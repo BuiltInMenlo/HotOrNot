@@ -2,29 +2,36 @@
 //  HONAppDelegate.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 09.05.12.
-//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
+//  Created by Matthew Holcombe on 09.06.12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
 #import "HONAppDelegate.h"
 
-#import "HONViewController.h"
+#import "HONFirstViewController.h"
+
+#import "HONSecondViewController.h"
 
 @implementation HONAppDelegate
 
 @synthesize window = _window;
-@synthesize viewController = _viewController;
+@synthesize tabBarController = _tabBarController;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
+	UIViewController *viewController1, *viewController2;
 	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-	    self.viewController = [[HONViewController alloc] initWithNibName:@"HONViewController_iPhone" bundle:nil];
+	    viewController1 = [[HONFirstViewController alloc] initWithNibName:@"HONFirstViewController_iPhone" bundle:nil];
+	    viewController2 = [[HONSecondViewController alloc] initWithNibName:@"HONSecondViewController_iPhone" bundle:nil];
 	} else {
-	    self.viewController = [[HONViewController alloc] initWithNibName:@"HONViewController_iPad" bundle:nil];
+	    viewController1 = [[HONFirstViewController alloc] initWithNibName:@"HONFirstViewController_iPad" bundle:nil];
+	    viewController2 = [[HONSecondViewController alloc] initWithNibName:@"HONSecondViewController_iPad" bundle:nil];
 	}
-	self.window.rootViewController = self.viewController;
+	self.tabBarController = [[UITabBarController alloc] init];
+	self.tabBarController.viewControllers = [NSArray arrayWithObjects:viewController1, viewController2, nil];
+	self.window.rootViewController = self.tabBarController;
     [self.window makeKeyAndVisible];
     return YES;
 }
@@ -67,5 +74,19 @@
 	 See also applicationDidEnterBackground:.
 	 */
 }
+
+/*
+// Optional UITabBarControllerDelegate method.
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
+{
+}
+*/
+
+/*
+// Optional UITabBarControllerDelegate method.
+- (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed
+{
+}
+*/
 
 @end

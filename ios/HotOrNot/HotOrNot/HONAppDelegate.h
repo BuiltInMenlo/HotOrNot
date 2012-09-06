@@ -2,18 +2,16 @@
 //  HONAppDelegate.h
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 09.05.12.
-//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
+//  Created by Matthew Holcombe on 09.06.12.
+//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@class HONViewController;
-
-@interface HONAppDelegate : UIResponder <UIApplicationDelegate>
+@interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (strong, nonatomic) HONViewController *viewController;
+@property (strong, nonatomic) UITabBarController *tabBarController;
 
 @end

@@ -13,7 +13,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4C54601215F83F0A006F4810"
+               BlueprintIdentifier = "4C62652415F96C7100AA7FCE"
                BuildableName = "HotOrNot.app"
                BlueprintName = "HotOrNot"
                ReferencedContainer = "container:HotOrNot.xcodeproj">
@@ -31,7 +31,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4C54601215F83F0A006F4810"
+            BlueprintIdentifier = "4C62652415F96C7100AA7FCE"
             BuildableName = "HotOrNot.app"
             BlueprintName = "HotOrNot"
             ReferencedContainer = "container:HotOrNot.xcodeproj">
@@ -49,7 +49,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4C54601215F83F0A006F4810"
+            BlueprintIdentifier = "4C62652415F96C7100AA7FCE"
             BuildableName = "HotOrNot.app"
             BlueprintName = "HotOrNot"
             ReferencedContainer = "container:HotOrNot.xcodeproj">
@@ -67,7 +67,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4C54601215F83F0A006F4810"
+            BlueprintIdentifier = "4C62652415F96C7100AA7FCE"
             BuildableName = "HotOrNot.app"
             BlueprintName = "HotOrNot"
             ReferencedContainer = "container:HotOrNot.xcodeproj">

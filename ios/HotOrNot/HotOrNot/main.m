@@ -2,7 +2,7 @@
 //  main.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 09.05.12.
+//  Created by Matthew Holcombe on 09.06.12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
