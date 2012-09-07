@@ -12,14 +12,10 @@
 		4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */; };
 		4C62653415F96C7100AA7FCE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C62653215F96C7100AA7FCE /* InfoPlist.strings */; };
 		4C62653615F96C7100AA7FCE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62653515F96C7100AA7FCE /* main.m */; };
-		4C62653F15F96C7100AA7FCE /* first.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C62653E15F96C7100AA7FCE /* first.png */; };
-		4C62654115F96C7100AA7FCE /* first@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654015F96C7100AA7FCE /* first@2x.png */; };
-		4C62654615F96C7100AA7FCE /* second.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654515F96C7100AA7FCE /* second.png */; };
-		4C62654815F96C7100AA7FCE /* second@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654715F96C7100AA7FCE /* second@2x.png */; };
-		4C62654B15F96C7100AA7FCE /* HONFirstViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654915F96C7100AA7FCE /* HONFirstViewController_iPhone.xib */; };
-		4C62654E15F96C7100AA7FCE /* HONFirstViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654C15F96C7100AA7FCE /* HONFirstViewController_iPad.xib */; };
-		4C62655115F96C7100AA7FCE /* HONSecondViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654F15F96C7100AA7FCE /* HONSecondViewController_iPhone.xib */; };
-		4C62655415F96C7100AA7FCE /* HONSecondViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C62655215F96C7100AA7FCE /* HONSecondViewController_iPad.xib */; };
+		4C62654B15F96C7100AA7FCE /* HONChallengesViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654915F96C7100AA7FCE /* HONChallengesViewController_iPhone.xib */; };
+		4C62654E15F96C7100AA7FCE /* HONChallengesViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654C15F96C7100AA7FCE /* HONChallengesViewController_iPad.xib */; };
+		4C62655115F96C7100AA7FCE /* HONVoteViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C62654F15F96C7100AA7FCE /* HONVoteViewController_iPhone.xib */; };
+		4C62655415F96C7100AA7FCE /* HONVoteViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4C62655215F96C7100AA7FCE /* HONVoteViewController_iPad.xib */; };
 		4C6266B215F96E2900AA7FCE /* AirshipConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C62655C15F96E2900AA7FCE /* AirshipConfig.plist */; };
 		4C6266B315F96E2900AA7FCE /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = 4C62655D15F96E2900AA7FCE /* CHANGELOG */; };
 		4C6266B415F96E2900AA7FCE /* libUAirship-1.3.2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6265BC15F96E2900AA7FCE /* libUAirship-1.3.2.a */; };
@@ -142,8 +138,8 @@
 		4C62673715F96E2900AA7FCE /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6266B015F96E2900AA7FCE /* FacebookSDK.framework */; };
 		4C62673815F96E2900AA7FCE /* FacebookSDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4C6266B115F96E2900AA7FCE /* FacebookSDKResources.bundle */; };
 		4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */; };
-		4C62674115F96E5600AA7FCE /* HONFirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673D15F96E5600AA7FCE /* HONFirstViewController.m */; };
-		4C62674215F96E5600AA7FCE /* HONSecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673F15F96E5600AA7FCE /* HONSecondViewController.m */; };
+		4C62674115F96E5600AA7FCE /* HONChallengesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673D15F96E5600AA7FCE /* HONChallengesViewController.m */; };
+		4C62674215F96E5600AA7FCE /* HONVoteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673F15F96E5600AA7FCE /* HONVoteViewController.m */; };
 		4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62674815F96FA800AA7FCE /* AudioToolbox.framework */; };
 		4C62675515F96FA800AA7FCE /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62674915F96FA800AA7FCE /* CFNetwork.framework */; };
 		4C62675615F96FA800AA7FCE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62674A15F96FA800AA7FCE /* CoreLocation.framework */; };
@@ -160,6 +156,8 @@
 		4C62676715F9710E00AA7FCE /* first@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C62676315F9710E00AA7FCE /* first@2x.png */; };
 		4C62676815F9710E00AA7FCE /* second.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C62676415F9710E00AA7FCE /* second.png */; };
 		4C62676915F9710E00AA7FCE /* second@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C62676515F9710E00AA7FCE /* second@2x.png */; };
+		4C62676D15F9786600AA7FCE /* HONPopularViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62676C15F9786600AA7FCE /* HONPopularViewController.m */; };
+		4C62677015F9788600AA7FCE /* HONCreateChallengeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62676F15F9788600AA7FCE /* HONCreateChallengeViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -171,14 +169,10 @@
 		4C62653315F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		4C62653515F96C7100AA7FCE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		4C62653715F96C7100AA7FCE /* HotOrNot-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "HotOrNot-Prefix.pch"; sourceTree = "<group>"; };
-		4C62653E15F96C7100AA7FCE /* first.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = first.png; sourceTree = "<group>"; };
-		4C62654015F96C7100AA7FCE /* first@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "first@2x.png"; sourceTree = "<group>"; };
-		4C62654515F96C7100AA7FCE /* second.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = second.png; sourceTree = "<group>"; };
-		4C62654715F96C7100AA7FCE /* second@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "second@2x.png"; sourceTree = "<group>"; };
-		4C62654A15F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/HONFirstViewController_iPhone.xib; sourceTree = "<group>"; };
-		4C62654D15F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/HONFirstViewController_iPad.xib; sourceTree = "<group>"; };
-		4C62655015F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/HONSecondViewController_iPhone.xib; sourceTree = "<group>"; };
-		4C62655315F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/HONSecondViewController_iPad.xib; sourceTree = "<group>"; };
+		4C62654A15F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/HONChallengesViewController_iPhone.xib; sourceTree = "<group>"; };
+		4C62654D15F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/HONChallengesViewController_iPad.xib; sourceTree = "<group>"; };
+		4C62655015F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/HONVoteViewController_iPhone.xib; sourceTree = "<group>"; };
+		4C62655315F96C7100AA7FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/HONVoteViewController_iPad.xib; sourceTree = "<group>"; };
 		4C62655C15F96E2900AA7FCE /* AirshipConfig.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = AirshipConfig.plist; sourceTree = "<group>"; };
 		4C62655D15F96E2900AA7FCE /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		4C62655F15F96E2900AA7FCE /* UAAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UAAnalytics.h; sourceTree = "<group>"; };
@@ -455,10 +449,10 @@
 		4C6266B115F96E2900AA7FCE /* FacebookSDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = FacebookSDKResources.bundle; sourceTree = "<group>"; };
 		4C62673A15F96E5600AA7FCE /* HONAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAppDelegate.h; sourceTree = "<group>"; };
 		4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAppDelegate.m; sourceTree = "<group>"; };
-		4C62673C15F96E5600AA7FCE /* HONFirstViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFirstViewController.h; sourceTree = "<group>"; };
-		4C62673D15F96E5600AA7FCE /* HONFirstViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFirstViewController.m; sourceTree = "<group>"; };
-		4C62673E15F96E5600AA7FCE /* HONSecondViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSecondViewController.h; sourceTree = "<group>"; };
-		4C62673F15F96E5600AA7FCE /* HONSecondViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSecondViewController.m; sourceTree = "<group>"; };
+		4C62673C15F96E5600AA7FCE /* HONChallengesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengesViewController.h; sourceTree = "<group>"; };
+		4C62673D15F96E5600AA7FCE /* HONChallengesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengesViewController.m; sourceTree = "<group>"; };
+		4C62673E15F96E5600AA7FCE /* HONVoteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteViewController.h; sourceTree = "<group>"; };
+		4C62673F15F96E5600AA7FCE /* HONVoteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteViewController.m; sourceTree = "<group>"; };
 		4C62674815F96FA800AA7FCE /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4C62674915F96FA800AA7FCE /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		4C62674A15F96FA800AA7FCE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -475,6 +469,10 @@
 		4C62676315F9710E00AA7FCE /* first@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "first@2x.png"; sourceTree = "<group>"; };
 		4C62676415F9710E00AA7FCE /* second.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = second.png; sourceTree = "<group>"; };
 		4C62676515F9710E00AA7FCE /* second@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "second@2x.png"; sourceTree = "<group>"; };
+		4C62676B15F9786600AA7FCE /* HONPopularViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularViewController.h; sourceTree = "<group>"; };
+		4C62676C15F9786600AA7FCE /* HONPopularViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularViewController.m; sourceTree = "<group>"; };
+		4C62676E15F9788600AA7FCE /* HONCreateChallengeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateChallengeViewController.h; sourceTree = "<group>"; };
+		4C62676F15F9788600AA7FCE /* HONCreateChallengeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateChallengeViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -554,14 +552,10 @@
 				4C62655A15F96E2900AA7FCE /* Other Classes */,
 				4C6266AE15F96E2900AA7FCE /* Other Frameworks */,
 				4C62676115F9710E00AA7FCE /* Resources */,
-				4C62653E15F96C7100AA7FCE /* first.png */,
-				4C62654015F96C7100AA7FCE /* first@2x.png */,
-				4C62654515F96C7100AA7FCE /* second.png */,
-				4C62654715F96C7100AA7FCE /* second@2x.png */,
-				4C62654915F96C7100AA7FCE /* HONFirstViewController_iPhone.xib */,
-				4C62654C15F96C7100AA7FCE /* HONFirstViewController_iPad.xib */,
-				4C62654F15F96C7100AA7FCE /* HONSecondViewController_iPhone.xib */,
-				4C62655215F96C7100AA7FCE /* HONSecondViewController_iPad.xib */,
+				4C62654915F96C7100AA7FCE /* HONChallengesViewController_iPhone.xib */,
+				4C62654C15F96C7100AA7FCE /* HONChallengesViewController_iPad.xib */,
+				4C62654F15F96C7100AA7FCE /* HONVoteViewController_iPhone.xib */,
+				4C62655215F96C7100AA7FCE /* HONVoteViewController_iPad.xib */,
 				4C62653015F96C7100AA7FCE /* Supporting Files */,
 			);
 			path = HotOrNot;
@@ -1301,12 +1295,9 @@
 		4C62673915F96E5600AA7FCE /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				4C62676A15F9776900AA7FCE /* Root */,
 				4C62673A15F96E5600AA7FCE /* HONAppDelegate.h */,
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
-				4C62673C15F96E5600AA7FCE /* HONFirstViewController.h */,
-				4C62673D15F96E5600AA7FCE /* HONFirstViewController.m */,
-				4C62673E15F96E5600AA7FCE /* HONSecondViewController.h */,
-				4C62673F15F96E5600AA7FCE /* HONSecondViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1320,6 +1311,21 @@
 				4C62676515F9710E00AA7FCE /* second@2x.png */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		4C62676A15F9776900AA7FCE /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				4C62673C15F96E5600AA7FCE /* HONChallengesViewController.h */,
+				4C62673D15F96E5600AA7FCE /* HONChallengesViewController.m */,
+				4C62673E15F96E5600AA7FCE /* HONVoteViewController.h */,
+				4C62673F15F96E5600AA7FCE /* HONVoteViewController.m */,
+				4C62676B15F9786600AA7FCE /* HONPopularViewController.h */,
+				4C62676C15F9786600AA7FCE /* HONPopularViewController.m */,
+				4C62676E15F9788600AA7FCE /* HONCreateChallengeViewController.h */,
+				4C62676F15F9788600AA7FCE /* HONCreateChallengeViewController.m */,
+			);
+			name = Root;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1374,14 +1380,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				4C62653415F96C7100AA7FCE /* InfoPlist.strings in Resources */,
-				4C62653F15F96C7100AA7FCE /* first.png in Resources */,
-				4C62654115F96C7100AA7FCE /* first@2x.png in Resources */,
-				4C62654615F96C7100AA7FCE /* second.png in Resources */,
-				4C62654815F96C7100AA7FCE /* second@2x.png in Resources */,
-				4C62654B15F96C7100AA7FCE /* HONFirstViewController_iPhone.xib in Resources */,
-				4C62654E15F96C7100AA7FCE /* HONFirstViewController_iPad.xib in Resources */,
-				4C62655115F96C7100AA7FCE /* HONSecondViewController_iPhone.xib in Resources */,
-				4C62655415F96C7100AA7FCE /* HONSecondViewController_iPad.xib in Resources */,
+				4C62654B15F96C7100AA7FCE /* HONChallengesViewController_iPhone.xib in Resources */,
+				4C62654E15F96C7100AA7FCE /* HONChallengesViewController_iPad.xib in Resources */,
+				4C62655115F96C7100AA7FCE /* HONVoteViewController_iPhone.xib in Resources */,
+				4C62655415F96C7100AA7FCE /* HONVoteViewController_iPad.xib in Resources */,
 				4C6266B215F96E2900AA7FCE /* AirshipConfig.plist in Resources */,
 				4C6266B315F96E2900AA7FCE /* CHANGELOG in Resources */,
 				4C6266B615F96E2900AA7FCE /* LICENSE in Resources */,
@@ -1530,8 +1532,10 @@
 				4C62673415F96E2900AA7FCE /* MixpanelEvent.m in Sources */,
 				4C62673515F96E2900AA7FCE /* Reachability.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
-				4C62674115F96E5600AA7FCE /* HONFirstViewController.m in Sources */,
-				4C62674215F96E5600AA7FCE /* HONSecondViewController.m in Sources */,
+				4C62674115F96E5600AA7FCE /* HONChallengesViewController.m in Sources */,
+				4C62674215F96E5600AA7FCE /* HONVoteViewController.m in Sources */,
+				4C62676D15F9786600AA7FCE /* HONPopularViewController.m in Sources */,
+				4C62677015F9788600AA7FCE /* HONCreateChallengeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1546,36 +1550,36 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		4C62654915F96C7100AA7FCE /* HONFirstViewController_iPhone.xib */ = {
+		4C62654915F96C7100AA7FCE /* HONChallengesViewController_iPhone.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				4C62654A15F96C7100AA7FCE /* en */,
 			);
-			name = HONFirstViewController_iPhone.xib;
+			name = HONChallengesViewController_iPhone.xib;
 			sourceTree = "<group>";
 		};
-		4C62654C15F96C7100AA7FCE /* HONFirstViewController_iPad.xib */ = {
+		4C62654C15F96C7100AA7FCE /* HONChallengesViewController_iPad.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				4C62654D15F96C7100AA7FCE /* en */,
 			);
-			name = HONFirstViewController_iPad.xib;
+			name = HONChallengesViewController_iPad.xib;
 			sourceTree = "<group>";
 		};
-		4C62654F15F96C7100AA7FCE /* HONSecondViewController_iPhone.xib */ = {
+		4C62654F15F96C7100AA7FCE /* HONVoteViewController_iPhone.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				4C62655015F96C7100AA7FCE /* en */,
 			);
-			name = HONSecondViewController_iPhone.xib;
+			name = HONVoteViewController_iPhone.xib;
 			sourceTree = "<group>";
 		};
-		4C62655215F96C7100AA7FCE /* HONSecondViewController_iPad.xib */ = {
+		4C62655215F96C7100AA7FCE /* HONVoteViewController_iPad.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				4C62655315F96C7100AA7FCE /* en */,
 			);
-			name = HONSecondViewController_iPad.xib;
+			name = HONVoteViewController_iPad.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
