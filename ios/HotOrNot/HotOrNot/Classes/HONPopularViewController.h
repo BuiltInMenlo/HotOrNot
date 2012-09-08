@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONPopularViewController : UIViewController
+@interface HONPopularViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @end

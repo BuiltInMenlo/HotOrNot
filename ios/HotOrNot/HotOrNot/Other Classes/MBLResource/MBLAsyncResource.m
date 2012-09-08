@@ -54,6 +54,8 @@
     _error = nil;
 	_data = nil;
 	_subscribers = nil;
+	
+	[super dealloc];
 }
 
 - (void)subscribe:(id<MBLResourceObserverProtocol>)observer
@@ -123,6 +125,7 @@
 - (void)dealloc
 {
 	handler = nil;
+	[super dealloc];
 }
 
 - (void)resource:(MBLAsyncResource *)resource isAvailableWithData:(NSData *)data

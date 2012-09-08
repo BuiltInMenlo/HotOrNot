@@ -60,6 +60,8 @@
 	_queue = nil;
 	_inflightRequests = nil;
 	_cache = nil;
+	
+	[super dealloc];
 }
 
 - (MBLResourceCache *)resourceCache
@@ -146,6 +148,8 @@
 	[_request setDelegate:nil];
 	[_request cancel];
 	_request = nil;
+	
+	[super dealloc];
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request

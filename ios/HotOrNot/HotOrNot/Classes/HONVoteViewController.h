@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONVoteViewController : UIViewController
+@interface HONVoteViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @end

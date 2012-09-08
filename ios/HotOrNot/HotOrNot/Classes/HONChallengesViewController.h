@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONChallengesViewController : UIViewController
+@interface HONChallengesViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @end

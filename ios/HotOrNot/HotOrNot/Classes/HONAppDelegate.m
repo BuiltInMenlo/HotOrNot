@@ -6,6 +6,9 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UAirship.h"
+#import "UAPush.h"
+
 #import "HONAppDelegate.h"
 
 #import "HONChallengesViewController.h"
@@ -20,6 +23,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	
+	NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
+	[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
+	[UAirship takeOff:takeOffOptions];
+	
+	[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	
 	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
@@ -49,18 +58,24 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+	[UAirship land];
 }
 
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+	[[UAPush shared] registerDeviceToken:deviceToken];
+	
+	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
+	deviceID = [deviceID substringToIndex:[deviceID length] - 1];
+	deviceID = [deviceID stringByReplacingOccurrencesOfString:@" " withString:@""];
+}
 
 # pragma mark - TabBarController Delegates
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
 	NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
 	if (viewController == [[tabBarController viewControllers] objectAtIndex:3]) {
-		HONCreateChallengeViewController *createChallengeViewController = [[HONCreateChallengeViewController alloc] init];
-		UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
-		
-		[tabBarController presentModalViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
+		[tabBarController presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
 		return (NO);
 	
 	} else
