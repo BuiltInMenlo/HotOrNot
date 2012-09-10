@@ -10,6 +10,17 @@
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
+
++ (void)writeDeviceToken:(NSString *)token;
++ (NSString *)deviceToken;
+
++ (void)writeUserInfo:(NSDictionary *)userInfo;
++ (NSDictionary *)infoForUser;
+
+#define kServerPath @"http://discover.getassembly.com/hotornot"
+#define kUsersAPI @"Users.php"
+#define kChallengesAPI @"Challenges.php"
+
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;
 

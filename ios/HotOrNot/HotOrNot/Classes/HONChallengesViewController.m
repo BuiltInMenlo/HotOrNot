@@ -7,7 +7,7 @@
 //
 
 #import "EGOImageView.h"
-
+#import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
 
@@ -138,7 +138,7 @@
 		//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//ptsLabel = [SNAppDelegate snLinkColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
-		ptsLabel.text = [NSString stringWithFormat:@"%d points", (int)((arc4random() % 2000) + 100)];
+		ptsLabel.text = [NSString stringWithFormat:@"%d points", [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue]];
 		[headerView addSubview:ptsLabel];
 		
 		UILabel *playedLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 200.0, 16.0)];

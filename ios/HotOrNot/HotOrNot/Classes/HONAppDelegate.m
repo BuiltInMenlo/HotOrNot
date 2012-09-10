@@ -8,6 +8,7 @@
 
 #import "UAirship.h"
 #import "UAPush.h"
+#import "ASIFormDataRequest.h"
 
 #import "HONAppDelegate.h"
 
@@ -16,10 +17,32 @@
 #import "HONPopularViewController.h"
 #import "HONCreateChallengeViewController.h"
 
+@interface HONAppDelegate() <ASIHTTPRequestDelegate>
+- (void)_registerUser;
+@end
+
 @implementation HONAppDelegate
 
 @synthesize window = _window;
 @synthesize tabBarController = _tabBarController;
+
++ (void)writeDeviceToken:(NSString *)token {
+	[[NSUserDefaults standardUserDefaults] setObject:token forKey:@"device_token"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (NSString *)deviceToken {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"]);
+}
+
++(void)writeUserInfo:(NSDictionary *)userInfo {
+	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++(NSDictionary *)infoForUser {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"]);
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -68,14 +91,105 @@
 	NSString *deviceID = [[deviceToken description] substringFromIndex:1];
 	deviceID = [deviceID substringToIndex:[deviceID length] - 1];
 	deviceID = [deviceID stringByReplacingOccurrencesOfString:@" " withString:@""];
+	
+	NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken:[%@]", deviceID);
+	
+	[HONAppDelegate writeDeviceToken:deviceID];
+	[self _registerUser];
 }
 
-# pragma mark - TabBarController Delegates
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
+	UALOG(@"Failed To Register For Remote Notifications With Error: %@", error);
+	
+	NSString *deviceID = [NSString stringWithFormat:@"%064d", 0];
+	NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", deviceID);
+	
+	[HONAppDelegate writeDeviceToken:deviceID];
+	[self _registerUser];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+	UALOG(@"Received remote notification: %@", userInfo);
+	
+	// Get application state for iOS4.x+ devices, otherwise assume active
+	UIApplicationState appState = UIApplicationStateActive;
+	if ([application respondsToSelector:@selector(applicationState)]) {
+		appState = application.applicationState;
+	}
+	
+	[[UAPush shared] handleNotification:userInfo applicationState:appState];
+	[[UAPush shared] resetBadge]; // zero badge after push received
+	
+	//[UAPush shared].delegate = self;
+	
+	/*
+	 int type_id = [[userInfo objectForKey:@"type"] intValue];
+	 NSLog(@"TYPE: [%d]", type_id);
+	 
+	 switch (type_id) {
+	 case 1:
+	 [[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_REWARDS_LIST" object:nil];
+	 break;
+	 
+	 case 2:
+	 [[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_REWARDS_LIST" object:nil];
+	 break;
+	 
+	 case 3:
+	 [[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_DEVICES_LIST" object:nil];
+	 break;
+	 
+	 case 4:
+	 [[NSNotificationCenter defaultCenter] postNotificationName:@"THANK_YOU_RECIEVED" object:nil];
+	 break;
+	 
+	 }
+	 
+	 if (type_id == 2) {
+	 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Leaving diddit" message:@"Your iTunes gift card number has been copied" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:@"Visit iTunes", nil];
+	 [alert show];
+	 [alert release];
+	 
+	 NSString *redeemCode = [[DIAppDelegate md5:[NSString stringWithFormat:@"%d", arc4random()]] uppercaseString];
+	 redeemCode = [redeemCode substringToIndex:[redeemCode length] - 12];
+	 
+	 UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	 [pasteboard setValue:redeemCode forPasteboardType:@"public.utf8-plain-text"];
+	 }
+	 
+	 UILocalNotification *localNotification = [[[UILocalNotification alloc] init] autorelease];
+	 localNotification.fireDate = [[NSDate alloc] initWithTimeIntervalSinceNow:5];
+	 localNotification.alertBody = [NSString stringWithFormat:@"%d", [[userInfo objectForKey:@"type"] intValue]];;
+	 localNotification.soundName = UILocalNotificationDefaultSoundName;
+	 localNotification.applicationIconBadgeNumber = 3;
+	 
+	 NSDictionary *infoDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Object 1", @"Key 1", @"Object 2", @"Key 2", nil];
+	 localNotification.userInfo = infoDict;
+	 
+	 [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+	 */
+}
+
+
+- (void)_registerUser {
+	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {
+		ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kUsersAPI]]];
+		[userRequest setDelegate:self];
+		[userRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
+		[userRequest setPostValue:[HONAppDelegate deviceToken] forKey:@"token"];
+		[userRequest startAsynchronous];
+	//}
+}
+
+
+#pragma mark - TabBarController Delegates
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
 	NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
 	if (viewController == [[tabBarController viewControllers] objectAtIndex:3]) {
-		[tabBarController presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
+		//[tabBarController presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
+		[tabBarController.selectedViewController.navigationController pushViewController:navigationController animated:YES];
 		return (NO);
 	
 	} else
@@ -88,6 +202,27 @@
 }
 
 - (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed {
+}
+
+#pragma mark - ASI Delegates
+-(void)requestFinished:(ASIHTTPRequest *)request {
+	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	
+	@autoreleasepool {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+		
+		if (error != nil)
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		
+		else {
+			[HONAppDelegate writeUserInfo:userResult];
+		}
+	}
+}
+
+-(void)requestFailed:(ASIHTTPRequest *)request {
+	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 
 @end

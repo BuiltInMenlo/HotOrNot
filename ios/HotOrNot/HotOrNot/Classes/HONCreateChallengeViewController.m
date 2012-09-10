@@ -7,8 +7,15 @@
 //
 
 #import "HONCreateChallengeViewController.h"
+#import "HONImagePickerViewController.h"
+
+@interface HONCreateChallengeViewController() <UITextFieldDelegate>
+@property (nonatomic, strong) NSString *subjectName;
+@end
 
 @implementation HONCreateChallengeViewController
+
+@synthesize subjectName = _subjectName;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -26,6 +33,46 @@
 }
 
 #pragma mark - View lifecycle
+- (void)loadView {
+	[super loadView];
+	
+	UITextField *subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 14.0, 237.0, 16.0)];
+	[subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	[subjectTextField setBackgroundColor:[UIColor clearColor]];
+	subjectTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
+	[subjectTextField setReturnKeyType:UIReturnKeyDone];
+	[subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
+	[subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	//subjectTextField.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
+	subjectTextField.keyboardType = UIKeyboardTypeDefault;
+	subjectTextField.text = @"";
+	subjectTextField.delegate = self;
+	[self.view addSubview:subjectTextField];
+	
+	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	friendsButton.frame = CGRectMake(20.0, 50.0, 280.0, 43.0);
+	[friendsButton setBackgroundColor:[UIColor whiteColor]];
+	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
+	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+	[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
+	//friendsButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+	[friendsButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
+	[friendsButton setTitle:@"Challenge Friends" forState:UIControlStateNormal];
+	[self.view addSubview:friendsButton];
+	
+	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	randomButton.frame = CGRectMake(20.0, 100.0, 280.0, 43.0);
+	[randomButton setBackgroundColor:[UIColor whiteColor]];
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
+	//randomButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+	[randomButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
+	[randomButton setTitle:@"Random Challenge" forState:UIControlStateNormal];
+	[self.view addSubview:randomButton];
+}
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
@@ -67,6 +114,20 @@
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)_goChallengeFriends {
+	
+}
+
+- (void)_goRandomChallenge {
+	NSLog(@"_goRandomChallenge");
+	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] init] animated:YES];
+	//[self.parentViewController.navigationController pushViewController:[[HONImagePickerViewController alloc] init] animated:YES];
+	
+	//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	//[self.navigationController pushViewController:navigationController animated:YES];
+	
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	// Return YES for supported orientations
 	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
@@ -74,6 +135,30 @@
 	} else {
 		return YES;
 	}
+}
+
+
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	//_commentsLabel.hidden = YES;
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return YES;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];
+	
+	if ([textField.text length] > 0) {
+		self.subjectName = textField.text;		
+		textField.text = @"";
+		
+		//_commentsLabel.hidden = NO;
+	}
+	
+	//_commentsLabel.hidden = NO;
 }
 
 @end
