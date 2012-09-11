@@ -11,18 +11,20 @@
 
 @interface HONCreateChallengeViewController() <UITextFieldDelegate>
 @property (nonatomic, strong) NSString *subjectName;
+@property (nonatomic, strong) UILabel *placeholderLabel;
 @end
 
 @implementation HONCreateChallengeViewController
 
 @synthesize subjectName = _subjectName;
+@synthesize placeholderLabel = _placeholderLabel;
 
 - (id)init {
 	if ((self = [super init])) {
 		self.title = NSLocalizedString(@"Create Challenge", @"Create Challenge");
 		self.tabBarItem.image = [UIImage imageNamed:@"second"];
 		
-		self.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
+		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	}
 	
 	return (self);
@@ -36,11 +38,11 @@
 - (void)loadView {
 	[super loadView];
 	
-	UITextField *subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 14.0, 237.0, 16.0)];
-	[subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	UITextField *subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 280.0, 20.0)];
+	//[subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	[subjectTextField setBackgroundColor:[UIColor clearColor]];
+	[subjectTextField setBackgroundColor:[UIColor whiteColor]];
 	subjectTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
 	[subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
@@ -51,8 +53,16 @@
 	subjectTextField.delegate = self;
 	[self.view addSubview:subjectTextField];
 	
+	self.placeholderLabel = [[UILabel alloc] initWithFrame:subjectTextField.frame];
+	//self.placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
+	self.placeholderLabel.textColor = [UIColor colorWithWhite:0.620 alpha:1.0];
+	self.placeholderLabel.backgroundColor = [UIColor clearColor];
+	self.placeholderLabel.textAlignment = UITextAlignmentCenter;
+	self.placeholderLabel.text = @"Give your challenge a #hashtag";
+	[self.view addSubview:self.placeholderLabel];
+	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(20.0, 50.0, 280.0, 43.0);
+	friendsButton.frame = CGRectMake(20.0, 100.0, 280.0, 43.0);
 	[friendsButton setBackgroundColor:[UIColor whiteColor]];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
@@ -63,7 +73,7 @@
 	[self.view addSubview:friendsButton];
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(20.0, 100.0, 280.0, 43.0);
+	randomButton.frame = CGRectMake(20.0, 150.0, 280.0, 43.0);
 	[randomButton setBackgroundColor:[UIColor whiteColor]];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
@@ -120,7 +130,7 @@
 
 - (void)_goRandomChallenge {
 	NSLog(@"_goRandomChallenge");
-	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] init] animated:YES];
+	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName] animated:YES];
 	//[self.parentViewController.navigationController pushViewController:[[HONImagePickerViewController alloc] init] animated:YES];
 	
 	//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
@@ -140,7 +150,7 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	//_commentsLabel.hidden = YES;
+	self.placeholderLabel.hidden = YES;
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -153,12 +163,9 @@
 	
 	if ([textField.text length] > 0) {
 		self.subjectName = textField.text;		
-		textField.text = @"";
-		
-		//_commentsLabel.hidden = NO;
-	}
 	
-	//_commentsLabel.hidden = NO;
+	} else
+		self.placeholderLabel.hidden = NO;
 }
 
 @end

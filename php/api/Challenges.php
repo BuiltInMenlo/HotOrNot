@@ -5,7 +5,7 @@
 	
 	  	function __construct() {
 		
-			$this->db_conn = mysql_connect('localhost', 'hotrnot_usr', 'dope911t') or die("Could not connect to database.");
+			$this->db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
 			mysql_select_db('hotornot') or die("Could not select database.");
 		}
 	
@@ -84,76 +84,54 @@
 		}
 	    
 		
-		function submitChallenge($user_id, $img_url) {
-			$user_arr = array();
+		function submitRandomChallenge($user_id, $subject, $img_url) {
+			$challenge_arr = array();
 			
-			$query = 'SELECT * FROM `tblUsers` WHERE `device_token` = "'. $device_token .'";';
+			$query = 'SELECT `id` FROM `tblChallengeSubjects` WHERE `title` = "'. $subject .'";';
 			$result = mysql_query($query);
 			
-			if (mysql_num_rows($result) > 0) {
+			if ($result) {
 				$row = mysql_fetch_row($result);
-				
-				$query = 'UPDATE `tblUsers` SET `last_login` = CURRENT_TIMESTAMP WHERE `id` ='. $row[0] .';';
-				$result = mysql_query($query);
-				
+				$subject_id = $row[0];
+			
 			} else {
-				$query = 'INSERT INTO `tblUsers` (';
-				$query .= '`id`, `username`, `device_token`, `paid`, `points`, `added`, `last_login`) ';
-				$query .= 'VALUES (NULL, "", "'. $device_token .'", "N" NOW(), CURRENT_TIMESTAMP);';
-				$result = mysql_query($query);
-				$user_id = mysql_insert_id();
-								
-				$query = 'SELECT * FROM `tblUsers` WHERE `id` ='. $user_id .';';
-				$row = mysql_fetch_row(mysql_query($query));								
+				$query = 'INSERT INTO `tblChallengeSubjects` (';
+				$query .= '`id`, `title`, `creator_id`, `added`) ';
+				$query .= 'VALUES (NULL, "'. $subject .'", "'. $user_id .'", NOW());';
+				$subject_result = mysql_query($query);
+				$subject_id = mysql_insert_id();
 			}
 			
-			$user_arr = array(
-				"id" => $row[0], 
-				"name" => $row[1], 
-				"token" => $row[2], 
-				"paid" => $row[3], 
-				"points" => $row[4]
+			
+			$range_result = mysql_query(" SELECT MAX(`id`) AS max_id , MIN(`id`) AS min_id FROM `tblUsers`");
+			$range_row = mysql_fetch_object($range_result); 
+			$rndUser_id = mt_rand($range_row->min_id , $range_row->max_id);			
+			
+			$query = 'INSERT INTO `tblChallenges` (';
+			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `img_url`, `started`, `added`) ';
+			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "", "0000-00-00 00:00:00", NOW());';
+			$result = mysql_query($query);
+			$challenge_id = mysql_insert_id();
+			
+			
+			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
+			$row = mysql_fetch_object(mysql_query($query));
+			
+			$challenge_arr = array(
+				"id" => $row->id, 
+				"status" => "Waiting", 
+				"subject" => $subject, 
+				"creator_id" => $row->creator_id, 
+				"img_url" => $row->img_url,
+				"added" => $row->added
 			);
 			
-			$this->sendResponse(200, json_encode($user_arr));
+			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);	
 		}
 		
 		
-		function updateName($user_id, $username) {
-			$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'" WHERE `id` ='. $user_id .';';
-			$result = mysql_query($query);
-			
-			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
-			$row = mysql_fetch_row(mysql_query($query));
-			$user_arr = array(
-				"id" => $row[0], 
-				"name" => $row[1], 
-				"token" => $row[2], 
-				"paid" => $row[3],
-				"points" => $row[4]
-			);
-			
-			$this->sendResponse(200, json_encode($user_arr));
-			return (true);
-		}
 		
-		function updatePaid($user_id, $isPaid) {
-			$query = 'UPDATE `tblUsers` SET `paid` = "'. $isPaid .'" WHERE `id` ='. $user_id .';';
-			$result = mysql_query($query);
-			
-			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
-			$row = mysql_fetch_row(mysql_query($query));
-			$user_arr = array(
-				"id" => $row[0], 
-				"name" => $row[1], 
-				"token" => $row[2], 
-				"paid" => $row[3]
-			);
-			
-			$this->sendResponse(200, json_encode($user_arr));
-			return (true);
-		}
 	    
 		function test() {
 			$this->sendResponse(200, json_encode(array(
@@ -174,19 +152,11 @@
 				break;
 				
 			case "1":
-				if (isset($_POST['token']))
-					$challenges->submitNewUser($_POST['token']);
+				if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL']))
+					$challenges->submitRandomChallenge($_POST['userID'], $_POST['subject'], $_POST['imgURL']);
 				break;
 				
-			case "2":
-				if (isset($_POST['userID']) && isset($_POST['username']))
-					$challenges->updateName($_POST['userID'], $_POST['username']);
-				break;
-			
-			case "3":
-				if (isset($_POST['userID']) && isset($_POST['isPaid']))
-					$challenges->updatePaid($_POST['userID'], $_POST['isPaid']);
-				break;			
+						
     	}
 	}
 ?>

@@ -85,15 +85,13 @@
 	    
 		
 		function submitNewUser($device_token) {
-			$user_arr = array();
-			
 			$query = 'SELECT * FROM `tblUsers` WHERE `device_token` = "'. $device_token .'";';
 			$result = mysql_query($query);
 			
 			if (mysql_num_rows($result) > 0) {
-				$row = mysql_fetch_row($result);
+				$row = mysql_fetch_object($result);
 				
-				$query = 'UPDATE `tblUsers` SET `last_login` = CURRENT_TIMESTAMP WHERE `id` ='. $row[0] .';';
+				$query = 'UPDATE `tblUsers` SET `last_login` = CURRENT_TIMESTAMP WHERE `id` ='. $row->id .';';
 				$result = mysql_query($query);
 				
 			} else {
@@ -102,17 +100,20 @@
 				$query .= 'VALUES (NULL, "", "'. $device_token .'", "N", "0", CURRENT_TIMESTAMP, NOW());';
 				$result = mysql_query($query);
 				$user_id = mysql_insert_id();
+				
+				$query = 'UPDATE `tblUsers` SET `username` = "HotOrNot_'. $user_id .'" WHERE `id` ='. $user_id .';';
+				$result = mysql_query($query);
 								
 				$query = 'SELECT * FROM `tblUsers` WHERE `id` ='. $user_id .';';
 				$row = mysql_fetch_row(mysql_query($query));								
 			}
 			
 			$user_arr = array(
-				"id" => $row[0], 
-				"name" => $row[1], 
-				"token" => $row[2], 
-				"paid" => $row[3], 
-				"points" => $row[4]
+				"id" => $row->id, 
+				"name" => $row->username, 
+				"token" => $row->device_token, 
+				"paid" => $row->paid, 
+				"points" => $row->points
 			);
 			
 			$this->sendResponse(200, json_encode($user_arr));
@@ -125,13 +126,14 @@
 			$result = mysql_query($query);
 			
 			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
-			$row = mysql_fetch_row(mysql_query($query));
+			$row = mysql_fetch_object(mysql_query($query));
+			
 			$user_arr = array(
-				"id" => $row[0], 
-				"name" => $row[1], 
-				"token" => $row[2], 
-				"paid" => $row[3],
-				"points" => $row[4]
+				"id" => $row->id, 
+				"name" => $row->username, 
+				"token" => $row->device_token, 
+				"paid" => $row->paid,
+				"points" => $row->points
 			);
 			
 			$this->sendResponse(200, json_encode($user_arr));
@@ -143,12 +145,14 @@
 			$result = mysql_query($query);
 			
 			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
-			$row = mysql_fetch_row(mysql_query($query));
+			$row = mysql_fetch_object(mysql_query($query));
+			
 			$user_arr = array(
-				"id" => $row[0], 
-				"name" => $row[1], 
-				"token" => $row[2], 
-				"paid" => $row[3]
+				"id" => $row->id, 
+				"name" => $row->username, 
+				"token" => $row->device_token, 
+				"paid" => $row->paid, 
+				"points" => $row->points
 			);
 			
 			$this->sendResponse(200, json_encode($user_arr));

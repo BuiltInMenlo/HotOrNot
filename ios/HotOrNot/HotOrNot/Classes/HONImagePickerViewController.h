@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONImagePickerViewController : UIViewController
+@interface HONImagePickerViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
+- (id)initWithSubject:(NSString *)subject;
 @end

@@ -59,9 +59,11 @@
 	popularViewController = [[HONPopularViewController alloc] init];
 	createChallengeViewController = [[HONCreateChallengeViewController alloc] init];
 	
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
+	
 	self.tabBarController = [[UITabBarController alloc] init];
 	self.tabBarController.delegate = self;
-	self.tabBarController.viewControllers = [NSArray arrayWithObjects:challengesViewController, voteViewController, popularViewController, createChallengeViewController, nil];
+	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController, voteViewController, popularViewController, createChallengeViewController, nil];
 	self.window.rootViewController = self.tabBarController;
 	[self.window makeKeyAndVisible];
 	
@@ -187,9 +189,9 @@
 	NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
 	if (viewController == [[tabBarController viewControllers] objectAtIndex:3]) {
-		//[tabBarController presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
-		[tabBarController.selectedViewController.navigationController pushViewController:navigationController animated:YES];
+		[tabBarController presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
+		//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
+		//[tabBarController.navigationController presentViewController:navigationController animated:YES completion:nil];
 		return (NO);
 	
 	} else

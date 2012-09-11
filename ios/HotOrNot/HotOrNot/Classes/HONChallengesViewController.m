@@ -102,7 +102,8 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	[self presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
+	//[self presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
 }
 
 - (void)_goSettings {
