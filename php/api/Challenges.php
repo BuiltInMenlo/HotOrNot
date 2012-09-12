@@ -87,6 +87,9 @@
 		function submitRandomChallenge($user_id, $subject, $img_url) {
 			$challenge_arr = array();
 			
+			if ($subject == "")
+				$subject = "N/A";
+			
 			$query = 'SELECT `id` FROM `tblChallengeSubjects` WHERE `title` = "'. $subject .'";';
 			$result = mysql_query($query);
 			
@@ -102,17 +105,29 @@
 				$subject_id = mysql_insert_id();
 			}
 			
+			$rndUser_id = $user_id;
+			while ($rndUser_id == $user_id) {
+				$range_result = mysql_query(" SELECT MAX(`id`) AS max_id , MIN(`id`) AS min_id FROM `tblUsers`");
+				$range_row = mysql_fetch_object($range_result); 
+				$rndUser_id = mt_rand($range_row->min_id , $range_row->max_id);
+			}
 			
-			$range_result = mysql_query(" SELECT MAX(`id`) AS max_id , MIN(`id`) AS min_id FROM `tblUsers`");
-			$range_row = mysql_fetch_object($range_result); 
-			$rndUser_id = mt_rand($range_row->min_id , $range_row->max_id);			
+			$query = 'SELECT `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$points = mysql_fetch_object(mysql_query($query))->points;
+			$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
+			$result = mysql_query($query);
 			
 			$query = 'INSERT INTO `tblChallenges` (';
 			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `img_url`, `started`, `added`) ';
-			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "", "0000-00-00 00:00:00", NOW());';
+			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0000-00-00 00:00:00", NOW());';
 			$result = mysql_query($query);
 			$challenge_id = mysql_insert_id();
 			
+			$query = 'INSERT INTO `tblChallengeParticipants` (';
+			$query .= '`challenge_id`, `user_id`) ';
+			$query .= 'VALUES ("'. $challenge_id .'", "'. $rndUser_id .'");';
+			$result = mysql_query($query);
+		 			
 			
 			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
 			$row = mysql_fetch_object(mysql_query($query));
@@ -131,6 +146,50 @@
 		}
 		
 		
+		function getChallengesForUser($user_id) {
+			$challenge_arr = array();
+			
+			$query = 'SELECT * FROM `tblChallenges` INNER JOIN `tblChallengeParticipants` ON `tblChallenges`.`id` = `tblChallengeParticipants`.`challenge_id` WHERE `tblChallengeParticipants`.`user_id` = '. $user_id .';';
+			$challenge_result = mysql_query($query);
+			
+			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				$sub_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
+				$user_obj = mysql_fetch_object(mysql_query($query));
+												
+				array_push($challenge_arr, array(
+					"id" => $challenge_row['id'], 
+					"status" => "Waiting", 
+					"creator_id" => $challenge_row['creator_id'], 
+					"creator" => $user_obj->username, 
+					"subject" => $sub_obj->title,
+					"img_url" => $challenge_row['img_url'], 
+					"started" => $challenge_row['started']
+				));
+			}
+			
+			
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);	
+		}
+		
+		function acceptChallenge($user_id, $challenge_id, $img_url) {
+			$challenge_arr = array();
+			
+			$query = 'INSERT INTO `tblChallengeImages` (';
+			$query .= '`id`, `challenge_id`, `user_id`, `url`, `added`) VALUES (';
+			$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $img_url .'", NOW();';
+			$result = mysql_query($query);
+			$img_id = mysql_insert_id();			
+			
+			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `started` = NOW() WHERE `id` = '. $challenge_id .';';
+			$result = mysql_query($query);
+			
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);	
+		}
 		
 	    
 		function test() {
@@ -156,7 +215,20 @@
 					$challenges->submitRandomChallenge($_POST['userID'], $_POST['subject'], $_POST['imgURL']);
 				break;
 				
-						
+			case "2":
+				if (isset($_POST['userID']))
+					$challenges->getChallengesForUser($_POST['userID']);
+				break;
+				
+			case "3":
+				if (isset($_POST['userID']) && isset($_POST['challengeID']))
+					$challenges->getChallengesForUser($_POST['userID'], $_POST['challengeID']);
+				break;
+				
+			case "4":
+				if (isset($_POST['userID']) && isset($_POST['challengeID']) && isset($_POST['imgURL']))
+					$challenges->acceptChallenge($_POST['userID'], $_POST['challengeID'], $_POST['imgURL']);
+				break;
     	}
 	}
 ?>

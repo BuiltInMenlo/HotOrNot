@@ -16,7 +16,9 @@
 
 @property (nonatomic) int challengeID;
 @property (nonatomic) int creatorID;
+@property (nonatomic, retain) NSString *imageURL;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic, retain) NSString *creatorName;
+@property (nonatomic, retain) NSDate *startedDate;
 
 @end

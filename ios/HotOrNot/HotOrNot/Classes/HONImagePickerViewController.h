@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "HONChallengeVO.h"
+
 @interface HONImagePickerViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 - (id)initWithSubject:(NSString *)subject;
+- (id)initWithChallenge:(HONChallengeVO *)vo;
 @end

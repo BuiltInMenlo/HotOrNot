@@ -7,8 +7,11 @@
 //
 
 #import "HONChallengeViewCell.h"
+#import "EGOImageView.h"
 
 @interface HONChallengeViewCell()
+
+@property (nonatomic, strong) EGOImageView *creatorImageView;
 @property (nonatomic, strong) UILabel *creatorLabel;
 @property (nonatomic, strong) UILabel *subjectLabel;
 @property (nonatomic, strong) UIButton *ctaButton;
@@ -17,6 +20,7 @@
 @implementation HONChallengeViewCell
 @synthesize challengeVO = _challengeVO;
 
+@synthesize creatorImageView = _creatorImageView;
 @synthesize creatorLabel = _creatorLabel;
 @synthesize subjectLabel = _subjectLabel;
 @synthesize ctaButton = _ctaButton;
@@ -32,6 +36,10 @@
 		UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 56.0, self.frame.size.width, 1.0)];
 		lineView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
 		[self addSubview:lineView];
+		
+		self.creatorImageView = [[EGOImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
+		self.creatorImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		[self addSubview:self.creatorImageView];
 		
 		self.creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];
 		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
@@ -62,13 +70,6 @@
 	return (self);
 }
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
-	if ((self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])) {
-		
-	}
-	
-	return (self);
-}
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
 	[super setSelected:selected animated:animated];
@@ -77,6 +78,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
+	self.creatorImageView.imageURL = [NSURL URLWithString:self.challengeVO.imageURL];
 	self.creatorLabel.text = self.challengeVO.creatorName;
 	self.subjectLabel.text = [NSString stringWithFormat:@"#%@", self.challengeVO.subjectName];
 }
@@ -84,7 +86,7 @@
 
 #pragma mark - Navigation
 - (void)_goCTA {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"CHALLENGE_CTA" object:self.challengeVO];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:self.challengeVO];
 }
 
 @end
