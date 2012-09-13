@@ -8,8 +8,9 @@
 
 #import "HONVoteViewController.h"
 #import "HONVoteItemViewCell.h"
+#import "ASIFormDataRequest.h"
 
-@interface HONVoteViewController()
+@interface HONVoteViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @end
@@ -57,6 +58,8 @@
 	self.tableView.showsVerticalScrollIndicator = YES;
 	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
 	[self.view addSubview:self.tableView];
+	
+	
 }
 
 - (void)viewDidLoad {

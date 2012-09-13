@@ -149,6 +149,28 @@
 		function getChallengesForUser($user_id) {
 			$challenge_arr = array();
 			
+			$query = 'SELECT * FROM `tblChallenges` WHERE `creator_id` = '. $user_id .';';
+			$challenge_result = mysql_query($query);
+			
+			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				$sub_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
+				$user_obj = mysql_fetch_object(mysql_query($query));
+				
+				array_push($challenge_arr, array(
+					"id" => $challenge_row['id'], 
+					"status" => "Waiting", 
+					"creator_id" => $challenge_row['creator_id'], 
+					"creator" => $user_obj->username, 
+					"subject" => $sub_obj->title,
+					"img_url" => $challenge_row['img_url'], 
+					"started" => $challenge_row['started']
+				));	
+			}
+				
+			
 			$query = 'SELECT * FROM `tblChallenges` INNER JOIN `tblChallengeParticipants` ON `tblChallenges`.`id` = `tblChallengeParticipants`.`challenge_id` WHERE `tblChallengeParticipants`.`user_id` = '. $user_id .';';
 			$challenge_result = mysql_query($query);
 			
@@ -161,7 +183,7 @@
 												
 				array_push($challenge_arr, array(
 					"id" => $challenge_row['id'], 
-					"status" => "Waiting", 
+					"status" => "Accept", 
 					"creator_id" => $challenge_row['creator_id'], 
 					"creator" => $user_obj->username, 
 					"subject" => $sub_obj->title,
@@ -189,6 +211,40 @@
 			
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);	
+		}
+		
+		function getActiveVotes($user_id) {
+			$challenge_arr = array();
+			
+			$query = 'SELECT `challenge_id` FROM `tblChallengeParticipants` WHERE `user_id` != '. $user_id .';';
+			$result = mysql_query($query);
+			
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+				$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $row['challenge_id'] .';';
+				$challenge_result = mysql_query($query);
+				$challenge_obj = mysql_
+				
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				$sub_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
+				$user_obj = mysql_fetch_object(mysql_query($query));
+												
+				array_push($challenge_arr, array(
+					"id" => $challenge_row['id'], 
+					"status" => "Accept", 
+					"creator_id" => $challenge_row['creator_id'], 
+					"creator" => $user_obj->username, 
+					"subject" => $sub_obj->title,
+					"img_url" => $challenge_row['img_url'], 
+					"started" => $challenge_row['started']
+				));
+			}
+			
+			
+			
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);
 		}
 		
 	    
@@ -228,6 +284,11 @@
 			case "4":
 				if (isset($_POST['userID']) && isset($_POST['challengeID']) && isset($_POST['imgURL']))
 					$challenges->acceptChallenge($_POST['userID'], $_POST['challengeID'], $_POST['imgURL']);
+				break;
+				
+			case "5":
+				if (isset($_POST['userID']))
+					$challenges->getActiveVotes($_POST['userID']);
 				break;
     	}
 	}
