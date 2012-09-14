@@ -216,28 +216,29 @@
 		function getActiveVotes($user_id) {
 			$challenge_arr = array();
 			
-			$query = 'SELECT `challenge_id` FROM `tblChallengeParticipants` WHERE `user_id` != '. $user_id .';';
+			$query = 'SELECT `challenge_id` FROM `tblChallengeParticipants` WHERE `user_id` = '. $user_id .';';
 			$result = mysql_query($query);
 			
 			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 				$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $row['challenge_id'] .';';
 				$challenge_result = mysql_query($query);
-				$challenge_obj = mysql_
+				$challenge_obj = mysql_fetch_object($challenge_result);
 				
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
 				$sub_obj = mysql_fetch_object(mysql_query($query));
 				
-				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
+				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';
 				$user_obj = mysql_fetch_object(mysql_query($query));
 												
 				array_push($challenge_arr, array(
-					"id" => $challenge_row['id'], 
-					"status" => "Accept", 
-					"creator_id" => $challenge_row['creator_id'], 
+					"id" => $challenge_obj->id, 
+					"status" => "Started", 
+					"creator_id" => $challenge_obj->creator_id, 
 					"creator" => $user_obj->username, 
 					"subject" => $sub_obj->title,
-					"img_url" => $challenge_row['img_url'], 
-					"started" => $challenge_row['started']
+					"img_url" => $challenge_obj->img_url, 
+					"started" => $challenge_obj->started
 				));
 			}
 			

@@ -9,6 +9,7 @@
 #import "HONVoteViewController.h"
 #import "HONVoteItemViewCell.h"
 #import "ASIFormDataRequest.h"
+#import "HONAppDelegate.h"
 
 @interface HONVoteViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
@@ -27,13 +28,6 @@
 		self.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
 		
 		self.challenges = [NSMutableArray new];
-		
-		[self.challenges addObject:@"derp"];
-		[self.challenges addObject:@"derp"];
-		[self.challenges addObject:@"derp"];
-		[self.challenges addObject:@"derp"];
-		[self.challenges addObject:@"derp"];
-		[self.challenges addObject:@"derp"];
 	}
 	
 	return (self);
@@ -59,7 +53,11 @@
 	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
 	[self.view addSubview:self.tableView];
 	
-	
+	ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	[challengeRequest setDelegate:self];
+	[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	[challengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[challengeRequest startAsynchronous];
 }
 
 - (void)viewDidLoad {
@@ -109,11 +107,13 @@
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 50.0)];
 	headerView.backgroundColor = [UIColor colorWithRed:0.33 green:0.0 blue:0.0 alpha:1.0];
 	
+	HONChallengeVO *vo = [_challenges objectAtIndex:section];
+	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(3.0, 3.0, 200.0, 16.0)];
 	//label = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 	//label = [SNAppDelegate snLinkColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = @"#hashtag";
+	label.text = [NSString stringWithFormat:@"#%@", vo.subjectName];
 	[headerView addSubview:label];
 	
 	return (headerView);
@@ -132,7 +132,7 @@
 		cell = [[HONVoteItemViewCell alloc] init];
 	}
 	
-	//cell.twitterUserVO = [_friends objectAtIndex:indexPath.row];
+	cell.challengeVO = [_challenges objectAtIndex:indexPath.section];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -163,6 +163,39 @@
 	//	}];
 	
 	//[self.navigationController pushViewController:[[SNFriendProfileViewController alloc] initWithTwitterUser:(SNTwitterUserVO *)[_friends objectAtIndex:indexPath.row]] animated:YES];
+}
+
+#pragma mark - ASI Delegates
+-(void)requestFinished:(ASIHTTPRequest *)request {
+	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	
+	@autoreleasepool {
+		
+		NSError *error = nil;
+		if (error != nil)
+			NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
+		
+		else {
+			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+			_challenges = [NSMutableArray new];
+			
+			NSMutableArray *list = [NSMutableArray array];
+			for (NSDictionary *serverList in parsedLists) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+				NSLog(@"VO:[%@]", vo);
+				
+				if (vo != nil)
+					[list addObject:vo];
+			}
+			
+			_challenges = [list copy];
+			[_tableView reloadData];
+		}
+	}
+}
+
+-(void)requestFailed:(ASIHTTPRequest *)request {
+	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 
 @end
