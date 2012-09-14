@@ -182,7 +182,7 @@
 			NSMutableArray *list = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				NSLog(@"VO:[%@]", vo);
+				NSLog(@"VO:[%@]", vo.image2URL);
 				
 				if (vo != nil)
 					[list addObject:vo];

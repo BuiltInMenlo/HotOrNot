@@ -137,7 +137,8 @@
 				"status" => "Waiting", 
 				"subject" => $subject, 
 				"creator_id" => $row->creator_id, 
-				"img_url" => $row->img_url,
+				"img_url" => $row->img_url,  
+				"img2_url" => "", 
 				"added" => $row->added
 			);
 			
@@ -165,7 +166,8 @@
 					"creator_id" => $challenge_row['creator_id'], 
 					"creator" => $user_obj->username, 
 					"subject" => $sub_obj->title,
-					"img_url" => $challenge_row['img_url'], 
+					"img_url" => $challenge_row['img_url'],   
+					"img2_url" => "",
 					"started" => $challenge_row['started']
 				));	
 			}
@@ -188,6 +190,7 @@
 					"creator" => $user_obj->username, 
 					"subject" => $sub_obj->title,
 					"img_url" => $challenge_row['img_url'], 
+					"img2_url" => "", 
 					"started" => $challenge_row['started']
 				));
 			}
@@ -230,6 +233,9 @@
 				
 				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';
 				$user_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $row['challenge_id'] .';';
+				$img_obj = mysql_fetch_object(mysql_query($query));
 												
 				array_push($challenge_arr, array(
 					"id" => $challenge_obj->id, 
@@ -237,7 +243,8 @@
 					"creator_id" => $challenge_obj->creator_id, 
 					"creator" => $user_obj->username, 
 					"subject" => $sub_obj->title,
-					"img_url" => $challenge_obj->img_url, 
+					"img_url" => $challenge_obj->img_url,
+					"img2_url" => $img_obj->url, 
 					"started" => $challenge_obj->started
 				));
 			}
