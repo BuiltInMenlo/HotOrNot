@@ -205,7 +205,7 @@
 			
 			$query = 'INSERT INTO `tblChallengeImages` (';
 			$query .= '`id`, `challenge_id`, `user_id`, `url`, `added`) VALUES (';
-			$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $img_url .'", NOW();';
+			$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $img_url .'", NOW());';
 			$result = mysql_query($query);
 			$img_id = mysql_insert_id();			
 			
@@ -249,9 +249,45 @@
 				));
 			}
 			
-			
-			
+						
 			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);
+		}
+		
+		function upvoteChallenge($challenge_id, $user_id, $isCreator) {
+		    $query = 'SELECT `creator_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+			$creator_id = mysql_fetch_object(mysql_query($query))->creator_id;
+			
+			$query = 'SELECT `user_id` FROM `tblChallengeParticipants` WHERE `challenge_id` = '. $challenge_id .';';
+			$challenger_id = mysql_fetch_object(mysql_query($query))->user_id;
+			
+			if ($isCreator == "Y")
+				$winningUser_id = $creator_id;
+								
+			else
+				$winningUser_id = $challenger_id;
+							    
+			
+			$query = 'INSERT INTO `tblChallengeVotes` (';
+			$query .= '`id`, `challenge_id`, `user_id`, `challenger_id`, `added`) VALUES (';
+			$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $winningUser_id .'", NOW());';				
+			$result = mysql_query($query);
+			$vote_id = mysql_insert_id();
+			
+			
+			$query = 'SELECT `points` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
+			$points = mysql_fetch_object(mysql_query($query))->points;
+			
+			$query = 'UPDATE `tblUsers` SET `points` = "'. (++$points) .'" WHERE `id` = '. $winningUser_id .';';
+			$result = mysql_query($query);
+			
+			
+			$this->sendResponse(200, json_encode(array(
+				"challenge_id" => $challenge_id,
+				"user_id" => $winningUser_id, 
+				"points" => $points, 
+				"creator" => $winningUser_id				
+			)));
 			return (true);
 		}
 		
@@ -297,6 +333,11 @@
 			case "5":
 				if (isset($_POST['userID']))
 					$challenges->getActiveVotes($_POST['userID']);
+				break;
+				
+			case "6":
+				if (isset($_POST['challengeID']) && isset($_POST['userID']) && isset($_POST['creator']))
+					$challenges->upvoteChallenge($_POST['challengeID'], $_POST['userID'], $_POST['creator']);
 				break;
     	}
 	}

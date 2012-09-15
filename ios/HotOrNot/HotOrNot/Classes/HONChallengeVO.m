@@ -17,7 +17,7 @@
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	vo.challengeID = [[dictionary objectForKey:@"challenge_id"] intValue];
+	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.creatorID = [[dictionary objectForKey:@"creator_id"] intValue];
 	vo.status = [dictionary objectForKey:@"status"];
 	vo.imageURL = [dictionary objectForKey:@"img_url"];

@@ -14,11 +14,13 @@
 @interface HONVoteViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
+@property(nonatomic, strong) ASIFormDataRequest *challengesRequest;
 @end
 
 @implementation HONVoteViewController
 @synthesize tableView = _tableView;
 @synthesize challenges = _challenges;
+@synthesize challengesRequest = _challengesRequest;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -26,8 +28,10 @@
 		self.tabBarItem.image = [UIImage imageNamed:@"second"];
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
-		
 		self.challenges = [NSMutableArray new];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
 	}
 	
 	return (self);
@@ -53,11 +57,11 @@
 	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
 	[self.view addSubview:self.tableView];
 	
-	ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
-	[challengeRequest setDelegate:self];
-	[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-	[challengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[challengeRequest startAsynchronous];
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	[self.challengesRequest setDelegate:self];
+	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.challengesRequest startAsynchronous];
 }
 
 - (void)viewDidLoad {
@@ -91,6 +95,36 @@
 	} else {
 	    return YES;
 	}
+}
+
+
+#pragma mark - Notifications
+- (void)_voteMain:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	NSLog(@"VOTE MAIN \n%d", vo.challengeID);
+	
+	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	[voteRequest setDelegate:self];
+	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
+	[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
+	[voteRequest setPostValue:@"Y" forKey:@"creator"];
+	[voteRequest startAsynchronous];
+}
+
+- (void)_voteSub:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	NSLog(@"VOTE SUB \n%d", vo.challengeID);
+	
+	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	[voteRequest setDelegate:self];
+	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
+	[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
+	[voteRequest setPostValue:@"N" forKey:@"creator"];
+	[voteRequest startAsynchronous];
 }
 
 
@@ -169,27 +203,28 @@
 -(void)requestFinished:(ASIHTTPRequest *)request {
 	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
-	@autoreleasepool {
-		
-		NSError *error = nil;
-		if (error != nil)
-			NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
-		
-		else {
-			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			_challenges = [NSMutableArray new];
+	if ([request isEqual:self.challengesRequest]) {
+		@autoreleasepool {
+			NSError *error = nil;
+			if (error != nil)
+				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
 			
-			NSMutableArray *list = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedLists) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				NSLog(@"VO:[%@]", vo.image2URL);
+			else {
+				NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+				_challenges = [NSMutableArray new];
 				
-				if (vo != nil)
-					[list addObject:vo];
+				NSMutableArray *list = [NSMutableArray array];
+				for (NSDictionary *serverList in parsedLists) {
+					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+					NSLog(@"VO:[%@]", vo.image2URL);
+					
+					if (vo != nil)
+						[list addObject:vo];
+				}
+				
+				_challenges = [list copy];
+				[_tableView reloadData];
 			}
-			
-			_challenges = [list copy];
-			[_tableView reloadData];
 		}
 	}
 }
