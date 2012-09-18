@@ -90,10 +90,7 @@
 			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC;';
 			$user_result = mysql_query($query);
 			
-			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {
-				$query = 'SELECT `id` FROM `tblChallenges` WHERE `creator_id` = '. $user_row['id'] .';';
-				$score = mysql_num_rows(mysql_query($query));
-				
+			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {				
 				array_push($user_arr, array(
 					"id" => $user_row['id'], 
 					"username" => $user_row['username'], 					
@@ -151,12 +148,12 @@
 				
 			case "1":
 				if (isset($_POST['userID']))
-					$challenges->getPopularByUsers($_POST['userID']);
+					$popular->getPopularByUsers($_POST['userID']);
 				break;
 				
 			case "2":
 				if (isset($_POST['userID']))
-					$challenges->getPopularBySubject($_POST['userID']);
+					$popular->getPopularBySubject($_POST['userID']);
 				break;			
     	}
 	}

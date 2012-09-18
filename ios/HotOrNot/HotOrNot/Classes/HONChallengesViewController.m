@@ -315,7 +315,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONChallengesViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		

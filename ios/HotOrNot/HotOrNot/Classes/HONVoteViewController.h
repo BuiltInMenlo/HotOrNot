@@ -1,5 +1,5 @@
 //
-//  HONSecondViewController.h
+//  HONVoteViewController
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.06.12.

@@ -1,5 +1,5 @@
 //
-//  HONSecondViewController.m
+//  HONVoteViewController
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.06.12.
@@ -201,7 +201,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if ([request isEqual:self.challengesRequest]) {
 		@autoreleasepool {
@@ -216,7 +216,7 @@
 				NSMutableArray *list = [NSMutableArray array];
 				for (NSDictionary *serverList in parsedLists) {
 					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-					NSLog(@"VO:[%@]", vo.image2URL);
+					//NSLog(@"VO:[%@]", vo.image2URL);
 					
 					if (vo != nil)
 						[list addObject:vo];
