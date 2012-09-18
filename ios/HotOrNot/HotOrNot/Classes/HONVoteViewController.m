@@ -12,12 +12,14 @@
 #import "HONAppDelegate.h"
 
 @interface HONVoteViewController() <ASIHTTPRequestDelegate>
+@property(nonatomic) int subjectID;
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) ASIFormDataRequest *challengesRequest;
 @end
 
 @implementation HONVoteViewController
+@synthesize subjectID = _subjectID;
 @synthesize tableView = _tableView;
 @synthesize challenges = _challenges;
 @synthesize challengesRequest = _challengesRequest;
@@ -26,12 +28,21 @@
 	if ((self = [super init])) {
 		self.title = NSLocalizedString(@"Vote", @"Vote");
 		self.tabBarItem.image = [UIImage imageNamed:@"second"];
+		self.subjectID = 0;
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
 		self.challenges = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
+	}
+	
+	return (self);
+}
+
+- (id)initWithSubject:(int)subjectID {
+	if ((self = [self init])) {
+		self.subjectID = subjectID;
 	}
 	
 	return (self);
@@ -59,8 +70,15 @@
 	
 	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
 	[self.challengesRequest setDelegate:self];
-	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	if (self.subjectID == 0)
+		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	
+	else {
+		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
+		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", self.subjectID] forKey:@"subjectID"];
+	}
+		
 	[self.challengesRequest startAsynchronous];
 }
 

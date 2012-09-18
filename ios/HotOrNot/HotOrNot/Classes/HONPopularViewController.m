@@ -7,6 +7,8 @@
 //
 
 #import "HONPopularViewController.h"
+#import "HONCreateChallengeViewController.h"
+#import "HONVoteViewController.h"
 
 #import "HONPopularUserViewCell.h"
 #import "HONPopularSubjectViewCell.h"
@@ -113,10 +115,22 @@
 #pragma mark - Navigation
 - (void)_goLeaders {
 	self.isUsersList = YES;
+	
+	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kPopularAPI]]];
+	[self.usersRequest setDelegate:self];
+	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
+	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.usersRequest startAsynchronous];
 }
 
 - (void)_goTags {
 	self.isUsersList = NO;
+	
+	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kPopularAPI]]];
+	[self.usersRequest setDelegate:self];
+	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
+	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.usersRequest startAsynchronous];
 }
 
 
@@ -205,6 +219,17 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
+	if (self.isUsersList) {
+		NSLog(@"CHALLENGE USER");
+		[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
+	
+	} else {
+		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row];
+		
+		NSLog(@"VOTE SUBJECT :[%@]", vo.subjectName);
+		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithSubject:vo.subjectID] animated:YES];
+	}
+	
 	//	[UIView animateWithDuration:0.25 animations:^(void) {
 	//		((HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath]).overlayView.alpha = 1.0;
 	//
@@ -255,7 +280,7 @@
 							[list addObject:vo];
 					}
 					
-					_users = [list copy];
+					_subjects = [list copy];
 				}
 				
 				[_tableView reloadData];

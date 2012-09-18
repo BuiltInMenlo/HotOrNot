@@ -16,6 +16,7 @@
 #import "HONVoteViewController.h"
 #import "HONPopularViewController.h"
 #import "HONCreateChallengeViewController.h"
+#import "HONVoteViewController.h"
 
 @interface HONAppDelegate() <ASIHTTPRequestDelegate>
 - (void)_registerUser;
@@ -59,11 +60,14 @@
 	popularViewController = [[HONPopularViewController alloc] init];
 	createChallengeViewController = [[HONCreateChallengeViewController alloc] init];
 	
-	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
+	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
+	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
+	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
+	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
 	
 	self.tabBarController = [[UITabBarController alloc] init];
 	self.tabBarController.delegate = self;
-	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController, voteViewController, popularViewController, createChallengeViewController, nil];
+	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, nil];
 	self.window.rootViewController = self.tabBarController;
 	[self.window makeKeyAndVisible];
 	

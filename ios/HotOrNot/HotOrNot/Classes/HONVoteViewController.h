@@ -10,4 +10,5 @@
 
 @interface HONVoteViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
+- (id)initWithSubject:(int)subjectID;
 @end

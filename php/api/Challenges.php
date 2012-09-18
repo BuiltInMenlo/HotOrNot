@@ -339,6 +339,11 @@
 				if (isset($_POST['challengeID']) && isset($_POST['userID']) && isset($_POST['creator']))
 					$challenges->upvoteChallenge($_POST['challengeID'], $_POST['userID'], $_POST['creator']);
 				break;
+				
+			case "7":
+				if (isset($_POST['userID']) && isset($_POST['subjectID']))
+					$challenges->getActiveVotesForSubject($_POST['userID'], $_POST['subjectID']);
+				break;
     	}
 	}
 ?>
