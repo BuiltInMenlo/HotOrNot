@@ -9,6 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "HONBasePopularViewCell.h"
 
+#import "HONPopularSubjectVO.h"
+
 @interface HONPopularSubjectViewCell : HONBasePopularViewCell
+
+@property (nonatomic, strong) HONPopularSubjectVO *subjectVO;
 
 @end

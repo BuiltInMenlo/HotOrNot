@@ -20,6 +20,7 @@
 #define kServerPath @"http://discover.getassembly.com/hotornot"
 #define kUsersAPI @"Users.php"
 #define kChallengesAPI @"Challenges.php"
+#define kPopularAPI @"Popular.php"
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;

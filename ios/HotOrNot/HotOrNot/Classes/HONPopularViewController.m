@@ -10,13 +10,20 @@
 
 #import "HONPopularUserViewCell.h"
 #import "HONPopularSubjectViewCell.h"
+#import "HONAppDelegate.h"
+#import "ASIFormDataRequest.h"
 
-@interface HONPopularViewController()
+#import "HONPopularSubjectVO.h"
+#import "HONPopularUserVO.h"
+
+@interface HONPopularViewController() <ASIHTTPRequestDelegate>
 
 @property(nonatomic) BOOL isUsersList;
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *users;
 @property(nonatomic, strong) NSMutableArray *subjects;
+@property(nonatomic, strong) ASIFormDataRequest *subjectsRequest;
+@property(nonatomic, strong) ASIFormDataRequest *usersRequest;
 
 @end
 
@@ -34,14 +41,6 @@
 		
 		self.users = [NSMutableArray new];
 		self.subjects = [NSMutableArray new];
-		
-		
-		[self.users addObject:@"derp"];
-		[self.users addObject:@"derp"];
-		[self.users addObject:@"derp"];
-		[self.users addObject:@"derp"];
-		[self.users addObject:@"derp"];
-		[self.users addObject:@"derp"];
 		
 		self.isUsersList = YES;
 		
@@ -69,6 +68,12 @@
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:self.tableView];
+	
+	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kPopularAPI]]];
+	[self.usersRequest setDelegate:self];
+	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
+	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.usersRequest startAsynchronous];
 }
 
 - (void)viewDidLoad {
@@ -164,7 +169,7 @@
 			cell = [[HONPopularUserViewCell alloc] init];
 		}
 		
-		//cell.twitterUserVO = [_friends objectAtIndex:indexPath.row];
+		cell.userVO = [_users objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		
 		return (cell);
@@ -176,7 +181,7 @@
 			cell = [[HONPopularSubjectViewCell alloc] init];
 		}
 		
-		//cell.twitterUserVO = [_friends objectAtIndex:indexPath.row];
+		cell.subjectVO = [_subjects objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		
 		return (cell);
@@ -208,6 +213,58 @@
 	//	}];
 	
 	//[self.navigationController pushViewController:[[SNFriendProfileViewController alloc] initWithTwitterUser:(SNTwitterUserVO *)[_friends objectAtIndex:indexPath.row]] animated:YES];
+}
+
+
+#pragma mark - ASI Delegates
+-(void)requestFinished:(ASIHTTPRequest *)request {
+	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	
+	
+		@autoreleasepool {
+			NSError *error = nil;
+			if (error != nil)
+				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
+			
+			else {
+				NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+				
+				if (_isUsersList) {
+					_users = [NSMutableArray new];
+					
+					NSMutableArray *list = [NSMutableArray array];
+					for (NSDictionary *serverList in parsedLists) {
+						HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
+						NSLog(@"VO:[%d]", vo.userID);
+						
+						if (vo != nil)
+							[list addObject:vo];
+					}
+					
+					_users = [list copy];
+				
+				} else {
+					_subjects = [NSMutableArray new];
+					
+					NSMutableArray *list = [NSMutableArray array];
+					for (NSDictionary *serverList in parsedLists) {
+						HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
+						NSLog(@"VO:[%@]", vo.subjectName);
+						
+						if (vo != nil)
+							[list addObject:vo];
+					}
+					
+					_users = [list copy];
+				}
+				
+				[_tableView reloadData];
+			}
+		}
+}
+
+-(void)requestFailed:(ASIHTTPRequest *)request {
+	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 
 @end

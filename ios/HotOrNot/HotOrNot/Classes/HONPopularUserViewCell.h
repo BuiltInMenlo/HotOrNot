@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "HONBasePopularViewCell.h"
+#import "HONPopularUserVO.h"
 
 @interface HONPopularUserViewCell : HONBasePopularViewCell
-
+@property (nonatomic, strong) HONPopularUserVO *userVO;
 @end
