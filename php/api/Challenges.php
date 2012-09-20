@@ -93,7 +93,7 @@
 			$query = 'SELECT `id` FROM `tblChallengeSubjects` WHERE `title` = "'. $subject .'";';
 			$result = mysql_query($query);
 			
-			if ($result) {
+			if (mysql_num_rows($result) > 0) {
 				$row = mysql_fetch_row($result);
 				$subject_id = $row[0];
 			
@@ -106,7 +106,7 @@
 			}
 			
 			$rndUser_id = $user_id;
-			while ($rndUser_id == $user_id) {
+			while ($rndUser_id == $user_id && $rndUser_id != 1) {
 				$range_result = mysql_query(" SELECT MAX(`id`) AS max_id , MIN(`id`) AS min_id FROM `tblUsers`");
 				$range_row = mysql_fetch_object($range_result); 
 				$rndUser_id = mt_rand($range_row->min_id , $range_row->max_id);
@@ -219,7 +219,7 @@
 		function getActiveVotes($user_id) {
 			$challenge_arr = array();
 			
-			$query = 'SELECT `challenge_id` FROM `tblChallengeParticipants` WHERE `user_id` = '. $user_id .';';
+			$query = 'SELECT `challenge_id` FROM `tblChallengeParticipants` WHERE `user_id` != '. $user_id .';';
 			$result = mysql_query($query);
 			
 			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
