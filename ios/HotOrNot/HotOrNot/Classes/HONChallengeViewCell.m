@@ -78,7 +78,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	self.creatorImageView.imageURL = [NSURL URLWithString:self.challengeVO.imageURL];
+	//self.creatorImageView.imageURL = [NSURL URLWithString:self.challengeVO.imageURL];
 	self.creatorLabel.text = self.challengeVO.creatorName;
 	self.subjectLabel.text = [NSString stringWithFormat:@"#%@", self.challengeVO.subjectName];
 	[self.ctaButton setTitle:self.challengeVO.status forState:UIControlStateNormal];
