@@ -10,6 +10,7 @@
 
 #import "HONAppDelegate.h"
 #import "ASIFormDataRequest.h"
+#import "MBProgressHUD.h"
 
 #import "HONImagePickerViewController.h"
 #import "HONImageTypeViewCell.h"
@@ -19,6 +20,7 @@
 @property(nonatomic, strong) NSMutableArray *imageSources;
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
+@property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic) int submitAction;
 @end
 
@@ -29,6 +31,7 @@
 @synthesize subjectName = _subjectName;
 @synthesize submitAction = _submitAction;
 @synthesize challengeVO = _challengeVO;
+@synthesize progressHUD = _progressHUD;
 
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
@@ -194,6 +197,12 @@
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", filename);
 	
 	@try {
+		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+		_progressHUD.labelText = @"Submitting Challenge…";
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.graceTime = 2.0;
+		_progressHUD.taskInProgress = YES;
+		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:filename inBucket:@"hotornot-challenges"];
 		por.contentType = @"image/jpeg";
@@ -224,13 +233,25 @@
 	NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
-		NSError *error = nil;
-		NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+		_progressHUD.taskInProgress = NO;
 		
-		if (error != nil)
+		NSError *error = nil;
+		//NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+		
+		if (error != nil) {
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			_progressHUD.graceTime = 0.0;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+			_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+		}
 		
 		else {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
 			[self.navigationController popToRootViewControllerAnimated:YES];
 		}
 	}

@@ -190,6 +190,8 @@
 	
 	_delegate=nil;
 	_statusLabel = nil;
+	
+	[super dealloc];
 }
 
 

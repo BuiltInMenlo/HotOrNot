@@ -111,14 +111,18 @@
 			$subject_result = mysql_query($query);
 			
 			while ($subject_row = mysql_fetch_array($subject_result, MYSQL_BOTH)) {
-				$query = 'SELECT `id` FROM `tblChallenges` WHERE `subject_id` = '. $subject_row['id'] .';';
-				$score = mysql_num_rows(mysql_query($query));
+				$query = 'SELECT `id`, `status_id` FROM `tblChallenges` WHERE `subject_id` = '. $subject_row['id'] .';';
+				$result = mysql_query($query);
+				$row = mysql_fetch_object($result);
+				
+				if ($row->status_id != "4")
+					continue;
 				
 				array_push($subject_arr, array(
 					"id" => $subject_row['id'], 
 					"name" => $subject_row['title'], 					
 					"img_url" => "",   
-					"score" => $score
+					"score" => mysql_num_rows($result)
 				));	
 			}
 				

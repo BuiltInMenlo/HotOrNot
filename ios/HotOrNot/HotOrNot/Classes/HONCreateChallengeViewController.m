@@ -57,7 +57,7 @@
 	//self.placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
 	self.placeholderLabel.textColor = [UIColor colorWithWhite:0.620 alpha:1.0];
 	self.placeholderLabel.backgroundColor = [UIColor clearColor];
-	self.placeholderLabel.textAlignment = UITextAlignmentCenter;
+	//self.placeholderLabel.textAlignment = UITextAlignmentCenter;
 	self.placeholderLabel.text = @"Give your challenge a #hashtag";
 	[self.view addSubview:self.placeholderLabel];
 	
