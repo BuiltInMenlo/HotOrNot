@@ -7,11 +7,12 @@
 //
 
 #import "HONVoteItemViewCell.h"
-#import "EGOImageView.h"
+#import "UIImageView+WebCache.h"
+
 
 @interface HONVoteItemViewCell()
-@property (nonatomic, strong) EGOImageView *mainImgView;
-@property (nonatomic, strong) EGOImageView *subImgView;
+@property (nonatomic, strong) UIImageView *mainImgView;
+@property (nonatomic, strong) UIImageView *subImgView;
 @property (nonatomic, strong) UIButton *mainImgButton;
 @property (nonatomic, strong) UIButton *subImgButton;
 @property (nonatomic, strong) UILabel *mainImgLabel;
@@ -32,7 +33,7 @@
 	if ((self = [super init])) {
 		self.backgroundColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0];
 		
-		self.mainImgView = [[EGOImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 155.0, 300.0)];
+		self.mainImgView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 155.0, 180.0)];
 		self.mainImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[self addSubview:self.mainImgView];
 		
@@ -42,7 +43,7 @@
 		[self.mainImgButton addTarget:self action:@selector(_goMainVote) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:self.mainImgButton];
 		
-		self.subImgView = [[EGOImageView alloc] initWithFrame:CGRectMake(165.0, 5.0, 155.0, 300.0)];
+		self.subImgView = [[UIImageView alloc] initWithFrame:CGRectMake(165.0, 5.0, 155.0, 180.0)];
 		self.subImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[self addSubview:self.subImgView];
 		
@@ -64,20 +65,22 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	self.mainImgView.imageURL = [NSURL URLWithString:challengeVO.imageURL];
-	self.subImgView.imageURL = [NSURL URLWithString:challengeVO.image2URL];
-	
-	[self.mainImgButton setTitle:[NSString stringWithFormat:@"%d", (arc4random() % 10)] forState:UIControlStateNormal];
-	[self.subImgButton setTitle:[NSString stringWithFormat:@"%d", (arc4random() % 10)] forState:UIControlStateNormal];
+	[self.mainImgView setImageWithURL:[NSURL URLWithString:challengeVO.imageURL] placeholderImage:nil options:SDWebImageProgressiveDownload];
+	[self.subImgView setImageWithURL:[NSURL URLWithString:challengeVO.image2URL] placeholderImage:nil options:SDWebImageProgressiveDownload];
+		
+	[self.mainImgButton setTitle:[NSString stringWithFormat:@"%d", challengeVO.scoreCreator] forState:UIControlStateNormal];
+	[self.subImgButton setTitle:[NSString stringWithFormat:@"%d", challengeVO.scoreChallenger] forState:UIControlStateNormal];
 }
 
 
 #pragma mark - Navigation
 - (void)_goMainVote {
+	[self.mainImgButton setTitle:[NSString stringWithFormat:@"%d", (self.challengeVO.scoreCreator + 1)] forState:UIControlStateNormal];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MAIN" object:self.challengeVO];
 }
 
 - (void)_goSubVote {
+	[self.subImgButton setTitle:[NSString stringWithFormat:@"%d", (self.challengeVO.scoreChallenger + 1)] forState:UIControlStateNormal];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_SUB" object:self.challengeVO];
 }
 

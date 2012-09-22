@@ -6,11 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "EGOImageView.h"
 #import "ASIFormDataRequest.h"
-#import "MBLAsyncResource.h"
-#import "MBLResourceLoader.h"
-
 #import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
@@ -20,10 +16,9 @@
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
 
-@interface HONChallengesViewController() <ASIHTTPRequestDelegate, MBLResourceObserverProtocol>
+@interface HONChallengesViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
-@property(nonatomic, strong) MBLAsyncResource *challengeResource;
 - (void)_retrieveChallenges;
 @end
 
@@ -31,7 +26,6 @@
 
 @synthesize tableView = _tableView;
 @synthesize challenges = _challenges;
-@synthesize challengeResource = _challengeResource;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -52,39 +46,15 @@
 }
 
 - (void)dealloc {
-	self.challengeResource = nil;
+	
 }
 
-- (void)setChallengeResource:(MBLAsyncResource *)challengeResource {
-	if (_challengeResource != nil) {
-		[_challengeResource unsubscribe:self];
-		_challengeResource = nil;
-	}
-	
-	_challengeResource = challengeResource;
-	
-	if (_challengeResource != nil)
-		[_challengeResource subscribe:self];
-}
-
-- (void)_retrieveChallenges {
-	if (_challengeResource == nil) {
-		NSMutableDictionary *userFormValues = [NSMutableDictionary dictionary];
-		[userFormValues setObject:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-		[userFormValues setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"userID"];
-		//[userFormValues setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		
-		NSString *url = [NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI];
-		_challengeResource = [[MBLResourceLoader sharedInstance] downloadURL:url withHeaders:nil withPostFields:userFormValues forceFetch:YES expiration:[NSDate date]];
-		[_challengeResource subscribe:self];
-	}
-}
 
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - 100.0) style:UITableViewStylePlain];
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - 50.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 56.0;
@@ -96,13 +66,7 @@
 	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
 	[self.view addSubview:self.tableView];
 	
-	ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
-	[challengeRequest setDelegate:self];
-	[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-	[challengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[challengeRequest startAsynchronous];
-	
-	//[self _retrieveChallenges];
+	[self _retrieveChallenges];
 }
 
 - (void)viewDidLoad {
@@ -120,7 +84,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	//[self _retrieveChallenges];
+	[self _retrieveChallenges];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -132,14 +96,25 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return (interfaceOrientation == UIInterfaceOrientationPortrait);
+	return (NO);//interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+- (void)_retrieveChallenges {
+	ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	[challengeRequest setDelegate:self];
+	[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
+	[challengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[challengeRequest startAsynchronous];
 }
 
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	//[self presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
-	[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
+	//[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
+	//[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goSettings {
@@ -172,9 +147,8 @@
 	headerView.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
 	
 	if (section == 0) {
-		EGOImageView *imgView = [[EGOImageView alloc] initWithFrame:CGRectMake(2.0, 2.0, 32.0, 32.0)];
+		UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(2.0, 2.0, 32.0, 32.0)];
 		imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		imgView.imageURL = [NSURL URLWithString:@""];
 		[headerView addSubview:imgView];
 		
 		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];
@@ -261,51 +235,6 @@
 	//[self.navigationController pushViewController:[[SNFriendProfileViewController alloc] initWithTwitterUser:(SNTwitterUserVO *)[_friends objectAtIndex:indexPath.row]] animated:YES];
 }
 
-
-
-#pragma mark - AsyncResource Observers
-- (void)resource:(MBLAsyncResource *)resource isAvailableWithData:(NSData *)data {
-	NSLog(@"MBLAsyncResource.data [%@]", [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding]);
-	if (resource == _challengeResource) {
-
-		NSError *error = nil;
-		NSArray *parsedChallenges = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-		
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedDescription]);
-		
-		} else {
-			NSMutableArray *list = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedChallenges) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				//NSLog(@"LIST \"@%@\" %d", vo.list_name, vo.totalInfluencers);
-				if (vo != nil)
-					[list addObject:vo];
-			}
-			
-			
-			_challenges = list;
-			[_tableView reloadData];
-			_tableView.userInteractionEnabled = YES;
-		}
-	}
-}
-
-
-- (void)resource:(MBLAsyncResource *)resource didFailWithError:(NSError *)error {
-//	if (_hud != nil) {
-//		_hud.graceTime = 0.0;
-//		_hud.mode = MBProgressHUDModeCustomView;
-//		_hud.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
-//		_hud.labelText = NSLocalizedString(@"Error", @"Error");
-//		[_hud show:NO];
-//		[_hud hide:YES afterDelay:1.5];
-//		_hud = nil;
-//	}
-	
-	if (resource == _challengeResource)
-		_challengeResource = nil;
-}
 
 
 #pragma mark - ASI Delegates

@@ -45,6 +45,20 @@
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"]);
 }
 
++ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
+	UIGraphicsBeginImageContext(size);
+	
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextTranslateCTM(context, 0.0, size.height);
+	CGContextScaleCTM(context, 1.0, -1.0);
+	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
+	
+	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+	
+	return (scaledImage);
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
@@ -65,8 +79,14 @@
 	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
 	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
 	
+	[navController1 setNavigationBarHidden:YES];
+	[navController2 setNavigationBarHidden:YES];
+	[navController3 setNavigationBarHidden:YES];
+	[navController4 setNavigationBarHidden:YES];
+	
 	self.tabBarController = [[UITabBarController alloc] init];
 	self.tabBarController.delegate = self;
+	//self.tabBarController.;
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, nil];
 	self.window.rootViewController = self.tabBarController;
 	[self.window makeKeyAndVisible];
@@ -193,11 +213,12 @@
 	//NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
 	if (viewController == [[tabBarController viewControllers] objectAtIndex:3]) {
-		[tabBarController presentViewController:[[HONCreateChallengeViewController alloc] init] animated:YES completion:nil];
-		//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
-		//[tabBarController.navigationController presentViewController:navigationController animated:YES completion:nil];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
+		//[navigationController setNavigationBarHidden:YES];
+		[tabBarController presentViewController:navigationController animated:YES completion:nil];
+		
 		return (NO);
-	
+		
 	} else
 		return (YES);
 }

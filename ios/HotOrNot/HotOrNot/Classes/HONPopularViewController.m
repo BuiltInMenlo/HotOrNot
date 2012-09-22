@@ -19,6 +19,7 @@
 #import "HONPopularUserVO.h"
 
 @interface HONPopularViewController() <ASIHTTPRequestDelegate>
+- (void)_retrievePopular;
 
 @property(nonatomic) BOOL isUsersList;
 @property(nonatomic, strong) UITableView *tableView;
@@ -71,11 +72,7 @@
 	self.tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:self.tableView];
 	
-	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kPopularAPI]]];
-	[self.usersRequest setDelegate:self];
-	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
-	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[self.usersRequest startAsynchronous];
+	[self _retrievePopular];
 }
 
 - (void)viewDidLoad {
@@ -92,6 +89,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	[self _retrievePopular];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -103,7 +101,15 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return (interfaceOrientation == UIInterfaceOrientationPortrait);
+	return (NO);//interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+- (void)_retrievePopular {
+	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kPopularAPI]]];
+	[self.usersRequest setDelegate:self];
+	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
+	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.usersRequest startAsynchronous];
 }
 
 

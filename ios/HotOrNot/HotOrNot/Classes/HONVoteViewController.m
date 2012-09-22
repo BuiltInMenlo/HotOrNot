@@ -12,6 +12,7 @@
 #import "HONAppDelegate.h"
 
 @interface HONVoteViewController() <ASIHTTPRequestDelegate>
+- (void)_retrieveChallenges;
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
@@ -41,8 +42,16 @@
 }
 
 - (id)initWithSubject:(int)subjectID {
-	if ((self = [self init])) {
+	if ((self = [super init])) {
+		self.title = NSLocalizedString(@"Vote", @"Vote");
+		self.tabBarItem.image = [UIImage imageNamed:@"second"];
 		self.subjectID = subjectID;
+		
+		self.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+		self.challenges = [NSMutableArray new];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
 	}
 	
 	return (self);
@@ -56,10 +65,12 @@
 - (void)loadView {
 	[super loadView];
 	
+	NSLog(@"SUBJECT:[%d]", self.subjectID);
+	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - 50.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	self.tableView.rowHeight = 300.0;
+	self.tableView.rowHeight = 180.0;
 	self.tableView.delegate = self;
 	self.tableView.dataSource = self;
 	self.tableView.userInteractionEnabled = YES;
@@ -68,18 +79,7 @@
 	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
 	[self.view addSubview:self.tableView];
 	
-	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
-	[self.challengesRequest setDelegate:self];
-	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	if (self.subjectID == 0)
-		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-	
-	else {
-		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
-		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", self.subjectID] forKey:@"subjectID"];
-	}
-		
-	[self.challengesRequest startAsynchronous];
+	[self _retrieveChallenges];
 }
 
 - (void)viewDidLoad {
@@ -96,6 +96,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	[self _retrieveChallenges];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -107,9 +108,23 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return (interfaceOrientation == UIInterfaceOrientationPortrait);
+	return (NO);//interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+- (void)_retrieveChallenges {
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	[self.challengesRequest setDelegate:self];
+	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	if (self.subjectID == 0)
+		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	
+	else {
+		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
+		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", self.subjectID] forKey:@"subjectID"];
+	}
+	
+	[self.challengesRequest startAsynchronous];
+}
 
 #pragma mark - Notifications
 - (void)_voteMain:(NSNotification *)notification {
@@ -188,7 +203,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (300.0);
+	return (180.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

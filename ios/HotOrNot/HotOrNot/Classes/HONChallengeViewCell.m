@@ -7,11 +7,11 @@
 //
 
 #import "HONChallengeViewCell.h"
-#import "EGOImageView.h"
+#import "UIImageView+WebCache.h"
 
 @interface HONChallengeViewCell()
 
-@property (nonatomic, strong) EGOImageView *creatorImageView;
+@property (nonatomic, strong) UIImageView *creatorImageView;
 @property (nonatomic, strong) UILabel *creatorLabel;
 @property (nonatomic, strong) UILabel *subjectLabel;
 @property (nonatomic, strong) UIButton *ctaButton;
@@ -37,7 +37,7 @@
 		lineView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
 		[self addSubview:lineView];
 		
-		self.creatorImageView = [[EGOImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
+		self.creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
 		self.creatorImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[self addSubview:self.creatorImageView];
 		
@@ -78,7 +78,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	//self.creatorImageView.imageURL = [NSURL URLWithString:self.challengeVO.imageURL];
+	[self.creatorImageView setImageWithURL:[NSURL URLWithString:self.challengeVO.imageURL] placeholderImage:nil];
 	self.creatorLabel.text = self.challengeVO.creatorName;
 	self.subjectLabel.text = [NSString stringWithFormat:@"#%@", self.challengeVO.subjectName];
 	[self.ctaButton setTitle:self.challengeVO.status forState:UIControlStateNormal];

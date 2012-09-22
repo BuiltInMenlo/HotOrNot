@@ -18,6 +18,8 @@
 @property (nonatomic) int creatorID;
 @property (nonatomic, retain) NSString *imageURL;
 @property (nonatomic, retain) NSString *image2URL;
+@property (nonatomic) int scoreCreator;
+@property (nonatomic) int scoreChallenger;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic, retain) NSString *creatorName;

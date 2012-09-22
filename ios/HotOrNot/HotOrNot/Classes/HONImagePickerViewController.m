@@ -96,6 +96,10 @@
 	[super didReceiveMemoryWarning];
 }
 
+- (BOOL)shouldAutorotate {
+	return (NO);
+}
+
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ([self.imageSources count]);
@@ -187,7 +191,7 @@
 
 #pragma mark - ImagePicker Delegates
 -(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+	UIImage *image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(480.0, 360.0)];
 	[self dismissViewControllerAnimated:YES completion:nil];
 	
 	NSData *imageData = UIImageJPEGRepresentation(image, 1.0);

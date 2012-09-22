@@ -7,10 +7,10 @@
 //
 
 #import "HONPopularUserViewCell.h"
-#import "EGOImageView.h"
+#import "UIImageView+WebCache.h"
 
 @interface HONPopularUserViewCell()
-@property (nonatomic, strong) EGOImageView *userImageView;
+@property (nonatomic, strong) UIImageView *userImageView;
 @property (nonatomic, strong) UILabel *usernameLabel;
 @property (nonatomic, strong) UILabel *scoreLabel;
 @end
@@ -23,7 +23,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.userImageView = [[EGOImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
+		self.userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
 		self.userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[self addSubview:self.userImageView];
 		
@@ -52,7 +52,7 @@
 - (void)setUserVO:(HONPopularUserVO *)userVO {
 	_userVO = userVO;
 	
-	self.userImageView.imageURL = [NSURL URLWithString:_userVO.imageURL];
+	[self.userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	self.usernameLabel.text = _userVO.username;
 	self.scoreLabel.text = [NSString stringWithFormat:@"%d points", _userVO.score];
 }

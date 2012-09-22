@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, creatorID, imageURL, image2URL, status, subjectName, creatorName, startedDate;
+@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, status, subjectName, creatorName, startedDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -22,6 +22,8 @@
 	vo.status = [dictionary objectForKey:@"status"];
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	vo.image2URL = [dictionary objectForKey:@"img2_url"];
+	vo.scoreCreator = [[dictionary objectForKey:@"score1"] intValue];
+	vo.scoreChallenger = [[dictionary objectForKey:@"score2"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"subject"];
 	vo.creatorName = [dictionary objectForKey:@"creator"];
 	

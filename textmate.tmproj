@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>php/api/RestUtils.php</string>
+	<string>php/api/Challenges.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -21,6 +21,34 @@
 	<integer>201</integer>
 	<key>metaData</key>
 	<dict>
+		<key>php/api/Challenges.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>27</integer>
+				<key>line</key>
+				<integer>111</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>95</integer>
+		</dict>
+		<key>php/api/Popular.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>14</integer>
+				<key>line</key>
+				<integer>118</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>128</integer>
+		</dict>
 		<key>php/api/RestUtils.php</key>
 		<dict>
 			<key>caret</key>
@@ -35,14 +63,31 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
+		<key>php/api/Users.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>3</integer>
+				<key>line</key>
+				<integer>90</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>67</integer>
+		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>php/api/RestUtils.php</string>
+		<string>php/api/Users.php</string>
+		<string>php/api/Challenges.php</string>
+		<string>php/api/Popular.php</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{1064, 168}, {1417, 947}}</string>
+	<string>{{1086, 40}, {1417, 947}}</string>
 </dict>
 </plist>

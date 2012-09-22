@@ -18,6 +18,8 @@
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
 
++ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
+
 #define kServerPath @"http://discover.getassembly.com/hotornot"
 #define kUsersAPI @"Users.php"
 #define kChallengesAPI @"Challenges.php"
