@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo. All rights reserved.
 //
 
+#import <FacebookSDK/FacebookSDK.h>
+
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
 
@@ -86,16 +88,18 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-	UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-	toolbar.frame = CGRectMake(0, 0, 320.0, 50.0);
-	toolbar.barStyle = UIBarStyleDefault;
-	[toolbar sizeToFit];        
-	[self.view addSubview:toolbar]; 
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(_goDone)];
 	
-	UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
-	UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(_goDone)];
-	NSArray *items = [[NSArray alloc] initWithObjects:flexibleSpace, doneButton, nil];
-	[toolbar setItems:items];
+//	UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
+//	toolbar.frame = CGRectMake(0, 0, 320.0, 50.0);
+//	toolbar.barStyle = UIBarStyleDefault;
+//	[toolbar sizeToFit];        
+//	[self.view addSubview:toolbar]; 
+//	
+//	UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+//	UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(_goDone)];
+//	NSArray *items = [[NSArray alloc] initWithObjects:flexibleSpace, doneButton, nil];
+//	[toolbar setItems:items];
 }
 
 - (void)viewDidUnload {
@@ -125,7 +129,42 @@
 }
 
 - (void)_goChallengeFriends {
+	FBFriendPickerViewController *friendPickerController = [[FBFriendPickerViewController alloc] init];
+	friendPickerController.title = @"Pick Friends";
+	[friendPickerController loadData];
 	
+	// Use the modal wrapper method to display the picker.
+	[friendPickerController presentModallyFromViewController:self animated:YES handler:
+	 ^(FBViewController *sender, BOOL donePressed) {
+		 if (!donePressed) {
+			 return;
+		 }
+		 NSString *message;
+		 
+		 if (friendPickerController.selection.count == 0) {
+			 message = @"<No Friends Selected>";
+		 } else {
+			 
+			 NSMutableString *text = [[NSMutableString alloc] init];
+			 
+			 // we pick up the users from the selection, and create a string that we use to update the text view
+			 // at the bottom of the display; note that self.selection is a property inherited from our base class
+			 for (id<FBGraphUser> user in friendPickerController.selection) {
+				 if ([text length]) {
+					 [text appendString:@", "];
+				 }
+				 [text appendString:user.name];
+			 }
+			 message = text;
+		 }
+		 
+		 [[[UIAlertView alloc] initWithTitle:@"You Picked:"
+											  message:message
+											 delegate:nil
+								 cancelButtonTitle:@"OK"
+								 otherButtonTitles:nil]
+		  show];
+	 }];
 }
 
 - (void)_goRandomChallenge {

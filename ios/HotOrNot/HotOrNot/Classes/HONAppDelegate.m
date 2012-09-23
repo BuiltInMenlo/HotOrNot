@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <FacebookSDK/FacebookSDK.h>
+
 #import "UAirship.h"
 #import "UAPush.h"
 #import "ASIFormDataRequest.h"
@@ -36,13 +38,27 @@
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"device_token"]);
 }
 
-+(void)writeUserInfo:(NSDictionary *)userInfo {
++ (void)writeUserInfo:(NSDictionary *)userInfo {
 	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+(NSDictionary *)infoForUser {
++ (NSDictionary *)infoForUser {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"]);
+}
+
++ (void)writeFBProfile:(NSDictionary *)profile {
+	if (profile != nil)
+		[[NSUserDefaults standardUserDefaults] setObject:profile forKey:@"fb_profile"];
+	
+	else
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"fb_profile"];
+	
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (NSDictionary *)fbProfileForUser {
+	return [[NSUserDefaults standardUserDefaults] objectForKey:@"fb_profile"];
 }
 
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
@@ -59,6 +75,12 @@
 	return (scaledImage);
 }
 
++ (NSArray *)fbPermissions {
+	return ([NSArray arrayWithObjects:@"publish_actions", @"user_photos", @"read_stream", @"status_update", @"publish_stream", nil]);
+}
+
+
+#pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
@@ -108,6 +130,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	[UAirship land];
+	[FBSession.activeSession close];
 }
 
 
@@ -195,6 +218,11 @@
 	 [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 	 */
 }
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+	return [FBSession.activeSession handleOpenURL:url];
+}
+
 
 
 - (void)_registerUser {

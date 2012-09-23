@@ -78,6 +78,8 @@
 		4CE5225E160D2466005F2ADC /* UIButton+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE52255160D2466005F2ADC /* UIButton+WebCache.m */; };
 		4CE5225F160D2466005F2ADC /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE52257160D2466005F2ADC /* UIImageView+WebCache.m */; };
 		4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE52261160D254B005F2ADC /* ImageIO.framework */; };
+		4CE52265160E3510005F2ADC /* HONLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE52264160E3510005F2ADC /* HONLoginViewController.m */; };
+		4CE52270160E4E1F005F2ADC /* HONFacebookCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */; };
 		B3BE3EAA1608E42500E7E2B7 /* HONPopularUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EA91608E42500E7E2B7 /* HONPopularUserVO.m */; };
 		B3BE3EAE1608E43800E7E2B7 /* HONPopularSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EAD1608E43800E7E2B7 /* HONPopularSubjectVO.m */; };
 /* End PBXBuildFile section */
@@ -287,6 +289,10 @@
 		4CE52256160D2466005F2ADC /* UIImageView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+WebCache.h"; sourceTree = "<group>"; };
 		4CE52257160D2466005F2ADC /* UIImageView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WebCache.m"; sourceTree = "<group>"; };
 		4CE52261160D254B005F2ADC /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		4CE52263160E3510005F2ADC /* HONLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONLoginViewController.h; sourceTree = "<group>"; };
+		4CE52264160E3510005F2ADC /* HONLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONLoginViewController.m; sourceTree = "<group>"; };
+		4CE5226E160E4E1E005F2ADC /* HONFacebookCaller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFacebookCaller.h; sourceTree = "<group>"; };
+		4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFacebookCaller.m; sourceTree = "<group>"; };
 		B3BE3EA81608E42500E7E2B7 /* HONPopularUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularUserVO.h; sourceTree = "<group>"; };
 		B3BE3EA91608E42500E7E2B7 /* HONPopularUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularUserVO.m; sourceTree = "<group>"; };
 		B3BE3EAC1608E43800E7E2B7 /* HONPopularSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularSubjectVO.h; sourceTree = "<group>"; };
@@ -792,6 +798,8 @@
 				4C32B99C15FA75870023A0EE /* VO */,
 				4C62673A15F96E5600AA7FCE /* HONAppDelegate.h */,
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
+				4CE5226E160E4E1E005F2ADC /* HONFacebookCaller.h */,
+				4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -812,6 +820,8 @@
 			children = (
 				4C32B9A015FAB3AE0023A0EE /* HONSettingsViewController.h */,
 				4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */,
+				4CE52263160E3510005F2ADC /* HONLoginViewController.h */,
+				4CE52264160E3510005F2ADC /* HONLoginViewController.m */,
 			);
 			name = Root;
 			sourceTree = "<group>";
@@ -973,6 +983,8 @@
 				4CE5225D160D2466005F2ADC /* SDWebImagePrefetcher.m in Sources */,
 				4CE5225E160D2466005F2ADC /* UIButton+WebCache.m in Sources */,
 				4CE5225F160D2466005F2ADC /* UIImageView+WebCache.m in Sources */,
+				4CE52265160E3510005F2ADC /* HONLoginViewController.m in Sources */,
+				4CE52270160E4E1F005F2ADC /* HONFacebookCaller.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1010,7 +1022,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "306DB2E8-6FF5-412E-89F4-670362704238";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1031,7 +1043,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "DD396889-3C93-40CB-938B-54E6DCD261B2";
 				SDKROOT = iphoneos;

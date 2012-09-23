@@ -6,7 +6,11 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <FacebookSDK/FacebookSDK.h>
+
 #import "ASIFormDataRequest.h"
+#import "UIImageView+WebCache.h"
+
 #import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
@@ -15,10 +19,13 @@
 #import "HONSettingsViewController.h"
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
+#import "HONLoginViewController.h"
 
 @interface HONChallengesViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
+@property(nonatomic) BOOL isFirstRun;
+
 - (void)_retrieveChallenges;
 @end
 
@@ -26,6 +33,7 @@
 
 @synthesize tableView = _tableView;
 @synthesize challenges = _challenges;
+@synthesize isFirstRun = _isFirstRun;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -34,6 +42,7 @@
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.0];
 		self.challenges = [NSMutableArray new];
+		self.isFirstRun = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
 	}
@@ -85,6 +94,12 @@
 	[super viewDidAppear:animated];
 	
 	[self _retrieveChallenges];
+	
+	if (FBSession.activeSession.state == FBSessionStateCreated && self.isFirstRun) {
+		self.isFirstRun = NO;
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -118,7 +133,8 @@
 }
 
 - (void)_goSettings {
-	[self presentViewController:[[HONSettingsViewController alloc] init] animated:YES completion:nil];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -147,8 +163,12 @@
 	headerView.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
 	
 	if (section == 0) {
+		
+		NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
+		
 		UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(2.0, 2.0, 32.0, 32.0)];
 		imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		[headerView addSubview:imgView];
 		
 		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];

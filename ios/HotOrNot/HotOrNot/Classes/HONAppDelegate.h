@@ -18,7 +18,13 @@
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
 
++(void)writeFBProfile:(NSDictionary *)userInfo;
++(NSDictionary *)fbProfileForUser;
+
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
+
++ (NSArray *)fbPermissions;
+
 
 #define kServerPath @"http://discover.getassembly.com/hotornot"
 #define kUsersAPI @"Users.php"
