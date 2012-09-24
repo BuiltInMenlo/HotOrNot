@@ -8,11 +8,11 @@
 
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 
-#import "HONAppDelegate.h"
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
 
 #import "HONImagePickerViewController.h"
+#import "HONAppDelegate.h"
 #import "HONImageTypeViewCell.h"
 
 @interface HONImagePickerViewController () <ASIHTTPRequestDelegate>
@@ -256,6 +256,7 @@
 		else {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
+			
 			[self.navigationController popToRootViewControllerAnimated:YES];
 		}
 	}

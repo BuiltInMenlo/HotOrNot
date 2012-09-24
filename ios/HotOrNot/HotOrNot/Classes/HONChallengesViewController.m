@@ -15,6 +15,7 @@
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
 #import "HONChallengeVO.h"
+#import "HONFacebookCaller.h"
 
 #import "HONSettingsViewController.h"
 #import "HONCreateChallengeViewController.h"
@@ -244,6 +245,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	NSLog(@"didSelectRowAtIndexPath");
+	[HONFacebookCaller postToTimeline:[_challenges objectAtIndex:indexPath.row]];
 	
 //	[UIView animateWithDuration:0.25 animations:^(void) {
 //		((HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath]).overlayView.alpha = 1.0;

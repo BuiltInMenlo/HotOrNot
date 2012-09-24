@@ -9,17 +9,18 @@
 #import "HONFacebookCaller.h"
 
 @implementation HONFacebookCaller
-+(void)postStatus:(NSString *)msg {
+
++ (void)postStatus:(NSString *)msg {
 	NSDictionary *params = [NSDictionary dictionaryWithObject:msg forKey:@"message"];
 	[FBRequestConnection startWithGraphPath:@"me/feed" parameters:params HTTPMethod:@"POST" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 		NSLog(@"POSTED STATUS");
 	}];
 }
 
-+(void)postToActivity:(HONChallengeVO *)vo withAction:(NSString *)action {
++ (void)postToActivity:(HONChallengeVO *)vo withAction:(NSString *)action {
 	NSMutableDictionary *params = [NSMutableDictionary new];
-//	[params setObject:[NSString stringWithFormat:@"http://discover.getassembly.com/facebook/opengraph/index.php?aID=%d", vo.article_id] forKey:@"quote"];
-//	[params setObject:((SNImageVO *)[vo.images objectAtIndex:0]).url forKey:@"image[0][url]"];
+	[params setObject:[NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID] forKey:@"quote"];
+	[params setObject:vo.imageURL forKey:@"image[0][url]"];
 	
 	[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"me/getassembly:%@", action] parameters:params HTTPMethod:@"POST" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 		NSLog(@"POSTED TO ACTVITY :[%@]",[result objectForKey:@"id"]);
@@ -30,19 +31,19 @@
 	}];
 }
 
-+(void)postToTicker:(NSString *)msg {
++ (void)postToTicker:(NSString *)msg {
 	
 }
 
-+(void)postToTimeline:(HONChallengeVO *)vo {
-//	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-//												  [NSString stringWithFormat:@"http://discover.getassembly.com/facebook/opengraph/index.php?aID=%d", vo.article_id], @"link",
-//												  ((SNImageVO *)[vo.images objectAtIndex:0]).url, @"picture",
-//												  vo.title, @"name",
-//												  vo.topicTitle, @"caption",
-//												  vo.content, @"description", nil];
++ (void)postToTimeline:(HONChallengeVO *)vo {
+	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID], @"link",
+												  vo.imageURL, @"picture",
+												  vo.subjectName, @"name",
+												  vo.subjectName, @"caption",
+												  vo.creatorName, @"description", nil];
 	
-	[FBRequestConnection startWithGraphPath:@"me/feed" parameters:[NSMutableDictionary new] HTTPMethod:@"POST" completionHandler:
+	[FBRequestConnection startWithGraphPath:@"me/feed" parameters:postParams HTTPMethod:@"POST" completionHandler:
 	 ^(FBRequestConnection *connection, id result, NSError *error) {
 		 NSString *alertText;
 		 
@@ -53,7 +54,7 @@
 			 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
 		 
 		 
-		 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
+		 [[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
 	 }];
 	
 	
@@ -85,15 +86,15 @@
 	
 }
 
-+(void)postToFriendTimeline:(NSString *)fbID article:(HONChallengeVO *)vo {
-//	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-//												  [NSString stringWithFormat:@"http://discover.getassembly.com/facebook/opengraph/index.php?aID=%d", vo.challengeID], @"link",
-//												  ((SNImageVO *)[vo.images objectAtIndex:0]).url, @"picture",
-//												  vo.title, @"name",
-//												  vo.topicTitle, @"caption",
-//												  vo.content, @"description", nil];
++ (void)postToFriendTimeline:(NSString *)fbID article:(HONChallengeVO *)vo {
+	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID], @"link",
+												  vo.imageURL, @"picture",
+												  vo.subjectName, @"name",
+												  vo.subjectName, @"caption",
+												  vo.creatorName, @"description", nil];
 	
-	[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"%@/feed", fbID] parameters:[NSMutableDictionary new] HTTPMethod:@"POST" completionHandler:
+	[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"%@/feed", fbID] parameters:postParams HTTPMethod:@"POST" completionHandler:
 	 ^(FBRequestConnection *connection, id result, NSError *error) {
 		 NSString *alertText;
 		 
@@ -108,7 +109,7 @@
 	 }];
 }
 
-+(void)postMessageToFriendTimeline:(NSString *)fbID message:(NSString *)msg {
++ (void)postMessageToFriendTimeline:(NSString *)fbID message:(NSString *)msg {
 	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
 												  msg, @"message",
 												  @"http://discover.getassembly.com", @"link",

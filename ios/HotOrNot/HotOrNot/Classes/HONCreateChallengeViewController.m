@@ -129,8 +129,26 @@
 }
 
 - (void)_goChallengeFriends {
+	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"]) {
+			NSLog(@"FRIEND:[%@]", friend);
+		}
+	}];
+	
+	
 	FBFriendPickerViewController *friendPickerController = [[FBFriendPickerViewController alloc] init];
 	friendPickerController.title = @"Pick Friends";
+	friendPickerController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+																				  initWithTitle:@"Cancel!"
+																				  style:UIBarButtonItemStyleBordered
+																				  target:self
+																				  action:@selector(cancelButtonWasPressed:)];
+	
+	friendPickerController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+																					initWithTitle:@"Done!"
+																					style:UIBarButtonItemStyleBordered
+																					target:self
+																					action:@selector(doneButtonWasPressed:)];
 	[friendPickerController loadData];
 	
 	// Use the modal wrapper method to display the picker.

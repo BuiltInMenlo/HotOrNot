@@ -26,7 +26,7 @@
 + (NSArray *)fbPermissions;
 
 
-#define kServerPath @"http://discover.getassembly.com/hotornot"
+#define kServerPath @"http://discover.getassembly.com/hotornot/api"
 #define kUsersAPI @"Users.php"
 #define kChallengesAPI @"Challenges.php"
 #define kPopularAPI @"Popular.php"
