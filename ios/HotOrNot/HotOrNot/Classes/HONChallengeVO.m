@@ -19,7 +19,21 @@
 	
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.creatorID = [[dictionary objectForKey:@"creator_id"] intValue];
-	vo.status = [dictionary objectForKey:@"status"];
+	
+	switch ([[dictionary objectForKey:@"status"] intValue]) {
+		case 2:
+			vo.status = @"Waiting";
+			break;
+			
+		case 4:
+			vo.status = @"Started";
+			break;
+			
+		default:
+			vo.status = @"Accept";
+			break;
+	}
+	
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	vo.image2URL = [dictionary objectForKey:@"img2_url"];
 	vo.scoreCreator = [[dictionary objectForKey:@"score1"] intValue];
@@ -30,6 +44,7 @@
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
+	vo.endDate = [vo.startedDate dateByAddingTimeInterval:(60 * 60 * 24)];
 	
 	return (vo);
 }

@@ -24,5 +24,6 @@
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic, retain) NSString *creatorName;
 @property (nonatomic, retain) NSDate *startedDate;
+@property (nonatomic, retain) NSDate *endDate;
 
 @end

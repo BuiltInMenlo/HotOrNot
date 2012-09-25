@@ -163,16 +163,28 @@
 				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
 				$user_obj = mysql_fetch_object(mysql_query($query));
 				
+				$query = 'SELECT `user_id` FROM `tblChallengeParticipants` WHERE `challenge_id` = '. $challenge_row['id'] .';';
+				$challenger_id = mysql_fetch_object(mysql_query($query))->user_id;
+				
+				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_row['id'] .' AND `challenger_id` = '. $user_id .';';
+				$score1 = mysql_num_rows(mysql_query($query));
+				
+				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_row['id'] .' AND `challenger_id` = '. $challenger_id .';';
+				$score2 = mysql_num_rows(mysql_query($query));
+				
+				$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $challenge_row['id'] .';';
+				$img_obj = mysql_fetch_object(mysql_query($query));
+				
 				array_push($challenge_arr, array(
 					"id" => $challenge_row['id'], 
-					"status" => "Waiting", 
+					"status" => $challenge_row['status_id'], 
 					"creator_id" => $challenge_row['creator_id'], 
 					"creator" => $user_obj->username, 
 					"subject" => $sub_obj->title,
 					"img_url" => $challenge_row['img_url'],   
-					"img2_url" => "",
-					"score1" => 0,
-					"score2" => 0,
+					"img2_url" => $img_obj->url,
+					"score1" => $score1,
+					"score2" => $score2,
 					"started" => $challenge_row['started']
 				));	
 			}
@@ -187,17 +199,29 @@
 				
 				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
 				$user_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `user_id` FROM `tblChallengeParticipants` WHERE `challenge_id` = '. $challenge_row['id'] .';';
+				$challenger_id = mysql_fetch_object(mysql_query($query))->user_id;
+				
+				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_row['id'] .' AND `challenger_id` = '. $user_id .';';
+				$score1 = mysql_num_rows(mysql_query($query));
+				
+				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_row['id'] .' AND `challenger_id` = '. $challenger_id .';';
+				$score2 = mysql_num_rows(mysql_query($query));
+				
+				$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $challenge_row['id'] .';';
+				$img_obj = mysql_fetch_object(mysql_query($query));
 												
 				array_push($challenge_arr, array(
 					"id" => $challenge_row['id'], 
-					"status" => "Accept", 
+					"status" => 0, 
 					"creator_id" => $challenge_row['creator_id'], 
 					"creator" => $user_obj->username, 
 					"subject" => $sub_obj->title,
 					"img_url" => $challenge_row['img_url'], 
-					"img2_url" => "", 
-					"score1" => 0,
-					"score2" => 0,
+					"img2_url" => $img_obj->url, 
+					"score1" => $score1,
+					"score2" => $score2,
 					"started" => $challenge_row['started']
 				));
 			}

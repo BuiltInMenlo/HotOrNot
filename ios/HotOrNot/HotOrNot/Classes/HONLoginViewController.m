@@ -77,7 +77,7 @@
 						[userRequest setDelegate:self];
 						[userRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
 						[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-						[userRequest setPostValue:[user objectForKey:@"name"] forKey:@"username"];
+						[userRequest setPostValue:[user objectForKey:@"first_name"] forKey:@"username"];
 						[userRequest startAsynchronous];
 					//}
 				}

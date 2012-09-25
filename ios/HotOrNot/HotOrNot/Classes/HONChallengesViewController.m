@@ -133,11 +133,6 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goSettings {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
 
 #pragma mark - Notifications
 - (void)_acceptChallenge:(NSNotification *)notification {
@@ -152,7 +147,7 @@
 		return (0);
 	
 	else
-		return ([self.challenges count]);
+		return ([self.challenges count] + 2);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -161,49 +156,44 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 50.0)];
-	headerView.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
 	
 	if (section == 0) {
 		
 		NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
 		
-		UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(2.0, 2.0, 32.0, 32.0)];
-		imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]] placeholderImage:nil options:SDWebImageProgressiveDownload];
-		[headerView addSubview:imgView];
+//		UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(2.0, 2.0, 32.0, 32.0)];
+//		imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+//		[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+//		[headerView addSubview:imgView];
+//		
+//		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];
+//		//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+//		//ptsLabel = [SNAppDelegate snLinkColor];
+//		ptsLabel.backgroundColor = [UIColor clearColor];
+//		ptsLabel.text = [NSString stringWithFormat:@"%d points", [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue]];
+//		[headerView addSubview:ptsLabel];
+//		
+//		UILabel *playedLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 200.0, 16.0)];
+//		//playedLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+//		//playedLabel = [SNAppDelegate snLinkColor];
+//		playedLabel.backgroundColor = [UIColor clearColor];
+//		playedLabel.text = [NSString stringWithFormat:@"%d rounds played", [[[HONAppDelegate infoForUser] objectForKey:@"matches"] intValue]];
+//		[headerView addSubview:playedLabel];
 		
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];
-		//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//ptsLabel = [SNAppDelegate snLinkColor];
-		ptsLabel.backgroundColor = [UIColor clearColor];
-		ptsLabel.text = [NSString stringWithFormat:@"%d points", [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue]];
-		[headerView addSubview:ptsLabel];
-		
-		UILabel *playedLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 200.0, 16.0)];
-		//playedLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//playedLabel = [SNAppDelegate snLinkColor];
-		playedLabel.backgroundColor = [UIColor clearColor];
-		playedLabel.text = [NSString stringWithFormat:@"%d rounds played", [[[HONAppDelegate infoForUser] objectForKey:@"matches"] intValue]];
-		[headerView addSubview:playedLabel];
-		
-		UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		settingsButton.frame = CGRectMake(290.0, 2.0, 22.0, 22.0);
-		[settingsButton setBackgroundColor:[UIColor whiteColor]];
-		[settingsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-		[settingsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
-		[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
-		[headerView addSubview:settingsButton];
+		headerView.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:1.0];
 	
 	} else {
+		headerView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.0];
+		
 		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		createChallengeButton.frame = CGRectMake(20.0, 2.0, 280.0, 43.0);
-		[createChallengeButton setBackgroundColor:[UIColor whiteColor]];
+		createChallengeButton.frame = CGRectMake(20.0, 15.0, 280.0, 43.0);
+		[createChallengeButton setBackgroundColor:[UIColor colorWithRed:0.5 green:0.5 blue:1.0 alpha:1.0]];
 		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
 		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
 		[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 		//createChallengeButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
 		[createChallengeButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
-		[createChallengeButton setTitle:@"Create Challenge" forState:UIControlStateNormal];
+		[createChallengeButton setTitle:@"Start Photo Challenge" forState:UIControlStateNormal];
 		[headerView addSubview:createChallengeButton];
 	}
 	
@@ -220,10 +210,19 @@
 	
 
 	if (cell == nil) {
-		cell = [[HONChallengeViewCell alloc] init];
+		if (indexPath.row == 0)
+			cell = [[HONChallengeViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
+		
+		else if (indexPath.row == [_challenges count] + 1)
+			cell = [[HONChallengeViewCell alloc] initAsBottomCell];
+				
+		else
+			cell = [[HONChallengeViewCell alloc] initAsChallengeCell];
 	}
 	
-	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
+	if (indexPath.row > 0 && indexPath.row < [_challenges count] + 1)
+		cell.challengeVO = [_challenges objectAtIndex:indexPath.row - 1];
+	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -236,7 +235,12 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (50.0);
+	
+	if (section == 0)
+		return (50.0);
+	
+	else
+		return (80.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -257,6 +261,20 @@
 //	}];
 	
 	//[self.navigationController pushViewController:[[SNFriendProfileViewController alloc] initWithTwitterUser:(SNTwitterUserVO *)[_friends objectAtIndex:indexPath.row]] animated:YES];
+}
+
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+	// Return YES if you want the specified item to be editable.
+	return (YES);
+}
+
+// Override to support editing the table view.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (editingStyle == UITableViewCellEditingStyleDelete) {
+		[self.challenges removeObjectAtIndex:indexPath.row - 1];
+		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+	}
 }
 
 

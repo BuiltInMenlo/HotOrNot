@@ -19,6 +19,7 @@
 #import "HONPopularViewController.h"
 #import "HONCreateChallengeViewController.h"
 #import "HONVoteViewController.h"
+#import "HONSettingsViewController.h"
 
 @interface HONAppDelegate() <ASIHTTPRequestDelegate>
 - (void)_registerUser;
@@ -79,6 +80,43 @@
 	return ([NSArray arrayWithObjects:@"publish_actions", @"user_photos", @"read_stream", @"status_update", @"publish_stream", nil]);
 }
 
++ (int)secondsBeforeDate:(NSDate *)date {
+	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
+	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+	
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
+	
+	return ([date timeIntervalSinceDate:utcDate]);
+}
+
++ (int)minutesBeforeDate:(NSDate *)date {
+	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
+	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+	
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
+	
+	return ([date timeIntervalSinceDate:utcDate] / 60);
+}
+
++ (int)hoursBeforeDate:(NSDate *)date {
+	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
+	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+	
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
+	
+	return ([date timeIntervalSinceDate:utcDate] / 3600);
+}
+
+
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -90,16 +128,18 @@
 	
 	[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	
-	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController;
+	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
 	voteViewController = [[HONVoteViewController alloc] init];
 	popularViewController = [[HONPopularViewController alloc] init];
 	createChallengeViewController = [[HONCreateChallengeViewController alloc] init];
+	settingsViewController = [[HONSettingsViewController alloc] init];
 	
 	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
 	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
 	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
 	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
+	UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
 	
 	[navController1 setNavigationBarHidden:YES];
 	[navController2 setNavigationBarHidden:YES];
@@ -109,7 +149,7 @@
 	self.tabBarController = [[UITabBarController alloc] init];
 	self.tabBarController.delegate = self;
 	//self.tabBarController.;
-	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, nil];
+	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
 	self.window.rootViewController = self.tabBarController;
 	[self.window makeKeyAndVisible];
 	
@@ -242,10 +282,15 @@
 	
 	if (viewController == [[tabBarController viewControllers] objectAtIndex:3]) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
-		//[navigationController setNavigationBarHidden:YES];
 		[tabBarController presentViewController:navigationController animated:YES completion:nil];
 		
 		return (NO);
+	
+//	} else if (viewController == [[tabBarController viewControllers] objectAtIndex:4]) {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+//		[tabBarController presentViewController:navigationController animated:YES completion:nil];
+//		
+//		return (NO);
 		
 	} else
 		return (YES);

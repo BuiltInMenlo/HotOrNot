@@ -25,6 +25,10 @@
 
 + (NSArray *)fbPermissions;
 
++ (int)secondsBeforeDate:(NSDate *)date;
++ (int)minutesBeforeDate:(NSDate *)date;
++ (int)hoursBeforeDate:(NSDate *)date;
+
 
 #define kServerPath @"http://discover.getassembly.com/hotornot/api"
 #define kUsersAPI @"Users.php"
