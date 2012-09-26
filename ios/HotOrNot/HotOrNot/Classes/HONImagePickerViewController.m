@@ -21,6 +21,7 @@
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
+@property(nonatomic, strong) NSString *fbID;
 @property(nonatomic) int submitAction;
 @end
 
@@ -32,6 +33,7 @@
 @synthesize submitAction = _submitAction;
 @synthesize challengeVO = _challengeVO;
 @synthesize progressHUD = _progressHUD;
+@synthesize fbID = _fbID;
 
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
@@ -47,6 +49,27 @@
 		[self.imageSources addObject:@"Facebook"];
 		
 		self.submitAction = 1;
+	}
+	
+	return (self);
+}
+
+- (id)initWithSubject:(NSString *)subject withFriendID:(NSString *)fbID {
+	if ((self = [super init])) {
+		self.title = NSLocalizedString(@"Select Image", @"Select Image");
+		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+		
+		self.subjectName = subject;
+		self.fbID = fbID;
+		
+		self.imageSources = [NSMutableArray new];
+		[self.imageSources addObject:@"Camera"];
+		[self.imageSources addObject:@"Camera Roll"];
+		[self.imageSources addObject:@"Photo Stream"];
+		[self.imageSources addObject:@"Facebook"];
+		
+		self.submitAction = 8;
+		
 	}
 	
 	return (self);
@@ -184,6 +207,11 @@
 			else if (self.submitAction == 4)
 				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
 			
+			else if (self.submitAction == 8) {
+				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
+				[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
+			}
+			
 			[submitChallengeRequest startAsynchronous];
 			break;
 	}
@@ -224,6 +252,11 @@
 		
 		else if (self.submitAction == 4)
 			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+		
+		else if (self.submitAction == 8) {
+			[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
+			[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
+		}
 		
 		[submitChallengeRequest startAsynchronous];
 		

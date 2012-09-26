@@ -67,7 +67,11 @@
 	
 	NSLog(@"SUBJECT:[%d]", self.subjectID);
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - 50.0) style:UITableViewStylePlain];
+	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	[self.view addSubview:headerImgView];
+	
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 180.0;
@@ -167,7 +171,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 50.0)];
-	headerView.backgroundColor = [UIColor colorWithRed:0.33 green:0.0 blue:0.0 alpha:1.0];
+	headerView.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
 	
 	HONChallengeVO *vo = [_challenges objectAtIndex:section];
 	
@@ -207,7 +211,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (30.0);
+	return (50.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

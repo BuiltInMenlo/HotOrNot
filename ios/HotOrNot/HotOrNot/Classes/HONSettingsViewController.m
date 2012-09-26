@@ -30,8 +30,12 @@
 - (void)loadView {
 	[super loadView];
 	
+	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	[self.view addSubview:headerImgView];
+	
 	FBLoginView *loginview = [[FBLoginView alloc] initWithPermissions:[NSArray arrayWithObject:@"status_update"]];
-	loginview.frame = CGRectOffset(loginview.frame, 5, 5);
+	loginview.frame = CGRectOffset(loginview.frame, 5.0, 50.0);
 	loginview.delegate = self;
 	[self.view addSubview:loginview];
 	[loginview sizeToFit];

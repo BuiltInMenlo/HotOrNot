@@ -99,12 +99,11 @@
 		
 		self.ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		self.ctaButton.frame = CGRectMake(200.0, 5.0, 100.0, 43.0);
-		[self.ctaButton setBackgroundColor:[UIColor whiteColor]];
-		[self.ctaButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-		[self.ctaButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[self.ctaButton setBackgroundImage:[UIImage imageNamed:@"genericButton_nonActive.png"] forState:UIControlStateNormal];
+		[self.ctaButton setBackgroundImage:[UIImage imageNamed:@"genericButton_Active.png"] forState:UIControlStateHighlighted];
 		[self.ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 		//self.ctaButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-		[self.ctaButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
+		[self.ctaButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:1.0] forState:UIControlStateNormal];
 		[self addSubview:self.ctaButton];
 	}
 	

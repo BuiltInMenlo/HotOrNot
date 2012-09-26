@@ -11,7 +11,7 @@
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
 
-@interface HONCreateChallengeViewController() <UITextFieldDelegate>
+@interface HONCreateChallengeViewController() <UITextFieldDelegate, FBFriendPickerDelegate>
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @end
@@ -25,6 +25,7 @@
 	if ((self = [super init])) {
 		self.title = NSLocalizedString(@"Create Challenge", @"Create Challenge");
 		self.tabBarItem.image = [UIImage imageNamed:@"second"];
+		self.subjectName = @"";
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	}
@@ -131,13 +132,16 @@
 - (void)_goChallengeFriends {
 	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"]) {
-			NSLog(@"FRIEND:[%@]", friend);
+			//NSLog(@"FRIEND:[%@]", friend);
 		}
 	}];
 	
 	
 	FBFriendPickerViewController *friendPickerController = [[FBFriendPickerViewController alloc] init];
 	friendPickerController.title = @"Pick Friends";
+	friendPickerController.allowsMultipleSelection = NO;
+	friendPickerController.delegate = self;
+	friendPickerController.sortOrdering = FBFriendDisplayByLastName;
 	friendPickerController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
 																				  initWithTitle:@"Cancel!"
 																				  style:UIBarButtonItemStyleBordered
@@ -154,45 +158,25 @@
 	// Use the modal wrapper method to display the picker.
 	[friendPickerController presentModallyFromViewController:self animated:YES handler:
 	 ^(FBViewController *sender, BOOL donePressed) {
-		 if (!donePressed) {
+		 if (!donePressed)
 			 return;
-		 }
-		 NSString *message;
 		 
 		 if (friendPickerController.selection.count == 0) {
-			 message = @"<No Friends Selected>";
-		 } else {
-			 
-			 NSMutableString *text = [[NSMutableString alloc] init];
-			 
-			 // we pick up the users from the selection, and create a string that we use to update the text view
-			 // at the bottom of the display; note that self.selection is a property inherited from our base class
-			 for (id<FBGraphUser> user in friendPickerController.selection) {
-				 if ([text length]) {
-					 [text appendString:@", "];
-				 }
-				 [text appendString:user.name];
-			 }
-			 message = text;
-		 }
+			 [[[UIAlertView alloc] initWithTitle:@"You Picked:"
+												  message:@"<No Friends Selected>"
+												 delegate:nil
+									 cancelButtonTitle:@"OK"
+									 otherButtonTitles:nil]
+			  show];
 		 
-		 [[[UIAlertView alloc] initWithTitle:@"You Picked:"
-											  message:message
-											 delegate:nil
-								 cancelButtonTitle:@"OK"
-								 otherButtonTitles:nil]
-		  show];
+	 } else
+			[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withFriendID:[[friendPickerController.selection lastObject] objectForKey:@"id"]] animated:YES];
 	 }];
 }
 
 - (void)_goRandomChallenge {
 	NSLog(@"_goRandomChallenge");
 	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName] animated:YES];
-	//[self.parentViewController.navigationController pushViewController:[[HONImagePickerViewController alloc] init] animated:YES];
-	
-	//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-	//[self.navigationController pushViewController:navigationController animated:YES];
-	
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -220,4 +204,11 @@
 		self.placeholderLabel.hidden = NO;
 }
 
+#pragma mark - Friend Picker Delegates
+- (void)friendPickerViewControllerSelectionDidChange:(FBFriendPickerViewController *)friendPicker {
+	[friendPicker dismissViewControllerAnimated:YES completion:^(void) {
+		NSLog(@"%@", [[friendPicker.selection lastObject] objectForKey:@"id"]);
+		[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withFriendID:[[friendPicker.selection lastObject] objectForKey:@"id"]] animated:YES];
+	}];
+}
 @end

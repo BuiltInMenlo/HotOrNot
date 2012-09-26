@@ -137,14 +137,15 @@
 	
 	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
 	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
-	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
-	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
+	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
+	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
 	UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
 	
 	[navController1 setNavigationBarHidden:YES];
 	[navController2 setNavigationBarHidden:YES];
 	[navController3 setNavigationBarHidden:YES];
 	[navController4 setNavigationBarHidden:YES];
+	[navController5 setNavigationBarHidden:YES];
 	
 	self.tabBarController = [[UITabBarController alloc] init];
 	self.tabBarController.delegate = self;
@@ -280,7 +281,7 @@
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
 	//NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
-	if (viewController == [[tabBarController viewControllers] objectAtIndex:3]) {
+	if (viewController == [[tabBarController viewControllers] objectAtIndex:2]) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
 		[tabBarController presentViewController:navigationController animated:YES completion:nil];
 		

@@ -129,8 +129,8 @@
 		}
 		
 		
-		function updateName($user_id, $username) {
-			$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'" WHERE `id` ='. $user_id .';';
+		function updateName($user_id, $username, $fb_id) {
+			$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = '. $fb_id .' WHERE `id` ='. $user_id .';';
 			$result = mysql_query($query);
 			
 			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
@@ -193,8 +193,8 @@
 				break;
 				
 			case "2":
-				if (isset($_POST['userID']) && isset($_POST['username']))
-					$users->updateName($_POST['userID'], $_POST['username']);
+				if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']))
+					$users->updateName($_POST['userID'], $_POST['username'], $_POST['fbID']);
 				break;
 			
 			case "3":

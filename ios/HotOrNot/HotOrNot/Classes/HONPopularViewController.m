@@ -61,7 +61,12 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - 50.0) style:UITableViewStylePlain];
+	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+	headerImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	[self.view addSubview:headerImgView];
+	
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 56.0;
