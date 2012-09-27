@@ -39,8 +39,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.title = NSLocalizedString(@"Popular", @"Popular");
-		self.tabBarItem.image = [UIImage imageNamed:@"first"];
+		self.tabBarItem.image = [UIImage imageNamed:@"tab04_nonActive"];
 		
 		self.users = [NSMutableArray new];
 		self.subjects = [NSMutableArray new];

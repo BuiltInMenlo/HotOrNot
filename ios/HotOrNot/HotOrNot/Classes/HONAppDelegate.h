@@ -12,6 +12,7 @@
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
 
++ (void)openSession;
 + (void)writeDeviceToken:(NSString *)token;
 + (NSString *)deviceToken;
 

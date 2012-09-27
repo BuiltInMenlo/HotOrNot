@@ -137,11 +137,14 @@
 				"status" => "Waiting", 
 				"subject" => $subject, 
 				"creator_id" => $row->creator_id, 
+				"creator" => "", 				
 				"challenger_id" => $rndUser_id, 
+				"challenger" => "",
 				"img_url" => $row->img_url,  
 				"img2_url" => "", 
 				"score1" => 1,
-				"score2" => 1,
+				"score2" => 1, 
+				"started" => $row->started, 
 				"added" => $row->added
 			);
 			
@@ -199,11 +202,14 @@
 				"status" => "Waiting", 
 				"subject" => $subject, 
 				"creator_id" => $row->creator_id, 
+				"creator" => "", 
 				"challenger_id" => $rndUser_id, 
+				"challenger" => "",
 				"img_url" => $row->img_url,  
 				"img2_url" => "", 
 				"score1" => 1,
-				"score2" => 1,
+				"score2" => 1, 
+				"started" => $row->started, 
 				"added" => $row->added
 			);
 			
@@ -228,6 +234,9 @@
 				$query = 'SELECT `user_id` FROM `tblChallengeParticipants` WHERE `challenge_id` = '. $challenge_row['id'] .';';
 				$challenger_id = mysql_fetch_object(mysql_query($query))->user_id;
 				
+				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenger_id .';';
+				$challenger_name = mysql_fetch_object(mysql_query($query))->username;
+				
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_row['id'] .' AND `challenger_id` = '. $user_id .';';
 				$score1 = mysql_num_rows(mysql_query($query));
 				
@@ -237,20 +246,35 @@
 				$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $challenge_row['id'] .';';
 				$img_obj = mysql_fetch_object(mysql_query($query));
 				
+				if ($challenge_row['started'] != "0000-00-00 00:00:00") {
+					$now_date = date('Y-m-d H:i:s', time());					
+					$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 24 hours'));				   
+
+					if ($now_date > $end_date) {
+						$challenge_row['status_id'] = "5";
+						
+						$query = 'UPDATE `tblChallenges` SET `status_id` = 5 WHERE `id` = '. $challenge_row['id'] .';';
+						$result = mysql_query($query);									
+					}
+				}
+				
 				array_push($challenge_arr, array(
 					"id" => $challenge_row['id'], 
 					"status" => $challenge_row['status_id'], 
 					"creator_id" => $challenge_row['creator_id'], 
 					"creator" => $user_obj->username, 
-					"subject" => $sub_obj->title,
+					"subject" => $sub_obj->title, 
+					"challenger_id" => $challenger_id, 
+					"challenger" => $challenger_name, 
 					"img_url" => $challenge_row['img_url'],   
 					"img2_url" => $img_obj->url,
 					"score1" => $score1,
 					"score2" => $score2,
-					"started" => $challenge_row['started']
+					"started" => $challenge_row['started'],
+					"added" => $challenge_row['added']
 				));	
 			}
-				
+			
 			
 			$query = 'SELECT * FROM `tblChallenges` INNER JOIN `tblChallengeParticipants` ON `tblChallenges`.`id` = `tblChallengeParticipants`.`challenge_id` WHERE `tblChallengeParticipants`.`user_id` = '. $user_id .';';
 			$challenge_result = mysql_query($query);
@@ -265,6 +289,9 @@
 				$query = 'SELECT `user_id` FROM `tblChallengeParticipants` WHERE `challenge_id` = '. $challenge_row['id'] .';';
 				$challenger_id = mysql_fetch_object(mysql_query($query))->user_id;
 				
+				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenger_id .';';
+				$challenger_name = mysql_fetch_object(mysql_query($query))->username;
+				
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_row['id'] .' AND `challenger_id` = '. $user_id .';';
 				$score1 = mysql_num_rows(mysql_query($query));
 				
@@ -273,18 +300,36 @@
 				
 				$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $challenge_row['id'] .';';
 				$img_obj = mysql_fetch_object(mysql_query($query));
+				
+				if ($challenge_row['status_id'] == "2")
+					$challenge_row['status_id'] = "1";
+					
+				if ($challenge_row['started'] != "0000-00-00 00:00:00") {
+				$now_date = date('Y-m-d H:i:s', time());					
+				$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 24 hours'));				   
+
+				if ($now_date > $end_date) {
+					$challenge_row['status_id'] = "5";
+					
+					$query = 'UPDATE `tblChallenges` SET `status_id` = 5 WHERE `id` = '. $challenge_row['id'] .';';
+					$result = mysql_query($query);									
+				}
+			}
 												
 				array_push($challenge_arr, array(
 					"id" => $challenge_row['id'], 
 					"status" => $challenge_row['status_id'], 
 					"creator_id" => $challenge_row['creator_id'], 
 					"creator" => $user_obj->username, 
-					"subject" => $sub_obj->title,
+					"subject" => $sub_obj->title, 
+					"challenger_id" => $challenger_id, 
+					"challenger" => $challenger_name, 
 					"img_url" => $challenge_row['img_url'], 
 					"img2_url" => $img_obj->url, 
 					"score1" => $score1,
 					"score2" => $score2,
-					"started" => $challenge_row['started']
+					"started" => $challenge_row['started'], 
+					"added" => $challenge_row['added']
 				));
 			}
 			
@@ -350,7 +395,8 @@
 					"img2_url" => $img_obj->url, 
 					"score1" => $score1,
 					"score2" => $score2,
-					"started" => $row['started']
+					"started" => $row['started'], 
+					"added" => $row['added']
 				));
 			}
 			
@@ -396,7 +442,8 @@
 					"img2_url" => $img_obj->url,
 					"score1" => $score1,
 					"score2" => $score2, 
-					"started" => $row['started']
+					"started" => $row['started'], 
+					"added" => $row['added']
 				));
 			}
 			

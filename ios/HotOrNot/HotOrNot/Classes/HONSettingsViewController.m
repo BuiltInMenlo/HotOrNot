@@ -18,9 +18,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.title = NSLocalizedString(@"Settings", @"Settings");
-		self.tabBarItem.image = [UIImage imageNamed:@"first"];
-		self.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
+		self.tabBarItem.image = [UIImage imageNamed:@"tab05_nonActive"];
+		self.view.backgroundColor = [UIColor blackColor];
 	}
 	
 	return (self);

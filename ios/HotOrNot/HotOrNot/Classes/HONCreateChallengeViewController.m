@@ -23,8 +23,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.title = NSLocalizedString(@"Create Challenge", @"Create Challenge");
-		self.tabBarItem.image = [UIImage imageNamed:@"second"];
+		self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
 		self.subjectName = @"";
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];

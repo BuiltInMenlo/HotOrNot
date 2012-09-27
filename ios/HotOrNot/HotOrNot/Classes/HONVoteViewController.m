@@ -27,8 +27,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.title = NSLocalizedString(@"Vote", @"Vote");
-		self.tabBarItem.image = [UIImage imageNamed:@"second"];
+		self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
 		self.subjectID = 0;
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
@@ -74,7 +73,7 @@
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	self.tableView.rowHeight = 180.0;
+	self.tableView.rowHeight = 249.0;
 	self.tableView.delegate = self;
 	self.tableView.dataSource = self;
 	self.tableView.userInteractionEnabled = YES;
@@ -171,16 +170,23 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 50.0)];
-	headerView.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
+	headerView.backgroundColor = [UIColor whiteColor];
 	
 	HONChallengeVO *vo = [_challenges objectAtIndex:section];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(3.0, 3.0, 200.0, 16.0)];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 10.0, 200.0, 16.0)];
 	//label = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 	//label = [SNAppDelegate snLinkColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = [NSString stringWithFormat:@"#%@", vo.subjectName];
 	[headerView addSubview:label];
+	
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(280.0, 10.0, 34.0, 24.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive.png"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active.png"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:@selector(_goMore:) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:moreButton];
 	
 	return (headerView);
 }
@@ -207,7 +213,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (180.0);
+	return (249.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

@@ -23,6 +23,8 @@
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic, retain) NSString *creatorName;
+@property (nonatomic, retain) NSString *challengerName;
+@property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *endDate;
 

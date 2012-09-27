@@ -38,8 +38,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.title = NSLocalizedString(@"Challenges", @"Challenges");
-		self.tabBarItem.image = [UIImage imageNamed:@"first"];
+		self.tabBarItem.image = [UIImage imageNamed:@"tab01_nonActive"];
 		self.challenges = [NSMutableArray new];
 		self.isFirstRun = YES;
 		
@@ -65,7 +64,7 @@
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - 50.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1.0]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	self.tableView.rowHeight = 56.0;
+	self.tableView.rowHeight = 70.0;
 	self.tableView.delegate = self;
 	self.tableView.dataSource = self;
 	self.tableView.userInteractionEnabled = YES;
@@ -223,7 +222,12 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (56.0);
+	
+	if (indexPath.row == 0)
+		return (55.0);
+		
+	else
+		return (70.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -243,7 +247,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	NSLog(@"didSelectRowAtIndexPath");
-	[HONFacebookCaller postToTimeline:[_challenges objectAtIndex:indexPath.row]];
+	//[HONFacebookCaller postToTimeline:[_challenges objectAtIndex:indexPath.row]];
 	
 //	[UIView animateWithDuration:0.25 animations:^(void) {
 //		((HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath]).overlayView.alpha = 1.0;
@@ -282,9 +286,10 @@
 			NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
 		
 		else {
-			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			_challenges = [NSMutableArray new];
+			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
 			
+			_challenges = [NSMutableArray new];
 			NSMutableArray *list = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];

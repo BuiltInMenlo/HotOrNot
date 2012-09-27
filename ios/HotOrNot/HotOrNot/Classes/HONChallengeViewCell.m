@@ -11,26 +11,12 @@
 #import "HONAppDelegate.h"
 
 @interface HONChallengeViewCell()
-
-@property (nonatomic, strong) UIImageView *creatorImageView;
-@property (nonatomic, strong) UILabel *creatorLabel;
-@property (nonatomic, strong) UILabel *challengerLabel;
-@property (nonatomic, strong) UILabel *subjectLabel;
-@property (nonatomic, strong) UILabel *pointsLabel;
-@property (nonatomic, strong) UIButton *ctaButton;
-@property (nonatomic, strong) UIButton *loadMoreButton;
+@property (nonatomic, strong) UIImageView *bgImgView;
 @end
 
 @implementation HONChallengeViewCell
 @synthesize challengeVO = _challengeVO;
-
-@synthesize creatorImageView = _creatorImageView;
-@synthesize creatorLabel = _creatorLabel;
-@synthesize challengerLabel = _challengerLabel;
-@synthesize subjectLabel = _subjectLabel;
-@synthesize pointsLabel = _pointsLabel;
-@synthesize ctaButton = _ctaButton;
-@synthesize loadMoreButton = _loadMoreButton;
+@synthesize bgImgView = _bgImgView;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -38,9 +24,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 56.0, self.frame.size.width, 1.0)];
-		lineView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
-		[self addSubview:lineView];
+		_bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
+		[self addSubview:_bgImgView];
 	}
 	
 	return (self);
@@ -48,22 +33,24 @@
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
 	if ((self = [self init])) {
-		self.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
-		self.pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 20.0, 50.0, 16.0)];
-		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.creatorLabel = [SNAppDelegate snLinkColor];
-		self.pointsLabel.backgroundColor = [UIColor clearColor];
-		self.pointsLabel.text = [NSString stringWithFormat:@"%d", points];
-		[self addSubview:self.pointsLabel];
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
+		_bgImgView.image = [UIImage imageNamed:@"headerBackground.png"];
+		
+		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 20.0, 50.0, 16.0)];
+		//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+		//ptsLabel = [SNAppDelegate snLinkColor];
+		ptsLabel.backgroundColor = [UIColor clearColor];
+		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
+		[self addSubview:ptsLabel];
 		
 		
-		self.subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 20.0, 150.0, 16.0)];
-		//self.subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.subjectLabel = [SNAppDelegate snLinkColor];
-		self.subjectLabel.backgroundColor = [UIColor clearColor];
-		self.subjectLabel.textAlignment = NSTextAlignmentCenter;
-		self.subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
-		[self addSubview:self.subjectLabel];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 20.0, 150.0, 16.0)];
+		//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+		//subjectLabel = [SNAppDelegate snLinkColor];
+		subjectLabel.backgroundColor = [UIColor clearColor];
+		subjectLabel.textAlignment = NSTextAlignmentCenter;
+		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
+		[self addSubview:subjectLabel];
 	}
 	
 	return (self);
@@ -71,7 +58,7 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		
+		_bgImgView.image = [UIImage imageNamed:@"footerRowBackground.png"];
 	}
 	
 	return (self);
@@ -79,32 +66,7 @@
 
 - (id)initAsChallengeCell {
 	if ((self = [self init])) {
-		self.creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
-		self.creatorImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[self addSubview:self.creatorImageView];
 		
-		self.creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 100.0, 16.0)];
-		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.creatorLabel = [SNAppDelegate snLinkColor];
-		self.creatorLabel.backgroundColor = [UIColor clearColor];
-		self.creatorLabel.textAlignment = NSTextAlignmentCenter;
-		[self addSubview:self.creatorLabel];
-		
-		self.subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 100.0, 16.0)];
-		//self.subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.subjectLabel = [SNAppDelegate snLinkColor];
-		self.subjectLabel.backgroundColor = [UIColor clearColor];
-		self.subjectLabel.textAlignment = NSTextAlignmentCenter;
-		[self addSubview:self.subjectLabel];
-		
-		self.ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		self.ctaButton.frame = CGRectMake(200.0, 5.0, 100.0, 43.0);
-		[self.ctaButton setBackgroundImage:[UIImage imageNamed:@"genericButton_nonActive.png"] forState:UIControlStateNormal];
-		[self.ctaButton setBackgroundImage:[UIImage imageNamed:@"genericButton_Active.png"] forState:UIControlStateHighlighted];
-		[self.ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
-		//self.ctaButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-		[self.ctaButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:1.0] forState:UIControlStateNormal];
-		[self addSubview:self.ctaButton];
 	}
 	
 	return (self);
@@ -118,25 +80,63 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[self.creatorImageView setImageWithURL:[NSURL URLWithString:self.challengeVO.imageURL] placeholderImage:nil];
-	self.creatorLabel.text = self.challengeVO.creatorName;
-	self.subjectLabel.text = [NSString stringWithFormat:@"#%@", self.challengeVO.subjectName];
-	[self.ctaButton setTitle:self.challengeVO.status forState:UIControlStateNormal];
+	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 10.0, 50.0, 50.0)];
+	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
+	[creatorImageView setImageWithURL:[NSURL URLWithString:self.challengeVO.imageURL] placeholderImage:nil];
+	[self addSubview:creatorImageView];
 	
-	if ([self.challengeVO.status isEqualToString:@"Started"]) {
-		[self.ctaButton removeFromSuperview];
-		[self.subjectLabel removeFromSuperview];
-		self.creatorLabel.frame = CGRectMake(40.0, 5.0, 100.0, 16.0);
+	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 100.0, 16.0)];
+	//creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+	//creatorLabel = [SNAppDelegate snLinkColor];
+	creatorLabel.backgroundColor = [UIColor clearColor];
+	creatorLabel.textAlignment = NSTextAlignmentCenter;
+	creatorLabel.text = self.challengeVO.creatorName;
+	[self addSubview:creatorLabel];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 100.0, 16.0)];
+	//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+	//subjectLabel = [SNAppDelegate snLinkColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.textAlignment = NSTextAlignmentCenter;
+	subjectLabel.text = [NSString stringWithFormat:@"#%@", self.challengeVO.subjectName];
+	[self addSubview:subjectLabel];
+	
+	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	ctaButton.frame = CGRectMake(200.0, 10.0, 100.0, 44.0);
+	[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
+	[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+	[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
+	//ctaButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+	[ctaButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:1.0] forState:UIControlStateNormal];
+	[ctaButton setTitle:self.challengeVO.status forState:UIControlStateNormal];
+	[self addSubview:ctaButton];
+	
+	if ([self.challengeVO.status isEqualToString:@"Waiting"]) {
+		_bgImgView.image = [UIImage imageNamed:@"genericRowBackground.png"];
 		
-		UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 5.0, 100.0, 16.0)];
-		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.creatorLabel = [SNAppDelegate snLinkColor];
-		challengerLabel.backgroundColor = [UIColor clearColor];
-		challengerLabel.textAlignment = NSTextAlignmentCenter;
-		challengerLabel.text = @"Challenger";
-		[self addSubview:challengerLabel];
+		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
+		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+	
+	} else if ([self.challengeVO.status isEqualToString:@"Accept"]) {
+		_bgImgView.image = [UIImage imageNamed:@"genericRowBackground.png"];
 		
-		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 25.0, 100.0, 16.0)];
+	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
+		_bgImgView.image = [UIImage imageNamed:@"activeRowBackground.png"];
+		
+		[ctaButton removeFromSuperview];
+		[subjectLabel removeFromSuperview];
+				
+		creatorImageView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
+		
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
+		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		[challengerImageView setImageWithURL:[NSURL URLWithString:self.challengeVO.image2URL] placeholderImage:nil];
+		[self addSubview:challengerImageView];
+
+		
+		creatorLabel.frame = CGRectMake(60.0, 5.0, 100.0, 16.0);
+		
+		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 35.0, 100.0, 16.0)];
 		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//self.creatorLabel = [SNAppDelegate snLinkColor];
 		creatorScoreLabel.backgroundColor = [UIColor clearColor];
@@ -144,7 +144,16 @@
 		creatorScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreCreator];
 		[self addSubview:creatorScoreLabel];
 		
-		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 25.0, 100.0, 16.0)];
+		
+		UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, 5.0, 100.0, 16.0)];
+		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+		//self.creatorLabel = [SNAppDelegate snLinkColor];
+		challengerLabel.backgroundColor = [UIColor clearColor];
+		challengerLabel.textAlignment = NSTextAlignmentCenter;
+		challengerLabel.text = self.challengeVO.challengerName;
+		[self addSubview:challengerLabel];
+		
+		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, 35.0, 100.0, 16.0)];
 		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//self.creatorLabel = [SNAppDelegate snLinkColor];
 		challengerScoreLabel.backgroundColor = [UIColor clearColor];
@@ -152,12 +161,6 @@
 		challengerScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreChallenger];
 		[self addSubview:challengerScoreLabel];
 		
-		self.creatorImageView.frame = CGRectMake(5.0, 5.0, 20.0, 40.0);
-		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(25.0, 5.0, 20.0, 40.0)];
-		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[challengerImageView setImageWithURL:[NSURL URLWithString:self.challengeVO.image2URL] placeholderImage:nil];
-		[self addSubview:challengerImageView];
 		
 		int hours = [HONAppDelegate hoursBeforeDate:self.challengeVO.endDate];
 		int mins = [HONAppDelegate minutesBeforeDate:self.challengeVO.endDate];
@@ -175,18 +178,21 @@
 				timeUntil = [NSString stringWithFormat:@"%d seconds", secs];
 		}
 		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(230.0, 15.0, 90.0, 16.0)];
-		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.creatorLabel = [SNAppDelegate snLinkColor];
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(220.0, 18.0, 90.0, 16.0)];
+		//timeLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+		//timeLabel = [SNAppDelegate snLinkColor];
 		timeLabel.backgroundColor = [UIColor clearColor];
 		timeLabel.textAlignment = NSTextAlignmentCenter;
 		timeLabel.text = timeUntil;
 		[self addSubview:timeLabel];
 		
-		NSLog(@"FINISHES IN [%d] HOURS", [HONAppDelegate hoursBeforeDate:self.challengeVO.endDate]);
-		NSLog(@"FINISHES IN [%d] MINUTES", [HONAppDelegate minutesBeforeDate:self.challengeVO.endDate]);
-		NSLog(@"FINISHES IN [%d] SECONDS", [HONAppDelegate secondsBeforeDate:self.challengeVO.endDate]);
-		NSLog(@"FINISHED [%@]", timeUntil);
+	} else if ([challengeVO.status isEqualToString:@"Ended"]) {
+		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
+			_bgImgView.image = [UIImage imageNamed:@"winnerRowBackground.png"];
+			
+		} else if (self.challengeVO.scoreCreator < self.challengeVO.scoreChallenger) {
+			_bgImgView.image = [UIImage imageNamed:@"loserRowBackground.png"];
+		}
 	}
 }
 

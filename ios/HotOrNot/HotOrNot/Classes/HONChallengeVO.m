@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, status, subjectName, creatorName, startedDate;
+@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, status, subjectName, creatorName, challengerName, addedDate, startedDate, endDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -21,6 +21,10 @@
 	vo.creatorID = [[dictionary objectForKey:@"creator_id"] intValue];
 	
 	switch ([[dictionary objectForKey:@"status"] intValue]) {
+		case 1:
+			vo.status = @"Accept";
+			break;
+			
 		case 2:
 			vo.status = @"Waiting";
 			break;
@@ -40,9 +44,11 @@
 	vo.scoreChallenger = [[dictionary objectForKey:@"score2"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"subject"];
 	vo.creatorName = [dictionary objectForKey:@"creator"];
+	vo.challengerName = [dictionary objectForKey:@"challenger"];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
 	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
 	vo.endDate = [vo.startedDate dateByAddingTimeInterval:(60 * 60 * 24)];
 	
@@ -56,7 +62,10 @@
 	self.image2URL = nil;
 	self.subjectName = nil;
 	self.creatorName = nil;
+	self.challengerName = nil;
 	self.startedDate = nil;
+	self.addedDate = nil;
+	self.endDate = nil;
 }
 
 @end

@@ -290,7 +290,8 @@
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 			
-			[self.navigationController popToRootViewControllerAnimated:YES];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+			[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 		}
 	}
 }
