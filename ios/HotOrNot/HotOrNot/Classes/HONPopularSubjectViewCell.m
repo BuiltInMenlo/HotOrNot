@@ -18,8 +18,8 @@
 @synthesize subjectLabel = _subjectLabel;
 @synthesize scoreLabel = _scoreLabel;
 
-- (id)init {
-	if ((self = [super init])) {
+- (id)initAsMidCell:(int)index {
+	if ((self = [super initAsMidCell:index])) {
 		self.subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];
 		//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//subjectLabel = [SNAppDelegate snLinkColor];

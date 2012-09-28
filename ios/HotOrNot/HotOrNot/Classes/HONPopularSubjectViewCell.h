@@ -13,6 +13,8 @@
 
 @interface HONPopularSubjectViewCell : HONBasePopularViewCell
 
+- (id)initAsMidCell:(int)index;
+
 @property (nonatomic, strong) HONPopularSubjectVO *subjectVO;
 
 @end

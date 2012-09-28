@@ -15,4 +15,5 @@
 - (id)initWithSubject:(NSString *)subject;
 - (id)initWithSubject:(NSString *)subject withFriendID:(NSString *)fbID;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
+- (id)initWithSubject:(NSString *)subject withUser:(int)userID;
 @end

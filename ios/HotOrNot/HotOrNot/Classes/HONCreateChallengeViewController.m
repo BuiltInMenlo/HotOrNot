@@ -10,19 +10,39 @@
 
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
+#import "HONCameraViewController.h"
 
 @interface HONCreateChallengeViewController() <UITextFieldDelegate, FBFriendPickerDelegate>
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) UILabel *placeholderLabel;
+@property (nonatomic) BOOL isPushView;
+@property (nonatomic) int challengerID;
 @end
 
 @implementation HONCreateChallengeViewController
 
 @synthesize subjectName = _subjectName;
 @synthesize placeholderLabel = _placeholderLabel;
+@synthesize isPushView = _isPushView;
+@synthesize challengerID = _challengerID;
 
 - (id)init {
 	if ((self = [super init])) {
+		self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
+		self.subjectName = @"";
+		_challengerID = 0;
+		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	}
+	
+	return (self);
+}
+
+- (id)initWithUser:(int)userID {
+	if ((self = [super init])) {
+		_isPushView = YES;
+		_challengerID = userID;
+		NSLog(@"initAsPush:[%d]", _isPushView);
+		
 		self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
 		self.subjectName = @"";
 		
@@ -39,6 +59,23 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	
+	if (_isPushView) {
+		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+		[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+		headerImgView.userInteractionEnabled = YES;
+		[self.view addSubview:headerImgView];
+		
+		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		backButton.frame = CGRectMake(5.0, 5.0, 54.0, 34.0);
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
+		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+		//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[backButton setTitle:@"Back" forState:UIControlStateNormal];
+		[headerImgView addSubview:backButton];
+	}
 	
 	UITextField *subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 280.0, 20.0)];
 	//[subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -63,43 +100,46 @@
 	self.placeholderLabel.text = @"Give your challenge a #hashtag";
 	[self.view addSubview:self.placeholderLabel];
 	
-	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(20.0, 100.0, 280.0, 43.0);
-	[friendsButton setBackgroundColor:[UIColor whiteColor]];
-	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
-	[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
-	//friendsButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[friendsButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
-	[friendsButton setTitle:@"Challenge Friends" forState:UIControlStateNormal];
-	[self.view addSubview:friendsButton];
+	if (_challengerID == 0) {
+		UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		friendsButton.frame = CGRectMake(20.0, 100.0, 280.0, 43.0);
+		[friendsButton setBackgroundColor:[UIColor whiteColor]];
+		[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
+		[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
+		//friendsButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+		[friendsButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
+		[friendsButton setTitle:@"Challenge Friends" forState:UIControlStateNormal];
+		[self.view addSubview:friendsButton];
 	
-	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(20.0, 150.0, 280.0, 43.0);
-	[randomButton setBackgroundColor:[UIColor whiteColor]];
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
-	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
-	//randomButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[randomButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
-	[randomButton setTitle:@"Random Challenge" forState:UIControlStateNormal];
-	[self.view addSubview:randomButton];
+		UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		randomButton.frame = CGRectMake(20.0, 150.0, 280.0, 43.0);
+		[randomButton setBackgroundColor:[UIColor whiteColor]];
+		[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
+		[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
+		//randomButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+		[randomButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
+		[randomButton setTitle:@"Random Challenge" forState:UIControlStateNormal];
+		[self.view addSubview:randomButton];
+	
+	} else {
+		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cameraButton.frame = CGRectMake(20.0, 150.0, 280.0, 43.0);
+		[cameraButton setBackgroundColor:[UIColor whiteColor]];
+		[cameraButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
+		[cameraButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[cameraButton addTarget:self action:@selector(_goPhoto) forControlEvents:UIControlEventTouchUpInside];
+		//cameraButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+		[cameraButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
+		[cameraButton setTitle:@"Choose Photo" forState:UIControlStateNormal];
+		[self.view addSubview:cameraButton];
+	}
 }
+
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(_goDone)];
-	
-//	UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-//	toolbar.frame = CGRectMake(0, 0, 320.0, 50.0);
-//	toolbar.barStyle = UIBarStyleDefault;
-//	[toolbar sizeToFit];        
-//	[self.view addSubview:toolbar]; 
-//	
-//	UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
-//	UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(_goDone)];
-//	NSArray *items = [[NSArray alloc] initWithObjects:flexibleSpace, doneButton, nil];
-//	[toolbar setItems:items];
 }
 
 - (void)viewDidUnload {
@@ -124,8 +164,16 @@
 
 
 #pragma mark - Navigation
+- (void)_goBack {
+	[self.navigationController popToRootViewControllerAnimated:YES];
+}
+
 - (void)_goDone {
 	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)_goPhoto {
+	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withUser:_challengerID] animated:YES];
 }
 
 - (void)_goChallengeFriends {
@@ -175,7 +223,8 @@
 
 - (void)_goRandomChallenge {
 	NSLog(@"_goRandomChallenge");
-	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName] animated:YES];
+	[self.navigationController pushViewController:[[HONCameraViewController alloc] init] animated:YES];
+	//[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName] animated:YES];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

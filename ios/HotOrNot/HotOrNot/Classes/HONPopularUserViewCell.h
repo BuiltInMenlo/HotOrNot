@@ -11,5 +11,7 @@
 #import "HONPopularUserVO.h"
 
 @interface HONPopularUserViewCell : HONBasePopularViewCell
+- (id)initAsMidCell:(int)index;
+
 @property (nonatomic, strong) HONPopularUserVO *userVO;
 @end

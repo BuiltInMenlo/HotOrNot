@@ -21,24 +21,22 @@
 @synthesize usernameLabel = _usernameLabel;
 @synthesize scoreLabel = _scoreLabel;
 
-- (id)init {
-	if ((self = [super init])) {
-		self.userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
+- (id)initAsMidCell:(int)index {
+	if ((self = [super initAsMidCell:index])) {
+		self.userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, 10.0, 40.0, 40.0)];
 		self.userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[self addSubview:self.userImageView];
 		
-		self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];
+		self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 15.0, 200.0, 16.0)];
 		//usernameLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//usernameLabel = [SNAppDelegate snLinkColor];
 		self.usernameLabel.backgroundColor = [UIColor clearColor];
-		self.usernameLabel.text = @"Username";
 		[self addSubview:self.usernameLabel];
 		
-		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 200.0, 16.0)];
+		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 35.0, 200.0, 16.0)];
 		//scoreLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//scoreLabel = [SNAppDelegate snLinkColor];
 		self.scoreLabel.backgroundColor = [UIColor clearColor];
-		self.scoreLabel.text = @"#hashtag";
 		[self addSubview:self.scoreLabel];
 	}
 	

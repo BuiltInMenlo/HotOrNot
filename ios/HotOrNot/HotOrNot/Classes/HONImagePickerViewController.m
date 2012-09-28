@@ -23,6 +23,7 @@
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) NSString *fbID;
 @property(nonatomic) int submitAction;
+@property(nonatomic) int challengerID;
 @end
 
 @implementation HONImagePickerViewController
@@ -34,6 +35,7 @@
 @synthesize challengeVO = _challengeVO;
 @synthesize progressHUD = _progressHUD;
 @synthesize fbID = _fbID;
+@synthesize challengerID = _challengerID;
 
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
@@ -90,6 +92,26 @@
 		[self.imageSources addObject:@"Facebook"];
 		
 		self.submitAction = 4;
+	}
+	
+	return (self);
+}
+
+- (id)initWithSubject:(NSString *)subject withUser:(int)userID {
+	if ((self = [super init])) {
+		self.title = NSLocalizedString(@"Select Image", @"Select Image");
+		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+		
+		self.subjectName = subject;
+		_challengerID = userID;
+		
+		self.imageSources = [NSMutableArray new];
+		[self.imageSources addObject:@"Camera"];
+		[self.imageSources addObject:@"Camera Roll"];
+		[self.imageSources addObject:@"Photo Stream"];
+		[self.imageSources addObject:@"Facebook"];
+		
+		self.submitAction = 9;
 	}
 	
 	return (self);
@@ -210,6 +232,10 @@
 			else if (self.submitAction == 8) {
 				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
 				[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
+			
+			} else if (self.submitAction == 9) {
+				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
+				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengerID] forKey:@"challengerID"];
 			}
 			
 			[submitChallengeRequest startAsynchronous];
@@ -256,6 +282,10 @@
 		else if (self.submitAction == 8) {
 			[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
 			[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
+		
+		} else if (self.submitAction == 9) {
+			[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
+			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengerID] forKey:@"challengerID"];
 		}
 		
 		[submitChallengeRequest startAsynchronous];

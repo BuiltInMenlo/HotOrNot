@@ -23,16 +23,17 @@
 
 @property(nonatomic) BOOL isUsersList;
 @property(nonatomic, strong) UITableView *tableView;
+@property(nonatomic, strong) UIImageView *toggleImgView;
 @property(nonatomic, strong) NSMutableArray *users;
 @property(nonatomic, strong) NSMutableArray *subjects;
 @property(nonatomic, strong) ASIFormDataRequest *subjectsRequest;
 @property(nonatomic, strong) ASIFormDataRequest *usersRequest;
-
 @end
 
 @implementation HONPopularViewController
 
 @synthesize tableView = _tableView;
+@synthesize toggleImgView = _toggleImgView;
 @synthesize users = _users;
 @synthesize subjects = _subjects;
 @synthesize isUsersList = _isUsersList;
@@ -40,17 +41,17 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.tabBarItem.image = [UIImage imageNamed:@"tab04_nonActive"];
+		self.view.backgroundColor = [UIColor whiteColor];
 		
 		self.users = [NSMutableArray new];
 		self.subjects = [NSMutableArray new];
 		
 		self.isUsersList = YES;
-		
-		self.view.backgroundColor = [UIColor colorWithWhite:0.25 alpha:1.0];
 	}
 	
 	return (self);
 }
+
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
@@ -63,12 +64,33 @@
 	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
 	headerImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	headerImgView.userInteractionEnabled = YES;
 	[self.view addSubview:headerImgView];
+	
+	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(76.0, 5.0, 167.0, 34.0)];
+	_toggleImgView.image = [UIImage imageNamed:@"Ltoggle.png"];
+	[headerImgView addSubview:_toggleImgView];
+	
+	UIButton *leadersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	leadersButton.frame = CGRectMake(76.0, 5.0, 84.0, 34.0);
+	[leadersButton addTarget:self action:@selector(_goLeaders) forControlEvents:UIControlEventTouchUpInside];
+	//leadersButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+	[leadersButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[leadersButton setTitle:@"Leaders" forState:UIControlStateNormal];
+	[headerImgView addSubview:leadersButton];
+	
+	UIButton *tagsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	tagsButton.frame = CGRectMake(161.0, 5.0, 84.0, 34.0);
+	[tagsButton addTarget:self action:@selector(_goTags) forControlEvents:UIControlEventTouchUpInside];
+	//tagsButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+	[tagsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[tagsButton setTitle:@"Tags" forState:UIControlStateNormal];
+	[headerImgView addSubview:tagsButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	self.tableView.rowHeight = 56.0;
+	self.tableView.rowHeight = 70.0;
 	self.tableView.delegate = self;
 	self.tableView.dataSource = self;
 	self.tableView.userInteractionEnabled = YES;
@@ -120,6 +142,7 @@
 #pragma mark - Navigation
 - (void)_goLeaders {
 	self.isUsersList = YES;
+	_toggleImgView.image = [UIImage imageNamed:@"Ltoggle.png"];
 	
 	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kPopularAPI]]];
 	[self.usersRequest setDelegate:self];
@@ -130,6 +153,7 @@
 
 - (void)_goTags {
 	self.isUsersList = NO;
+	_toggleImgView.image = [UIImage imageNamed:@"Rtoggle.png"];
 	
 	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kPopularAPI]]];
 	[self.usersRequest setDelegate:self];
@@ -143,40 +167,10 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	
 	if (self.isUsersList)
-		return ([self.users count]);
+		return ([_users count] + 2);
 	
 	else
-		return ([self.subjects count]);
-}
-
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 50.0)];
-	headerView.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0];
-	
-	UIButton *leadersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	leadersButton.frame = CGRectMake(20.0, 2.0, 140.0, 43.0);
-	[leadersButton setBackgroundColor:[UIColor whiteColor]];
-	[leadersButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-	[leadersButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
-	[leadersButton addTarget:self action:@selector(_goLeaders) forControlEvents:UIControlEventTouchUpInside];
-	//leadersButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[leadersButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
-	[leadersButton setTitle:@"Leaders" forState:UIControlStateNormal];
-	[headerView addSubview:leadersButton];
-	
-	UIButton *tagsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	tagsButton.frame = CGRectMake(160.0, 2.0, 140.0, 43.0);
-	[tagsButton setBackgroundColor:[UIColor whiteColor]];
-	[tagsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-	[tagsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
-	[tagsButton addTarget:self action:@selector(_goTags) forControlEvents:UIControlEventTouchUpInside];
-	//tagsButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[tagsButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
-	[tagsButton setTitle:@"Tags" forState:UIControlStateNormal];
-	[headerView addSubview:tagsButton];
-	
-	return (headerView);
+		return ([_subjects count] + 2);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -185,24 +179,40 @@
 		HONPopularUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			cell = [[HONPopularUserViewCell alloc] init];
+			if (indexPath.row == 0)
+				cell = [[HONPopularUserViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
+			
+			else if (indexPath.row == [_users count] + 1)
+				cell = [[HONPopularUserViewCell alloc] initAsBottomCell];
+			
+			else
+				cell = [[HONPopularUserViewCell alloc] initAsMidCell:indexPath.row];
 		}
 		
-		cell.userVO = [_users objectAtIndex:indexPath.row];
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		if (indexPath.row > 0 && indexPath.row < [_users count] + 1)
+			cell.userVO = [_users objectAtIndex:indexPath.row - 1];
 		
+		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
 	
 	} else {
 		HONPopularSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			cell = [[HONPopularSubjectViewCell alloc] init];
+			if (indexPath.row == 0)
+				cell = [[HONPopularSubjectViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
+			
+			else if (indexPath.row == [_subjects count] + 1)
+				cell = [[HONPopularSubjectViewCell alloc] initAsBottomCell];
+			
+			else
+				cell = [[HONPopularSubjectViewCell alloc] initAsMidCell:indexPath.row];
 		}
 		
-		cell.subjectVO = [_subjects objectAtIndex:indexPath.row];
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		if (indexPath.row > 0 && indexPath.row < [_subjects count] + 1)
+			cell.subjectVO = [_subjects objectAtIndex:indexPath.row - 1];
 		
+		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
 	}
 }
@@ -210,11 +220,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (56.0);
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (50.0);
+	if (indexPath.row == 0)
+		return (55.0);
+	
+	else
+		return (70.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -225,11 +235,12 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	if (self.isUsersList) {
+		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row - 1];
 		NSLog(@"CHALLENGE USER");
-		[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
+		[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] initWithUser:vo.userID] animated:YES];
 	
 	} else {
-		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row];
+		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row - 1];
 		
 		NSLog(@"VOTE SUBJECT :[%@]", vo.subjectName);
 		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithSubject:vo.subjectID] animated:YES];
@@ -265,7 +276,7 @@
 					NSMutableArray *list = [NSMutableArray array];
 					for (NSDictionary *serverList in parsedLists) {
 						HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
-						NSLog(@"VO:[%d]", vo.userID);
+						//NSLog(@"VO:[%d]", vo.userID);
 						
 						if (vo != nil)
 							[list addObject:vo];
@@ -279,7 +290,7 @@
 					NSMutableArray *list = [NSMutableArray array];
 					for (NSDictionary *serverList in parsedLists) {
 						HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
-						NSLog(@"VO:[%@]", vo.subjectName);
+						//NSLog(@"VO:[%@]", vo.subjectName);
 						
 						if (vo != nil)
 							[list addObject:vo];

@@ -11,5 +11,8 @@
 @interface HONBasePopularViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+- (id)initAsTopCell:(int)points withSubject:(NSString *)subject;
+- (id)initAsBottomCell;
+- (id)initAsMidCell:(int)index;
 
 @end

@@ -17,6 +17,7 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) ASIFormDataRequest *challengesRequest;
+@property(nonatomic) BOOL isPushView;
 @end
 
 @implementation HONVoteViewController
@@ -24,13 +25,14 @@
 @synthesize tableView = _tableView;
 @synthesize challenges = _challenges;
 @synthesize challengesRequest = _challengesRequest;
+@synthesize isPushView = _isPushView;
 
 - (id)init {
 	if ((self = [super init])) {
 		self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
 		self.subjectID = 0;
 		
-		self.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+		self.view.backgroundColor = [UIColor whiteColor];
 		self.challenges = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
@@ -42,11 +44,12 @@
 
 - (id)initWithSubject:(int)subjectID {
 	if ((self = [super init])) {
-		self.title = NSLocalizedString(@"Vote", @"Vote");
-		self.tabBarItem.image = [UIImage imageNamed:@"second"];
+		_isPushView = YES;
+		
+		self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
 		self.subjectID = subjectID;
 		
-		self.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
+		self.view.backgroundColor = [UIColor whiteColor];
 		self.challenges = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
@@ -64,11 +67,24 @@
 - (void)loadView {
 	[super loadView];
 	
-	NSLog(@"SUBJECT:[%d]", self.subjectID);
+	NSLog(@"SUBJECT:[%d][%d]", self.subjectID, _isPushView);
 	
 	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
 	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	headerImgView.userInteractionEnabled = YES;
 	[self.view addSubview:headerImgView];
+	
+	if (_isPushView) {
+		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		backButton.frame = CGRectMake(5.0, 5.0, 54.0, 34.0);
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
+		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+		//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[backButton setTitle:@"Back" forState:UIControlStateNormal];
+		[headerImgView addSubview:backButton];
+	}
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -127,6 +143,11 @@
 	}
 	
 	[self.challengesRequest startAsynchronous];
+}
+
+#pragma mark - Navigation
+- (void)_goBack {
+	[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 #pragma mark - Notifications
