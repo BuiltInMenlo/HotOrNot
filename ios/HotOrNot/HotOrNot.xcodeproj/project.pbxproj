@@ -91,6 +91,11 @@
 		4C6BBCA71615764100145996 /* playButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6BBCA31615764000145996 /* playButton_nonActive.png */; };
 		4C6BBCA81615764100145996 /* playButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6BBCA41615764100145996 /* playButton_nonActive@2x.png */; };
 		4C6BBCAB16157FE100145996 /* HONChallengerPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBCAA16157FE100145996 /* HONChallengerPickerViewController.m */; };
+		4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */; };
+		4C6BBCB516167FA500145996 /* subSectionHeaderRowBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6BBCB316167FA500145996 /* subSectionHeaderRowBackground.png */; };
+		4C6BBCB616167FA500145996 /* subSectionHeaderRowBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6BBCB416167FA500145996 /* subSectionHeaderRowBackground@2x.png */; };
+		4C7341921616C078001F9F11 /* HONPrivacyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7341911616C078001F9F11 /* HONPrivacyViewController.m */; };
+		4C7341961616C08B001F9F11 /* HONAboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7341951616C08B001F9F11 /* HONAboutViewController.m */; };
 		4C824FB61612442C00C34FD9 /* mainCTA_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C824FB21612442C00C34FD9 /* mainCTA_Active.png */; };
 		4C824FB71612442C00C34FD9 /* mainCTA_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C824FB31612442C00C34FD9 /* mainCTA_Active@2x.png */; };
 		4C824FB81612442C00C34FD9 /* mainCTA_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C824FB41612442C00C34FD9 /* mainCTA_nonActive.png */; };
@@ -425,6 +430,14 @@
 		4C6BBCA41615764100145996 /* playButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "playButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C6BBCA916157FE000145996 /* HONChallengerPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengerPickerViewController.h; sourceTree = "<group>"; };
 		4C6BBCAA16157FE100145996 /* HONChallengerPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengerPickerViewController.m; sourceTree = "<group>"; };
+		4C6BBCB016167F2000145996 /* HONSettingsViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSettingsViewCell.h; sourceTree = "<group>"; };
+		4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewCell.m; sourceTree = "<group>"; };
+		4C6BBCB316167FA500145996 /* subSectionHeaderRowBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = subSectionHeaderRowBackground.png; sourceTree = "<group>"; };
+		4C6BBCB416167FA500145996 /* subSectionHeaderRowBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "subSectionHeaderRowBackground@2x.png"; sourceTree = "<group>"; };
+		4C7341901616C078001F9F11 /* HONPrivacyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPrivacyViewController.h; sourceTree = "<group>"; };
+		4C7341911616C078001F9F11 /* HONPrivacyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPrivacyViewController.m; sourceTree = "<group>"; };
+		4C7341941616C08B001F9F11 /* HONAboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAboutViewController.h; sourceTree = "<group>"; };
+		4C7341951616C08B001F9F11 /* HONAboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAboutViewController.m; sourceTree = "<group>"; };
 		4C824FB21612442C00C34FD9 /* mainCTA_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mainCTA_Active.png; sourceTree = "<group>"; };
 		4C824FB31612442C00C34FD9 /* mainCTA_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mainCTA_Active@2x.png"; sourceTree = "<group>"; };
 		4C824FB41612442C00C34FD9 /* mainCTA_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mainCTA_nonActive.png; sourceTree = "<group>"; };
@@ -1183,6 +1196,8 @@
 		4C824FBF16124D7D00C34FD9 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				4C6BBCB316167FA500145996 /* subSectionHeaderRowBackground.png */,
+				4C6BBCB416167FA500145996 /* subSectionHeaderRowBackground@2x.png */,
 				4CA8DAC41614FC4000B7B13C /* genericRowBackgroundnoImage_active.png */,
 				4CA8DAC51614FC4000B7B13C /* genericRowBackgroundnoImage_active@2x.png */,
 				4CA8DAC61614FC4000B7B13C /* genericRowBackgroundnoImage.png */,
@@ -1220,8 +1235,14 @@
 		4CA8DA541613D03300B7B13C /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				4C6BBCB016167F2000145996 /* HONSettingsViewCell.h */,
+				4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */,
 				4C32B9A015FAB3AE0023A0EE /* HONSettingsViewController.h */,
 				4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */,
+				4C7341901616C078001F9F11 /* HONPrivacyViewController.h */,
+				4C7341911616C078001F9F11 /* HONPrivacyViewController.m */,
+				4C7341941616C08B001F9F11 /* HONAboutViewController.h */,
+				4C7341951616C08B001F9F11 /* HONAboutViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -1542,6 +1563,8 @@
 				4C6BBCA61615764100145996 /* playButton_Active@2x.png in Resources */,
 				4C6BBCA71615764100145996 /* playButton_nonActive.png in Resources */,
 				4C6BBCA81615764100145996 /* playButton_nonActive@2x.png in Resources */,
+				4C6BBCB516167FA500145996 /* subSectionHeaderRowBackground.png in Resources */,
+				4C6BBCB616167FA500145996 /* subSectionHeaderRowBackground@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1615,6 +1638,9 @@
 				4C6BBC7F1615257F00145996 /* HONCameraViewController.m in Sources */,
 				4C6BBC861615455000145996 /* HONCameraOverlayView.m in Sources */,
 				4C6BBCAB16157FE100145996 /* HONChallengerPickerViewController.m in Sources */,
+				4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */,
+				4C7341921616C078001F9F11 /* HONPrivacyViewController.m in Sources */,
+				4C7341961616C08B001F9F11 /* HONAboutViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

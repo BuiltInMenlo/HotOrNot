@@ -9,9 +9,18 @@
 #import <FacebookSDK/FacebookSDK.h>
 
 #import "HONSettingsViewController.h"
+#import "HONSettingsViewCell.h"
+#import "HONAppDelegate.h"
 
-@interface HONSettingsViewController () <FBLoginViewDelegate>
+#import "HONPrivacyViewController.h"
+#import "HONAboutViewController.h"
 
+@interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, FBLoginViewDelegate>
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UISwitch *notificationSwitch;
+@property (nonatomic, strong) UISwitch *tournamentSwitch;
+@property (nonatomic, strong) UISwitch *activatedSwitch;
+@property (nonatomic, strong) NSArray *captions;
 @end
 
 @implementation HONSettingsViewController
@@ -19,7 +28,15 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.tabBarItem.image = [UIImage imageNamed:@"tab05_nonActive"];
-		self.view.backgroundColor = [UIColor blackColor];
+		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		
+		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
+		
+		_tournamentSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+		[_tournamentSwitch addTarget:self action:@selector(_goTournamentsSwitch:) forControlEvents:UIControlEventValueChanged];
+		
+		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Daily Tournaments", @"Logout", @"Privacy Policy", @"About PicChallenge", @"", nil];
 	}
 	
 	return (self);
@@ -33,11 +50,22 @@
 	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
 	[self.view addSubview:headerImgView];
 	
-	FBLoginView *loginview = [[FBLoginView alloc] initWithPermissions:[NSArray arrayWithObject:@"status_update"]];
-	loginview.frame = CGRectOffset(loginview.frame, 5.0, 50.0);
-	loginview.delegate = self;
-	[self.view addSubview:loginview];
-	[loginview sizeToFit];
+//	FBLoginView *loginview = [[FBLoginView alloc] initWithPermissions:[NSArray arrayWithObject:@"status_update"]];
+//	loginview.frame = CGRectOffset(loginview.frame, 5.0, 50.0);
+//	loginview.delegate = self;
+//	[self.view addSubview:loginview];
+//	[loginview sizeToFit];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.rowHeight = 70.0;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.userInteractionEnabled = YES;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[self.view addSubview:_tableView];
 	
 }
 - (void)viewDidLoad {
@@ -70,6 +98,113 @@
 #pragma mark - Navigation
 - (void)_goDone {
 	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)_goNotificationsSwitch:(UISwitch *)switchView {
+	NSString *msg;
+	
+	if (switchView.on)
+		msg = @"Turn on notifications?";
+	
+	else
+		msg = @"Turn off notifications?";
+	
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Notifications"
+																	message:msg
+																  delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"No", nil];
+	[alert show];
+	_activatedSwitch = switchView;
+}
+
+-(void)_goTournamentsSwitch:(UISwitch *)switchView {
+	NSString *msg;
+	
+	if (switchView.on)
+		msg = @"Turn on daily tournaments?";
+	
+	else
+		msg = @"Turn off daily tournaments?";
+	
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Daily Tournaments"
+																	message:msg
+																  delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"No", nil];
+	[alert show];
+	_activatedSwitch = switchView;
+}
+
+
+#pragma mark - TableView DataSource Delegates
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return (7);
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	
+	HONSettingsViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	
+	if (cell == nil) {
+		if (indexPath.row == 0)
+			cell = [[HONSettingsViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
+		
+		else if (indexPath.row == 6)
+			cell = [[HONSettingsViewCell alloc] initAsBottomCell];
+		
+		else
+			cell = [[HONSettingsViewCell alloc] initAsMidCell:[_captions objectAtIndex:indexPath.row]];
+	}
+	
+	if (indexPath.row == 1)
+		cell.accessoryView = _notificationSwitch;
+	
+	if (indexPath.row == 2)
+		cell.accessoryView = _tournamentSwitch;
+		
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	return (cell);
+}
+
+
+#pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (indexPath.row == 0)
+		return (55.0);
+	
+	else
+		return (70.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (indexPath);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	switch (indexPath.row) {
+		case 4:
+			[self.navigationController pushViewController:[[HONPrivacyViewController alloc] init] animated:YES];
+			break;
+			
+		case 5:
+			[self.navigationController pushViewController:[[HONAboutViewController alloc] init] animated:YES];
+			break;
+	}
+}
+
+#pragma mark - AlerView Delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	switch(buttonIndex) {
+		case 0:
+			break;
+			
+		case 1:
+			_activatedSwitch.on = !_activatedSwitch.on;
+			break;
+	}
 }
 
 

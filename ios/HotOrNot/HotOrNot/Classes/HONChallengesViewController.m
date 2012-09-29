@@ -127,7 +127,7 @@
 	//[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCameraViewController alloc] init]];
-	//[navigationController setNavigationBarHidden:YES];
+	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 

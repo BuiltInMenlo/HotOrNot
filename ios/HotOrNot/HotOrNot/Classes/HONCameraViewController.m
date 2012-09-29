@@ -111,6 +111,10 @@
 
 
 #pragma mark - View lifecycle
+- (void)loadView {
+	[super loadView];
+	self.view.backgroundColor = [UIColor blackColor];
+}
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	overlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGTH)];
@@ -119,7 +123,7 @@
 	self.imagePickerController = [[UIImagePickerController alloc] init];
 	self.imagePickerController.delegate = self;
 	self.imagePickerController.navigationBarHidden = YES;
-	self.imagePickerController.toolbarHidden = YES;
+	//self.imagePickerController.toolbarHidden = YES;
 	self.imagePickerController.wantsFullScreenLayout = YES;
 	
 	void (^assetEnumerator)(ALAsset *, NSUInteger, BOOL *) = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
@@ -144,9 +148,10 @@
 
 - (void) showCamera {
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-	self.imagePickerController.showsCameraControls = NO;
+	//self.imagePickerController.showsCameraControls = NO;
 	self.imagePickerController.cameraViewTransform = CGAffineTransformScale(self.imagePickerController.cameraViewTransform, CAMERA_TRANSFORM_X, CAMERA_TRANSFORM_Y);
-	self.imagePickerController.cameraOverlayView = overlayView;
+	//self.imagePickerController.cameraOverlayView = overlayView;
+	[self.imagePickerController setNavigationBarHidden:YES];
 	
 	if (overlayView.flashButton.hidden) {
 		overlayView.flashButton.hidden = NO;
@@ -168,66 +173,67 @@
 	UIImage *aImage = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
 	
 	if (aPicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-		UIImageWriteToSavedPhotosAlbum (aImage, nil, nil , nil);
+		//UIImageWriteToSavedPhotosAlbum (aImage, nil, nil , nil);
 		overlayView.captureButton.enabled = YES;
 	
 	} else {
-		[_imageView removeFromSuperview];
-		_imageView = nil;
-		
-		// reset our zoomScale
-		CGRect applicationFrame = [[UIScreen mainScreen] applicationFrame];
-		_imageView = [[UIImageView alloc] initWithImage:aImage];
-		_scrollView.contentSize = aImage.size;
-		_scrollView.bounces = NO;
-		_scrollView.delegate = self;
-		
-		// set up our content size and min/max zoomscale
-		CGFloat xScale = applicationFrame.size.width / aImage.size.width;    // the scale needed to perfectly fit the image width-wise
-		CGFloat yScale = applicationFrame.size.height / aImage.size.height;  // the scale needed to perfectly fit the image height-wise
-		CGFloat minScale = MIN(xScale, yScale);                 // use minimum of these to allow the image to become fully visible
-		
-		// on high resolution screens we have double the pixel density, so we will be seeing every pixel if we limit the
-		// maximum zoom scale to 0.5.
-		CGFloat maxScale = 1.0 / [[UIScreen mainScreen] scale];
-		
-		// don't let minScale exceed maxScale. (If the image is smaller than the screen, we don't want to force it to be zoomed.)
-		minScale = MIN(minScale, maxScale);
-		
-		_scrollView.contentSize = aImage.size;
-		_scrollView.maximumZoomScale = maxScale;
-		_scrollView.minimumZoomScale = minScale;
-		_scrollView.zoomScale = minScale;
-		
-		
-		//////////////
-		
-		CGSize boundsSize = applicationFrame.size;
-		CGRect frameToCenter = _imageView.frame;
-		
-		// center horizontally
-		if (frameToCenter.size.width < boundsSize.width)
-			frameToCenter.origin.x = (boundsSize.width - frameToCenter.size.width) / 2;
-		
-		else
-			frameToCenter.origin.x = 0;
-		
-		// center vertically
-		if (frameToCenter.size.height < boundsSize.height)
-			frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2;
-		
-		else
-			frameToCenter.origin.y = 0;
-		
-		//////////////
-		
-		_imageView.frame = frameToCenter;
-		[_scrollView addSubview:_imageView];
-		
-		[self.imagePickerController dismissViewControllerAnimated:NO completion:nil];
+//		[_imageView removeFromSuperview];
+//		_imageView = nil;
+//		
+//		// reset our zoomScale
+//		CGRect applicationFrame = [[UIScreen mainScreen] applicationFrame];
+//		_imageView = [[UIImageView alloc] initWithImage:aImage];
+//		_scrollView.contentSize = aImage.size;
+//		_scrollView.bounces = NO;
+//		_scrollView.delegate = self;
+//		
+//		// set up our content size and min/max zoomscale
+//		CGFloat xScale = applicationFrame.size.width / aImage.size.width;    // the scale needed to perfectly fit the image width-wise
+//		CGFloat yScale = applicationFrame.size.height / aImage.size.height;  // the scale needed to perfectly fit the image height-wise
+//		CGFloat minScale = MIN(xScale, yScale);                 // use minimum of these to allow the image to become fully visible
+//		
+//		// on high resolution screens we have double the pixel density, so we will be seeing every pixel if we limit the
+//		// maximum zoom scale to 0.5.
+//		CGFloat maxScale = 1.0 / [[UIScreen mainScreen] scale];
+//		
+//		// don't let minScale exceed maxScale. (If the image is smaller than the screen, we don't want to force it to be zoomed.)
+//		minScale = MIN(minScale, maxScale);
+//		
+//		_scrollView.contentSize = aImage.size;
+//		_scrollView.maximumZoomScale = maxScale;
+//		_scrollView.minimumZoomScale = minScale;
+//		_scrollView.zoomScale = minScale;
+//		
+//		
+//		//////////////
+//		
+//		CGSize boundsSize = applicationFrame.size;
+//		CGRect frameToCenter = _imageView.frame;
+//		
+//		// center horizontally
+//		if (frameToCenter.size.width < boundsSize.width)
+//			frameToCenter.origin.x = (boundsSize.width - frameToCenter.size.width) / 2;
+//		
+//		else
+//			frameToCenter.origin.x = 0;
+//		
+//		// center vertically
+//		if (frameToCenter.size.height < boundsSize.height)
+//			frameToCenter.origin.y = (boundsSize.height - frameToCenter.size.height) / 2;
+//		
+//		else
+//			frameToCenter.origin.y = 0;
+//		
+//		//////////////
+//		
+//		_imageView.frame = frameToCenter;
+//		[_scrollView addSubview:_imageView];
 	}
 	
-	[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] init] animated:YES];
+	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void){
+		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] init] animated:YES];
+	}];
+	
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
