@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "HONCameraViewController.h"
+#import "HONImagePickerViewController.h"
 
 @interface HONCameraOverlayView : UIView
 
-@property (nonatomic, weak) HONCameraViewController *delegate;
+@property (nonatomic, weak) HONImagePickerViewController *delegate;
 @property (nonatomic, weak) UIButton *captureButton;
 @property (nonatomic, weak) UIButton *flashButton;
 @property (nonatomic, weak) UIButton *changeCameraButton;

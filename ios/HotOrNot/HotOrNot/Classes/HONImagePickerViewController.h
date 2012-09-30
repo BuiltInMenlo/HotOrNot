@@ -16,4 +16,8 @@
 - (id)initWithSubject:(NSString *)subject withFriendID:(NSString *)fbID;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 - (id)initWithSubject:(NSString *)subject withUser:(int)userID;
+
+- (void)showLibrary;
+- (void)takePicture;
+- (void)closeCamera;
 @end

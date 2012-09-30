@@ -32,27 +32,27 @@
 		headerImgView.userInteractionEnabled = YES;
 		[self addSubview:headerImgView];
 				
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(2.0, 8.0, 280.0, 20.0)];
-		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
-		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
-		[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		//_subjectTextField.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
-		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
-		_subjectTextField.text = @"";
-		_subjectTextField.delegate = self;
-		[headerImgView addSubview:_subjectTextField];
-		
-		_placeholderLabel = [[UILabel alloc] initWithFrame:_subjectTextField.frame];
-		//_placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
-		_placeholderLabel.textColor = [UIColor colorWithWhite:0.620 alpha:1.0];
-		_placeholderLabel.backgroundColor = [UIColor clearColor];
-		_placeholderLabel.textAlignment = NSTextAlignmentCenter;
-		_placeholderLabel.text = @"Give your challenge a #hashtag";
-		[self addSubview:self.placeholderLabel];
+//		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(2.0, 8.0, 280.0, 20.0)];
+//		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+//		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+//		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+//		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
+//		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
+//		[_subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
+//		[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+//		//_subjectTextField.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
+//		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
+//		_subjectTextField.text = @"";
+//		_subjectTextField.delegate = self;
+//		[headerImgView addSubview:_subjectTextField];
+//		
+//		_placeholderLabel = [[UILabel alloc] initWithFrame:_subjectTextField.frame];
+//		//_placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
+//		_placeholderLabel.textColor = [UIColor colorWithWhite:0.620 alpha:1.0];
+//		_placeholderLabel.backgroundColor = [UIColor clearColor];
+//		_placeholderLabel.textAlignment = NSTextAlignmentCenter;
+//		_placeholderLabel.text = @"Give your challenge a #hashtag";
+//		[self addSubview:self.placeholderLabel];
 		
 //		UIImage *buttonImageNormal;
 //		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {
@@ -94,6 +94,15 @@
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
 		[self.cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
 		[footerImgView addSubview:self.cameraRollButton];
+		
+		// Add the close button
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = CGRectMake(270.0, 10.0, 44.0, 44.0);
+		[closeButton setBackgroundColor:[UIColor whiteColor]];
+		//[closeButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
+		//[closeButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
+		[closeButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
+		[footerImgView addSubview:closeButton];
 	}
 	
 	return (self);
@@ -113,15 +122,19 @@
 }
 
 - (void)setFlash:(id)sender {
-	[self.delegate changeFlash:sender];
+	//[self.delegate changeFlash:sender];
 }
 
 - (void)changeCamera:(id)sender {
-	[self.delegate changeCamera];
+	//[self.delegate changeCamera];
 }
 
 - (void)showCameraRoll:(id)sender {
 	[self.delegate showLibrary];
+}
+
+- (void)closeCamera:(id)sender {
+	[self.delegate closeCamera];
 }
 
 

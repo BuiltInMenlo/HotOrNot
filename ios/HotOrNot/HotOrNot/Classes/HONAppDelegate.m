@@ -16,7 +16,7 @@
 #import "HONChallengesViewController.h"
 #import "HONVoteViewController.h"
 #import "HONPopularViewController.h"
-#import "HONCreateChallengeViewController.h"
+#import "HONImagePickerViewController.h"
 #import "HONVoteViewController.h"
 #import "HONSettingsViewController.h"
 
@@ -141,7 +141,7 @@
 	challengesViewController = [[HONChallengesViewController alloc] init];
 	voteViewController = [[HONVoteViewController alloc] init];
 	popularViewController = [[HONPopularViewController alloc] init];
-	createChallengeViewController = [[HONCreateChallengeViewController alloc] init];
+	createChallengeViewController = [[HONImagePickerViewController alloc] init];
 	settingsViewController = [[HONSettingsViewController alloc] init];
 	
 	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
@@ -316,7 +316,8 @@
 	//NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
 	if (viewController == [[tabBarController viewControllers] objectAtIndex:2]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCreateChallengeViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
 		[tabBarController presentViewController:navigationController animated:YES completion:nil];
 		
 		return (NO);

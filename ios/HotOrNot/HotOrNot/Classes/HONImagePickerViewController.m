@@ -14,6 +14,9 @@
 #import "HONImagePickerViewController.h"
 #import "HONAppDelegate.h"
 #import "HONImageTypeViewCell.h"
+#import "HONCameraOverlayView.h"
+
+#import "HONChallengerPickerViewController.h"
 
 @interface HONImagePickerViewController () <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
@@ -24,6 +27,8 @@
 @property(nonatomic, strong) NSString *fbID;
 @property(nonatomic) int submitAction;
 @property(nonatomic) int challengerID;
+@property(nonatomic) BOOL isFirstAppearance;
+@property(nonatomic, strong) UIImagePickerController *imagePicker;
 @end
 
 @implementation HONImagePickerViewController
@@ -37,18 +42,35 @@
 @synthesize fbID = _fbID;
 @synthesize challengerID = _challengerID;
 
+
+- (id)init {
+	if ((self = [super init])) {
+		self.view.backgroundColor = [UIColor blackColor];
+		self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
+		
+		_isFirstAppearance = YES;
+		self.subjectName = @"";
+		
+		self.imageSources = [NSMutableArray new];
+		[self.imageSources addObject:@"Camera"];
+		[self.imageSources addObject:@"Camera Roll"];
+		
+		self.submitAction = 1;
+	}
+	
+	return (self);
+}
+
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
 		self.title = NSLocalizedString(@"Select Image", @"Select Image");
-		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+		self.view.backgroundColor = [UIColor blackColor];
 		
 		self.subjectName = subject;
 		
 		self.imageSources = [NSMutableArray new];
 		[self.imageSources addObject:@"Camera"];
 		[self.imageSources addObject:@"Camera Roll"];
-		[self.imageSources addObject:@"Photo Stream"];
-		[self.imageSources addObject:@"Facebook"];
 		
 		self.submitAction = 1;
 	}
@@ -59,7 +81,7 @@
 - (id)initWithSubject:(NSString *)subject withFriendID:(NSString *)fbID {
 	if ((self = [super init])) {
 		self.title = NSLocalizedString(@"Select Image", @"Select Image");
-		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+		self.view.backgroundColor = [UIColor blackColor];
 		
 		self.subjectName = subject;
 		self.fbID = fbID;
@@ -67,8 +89,6 @@
 		self.imageSources = [NSMutableArray new];
 		[self.imageSources addObject:@"Camera"];
 		[self.imageSources addObject:@"Camera Roll"];
-		[self.imageSources addObject:@"Photo Stream"];
-		[self.imageSources addObject:@"Facebook"];
 		
 		self.submitAction = 8;
 		
@@ -79,7 +99,6 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
-		self.title = NSLocalizedString(@"Select Image", @"Select Image");
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.challengeVO = vo;
@@ -88,8 +107,6 @@
 		self.imageSources = [NSMutableArray new];
 		[self.imageSources addObject:@"Camera"];
 		[self.imageSources addObject:@"Camera Roll"];
-		[self.imageSources addObject:@"Photo Stream"];
-		[self.imageSources addObject:@"Facebook"];
 		
 		self.submitAction = 4;
 	}
@@ -108,8 +125,6 @@
 		self.imageSources = [NSMutableArray new];
 		[self.imageSources addObject:@"Camera"];
 		[self.imageSources addObject:@"Camera Roll"];
-		[self.imageSources addObject:@"Photo Stream"];
-		[self.imageSources addObject:@"Facebook"];
 		
 		self.submitAction = 9;
 	}
@@ -121,7 +136,23 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStylePlain];
+	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+	headerImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	headerImgView.userInteractionEnabled = YES;
+//	[self.view addSubview:headerImgView];
+	
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(5.0, 5.0, 54.0, 34.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+	[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[backButton setTitle:@"Done" forState:UIControlStateNormal];
+	[headerImgView addSubview:backButton];
+	
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 45.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 56.0;
@@ -130,11 +161,38 @@
 	self.tableView.userInteractionEnabled = YES;
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:self.tableView];
+	//[self.view addSubview:self.tableView];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	
+	//if (_isFirstAppearance) {
+		_isFirstAppearance = NO;
+		
+		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
+			
+			HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 640.0, 480.0)];
+			camerOverlayView.delegate = self;
+			
+			_imagePicker = [[UIImagePickerController alloc] init];
+			_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
+			_imagePicker.delegate = self;
+			_imagePicker.allowsEditing = NO;
+			_imagePicker.cameraOverlayView = camerOverlayView;
+			_imagePicker.navigationBarHidden = YES;
+			_imagePicker.toolbarHidden = YES;
+			_imagePicker.wantsFullScreenLayout = YES;
+			_imagePicker.showsCameraControls = NO;
+			
+			[self.navigationController presentViewController:_imagePicker animated:NO completion:nil];
+		}
+	//}
 }
 
 - (void)didReceiveMemoryWarning {
@@ -143,6 +201,26 @@
 
 - (BOOL)shouldAutorotate {
 	return (NO);
+}
+
+#pragma mark - Navigation
+- (void)_goDone {
+	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+- (void)takePicture {
+	[_imagePicker takePicture];
+}
+
+- (void)showLibrary {
+	_imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+}
+
+- (void)closeCamera {
+	[_imagePicker dismissViewControllerAnimated:NO completion:^(void){
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	}];
 }
 
 #pragma mark - TableView DataSource Delegates
@@ -158,7 +236,7 @@
 	}
 	
 	[cell setCaption:[self.imageSources objectAtIndex:indexPath.row]];
-	[cell setTotal:arc4random() % 100];
+	//[cell setTotal:arc4random() % 100];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -186,9 +264,14 @@
 				UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
 				imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
 				imagePicker.delegate = self;
-				imagePicker.allowsEditing = YES;
+				imagePicker.showsCameraControls = NO;
+				imagePicker.allowsEditing = NO;
+				imagePicker.navigationBarHidden = YES;
+				imagePicker.toolbarHidden = YES;
+				imagePicker.wantsFullScreenLayout = YES;
+				imagePicker.cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 640.0, 480.0)];
 				
-				[self.navigationController presentViewController:imagePicker animated:YES completion:nil];
+				[self.navigationController presentViewController:imagePicker animated:NO completion:nil];
 				
 			} else {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Camera not aviable." delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
@@ -206,7 +289,7 @@
 				imagePicker.allowsEditing = YES;
 				//imagePicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, nil];
 				
-				[self.navigationController presentViewController:imagePicker animated:YES completion:nil];
+				[self.navigationController presentViewController:imagePicker animated:NO completion:nil];
 				
 			} else {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Photo roll not available." delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
@@ -244,7 +327,7 @@
 }
 
 #pragma mark - ImagePicker Delegates
--(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(480.0, 360.0)];
 	[self dismissViewControllerAnimated:YES completion:nil];
 	
@@ -255,17 +338,17 @@
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", filename);
 	
 	@try {
-		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-		_progressHUD.labelText = @"Submitting Challenge…";
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.graceTime = 2.0;
-		_progressHUD.taskInProgress = YES;
-		
-		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:filename inBucket:@"hotornot-challenges"];
-		por.contentType = @"image/jpeg";
-		por.data = imageData;
-		[s3 putObject:por];
+//		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+//		_progressHUD.labelText = @"Submitting Challenge…";
+//		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//		_progressHUD.graceTime = 2.0;
+//		_progressHUD.taskInProgress = YES;
+//		
+//		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
+//		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:filename inBucket:@"hotornot-challenges"];
+//		por.contentType = @"image/jpeg";
+//		por.data = imageData;
+//		[s3 putObject:por];
 		
 		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
 		[submitChallengeRequest setDelegate:self];
@@ -288,11 +371,19 @@
 			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengerID] forKey:@"challengerID"];
 		}
 		
-		[submitChallengeRequest startAsynchronous];
+		
+		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] init] animated:YES];
+		//[submitChallengeRequest startAsynchronous];
 		
 	} @catch (AmazonClientException *exception) {
 		[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 	}
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+	NSLog(@"DISMISS");
+	
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - ASI Delegates

@@ -20,7 +20,6 @@
 #import "HONSettingsViewController.h"
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONCameraViewController.h"
 #import "HONLoginViewController.h"
 
 @interface HONChallengesViewController() <ASIHTTPRequestDelegate>
@@ -126,7 +125,7 @@
 - (void)_goCreateChallenge {
 	//[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCameraViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -134,6 +133,10 @@
 
 #pragma mark - Notifications
 - (void)_acceptChallenge:(NSNotification *)notification {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
 	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithChallenge:[notification object]] animated:YES];
 }
 

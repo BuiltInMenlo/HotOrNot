@@ -94,6 +94,10 @@
 	[super viewDidLoad];
 }
 
+- (void)_goBack {
+	[self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 }
