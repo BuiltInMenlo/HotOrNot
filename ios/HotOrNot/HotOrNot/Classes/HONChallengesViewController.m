@@ -133,11 +133,9 @@
 
 #pragma mark - Notifications
 - (void)_acceptChallenge:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[notification object]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-	
-	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithChallenge:[notification object]] animated:YES];
 }
 
 

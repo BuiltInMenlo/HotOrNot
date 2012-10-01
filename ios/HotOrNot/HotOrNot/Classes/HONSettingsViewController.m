@@ -50,12 +50,6 @@
 	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
 	[self.view addSubview:headerImgView];
 	
-//	FBLoginView *loginview = [[FBLoginView alloc] initWithPermissions:[NSArray arrayWithObject:@"status_update"]];
-//	loginview.frame = CGRectOffset(loginview.frame, 5.0, 50.0);
-//	loginview.delegate = self;
-//	[self.view addSubview:loginview];
-//	[loginview sizeToFit];
-	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -185,6 +179,10 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	switch (indexPath.row) {
+		case 3:
+			[FBSession.activeSession closeAndClearTokenInformation];
+			break;
+			
 		case 4:
 			[self.navigationController pushViewController:[[HONPrivacyViewController alloc] init] animated:YES];
 			break;

@@ -7,7 +7,7 @@
 //
 
 #import "HONPopularViewController.h"
-#import "HONCreateChallengeViewController.h"
+#import "HONImagePickerViewController.h"
 #import "HONVoteViewController.h"
 
 #import "HONPopularUserViewCell.h"
@@ -237,7 +237,10 @@
 	if (self.isUsersList) {
 		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row - 1];
 		NSLog(@"CHALLENGE USER");
-		[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] initWithUser:vo.userID] animated:YES];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	
 	} else {
 		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row - 1];

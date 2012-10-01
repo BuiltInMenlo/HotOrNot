@@ -10,12 +10,10 @@
 
 #import "HONChallengeVO.h"
 
-@interface HONImagePickerViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
-- (id)initWithSubject:(NSString *)subject;
-- (id)initWithSubject:(NSString *)subject withFriendID:(NSString *)fbID;
+- (id)initWithUser:(int)userID;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
-- (id)initWithSubject:(NSString *)subject withUser:(int)userID;
 
 - (void)showLibrary;
 - (void)takePicture;

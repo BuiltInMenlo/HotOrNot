@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface HONCreateChallengeViewController : UIViewController
-- (id)initWithUser:(int)userID;
+- (id)initWithUser:(int)userID;;
 @end

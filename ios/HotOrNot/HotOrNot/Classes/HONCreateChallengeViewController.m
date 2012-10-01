@@ -10,7 +10,6 @@
 
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONCameraViewController.h"
 
 @interface HONCreateChallengeViewController() <UITextFieldDelegate, FBFriendPickerDelegate>
 @property (nonatomic, strong) NSString *subjectName;
@@ -173,7 +172,7 @@
 }
 
 - (void)_goPhoto {
-	[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withUser:_challengerID] animated:YES];
+	//[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withUser:_challengerID] animated:YES];
 }
 
 - (void)_goChallengeFriends {
@@ -216,15 +215,15 @@
 									 otherButtonTitles:nil]
 			  show];
 		 
-	 } else
-			[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withFriendID:[[friendPickerController.selection lastObject] objectForKey:@"id"]] animated:YES];
+		 } else {
+		 // submit
+		 //[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withFriendID:[[friendPickerController.selection lastObject] objectForKey:@"id"]] animated:YES];
+		 }
 	 }];
 }
 
 - (void)_goRandomChallenge {
 	NSLog(@"_goRandomChallenge");
-	[self.navigationController pushViewController:[[HONCameraViewController alloc] init] animated:YES];
-	//[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName] animated:YES];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -256,7 +255,7 @@
 - (void)friendPickerViewControllerSelectionDidChange:(FBFriendPickerViewController *)friendPicker {
 	[friendPicker dismissViewControllerAnimated:YES completion:^(void) {
 		NSLog(@"%@", [[friendPicker.selection lastObject] objectForKey:@"id"]);
-		[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withFriendID:[[friendPicker.selection lastObject] objectForKey:@"id"]] animated:YES];
+		//[self.navigationController pushViewController:[[HONImagePickerViewController alloc] initWithSubject:self.subjectName withFriendID:[[friendPicker.selection lastObject] objectForKey:@"id"]] animated:YES];
 	}];
 }
 @end

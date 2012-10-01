@@ -179,6 +179,10 @@
 	[voteRequest startAsynchronous];
 }
 
+- (void)_goMore {
+	
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

@@ -10,4 +10,5 @@
 
 @interface HONChallengerPickerViewController : UIViewController
 - (id)initWithUser:(int)userID;
+- (id)initWithSubject:(NSString *)subject withImage:(UIImage *)img;
 @end
