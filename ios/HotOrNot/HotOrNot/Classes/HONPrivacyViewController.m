@@ -9,12 +9,15 @@
 #import "HONPrivacyViewController.h"
 #import "HONAppDelegate.h"
 
-@interface HONPrivacyViewController ()
+#import "MBProgressHUD.h"
 
+@interface HONPrivacyViewController () <UIWebViewDelegate>
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONPrivacyViewController
 
+@synthesize progressHUD = _progressHUD;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -48,6 +51,22 @@
 	[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[backButton setTitle:@"Back" forState:UIControlStateNormal];
 	[headerImgView addSubview:backButton];
+	
+	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0)];
+	[webView setBackgroundColor:[UIColor clearColor]];
+	webView.delegate = self;
+	[webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/privacy.htm", [HONAppDelegate apiServerPath]]]]];
+	[self.view addSubview:webView];
+	
+	if (!_progressHUD) {
+		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.taskInProgress = YES;
+		_progressHUD.graceTime = 5.0;
+		
+		[self performSelector:@selector(_removeHUD) withObject:nil afterDelay:8.0];
+	}
+
 }
 
 - (void)viewDidLoad {
@@ -59,5 +78,34 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)_removeHUD {
+	if (_progressHUD != nil) {
+		_progressHUD.taskInProgress = NO;
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+}
+
+
+#pragma mark - WebView Delegates
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+	return (YES);
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+	[self _removeHUD];
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+	NSLog(@"didFailLoadWithError:[%@]", error);
+	
+	[self _removeHUD];
+	
+	if ([error code] == NSURLErrorCancelled)
+		return;
+}
 
 @end

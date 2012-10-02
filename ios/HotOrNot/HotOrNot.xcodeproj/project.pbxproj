@@ -217,6 +217,9 @@
 		4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CE52261160D254B005F2ADC /* ImageIO.framework */; };
 		4CE52265160E3510005F2ADC /* HONLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE52264160E3510005F2ADC /* HONLoginViewController.m */; };
 		4CE52270160E4E1F005F2ADC /* HONFacebookCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */; };
+		4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1C95161A238C00C54FBF /* CoreData.framework */; };
+		4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE1C9E161A311E00C54FBF /* HotOrNot.xcdatamodeld */; };
+		4CEE1CA2161A3A3E00C54FBF /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1CA1161A3A3E00C54FBF /* Parse.framework */; };
 		B3BE3EAA1608E42500E7E2B7 /* HONPopularUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EA91608E42500E7E2B7 /* HONPopularUserVO.m */; };
 		B3BE3EAE1608E43800E7E2B7 /* HONPopularSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EAD1608E43800E7E2B7 /* HONPopularSubjectVO.m */; };
 /* End PBXBuildFile section */
@@ -573,6 +576,9 @@
 		4CE52264160E3510005F2ADC /* HONLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONLoginViewController.m; sourceTree = "<group>"; };
 		4CE5226E160E4E1E005F2ADC /* HONFacebookCaller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFacebookCaller.h; sourceTree = "<group>"; };
 		4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFacebookCaller.m; sourceTree = "<group>"; };
+		4CEE1C95161A238C00C54FBF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		4CEE1C9F161A311E00C54FBF /* HotOrNotModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HotOrNotModel.xcdatamodel; sourceTree = "<group>"; };
+		4CEE1CA1161A3A3E00C54FBF /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		B3BE3EA81608E42500E7E2B7 /* HONPopularUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularUserVO.h; sourceTree = "<group>"; };
 		B3BE3EA91608E42500E7E2B7 /* HONPopularUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularUserVO.m; sourceTree = "<group>"; };
 		B3BE3EAC1608E43800E7E2B7 /* HONPopularSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularSubjectVO.h; sourceTree = "<group>"; };
@@ -584,13 +590,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */,
+				4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */,
 				4C6BBC881615466200145996 /* AssetsLibrary.framework in Frameworks */,
 				4CA8DA521613CD4A00B7B13C /* QuartzCore.framework in Frameworks */,
 				4CA8D9F61613933600B7B13C /* Accounts.framework in Frameworks */,
 				4CA8D9F41613932500B7B13C /* AdSupport.framework in Frameworks */,
 				4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */,
 				4CE52262160D254B005F2ADC /* ImageIO.framework in Frameworks */,
-				4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */,
 				4C62675515F96FA800AA7FCE /* CFNetwork.framework in Frameworks */,
 				4C62675615F96FA800AA7FCE /* CoreLocation.framework in Frameworks */,
 				4C62675715F96FA800AA7FCE /* CoreTelephony.framework in Frameworks */,
@@ -610,6 +617,7 @@
 				4C62672A15F96E2900AA7FCE /* libGoogleAnalytics.a in Frameworks */,
 				4C62673615F96E2900AA7FCE /* AWSiOSSDK.framework in Frameworks */,
 				4CA8D9EF1613923200B7B13C /* FacebookSDK.framework in Frameworks */,
+				4CEE1CA2161A3A3E00C54FBF /* Parse.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -701,6 +709,7 @@
 		4C62652815F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CEE1C95161A238C00C54FBF /* CoreData.framework */,
 				4C6BBC871615466200145996 /* AssetsLibrary.framework */,
 				4CA8DA511613CD4A00B7B13C /* QuartzCore.framework */,
 				4CA8D9F51613933600B7B13C /* Accounts.framework */,
@@ -741,6 +750,7 @@
 		4C62653015F96C7100AA7FCE /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				4CEE1C9E161A311E00C54FBF /* HotOrNot.xcdatamodeld */,
 				4C62653115F96C7100AA7FCE /* HotOrNot-Info.plist */,
 				4C62653215F96C7100AA7FCE /* InfoPlist.strings */,
 				4C62653515F96C7100AA7FCE /* main.m */,
@@ -1072,6 +1082,7 @@
 		4C6266AE15F96E2900AA7FCE /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CEE1CA1161A3A3E00C54FBF /* Parse.framework */,
 				4C6266AF15F96E2900AA7FCE /* AWSiOSSDK.framework */,
 				4CA8D9ED1613923200B7B13C /* FacebookSDK.framework */,
 				4CA8D9EE1613923200B7B13C /* FacebookSDKResources.bundle */,
@@ -1641,6 +1652,7 @@
 				4C7341961616C08B001F9F11 /* HONAboutViewController.m in Sources */,
 				4C73419916196701001F9F11 /* HONSplashViewController.m in Sources */,
 				4C73419C16196711001F9F11 /* HONTutorialViewController.m in Sources */,
+				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1679,6 +1691,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6101CD23-CD8B-42EA-A6FF-EC212BC92156";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1701,6 +1714,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				OTHER_LDFLAGS = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "A3BDD045-D1D0-4504-97E6-66EF423E764B";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1724,6 +1738,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Airship\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Google Analytics\"",
+					"\"$(SRCROOT)/HotOrNot/Other Classes/StackMob-v1.0.0\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1746,6 +1761,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Airship\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Google Analytics\"",
+					"\"$(SRCROOT)/HotOrNot/Other Classes/StackMob-v1.0.0\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1775,6 +1791,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		4CEE1C9E161A311E00C54FBF /* HotOrNot.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				4CEE1C9F161A311E00C54FBF /* HotOrNotModel.xcdatamodel */,
+			);
+			currentVersion = 4CEE1C9F161A311E00C54FBF /* HotOrNotModel.xcdatamodel */;
+			path = HotOrNot.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 4C62651C15F96C7100AA7FCE /* Project object */;
 }

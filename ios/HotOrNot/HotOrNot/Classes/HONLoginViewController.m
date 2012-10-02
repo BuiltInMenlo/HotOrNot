@@ -73,7 +73,7 @@
 					[HONAppDelegate writeFBProfile:user];
 					
 					//if ([[HONAppDelegate infoForUser] objectForKey:@"id"] != @"1") {
-						ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kUsersAPI]]];
+						ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 						[userRequest setDelegate:self];
 						[userRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
 						[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];

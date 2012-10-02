@@ -13,7 +13,6 @@
 #import "HONAppDelegate.h"
 
 #import "HONPrivacyViewController.h"
-#import "HONAboutViewController.h"
 
 @interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, FBLoginViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -32,11 +31,13 @@
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
+		_notificationSwitch.on = YES;
 		
 		_tournamentSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
 		[_tournamentSwitch addTarget:self action:@selector(_goTournamentsSwitch:) forControlEvents:UIControlEventValueChanged];
+		_tournamentSwitch.on = YES;
 		
-		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Daily Tournaments", @"Logout", @"Privacy Policy", @"About PicChallenge", @"", nil];
+		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Daily Tournaments", @"Logout", @"Privacy Policy", @"", nil];
 	}
 	
 	return (self);
@@ -133,7 +134,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (7);
+	return (6);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -144,7 +145,7 @@
 		if (indexPath.row == 0)
 			cell = [[HONSettingsViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
 		
-		else if (indexPath.row == 6)
+		else if (indexPath.row == 5)
 			cell = [[HONSettingsViewCell alloc] initAsBottomCell];
 		
 		else
@@ -185,10 +186,6 @@
 			
 		case 4:
 			[self.navigationController pushViewController:[[HONPrivacyViewController alloc] init] animated:YES];
-			break;
-			
-		case 5:
-			[self.navigationController pushViewController:[[HONAboutViewController alloc] init] animated:YES];
 			break;
 	}
 }

@@ -113,7 +113,7 @@
 }
 
 - (void)_retrieveChallenges {
-	ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	[challengeRequest setDelegate:self];
 	[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
 	[challengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];

@@ -131,7 +131,7 @@
 }
 
 - (void)_retrieveChallenges {
-	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	[self.challengesRequest setDelegate:self];
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	if (self.subjectID == 0)
@@ -156,7 +156,7 @@
 	
 	NSLog(@"VOTE MAIN \n%d", vo.challengeID);
 	
-	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	[voteRequest setDelegate:self];
 	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 	[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
@@ -170,7 +170,7 @@
 	
 	NSLog(@"VOTE SUB \n%d", vo.challengeID);
 	
-	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	[voteRequest setDelegate:self];
 	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 	[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];

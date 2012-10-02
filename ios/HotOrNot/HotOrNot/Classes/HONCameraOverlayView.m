@@ -32,7 +32,7 @@
 		headerImgView.userInteractionEnabled = YES;
 		[self addSubview:headerImgView];
 				
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(2.0, 8.0, 280.0, 20.0)];
+		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 8.0, 280.0, 20.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -110,10 +110,10 @@
 
 - (void)setSubjectName:(NSString *)subjectName {
 	_subjectName = subjectName;
-	_subjectTextField.text = _subjectName;
+	_subjectTextField.text = [NSString stringWithFormat:@"#%@", _subjectName];
 	
 	_placeholderLabel.hidden = YES;
-	_placeholderLabel.text = _subjectName;
+	_placeholderLabel.text = [NSString stringWithFormat:@"#%@", _subjectName];
 }
 
 - (void)takePicture:(id)sender {

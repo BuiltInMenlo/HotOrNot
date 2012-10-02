@@ -9,8 +9,16 @@
 #import <UIKit/UIKit.h>
 #import <FacebookSDK/FacebookSDK.h>
 
+@class SMClient;
+
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
+@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
+@property (strong, nonatomic) SMClient *client;
+
+
++ (NSString *)apiServerPath;
 
 + (void)openSession;
 + (void)writeDeviceToken:(NSString *)token;

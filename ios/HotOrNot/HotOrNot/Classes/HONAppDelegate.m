@@ -7,11 +7,13 @@
 //
 
 #import <FacebookSDK/FacebookSDK.h>
+#import <Parse/Parse.h>
 
 #import "UAirship.h"
 #import "UAPush.h"
 #import "ASIFormDataRequest.h"
 #import "HONAppDelegate.h"
+#import "Parse/Parse.h"
 
 #import "HONChallengesViewController.h"
 #import "HONVoteViewController.h"
@@ -28,6 +30,14 @@
 
 @synthesize window = _window;
 @synthesize tabBarController = _tabBarController;
+
+@synthesize managedObjectContext = _managedObjectContext;
+@synthesize managedObjectModel = _managedObjectModel;
+@synthesize client = _client;
+
++ (NSString *)apiServerPath {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+}
 
 + (void)openSession {
 	[FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions] allowLoginUI:YES completionHandler:
@@ -124,7 +134,6 @@
 }
 
 
-
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -136,6 +145,28 @@
 	[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	
 	//[HONAppDelegate openSession];
+	[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
+	[PFUser enableAutomaticUser];
+	PFACL *defaultACL = [PFACL ACL];
+	
+	// If you would like all objects to be private by default, remove this line.
+	[defaultACL setPublicReadAccess:YES];
+	
+	[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
+	
+	
+//	PFObject *testObject = [PFObject objectWithClassName:@"APIs"];
+//	[testObject setObject:@"PicChallenge" forKey:@"title"];
+//	[testObject setObject:@"http://discover.getassembly.com/hotornot/api" forKey:@"server_path"];
+//	[testObject save];
+	
+	PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
+	PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	NSLog(@"PFObject [%@]", [appObject objectForKey:@"server_path"]);
 	
 	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
@@ -302,7 +333,7 @@
 
 - (void)_registerUser {
 	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {
-		ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kUsersAPI]]];
+		ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 		[userRequest setDelegate:self];
 		[userRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
 		[userRequest setPostValue:[HONAppDelegate deviceToken] forKey:@"token"];

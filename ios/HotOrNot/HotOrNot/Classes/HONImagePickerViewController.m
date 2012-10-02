@@ -111,6 +111,9 @@
 		HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 640.0, 480.0)];
 		camerOverlayView.delegate = self;
 		
+		if (self.subjectName != @"")
+			[camerOverlayView setSubjectName:self.subjectName];
+		
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
 		_imagePicker.delegate = self;
@@ -181,7 +184,7 @@
 			por.data = imageData;
 			[s3 putObject:por];
 			
-			ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", kServerPath, kChallengesAPI]]];
+			ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 			[submitChallengeRequest setDelegate:self];
 			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.submitAction] forKey:@"action"];
 			[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
