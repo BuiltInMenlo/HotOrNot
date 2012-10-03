@@ -19,6 +19,8 @@
 
 
 + (NSString *)apiServerPath;
++ (NSNumber *)challengeDuration;
++ (NSString *)dailySubjectName;
 
 + (void)openSession;
 + (void)writeDeviceToken:(NSString *)token;

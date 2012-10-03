@@ -19,7 +19,8 @@
 #import "HONPopularUserVO.h"
 
 @interface HONPopularViewController() <ASIHTTPRequestDelegate>
-- (void)_retrievePopular;
+- (void)_retrievePopularUsers;
+- (void)_retrievePopularSubjects;
 
 @property(nonatomic) BOOL isUsersList;
 @property(nonatomic, strong) UITableView *tableView;
@@ -87,7 +88,7 @@
 	[tagsButton setTitle:@"Tags" forState:UIControlStateNormal];
 	[headerImgView addSubview:tagsButton];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 70.0;
@@ -97,8 +98,6 @@
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:self.tableView];
-	
-	[self _retrievePopular];
 }
 
 - (void)viewDidLoad {
@@ -115,7 +114,12 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	[self _retrievePopular];
+	
+	if (self.isUsersList)
+		[self _retrievePopularUsers];
+	
+	else
+		[self _retrievePopularSubjects];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -130,7 +134,22 @@
 	return (NO);//interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-- (void)_retrievePopular {
+- (void)_retrievePopularSubjects {
+	self.isUsersList = NO;
+	_toggleImgView.image = [UIImage imageNamed:@"Rtoggle.png"];
+	
+	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
+	[self.usersRequest setDelegate:self];
+	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
+	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.usersRequest startAsynchronous];
+}
+
+
+- (void)_retrievePopularUsers {
+	self.isUsersList = YES;
+	_toggleImgView.image = [UIImage imageNamed:@"Ltoggle.png"];
+	
 	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[self.usersRequest setDelegate:self];
 	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
@@ -180,7 +199,7 @@
 		
 		if (cell == nil) {
 			if (indexPath.row == 0)
-				cell = [[HONPopularUserViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
+				cell = [[HONPopularUserViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
 			
 			else if (indexPath.row == [_users count] + 1)
 				cell = [[HONPopularUserViewCell alloc] initAsBottomCell];
@@ -200,7 +219,7 @@
 		
 		if (cell == nil) {
 			if (indexPath.row == 0)
-				cell = [[HONPopularSubjectViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
+				cell = [[HONPopularSubjectViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
 			
 			else if (indexPath.row == [_subjects count] + 1)
 				cell = [[HONPopularSubjectViewCell alloc] initAsBottomCell];
@@ -228,11 +247,29 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	
+	BOOL isSelectable = NO;
+	
+	if (self.isUsersList) {
+		if (indexPath.row > 0 && indexPath.row < [_users count] + 1)
+			isSelectable = YES;
+	
+	} else {
+		if (indexPath.row > 0 && indexPath.row < [_subjects count] + 1)
+			isSelectable = YES;
+	}
+	
+	if (isSelectable)
+		return (indexPath);
+	
+	else
+		return (nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	[(HONBasePopularViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	if (self.isUsersList) {
 		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row - 1];

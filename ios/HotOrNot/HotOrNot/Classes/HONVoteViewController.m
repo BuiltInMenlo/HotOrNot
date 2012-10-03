@@ -11,7 +11,7 @@
 #import "ASIFormDataRequest.h"
 #import "HONAppDelegate.h"
 
-@interface HONVoteViewController() <ASIHTTPRequestDelegate>
+@interface HONVoteViewController() <UIActionSheetDelegate, ASIHTTPRequestDelegate>
 - (void)_retrieveChallenges;
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) UITableView *tableView;
@@ -86,7 +86,7 @@
 		[headerImgView addSubview:backButton];
 	}
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 249.0;
@@ -179,8 +179,14 @@
 	[voteRequest startAsynchronous];
 }
 
-- (void)_goMore {
-	
+- (void)_goMore:(id)sender {
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																				delegate:self
+																	cancelButtonTitle:@"Cancel"
+															 destructiveButtonTitle:nil
+																	otherButtonTitles:@"Flag Challenge", @"Share Challenge", @"ReChallenge", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+	[actionSheet showInView:self.view];
 }
 
 
@@ -260,6 +266,12 @@
 	//	}];
 	
 	//[self.navigationController pushViewController:[[SNFriendProfileViewController alloc] initWithTwitterUser:(SNTwitterUserVO *)[_friends objectAtIndex:indexPath.row]] animated:YES];
+}
+
+
+#pragma mark - ActionSheet Delegates
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	
 }
 
 #pragma mark - ASI Delegates

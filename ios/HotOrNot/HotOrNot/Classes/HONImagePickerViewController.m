@@ -77,6 +77,19 @@
 	return (self);
 }
 
+- (id)initWithSubject:(NSString *)subject {
+	if ((self = [super init])) {
+		NSLog(@"initWithSubject");
+		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+		
+		self.subjectName = subject;
+		self.submitAction = 1;
+		self.needsChallenger = NO;
+	}
+	
+	return (self);
+}
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];

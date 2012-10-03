@@ -51,6 +51,11 @@
 		subjectLabel.textAlignment = NSTextAlignmentCenter;
 		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
 		[self addSubview:subjectLabel];
+		
+		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		dailyButton.frame = CGRectMake(108.0, 5.0, 195.0, 50.0);
+		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:dailyButton];
 	}
 	
 	return (self);
@@ -197,9 +202,50 @@
 }
 
 
+//- (void)willTransitionToState:(UITableViewCellStateMask)state {
+//	[super willTransitionToState:state];
+//	
+//	NSLog(@"willTransitionToState");
+//	
+//	if ((state & UITableViewCellStateShowingDeleteConfirmationMask) == UITableViewCellStateShowingDeleteConfirmationMask) {
+//		for (UIView *subview in self.subviews) {
+//			if ([NSStringFromClass([subview class]) isEqualToString:@"UITableViewCellDeleteConfirmationControl"]) {
+//				UIImageView *deleteBtn = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 80, 40)];
+//				[deleteBtn setImage:[UIImage imageNamed:@"genericGrayButton_nonActive.png"]];
+//				[[subview.subviews objectAtIndex:0] addSubview:deleteBtn];
+//			}
+//		}
+//	}
+//}
+
 #pragma mark - Navigation
 - (void)_goCTA {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:self.challengeVO];
+}
+
+- (void)_goDailyChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"DAILY_CHALLENGE" object:nil];
+}
+
+- (void)didSelect {
+	
+	if ([self.challengeVO.status isEqualToString:@"Accept"]) {
+		_bgImgView.image = [UIImage imageNamed:@"genericRowBackground_active.png"];
+	
+	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
+		_bgImgView.image = [UIImage imageNamed:@"activeRowBackground_onTap.png"];
+	}
+	
+	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
+}
+
+- (void)_resetBG {
+	if ([self.challengeVO.status isEqualToString:@"Accept"]) {
+		_bgImgView.image = [UIImage imageNamed:@"genericRowBackground.png"];
+		
+	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
+		_bgImgView.image = [UIImage imageNamed:@"activeRowBackground.png"];
+	}
 }
 
 @end

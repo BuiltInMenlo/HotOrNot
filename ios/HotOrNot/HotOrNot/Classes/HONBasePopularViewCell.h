@@ -15,4 +15,6 @@
 - (id)initAsBottomCell;
 - (id)initAsMidCell:(int)index;
 
+- (void)didSelect;
+
 @end

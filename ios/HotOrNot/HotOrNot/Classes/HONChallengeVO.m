@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 
 @implementation HONChallengeVO
@@ -50,7 +51,7 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
 	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
-	vo.endDate = [vo.startedDate dateByAddingTimeInterval:(60 * 60 * 24)];
+	vo.endDate = [vo.startedDate dateByAddingTimeInterval:(60 * 60 * [[HONAppDelegate challengeDuration] intValue])];
 	
 	return (vo);
 }

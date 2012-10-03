@@ -17,6 +17,8 @@
 - (id)initAsBottomCell;
 - (id)initAsChallengeCell;
 
+- (void)didSelect;
+
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 
 @end

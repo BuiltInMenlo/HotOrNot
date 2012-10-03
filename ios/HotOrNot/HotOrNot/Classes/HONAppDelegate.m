@@ -39,6 +39,14 @@
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 }
 
++ (NSNumber *)challengeDuration {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"challange_duration"]);
+}
+
++ (NSString *)dailySubjectName {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"daily_challenge"]);
+}
+
 + (void)openSession {
 	[FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions] allowLoginUI:YES completionHandler:
 	 ^(FBSession *session, FBSessionState state, NSError *error) {
@@ -137,6 +145,9 @@
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
+	
+	NSLog(@"BOUNDS:[%f, %f]", self.window.bounds.size.width, self.window.bounds.size.height);
 	
 	NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 	[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
@@ -163,10 +174,16 @@
 	PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
 	PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	PFQuery *durationQuery = [PFQuery queryWithClassName:@"Durations"];
+	PFObject *durationObject = [durationQuery getObjectWithId:@"FXca98y3mE"];
 	
-	NSLog(@"PFObject [%@]", [appObject objectForKey:@"server_path"]);
+	PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
+	PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
+	[[NSUserDefaults standardUserDefaults] setObject:[durationObject objectForKey:@"duration"] forKey:@"challange_duration"];
+	[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];

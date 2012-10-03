@@ -43,6 +43,7 @@
 		self.isFirstRun = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dailyChallenge:) name:@"DAILY_CHALLENGE" object:nil];
 	}
 	
 	return (self);
@@ -61,7 +62,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height - 50.0) style:UITableViewStylePlain];
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 50.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1.0]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 70.0;
@@ -138,6 +139,12 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_dailyChallenge:(NSNotification *)notification {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -204,7 +211,7 @@
 
 	if (cell == nil) {
 		if (indexPath.row == 0)
-			cell = [[HONChallengeViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
+			cell = [[HONChallengeViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
 		
 		else if (indexPath.row == [_challenges count] + 1)
 			cell = [[HONChallengeViewCell alloc] initAsBottomCell];
@@ -242,11 +249,18 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
+	
+	if ([vo.status isEqualToString:@"Started"])
+		return (indexPath);
+	
+	else
+		return (nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	NSLog(@"didSelectRowAtIndexPath");
 	//[HONFacebookCaller postToTimeline:[_challenges objectAtIndex:indexPath.row]];
@@ -270,8 +284,14 @@
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		[self.challenges removeObjectAtIndex:indexPath.row - 1];
-		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
+		//[self.challenges removeObjectAtIndex:indexPath.row - 1];
+		//[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+		
+		ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
+		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
+		[challengeRequest startAsynchronous];
 	}
 }
 

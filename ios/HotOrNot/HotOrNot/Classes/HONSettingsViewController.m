@@ -13,6 +13,7 @@
 #import "HONAppDelegate.h"
 
 #import "HONPrivacyViewController.h"
+#import "HONLoginViewController.h"
 
 @interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, FBLoginViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -51,7 +52,7 @@
 	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
 	[self.view addSubview:headerImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 95.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -143,7 +144,7 @@
 	
 	if (cell == nil) {
 		if (indexPath.row == 0)
-			cell = [[HONSettingsViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:@"funnyface"];
+			cell = [[HONSettingsViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
 		
 		else if (indexPath.row == 5)
 			cell = [[HONSettingsViewCell alloc] initAsBottomCell];
@@ -173,15 +174,23 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	
+	if (indexPath.row == 3 || indexPath.row == 4)
+		return (indexPath);
+	
+	else
+		return (nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	switch (indexPath.row) {
 		case 3:
 			[FBSession.activeSession closeAndClearTokenInformation];
+			
+			[self presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]] animated:YES completion:nil];
 			break;
 			
 		case 4:

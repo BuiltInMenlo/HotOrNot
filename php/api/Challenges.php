@@ -310,7 +310,7 @@
 				
 				if ($challenge_row['started'] != "0000-00-00 00:00:00") {
 					$now_date = date('Y-m-d H:i:s', time());					
-					$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 24 hours'));				   
+					$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 8 hours'));				   
 
 					if ($now_date > $end_date) {
 						$challenge_row['status_id'] = "5";
@@ -368,7 +368,7 @@
 					
 				if ($challenge_row['started'] != "0000-00-00 00:00:00") {
 				$now_date = date('Y-m-d H:i:s', time());					
-				$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 24 hours'));				   
+				$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 8 hours'));				   
 
 				if ($now_date > $end_date) {
 					$challenge_row['status_id'] = "5";
@@ -550,6 +550,16 @@
 			return (true);
 		}
 		
+		function cancelChallenge ($challenge_id) {
+			$query = 'UPDATE `tblChallenges` SET `status_id` = 3 WHERE `id` = '. $challenge_id .';';
+			$result = mysql_query($query);			
+			
+			$this->sendResponse(200, json_encode(array(
+				"id" => $challenge_id
+			)));
+			return (true);
+		}
+		
 	    
 		function test() {
 			$this->sendResponse(200, json_encode(array(
@@ -612,6 +622,11 @@
 			case "9":
 				if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL']) && isset($_POST['challengerID']))
 					$challenges->submitChallengeWithChallenger($_POST['userID'], $_POST['subject'], $_POST['imgURL'], $_POST['challengerID']);
+				break;
+				
+			case "10":
+				if (isset($_POST['challengeID']))
+					$challenges->cancelChallenge($_POST['challengeID']);
 				break;
     	}
 	}
