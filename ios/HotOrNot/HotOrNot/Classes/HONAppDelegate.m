@@ -171,6 +171,16 @@
 //	[testObject setObject:@"http://discover.getassembly.com/hotornot/api" forKey:@"server_path"];
 //	[testObject save];
 	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
+	
+	else {
+		int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+		boot_total++;
+	
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+	}
+		
 	PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
 	PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
 	

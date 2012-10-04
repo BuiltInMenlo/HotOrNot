@@ -64,7 +64,7 @@
 	
 	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
 	headerImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
 	headerImgView.userInteractionEnabled = YES;
 	[self.view addSubview:headerImgView];
 	
@@ -87,6 +87,13 @@
 	[tagsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[tagsButton setTitle:@"Tags" forState:UIControlStateNormal];
 	[headerImgView addSubview:tagsButton];
+	
+	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	refreshButton.frame = CGRectMake(290.0, 10.0, 20.0, 20.0);
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_nonActive.png"] forState:UIControlStateNormal];
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_Active.png"] forState:UIControlStateHighlighted];
+	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	[headerImgView addSubview:refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -181,6 +188,13 @@
 	[self.usersRequest startAsynchronous];
 }
 
+- (void)_goRefresh {
+	if (self.isUsersList)
+		[self _retrievePopularUsers];
+	
+	else
+		[self _retrievePopularSubjects];
+}
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

@@ -560,6 +560,21 @@
 			return (true);
 		}
 		
+		function flagChallenge ($user_id, $challenge_id) {
+			$query = 'UPDATE `tblChallenges` SET `status_id` = 6 WHERE `id` = '. $challenge_id .';';
+			$result = mysql_query($query);
+			
+			$query = 'INSERT INTO `tblFlaggedChallenges` (';
+			$query .= '`challenge_id`, `user_id`, `added`) VALUES (';
+			$query .= '"'. $challenge_id .'", "'. $user_id .'", NOW());';				
+			$result = mysql_query($query);		   
+			
+			$this->sendResponse(200, json_encode(array(
+				"id" => $challenge_id
+			)));
+			return (true);
+		}
+		
 	    
 		function test() {
 			$this->sendResponse(200, json_encode(array(
@@ -627,6 +642,11 @@
 			case "10":
 				if (isset($_POST['challengeID']))
 					$challenges->cancelChallenge($_POST['challengeID']);
+				break;
+				
+			case "11":
+				if (isset($_POST['userID']) && isset($_POST['challengeID']))
+					$challenges->flagChallenge($_POST['userID'], $_POST['challengeID']);
 				break;
     	}
 	}

@@ -49,7 +49,7 @@
 	[super loadView];
 	
 	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
 	[self.view addSubview:headerImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
@@ -186,11 +186,13 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
 	switch (indexPath.row) {
 		case 3:
 			[FBSession.activeSession closeAndClearTokenInformation];
 			
-			[self presentViewController:[[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]] animated:YES completion:nil];
+			[navController setNavigationBarHidden:YES];
+			[self presentViewController:navController animated:YES completion:nil];
 			break;
 			
 		case 4:

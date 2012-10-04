@@ -26,6 +26,7 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic) BOOL isFirstRun;
+@property(nonatomic, strong) UIButton *tutorialButton;
 
 - (void)_retrieveChallenges;
 @end
@@ -35,6 +36,7 @@
 @synthesize tableView = _tableView;
 @synthesize challenges = _challenges;
 @synthesize isFirstRun = _isFirstRun;
+@synthesize tutorialButton = _tutorialButton;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -75,6 +77,17 @@
 	[self.view addSubview:self.tableView];
 	
 	[self _retrieveChallenges];
+	
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0) {
+		NSString *buttonImage = [NSString stringWithFormat:@"tutorial_image0%d.png", ((arc4random() % 4) + 1)];
+		
+		_tutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_tutorialButton.frame = CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height);
+		[_tutorialButton setBackgroundImage:[UIImage imageNamed:buttonImage] forState:UIControlStateNormal];
+		[_tutorialButton setBackgroundImage:[UIImage imageNamed:buttonImage] forState:UIControlStateHighlighted];
+		[_tutorialButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
+		[self.view addSubview:_tutorialButton];
+	}
 }
 
 - (void)viewDidLoad {
@@ -97,6 +110,7 @@
 	if (FBSession.activeSession.state == FBSessionStateCreated && self.isFirstRun) {
 		self.isFirstRun = NO;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
@@ -129,6 +143,21 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_goRefresh {
+	[self _retrieveChallenges];
+}
+
+- (void)_goTutorialClose {
+	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+	boot_total++;
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[_tutorialButton removeTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
+	[_tutorialButton removeFromSuperview];
 }
 
 
@@ -168,23 +197,16 @@
 		NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
 		
 		UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-		imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[imgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+		[imgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
+		imgView.userInteractionEnabled = YES;
 		[headerView addSubview:imgView];
-//
-//		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];
-//		//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-//		//ptsLabel = [SNAppDelegate snLinkColor];
-//		ptsLabel.backgroundColor = [UIColor clearColor];
-//		ptsLabel.text = [NSString stringWithFormat:@"%d points", [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue]];
-//		[headerView addSubview:ptsLabel];
-//		
-//		UILabel *playedLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 200.0, 16.0)];
-//		//playedLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-//		//playedLabel = [SNAppDelegate snLinkColor];
-//		playedLabel.backgroundColor = [UIColor clearColor];
-//		playedLabel.text = [NSString stringWithFormat:@"%d rounds played", [[[HONAppDelegate infoForUser] objectForKey:@"matches"] intValue]];
-//		[headerView addSubview:playedLabel];
+		
+		UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		refreshButton.frame = CGRectMake(290.0, 10.0, 20.0, 20.0);
+		[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_nonActive.png"] forState:UIControlStateNormal];
+		[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_Active.png"] forState:UIControlStateHighlighted];
+		[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+		[headerView addSubview:refreshButton];
 	
 	} else {
 		headerView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.0];

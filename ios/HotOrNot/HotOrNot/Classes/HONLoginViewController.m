@@ -23,7 +23,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.view.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.0];
+		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	}
 	
 	return (self);
@@ -32,15 +32,26 @@
 - (void)loadView {
 	[super loadView];
 	
+	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
+	headerImgView.userInteractionEnabled = YES;
+	[self.view addSubview:headerImgView];
+	
+	UIImageView *holderImgView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 55.0, 301.0, 482.0)];
+	holderImgView.image = [UIImage imageNamed:[NSString stringWithFormat:@"firstRun_image0%d.png", ((arc4random() % 4) + 1)]];
+	[self.view addSubview:holderImgView];
+	
+	UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];
+	footerImgView.image = [UIImage imageNamed:@"footerBackground.png"];
+	footerImgView.userInteractionEnabled = YES;
+	[self.view addSubview:footerImgView];
+	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	facebookButton.frame = CGRectMake(77.0, 2.0, 167.0, 43.0);
+	[facebookButton setBackgroundImage:[UIImage imageNamed:@"facebookButton_nonActive.png"] forState:UIControlStateNormal];
+	[facebookButton setBackgroundImage:[UIImage imageNamed:@"facebookButton_Active.png"] forState:UIControlStateHighlighted];
 	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];
-	facebookButton.frame = CGRectMake(30.0, 250.0, 100.0, 48.0);
-	[facebookButton setBackgroundImage:[[UIImage imageNamed:@"sendButton_nonActive.png"] stretchableImageWithLeftCapWidth:32.0 topCapHeight:12.0] forState:UIControlStateNormal];
-	[facebookButton setBackgroundImage:[[UIImage imageNamed:@"sendButton_Active.png"] stretchableImageWithLeftCapWidth:32.0 topCapHeight:12.0] forState:UIControlStateHighlighted];
-	[facebookButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
-	//facebookButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12.0];
-	[facebookButton setTitle:@"Facebook" forState:UIControlStateNormal];
-	[self.view addSubview:facebookButton];
+	[footerImgView addSubview:facebookButton];
 }
 
 - (void)viewDidLoad {

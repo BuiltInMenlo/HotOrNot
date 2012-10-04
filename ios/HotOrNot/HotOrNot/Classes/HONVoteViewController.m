@@ -10,6 +10,10 @@
 #import "HONVoteItemViewCell.h"
 #import "ASIFormDataRequest.h"
 #import "HONAppDelegate.h"
+#import "HONVoteHeaderView.h"
+#import "HONChallengeVO.h"
+#import "HONFacebookCaller.h"
+#import "HONImagePickerViewController.h"
 
 @interface HONVoteViewController() <UIActionSheetDelegate, ASIHTTPRequestDelegate>
 - (void)_retrieveChallenges;
@@ -18,6 +22,7 @@
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) ASIFormDataRequest *challengesRequest;
 @property(nonatomic) BOOL isPushView;
+@property(nonatomic, strong) HONChallengeVO *challengeVO;
 @end
 
 @implementation HONVoteViewController
@@ -26,6 +31,7 @@
 @synthesize challenges = _challenges;
 @synthesize challengesRequest = _challengesRequest;
 @synthesize isPushView = _isPushView;
+@synthesize challengeVO = _challengeVO;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -37,6 +43,7 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
 	}
 	
 	return (self);
@@ -70,7 +77,7 @@
 	NSLog(@"SUBJECT:[%d][%d]", self.subjectID, _isPushView);
 	
 	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
 	headerImgView.userInteractionEnabled = YES;
 	[self.view addSubview:headerImgView];
 	
@@ -85,6 +92,13 @@
 		[backButton setTitle:@"Back" forState:UIControlStateNormal];
 		[headerImgView addSubview:backButton];
 	}
+	
+	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	refreshButton.frame = CGRectMake(290.0, 10.0, 20.0, 20.0);
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_nonActive.png"] forState:UIControlStateNormal];
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_Active.png"] forState:UIControlStateHighlighted];
+	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	[headerImgView addSubview:refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -150,6 +164,10 @@
 	[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
+- (void)_goRefresh {
+	[self _retrieveChallenges];
+}
+
 #pragma mark - Notifications
 - (void)_voteMain:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
@@ -179,7 +197,9 @@
 	[voteRequest startAsynchronous];
 }
 
-- (void)_goMore:(id)sender {
+- (void)_voteMore:(NSNotification *)notification {
+	_challengeVO = (HONChallengeVO *)[notification object];
+	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																				delegate:self
 																	cancelButtonTitle:@"Cancel"
@@ -200,24 +220,8 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 50.0)];
-	headerView.backgroundColor = [UIColor whiteColor];
-	
-	HONChallengeVO *vo = [_challenges objectAtIndex:section];
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 10.0, 200.0, 16.0)];
-	//label = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-	//label = [SNAppDelegate snLinkColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = [NSString stringWithFormat:@"#%@", vo.subjectName];
-	[headerView addSubview:label];
-	
-	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(280.0, 10.0, 34.0, 24.0);
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive.png"] forState:UIControlStateNormal];
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active.png"] forState:UIControlStateHighlighted];
-	[moreButton addTarget:self action:@selector(_goMore:) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:moreButton];
+	HONVoteHeaderView *headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 50.0)];
+	[headerView setChallengeVO:[_challenges objectAtIndex:section]];
 	
 	return (headerView);
 }
@@ -271,7 +275,28 @@
 
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:self.challengeVO.creatorID]];
 	
+	switch (buttonIndex ) {
+		case 0:
+			[voteRequest setDelegate:self];
+			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
+			[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+			[voteRequest setPostValue:@"N" forKey:@"creator"];
+			[voteRequest startAsynchronous];
+			break;
+			
+		case 1:
+			[HONFacebookCaller postToTimeline:self.challengeVO];
+			break;
+			
+		case 2:
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			break;
+	}
 }
 
 #pragma mark - ASI Delegates
@@ -301,6 +326,8 @@
 				[_tableView reloadData];
 			}
 		}
+	} else {
+		
 	}
 }
 

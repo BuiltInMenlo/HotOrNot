@@ -30,7 +30,7 @@
 	
 	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
 	headerImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[headerImgView setImage:[UIImage imageNamed:@"basicHeader.png"]];
+	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
 	headerImgView.userInteractionEnabled = YES;
 	[self.view addSubview:headerImgView];
 	
