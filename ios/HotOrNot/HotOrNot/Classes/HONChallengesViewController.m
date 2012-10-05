@@ -21,6 +21,7 @@
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONLoginViewController.h"
+#import "HONPhotoViewController.h"
 
 @interface HONChallengesViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
@@ -273,7 +274,7 @@
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
 	
-	if ([vo.status isEqualToString:@"Started"])
+	if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Accept"])
 		return (indexPath);
 	
 	else
@@ -285,6 +286,11 @@
 	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	NSLog(@"didSelectRowAtIndexPath");
+	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
 	//[HONFacebookCaller postToTimeline:[_challenges objectAtIndex:indexPath.row]];
 	
 //	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -317,6 +323,20 @@
 	}
 }
 
+
+#pragma mark - ActionSheet Delegates
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	switch (buttonIndex ) {
+		case 0:
+			break;
+			
+		case 1:
+			break;
+			
+		case 2:
+			break;
+	}
+}
 
 
 #pragma mark - ASI Delegates

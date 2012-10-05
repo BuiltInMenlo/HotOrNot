@@ -33,6 +33,8 @@
 +(NSDictionary *)fbProfileForUser;
 
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
++ (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor;
++ (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
 
 + (NSArray *)fbPermissions;
 

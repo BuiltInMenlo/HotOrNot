@@ -15,6 +15,7 @@
 #import "HONAppDelegate.h"
 #import "Parse/Parse.h"
 
+#import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
 #import "HONVoteViewController.h"
 #import "HONPopularViewController.h"
@@ -99,6 +100,32 @@
 	UIGraphicsEndImageContext();
 	
 	return (scaledImage);
+}
+
+
++ (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor {
+	CGSize size = CGSizeMake(image.size.width * factor, image.size.height * factor);
+	
+	UIGraphicsBeginImageContext(size);
+	
+	CGContextRef context = UIGraphicsGetCurrentContext();
+	CGContextTranslateCTM(context, 0.0, size.height);
+	CGContextScaleCTM(context, 1.0, -1.0);
+	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
+	
+	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+	UIGraphicsEndImageContext();
+	
+	return (scaledImage);
+}
+
++ (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect {
+	CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], rect);
+	
+	UIImage *croppedImage = [UIImage imageWithCGImage:imageRef];
+	CGImageRelease(imageRef);
+	
+	return (croppedImage);
 }
 
 + (NSArray *)fbPermissions {
@@ -214,7 +241,9 @@
 	[navController4 setNavigationBarHidden:YES];
 	[navController5 setNavigationBarHidden:YES];
 	
-	self.tabBarController = [[UITabBarController alloc] init];
+	self.tabBarController = [[HONTabBarController alloc] init];
+	
+	//self.tabBarController = [[UITabBarController alloc] init];
 	self.tabBarController.delegate = self;
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
 	
