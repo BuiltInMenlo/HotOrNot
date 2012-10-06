@@ -19,10 +19,10 @@
 
 + (void)postToActivity:(HONChallengeVO *)vo withAction:(NSString *)action {
 	NSMutableDictionary *params = [NSMutableDictionary new];
-	[params setObject:[NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID] forKey:@"quote"];
+	[params setObject:[NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID] forKey:@"challenge"];
 	[params setObject:vo.imageURL forKey:@"image[0][url]"];
 	
-	[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"me/getassembly:%@", action] parameters:params HTTPMethod:@"POST" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+	[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"me/pchallenge:%@", action] parameters:params HTTPMethod:@"POST" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 		NSLog(@"POSTED TO ACTVITY :[%@]",[result objectForKey:@"id"]);
 		
 		if (error) {

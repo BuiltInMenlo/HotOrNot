@@ -87,7 +87,8 @@
 	
 	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 10.0, 50.0, 50.0)];
 	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
-	[creatorImageView setImageWithURL:[NSURL URLWithString:self.challengeVO.imageURL] placeholderImage:nil];
+	creatorImageView.clipsToBounds = YES;
+	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t1.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 	[self addSubview:creatorImageView];
 	
 	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 100.0, 16.0)];
@@ -132,10 +133,12 @@
 		[subjectLabel removeFromSuperview];
 				
 		creatorImageView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
+		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 		
 		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[challengerImageView setImageWithURL:[NSURL URLWithString:self.challengeVO.image2URL] placeholderImage:nil];
+		challengerImageView.clipsToBounds = YES;
+		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[self addSubview:challengerImageView];
 
 		

@@ -15,6 +15,7 @@
 #import "HONAppDelegate.h"
 #import "HONCameraOverlayView.h"
 #import "HONChallengerPickerViewController.h"
+#import "HONFacebookCaller.h"
 
 @interface HONImagePickerViewController () <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) NSString *subjectName;
@@ -25,6 +26,7 @@
 @property(nonatomic) int challengerID;
 @property(nonatomic) BOOL needsChallenger;
 @property(nonatomic, strong) UIImagePickerController *imagePicker;
+@property(nonatomic) BOOL isFirstAppearance;
 @end
 
 @implementation HONImagePickerViewController
@@ -36,16 +38,17 @@
 @synthesize fbID = _fbID;
 @synthesize challengerID = _challengerID;
 @synthesize needsChallenger = _needsChallenger;
+@synthesize isFirstAppearance = _isFirstAppearance;
 
 
 - (id)init {
 	if ((self = [super init])) {
-		NSLog(@"init");
 		self.view.backgroundColor = [UIColor blackColor];
 		self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
 		self.subjectName = @"";
 		self.submitAction = 1;
 		self.needsChallenger = YES;
+		self.isFirstAppearance = YES;
 	}
 	
 	return (self);
@@ -53,11 +56,11 @@
 
 - (id)initWithUser:(int)userID {
 	if ((self = [super init])) {
-		NSLog(@"initWithUser");
 		self.subjectName = @"";
 		self.challengerID = userID;
 		self.needsChallenger = NO;
 		self.submitAction = 9;
+		self.isFirstAppearance = YES;
 	}
 	
 	return (self);
@@ -65,13 +68,13 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
-		NSLog(@"initWithChallenge");
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.challengeVO = vo;
 		self.subjectName = vo.subjectName;
 		self.submitAction = 4;
 		self.needsChallenger = NO;
+		self.isFirstAppearance = YES;
 	}
 	
 	return (self);
@@ -79,12 +82,12 @@
 
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
-		NSLog(@"initWithSubject");
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.subjectName = subject;
 		self.submitAction = 1;
 		self.needsChallenger = NO;
+		self.isFirstAppearance = YES;
 	}
 	
 	return (self);
@@ -118,10 +121,11 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] && self.isFirstAppearance) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
+		self.isFirstAppearance = NO;
 		
-		HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0, 0, 640.0, 480.0)];
+		HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
 		camerOverlayView.delegate = self;
 		
 		if (self.subjectName != @"")
@@ -131,15 +135,23 @@
 		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
 		_imagePicker.delegate = self;
 		_imagePicker.allowsEditing = NO;
-		_imagePicker.cameraOverlayView = camerOverlayView;
+		_imagePicker.cameraOverlayView = nil;
 		_imagePicker.navigationBarHidden = YES;
 		_imagePicker.toolbarHidden = YES;
 		_imagePicker.wantsFullScreenLayout = YES;
 		_imagePicker.showsCameraControls = NO;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:nil];
+		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+			[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:1.33];
+		}];
 	}
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+	[super viewDidDisappear:animated];
+	
+	self.isFirstAppearance = YES;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -148,6 +160,13 @@
 
 - (BOOL)shouldAutorotate {
 	return (NO);
+}
+
+- (void)_showOverlay {
+	HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
+	camerOverlayView.delegate = self;
+	
+	_imagePicker.cameraOverlayView = camerOverlayView;
 }
 
 #pragma mark - Navigation
@@ -174,15 +193,22 @@
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(480.0, 360.0)];
+	
+	
+	UIImage *lImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(1296.0, 968.0)];
+	UIImage *mImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(480.0, 360.0)];
+	UIImage *t1Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(324.0, 242.0)];
+	UIImage *t2Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(324.0, 242.0)];
+	
+	
 	[self dismissViewControllerAnimated:YES completion:nil];
 	
 	NSLog(@"self.needsChallenger:[%d]", self.needsChallenger);
 	
 	if (!self.needsChallenger) {
-		NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
 		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
 		
-		NSString *filename = [NSString stringWithFormat:@"%@.jpg", [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+		NSString *filename = [NSString stringWithFormat:@"%@", [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", filename);
 		
 		@try {
@@ -193,10 +219,27 @@
 			_progressHUD.taskInProgress = YES;
 			
 			[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-			S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:filename inBucket:@"hotornot-challenges"];
-			por.contentType = @"image/jpeg";
-			por.data = imageData;
-			[s3 putObject:por];
+			S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t1.jpg", filename] inBucket:@"hotornot-challenges"];
+			por1.contentType = @"image/jpeg";
+			por1.data = UIImageJPEGRepresentation(t1Image, 1.0);
+			[s3 putObject:por1];
+			
+			S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", filename] inBucket:@"hotornot-challenges"];
+			por2.contentType = @"image/jpeg";
+			por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
+			[s3 putObject:por2];
+			
+			S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", filename] inBucket:@"hotornot-challenges"];
+			por3.contentType = @"image/jpeg";
+			por3.data = UIImageJPEGRepresentation(mImage, 1.0);
+			[s3 putObject:por3];
+			
+			S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", filename] inBucket:@"hotornot-challenges"];
+			por4.contentType = @"image/jpeg";
+			por4.data = UIImageJPEGRepresentation(lImage, 1.0);
+			[s3 putObject:por4];
+			
+			
 			
 			ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 			[submitChallengeRequest setDelegate:self];
@@ -207,10 +250,11 @@
 			if (self.submitAction == 1)
 				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
 			
-			else if (self.submitAction == 4)
+			else if (self.submitAction == 4) {
+				[HONFacebookCaller postToActivity:self.challengeVO withAction:@"accept"];
 				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
 			
-			else if (self.submitAction == 8) {
+			} else if (self.submitAction == 8) {
 				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
 				[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
 			

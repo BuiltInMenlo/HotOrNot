@@ -129,6 +129,8 @@
 }
 
 - (void)selectTab:(int)tabID {
+	[self.delegate tabBarController:self shouldSelectViewController:[self.viewControllers objectAtIndex:tabID]];
+	
 	switch(tabID) {
 		case 0:
 			[btn1 setSelected:true];
@@ -171,6 +173,7 @@
 			break;
 	}
 	
+	[self.delegate tabBarController:self didSelectViewController:[self.viewControllers objectAtIndex:tabID]];
 	self.selectedIndex = tabID;
 }
 

@@ -182,7 +182,7 @@
 	
 	[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 	
-	//[HONAppDelegate openSession];
+	[HONAppDelegate openSession];
 	[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
 	[PFUser enableAutomaticUser];
 	PFACL *defaultACL = [PFACL ACL];
@@ -247,31 +247,6 @@
 	self.tabBarController.delegate = self;
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
 	
-//	NSArray *names = [NSArray arrayWithObjects:@"tab01_nonActive.png", @"tab02_nonActive.png", @"tab03_nonActive.png", @"tab04_nonActive.png", @"tab05_nonActive.png", nil];
-//	NSArray *names1 = [NSArray arrayWithObjects:@"tab01_Active.png", @"tab02_Active.png", @"tab03_Active.png", @"tab04_Active.png", @"tab05_Active.png", nil];
-//	
-//	DDKCustomTabbar *tabBar = [[DDKCustomTabbar alloc] init];
-//	[tabBar.navigationController setNavigationBarHidden:YES];
-//	
-//	for (int i=0; i<5; ++i) {
-//		UIImage *iconImage = [UIImage imageNamed:[names objectAtIndex:i]];
-//		UIImage *iconSelectedImage = [UIImage imageNamed:[names1 objectAtIndex:i]];
-//		DDKCustomTabButton *btn = [DDKCustomTabButton buttonWithImage:[UIImage imageNamed:@"tabButtonNormal.png"]
-//																			  selected:[UIImage imageNamed:@"tabButtonSelected.png"]
-//																		 upShadowSize:6.0f
-//																					icon:iconImage
-//																		 iconSelected:iconSelectedImage];
-//		[tabBar insertTabButton:btn atIndex:i];
-//	}
-//	
-//	[tabBar setViewController:navController1 atIndex:0];
-//	[tabBar setViewController:navController2 atIndex:1];
-//	[tabBar setViewController:navController3 atIndex:2];
-//	[tabBar setViewController:navController4 atIndex:3];
-//	[tabBar setViewController:navController5 atIndex:4];
-	
-	
-	
 	self.window.rootViewController = self.tabBarController;
 	[self.window makeKeyAndVisible];
 	
@@ -288,6 +263,7 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+	[FBSession.activeSession handleDidBecomeActive];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -400,12 +376,12 @@
 
 #pragma mark - TabBarController Delegates
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
-	//NSLog(@"shouldSelectViewController:[%@]", viewController);
+	NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
 	if (viewController == [[tabBarController viewControllers] objectAtIndex:2]) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
-		[tabBarController presentViewController:navigationController animated:YES completion:nil];
+		[tabBarController presentViewController:navigationController animated:NO completion:nil];
 		
 		return (NO);
 	

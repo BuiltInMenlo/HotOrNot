@@ -289,7 +289,7 @@
 			break;
 			
 		case 1:
-			[HONFacebookCaller postToTimeline:self.challengeVO];
+			[HONFacebookCaller postToActivity:self.challengeVO withAction:@"share"];
 			break;
 			
 		case 2:

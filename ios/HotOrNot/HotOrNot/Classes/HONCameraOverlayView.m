@@ -74,7 +74,7 @@
 //		}
 		
 		// Add the bottom bar
-		UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 415.0, 320.0, 65.0)];
+		UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 65.0, 320.0, 65.0)];
 		footerImgView.backgroundColor = [UIColor blueColor];
 		footerImgView.userInteractionEnabled = YES;
 		[self addSubview:footerImgView];

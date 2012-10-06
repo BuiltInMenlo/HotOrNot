@@ -15,7 +15,6 @@
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
 #import "HONChallengeVO.h"
-#import "HONFacebookCaller.h"
 
 #import "HONSettingsViewController.h"
 #import "HONCreateChallengeViewController.h"
@@ -108,7 +107,7 @@
 	
 	[self _retrieveChallenges];
 	
-	if (FBSession.activeSession.state == FBSessionStateCreated && self.isFirstRun) {
+	if (FBSession.activeSession.state != 513 && self.isFirstRun) {
 		self.isFirstRun = NO;
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
@@ -143,7 +142,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goRefresh {
@@ -274,7 +273,7 @@
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
 	
-	if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Accept"])
+	if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Waiting"])
 		return (indexPath);
 	
 	else
@@ -290,8 +289,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-	
-	//[HONFacebookCaller postToTimeline:[_challenges objectAtIndex:indexPath.row]];
 	
 //	[UIView animateWithDuration:0.25 animations:^(void) {
 //		((HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath]).overlayView.alpha = 1.0;

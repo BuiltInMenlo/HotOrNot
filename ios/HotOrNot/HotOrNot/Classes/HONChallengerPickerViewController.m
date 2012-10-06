@@ -155,7 +155,7 @@
 			 
 		 } else {
 			 // submit
-			 self.filename = [NSString stringWithFormat:@"%@.jpg", [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+			 self.filename = [NSString stringWithFormat:@"%@", [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 			 self.fbID = [[friendPickerController.selection lastObject] objectForKey:@"id"];
 			 
 			 [self _goFriendChallenge];
@@ -165,6 +165,13 @@
 
 - (void)_goFriendChallenge {
 	NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
+	
+	UIImage *lImage = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(1296.0, 968.0)];
+	UIImage *mImage = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(480.0, 360.0)];
+	UIImage *t1Image = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(324.0, 242.0)];
+	UIImage *t2Image = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(324.0, 242.0)];
+
+	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
 	
 	@try {
@@ -176,10 +183,25 @@
 		_progressHUD.taskInProgress = YES;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:self.filename inBucket:@"hotornot-challenges"];
-		por.contentType = @"image/jpeg";
-		por.data = imageData;
-		[s3 putObject:por];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t1.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		por1.contentType = @"image/jpeg";
+		por1.data = UIImageJPEGRepresentation(t1Image, 1.0);
+		[s3 putObject:por1];
+		
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		por2.contentType = @"image/jpeg";
+		por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
+		[s3 putObject:por2];
+		
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		por3.contentType = @"image/jpeg";
+		por3.data = UIImageJPEGRepresentation(mImage, 1.0);
+		[s3 putObject:por3];
+		
+		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		por4.contentType = @"image/jpeg";
+		por4.data = UIImageJPEGRepresentation(lImage, 1.0);
+		[s3 putObject:por4];
 		
 		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 		[submitChallengeRequest setDelegate:self];

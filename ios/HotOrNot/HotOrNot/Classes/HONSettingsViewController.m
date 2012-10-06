@@ -63,6 +63,8 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
+	NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
+	
 }
 - (void)viewDidLoad {
 	[super viewDidLoad];
