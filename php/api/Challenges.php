@@ -182,9 +182,9 @@
 				$subject_id = mysql_insert_id();
 			}
 			
-			$query = 'SELECT `id` FROM `tblUsers` WHERE `fb_id` = '. $fb_id .';';
+			$query = 'SELECT `id`, `device_token` FROM `tblUsers` WHERE `fb_id` = '. $fb_id .';';
 			$challenger_id = mysql_fetch_object(mysql_query($query))->id;
-			
+			//$device_token
 						
 			$query = 'SELECT `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
 			$points = mysql_fetch_object(mysql_query($query))->points;

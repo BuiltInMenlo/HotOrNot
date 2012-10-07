@@ -121,7 +121,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MAIN" object:self.challengeVO];
 }
 
-- (void)_goRightVote:(id)sender {
+- (void)_goRightVote {
 	[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
 	[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -130,7 +130,7 @@
 	
 	UIImageView *losingImgView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 128.0, 180.0)];
 	losingImgView.image = [UIImage imageNamed:@"voteOverlay.png"];
-
+	[_lHolderImgView addSubview:losingImgView];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_SUB" object:self.challengeVO];
 }
