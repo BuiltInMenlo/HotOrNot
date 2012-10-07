@@ -112,6 +112,9 @@
 				$rndUser_id = mt_rand(2, $range_row->max_id);
 			}
 			
+			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $rndUser_id .';';
+			$device_token = mysql_fetch_object(mysql_query($query))->device_token;
+			
 			$query = 'SELECT `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
 			$points = mysql_fetch_object(mysql_query($query))->points;
 			$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
@@ -127,6 +130,12 @@
 			$query .= '`challenge_id`, `user_id`) ';
 			$query .= 'VALUES ("'. $challenge_id .'", "'. $rndUser_id .'");';
 			$result = mysql_query($query);
+			
+			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+			curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
 		 			
 			
 			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
@@ -174,7 +183,7 @@
 			}
 			
 			$query = 'SELECT `id` FROM `tblUsers` WHERE `fb_id` = '. $fb_id .';';
-			$rndUser_id = mysql_fetch_object(mysql_query($query))->id;
+			$challenger_id = mysql_fetch_object(mysql_query($query))->id;
 			
 						
 			$query = 'SELECT `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
@@ -190,7 +199,7 @@
 			
 			$query = 'INSERT INTO `tblChallengeParticipants` (';
 			$query .= '`challenge_id`, `user_id`) ';
-			$query .= 'VALUES ("'. $challenge_id .'", "'. $rndUser_id .'");';
+			$query .= 'VALUES ("'. $challenge_id .'", "'. $challenger_id .'");';
 			$result = mysql_query($query);
 		 			
 			
@@ -203,7 +212,7 @@
 				"subject" => $subject, 
 				"creator_id" => $row->creator_id, 
 				"creator" => "", 
-				"challenger_id" => $rndUser_id, 
+				"challenger_id" => $challenger_id, 
 				"challenger" => "",
 				"img_url" => $row->img_url,  
 				"img2_url" => "", 
@@ -534,8 +543,12 @@
 			$vote_id = mysql_insert_id();
 			
 			
-			$query = 'SELECT `points` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
-			$points = mysql_fetch_object(mysql_query($query))->points;
+			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';
+			$result = mysql_query($query);
+			
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+				if ($row['challenger_id'] == $creator_id)
+			}
 			
 			$query = 'UPDATE `tblUsers` SET `points` = "'. (++$points) .'" WHERE `id` = '. $winningUser_id .';';
 			$result = mysql_query($query);

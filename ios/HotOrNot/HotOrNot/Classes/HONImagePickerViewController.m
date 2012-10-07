@@ -286,7 +286,7 @@
 		_progressHUD.taskInProgress = NO;
 		
 		NSError *error = nil;
-		//NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+		NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
 		
 		if (error != nil) {
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -302,6 +302,8 @@
 		else {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
+			
+			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 			//[self.navigationController dismissViewControllerAnimated:YES completion:nil];

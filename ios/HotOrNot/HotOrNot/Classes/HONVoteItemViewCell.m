@@ -15,6 +15,8 @@
 @property (nonatomic, strong) UIImageView *rHolderImgView;
 @property (nonatomic, strong) UILabel *lScoreLabel;
 @property (nonatomic, strong) UILabel *rScoreLabel;
+@property (nonatomic, strong) UIButton *lVoteButton;
+@property (nonatomic, strong) UIButton *rVoteButton;
 @end
 
 @implementation HONVoteItemViewCell
@@ -23,6 +25,8 @@
 @synthesize rHolderImgView = _rHolderImgView;
 @synthesize lScoreLabel = _lScoreLabel;
 @synthesize rScoreLabel = _rScoreLabel;
+@synthesize lVoteButton = _lVoteButton;
+@synthesize rVoteButton = _rVoteButton;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -42,15 +46,15 @@
 		_rHolderImgView.userInteractionEnabled = YES;
 		[self addSubview:_rHolderImgView];
 		
-		UIButton *lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		lVoteButton.frame = CGRectMake(5.0, 208.0, 147.0, 35.0);
-		[lVoteButton addTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
-		[_lHolderImgView addSubview:lVoteButton];
+		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_lVoteButton.frame = CGRectMake(5.0, 208.0, 147.0, 35.0);
+		[_lVoteButton addTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
+		[_lHolderImgView addSubview:_lVoteButton];
 		
-		UIButton *rVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		rVoteButton.frame = CGRectMake(0.0, 208.0, 147.0, 35.0);
-		[rVoteButton addTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
-		[_rHolderImgView addSubview:rVoteButton];
+		_rVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_rVoteButton.frame = CGRectMake(0.0, 208.0, 147.0, 35.0);
+		[_rVoteButton addTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
+		[_rHolderImgView addSubview:_rVoteButton];
 	}
 	
 	return (self);
@@ -103,19 +107,30 @@
 
 
 #pragma mark - Navigation
-- (void)_goLeftVote:(id)sender {
-	[(UIButton *)sender removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
+- (void)_goLeftVote {
+	[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
+	[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
+	
 	_lHolderImgView.image = [UIImage imageNamed:@"voteBackgroundLiked_Active.png"];
 	_lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreCreator + 1)];
+	
+	UIImageView *losingImgView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 128.0, 180.0)];
+	losingImgView.image = [UIImage imageNamed:@"voteOverlay.png"];
+	[_rHolderImgView addSubview:losingImgView];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MAIN" object:self.challengeVO];
 }
 
 - (void)_goRightVote:(id)sender {
-//	[self.subImgButton setTitle:[NSString stringWithFormat:@"%d", (self.challengeVO.scoreChallenger + 1)] forState:UIControlStateNormal];
-	[(UIButton *)sender removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
+	[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
+	[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
+	
 	_rHolderImgView.image = [UIImage imageNamed:@"RvoteBackgroundLiked_Active.png"];
 	_rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreChallenger + 1)];
+	
+	UIImageView *losingImgView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 128.0, 180.0)];
+	losingImgView.image = [UIImage imageNamed:@"voteOverlay.png"];
+
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_SUB" object:self.challengeVO];
 }
