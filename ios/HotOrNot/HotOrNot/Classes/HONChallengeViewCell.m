@@ -64,6 +64,16 @@
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
 		_bgImgView.image = [UIImage imageNamed:@"footerRowBackground.png"];
+		
+		UIButton *loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		loadMoreButton.frame = CGRectMake(100.0, 10.0, 100.0, 44.0);
+		[loadMoreButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
+		[loadMoreButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+		[loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+		//loadMoreButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+		[loadMoreButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:1.0] forState:UIControlStateNormal];
+		[loadMoreButton setTitle:@"Load More" forState:UIControlStateNormal];
+		[self addSubview:loadMoreButton];
 	}
 	
 	return (self);
@@ -131,7 +141,7 @@
 		
 		[ctaButton removeFromSuperview];
 		[subjectLabel removeFromSuperview];
-				
+		
 		creatorImageView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
 		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 		
@@ -228,6 +238,10 @@
 
 - (void)_goDailyChallenge {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"DAILY_CHALLENGE" object:nil];
+}
+
+- (void)_goLoadMore {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
 }
 
 - (void)didSelect {

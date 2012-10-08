@@ -7,8 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HONChallengeVO.h"
 
 @interface HONVoteViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 - (id)initWithSubject:(int)subjectID;
+- (id)initWithChallenge:(HONChallengeVO *)vo;
 @end

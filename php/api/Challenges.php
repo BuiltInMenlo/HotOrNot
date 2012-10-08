@@ -183,44 +183,58 @@
 			}
 			
 			$query = 'SELECT `id`, `device_token` FROM `tblUsers` WHERE `fb_id` = '. $fb_id .';';
-			$challenger_id = mysql_fetch_object(mysql_query($query))->id;
-			//$device_token
+			
+			if (mysql_query($query)) {			
+				$challenger_id = mysql_fetch_object(mysql_query($query))->id;
+				$device_token =  mysql_fetch_object(mysql_query($query))->device_token;
 						
-			$query = 'SELECT `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$points = mysql_fetch_object(mysql_query($query))->points;
-			$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
-			$result = mysql_query($query);
+				$query = 'SELECT `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+				$points = mysql_fetch_object(mysql_query($query))->points;
+				$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
+				$result = mysql_query($query);
 			
-			$query = 'INSERT INTO `tblChallenges` (';
-			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `img_url`, `started`, `added`) ';
-			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0000-00-00 00:00:00", NOW());';
-			$result = mysql_query($query);
-			$challenge_id = mysql_insert_id();
+				$query = 'INSERT INTO `tblChallenges` (';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `img_url`, `started`, `added`) ';
+				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0000-00-00 00:00:00", NOW());';
+				$result = mysql_query($query);
+				$challenge_id = mysql_insert_id();
 			
-			$query = 'INSERT INTO `tblChallengeParticipants` (';
-			$query .= '`challenge_id`, `user_id`) ';
-			$query .= 'VALUES ("'. $challenge_id .'", "'. $challenger_id .'");';
-			$result = mysql_query($query);
+				$query = 'INSERT INTO `tblChallengeParticipants` (';
+				$query .= '`challenge_id`, `user_id`) ';
+				$query .= 'VALUES ("'. $challenge_id .'", "'. $challenger_id .'");';
+				$result = mysql_query($query);
+			
+				curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+				curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+				curl_setopt($ch, CURLOPT_POST, 1);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
+			
 		 			
 			
-			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
-			$row = mysql_fetch_object(mysql_query($query));
+				$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
+				$row = mysql_fetch_object(mysql_query($query));
 			
-			$challenge_arr = array(
-				"id" => $row->id, 
-				"status" => "Waiting", 
-				"subject" => $subject, 
-				"creator_id" => $row->creator_id, 
-				"creator" => "", 
-				"challenger_id" => $challenger_id, 
-				"challenger" => "",
-				"img_url" => $row->img_url,  
-				"img2_url" => "", 
-				"score1" => 1,
-				"score2" => 1, 
-				"started" => $row->started, 
-				"added" => $row->added
-			);
+				$challenge_arr = array(
+					"id" => $row->id, 
+					"status" => "Waiting", 
+					"subject" => $subject, 
+					"creator_id" => $row->creator_id, 
+					"creator" => "", 
+					"challenger_id" => $challenger_id, 
+					"challenger" => "",
+					"img_url" => $row->img_url,  
+					"img2_url" => "", 
+					"score1" => 1,
+					"score2" => 1, 
+					"started" => $row->started, 
+					"added" => $row->added
+				);
+			
+			} else {
+				$challenge_arr = array(					
+				);
+			}
 			
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);	
@@ -263,6 +277,15 @@
 			$query .= '`challenge_id`, `user_id`) ';
 			$query .= 'VALUES ("'. $challenge_id .'", "'. $challenger_id .'");';
 			$result = mysql_query($query);
+			
+			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $challenger_id .';';
+			$device_token = mysql_fetch_object(mysql_query($query))->device_token; 
+			
+			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+			curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
 		 			
 			
 			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
@@ -292,6 +315,7 @@
 		function getChallengesForUser($user_id) {
 			$challenge_arr = array();
 			
+			/*
 			$query = 'SELECT * FROM `tblChallenges` WHERE `creator_id` = '. $user_id .';';
 			$challenge_result = mysql_query($query);
 			
@@ -344,10 +368,10 @@
 					"started" => $challenge_row['started'],
 					"added" => $challenge_row['added']
 				));	
-			}
+			}*/
 			
 			
-			$query = 'SELECT * FROM `tblChallenges` INNER JOIN `tblChallengeParticipants` ON `tblChallenges`.`id` = `tblChallengeParticipants`.`challenge_id` WHERE `tblChallengeParticipants`.`user_id` = '. $user_id .';';
+			$query = 'SELECT * FROM `tblChallenges` INNER JOIN `tblChallengeParticipants` ON `tblChallenges`.`id` = `tblChallengeParticipants`.`challenge_id` WHERE `tblChallenges`.`status_id` != 3 AND (`tblChallenges`.`creator_id` = '. $user_id .' OR `tblChallengeParticipants`.`user_id` = '. $user_id .');';
 			$challenge_result = mysql_query($query);
 			
 			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
@@ -372,20 +396,20 @@
 				$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $challenge_row['id'] .';';
 				$img_obj = mysql_fetch_object(mysql_query($query));
 				
-				if ($challenge_row['status_id'] == "2")
+				if ($challenger_id == $user_id && $challenge_row['status_id'] == "2")
 					$challenge_row['status_id'] = "1";
-					
+				
 				if ($challenge_row['started'] != "0000-00-00 00:00:00") {
-				$now_date = date('Y-m-d H:i:s', time());					
-				$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 8 hours'));				   
+					$now_date = date('Y-m-d H:i:s', time());					
+					$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 8 hours'));				   
 
-				if ($now_date > $end_date) {
-					$challenge_row['status_id'] = "5";
+					if ($now_date > $end_date) {
+						$challenge_row['status_id'] = "5";
 					
-					$query = 'UPDATE `tblChallenges` SET `status_id` = 5 WHERE `id` = '. $challenge_row['id'] .';';
-					$result = mysql_query($query);									
+						$query = 'UPDATE `tblChallenges` SET `status_id` = 5 WHERE `id` = '. $challenge_row['id'] .';';
+						$result = mysql_query($query);									
+					}
 				}
-			}
 												
 				array_push($challenge_arr, array(
 					"id" => $challenge_row['id'], 
@@ -541,23 +565,26 @@
 			$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $winningUser_id .'", NOW());';				
 			$result = mysql_query($query);
 			$vote_id = mysql_insert_id();
-			
-			
+						
 			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';
 			$result = mysql_query($query);
 			
+			$points1 = 0;
+			$points2 = 0;
+			
 			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 				if ($row['challenger_id'] == $creator_id)
+					$points1++;
+					
+				else
+					$points2++;
 			}
-			
-			$query = 'UPDATE `tblUsers` SET `points` = "'. (++$points) .'" WHERE `id` = '. $winningUser_id .';';
-			$result = mysql_query($query);
-			
-			
+						
 			$this->sendResponse(200, json_encode(array(
 				"challenge_id" => $challenge_id,
 				"user_id" => $winningUser_id, 
-				"points" => $points, 
+				"points1" => $points1, 
+				"points2" => $points2, 
 				"creator" => $winningUser_id				
 			)));
 			return (true);

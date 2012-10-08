@@ -65,6 +65,24 @@
 	
 	return (self);
 }
+
+- (id)initWithChallenge:(HONChallengeVO *)vo {
+	if ((self = [super init])) {
+		_isPushView = YES;
+		
+		self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
+		self.subjectID = 0;
+		self.challengeVO = vo;
+		
+		self.view.backgroundColor = [UIColor whiteColor];
+		self.challenges = [NSMutableArray new];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
+	}
+	
+	return (self);
+}
 							
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
@@ -112,7 +130,12 @@
 	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
 	[self.view addSubview:self.tableView];
 	
-	[self _retrieveChallenges];
+	if (self.challengeVO) {
+		_challenges = [NSMutableArray new];
+		[_challenges addObject:self.challengeVO];
+	
+	} else
+		[self _retrieveChallenges];
 }
 
 - (void)viewDidLoad {

@@ -21,6 +21,7 @@
 #import "HONImagePickerViewController.h"
 #import "HONLoginViewController.h"
 #import "HONPhotoViewController.h"
+#import "HONVoteViewController.h"
 
 @interface HONChallengesViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
@@ -284,20 +285,16 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
-	NSLog(@"didSelectRowAtIndexPath");
 	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
 	
-//	[UIView animateWithDuration:0.25 animations:^(void) {
-//		((HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath]).overlayView.alpha = 1.0;
-//		
-//	} completion:^(BOOL finished) {
-//		((HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath]).overlayView.alpha = 0.0;
-//	}];
+	if ([vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Waiting"]) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	
-	//[self.navigationController pushViewController:[[SNFriendProfileViewController alloc] initWithTwitterUser:(SNTwitterUserVO *)[_friends objectAtIndex:indexPath.row]] animated:YES];
+	} else if ([vo.status isEqualToString:@"Started"]) {
+		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithChallenge:vo] animated:YES];
+	}
 }
 
 
