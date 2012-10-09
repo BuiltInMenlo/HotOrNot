@@ -19,4 +19,5 @@
 - (void)showLibrary;
 - (void)takePicture;
 - (void)closeCamera;
+- (void)defineSubject:(NSString *)subject;
 @end

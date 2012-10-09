@@ -14,6 +14,7 @@
 #import "HONChallengeVO.h"
 #import "HONFacebookCaller.h"
 #import "HONImagePickerViewController.h"
+#import "HONPhotoViewController.h"
 
 @interface HONVoteViewController() <UIActionSheetDelegate, ASIHTTPRequestDelegate>
 - (void)_retrieveChallenges;
@@ -44,6 +45,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_zoomImage:) name:@"ZOOM_IMAGE" object:nil];
 	}
 	
 	return (self);
@@ -61,6 +63,8 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_zoomImage:) name:@"ZOOM_IMAGE" object:nil];
 	}
 	
 	return (self);
@@ -79,6 +83,8 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMain:) name:@"VOTE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_zoomImage:) name:@"ZOOM_IMAGE" object:nil];
 	}
 	
 	return (self);
@@ -130,12 +136,12 @@
 	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
 	[self.view addSubview:self.tableView];
 	
-	if (self.challengeVO) {
-		_challenges = [NSMutableArray new];
-		[_challenges addObject:self.challengeVO];
-	
-	} else
+	if (self.challengeVO == nil)
 		[self _retrieveChallenges];
+	
+	else {
+		[self _retrieveSingleChallenge:self.challengeVO];
+	}
 }
 
 - (void)viewDidLoad {
@@ -182,9 +188,18 @@
 	[self.challengesRequest startAsynchronous];
 }
 
+- (void)_retrieveSingleChallenge:(HONChallengeVO *)vo {
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	[self.challengesRequest setDelegate:self];
+	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 13] forKey:@"action"];
+	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
+	[self.challengesRequest startAsynchronous];
+}
+
 #pragma mark - Navigation
 - (void)_goBack {
-	[self.navigationController popToRootViewControllerAnimated:YES];
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
@@ -232,6 +247,12 @@
 	[actionSheet showInView:self.view];
 }
 
+- (void)_zoomImage:(NSNotification *)notification {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:[notification object]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -239,7 +260,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ([self.challenges count]);
+	return ([_challenges count]);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -279,20 +300,11 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (indexPath);
+	return (nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	
-	//	[UIView animateWithDuration:0.25 animations:^(void) {
-	//		((HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath]).overlayView.alpha = 1.0;
-	//
-	//	} completion:^(BOOL finished) {
-	//		((HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath]).overlayView.alpha = 0.0;
-	//	}];
-	
-	//[self.navigationController pushViewController:[[SNFriendProfileViewController alloc] initWithTwitterUser:(SNTwitterUserVO *)[_friends objectAtIndex:indexPath.row]] animated:YES];
 }
 
 
@@ -349,8 +361,8 @@
 				[_tableView reloadData];
 			}
 		}
+	
 	} else {
-		
 	}
 }
 

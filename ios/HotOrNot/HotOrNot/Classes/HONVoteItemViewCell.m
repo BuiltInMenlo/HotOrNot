@@ -69,8 +69,13 @@
 	_challengeVO = challengeVO;
 	
 	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 10.0, 125.0, 180.0)];
-	[lImgView setImageWithURL:[NSURL URLWithString:challengeVO.imageURL] placeholderImage:nil options:SDWebImageProgressiveDownload];
+	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 	[_lHolderImgView addSubview:lImgView];
+	
+	UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	lZoomButton.frame = lImgView.frame;
+	[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
+	[_lHolderImgView addSubview:lZoomButton];
 	
 	UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, 50.0, 84.0, 84.0)];
 	lScoreImgView.image = [UIImage imageNamed:@"overlayBackgroundScore.png"];
@@ -85,8 +90,13 @@
 	[lScoreImgView addSubview:_lScoreLabel];
 	
 	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 10.0, 125.0, 180.0)];
-	[rImgView setImageWithURL:[NSURL URLWithString:challengeVO.image2URL] placeholderImage:nil options:SDWebImageProgressiveDownload];
+	[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 	[_rHolderImgView addSubview:rImgView];
+	
+	UIButton *rZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	rZoomButton.frame = rImgView.frame;
+	[rZoomButton addTarget:self action:@selector(_goRightZoom) forControlEvents:UIControlEventTouchUpInside];
+	[_rHolderImgView addSubview:rZoomButton];
 	
 	UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, 50.0, 84.0, 84.0)];
 	rScoreImgView.image = [UIImage imageNamed:@"overlayBackgroundScore.png"];
@@ -133,6 +143,14 @@
 	[_lHolderImgView addSubview:losingImgView];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_SUB" object:self.challengeVO];
+}
+
+- (void)_goLeftZoom {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:self.challengeVO.imageURL];
+}
+
+- (void)_goRightZoom {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:self.self.challengeVO.image2URL];
 }
 
 @end

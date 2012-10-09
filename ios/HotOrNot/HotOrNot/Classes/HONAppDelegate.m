@@ -14,6 +14,7 @@
 #import "ASIFormDataRequest.h"
 #import "HONAppDelegate.h"
 #import "Parse/Parse.h"
+#import "Mixpanel.h"
 
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
@@ -198,6 +199,11 @@
 //	[testObject setObject:@"http://discover.getassembly.com/hotornot/api" forKey:@"server_path"];
 //	[testObject save];
 	
+	[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
+	[[Mixpanel sharedInstance] track:@"App Boot"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
 	
@@ -207,12 +213,13 @@
 	
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
 	}
+	
 		
 	PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
 	PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
 	
 	PFQuery *durationQuery = [PFQuery queryWithClassName:@"Durations"];
-	PFObject *durationObject = [durationQuery getObjectWithId:@"FXca98y3mE"];
+	PFObject *durationObject = [durationQuery getObjectWithId:@"ND1LzmULX5"];
 	
 	PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
 	PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];

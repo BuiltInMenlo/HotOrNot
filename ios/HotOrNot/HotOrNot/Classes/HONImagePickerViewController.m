@@ -121,30 +121,44 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] && self.isFirstAppearance) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
+	if (self.isFirstAppearance) {
 		self.isFirstAppearance = NO;
 		
-		HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
-		camerOverlayView.delegate = self;
+		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
+			
+			HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
+			camerOverlayView.delegate = self;
+			
+			if (self.subjectName != @"")
+				[camerOverlayView setSubjectName:self.subjectName];
+			
+			_imagePicker = [[UIImagePickerController alloc] init];
+			_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
+			_imagePicker.delegate = self;
+			_imagePicker.allowsEditing = NO;
+			_imagePicker.cameraOverlayView = nil;
+			_imagePicker.navigationBarHidden = YES;
+			_imagePicker.toolbarHidden = YES;
+			_imagePicker.wantsFullScreenLayout = YES;
+			_imagePicker.showsCameraControls = NO;
+			_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+			
+			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+				[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:1.33];
+			}];
 		
-		if (self.subjectName != @"")
-			[camerOverlayView setSubjectName:self.subjectName];
-		
-		_imagePicker = [[UIImagePickerController alloc] init];
-		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.delegate = self;
-		_imagePicker.allowsEditing = NO;
-		_imagePicker.cameraOverlayView = nil;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = YES;
-		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-			[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:1.33];
-		}];
+		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+			_imagePicker = [[UIImagePickerController alloc] init];
+			_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+			_imagePicker.delegate = self;
+			_imagePicker.allowsEditing = YES;
+			_imagePicker.navigationBarHidden = YES;
+			_imagePicker.toolbarHidden = YES;
+			_imagePicker.wantsFullScreenLayout = YES;
+			
+			[self.navigationController presentViewController:_imagePicker animated:NO completion:nil];
+		}
 	}
 }
 
@@ -187,6 +201,10 @@
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void){
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
+}
+
+- (void)defineSubject:(NSString *)subject {
+	self.subjectName = subject;
 }
 
 
@@ -251,7 +269,6 @@
 				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
 			
 			else if (self.submitAction == 4) {
-				[HONFacebookCaller postToActivity:self.challengeVO withAction:@"accept"];
 				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
 			
 			} else if (self.submitAction == 8) {
@@ -304,6 +321,7 @@
 			_progressHUD = nil;
 			
 			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
+			[HONFacebookCaller postToFriendTimeline:self.fbID article:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 			//[self.navigationController dismissViewControllerAnimated:YES completion:nil];

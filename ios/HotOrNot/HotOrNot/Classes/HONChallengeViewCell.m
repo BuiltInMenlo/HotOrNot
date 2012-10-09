@@ -204,12 +204,32 @@
 		timeLabel.text = timeUntil;
 		[self addSubview:timeLabel];
 		
-	} else if ([challengeVO.status isEqualToString:@"Ended"]) {
+	} else if ([challengeVO.status isEqualToString:@"Completed"]) {
+		creatorImageView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
+		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
+		
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
+		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		challengerImageView.clipsToBounds = YES;
+		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
+		[self addSubview:challengerImageView];
+		
+		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
+		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+		
 		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
 			_bgImgView.image = [UIImage imageNamed:@"winnerRowBackground.png"];
+			[ctaButton setTitle:@"Winner" forState:UIControlStateNormal];
+			creatorLabel.text = self.challengeVO.creatorName;
 			
 		} else if (self.challengeVO.scoreCreator < self.challengeVO.scoreChallenger) {
 			_bgImgView.image = [UIImage imageNamed:@"loserRowBackground.png"];
+			[ctaButton setTitle:@"Loser" forState:UIControlStateNormal];
+			creatorLabel.text = self.challengeVO.challengerName;
+		
+		} else {
+			_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage.png"];
+			[ctaButton setTitle:@"Tie" forState:UIControlStateNormal];
 		}
 	}
 }

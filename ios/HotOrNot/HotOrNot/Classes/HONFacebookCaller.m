@@ -20,7 +20,7 @@
 + (void)postToActivity:(HONChallengeVO *)vo withAction:(NSString *)action {
 	NSMutableDictionary *params = [NSMutableDictionary new];
 	[params setObject:[NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID] forKey:@"challenge"];
-	[params setObject:vo.imageURL forKey:@"image[0][url]"];
+	[params setObject:[NSString stringWithFormat:@"%@_l.jpg", vo.imageURL] forKey:@"image[0][url]"];
 	
 	[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"me/pchallenge:%@", action] parameters:params HTTPMethod:@"POST" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 		NSLog(@"POSTED TO ACTVITY :[%@]",[result objectForKey:@"id"]);
@@ -38,7 +38,7 @@
 + (void)postToTimeline:(HONChallengeVO *)vo {
 	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID], @"link",
-												  vo.imageURL, @"picture",
+												  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
 												  vo.subjectName, @"name",
 												  vo.subjectName, @"caption",
 												  vo.creatorName, @"description", nil];
@@ -89,7 +89,7 @@
 + (void)postToFriendTimeline:(NSString *)fbID article:(HONChallengeVO *)vo {
 	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID], @"link",
-												  vo.imageURL, @"picture",
+												  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
 												  vo.subjectName, @"name",
 												  vo.subjectName, @"caption",
 												  vo.creatorName, @"description", nil];
@@ -105,7 +105,7 @@
 			 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
 		 
 		 
-		 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
+		 [[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
 	 }];
 }
 

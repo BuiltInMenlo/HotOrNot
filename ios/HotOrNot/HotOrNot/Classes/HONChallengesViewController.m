@@ -10,6 +10,7 @@
 
 #import "ASIFormDataRequest.h"
 #import "UIImageView+WebCache.h"
+#import "Mixpanel.h"
 
 #import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
@@ -28,6 +29,8 @@
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic) BOOL isFirstRun;
 @property(nonatomic, strong) UIButton *tutorialButton;
+@property(nonatomic, strong) NSDate *lastDate;
+@property(nonatomic, strong) ASIFormDataRequest *nextChallengesRequest;
 
 - (void)_retrieveChallenges;
 @end
@@ -38,15 +41,18 @@
 @synthesize challenges = _challenges;
 @synthesize isFirstRun = _isFirstRun;
 @synthesize tutorialButton = _tutorialButton;
+@synthesize lastDate = _lastDate;
+@synthesize nextChallengesRequest = _nextChallengesRequest;
 
 - (id)init {
 	if ((self = [super init])) {
 		self.tabBarItem.image = [UIImage imageNamed:@"tab01_nonActive"];
-		self.challenges = [NSMutableArray new];
+		self.challenges = [NSMutableArray array];
 		self.isFirstRun = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dailyChallenge:) name:@"DAILY_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 	}
 	
 	return (self);
@@ -141,6 +147,10 @@
 - (void)_goCreateChallenge {
 	//[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
 	
+	[[Mixpanel sharedInstance] track:@"Create Challenge"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -173,6 +183,18 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_nextChallengeBlock:(NSNotification *)notification {
+	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+	
+	self.nextChallengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	[self.nextChallengesRequest setDelegate:self];
+	[self.nextChallengesRequest setPostValue:[NSString stringWithFormat:@"%d", 12] forKey:@"action"];
+	[self.nextChallengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.nextChallengesRequest setPostValue:[dateFormat stringFromDate:self.lastDate] forKey:@"datetime"];
+	[self.nextChallengesRequest startAsynchronous];
 }
 
 
@@ -337,27 +359,51 @@
 -(void)requestFinished:(ASIHTTPRequest *)request {
 	NSLog(@"HONChallengesViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
-	@autoreleasepool {
-		
-		NSError *error = nil;
-		if (error != nil)
-			NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
-		
-		else {
-			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
+	if (request == self.nextChallengesRequest) {
+		@autoreleasepool {
+			NSError *error = nil;
+			if (error != nil)
+				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
 			
-			_challenges = [NSMutableArray new];
-			NSMutableArray *list = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedLists) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+			else {
+				NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+				NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
 				
-				if (vo != nil)
-					[list addObject:vo];
+				for (NSDictionary *serverList in parsedLists) {
+					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+					
+					if (vo != nil)
+						[_challenges addObject:vo];
+				}
+								
+				self.lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
+				[_tableView reloadData];
 			}
+		}
+	
+	} else {
+		@autoreleasepool {
+			NSError *error = nil;
+			if (error != nil)
+				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
 			
-			_challenges = [list copy];
-			[_tableView reloadData];
+			else {
+				NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+				NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
+				
+				_challenges = [NSMutableArray array];
+				for (NSDictionary *serverList in parsedLists) {
+					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+					
+					if (vo != nil)
+						[_challenges addObject:vo];
+				}
+				
+				//_challenges = [list copy];
+				
+				self.lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
+				[_tableView reloadData];
+			}
 		}
 	}
 }

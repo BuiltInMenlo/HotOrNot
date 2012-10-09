@@ -153,6 +153,8 @@
 	
 	if ([textField.text length] == 0)
 		self.placeholderLabel.hidden = NO;
+	
+	[self.delegate defineSubject:textField.text];
 }
 
 
