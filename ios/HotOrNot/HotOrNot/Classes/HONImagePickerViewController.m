@@ -230,7 +230,7 @@
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", filename);
 		
 		@try {
-			_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.labelText = @"Submitting Challenge…";
 			_progressHUD.mode = MBProgressHUDModeIndeterminate;
 			_progressHUD.graceTime = 2.0;

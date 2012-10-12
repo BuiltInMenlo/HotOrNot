@@ -48,6 +48,8 @@
 		self.subjects = [NSMutableArray new];
 		
 		self.isUsersList = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_randomChallenge:) name:@"RANDOM_CHALLENGE" object:nil];
 	}
 	
 	return (self);
@@ -195,6 +197,16 @@
 	else
 		[self _retrievePopularSubjects];
 }
+
+#pragma mark - Notifications
+- (void)_randomChallenge:(NSNotification *)notification {
+	HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:(arc4random() % [_users count])];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

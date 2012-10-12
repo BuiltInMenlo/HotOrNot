@@ -22,11 +22,11 @@
 @property (nonatomic, retain) UIButton *btn4;
 @property (nonatomic, retain) UIButton *btn5;
 
--(void) hideTabBar;
--(void) addCustomElements;
--(void) selectTab:(int)tabID;
+- (void)hideTabBar;
+- (void)addCustomElements;
+- (void)selectTab:(int)tabID;
 
--(void) hideNewTabBar;
--(void) ShowNewTabBar;
+- (void)hideNewTabBar;
+- (void)showNewTabBar;
 
 @end

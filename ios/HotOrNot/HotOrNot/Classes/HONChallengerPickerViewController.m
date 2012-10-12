@@ -178,7 +178,7 @@
 	
 	@try {
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
-		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
 		_progressHUD.graceTime = 2.0;
@@ -239,7 +239,7 @@
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
 	
 	@try {
-		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
 		_progressHUD.graceTime = 2.0;
@@ -312,8 +312,8 @@
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
 			[HONFacebookCaller postToTimeline:vo];
 			
-			if (self.fbID != nil)
-				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];
+//			if (self.fbID != nil)
+//				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];
 			
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];

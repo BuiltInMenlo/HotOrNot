@@ -173,8 +173,14 @@
 			break;
 	}
 	
+	if (tabID == 2) {
+		UINavigationController *navController = (UINavigationController *)[self selectedViewController];
+		[navController popToRootViewControllerAnimated:YES];
+	
+	} else
+		self.selectedIndex = tabID;
+	
 	[self.delegate tabBarController:self didSelectViewController:[self.viewControllers objectAtIndex:tabID]];
-	self.selectedIndex = tabID;
 }
 
 - (void)didReceiveMemoryWarning {

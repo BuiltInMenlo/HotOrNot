@@ -28,9 +28,24 @@
 		self.opaque = NO;
 		
 		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-		[headerImgView setImage:[UIImage imageNamed:@"cameraInput.png"]];
+		[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
 		headerImgView.userInteractionEnabled = YES;
 		[self addSubview:headerImgView];
+		
+		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		backButton.frame = CGRectMake(255.0, 5.0, 54.0, 34.0);
+		[backButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+		[backButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
+		//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[backButton setTitle:@"Cancel" forState:UIControlStateNormal];
+		[headerImgView addSubview:backButton];
+		
+		UIImageView *subjectImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 70.0, 320.0, 45.0)];
+		[subjectImgView setImage:[UIImage imageNamed:@"cameraInput.png"]];
+		subjectImgView.userInteractionEnabled = YES;
+		[self addSubview:subjectImgView];
 				
 		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 8.0, 280.0, 20.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -44,7 +59,7 @@
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = @"";
 		_subjectTextField.delegate = self;
-		[headerImgView addSubview:_subjectTextField];
+		[subjectImgView addSubview:_subjectTextField];
 		
 		_placeholderLabel = [[UILabel alloc] initWithFrame:_subjectTextField.frame];
 		//_placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
@@ -52,7 +67,7 @@
 		_placeholderLabel.backgroundColor = [UIColor clearColor];
 		_placeholderLabel.textAlignment = NSTextAlignmentCenter;
 		_placeholderLabel.text = @"Give your challenge a #hashtag";
-		[self addSubview:self.placeholderLabel];
+		[subjectImgView addSubview:self.placeholderLabel];
 		
 //		UIImage *buttonImageNormal;
 //		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {
@@ -94,15 +109,6 @@
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
 		[self.cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
 		[footerImgView addSubview:self.cameraRollButton];
-		
-		// Add the close button
-		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(270.0, 10.0, 44.0, 44.0);
-		[closeButton setBackgroundColor:[UIColor whiteColor]];
-		//[closeButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
-		//[closeButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
-		[closeButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
-		[footerImgView addSubview:closeButton];
 	}
 	
 	return (self);

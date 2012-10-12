@@ -33,21 +33,13 @@
 		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
 		_bgImgView.image = [UIImage imageNamed:@"headerBackground.png"];
 		
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 20.0, 50.0, 16.0)];
-		//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//ptsLabel = [SNAppDelegate snLinkColor];
-		ptsLabel.backgroundColor = [UIColor clearColor];
-		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
-		[self addSubview:ptsLabel];
-		
-		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 20.0, 150.0, 16.0)];
-		//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//subjectLabel = [SNAppDelegate snLinkColor];
-		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.textAlignment = NSTextAlignmentCenter;
-		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
-		[self addSubview:subjectLabel];
+		UIButton *randomChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		randomChallengeButton.frame = CGRectMake(50.0, 5.0, 220.0, 50.0);
+		[randomChallengeButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
+		//randomChallengeButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
+		[randomChallengeButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:1.0] forState:UIControlStateNormal];
+		[randomChallengeButton setTitle:@"Random Challenge" forState:UIControlStateNormal];
+		[self addSubview:randomChallengeButton];
 	}
 	
 	return (self);
@@ -90,4 +82,7 @@
 	[super setSelected:selected animated:animated];
 }
 
+- (void)_goRandomChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"RANDOM_CHALLENGE" object:nil];
+}
 @end

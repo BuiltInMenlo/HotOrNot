@@ -54,36 +54,8 @@
 			 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
 		 
 		 
-		 [[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
+		 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
 	 }];
-	
-	
-	//	id<SNOGArticle> articleObject = (id<SNOGArticle>)[FBGraphObject graphObject];
-	//	articleObject.url = [NSString stringWithFormat:@"http://discover.getassembly.com/facebook/opengraph/index.php?aID=%d", _articleVO.article_id];
-	//
-	//	id<SNOGShareArticleAction> action = (id<SNOGShareArticleAction>)[FBGraphObject graphObject];
-	//	action.article = articleObject;
-	//
-	//	NSMutableDictionary *image = [[NSMutableDictionary alloc] init];
-	//	[image setObject:((SNImageVO *)[_articleVO.images objectAtIndex:0]).url forKey:@"url"];
-	//
-	//	NSMutableArray *images = [[NSMutableArray alloc] init];
-	//	[images addObject:image];
-	//
-	//	action.image = images;
-	//
-	//	[FBRequest startForPostWithGraphPath:@"me/getassembly:share" graphObject:action completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-	//		NSString *alertText;
-	//
-	//		if (!error)
-	//			alertText = [NSString stringWithFormat:@"Posted Open Graph action, id: %@", [result objectForKey:@"id"]];
-	//
-	//		else
-	//			alertText = [NSString stringWithFormat:@"error: domain = %@, code = %d", error.description, error.code];
-	//
-	//		[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:nil cancelButtonTitle:@"Thanks!" otherButtonTitles:nil] show];
-	//	}];
-	
 }
 
 + (void)postToFriendTimeline:(NSString *)fbID article:(HONChallengeVO *)vo {
@@ -105,7 +77,7 @@
 			 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
 		 
 		 
-		 [[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
+		 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
 	 }];
 }
 

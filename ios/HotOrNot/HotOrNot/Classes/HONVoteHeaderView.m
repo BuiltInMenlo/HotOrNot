@@ -20,7 +20,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 10.0, 200.0, 16.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 15.0, 200.0, 16.0)];
 		//_titleLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//_titleLabel = [SNAppDelegate snLinkColor];
 		_titleLabel.backgroundColor = [UIColor clearColor];

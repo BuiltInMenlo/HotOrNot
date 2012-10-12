@@ -131,12 +131,18 @@
 			$query .= 'VALUES ("'. $challenge_id .'", "'. $rndUser_id .'");';
 			$result = mysql_query($query);
 			
+			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
 			curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
-		 			
+		 	$res = curl_exec($ch);
+			$err_no = curl_errno($ch);
+			$err_msg = curl_error($ch);
+			$header = curl_getinfo($ch);
+			curl_close($ch);		
 			
 			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
 			$row = mysql_fetch_object(mysql_query($query));
@@ -203,13 +209,19 @@
 				$query .= '`challenge_id`, `user_id`) ';
 				$query .= 'VALUES ("'. $challenge_id .'", "'. $challenger_id .'");';
 				$result = mysql_query($query);
-			
+				
+				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
 				curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_POST, 1);
 				curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
-			
+			 	$res = curl_exec($ch);
+				$err_no = curl_errno($ch);
+				$err_msg = curl_error($ch);
+				$header = curl_getinfo($ch);
+				curl_close($ch);
 		 			
 			
 				$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
@@ -281,12 +293,18 @@
 			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $challenger_id .';';
 			$device_token = mysql_fetch_object(mysql_query($query))->device_token; 
 			
+			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
 			curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
-		 			
+		 	$res = curl_exec($ch);
+			$err_no = curl_errno($ch);
+			$err_msg = curl_error($ch);
+			$header = curl_getinfo($ch);
+			curl_close($ch);		
 			
 			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
 			$row = mysql_fetch_object(mysql_query($query));

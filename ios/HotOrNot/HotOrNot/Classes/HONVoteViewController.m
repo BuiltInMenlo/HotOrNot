@@ -133,8 +133,34 @@
 	self.tableView.userInteractionEnabled = YES;
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
-	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
+	self.tableView.contentInset = UIEdgeInsetsMake(55.0, 0.0f, 55.0f, 0.0f);
 	[self.view addSubview:self.tableView];
+	
+	UIImageView *tableHeaderImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -55.0, 320.0, 55.0)];
+	tableHeaderImgView.image = [UIImage imageNamed:@"headerBackground.png"];
+	tableHeaderImgView.userInteractionEnabled = YES;
+	
+	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 20.0, 50.0, 16.0)];
+	//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+	//ptsLabel = [SNAppDelegate snLinkColor];
+	ptsLabel.backgroundColor = [UIColor clearColor];
+	ptsLabel.text = [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue]];
+	[tableHeaderImgView addSubview:ptsLabel];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 20.0, 150.0, 16.0)];
+	//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
+	//subjectLabel = [SNAppDelegate snLinkColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.textAlignment = NSTextAlignmentCenter;
+	subjectLabel.text = [NSString stringWithFormat:@"#%@", [HONAppDelegate dailySubjectName]];
+	[tableHeaderImgView addSubview:subjectLabel];
+	
+	UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	dailyButton.frame = CGRectMake(108.0, 5.0, 195.0, 50.0);
+	[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[tableHeaderImgView addSubview:dailyButton];
+	
+	[self.tableView addSubview:tableHeaderImgView];
 	
 	if (self.challengeVO == nil)
 		[self _retrieveChallenges];
@@ -205,6 +231,13 @@
 - (void)_goRefresh {
 	[self _retrieveChallenges];
 }
+
+- (void)_goDailyChallenge {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 #pragma mark - Notifications
 - (void)_voteMain:(NSNotification *)notification {
