@@ -203,11 +203,6 @@
 	}];
 }
 
-- (void)defineSubject:(NSString *)subject {
-	self.subjectName = subject;
-}
-
-
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	UIImage *image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(480.0, 360.0)];
@@ -287,7 +282,7 @@
 		}
 	
 	} else {
-		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:self.subjectName withImage:image] animated:YES];
+		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithImage:image] animated:YES];
 	}
 }
 

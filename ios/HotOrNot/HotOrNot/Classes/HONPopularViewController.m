@@ -107,6 +107,8 @@
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:self.tableView];
+	
+	[self _retrievePopularUsers];
 }
 
 - (void)viewDidLoad {
@@ -351,6 +353,9 @@
 					_users = [list copy];
 				
 				} else {
+					NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+					NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]]];
+					
 					_subjects = [NSMutableArray new];
 					
 					NSMutableArray *list = [NSMutableArray array];

@@ -10,17 +10,12 @@
 
 #import "HONAppDelegate.h"
 
-@interface HONCameraOverlayView() <UITextFieldDelegate>
-@property (nonatomic, strong) UILabel *placeholderLabel;
-@property (nonatomic, strong) UITextField *subjectTextField;
+@interface HONCameraOverlayView()
 @end
 
 @implementation HONCameraOverlayView
 
 @synthesize delegate, flashButton, changeCameraButton, captureButton, cameraRollButton;
-@synthesize placeholderLabel = _placeholderLabel;
-@synthesize subjectTextField = _subjectTextField;
-@synthesize subjectName = _subjectName;
 
 - (id)initWithFrame:(CGRect)frame {
 	if (self = [super initWithFrame:frame]) {
@@ -41,33 +36,6 @@
 		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[backButton setTitle:@"Cancel" forState:UIControlStateNormal];
 		[headerImgView addSubview:backButton];
-		
-		UIImageView *subjectImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 70.0, 320.0, 45.0)];
-		[subjectImgView setImage:[UIImage imageNamed:@"cameraInput.png"]];
-		subjectImgView.userInteractionEnabled = YES;
-		[self addSubview:subjectImgView];
-				
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 8.0, 280.0, 20.0)];
-		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
-		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
-		[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		//_subjectTextField.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
-		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
-		_subjectTextField.text = @"";
-		_subjectTextField.delegate = self;
-		[subjectImgView addSubview:_subjectTextField];
-		
-		_placeholderLabel = [[UILabel alloc] initWithFrame:_subjectTextField.frame];
-		//_placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
-		_placeholderLabel.textColor = [UIColor colorWithWhite:0.620 alpha:1.0];
-		_placeholderLabel.backgroundColor = [UIColor clearColor];
-		_placeholderLabel.textAlignment = NSTextAlignmentCenter;
-		_placeholderLabel.text = @"Give your challenge a #hashtag";
-		[subjectImgView addSubview:self.placeholderLabel];
 		
 //		UIImage *buttonImageNormal;
 //		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {
@@ -114,14 +82,6 @@
 	return (self);
 }
 
-- (void)setSubjectName:(NSString *)subjectName {
-	_subjectName = subjectName;
-	_subjectTextField.text = [NSString stringWithFormat:@"#%@", _subjectName];
-	
-	_placeholderLabel.hidden = YES;
-	_placeholderLabel.text = [NSString stringWithFormat:@"#%@", _subjectName];
-}
-
 - (void)takePicture:(id)sender {
 	self.captureButton.enabled = NO;
 	[self.delegate takePicture];
@@ -141,26 +101,6 @@
 
 - (void)closeCamera:(id)sender {
 	[self.delegate closeCamera];
-}
-
-
-#pragma mark - TextField Delegates
--(void)textFieldDidBeginEditing:(UITextField *)textField {
-	self.placeholderLabel.hidden = YES;
-}
-
--(BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[textField resignFirstResponder];
-	return YES;
-}
-
--(void)textFieldDidEndEditing:(UITextField *)textField {
-	[textField resignFirstResponder];
-	
-	if ([textField.text length] == 0)
-		self.placeholderLabel.hidden = NO;
-	
-	[self.delegate defineSubject:textField.text];
 }
 
 

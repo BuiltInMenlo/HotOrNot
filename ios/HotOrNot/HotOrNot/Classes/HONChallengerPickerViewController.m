@@ -21,9 +21,11 @@
 @property(nonatomic, strong) NSString *subjectName;
 @property (nonatomic) int challengerID;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) UIImage *image;
+@property(nonatomic, strong) UIImage *challengeImage;
 @property(nonatomic, strong) NSString *fbID;
 @property(nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) UILabel *placeholderLabel;
+@property (nonatomic, strong) UITextField *subjectTextField;
 @end
 
 @implementation HONChallengerPickerViewController
@@ -32,30 +34,33 @@
 @synthesize challengerID = _challengerID;
 @synthesize progressHUD = _progressHUD;
 @synthesize fbID = _fbID;
-@synthesize image = _image;
+@synthesize challengeImage = _challengeImage;
 @synthesize filename = _filename;
+@synthesize placeholderLabel = _placeholderLabel;
+@synthesize subjectTextField = _subjectTextField;
 
 - (id)init {
 	if ((self = [super init])) {
+		NSLog(@"init");
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	}
 	
 	return (self);
 }
 
-- (id)initWithUser:(int)userID {
+- (id)initWithImage:(UIImage *)img {
 	if ((self = [super init])) {
+		NSLog(@"initWithImage:[%f, %f]", img.size.width, img.size.height);
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	}
-	
-	return (self);
-}
-
-- (id)initWithSubject:(NSString *)subject withImage:(UIImage *)img {
-	if ((self = [super init])) {
-		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		self.subjectName = subject;
-		self.image = img;
+		self.challengeImage = [img copy];
+		
+		UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 130.0, 240.0, 180.0)];
+		imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		imgView.image = img;
+		imgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
+		[self.view addSubview:imgView];
+		
+		NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
 	}
 	
 	return (self);
@@ -81,9 +86,36 @@
 	[backButton setTitle:@"Back" forState:UIControlStateNormal];
 	[headerImgView addSubview:backButton];
 	
+	UIImageView *subjectImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 45.0)];
+	[subjectImgView setImage:[UIImage imageNamed:@"cameraInput.png"]];
+	subjectImgView.userInteractionEnabled = YES;
+	[self.view addSubview:subjectImgView];
+	
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 8.0, 280.0, 20.0)];
+	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
+	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
+	[_subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
+	[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	//_subjectTextField.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
+	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
+	_subjectTextField.text = @"";
+	_subjectTextField.delegate = self;
+	[subjectImgView addSubview:_subjectTextField];
+	
+	_placeholderLabel = [[UILabel alloc] initWithFrame:_subjectTextField.frame];
+	//_placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
+	_placeholderLabel.textColor = [UIColor colorWithWhite:0.620 alpha:1.0];
+	_placeholderLabel.backgroundColor = [UIColor clearColor];
+	_placeholderLabel.textAlignment = NSTextAlignmentCenter;
+	_placeholderLabel.text = @"Give your challenge a #hashtag";
+	[subjectImgView addSubview:self.placeholderLabel];
+	
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(20.0, 100.0, 280.0, 43.0);
+	friendsButton.frame = CGRectMake(20.0, 350.0, 280.0, 43.0);
 	[friendsButton setBackgroundColor:[UIColor whiteColor]];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
@@ -94,7 +126,7 @@
 	[self.view addSubview:friendsButton];
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(20.0, 150.0, 280.0, 43.0);
+	randomButton.frame = CGRectMake(20.0, 400.0, 280.0, 43.0);
 	[randomButton setBackgroundColor:[UIColor whiteColor]];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
@@ -168,10 +200,10 @@
 - (void)_goFriendChallenge {
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
-	UIImage *lImage = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(1296.0, 968.0)];
-	UIImage *mImage = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(480.0, 360.0)];
-	UIImage *t1Image = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(324.0, 242.0)];
-	UIImage *t2Image = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(324.0, 242.0)];
+	UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(1296.0, 968.0)];
+	UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(480.0, 360.0)];
+	UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(324.0, 242.0)];
+	UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(324.0, 242.0)];
 
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
@@ -228,10 +260,10 @@
 - (void)_goRandomChallenge {
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
-	UIImage *lImage = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(1296.0, 968.0)];
-	UIImage *mImage = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(480.0, 360.0)];
-	UIImage *t1Image = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(324.0, 242.0)];
-	UIImage *t2Image = [HONAppDelegate scaleImage:self.image toSize:CGSizeMake(324.0, 242.0)];
+	UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(1296.0, 968.0)];
+	UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(480.0, 360.0)];
+	UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(324.0, 242.0)];
+	UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(324.0, 242.0)];
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
 	
@@ -282,6 +314,26 @@
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
+}
+
+
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	self.placeholderLabel.hidden = YES;
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return YES;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];
+	
+	if ([textField.text length] == 0)
+		self.placeholderLabel.hidden = NO;
+	
+	self.subjectName = textField.text;
 }
 
 

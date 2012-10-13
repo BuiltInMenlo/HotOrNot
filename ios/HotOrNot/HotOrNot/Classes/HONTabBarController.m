@@ -16,12 +16,16 @@
 
 @synthesize btn1, btn2, btn3, btn4, btn5;
 
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
+- (void)loadView {
+	[super loadView];
 	
 	[self hideTabBar];
 	[self addCustomElements];
 	[self showNewTabBar];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
 }
 
 - (void)hideTabBar {
@@ -149,11 +153,11 @@
 			break;
 			
 		case 2:
-			[btn1 setSelected:false];
-			[btn2 setSelected:false];
-			[btn3 setSelected:true];
-			[btn4 setSelected:false];
-			[btn5 setSelected:false];
+			[btn1 setSelected:(self.selectedIndex == 0)];
+			[btn2 setSelected:(self.selectedIndex == 1)];
+			[btn3 setSelected:false];
+			[btn4 setSelected:(self.selectedIndex == 3)];
+			[btn5 setSelected:(self.selectedIndex == 4)];
 			break;
 			
 		case 3:

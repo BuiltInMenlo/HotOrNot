@@ -44,7 +44,12 @@
 	_subjectVO = subjectVO;
 	
 	self.subjectLabel.text = [NSString stringWithFormat:@"#%@", _subjectVO.subjectName];
-	self.scoreLabel.text = [NSString stringWithFormat:@"%d points", _subjectVO.score];
+	
+	if (_subjectVO.score == 1)
+		self.scoreLabel.text = @"1 challenge";
+	
+	else
+		self.scoreLabel.text = [NSString stringWithFormat:@"%d challenges", _subjectVO.score];
 }
 
 @end

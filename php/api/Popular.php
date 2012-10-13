@@ -115,9 +115,6 @@
 				$result = mysql_query($query);
 				$row = mysql_fetch_object($result);
 				
-				if ($row->status_id != "4")
-					continue;
-				
 				array_push($subject_arr, array(
 					"id" => $subject_row['id'], 
 					"name" => $subject_row['title'], 					

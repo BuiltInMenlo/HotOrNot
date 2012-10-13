@@ -70,6 +70,7 @@
 	
 	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 10.0, 125.0, 180.0)];
 	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+	lImgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[_lHolderImgView addSubview:lImgView];
 	
 	UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -91,6 +92,7 @@
 	
 	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 10.0, 125.0, 180.0)];
 	[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+	rImgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[_rHolderImgView addSubview:rImgView];
 	
 	UIButton *rZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];

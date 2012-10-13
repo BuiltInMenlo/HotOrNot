@@ -467,7 +467,29 @@
 			$query .= '`id`, `challenge_id`, `user_id`, `url`, `added`) VALUES (';
 			$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $img_url .'", NOW());';
 			$result = mysql_query($query);
-			$img_id = mysql_insert_id();			
+			$img_id = mysql_insert_id();
+						
+			
+			$query = 'SELECT `name` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$user_name = mysql_fetch_object(mysql_query($query))->name; 
+			
+			$query = 'SELECT `creator_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+			$creator_id = mysql_fetch_object(mysql_query($query))->creator_id;			
+			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $creator_id .';';			
+			$device_token = mysql_fetch_object(mysql_query($query))->device_token; 
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+			curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $user_name .' has accepted your challenge!"}}');
+		 	$res = curl_exec($ch);
+			$err_no = curl_errno($ch);
+			$err_msg = curl_error($ch);
+			$header = curl_getinfo($ch);
+			curl_close($ch); 			
 			
 			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `started` = NOW() WHERE `id` = '. $challenge_id .';';
 			$result = mysql_query($query);			

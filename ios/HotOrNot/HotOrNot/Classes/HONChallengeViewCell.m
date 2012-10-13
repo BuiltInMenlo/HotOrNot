@@ -95,11 +95,15 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 10.0, 50.0, 50.0)];
+	UIView *creatorImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(20.0, 10.0, 50.0, 50.0)];
+	creatorImgHolderView.clipsToBounds = YES;
+	[self addSubview:creatorImgHolderView];
+	
+	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-30.0, 0.0, 162.0, 121.0)];
 	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
-	creatorImageView.clipsToBounds = YES;
 	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t1.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
-	[self addSubview:creatorImageView];
+	creatorImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
+	[creatorImgHolderView addSubview:creatorImageView];
 	
 	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 100.0, 16.0)];
 	//creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
@@ -142,14 +146,18 @@
 		[ctaButton removeFromSuperview];
 		[subjectLabel removeFromSuperview];
 		
-		creatorImageView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
+		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
 		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
+		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
+		challengerImgHolderView.clipsToBounds = YES;
+		[self addSubview:challengerImgHolderView];
+		
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-30.0, 10.0, 162.0, 121.0)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		challengerImageView.clipsToBounds = YES;
+		challengerImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
-		[self addSubview:challengerImageView];
+		[challengerImgHolderView addSubview:challengerImageView];
 
 		
 		creatorLabel.frame = CGRectMake(60.0, 5.0, 100.0, 16.0);
@@ -205,14 +213,18 @@
 		[self addSubview:timeLabel];
 		
 	} else if ([challengeVO.status isEqualToString:@"Completed"]) {
-		creatorImageView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
+		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
 		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
+		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
+		challengerImgHolderView.clipsToBounds = YES;
+		[self addSubview:challengerImgHolderView];
+		
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-30.0, 10.0, 162.0, 121.0)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		challengerImageView.clipsToBounds = YES;
+		challengerImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
-		[self addSubview:challengerImageView];
+		[challengerImgHolderView addSubview:challengerImageView];
 		
 		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
 		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
