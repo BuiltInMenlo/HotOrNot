@@ -185,6 +185,7 @@
 		self.selectedIndex = tabID;
 	
 	[self.delegate tabBarController:self didSelectViewController:[self.viewControllers objectAtIndex:tabID]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

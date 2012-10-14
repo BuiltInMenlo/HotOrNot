@@ -197,6 +197,17 @@
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
 }
 
+- (void)changeCamera {
+	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
+		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
+		//overlay.flashButton.hidden = NO;
+	
+	} else {
+		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+		//overlay.flashButton.hidden = YES;
+	}
+}
+
 - (void)closeCamera {
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void){
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
@@ -208,10 +219,10 @@
 	UIImage *image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(480.0, 360.0)];
 	
 	
-	UIImage *lImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(1296.0, 968.0)];
-	UIImage *mImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(480.0, 360.0)];
-	UIImage *t1Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(324.0, 242.0)];
-	UIImage *t2Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(324.0, 242.0)];
+	UIImage *lImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kLargeW, kLargeH)];
+	UIImage *mImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kMediumW, kMediumH)];
+	UIImage *t1Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kThumb1W, kThumb1H)];
+	//UIImage *t2Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kThumb2W, kThumb2H)];
 	
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
@@ -221,7 +232,7 @@
 	if (!self.needsChallenger) {
 		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
 		
-		NSString *filename = [NSString stringWithFormat:@"%@", [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+		NSString *filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", filename);
 		
 		@try {
@@ -232,15 +243,15 @@
 			_progressHUD.taskInProgress = YES;
 			
 			[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-			S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t1.jpg", filename] inBucket:@"hotornot-challenges"];
+			S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", filename] inBucket:@"hotornot-challenges"];
 			por1.contentType = @"image/jpeg";
 			por1.data = UIImageJPEGRepresentation(t1Image, 1.0);
 			[s3 putObject:por1];
 			
-			S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", filename] inBucket:@"hotornot-challenges"];
-			por2.contentType = @"image/jpeg";
-			por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
-			[s3 putObject:por2];
+//			S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", filename] inBucket:@"hotornot-challenges"];
+//			por2.contentType = @"image/jpeg";
+//			por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
+//			[s3 putObject:por2];
 			
 			S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", filename] inBucket:@"hotornot-challenges"];
 			por3.contentType = @"image/jpeg";
@@ -314,6 +325,8 @@
 		else {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 			
 			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			[HONFacebookCaller postToFriendTimeline:self.fbID article:[HONChallengeVO challengeWithDictionary:challengeResult]];

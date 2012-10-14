@@ -9,6 +9,8 @@
 #import "HONVoteItemViewCell.h"
 #import "UIImageView+WebCache.h"
 
+#import "HONAppDelegate.h"
+
 
 @interface HONVoteItemViewCell()
 @property (nonatomic, strong) UIImageView *lHolderImgView;
@@ -68,10 +70,14 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 10.0, 125.0, 180.0)];
+	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(15.0, 10.0, 125.0, 180.0)];
+	lHolderView.clipsToBounds = YES;
+	[_lHolderImgView addSubview:lHolderView];
+	
+	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(lHolderView.frame.size.width * -0.5, 0.0, kMediumW, kMediumH)];
 	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 	lImgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
-	[_lHolderImgView addSubview:lImgView];
+	[lHolderView addSubview:lImgView];
 	
 	UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	lZoomButton.frame = lImgView.frame;
@@ -90,10 +96,14 @@
 	_lScoreLabel.text = [NSString stringWithFormat:@"%d", challengeVO.scoreCreator];
 	[lScoreImgView addSubview:_lScoreLabel];
 	
-	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 10.0, 125.0, 180.0)];
+	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(15.0, 10.0, 125.0, 180.0)];
+	rHolderView.clipsToBounds = YES;
+	[_rHolderImgView addSubview:rHolderView];
+	
+	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(rHolderView.frame.size.width * -0.5, 0.0, kMediumW, kMediumH)];
 	[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 	rImgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
-	[_rHolderImgView addSubview:rImgView];
+	[rHolderView addSubview:rImgView];
 	
 	UIButton *rZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	rZoomButton.frame = rImgView.frame;

@@ -26,7 +26,9 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) UIImageView *toggleImgView;
 @property(nonatomic, strong) NSMutableArray *users;
+@property(nonatomic, strong) NSMutableDictionary *usersDictionary;
 @property(nonatomic, strong) NSMutableArray *subjects;
+@property(nonatomic, strong) NSArray *sectionTitles;
 @property(nonatomic, strong) ASIFormDataRequest *subjectsRequest;
 @property(nonatomic, strong) ASIFormDataRequest *usersRequest;
 @end
@@ -36,8 +38,10 @@
 @synthesize tableView = _tableView;
 @synthesize toggleImgView = _toggleImgView;
 @synthesize users = _users;
+@synthesize usersDictionary = _usersDictionary;
 @synthesize subjects = _subjects;
 @synthesize isUsersList = _isUsersList;
+@synthesize sectionTitles = _sectionTitles;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -45,7 +49,9 @@
 		self.view.backgroundColor = [UIColor whiteColor];
 		
 		self.users = [NSMutableArray new];
+		self.usersDictionary = [NSMutableDictionary dictionary];
 		self.subjects = [NSMutableArray new];
+		self.sectionTitles = [NSArray arrayWithObjects:@"#", @"A", @"B", @"C", @"D", @"E", @"F", @"G", @"H", @"I", @"J", @"K", @"L", @"M", @"N", @"O", @"P", @"Q", @"R", @"S", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z", nil];
 		
 		self.isUsersList = YES;
 		
@@ -209,14 +215,20 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_refreshList:(NSNotification *)notification {
+	[self _goRefresh];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	
-	if (self.isUsersList)
+	if (self.isUsersList) {
 		return ([_users count] + 2);
+//		NSMutableArray *letterArray = [_usersDictionary objectForKey:[_sectionTitles objectAtIndex:section]];
+//		return ([letterArray count]);
 	
-	else
+	}else
 		return ([_subjects count] + 2);
 }
 
@@ -265,6 +277,30 @@
 }
 
 
+//- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+//	NSMutableSet *mySet = [[NSMutableSet alloc] init];
+//	
+//	NSArray *myArray;
+//	if (self.isUsersList)
+//		myArray = [_users copy];
+//	
+//	else
+//		myArray = [_subjects copy];
+//	
+//	
+//	for (NSString *s in myArray) {
+//		if (s.length > 0)
+//			[mySet addObject:[s substringToIndex:1]];
+//	}
+//	
+//	return ([[mySet allObjects] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]);
+//}
+//
+//- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
+//	return (index);
+//}
+
+
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0)
@@ -310,8 +346,14 @@
 	} else {
 		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row - 1];
 		
-		NSLog(@"VOTE SUBJECT :[%@]", vo.subjectName);
-		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithSubject:vo.subjectID] animated:YES];
+		NSLog(@"VOTE SUBJECT :[%d]", vo.actives);
+		
+		if (vo.actives > 0)
+			[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithSubject:vo.subjectID] animated:YES];
+		
+		else {
+			[[[UIAlertView alloc] initWithTitle:@"No Challenges" message:@"No games available!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		}
 	}
 	
 	//	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -348,6 +390,24 @@
 						
 						if (vo != nil)
 							[list addObject:vo];
+						
+						for (HONPopularUserVO *vo in list) {
+							NSString *firstLetter = [[vo.username substringToIndex:1] uppercaseString];
+							
+							if ([firstLetter isEqualToString:@"0"] || [firstLetter isEqualToString:@"1"] || [firstLetter isEqualToString:@"2"] || [firstLetter isEqualToString:@"3"] || [firstLetter isEqualToString:@"4"] || [firstLetter isEqualToString:@"5"] || [firstLetter isEqualToString:@"6"] || [firstLetter isEqualToString:@"7"] || [firstLetter isEqualToString:@"8"] || [firstLetter isEqualToString:@"9"])
+								firstLetter = @"#";
+							
+							if ([_usersDictionary objectForKey:firstLetter] == nil) {
+								NSMutableArray * tmpArray = [NSMutableArray array];
+								[tmpArray addObject:vo];
+								[_usersDictionary setObject:tmpArray forKey:firstLetter];
+								
+							} else {
+								NSMutableArray *letterArray = [_usersDictionary objectForKey:firstLetter];
+								[letterArray addObject:vo];
+								[_usersDictionary setObject:letterArray forKey:firstLetter];
+							}
+						}
 					}
 					
 					_users = [list copy];

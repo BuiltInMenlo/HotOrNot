@@ -89,6 +89,24 @@
 	return [[NSUserDefaults standardUserDefaults] objectForKey:@"fb_profile"];
 }
 
++ (void)setAllowsFBPosting:(BOOL)canPost {
+	NSString *allows;
+	
+	if (canPost)
+		allows = @"YES";
+	
+	else
+		allows = @"NO";
+	
+	[[NSUserDefaults standardUserDefaults] setObject:allows forKey:@"fb_posting"];
+}
+
++ (BOOL)allowsFBPosting {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"] isEqualToString:@"YES"]);
+}
+
+
+
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
 	UIGraphicsBeginImageContext(size);
 	
@@ -175,7 +193,7 @@
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
-	NSLog(@"BOUNDS:[%f, %f]", self.window.bounds.size.width, self.window.bounds.size.height);
+	NSLog(@"TOKEN:[%@]", [HONAppDelegate deviceToken]);
 	
 	NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 	[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
@@ -213,6 +231,9 @@
 	
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
 	}
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
+		[HONAppDelegate setAllowsFBPosting:YES];
 	
 		
 	PFQuery *query = [PFQuery queryWithClassName:@"APIs"];

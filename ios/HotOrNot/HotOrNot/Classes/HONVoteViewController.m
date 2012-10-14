@@ -46,6 +46,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_zoomImage:) name:@"ZOOM_IMAGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 	}
 	
 	return (self);
@@ -65,6 +66,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_zoomImage:) name:@"ZOOM_IMAGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 	}
 	
 	return (self);
@@ -85,6 +87,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteSub:) name:@"VOTE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_zoomImage:) name:@"ZOOM_IMAGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 	}
 	
 	return (self);
@@ -284,6 +287,10 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:[notification object]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_refreshList:(NSNotification *)notification {
+	[self _retrieveChallenges];
 }
 
 

@@ -15,12 +15,22 @@
 
 @implementation HONCameraOverlayView
 
-@synthesize delegate, flashButton, changeCameraButton, captureButton, cameraRollButton;
+@synthesize delegate, flashButton, captureButton, cameraRollButton;
 
 - (id)initWithFrame:(CGRect)frame {
 	if (self = [super initWithFrame:frame]) {
-		
 		self.opaque = NO;
+		
+		float gutterHeight = ([[UIApplication sharedApplication] delegate].window.frame.size.height - 320.0) * 0.5;
+		
+		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, gutterHeight)];
+		headerGutterView.backgroundColor = [UIColor blackColor];
+		[self addSubview:headerGutterView];
+		
+		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 350.0, self.frame.size.height - gutterHeight, gutterHeight)];
+		footerGutterView.backgroundColor = [UIColor blackColor];
+		[self addSubview:footerGutterView];
+		
 		
 		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
 		[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
@@ -77,6 +87,13 @@
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
 		[self.cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
 		[footerImgView addSubview:self.cameraRollButton];
+		
+		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		changeCameraButton.frame = CGRectMake(270.0, 10.0, 44.0, 44.0);
+		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
+		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
+		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
+		[footerImgView addSubview:changeCameraButton];
 	}
 	
 	return (self);
@@ -92,7 +109,7 @@
 }
 
 - (void)changeCamera:(id)sender {
-	//[self.delegate changeCamera];
+	[self.delegate changeCamera];
 }
 
 - (void)showCameraRoll:(id)sender {

@@ -36,9 +36,9 @@
 		
 		_tournamentSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
 		[_tournamentSwitch addTarget:self action:@selector(_goTournamentsSwitch:) forControlEvents:UIControlEventValueChanged];
-		_tournamentSwitch.on = YES;
+		_tournamentSwitch.on = [HONAppDelegate allowsFBPosting];
 		
-		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Daily Tournaments", @"Logout", @"Privacy Policy", @"", nil];
+		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Facebook Posting", @"Logout", @"Privacy Policy", @"", nil];
 	}
 	
 	return (self);
@@ -119,13 +119,15 @@
 -(void)_goTournamentsSwitch:(UISwitch *)switchView {
 	NSString *msg;
 	
+	[HONAppDelegate setAllowsFBPosting:switchView.on];
+	
 	if (switchView.on)
-		msg = @"Turn on daily tournaments?";
+		msg = @"Turn on Facebook posting?";
 	
 	else
-		msg = @"Turn off daily tournaments?";
+		msg = @"Turn off facebook posting?";
 	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Daily Tournaments"
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook Posting"
 																	message:msg
 																  delegate:self
 													  cancelButtonTitle:@"Yes"

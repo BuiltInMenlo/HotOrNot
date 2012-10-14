@@ -115,11 +115,16 @@
 				$result = mysql_query($query);
 				$row = mysql_fetch_object($result);
 				
+				$active = 0;
+				if ($row->status_id == 4)
+					$active++;
+					
 				array_push($subject_arr, array(
 					"id" => $subject_row['id'], 
 					"name" => $subject_row['title'], 					
 					"img_url" => "",   
-					"score" => mysql_num_rows($result)
+					"score" => mysql_num_rows($result), 
+					"active" => $active
 				));	
 			}
 				

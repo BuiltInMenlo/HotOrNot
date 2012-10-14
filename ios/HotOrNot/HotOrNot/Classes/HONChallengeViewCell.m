@@ -99,9 +99,9 @@
 	creatorImgHolderView.clipsToBounds = YES;
 	[self addSubview:creatorImgHolderView];
 	
-	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-30.0, 0.0, 162.0, 121.0)];
+	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-15.0, 0.0, 81.0, 60.0)];
 	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
-	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t1.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
+	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 	creatorImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[creatorImgHolderView addSubview:creatorImageView];
 	
@@ -147,16 +147,16 @@
 		[subjectLabel removeFromSuperview];
 		
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
-		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
+		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 		
 		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
 		challengerImgHolderView.clipsToBounds = YES;
 		[self addSubview:challengerImgHolderView];
 		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-30.0, 10.0, 162.0, 121.0)];
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-15.0, 10.0, 81.0, 60.0)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		challengerImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
-		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
+		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
 
 		
@@ -214,16 +214,16 @@
 		
 	} else if ([challengeVO.status isEqualToString:@"Completed"]) {
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
-		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
+		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 		
 		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
 		challengerImgHolderView.clipsToBounds = YES;
 		[self addSubview:challengerImgHolderView];
 		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-30.0, 10.0, 162.0, 121.0)];
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-15.0, 10.0, 81.0, 60.0)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		challengerImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
-		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t2.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
+		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
 		
 		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
@@ -231,7 +231,12 @@
 		
 		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
 			_bgImgView.image = [UIImage imageNamed:@"winnerRowBackground.png"];
-			[ctaButton setTitle:@"Winner" forState:UIControlStateNormal];
+			
+			if (self.challengeVO.scoreCreator == 1)
+				[ctaButton setTitle:@"1 point" forState:UIControlStateNormal];
+			else
+				[ctaButton setTitle:[NSString stringWithFormat:@"%d points", self.challengeVO.scoreCreator] forState:UIControlStateNormal];
+			
 			creatorLabel.text = self.challengeVO.creatorName;
 			
 		} else if (self.challengeVO.scoreCreator < self.challengeVO.scoreChallenger) {

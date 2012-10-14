@@ -40,7 +40,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 648.0, 484.0)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(-100.0, 0.0, kLargeW, kLargeH)];
 	imgView.userInteractionEnabled = YES;
 	[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", self.imgURL]] placeholderImage:nil];
 	imgView.transform = CGAffineTransformMakeRotation(M_PI / 2);

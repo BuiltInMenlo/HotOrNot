@@ -16,6 +16,7 @@
 
 @property (nonatomic) int subjectID;
 @property (nonatomic) int score;
+@property (nonatomic) int actives;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic, retain) NSString *imageURL;
 

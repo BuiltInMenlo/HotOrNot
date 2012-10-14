@@ -11,7 +11,7 @@
 @implementation HONPopularSubjectVO
 
 @synthesize dictionary;
-@synthesize subjectID, subjectName, score;
+@synthesize subjectID, subjectName, score, actives;
 
 + (HONPopularSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary {
 	HONPopularSubjectVO *vo = [[HONPopularSubjectVO alloc] init];
@@ -19,6 +19,7 @@
 	
 	vo.subjectID = [[dictionary objectForKey:@"id"] intValue];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
+	vo.actives = [[dictionary objectForKey:@"active"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"name"];
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	

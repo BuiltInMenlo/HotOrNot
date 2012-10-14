@@ -52,15 +52,7 @@
 	if ((self = [super init])) {
 		NSLog(@"initWithImage:[%f, %f]", img.size.width, img.size.height);
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		self.challengeImage = [img copy];
-		
-		UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 130.0, 240.0, 180.0)];
-		imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		imgView.image = img;
-		imgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
-		[self.view addSubview:imgView];
-		
-		NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
+		self.challengeImage = img;
 	}
 	
 	return (self);
@@ -113,7 +105,6 @@
 	_placeholderLabel.text = @"Give your challenge a #hashtag";
 	[subjectImgView addSubview:self.placeholderLabel];
 	
-	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	friendsButton.frame = CGRectMake(20.0, 350.0, 280.0, 43.0);
 	[friendsButton setBackgroundColor:[UIColor whiteColor]];
@@ -137,8 +128,20 @@
 	[self.view addSubview:randomButton];
 }
 
-- (void)viewDidLoad {
-	[super viewDidLoad];
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(30.0, 105.0, 240.0, 240.0)];
+	holderView.clipsToBounds = YES;
+	[self.view addSubview:holderView];
+	
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(-85.0, -40.0, 480.0, 360.0)];
+	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	imgView.image = self.challengeImage;
+	imgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
+	[holderView addSubview:imgView];
+	
+	NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
 }
 
 
@@ -189,7 +192,7 @@
 			 
 		 } else {
 			 // submit
-			 self.filename = [NSString stringWithFormat:@"%@", [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+			 self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 			 self.fbID = [[friendPickerController.selection lastObject] objectForKey:@"id"];
 			 
 			 [self _goFriendChallenge];
@@ -200,11 +203,10 @@
 - (void)_goFriendChallenge {
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
-	UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(1296.0, 968.0)];
-	UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(480.0, 360.0)];
-	UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(324.0, 242.0)];
-	UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(324.0, 242.0)];
-
+	UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
+	UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW, kMediumH)];
+	UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W, kThumb1H)];
+	//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
 	
@@ -217,15 +219,15 @@
 		_progressHUD.taskInProgress = YES;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t1.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", self.filename] inBucket:@"hotornot-challenges"];
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, 1.0);
 		[s3 putObject:por1];
 		
-		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", self.filename] inBucket:@"hotornot-challenges"];
-		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
-		[s3 putObject:por2];
+//		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", self.filename] inBucket:@"hotornot-challenges"];
+//		por2.contentType = @"image/jpeg";
+//		por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
+//		[s3 putObject:por2];
 		
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
@@ -260,14 +262,14 @@
 - (void)_goRandomChallenge {
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
-	UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(1296.0, 968.0)];
-	UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(480.0, 360.0)];
-	UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(324.0, 242.0)];
-	UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(324.0, 242.0)];
+	UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
+	UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW, kMediumH)];
+	UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W, kThumb1H)];
+	//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
 	
-	self.filename = [NSString stringWithFormat:@"%@", [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
 	
 	@try {
@@ -278,15 +280,15 @@
 		_progressHUD.taskInProgress = YES;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t1.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", self.filename] inBucket:@"hotornot-challenges"];
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, 1.0);
 		[s3 putObject:por1];
 		
-		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", self.filename] inBucket:@"hotornot-challenges"];
-		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
-		[s3 putObject:por2];
+//		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", self.filename] inBucket:@"hotornot-challenges"];
+//		por2.contentType = @"image/jpeg";
+//		por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
+//		[s3 putObject:por2];
 		
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
@@ -363,6 +365,8 @@
 			
 			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
 			[HONFacebookCaller postToTimeline:vo];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 			
 //			if (self.fbID != nil)
 //				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];

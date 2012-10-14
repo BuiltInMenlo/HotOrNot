@@ -12,7 +12,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, status, subjectName, creatorName, challengerName, addedDate, startedDate, endDate;
+@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, status, subjectName, creatorName, creatorFB, challengerName, addedDate, startedDate, endDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -49,6 +49,7 @@
 	vo.scoreChallenger = [[dictionary objectForKey:@"score2"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"subject"];
 	vo.creatorName = [dictionary objectForKey:@"creator"];
+	vo.creatorFB = [dictionary objectForKey:@"creator_fb"];
 	vo.challengerName = [dictionary objectForKey:@"challenger"];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -67,6 +68,7 @@
 	self.image2URL = nil;
 	self.subjectName = nil;
 	self.creatorName = nil;
+	self.creatorFB = nil;
 	self.challengerName = nil;
 	self.startedDate = nil;
 	self.addedDate = nil;
