@@ -9,6 +9,7 @@
 #import "HONCameraOverlayView.h"
 
 #import "HONAppDelegate.h"
+#import "HONHeaderView.h"
 
 @interface HONCameraOverlayView()
 @end
@@ -31,21 +32,15 @@
 		footerGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:footerGutterView];
 		
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+		[self addSubview:headerView];
 		
-		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-		[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-		headerImgView.userInteractionEnabled = YES;
-		[self addSubview:headerImgView];
-		
-		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(255.0, 5.0, 54.0, 34.0);
-		[backButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
-		[backButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
-		//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[backButton setTitle:@"Cancel" forState:UIControlStateNormal];
-		[headerImgView addSubview:backButton];
+		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cancelButton.frame = CGRectMake(255.0, 5.0, 54.0, 34.0);
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive.png"] forState:UIControlStateNormal];
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active.png"] forState:UIControlStateHighlighted];
+		[cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
+		[headerView addSubview:cancelButton];
 		
 //		UIImage *buttonImageNormal;
 //		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {

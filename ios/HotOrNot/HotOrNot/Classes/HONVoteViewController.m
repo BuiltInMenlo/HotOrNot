@@ -15,6 +15,7 @@
 #import "HONFacebookCaller.h"
 #import "HONImagePickerViewController.h"
 #import "HONPhotoViewController.h"
+#import "HONHeaderView.h"
 
 @interface HONVoteViewController() <UIActionSheetDelegate, ASIHTTPRequestDelegate>
 - (void)_retrieveChallenges;
@@ -103,29 +104,27 @@
 	
 	NSLog(@"SUBJECT:[%d][%d]", self.subjectID, _isPushView);
 	
-	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-	headerImgView.userInteractionEnabled = YES;
-	[self.view addSubview:headerImgView];
-	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Popular"];
+	[self.view addSubview:headerView];
+		
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(5.0, 5.0, 54.0, 34.0);
+		backButton.frame = CGRectMake(5.0, 5.0, 74.0, 44.0);
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
 		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[backButton setTitle:@"Back" forState:UIControlStateNormal];
-		[headerImgView addSubview:backButton];
+		[headerView addSubview:backButton];
 	}
 	
 	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	refreshButton.frame = CGRectMake(290.0, 10.0, 20.0, 20.0);
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_nonActive.png"] forState:UIControlStateNormal];
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_Active.png"] forState:UIControlStateHighlighted];
+	refreshButton.frame = CGRectMake(260.0, 0.0, 50.0, 45.0);
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[headerImgView addSubview:refreshButton];
+	[headerView addSubview:refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -183,6 +182,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	
+	if ([_challenges count] == 0)
+		[[[UIAlertView alloc] initWithTitle:@"No Challenges" message:@"There aren't any challenges available!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

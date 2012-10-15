@@ -16,6 +16,7 @@
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 #import "HONFacebookCaller.h"
+#import "HONHeaderView.h"
 
 @interface HONChallengerPickerViewController () <UITextFieldDelegate, FBFriendPickerDelegate>
 @property(nonatomic, strong) NSString *subjectName;
@@ -63,20 +64,18 @@
 	NSLog(@"loadView");
 	[super loadView];
 	
-	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-	headerImgView.userInteractionEnabled = YES;
-	[self.view addSubview:headerImgView];
-	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Challenger"];
+	[self.view addSubview:headerView];
+		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(5.0, 5.0, 54.0, 34.0);
+	backButton.frame = CGRectMake(5.0, 5.0, 74.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
 	[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[backButton setTitle:@"Back" forState:UIControlStateNormal];
-	[headerImgView addSubview:backButton];
+	[headerView addSubview:backButton];
 	
 	UIImageView *subjectImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 45.0)];
 	[subjectImgView setImage:[UIImage imageNamed:@"cameraInput.png"]];
@@ -106,25 +105,17 @@
 	[subjectImgView addSubview:self.placeholderLabel];
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(20.0, 350.0, 280.0, 43.0);
-	[friendsButton setBackgroundColor:[UIColor whiteColor]];
-	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+	friendsButton.frame = CGRectMake(20.0, 350.0, 284.0, 49.0);
+	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_nonActive.png"] forState:UIControlStateNormal];
+	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_Active.png"] forState:UIControlStateHighlighted];
 	[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
-	//friendsButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[friendsButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
-	[friendsButton setTitle:@"Challenge Friends" forState:UIControlStateNormal];
 	[self.view addSubview:friendsButton];
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(20.0, 400.0, 280.0, 43.0);
-	[randomButton setBackgroundColor:[UIColor whiteColor]];
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+	randomButton.frame = CGRectMake(20.0, 400.0, 284.0, 49.0);
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_nonActive.png"] forState:UIControlStateNormal];
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_Active.png"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
-	//randomButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[randomButton setTitleColor:[UIColor colorWithWhite:0.396 alpha:1.0] forState:UIControlStateNormal];
-	[randomButton setTitle:@"Random Challenge" forState:UIControlStateNormal];
 	[self.view addSubview:randomButton];
 }
 

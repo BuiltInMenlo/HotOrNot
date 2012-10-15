@@ -10,6 +10,7 @@
 
 #import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
+#import "HONHeaderView.h"
 
 @interface HONCreateChallengeViewController() <UITextFieldDelegate, FBFriendPickerDelegate>
 @property (nonatomic, strong) NSString *subjectName;
@@ -60,20 +61,18 @@
 	[super loadView];
 	
 	if (_isPushView) {
-		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-		[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-		headerImgView.userInteractionEnabled = YES;
-		[self.view addSubview:headerImgView];
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Create Challenge"];
+		[self.view addSubview:headerView];
 		
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(5.0, 5.0, 54.0, 34.0);
+		backButton.frame = CGRectMake(5.0, 5.0, 74.0, 44.0);
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
 		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[backButton setTitle:@"Back" forState:UIControlStateNormal];
-		[headerImgView addSubview:backButton];
+		[headerView addSubview:backButton];
 	}
 	
 	UITextField *subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 280.0, 20.0)];

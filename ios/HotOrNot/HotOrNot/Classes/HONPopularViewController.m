@@ -14,6 +14,7 @@
 #import "HONPopularSubjectViewCell.h"
 #import "HONAppDelegate.h"
 #import "ASIFormDataRequest.h"
+#import "HONHeaderView.h"
 
 #import "HONPopularSubjectVO.h"
 #import "HONPopularUserVO.h"
@@ -70,38 +71,29 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	headerImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-	headerImgView.userInteractionEnabled = YES;
-	[self.view addSubview:headerImgView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Popular"];
+	[self.view addSubview:headerView];
 	
-	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(76.0, 5.0, 167.0, 34.0)];
-	_toggleImgView.image = [UIImage imageNamed:@"Ltoggle.png"];
-	[headerImgView addSubview:_toggleImgView];
+	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(76.0, 0.0, 169.0, 44.0)];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
+	[headerView addSubview:_toggleImgView];
 	
 	UIButton *leadersButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	leadersButton.frame = CGRectMake(76.0, 5.0, 84.0, 34.0);
 	[leadersButton addTarget:self action:@selector(_goLeaders) forControlEvents:UIControlEventTouchUpInside];
-	//leadersButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[leadersButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[leadersButton setTitle:@"Leaders" forState:UIControlStateNormal];
-	[headerImgView addSubview:leadersButton];
+	[headerView addSubview:leadersButton];
 	
 	UIButton *tagsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	tagsButton.frame = CGRectMake(161.0, 5.0, 84.0, 34.0);
 	[tagsButton addTarget:self action:@selector(_goTags) forControlEvents:UIControlEventTouchUpInside];
-	//tagsButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[tagsButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[tagsButton setTitle:@"Tags" forState:UIControlStateNormal];
-	[headerImgView addSubview:tagsButton];
+	[headerView addSubview:tagsButton];
 	
 	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	refreshButton.frame = CGRectMake(290.0, 10.0, 20.0, 20.0);
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_nonActive.png"] forState:UIControlStateNormal];
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_Active.png"] forState:UIControlStateHighlighted];
+	refreshButton.frame = CGRectMake(260.0, 0.0, 50.0, 45.0);
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[headerImgView addSubview:refreshButton];
+	[headerView addSubview:refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -153,7 +145,7 @@
 
 - (void)_retrievePopularSubjects {
 	self.isUsersList = NO;
-	_toggleImgView.image = [UIImage imageNamed:@"Rtoggle.png"];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_hashTags.png"];
 	
 	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[self.usersRequest setDelegate:self];
@@ -165,7 +157,7 @@
 
 - (void)_retrievePopularUsers {
 	self.isUsersList = YES;
-	_toggleImgView.image = [UIImage imageNamed:@"Ltoggle.png"];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
 	
 	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[self.usersRequest setDelegate:self];
@@ -178,7 +170,7 @@
 #pragma mark - Navigation
 - (void)_goLeaders {
 	self.isUsersList = YES;
-	_toggleImgView.image = [UIImage imageNamed:@"Ltoggle.png"];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
 	
 	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[self.usersRequest setDelegate:self];
@@ -189,7 +181,7 @@
 
 - (void)_goTags {
 	self.isUsersList = NO;
-	_toggleImgView.image = [UIImage imageNamed:@"Rtoggle.png"];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_hashTags.png"];
 	
 	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[self.usersRequest setDelegate:self];
@@ -275,30 +267,6 @@
 		return (cell);
 	}
 }
-
-
-//- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-//	NSMutableSet *mySet = [[NSMutableSet alloc] init];
-//	
-//	NSArray *myArray;
-//	if (self.isUsersList)
-//		myArray = [_users copy];
-//	
-//	else
-//		myArray = [_subjects copy];
-//	
-//	
-//	for (NSString *s in myArray) {
-//		if (s.length > 0)
-//			[mySet addObject:[s substringToIndex:1]];
-//	}
-//	
-//	return ([[mySet allObjects] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)]);
-//}
-//
-//- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
-//	return (index);
-//}
 
 
 #pragma mark - TableView Delegates

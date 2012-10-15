@@ -33,10 +33,14 @@
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
-		_bgImgView.image = [UIImage imageNamed:@"headerBackground.png"];
+		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:dailyButton];
 		
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 20.0, 50.0, 16.0)];
+		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
 		//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//ptsLabel = [SNAppDelegate snLinkColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
@@ -44,18 +48,13 @@
 		[self addSubview:ptsLabel];
 		
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 20.0, 150.0, 16.0)];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 150.0, 16.0)];
 		//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//subjectLabel = [SNAppDelegate snLinkColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textAlignment = NSTextAlignmentCenter;
 		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
 		[self addSubview:subjectLabel];
-		
-		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		dailyButton.frame = CGRectMake(108.0, 5.0, 195.0, 50.0);
-		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:dailyButton];
 	}
 	
 	return (self);
@@ -63,16 +62,13 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"footerRowBackground.png"];
+		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
 		
 		UIButton *loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		loadMoreButton.frame = CGRectMake(100.0, 10.0, 100.0, 44.0);
-		[loadMoreButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
-		[loadMoreButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+		loadMoreButton.frame = CGRectMake(100.0, 0.0, 120.0, 60.0);
+		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive.png"] forState:UIControlStateNormal];
+		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active.png"] forState:UIControlStateHighlighted];
 		[loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-		//loadMoreButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-		[loadMoreButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:1.0] forState:UIControlStateNormal];
-		[loadMoreButton setTitle:@"Load More" forState:UIControlStateNormal];
 		[self addSubview:loadMoreButton];
 	}
 	
@@ -122,23 +118,19 @@
 	[self addSubview:subjectLabel];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	ctaButton.frame = CGRectMake(200.0, 10.0, 100.0, 44.0);
-	[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
-	[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+	ctaButton.frame = CGRectMake(200.0, 0.0, 98.0, 60.0);
 	[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
-	//ctaButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[ctaButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:1.0] forState:UIControlStateNormal];
-	[ctaButton setTitle:self.challengeVO.status forState:UIControlStateNormal];
 	[self addSubview:ctaButton];
 	
 	if ([self.challengeVO.status isEqualToString:@"Waiting"]) {
 		_bgImgView.image = [UIImage imageNamed:@"genericRowBackground.png"];
-		
-		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
-		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive.png"] forState:UIControlStateNormal];
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active.png"] forState:UIControlStateHighlighted];
 	
 	} else if ([self.challengeVO.status isEqualToString:@"Accept"]) {
 		_bgImgView.image = [UIImage imageNamed:@"genericRowBackground.png"];
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive.png"] forState:UIControlStateNormal];
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active.png"] forState:UIControlStateHighlighted];
 		
 	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
 		_bgImgView.image = [UIImage imageNamed:@"activeRowBackground.png"];
@@ -226,11 +218,10 @@
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
 		
-		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_nonActive.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateNormal];
-		[ctaButton setBackgroundImage:[[UIImage imageNamed:@"genericGrayButton_Active.png"] stretchableImageWithLeftCapWidth:16.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
-		
 		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
 			_bgImgView.image = [UIImage imageNamed:@"winnerRowBackground.png"];
+			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_nonActive.png"] forState:UIControlStateNormal];
+			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_Active.png"] forState:UIControlStateHighlighted];
 			
 			if (self.challengeVO.scoreCreator == 1)
 				[ctaButton setTitle:@"1 point" forState:UIControlStateNormal];
@@ -241,12 +232,15 @@
 			
 		} else if (self.challengeVO.scoreCreator < self.challengeVO.scoreChallenger) {
 			_bgImgView.image = [UIImage imageNamed:@"loserRowBackground.png"];
-			[ctaButton setTitle:@"Loser" forState:UIControlStateNormal];
+			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonLoser_nonActive.png"] forState:UIControlStateNormal];
+			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonLoser_Active.png"] forState:UIControlStateHighlighted];
+			
 			creatorLabel.text = self.challengeVO.challengerName;
 		
 		} else {
 			_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage.png"];
-			[ctaButton setTitle:@"Tie" forState:UIControlStateNormal];
+			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_nonActive.png"] forState:UIControlStateNormal];
+			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_Active.png"] forState:UIControlStateHighlighted];
 		}
 	}
 }

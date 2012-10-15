@@ -23,6 +23,10 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+		bgImgView.image = [UIImage imageNamed:@"challengeHeader.png"];
+		[self addSubview:bgImgView];
+		
 		_creatorImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 15.0, 25.0, 25.0)];
 		[self addSubview:_creatorImgView];
 		
@@ -33,9 +37,9 @@
 		[self addSubview:_titleLabel];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(280.0, 10.0, 34.0, 24.0);
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive.png"] forState:UIControlStateNormal];
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active.png"] forState:UIControlStateHighlighted];
+		moreButton.frame = CGRectMake(280.0, 0.0, 34.0, 34.0);
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:moreButton];
 	}

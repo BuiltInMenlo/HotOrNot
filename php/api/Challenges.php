@@ -512,12 +512,26 @@
 		}
 		
 		function getActiveVotes($user_id) {
-			$challenge_arr = array();
-			
-			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 4 ORDER BY `started` DESC;';
+			$challenge_arr = array();			
+			$id_arr = array();
+
+			$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 4;';
 			$result = mysql_query($query);
-			
 			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+				$id_arr[$row['id']] = 0;
+			}
+
+			$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 4;';
+			$result = mysql_query($query);
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+				$id_arr[$row['id']]++;
+			}
+
+			arsort($id_arr);
+			foreach ($id_arr as $key => $val) {				
+				$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $key .';';
+				$row = mysql_fetch_array(mysql_query($query), MYSQL_BOTH);
+				
 				$creator_id = $row['creator_id'];
 				
 				$query = 'SELECT `user_id` FROM `tblChallengeParticipants` WHERE `challenge_id` = '. $row['id'] .';';

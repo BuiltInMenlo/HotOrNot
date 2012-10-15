@@ -10,6 +10,7 @@
 #import "HONAppDelegate.h"
 
 #import "MBProgressHUD.h"
+#import "HONHeaderView.h"
 
 @interface HONPrivacyViewController () <UIWebViewDelegate>
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -36,21 +37,18 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	headerImgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-	headerImgView.userInteractionEnabled = YES;
-	[self.view addSubview:headerImgView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Privacy"];
+	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(5.0, 5.0, 54.0, 34.0);
+	backButton.frame = CGRectMake(5.0, 5.0, 74.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
 	[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[backButton setTitle:@"Back" forState:UIControlStateNormal];
-	[headerImgView addSubview:backButton];
+	[headerView addSubview:backButton];
 	
 	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0)];
 	[webView setBackgroundColor:[UIColor clearColor]];

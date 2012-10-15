@@ -59,9 +59,9 @@
 	[self.view addSubview:bgImgView];
 	
 	// Initialise our two images
-	UIImage *btnImage = [UIImage imageNamed:@"tab01_nonActive.png"];
-	UIImage *btnImageActive = [UIImage imageNamed:@"tab01_Active.png"];
-	UIImage *btnImageSelected = [UIImage imageNamed:@"tab01_tapped.png"];
+	UIImage *btnImage = [UIImage imageNamed:@"tabbar_001_nonActive.png"];
+	UIImage *btnImageActive = [UIImage imageNamed:@"tabbar_001_active.png"];
+	UIImage *btnImageSelected = [UIImage imageNamed:@"tabbar_001_tapped.png"];
 	
 	self.btn1 = [UIButton buttonWithType:UIButtonTypeCustom]; //Setup the button
 	btn1.frame = CGRectMake(0.0, self.view.frame.size.height - 48.0, 64.0, 48.0); // Set the frame (size and position) of the button)
@@ -72,9 +72,9 @@
 	[btn1 setSelected:true]; // Set this button as selected (we will select the others to false as we only want Tab 1 to be selected initially
 	
 	// Now we repeat the process for the other buttons
-	btnImage = [UIImage imageNamed:@"tab02_nonActive.png"];
-	btnImageActive = [UIImage imageNamed:@"tab02_Active.png"];
-	btnImageSelected = [UIImage imageNamed:@"tab02_tapped.png"];
+	btnImage = [UIImage imageNamed:@"tabbar_002_nonActive.png"];
+	btnImageActive = [UIImage imageNamed:@"tabbar_002_active.png"];
+	btnImageSelected = [UIImage imageNamed:@"tabbar_002_tapped.png"];
 	self.btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
 	btn2.frame = CGRectMake(64.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn2 setBackgroundImage:btnImage forState:UIControlStateNormal];
@@ -82,9 +82,9 @@
 	[btn2 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
 	[btn2 setTag:1];
 	
-	btnImage = [UIImage imageNamed:@"tab03_nonActive.png"];
-	btnImageActive = [UIImage imageNamed:@"tab03_Active.png"];
-	btnImageSelected = [UIImage imageNamed:@"tab03_tapped.png"];
+	btnImage = [UIImage imageNamed:@"tabbar_003_nonActive.png"];
+	btnImageActive = [UIImage imageNamed:@"tabbar_003_active.png"];
+	btnImageSelected = [UIImage imageNamed:@"tabbar_003_tapped.png"];
 	self.btn3 = [UIButton buttonWithType:UIButtonTypeCustom];
 	btn3.frame = CGRectMake(128.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn3 setBackgroundImage:btnImage forState:UIControlStateNormal];
@@ -92,9 +92,9 @@
 	[btn3 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
 	[btn3 setTag:2];
 	
-	btnImage = [UIImage imageNamed:@"tab04_nonActive.png"];
-	btnImageActive = [UIImage imageNamed:@"tab04_Active.png"];
-	btnImageSelected = [UIImage imageNamed:@"tab04_tapped.png"];
+	btnImage = [UIImage imageNamed:@"tabbar_004_nonActive.png"];
+	btnImageActive = [UIImage imageNamed:@"tabbar_004_active.png"];
+	btnImageSelected = [UIImage imageNamed:@"tabbar_004_tapped.png"];
 	self.btn4 = [UIButton buttonWithType:UIButtonTypeCustom];
 	btn4.frame = CGRectMake(192.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn4 setBackgroundImage:btnImage forState:UIControlStateNormal];
@@ -102,9 +102,9 @@
 	[btn4 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
 	[btn4 setTag:3];
 	
-	btnImage = [UIImage imageNamed:@"tab05_nonActive.png"];
-	btnImageActive = [UIImage imageNamed:@"tab05_Active.png"];
-	btnImageSelected = [UIImage imageNamed:@"tab05_tapped.png"];
+	btnImage = [UIImage imageNamed:@"tabbar_005_nonActive.png"];
+	btnImageActive = [UIImage imageNamed:@"tabbar_005_active.png"];
+	btnImageSelected = [UIImage imageNamed:@"tabbar_005_tapped.png"];
 	self.btn5 = [UIButton buttonWithType:UIButtonTypeCustom];
 	btn5.frame = CGRectMake(256.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn5 setBackgroundImage:btnImage forState:UIControlStateNormal];

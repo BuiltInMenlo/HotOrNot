@@ -12,7 +12,7 @@
 
 #import "HONLoginViewController.h"
 #import "HONAppDelegate.h"
-
+#import "HONHeaderView.h"
 
 
 @interface HONLoginViewController () <ASIHTTPRequestDelegate>
@@ -32,11 +32,9 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-	headerImgView.userInteractionEnabled = YES;
-	[self.view addSubview:headerImgView];
-	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Login"];
+	[self.view addSubview:headerView];
+		
 	UIImageView *holderImgView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 55.0, 301.0, 482.0)];
 	holderImgView.image = [UIImage imageNamed:[NSString stringWithFormat:@"firstRun_image0%d.png", ((arc4random() % 4) + 1)]];
 	[self.view addSubview:holderImgView];
@@ -47,9 +45,9 @@
 	[self.view addSubview:footerImgView];
 	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	facebookButton.frame = CGRectMake(77.0, 2.0, 167.0, 43.0);
-	[facebookButton setBackgroundImage:[UIImage imageNamed:@"facebookButton_nonActive.png"] forState:UIControlStateNormal];
-	[facebookButton setBackgroundImage:[UIImage imageNamed:@"facebookButton_Active.png"] forState:UIControlStateHighlighted];
+	facebookButton.frame = CGRectMake(12.0, 0.0, 296.0, 49.0);
+	[facebookButton setBackgroundImage:[UIImage imageNamed:@"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
+	[facebookButton setBackgroundImage:[UIImage imageNamed:@"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
 	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];
 	[footerImgView addSubview:facebookButton];
 }

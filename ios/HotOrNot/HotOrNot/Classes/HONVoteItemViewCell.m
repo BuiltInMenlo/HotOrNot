@@ -38,6 +38,8 @@
 	if ((self = [super init])) {
 		self.backgroundColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0];
 		
+		
+		
 		_lHolderImgView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 154.0, 249.0)];
 		_lHolderImgView.image = [UIImage imageNamed:@"voteBackgroundLiked_nonActive.png"];
 		_lHolderImgView.userInteractionEnabled = YES;

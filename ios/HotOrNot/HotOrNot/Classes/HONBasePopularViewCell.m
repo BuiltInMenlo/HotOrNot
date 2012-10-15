@@ -34,11 +34,10 @@
 		_bgImgView.image = [UIImage imageNamed:@"headerBackground.png"];
 		
 		UIButton *randomChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		randomChallengeButton.frame = CGRectMake(50.0, 5.0, 220.0, 50.0);
+		randomChallengeButton.frame = CGRectMake(50.0, 5.0, 284.0, 39.0);
 		[randomChallengeButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
-		//randomChallengeButton.titleLabel.font = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-		[randomChallengeButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:1.0] forState:UIControlStateNormal];
-		[randomChallengeButton setTitle:@"Random Challenge" forState:UIControlStateNormal];
+		[randomChallengeButton setBackgroundImage:[UIImage imageNamed:@"randomChallengeButton_nonActive.png"] forState:UIControlStateNormal];
+		[randomChallengeButton setBackgroundImage:[UIImage imageNamed:@"randomChallengeButton_Active.png"] forState:UIControlStateHighlighted];
 		[self addSubview:randomChallengeButton];
 	}
 	
@@ -47,7 +46,7 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"footerRowBackground.png"];
+		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
 	}
 	
 	return (self);
@@ -85,4 +84,5 @@
 - (void)_goRandomChallenge {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RANDOM_CHALLENGE" object:nil];
 }
+
 @end

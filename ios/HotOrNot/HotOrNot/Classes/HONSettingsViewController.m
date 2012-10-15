@@ -14,6 +14,7 @@
 
 #import "HONPrivacyViewController.h"
 #import "HONLoginViewController.h"
+#import "HONHeaderView.h"
 
 @interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, FBLoginViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -48,9 +49,8 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-	[headerImgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-	[self.view addSubview:headerImgView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings"];
+	[self.view addSubview:headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];

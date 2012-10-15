@@ -23,12 +23,13 @@
 #import "HONLoginViewController.h"
 #import "HONPhotoViewController.h"
 #import "HONVoteViewController.h"
+#import "HONHeaderView.h"
 
 @interface HONChallengesViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic) BOOL isFirstRun;
-@property(nonatomic, strong) UIButton *tutorialButton;
+@property(nonatomic, strong) UIImageView *tutorialOverlayImgView;
 @property(nonatomic, strong) NSDate *lastDate;
 @property(nonatomic, strong) ASIFormDataRequest *nextChallengesRequest;
 
@@ -40,7 +41,7 @@
 @synthesize tableView = _tableView;
 @synthesize challenges = _challenges;
 @synthesize isFirstRun = _isFirstRun;
-@synthesize tutorialButton = _tutorialButton;
+@synthesize tutorialOverlayImgView = _tutorialOverlayImgView;
 @synthesize lastDate = _lastDate;
 @synthesize nextChallengesRequest = _nextChallengesRequest;
 
@@ -89,12 +90,24 @@
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0) {
 		NSString *buttonImage = [NSString stringWithFormat:@"tutorial_image0%d.png", ((arc4random() % 4) + 1)];
 		
-		_tutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_tutorialButton.frame = CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height);
-		[_tutorialButton setBackgroundImage:[UIImage imageNamed:buttonImage] forState:UIControlStateNormal];
-		[_tutorialButton setBackgroundImage:[UIImage imageNamed:buttonImage] forState:UIControlStateHighlighted];
-		[_tutorialButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
-		[self.view addSubview:_tutorialButton];
+		_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, self.view.frame.size.height)];
+		_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
+		_tutorialOverlayImgView.userInteractionEnabled = YES; 
+		[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
+		
+		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		createChallengeButton.frame = CGRectMake(0.0, 20.0, 320.0, 78.0);
+		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
+		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+		[createChallengeButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
+		[_tutorialOverlayImgView addSubview:createChallengeButton];
+	
+		UIButton *createChallenge2Button = [UIButton buttonWithType:UIButtonTypeCustom];
+		createChallenge2Button.frame = CGRectMake(128.0, _tutorialOverlayImgView.frame.size.height - 48.0, 64.0, 48.0);
+		[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tab03_nonActive.png"] forState:UIControlStateNormal];
+		[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tab03_Active.png"] forState:UIControlStateHighlighted];
+		[createChallenge2Button addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
+		[_tutorialOverlayImgView addSubview:createChallenge2Button];
 	}
 }
 
@@ -168,8 +181,10 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	[_tutorialButton removeTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialButton removeFromSuperview];
+	_tutorialOverlayImgView.hidden = YES;
+	[_tutorialOverlayImgView removeFromSuperview];
+	
+	[self _goCreateChallenge];
 }
 
 
@@ -220,18 +235,13 @@
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 45.0)];
 	
 	if (section == 0) {
-		
-		NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
-		
-		UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
-		[imgView setImage:[UIImage imageNamed:@"headerTitleBackground.png"]];
-		imgView.userInteractionEnabled = YES;
-		[headerView addSubview:imgView];
+		//NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
+		[headerView addSubview:[[HONHeaderView alloc] initWithTitle:@""]];
 		
 		UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		refreshButton.frame = CGRectMake(290.0, 10.0, 20.0, 20.0);
-		[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_nonActive.png"] forState:UIControlStateNormal];
-		[refreshButton setBackgroundImage:[UIImage imageNamed:@"genericButton_Active.png"] forState:UIControlStateHighlighted];
+		refreshButton.frame = CGRectMake(260.0, 0.0, 50.0, 45.0);
+		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 		[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 		[headerView addSubview:refreshButton];
 	
@@ -239,9 +249,9 @@
 		headerView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.0];
 		
 		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 75.0);
-		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"mainCTA_nonActive.png"] forState:UIControlStateNormal];
-		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"mainCTA_Active.png"] forState:UIControlStateHighlighted];
+		createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
+		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
+		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
 		[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[headerView addSubview:createChallengeButton];
 	}
@@ -280,12 +290,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	if (indexPath.row == 0)
-		return (55.0);
-		
-	else
-		return (70.0);
+	return (70.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

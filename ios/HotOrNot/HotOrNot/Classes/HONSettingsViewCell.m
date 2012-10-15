@@ -31,10 +31,14 @@
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
-		_bgImgView.image = [UIImage imageNamed:@"headerBackground.png"];
+		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:dailyButton];
 		
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 20.0, 50.0, 16.0)];
+		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
 		//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//ptsLabel = [SNAppDelegate snLinkColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
@@ -42,7 +46,7 @@
 		[self addSubview:ptsLabel];
 		
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 20.0, 150.0, 16.0)];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 150.0, 16.0)];
 		//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
 		//subjectLabel = [SNAppDelegate snLinkColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
@@ -56,7 +60,7 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"footerRowBackground.png.png"];
+		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
 	}
 	
 	return (self);

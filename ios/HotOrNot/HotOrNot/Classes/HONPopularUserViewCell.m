@@ -38,6 +38,13 @@
 		//scoreLabel = [SNAppDelegate snLinkColor];
 		self.scoreLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.scoreLabel];
+		
+		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		challengeButton.frame = CGRectMake(220.0, 10.0, 84.0, 44.0);
+		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
+		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:challengeButton];
 	}
 	
 	return (self);
@@ -54,4 +61,9 @@
 	self.usernameLabel.text = _userVO.username;
 	self.scoreLabel.text = [NSString stringWithFormat:@"%d points", _userVO.score];
 }
+
+- (void)_goChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"POPULAR_USER_CHALLENGE" object:_userVO];
+}
+
 @end
