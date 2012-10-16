@@ -30,11 +30,11 @@
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
-		_bgImgView.image = [UIImage imageNamed:@"headerBackground.png"];
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
+		_bgImgView.image = [UIImage imageNamed:@"leaderTableHeader.png"];
 		
 		UIButton *randomChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		randomChallengeButton.frame = CGRectMake(50.0, 5.0, 284.0, 39.0);
+		randomChallengeButton.frame = CGRectMake(20.0, 25.0, 284.0, 39.0);
 		[randomChallengeButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[randomChallengeButton setBackgroundImage:[UIImage imageNamed:@"randomChallengeButton_nonActive.png"] forState:UIControlStateNormal];
 		[randomChallengeButton setBackgroundImage:[UIImage imageNamed:@"randomChallengeButton_Active.png"] forState:UIControlStateHighlighted];
@@ -54,14 +54,7 @@
 
 - (id)initAsMidCell:(int)index {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage.png"];
-		
-		UILabel *indexLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 50.0, 16.0)];
-		//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//subjectLabel = [SNAppDelegate snLinkColor];
-		indexLabel.backgroundColor = [UIColor clearColor];
-		indexLabel.text = [NSString stringWithFormat:@"%d.", index];
-		[self addSubview:indexLabel];
+		_bgImgView.image = [UIImage imageNamed:@"leaderTableRow_nonActive.png"];
 	}
 	
 	return (self);

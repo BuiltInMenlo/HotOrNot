@@ -135,34 +135,35 @@
 	self.tableView.userInteractionEnabled = YES;
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
-	self.tableView.contentInset = UIEdgeInsetsMake(55.0, 0.0f, 55.0f, 0.0f);
+	//self.tableView.contentInset = UIEdgeInsetsMake(70.0, 0.0f, 70.0f, 0.0f);
+	self.tableView.contentOffset = CGPointMake(0.0, -70.0);
 	[self.view addSubview:self.tableView];
 	
-	UIImageView *tableHeaderImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -55.0, 320.0, 55.0)];
-	tableHeaderImgView.image = [UIImage imageNamed:@"headerBackground.png"];
-	tableHeaderImgView.userInteractionEnabled = YES;
+	UIView *tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -70.0, 320.0, 70.0)];
+	tableHeaderView.userInteractionEnabled = YES;
 	
-	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 20.0, 50.0, 16.0)];
-	//ptsLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-	//ptsLabel = [SNAppDelegate snLinkColor];
+	UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
+	[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
+	[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+	[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[tableHeaderView addSubview:dailyButton];
+	
+	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
+	ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+	ptsLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	ptsLabel.backgroundColor = [UIColor clearColor];
 	ptsLabel.text = [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue]];
-	[tableHeaderImgView addSubview:ptsLabel];
+	[tableHeaderView addSubview:ptsLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 20.0, 150.0, 16.0)];
-	//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-	//subjectLabel = [SNAppDelegate snLinkColor];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 40.0, 150.0, 16.0)];
+	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.textAlignment = NSTextAlignmentCenter;
 	subjectLabel.text = [NSString stringWithFormat:@"#%@", [HONAppDelegate dailySubjectName]];
-	[tableHeaderImgView addSubview:subjectLabel];
-	
-	UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dailyButton.frame = CGRectMake(108.0, 5.0, 195.0, 50.0);
-	[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[tableHeaderImgView addSubview:dailyButton];
-	
-	[self.tableView addSubview:tableHeaderImgView];
+	[tableHeaderView addSubview:subjectLabel];
+	[self.tableView addSubview:tableHeaderView];
 	
 	if (self.challengeVO == nil)
 		[self _retrieveChallenges];
@@ -183,8 +184,8 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	
-	if ([_challenges count] == 0)
-		[[[UIAlertView alloc] initWithTitle:@"No Challenges" message:@"There aren't any challenges available!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+//	if ([_challenges count] == 0)
+//		[[[UIAlertView alloc] initWithTitle:@"No Challenges" message:@"There aren't any challenges available!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -334,11 +335,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (249.0);
+	return (340.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (50.0);
+	return (45.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

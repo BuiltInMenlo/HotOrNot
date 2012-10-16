@@ -32,7 +32,7 @@
 		footerGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:footerGutterView];
 		
-		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo"];
 		[self addSubview:headerView];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];

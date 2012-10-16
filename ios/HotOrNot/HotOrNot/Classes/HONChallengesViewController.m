@@ -88,7 +88,7 @@
 	[self _retrieveChallenges];
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0) {
-		NSString *buttonImage = [NSString stringWithFormat:@"tutorial_image0%d.png", ((arc4random() % 4) + 1)];
+		NSString *buttonImage = [NSString stringWithFormat:@"tutorial_overlay_00%d.png", ((arc4random() % 4) + 1)];
 		
 		_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, self.view.frame.size.height)];
 		_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
@@ -96,7 +96,7 @@
 		[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
 		
 		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		createChallengeButton.frame = CGRectMake(0.0, 20.0, 320.0, 78.0);
+		createChallengeButton.frame = CGRectMake(0.0, 45.0, 320.0, 78.0);
 		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
 		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
 		[createChallengeButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
@@ -236,7 +236,7 @@
 	
 	if (section == 0) {
 		//NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
-		[headerView addSubview:[[HONHeaderView alloc] initWithTitle:@""]];
+		[headerView addSubview:[[HONHeaderView alloc] initWithTitle:@"Challenges"]];
 		
 		UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		refreshButton.frame = CGRectMake(260.0, 0.0, 50.0, 45.0);

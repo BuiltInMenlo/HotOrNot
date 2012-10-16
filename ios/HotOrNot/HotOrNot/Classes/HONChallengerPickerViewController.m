@@ -64,25 +64,22 @@
 	NSLog(@"loadView");
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Challenger"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Edit Challenge"];
 	[self.view addSubview:headerView];
 		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(5.0, 5.0, 74.0, 44.0);
+	backButton.frame = CGRectMake(5.0, 0.0, 74.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[backButton setTitle:@"Back" forState:UIControlStateNormal];
 	[headerView addSubview:backButton];
 	
-	UIImageView *subjectImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 45.0)];
-	[subjectImgView setImage:[UIImage imageNamed:@"cameraInput.png"]];
-	subjectImgView.userInteractionEnabled = YES;
-	[self.view addSubview:subjectImgView];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 45.0, 320.0, 480.0)];
+	[bgImgView setImage:[UIImage imageNamed:@"challengePreviewBG.png"]];
+	bgImgView.userInteractionEnabled = YES;
+	[self.view addSubview:bgImgView];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 8.0, 280.0, 20.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 25.0, 280.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -94,7 +91,7 @@
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = @"";
 	_subjectTextField.delegate = self;
-	[subjectImgView addSubview:_subjectTextField];
+	[bgImgView addSubview:_subjectTextField];
 	
 	_placeholderLabel = [[UILabel alloc] initWithFrame:_subjectTextField.frame];
 	//_placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
@@ -102,7 +99,7 @@
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.textAlignment = NSTextAlignmentCenter;
 	_placeholderLabel.text = @"Give your challenge a #hashtag";
-	[subjectImgView addSubview:self.placeholderLabel];
+	[bgImgView addSubview:self.placeholderLabel];
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	friendsButton.frame = CGRectMake(20.0, 350.0, 284.0, 49.0);

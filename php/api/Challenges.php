@@ -514,8 +514,8 @@
 		function getActiveVotes($user_id) {
 			$challenge_arr = array();			
 			$id_arr = array();
-
-			$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 4;';
+			
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4;';
 			$result = mysql_query($query);
 			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 				$id_arr[$row['id']] = 0;

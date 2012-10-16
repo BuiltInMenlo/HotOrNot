@@ -41,6 +41,12 @@
 
 + (NSArray *)fbPermissions;
 
++ (UIFont *)honHelveticaNeueFontBold;
++ (UIFont *)honHelveticaNeueFontMedium;
+
++ (UIColor *)honBlueTxtColor;
++ (UIColor *)honGreyTxtColor;
+
 + (int)secondsBeforeDate:(NSDate *)date;
 + (int)minutesBeforeDate:(NSDate *)date;
 + (int)hoursBeforeDate:(NSDate *)date;

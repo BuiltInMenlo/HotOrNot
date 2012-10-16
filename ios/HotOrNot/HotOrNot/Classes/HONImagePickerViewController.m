@@ -98,7 +98,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Images"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Choose Photo"];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

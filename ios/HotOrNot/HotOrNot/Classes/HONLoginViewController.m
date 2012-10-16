@@ -35,9 +35,9 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Login"];
 	[self.view addSubview:headerView];
 		
-	UIImageView *holderImgView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 55.0, 301.0, 482.0)];
-	holderImgView.image = [UIImage imageNamed:[NSString stringWithFormat:@"firstRun_image0%d.png", ((arc4random() % 4) + 1)]];
-	[self.view addSubview:holderImgView];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 45.0, 320.0, 548.0)];
+	bgImgView.image = [UIImage imageNamed:@"firstUserExperience_Background.png"];
+	[self.view addSubview:bgImgView];
 	
 	UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];
 	footerImgView.image = [UIImage imageNamed:@"footerBackground.png"];

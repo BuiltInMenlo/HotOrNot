@@ -8,6 +8,7 @@
 
 #import "HONPopularUserViewCell.h"
 #import "UIImageView+WebCache.h"
+#import "HONAppDelegate.h"
 
 @interface HONPopularUserViewCell()
 @property (nonatomic, strong) UIImageView *userImageView;
@@ -23,19 +24,26 @@
 
 - (id)initAsMidCell:(int)index {
 	if ((self = [super initAsMidCell:index])) {
-		self.userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, 10.0, 40.0, 40.0)];
+		UILabel *indexLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 50.0, 16.0)];
+		indexLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		indexLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		indexLabel.backgroundColor = [UIColor clearColor];
+		indexLabel.text = [NSString stringWithFormat:@"%d.", index];
+		[self addSubview:indexLabel];
+		
+		self.userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(45.0, 10.0, 50.0, 50.0)];
 		self.userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[self addSubview:self.userImageView];
 		
-		self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 15.0, 200.0, 16.0)];
-		//usernameLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//usernameLabel = [SNAppDelegate snLinkColor];
+		self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 15.0, 200.0, 16.0)];
+		self.usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		self.usernameLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		self.usernameLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.usernameLabel];
 		
-		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 35.0, 200.0, 16.0)];
-		//scoreLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//scoreLabel = [SNAppDelegate snLinkColor];
+		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 35.0, 200.0, 16.0)];
+		self.scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
+		self.scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		self.scoreLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.scoreLabel];
 		

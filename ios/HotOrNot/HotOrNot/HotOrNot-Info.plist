@@ -9,7 +9,21 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
-	<array/>
+	<array>
+		<string>icon_57x57.png</string>
+		<string>icon_114x114.png</string>
+	</array>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>icon_57x57.png</string>
+				<string>icon_114x114.png</string>
+			</array>
+		</dict>
+	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>com.builtinmenlo.hotornot</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -37,11 +51,16 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>4CB</string>
+	<string>4F2</string>
 	<key>FacebookAppID</key>
 	<string>529054720443694</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>HelveticaNeueLTStd-Md.otf</string>
+		<string>HelveticaNeueLTStd-Bd.otf</string>
+	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

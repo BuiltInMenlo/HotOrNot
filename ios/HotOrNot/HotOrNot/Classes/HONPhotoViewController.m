@@ -59,9 +59,6 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[backButton setTitle:@"Done" forState:UIControlStateNormal];
 	[headerView addSubview:backButton];
 	
 	

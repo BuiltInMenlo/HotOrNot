@@ -7,6 +7,7 @@
 //
 
 #import "HONPopularSubjectViewCell.h"
+#import "HONAppDelegate.h"
 
 @interface HONPopularSubjectViewCell()
 @property (nonatomic, strong) UILabel *subjectLabel;
@@ -20,15 +21,19 @@
 
 - (id)initAsMidCell:(int)index {
 	if ((self = [super initAsMidCell:index])) {
-		self.subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 200.0, 16.0)];
-		//subjectLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//subjectLabel = [SNAppDelegate snLinkColor];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
+		bgImgView.image = [UIImage imageNamed:@"blankRowBackground_nonActive.png"];
+		[self addSubview:bgImgView];
+		
+		self.subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 10.0, 200.0, 16.0)];
+		self.subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		self.subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		self.subjectLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.subjectLabel];
 		
-		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 200.0, 16.0)];
-		//scoreLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//scoreLabel = [SNAppDelegate snLinkColor];
+		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 30.0, 200.0, 16.0)];
+		self.scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
+		self.scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		self.scoreLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.scoreLabel];
 		

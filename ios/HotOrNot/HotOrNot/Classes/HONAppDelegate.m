@@ -151,6 +151,22 @@
 	return ([NSArray arrayWithObjects:@"publish_actions", @"user_photos", @"read_stream", @"status_update", @"publish_stream", nil]);
 }
 
++ (UIFont *)honHelveticaNeueFontBold {
+	return [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0];
+}
+
++ (UIFont *)honHelveticaNeueFontMedium {
+	return [UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0];
+}
+
++ (UIColor *)honBlueTxtColor {
+	return ([UIColor colorWithRed:0.0 green:0.0 blue:0.85 alpha:1.0]);
+}
+
++ (UIColor *)honGreyTxtColor {
+	return ([UIColor colorWithWhite:0.482 alpha:1.0]);
+}
+
 + (int)secondsBeforeDate:(NSDate *)date {
 	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
 	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];

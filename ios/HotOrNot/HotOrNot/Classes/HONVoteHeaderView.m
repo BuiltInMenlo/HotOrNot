@@ -8,6 +8,7 @@
 
 #import "HONVoteHeaderView.h"
 #import "UIImageView+WebCache.h"
+#import "HONAppDelegate.h"
 
 @interface HONVoteHeaderView()
 @property (nonatomic, strong) UILabel *titleLabel;
@@ -31,13 +32,13 @@
 		[self addSubview:_creatorImgView];
 		
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, 15.0, 200.0, 16.0)];
-		//_titleLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//_titleLabel = [SNAppDelegate snLinkColor];
+		_titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		_titleLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:_titleLabel];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(280.0, 0.0, 34.0, 34.0);
+		moreButton.frame = CGRectMake(270.0, 0.0, 34.0, 34.0);
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
