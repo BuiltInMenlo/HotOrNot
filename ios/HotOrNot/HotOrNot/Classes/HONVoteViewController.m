@@ -150,14 +150,14 @@
 	[tableHeaderView addSubview:dailyButton];
 	
 	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
-	ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+	ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 	ptsLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	ptsLabel.backgroundColor = [UIColor clearColor];
 	ptsLabel.text = [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue]];
 	[tableHeaderView addSubview:ptsLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(140.0, 40.0, 150.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 140.0, 16.0)];
+	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.textAlignment = NSTextAlignmentCenter;

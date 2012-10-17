@@ -35,14 +35,14 @@
 		[self addSubview:bgImgView];
 				
 		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_lVoteButton.frame = CGRectMake(25.0, 270.0, 106.0, 61.0);
+		_lVoteButton.frame = CGRectMake(30.0, 270.0, 106.0, 61.0);
 		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
 		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active.png"] forState:UIControlStateHighlighted];
 		[_lVoteButton addTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_lVoteButton];
 		
 		_rVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_rVoteButton.frame = CGRectMake(185.0, 270.0, 106.0, 61.0);
+		_rVoteButton.frame = CGRectMake(182.0, 270.0, 106.0, 61.0);
 		[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
 		[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active.png"] forState:UIControlStateHighlighted];
 		[_rVoteButton addTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
@@ -64,7 +64,7 @@
 	lHolderView.clipsToBounds = YES;
 	[self addSubview:lHolderView];
 	
-	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(lHolderView.frame.size.width * -0.5, 0.0, kMediumW * 1.5, kMediumH * 1.5)];
+	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(lHolderView.frame.size.width * -0.5, 0.0, kMediumW * 1.25, kMediumH * 1.25)];
 	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 	lImgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[lHolderView addSubview:lImgView];
@@ -78,7 +78,7 @@
 	rHolderView.clipsToBounds = YES;
 	[self addSubview:rHolderView];
 	
-	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(rHolderView.frame.size.width * -0.5, 0.0, kMediumW * 1.5, kMediumH * 1.5)];
+	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(rHolderView.frame.size.width * -0.5, 0.0, kMediumW * 1.25, kMediumH * 1.25)];
 	[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 	rImgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[rHolderView addSubview:rImgView];
@@ -93,15 +93,17 @@
 #pragma mark - Navigation
 - (void)_goLeftVote {
 	[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateNormal];
+	[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateHighlighted];
+	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateHighlighted];
 	[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
 	[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
 	
-	UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, 50.0, 84.0, 84.0)];
-	lScoreImgView.image = [UIImage imageNamed:@"overlayBackgroundScore.png"];
+	UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 92.0, 84.0, 84.0)];
+	lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
 	[self addSubview:lScoreImgView];
 	
-	UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 20.0, 84.0, 16.0)];
-	lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:24];
+	UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
+	lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
 	lScoreLabel.backgroundColor = [UIColor clearColor];
 	lScoreLabel.textColor = [UIColor whiteColor];
 	lScoreLabel.textAlignment = NSTextAlignmentCenter;
@@ -114,14 +116,16 @@
 - (void)_goRightVote {
 	[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
 	[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
+	[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateHighlighted];
 	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateNormal];
+	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateHighlighted];
 	
-	UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(185.0, 50.0, 84.0, 84.0)];
-	rScoreImgView.image = [UIImage imageNamed:@"overlayBackgroundScore.png"];
+	UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 92.0, 84.0, 84.0)];
+	rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
 	[self addSubview:rScoreImgView];
 	
-	UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 20.0, 84.0, 16.0)];
-	rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:24];
+	UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
+	rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
 	rScoreLabel.backgroundColor = [UIColor clearColor];
 	rScoreLabel.textColor = [UIColor whiteColor];
 	rScoreLabel.textAlignment = NSTextAlignmentCenter;

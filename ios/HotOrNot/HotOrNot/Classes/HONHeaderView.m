@@ -7,6 +7,7 @@
 //
 
 #import "HONHeaderView.h"
+#import "HONAppDelegate.h"
 
 @implementation HONHeaderView
 
@@ -18,6 +19,8 @@
 		
 		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, 25.0)];
 		titleLabel.backgroundColor = [UIColor clearColor];
+		titleLabel.font = [HONAppDelegate honHelveticaNeueFontBold];
+		titleLabel.textColor = [UIColor colorWithRed:0.12549019607843 green:0.31764705882353 blue:0.44705882352941 alpha:1.0];
 		titleLabel.textAlignment = NSTextAlignmentCenter;
 		titleLabel.text = title;
 		[self addSubview:titleLabel];

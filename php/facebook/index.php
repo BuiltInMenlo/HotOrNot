@@ -7,13 +7,13 @@ if (isset($_GET['cID'])) {
 	
 	$query = 'SELECT `subject_id`, `img_url` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
 	$row = mysql_fetch_object(mysql_query($query));
-	$img_url = $row->img_url;
+	$img_url = $row->img_url . "_l.jpg";
 	
 	$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row->subject_id .';';
 	$row = mysql_fetch_object(mysql_query($query));	
 	$title = $row->title;
 	
-	$blurb = "Formas humanitatis per seacula quarta decima et quinta decima. Adipiscing elit sed diam nonummy nibh euismod tincidunt ut laoreet dolore. Wisi enim ad minim veniam quis nostrud exerci. Esse molestie consequat, vel illum dolore eu feugiat nulla facilisis? Processus dynamicus qui sequitur mutationem consuetudium lectorum mirum est notare quam. Non habent claritatem insitam est usus legentis in iis, qui facit eorum claritatem Investigationes.";
+	$blurb = "PicChallenge - #challenge friends and strangers with photos, memes, quotes, and more!";
 }
 
 

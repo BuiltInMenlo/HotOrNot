@@ -34,6 +34,7 @@
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
 	if ((self = [self init])) {
 		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		//dailyButton.backgroundColor = [UIColor redColor];
 		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
 		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
 		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
@@ -41,15 +42,14 @@
 		[self addSubview:dailyButton];
 		
 		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
-		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		ptsLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
 		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
 		[self addSubview:ptsLabel];
 		
-		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 150.0, 16.0)];
-		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 140.0, 16.0)];
+		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textAlignment = NSTextAlignmentCenter;
@@ -101,16 +101,16 @@
 	creatorImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[creatorImgHolderView addSubview:creatorImageView];
 	
-	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 10.0, 100.0, 16.0)];
-	creatorLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 15.0, 100.0, 16.0)];
+	creatorLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 	creatorLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	creatorLabel.backgroundColor = [UIColor clearColor];
 	creatorLabel.textAlignment = NSTextAlignmentCenter;
 	creatorLabel.text = self.challengeVO.creatorName;
 	[self addSubview:creatorLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 30.0, 100.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 33.0, 100.0, 16.0)];
+	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.textAlignment = NSTextAlignmentCenter;
@@ -118,7 +118,7 @@
 	[self addSubview:subjectLabel];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	ctaButton.frame = CGRectMake(210.0, 5.0, 98.0, 60.0);
+	ctaButton.frame = CGRectMake(210.0, 4.0, 98.0, 60.0);
 	[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:ctaButton];
 	
@@ -206,6 +206,9 @@
 		
 	} else if ([challengeVO.status isEqualToString:@"Completed"]) {
 		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
+		[subjectLabel removeFromSuperview];
+		
+		creatorLabel.frame = CGRectMake(65.0, 5.0, 100.0, 16.0);
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
 		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 		
@@ -219,14 +222,38 @@
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
 		
+		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 35.0, 100.0, 16.0)];
+		creatorScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		creatorScoreLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		creatorScoreLabel.backgroundColor = [UIColor clearColor];
+		creatorScoreLabel.textAlignment = NSTextAlignmentCenter;
+		creatorScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreCreator];
+		[self addSubview:creatorScoreLabel];
+		
+		UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(127.0, 5.0, 100.0, 16.0)];
+		challengerLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		challengerLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		challengerLabel.backgroundColor = [UIColor clearColor];
+		challengerLabel.textAlignment = NSTextAlignmentCenter;
+		challengerLabel.text = self.challengeVO.challengerName;
+		[self addSubview:challengerLabel];
+		
+		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(127.0, 35.0, 100.0, 16.0)];
+		challengerScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		challengerScoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		challengerScoreLabel.backgroundColor = [UIColor clearColor];
+		challengerScoreLabel.textAlignment = NSTextAlignmentCenter;
+		challengerScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreChallenger];
+		[self addSubview:challengerScoreLabel];
+		
 		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_nonActive.png"] forState:UIControlStateNormal];
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_Active.png"] forState:UIControlStateHighlighted];
 			
-			if (self.challengeVO.scoreCreator == 1)
-				[ctaButton setTitle:@"1 point" forState:UIControlStateNormal];
-			else
-				[ctaButton setTitle:[NSString stringWithFormat:@"%d points", self.challengeVO.scoreCreator] forState:UIControlStateNormal];
+//			if (self.challengeVO.scoreCreator == 1)
+//				[ctaButton setTitle:@"1 point" forState:UIControlStateNormal];
+//			else
+//				[ctaButton setTitle:[NSString stringWithFormat:@"%d points", self.challengeVO.scoreCreator] forState:UIControlStateNormal];
 			
 			creatorLabel.text = self.challengeVO.creatorName;
 			

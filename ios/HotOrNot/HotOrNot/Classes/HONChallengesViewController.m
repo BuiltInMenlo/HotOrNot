@@ -73,8 +73,10 @@
 - (void)loadView {
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor whiteColor];
+	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 50.0) style:UITableViewStylePlain];
-	[self.tableView setBackgroundColor:[UIColor colorWithWhite:0.85 alpha:1.0]];
+	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 70.0;
 	self.tableView.delegate = self;
@@ -239,15 +241,13 @@
 		[headerView addSubview:[[HONHeaderView alloc] initWithTitle:@"Challenges"]];
 		
 		UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		refreshButton.frame = CGRectMake(260.0, 0.0, 50.0, 45.0);
+		refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 		[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 		[headerView addSubview:refreshButton];
 	
 	} else {
-		headerView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.0];
-		
 		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
 		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
@@ -299,7 +299,7 @@
 		return (45.0);
 	
 	else
-		return (75.0);
+		return (78.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

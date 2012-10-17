@@ -160,7 +160,7 @@
 }
 
 + (UIColor *)honBlueTxtColor {
-	return ([UIColor colorWithRed:0.0 green:0.0 blue:0.85 alpha:1.0]);
+	return ([UIColor colorWithRed:0.17647058823529 green:0.33333333333333 blue:0.6078431372549 alpha:1.0]);
 }
 
 + (UIColor *)honGreyTxtColor {
