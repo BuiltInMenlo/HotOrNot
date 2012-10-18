@@ -151,6 +151,10 @@
 	return ([NSArray arrayWithObjects:@"publish_actions", @"user_photos", @"read_stream", @"status_update", @"publish_stream", nil]);
 }
 
++ (BOOL)isRetina5 {
+	return ([UIScreen mainScreen].scale == 2.f && [UIScreen mainScreen].bounds.size.height == 568.0f);
+}
+
 + (UIFont *)honHelveticaNeueFontBold {
 	return [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0];
 }
@@ -249,7 +253,7 @@
 	}
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
-		[HONAppDelegate setAllowsFBPosting:YES];
+		[HONAppDelegate setAllowsFBPosting:NO];
 	
 		
 	PFQuery *query = [PFQuery queryWithClassName:@"APIs"];

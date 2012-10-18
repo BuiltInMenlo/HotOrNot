@@ -25,20 +25,20 @@
 		bgImgView.image = [UIImage imageNamed:@"blankRowBackground_nonActive.png"];
 		[self addSubview:bgImgView];
 		
-		self.subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 10.0, 200.0, 16.0)];
-		self.subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		self.subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 19.0, 200.0, 16.0)];
+		self.subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 		self.subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		self.subjectLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.subjectLabel];
 		
-		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 30.0, 200.0, 16.0)];
-		self.scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
+		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 36.0, 200.0, 16.0)];
+		self.scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		self.scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		self.scoreLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.scoreLabel];
 		
 		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		challengeButton.frame = CGRectMake(220.0, 10.0, 84.0, 44.0);
+		challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
 		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
 		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
 		[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];

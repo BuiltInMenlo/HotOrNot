@@ -12,21 +12,27 @@
 #import "UIImageView+WebCache.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
+#import "MBProgressHUD.h"
 
 @interface HONPhotoViewController () <UIGestureRecognizerDelegate>
 @property (nonatomic, strong) NSString *imgURL;
+@property (nonatomic, strong) NSString *subjectTitle;
+@property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) CGFloat lastScale;
 @end
 
 @implementation HONPhotoViewController
 
 @synthesize imgURL = _imgURL;
+@synthesize subjectTitle = _subjectTitle;
 @synthesize lastScale = _lastScale;
+@synthesize progressHUD = _progressHUD;
 
-- (id)initWithImagePath:(NSString *)imageURL {
+- (id)initWithImagePath:(NSString *)imageURL withTitle:(NSString *)title {
 	if ((self = [super init])) {
 		_imgURL = imageURL;
-		self.view.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
+		_subjectTitle = title;
+		self.view.backgroundColor = [UIColor whiteColor];
 	}
 	
 	return (self);
@@ -41,9 +47,19 @@
 - (void)loadView {
 	[super loadView];
 	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Loading Photo…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.graceTime = 2.0;
+	_progressHUD.taskInProgress = YES;
+	
 	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(-100.0, 0.0, kLargeW, kLargeH)];
 	imgView.userInteractionEnabled = YES;
-	[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", self.imgURL]] placeholderImage:nil];
+	[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", self.imgURL]] placeholderImage:nil options:0 success:^(UIImage *image, BOOL cached) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	} failure:nil];
+	 
 	imgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[self.view addSubview:imgView];
 	
@@ -51,15 +67,15 @@
 //	tmpView.image = [HONAppDelegate cropImage:[UIImage imageNamed:@"firstRun_image01.png"] toRect:CGRectMake(30.0, 30.0, 100.0, 100.0)];
 //	[self.view addSubview:tmpView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Photo"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"#%@", _subjectTitle]];
 	[self.view addSubview:headerView];
 		
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(5.0, 5.0, 74.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:backButton];
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(263.0, 0.0, 54.0, 34.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive.png"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active.png"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:doneButton];
 	
 	
 	UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_goPinch:)];

@@ -126,6 +126,7 @@
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive.png"] forState:UIControlStateNormal];
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active.png"] forState:UIControlStateHighlighted];
+		[ctaButton removeTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 	
 	} else if ([self.challengeVO.status isEqualToString:@"Accept"]) {
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];

@@ -24,8 +24,8 @@
 
 - (id)initAsMidCell:(int)index {
 	if ((self = [super initAsMidCell:index])) {
-		UILabel *indexLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 50.0, 16.0)];
-		indexLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		UILabel *indexLabel = [[UILabel alloc] initWithFrame:CGRectMake(23.0, 27.0, 50.0, 16.0)];
+		indexLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		indexLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		indexLabel.backgroundColor = [UIColor clearColor];
 		indexLabel.text = [NSString stringWithFormat:@"%d.", index];
@@ -35,20 +35,20 @@
 		self.userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[self addSubview:self.userImageView];
 		
-		self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 15.0, 200.0, 16.0)];
-		self.usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:20];
+		self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(104.0, 19.0, 200.0, 16.0)];
+		self.usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 		self.usernameLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		self.usernameLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.usernameLabel];
 		
-		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 35.0, 200.0, 16.0)];
-		self.scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
+		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(104.0, 36.0, 200.0, 16.0)];
+		self.scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		self.scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		self.scoreLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.scoreLabel];
 		
 		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		challengeButton.frame = CGRectMake(220.0, 10.0, 84.0, 44.0);
+		challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
 		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
 		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
 		[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];

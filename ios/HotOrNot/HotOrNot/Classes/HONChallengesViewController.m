@@ -25,13 +25,15 @@
 #import "HONVoteViewController.h"
 #import "HONHeaderView.h"
 
-@interface HONChallengesViewController() <ASIHTTPRequestDelegate>
+@interface HONChallengesViewController() <UIAlertViewDelegate, ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic) BOOL isFirstRun;
 @property(nonatomic, strong) UIImageView *tutorialOverlayImgView;
 @property(nonatomic, strong) NSDate *lastDate;
 @property(nonatomic, strong) ASIFormDataRequest *nextChallengesRequest;
+@property(nonatomic, strong) HONChallengeVO *challengeVO;
+@property(nonatomic, strong) NSIndexPath *idxPath;
 
 - (void)_retrieveChallenges;
 @end
@@ -44,6 +46,8 @@
 @synthesize tutorialOverlayImgView = _tutorialOverlayImgView;
 @synthesize lastDate = _lastDate;
 @synthesize nextChallengesRequest = _nextChallengesRequest;
+@synthesize challengeVO = _challengeVO;
+@synthesize idxPath = _idxPath;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -89,28 +93,42 @@
 	
 	[self _retrieveChallenges];
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0) {
-		NSString *buttonImage = [NSString stringWithFormat:@"tutorial_overlay_00%d.png", ((arc4random() % 4) + 1)];
+	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0) {
+		NSString *buttonImage;// = [NSString stringWithFormat:@"tutorial_00%d.png", ((arc4random() % 4) + 1)];
+		CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+		
+		NSLog(@"HEIGHT:[%f]", screenHeight);
+		
+		if ([HONAppDelegate isRetina5])
+			buttonImage = [NSString stringWithFormat:@"tutorial_00%d-568h.png", ((arc4random() % 4) + 1)];
+		
+		else
+			buttonImage = [NSString stringWithFormat:@"tutorial_00%d.png", ((arc4random() % 4) + 1)];
 		
 		_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, self.view.frame.size.height)];
 		_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
 		_tutorialOverlayImgView.userInteractionEnabled = YES; 
 		[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
+	
+	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeTutorialButton.frame = _tutorialOverlayImgView.frame;
+	[closeTutorialButton addTarget:self action:@selector(_goTutorialCancel) forControlEvents:UIControlEventTouchUpInside];
+	[_tutorialOverlayImgView addSubview:closeTutorialButton];
 		
 		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		createChallengeButton.frame = CGRectMake(0.0, 45.0, 320.0, 78.0);
-		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButtonClear.png"] forState:UIControlStateNormal];
+		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButtonClear_active.png"] forState:UIControlStateHighlighted];
 		[createChallengeButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
 		[_tutorialOverlayImgView addSubview:createChallengeButton];
 	
 		UIButton *createChallenge2Button = [UIButton buttonWithType:UIButtonTypeCustom];
 		createChallenge2Button.frame = CGRectMake(128.0, _tutorialOverlayImgView.frame.size.height - 48.0, 64.0, 48.0);
-		[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tab03_nonActive.png"] forState:UIControlStateNormal];
-		[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tab03_Active.png"] forState:UIControlStateHighlighted];
+		[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive.png"] forState:UIControlStateNormal];
+		[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tabbar_003_active.png"] forState:UIControlStateHighlighted];
 		[createChallenge2Button addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
 		[_tutorialOverlayImgView addSubview:createChallenge2Button];
-	}
+	//}
 }
 
 - (void)viewDidLoad {
@@ -176,6 +194,17 @@
 	[self _retrieveChallenges];
 }
 
+- (void)_goTutorialCancel {
+	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+	boot_total++;
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	_tutorialOverlayImgView.hidden = YES;
+	[_tutorialOverlayImgView removeFromSuperview];
+}
+
 - (void)_goTutorialClose {
 	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 	boot_total++;
@@ -218,6 +247,27 @@
 - (void)_refreshList:(NSNotification *)notification {
 	[self _retrieveChallenges];
 }
+
+#pragma mark - AlerView Delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	ASIFormDataRequest *challengeRequest;
+	
+	switch(buttonIndex) {
+		case 0:
+			[self.challenges removeObjectAtIndex:self.idxPath.row - 1];
+			[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.idxPath] withRowAnimation:UITableViewRowAnimationFade];
+			
+			challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+			[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
+			[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+			[challengeRequest startAsynchronous];
+			break;
+			
+		case 1:
+			break;
+	}
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -319,7 +369,7 @@
 	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
 	
 	if ([vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Waiting"]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL withTitle:vo.subjectName]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	
@@ -337,17 +387,17 @@
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
-		[self.challenges removeObjectAtIndex:indexPath.row - 1];
-		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+		self.idxPath = indexPath;
+		self.challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
 		
-		ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
-		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
-		[challengeRequest startAsynchronous];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Delete Challenge"
+																		message:@"Are you sure you want to remove this challenge?"
+																	  delegate:self
+														  cancelButtonTitle:@"Yes"
+														  otherButtonTitles:@"No", nil];
+		[alert show];
 	}
 }
-
 
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {

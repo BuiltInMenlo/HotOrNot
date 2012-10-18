@@ -141,6 +141,7 @@
 			_imagePicker.wantsFullScreenLayout = YES;
 			_imagePicker.showsCameraControls = NO;
 			_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
 				[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:1.33];
@@ -154,6 +155,7 @@
 			_imagePicker.navigationBarHidden = YES;
 			_imagePicker.toolbarHidden = YES;
 			_imagePicker.wantsFullScreenLayout = YES;
+			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:nil];
 		}

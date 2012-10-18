@@ -74,7 +74,7 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Popular"];
 	[self.view addSubview:headerView];
 	
-	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(76.0, 0.0, 169.0, 44.0)];
+	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 0.0, 169.0, 44.0)];
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
 	[headerView addSubview:_toggleImgView];
 	
@@ -89,7 +89,7 @@
 	[headerView addSubview:tagsButton];
 	
 	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	refreshButton.frame = CGRectMake(260.0, 0.0, 50.0, 45.0);
+	refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
@@ -204,7 +204,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_refreshList:(NSNotification *)notification {
@@ -271,7 +271,12 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (70.0);
+	
+//	if (indexPath.row == 0)
+//		return (30.0);
+//	
+//	else
+		return (70.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -305,7 +310,7 @@
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
 		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+		[self presentViewController:navigationController animated:NO completion:nil];
 	
 	} else {
 		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row - 1];

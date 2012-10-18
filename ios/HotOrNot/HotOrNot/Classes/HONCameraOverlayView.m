@@ -62,14 +62,14 @@
 //		}
 		
 		// Add the bottom bar
-		UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 65.0, 320.0, 65.0)];
-		footerImgView.backgroundColor = [UIColor blueColor];
+		UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 70.0, 320.0, 70.0)];
+		footerImgView.image = [UIImage imageNamed:@"cameraFooterBG.png"];
 		footerImgView.userInteractionEnabled = YES;
 		[self addSubview:footerImgView];
 		
 		// Add the capture button
 		self.captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		self.captureButton.frame = CGRectMake(106.0, 5.0, 108.0, 48.0);
+		self.captureButton.frame = CGRectMake(106.0, 8.0, 108.0, 48.0);
 		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"playButton_nonActive.png"] forState:UIControlStateNormal];
 		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"playButton_Active.png"] forState:UIControlStateHighlighted];
 		[self.captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
@@ -77,16 +77,16 @@
 				
 		// Add the gallery button
 		self.cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		self.cameraRollButton.frame = CGRectMake(10.0, 10.0, 44.0, 44.0);
+		self.cameraRollButton.frame = CGRectMake(10.0, 10.0, 49.0, 49.0);
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
 		[self.cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
 		[footerImgView addSubview:self.cameraRollButton];
 		
 		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		changeCameraButton.frame = CGRectMake(270.0, 10.0, 44.0, 44.0);
-		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
-		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
+		changeCameraButton.frame = CGRectMake(263.0, 10.0, 49.0, 49.0);
+		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive.png"] forState:UIControlStateNormal];
+		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active.png"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[footerImgView addSubview:changeCameraButton];
 	}

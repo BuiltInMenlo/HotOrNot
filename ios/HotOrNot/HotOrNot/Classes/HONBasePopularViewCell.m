@@ -32,13 +32,6 @@
 	if ((self = [self init])) {
 		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
 		_bgImgView.image = [UIImage imageNamed:@"leaderTableHeader.png"];
-		
-		UIButton *randomChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		randomChallengeButton.frame = CGRectMake(20.0, 25.0, 284.0, 39.0);
-		[randomChallengeButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[randomChallengeButton setBackgroundImage:[UIImage imageNamed:@"randomChallengeButton_nonActive.png"] forState:UIControlStateNormal];
-		[randomChallengeButton setBackgroundImage:[UIImage imageNamed:@"randomChallengeButton_Active.png"] forState:UIControlStateHighlighted];
-		[self addSubview:randomChallengeButton];
 	}
 	
 	return (self);
@@ -47,6 +40,13 @@
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
 		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
+		
+		UIButton *randomChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		randomChallengeButton.frame = CGRectMake(18.0, 6.0, 284.0, 39.0);
+		[randomChallengeButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[randomChallengeButton setBackgroundImage:[UIImage imageNamed:@"randomChallengeButton_nonActive.png"] forState:UIControlStateNormal];
+		[randomChallengeButton setBackgroundImage:[UIImage imageNamed:@"randomChallengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[self addSubview:randomChallengeButton];
 	}
 	
 	return (self);

@@ -136,11 +136,11 @@
 }
 
 - (void)_goLeftZoom {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:self.challengeVO.imageURL];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:[NSDictionary dictionaryWithObjectsAndKeys:self.challengeVO.imageURL, @"img", self.challengeVO.subjectName, @"title", nil]];
 }
 
 - (void)_goRightZoom {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:self.self.challengeVO.image2URL];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:[NSDictionary dictionaryWithObjectsAndKeys:self.challengeVO.image2URL, @"img", self.challengeVO.subjectName, @"title", nil]];
 }
 
 @end

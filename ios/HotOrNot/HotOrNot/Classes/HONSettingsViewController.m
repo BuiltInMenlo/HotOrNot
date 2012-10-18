@@ -31,7 +31,7 @@
 		self.tabBarItem.image = [UIImage imageNamed:@"tab05_nonActive"];
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		
-		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
 		_notificationSwitch.on = YES;
 		
@@ -170,11 +170,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == 0)
-		return (55.0);
-	
-	else
-		return (70.0);
+	return (70.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

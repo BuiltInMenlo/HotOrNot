@@ -41,6 +41,8 @@
 
 + (NSArray *)fbPermissions;
 
++ (BOOL)isRetina5;
+
 + (UIFont *)honHelveticaNeueFontBold;
 + (UIFont *)honHelveticaNeueFontMedium;
 

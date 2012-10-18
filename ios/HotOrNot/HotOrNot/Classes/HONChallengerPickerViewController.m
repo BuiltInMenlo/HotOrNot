@@ -43,7 +43,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		NSLog(@"init");
-		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		self.view.backgroundColor = [UIColor whiteColor];
 	}
 	
 	return (self);
@@ -52,7 +52,7 @@
 - (id)initWithImage:(UIImage *)img {
 	if ((self = [super init])) {
 		NSLog(@"initWithImage:[%f, %f]", img.size.width, img.size.height);
-		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		self.view.backgroundColor = [UIColor whiteColor];
 		self.challengeImage = img;
 	}
 	
@@ -74,12 +74,24 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:backButton];
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 45.0, 320.0, 480.0)];
+	UIImageView *bgImgView;
+	
+	bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 419.0)];
 	[bgImgView setImage:[UIImage imageNamed:@"challengePreviewBG.png"]];
+	
+//	if ([HONAppDelegate isRetina5]) {
+//		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 480.0)];
+//		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground-568h.png"]];
+//	
+//	} else {
+//		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 419.0)];
+//		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground.png"]];
+//	}
+	
 	bgImgView.userInteractionEnabled = YES;
 	[self.view addSubview:bgImgView];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 25.0, 280.0, 20.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(40.0, 25.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -87,18 +99,18 @@
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[_subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
 	[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	//_subjectTextField.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
+	_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = @"";
 	_subjectTextField.delegate = self;
 	[bgImgView addSubview:_subjectTextField];
 	
 	_placeholderLabel = [[UILabel alloc] initWithFrame:_subjectTextField.frame];
-	//_placeholderLabel.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12];
-	_placeholderLabel.textColor = [UIColor colorWithWhite:0.620 alpha:1.0];
+	_placeholderLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	_placeholderLabel.textColor = [UIColor colorWithWhite:0.29803921568627 alpha:1.0];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.textAlignment = NSTextAlignmentCenter;
-	_placeholderLabel.text = @"Give your challenge a #hashtag";
+	_placeholderLabel.text = @"tap here to add challenge #hashtag";
 	[bgImgView addSubview:self.placeholderLabel];
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -119,7 +131,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(30.0, 105.0, 240.0, 240.0)];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(26.0, 120.0, 240.0, 240.0)];
 	holderView.clipsToBounds = YES;
 	[self.view addSubview:holderView];
 	

@@ -32,11 +32,8 @@
 - (void)loadView {
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Login"];
-	[self.view addSubview:headerView];
-		
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 45.0, 320.0, 548.0)];
-	bgImgView.image = [UIImage imageNamed:@"firstUserExperience_Background.png"];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 548.0)];
+	bgImgView.image = [UIImage imageNamed:[NSString stringWithFormat:@"firstUserExperience_Background_00%d.png", ((arc4random() % 4) + 1)]];
 	[self.view addSubview:bgImgView];
 	
 	UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];

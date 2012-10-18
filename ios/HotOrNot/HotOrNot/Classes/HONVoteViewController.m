@@ -109,18 +109,15 @@
 		
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(5.0, 5.0, 74.0, 44.0);
+		backButton.frame = CGRectMake(5.0, 0.0, 74.0, 44.0);
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-		//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[backButton setTitle:@"Back" forState:UIControlStateNormal];
 		[headerView addSubview:backButton];
 	}
 	
 	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	refreshButton.frame = CGRectMake(260.0, 0.0, 50.0, 45.0);
+	refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
@@ -135,8 +132,8 @@
 	self.tableView.userInteractionEnabled = YES;
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
-	//self.tableView.contentInset = UIEdgeInsetsMake(70.0, 0.0f, 70.0f, 0.0f);
-	self.tableView.contentOffset = CGPointMake(0.0, -70.0);
+	//self.tableView.contentInset = UIEdgeInsetsMake(70.0, 0.0, 0.0, 0.0);
+	//self.tableView.contentOffset = CGPointMake(0.0, -70.0);
 	[self.view addSubview:self.tableView];
 	
 	UIView *tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -70.0, 320.0, 70.0)];
@@ -163,7 +160,7 @@
 	subjectLabel.textAlignment = NSTextAlignmentCenter;
 	subjectLabel.text = [NSString stringWithFormat:@"#%@", [HONAppDelegate dailySubjectName]];
 	[tableHeaderView addSubview:subjectLabel];
-	[self.tableView addSubview:tableHeaderView];
+	//[self.tableView addSubview:tableHeaderView];
 	
 	if (self.challengeVO == nil)
 		[self _retrieveChallenges];
@@ -282,12 +279,14 @@
 																	cancelButtonTitle:@"Cancel"
 															 destructiveButtonTitle:nil
 																	otherButtonTitles:@"Flag Challenge", @"Share Challenge", @"ReChallenge", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet showInView:self.view];
 }
 
 - (void)_zoomImage:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:[notification object]]];
+	NSDictionary *dict = (NSDictionary *)[notification object];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:[dict objectForKey:@"img"] withTitle:[dict objectForKey:@"title"]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }

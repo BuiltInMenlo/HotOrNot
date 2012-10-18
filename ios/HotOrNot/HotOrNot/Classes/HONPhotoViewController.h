@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface HONPhotoViewController : UIViewController
-- (id)initWithImagePath:(NSString *)imageURL;
+- (id)initWithImagePath:(NSString *)imageURL withTitle:(NSString *)title;
 @end
