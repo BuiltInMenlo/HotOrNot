@@ -71,7 +71,7 @@
 	[self.view addSubview:headerView];
 		
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(263.0, 0.0, 54.0, 34.0);
+	doneButton.frame = CGRectMake(263.0, 5.0, 54.0, 34.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive.png"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active.png"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];

@@ -67,9 +67,10 @@
 	btn1.frame = CGRectMake(0.0, self.view.frame.size.height - 48.0, 64.0, 48.0); // Set the frame (size and position) of the button)
 	[btn1 setBackgroundImage:btnImage forState:UIControlStateNormal]; // Set the image for the normal state of the button
 	[btn1 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted]; // Set the image for the normal state of the button
-	[btn1 setBackgroundImage:btnImageSelected forState:UIControlStateSelected]; // Set the image for the selected state of the button
+	[btn1 setBackgroundImage:btnImageSelected forState:(UIControlStateSelected | UIControlStateDisabled)]; // Set the image for the selected state of the button
 	[btn1 setTag:0]; // Assign the button a "tag" so when our "click" event is called we know which button was pressed.
 	[btn1 setSelected:true]; // Set this button as selected (we will select the others to false as we only want Tab 1 to be selected initially
+	[btn1 setEnabled:NO];
 	
 	// Now we repeat the process for the other buttons
 	btnImage = [UIImage imageNamed:@"tabbar_002_nonActive.png"];
@@ -79,7 +80,7 @@
 	btn2.frame = CGRectMake(64.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn2 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn2 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
-	[btn2 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
+	[btn2 setBackgroundImage:btnImageSelected forState:(UIControlStateSelected | UIControlStateDisabled)];
 	[btn2 setTag:1];
 	
 	btnImage = [UIImage imageNamed:@"tabbar_003_nonActive.png"];
@@ -89,7 +90,7 @@
 	btn3.frame = CGRectMake(128.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn3 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn3 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
-	[btn3 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
+	[btn3 setBackgroundImage:btnImageSelected forState:(UIControlStateSelected | UIControlStateDisabled)];
 	[btn3 setTag:2];
 	
 	btnImage = [UIImage imageNamed:@"tabbar_004_nonActive.png"];
@@ -99,7 +100,7 @@
 	btn4.frame = CGRectMake(192.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn4 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn4 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
-	[btn4 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
+	[btn4 setBackgroundImage:btnImageSelected forState:(UIControlStateSelected | UIControlStateDisabled)];
 	[btn4 setTag:3];
 	
 	btnImage = [UIImage imageNamed:@"tabbar_005_nonActive.png"];
@@ -109,7 +110,7 @@
 	btn5.frame = CGRectMake(256.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn5 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn5 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
-	[btn5 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
+	[btn5 setBackgroundImage:btnImageSelected forState:(UIControlStateSelected | UIControlStateDisabled)];
 	[btn5 setTag:4];
 	
 	// Add my new buttons to the view
@@ -138,42 +139,66 @@
 	switch(tabID) {
 		case 0:
 			[btn1 setSelected:true];
+			[btn1 setEnabled:NO];
 			[btn2 setSelected:false];
+			[btn2 setEnabled:YES];
 			[btn3 setSelected:false];
+			[btn3 setEnabled:YES];
 			[btn4 setSelected:false];
+			[btn4 setEnabled:YES];
 			[btn5 setSelected:false];
+			[btn5 setEnabled:YES];
 			break;
 			
 		case 1:
 			[btn1 setSelected:false];
+			[btn1 setEnabled:YES];
 			[btn2 setSelected:true];
+			[btn2 setEnabled:NO];
 			[btn3 setSelected:false];
+			[btn3 setEnabled:YES];
 			[btn4 setSelected:false];
+			[btn4 setEnabled:YES];
 			[btn5 setSelected:false];
+			[btn5 setEnabled:YES];
 			break;
 			
 		case 2:
 			[btn1 setSelected:(self.selectedIndex == 0)];
+			[btn1 setEnabled:!(self.selectedIndex == 0)];
 			[btn2 setSelected:(self.selectedIndex == 1)];
+			[btn2 setEnabled:!(self.selectedIndex == 1)];
 			[btn3 setSelected:false];
 			[btn4 setSelected:(self.selectedIndex == 3)];
+			[btn4 setEnabled:!(self.selectedIndex == 3)];
 			[btn5 setSelected:(self.selectedIndex == 4)];
+			[btn5 setEnabled:!(self.selectedIndex == 4)];
 			break;
 			
 		case 3:
 			[btn1 setSelected:false];
+			[btn1 setEnabled:YES];
 			[btn2 setSelected:false];
+			[btn2 setEnabled:YES];
 			[btn3 setSelected:false];
+			[btn3 setEnabled:YES];
 			[btn4 setSelected:true];
+			[btn4 setEnabled:NO];
 			[btn5 setSelected:false];
+			[btn5 setEnabled:YES];
 			break;
 			
 		case 4:
 			[btn1 setSelected:false];
+			[btn1 setEnabled:YES];
 			[btn2 setSelected:false];
+			[btn2 setEnabled:YES];
 			[btn3 setSelected:false];
+			[btn3 setEnabled:YES];
 			[btn4 setSelected:false];
+			[btn4 setEnabled:YES];
 			[btn5 setSelected:true];
+			[btn5 setEnabled:NO];
 			break;
 	}
 	

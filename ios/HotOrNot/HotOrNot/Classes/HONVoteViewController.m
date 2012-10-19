@@ -57,7 +57,7 @@
 	if ((self = [super init])) {
 		_isPushView = YES;
 		
-		self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
+		//self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
 		self.subjectID = subjectID;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
@@ -77,7 +77,7 @@
 	if ((self = [super init])) {
 		_isPushView = YES;
 		
-		self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
+		//self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
 		self.subjectID = 0;
 		self.challengeVO = vo;
 		
@@ -180,14 +180,14 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	
-//	if ([_challenges count] == 0)
-//		[[[UIAlertView alloc] initWithTitle:@"No Challenges" message:@"There aren't any challenges available!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	[self _retrieveChallenges];
+	
+	if ([_challenges count] == 0)
+		[[[UIAlertView alloc] initWithTitle:@"Nothing Here!" message:@"No PicChallenges in session. You should start one." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

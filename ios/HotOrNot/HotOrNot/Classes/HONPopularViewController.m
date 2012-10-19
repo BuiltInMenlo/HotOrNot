@@ -46,7 +46,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.tabBarItem.image = [UIImage imageNamed:@"tab04_nonActive"];
+		//self.tabBarItem.image = [UIImage imageNamed:@"tab04_nonActive"];
 		self.view.backgroundColor = [UIColor whiteColor];
 		
 		self.users = [NSMutableArray new];

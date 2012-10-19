@@ -1,5 +1,8 @@
 <?php session_start();
 
+header('Location: https://www.facebook.com/PicChallengeGame');
+
+/*
 require './_db_open.php'; 
 
 if (isset($_GET['cID'])) {
@@ -17,9 +20,12 @@ if (isset($_GET['cID'])) {
 }
 
 
-require './_db_close.php'; ?>
+require './_db_close.php'; 
+
+*/ ?>
 
 
+<!-- 
 <html>
   <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# pchallenge: http://ogp.me/ns/fb/pchallenge#">
     <meta property="fb:app_id" content="529054720443694" /> 
@@ -37,10 +43,6 @@ require './_db_close.php'; ?>
 	<hr />
 	<p><?php echo ($blurb); ?></p>
 	<p><img src="<?php echo ($img_url); ?>" /></p>	
-<!--
-	<script type="text/javascript">
-      setTimeout(function() {window.location = "<?php echo ($url); ?>";}, 500);
-    </script>
--->
   </body>  
 </html>
+-->

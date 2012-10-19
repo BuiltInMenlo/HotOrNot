@@ -69,9 +69,9 @@
 		
 		// Add the capture button
 		self.captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		self.captureButton.frame = CGRectMake(106.0, 8.0, 108.0, 48.0);
-		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"playButton_nonActive.png"] forState:UIControlStateNormal];
-		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"playButton_Active.png"] forState:UIControlStateHighlighted];
+		self.captureButton.frame = CGRectMake(103.0, 3.0, 114.0, 64.0);
+		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive.png"] forState:UIControlStateNormal];
+		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active.png"] forState:UIControlStateHighlighted];
 		[self.captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
 		[footerImgView addSubview:self.captureButton];
 				

@@ -45,9 +45,6 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-	[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[backButton setTitle:@"Back" forState:UIControlStateNormal];
 	[headerView addSubview:backButton];
 	
 	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0)];

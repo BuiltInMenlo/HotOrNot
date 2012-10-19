@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <FacebookSDK/FacebookSDK.h>
 
@@ -76,22 +77,19 @@
 	
 	UIImageView *bgImgView;
 	
-	bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 419.0)];
-	[bgImgView setImage:[UIImage imageNamed:@"challengePreviewBG.png"]];
+	if ([HONAppDelegate isRetina5]) {
+		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 480.0)];
+		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground-568h.png"]];
 	
-//	if ([HONAppDelegate isRetina5]) {
-//		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 480.0)];
-//		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground-568h.png"]];
-//	
-//	} else {
-//		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 419.0)];
-//		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground.png"]];
-//	}
+	} else {
+		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, 419.0)];
+		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground.png"]];
+	}
 	
 	bgImgView.userInteractionEnabled = YES;
 	[self.view addSubview:bgImgView];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(40.0, 25.0, 240.0, 20.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(40.0, 30.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -114,14 +112,14 @@
 	[bgImgView addSubview:self.placeholderLabel];
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(20.0, 350.0, 284.0, 49.0);
+	friendsButton.frame = CGRectMake(18.0, self.view.frame.size.height - 132.0, 284.0, 49.0);
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_nonActive.png"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_Active.png"] forState:UIControlStateHighlighted];
 	[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:friendsButton];
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(20.0, 400.0, 284.0, 49.0);
+	randomButton.frame = CGRectMake(18.0, self.view.frame.size.height - 75.0, 284.0, 49.0);
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_nonActive.png"] forState:UIControlStateNormal];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_Active.png"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -131,7 +129,14 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(26.0, 120.0, 240.0, 240.0)];
+	UIView *holderView;
+	
+	if ([HONAppDelegate isRetina5])
+		holderView = [[UIView alloc] initWithFrame:CGRectMake(26.0, 135.0, 263.0, 263.0)];
+	
+	else
+		holderView = [[UIView alloc] initWithFrame:CGRectMake(73.0, 132.0, 180.0, 180.0)];
+	
 	holderView.clipsToBounds = YES;
 	[self.view addSubview:holderView];
 	
@@ -203,14 +208,27 @@
 - (void)_goFriendChallenge {
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
-	UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
-	UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW, kMediumH)];
-	UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W, kThumb1H)];
-	//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
-	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
 	
 	@try {
+		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
+		canvasView.image = self.challengeImage;
+		
+		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, kLargeH - 84.0, 568.0, 68.0)];
+		watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
+		[canvasView addSubview:watermarkImgView];
+		
+		CGSize size = [canvasView bounds].size;
+		UIGraphicsBeginImageContext(size);
+		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+		UIGraphicsEndImageContext();
+		
+		//UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
+		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW, kMediumH)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W, kThumb1H)];
+		//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
+		
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
@@ -262,17 +280,30 @@
 - (void)_goRandomChallenge {
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
-	UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
-	UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW, kMediumH)];
-	UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W, kThumb1H)];
-	//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
-	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
 	
 	self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
 	
 	@try {
+		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
+		canvasView.image = self.challengeImage;
+		
+		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, kLargeH - 84.0, 568.0, 68.0)];
+		watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
+		[canvasView addSubview:watermarkImgView];
+		
+		CGSize size = [canvasView bounds].size;
+		UIGraphicsBeginImageContext(size);
+		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+		UIGraphicsEndImageContext();
+		
+		//UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
+		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW, kMediumH)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W, kThumb1H)];
+		//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
+		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;

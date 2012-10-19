@@ -69,10 +69,6 @@
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-		//backButton = [[SNAppDelegate snHelveticaNeueFontMedium] fontWithSize:11.0];
-		[backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[backButton setTitle:@"Back" forState:UIControlStateNormal];
-		[headerView addSubview:backButton];
 	}
 	
 	UITextField *subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 280.0, 20.0)];

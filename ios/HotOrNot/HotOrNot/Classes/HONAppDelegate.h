@@ -65,8 +65,8 @@
 #define kMediumW 240.0
 #define kMediumH 180.0
 
-#define kLargeW 648.0
-#define kLargeH 484.0
+#define kLargeW 803.0
+#define kLargeH 600.0
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;

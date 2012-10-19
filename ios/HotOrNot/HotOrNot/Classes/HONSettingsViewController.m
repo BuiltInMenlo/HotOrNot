@@ -28,7 +28,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.tabBarItem.image = [UIImage imageNamed:@"tab05_nonActive"];
+		//self.tabBarItem.image = [UIImage imageNamed:@"tab05_nonActive"];
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];

@@ -51,7 +51,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.tabBarItem.image = [UIImage imageNamed:@"tab01_nonActive"];
+		//self.tabBarItem.image = [UIImage imageNamed:@"tab01_nonActive"];
 		self.challenges = [NSMutableArray array];
 		self.isFirstRun = YES;
 		
@@ -88,12 +88,14 @@
 	self.tableView.userInteractionEnabled = YES;
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
+	//self.tableView.bounces = NO;
+	
 	//self.tableView.contentInset = UIEdgeInsetsMake(9.0, 0.0f, 9.0f, 0.0f);
 	[self.view addSubview:self.tableView];
 	
 	[self _retrieveChallenges];
 	
-	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0) {
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0) {
 		NSString *buttonImage;// = [NSString stringWithFormat:@"tutorial_00%d.png", ((arc4random() % 4) + 1)];
 		CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
 		
@@ -110,10 +112,10 @@
 		_tutorialOverlayImgView.userInteractionEnabled = YES; 
 		[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
 	
-	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = _tutorialOverlayImgView.frame;
-	[closeTutorialButton addTarget:self action:@selector(_goTutorialCancel) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialOverlayImgView addSubview:closeTutorialButton];
+		UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeTutorialButton.frame = _tutorialOverlayImgView.frame;
+		[closeTutorialButton addTarget:self action:@selector(_goTutorialCancel) forControlEvents:UIControlEventTouchUpInside];
+		[_tutorialOverlayImgView addSubview:closeTutorialButton];
 		
 		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		createChallengeButton.frame = CGRectMake(0.0, 45.0, 320.0, 78.0);
@@ -128,7 +130,7 @@
 		[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tabbar_003_active.png"] forState:UIControlStateHighlighted];
 		[createChallenge2Button addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
 		[_tutorialOverlayImgView addSubview:createChallenge2Button];
-	//}
+	}
 }
 
 - (void)viewDidLoad {

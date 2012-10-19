@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 
 #import "ASIFormDataRequest.h"
@@ -45,7 +46,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor blackColor];
-		self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
+		//self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
 		self.subjectName = @"";
 		self.submitAction = 1;
 		self.needsChallenger = YES;
@@ -216,16 +217,10 @@
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-	UIImage *image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(480.0, 360.0)];
-	
-	
-	UIImage *lImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kLargeW, kLargeH)];
-	UIImage *mImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kMediumW, kMediumH)];
-	UIImage *t1Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kThumb1W, kThumb1H)];
-	//UIImage *t2Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kThumb2W, kThumb2H)];
-	
-	
 	[self dismissViewControllerAnimated:YES completion:nil];
+	
+	UIImage *image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kLargeW, kLargeH)];
+	
 	
 	NSLog(@"self.needsChallenger:[%d]", self.needsChallenger);
 	
@@ -236,6 +231,25 @@
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", filename);
 		
 		@try {
+			UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
+			canvasView.image = image;
+			
+			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, kLargeH - 84.0, 568.0, 68.0)];
+			watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
+			[canvasView addSubview:watermarkImgView];
+			
+			CGSize size = [canvasView bounds].size;
+			UIGraphicsBeginImageContext(size);
+			[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+			UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+			UIGraphicsEndImageContext();
+
+			
+			//UIImage *lImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kLargeW, kLargeH)];
+			UIImage *mImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kMediumW, kMediumH)];
+			UIImage *t1Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kThumb1W, kThumb1H)];
+			//UIImage *t2Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kThumb2W, kThumb2H)];
+			
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.labelText = @"Submitting Challenge…";
 			_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -298,7 +312,20 @@
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+		_imagePicker.cameraOverlayView = nil;
+		_imagePicker.navigationBarHidden = YES;
+		_imagePicker.toolbarHidden = YES;
+		_imagePicker.wantsFullScreenLayout = YES;
+		_imagePicker.showsCameraControls = NO;
+		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
+	
+		[self _showOverlay];
+	
+	} else
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - ASI Delegates

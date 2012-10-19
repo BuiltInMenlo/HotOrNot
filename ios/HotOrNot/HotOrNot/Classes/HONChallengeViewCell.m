@@ -127,6 +127,7 @@
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive.png"] forState:UIControlStateNormal];
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active.png"] forState:UIControlStateHighlighted];
 		[ctaButton removeTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
+		[ctaButton addTarget:self action:@selector(_goWaitingAlert) forControlEvents:UIControlEventTouchUpInside];
 	
 	} else if ([self.challengeVO.status isEqualToString:@"Accept"]) {
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
@@ -299,6 +300,15 @@
 
 - (void)_goLoadMore {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
+}
+
+- (void)_goWaitingAlert {
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Waiting Challenge"
+																	message:@"This challenge hasn't been accepted yet."
+																  delegate:self
+													  cancelButtonTitle:nil
+													  otherButtonTitles:@"OK", nil];
+	[alert show];
 }
 
 - (void)didSelect {
