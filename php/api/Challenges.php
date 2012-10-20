@@ -139,7 +139,7 @@
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!", "sound": "push_01.caf"}}');
 		 	$res = curl_exec($ch);
 			$err_no = curl_errno($ch);
 			$err_msg = curl_error($ch);
@@ -220,7 +220,7 @@
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_POST, 1);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
+				curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!", "sound": "push_01.caf"}}');
 			 	$res = curl_exec($ch);
 				$err_no = curl_errno($ch);
 				$err_msg = curl_error($ch);
@@ -305,7 +305,7 @@
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!"}}');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!", "sound": "push_01.caf"}}');
 		 	$res = curl_exec($ch);
 			$err_no = curl_errno($ch);
 			$err_msg = curl_error($ch);
@@ -493,7 +493,7 @@
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $user_name .' has accepted your challenge!"}}');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $user_name .' has accepted your challenge!", "sound": "push_01.caf"}}');
 		 	$res = curl_exec($ch);
 			$err_no = curl_errno($ch);
 			$err_msg = curl_error($ch);

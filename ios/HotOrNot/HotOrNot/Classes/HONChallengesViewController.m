@@ -78,6 +78,15 @@
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor whiteColor];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	
+	if ([HONAppDelegate isRetina5])
+		bgImgView.image = [UIImage imageNamed:@"backgroundBG-568h.png"];
+	
+	else
+		bgImgView.image = [UIImage imageNamed:@"backgroundBG.png"];
+	
+	[self.view addSubview:bgImgView];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 50.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -205,6 +214,8 @@
 	
 	_tutorialOverlayImgView.hidden = YES;
 	[_tutorialOverlayImgView removeFromSuperview];
+	
+	[self _retrieveChallenges];
 }
 
 - (void)_goTutorialClose {
@@ -217,6 +228,7 @@
 	_tutorialOverlayImgView.hidden = YES;
 	[_tutorialOverlayImgView removeFromSuperview];
 	
+	[self _retrieveChallenges];
 	[self _goCreateChallenge];
 }
 
@@ -249,27 +261,6 @@
 - (void)_refreshList:(NSNotification *)notification {
 	[self _retrieveChallenges];
 }
-
-#pragma mark - AlerView Delegates
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	ASIFormDataRequest *challengeRequest;
-	
-	switch(buttonIndex) {
-		case 0:
-			[self.challenges removeObjectAtIndex:self.idxPath.row - 1];
-			[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.idxPath] withRowAnimation:UITableViewRowAnimationFade];
-			
-			challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-			[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
-			[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
-			[challengeRequest startAsynchronous];
-			break;
-			
-		case 1:
-			break;
-	}
-}
-
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -401,16 +392,29 @@
 	}
 }
 
-#pragma mark - ActionSheet Delegates
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	switch (buttonIndex ) {
+
+#pragma mark - AlerView Delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	ASIFormDataRequest *challengeRequest;
+	HONChallengeVO *vo;
+	
+	switch(buttonIndex) {
 		case 0:
+			vo = (HONChallengeVO *)[_challenges objectAtIndex:self.idxPath.row - 1];
+			
+			[self.challenges removeObjectAtIndex:self.idxPath.row - 1];
+			[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.idxPath] withRowAnimation:UITableViewRowAnimationFade];
+			
+			
+			NSLog(@"VO:[%d]", vo.challengeID);
+			
+			challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+			[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
+			[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
+			[challengeRequest startAsynchronous];
 			break;
 			
 		case 1:
-			break;
-			
-		case 2:
 			break;
 	}
 }

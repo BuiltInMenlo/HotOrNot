@@ -32,28 +32,31 @@
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
 	if ((self = [self init])) {
-		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		//dailyButton.backgroundColor = [UIColor redColor];
-		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
-		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:dailyButton];
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
+		_bgImgView.image = [UIImage imageNamed:@"leaderTableHeader.png"];
 		
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
-		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		ptsLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		ptsLabel.backgroundColor = [UIColor clearColor];
-		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
-		[self addSubview:ptsLabel];
-		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 140.0, 16.0)];
-		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.textAlignment = NSTextAlignmentCenter;
-		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
-		[self addSubview:subjectLabel];
+//		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		//dailyButton.backgroundColor = [UIColor redColor];
+//		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
+//		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
+//		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+//		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:dailyButton];
+//		
+//		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
+//		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+//		ptsLabel.textColor = [HONAppDelegate honBlueTxtColor];
+//		ptsLabel.backgroundColor = [UIColor clearColor];
+//		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
+//		[self addSubview:ptsLabel];
+//		
+//		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 140.0, 16.0)];
+//		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+//		subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
+//		subjectLabel.backgroundColor = [UIColor clearColor];
+//		subjectLabel.textAlignment = NSTextAlignmentCenter;
+//		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
+//		[self addSubview:subjectLabel];
 	}
 	
 	return (self);

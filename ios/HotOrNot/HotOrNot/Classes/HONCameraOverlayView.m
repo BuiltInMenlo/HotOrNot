@@ -36,7 +36,7 @@
 		[self addSubview:headerView];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cancelButton.frame = CGRectMake(255.0, 5.0, 54.0, 34.0);
+		cancelButton.frame = CGRectMake(245.0, 0.0, 74.0, 44.0);
 		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive.png"] forState:UIControlStateNormal];
 		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active.png"] forState:UIControlStateHighlighted];
 		[cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];

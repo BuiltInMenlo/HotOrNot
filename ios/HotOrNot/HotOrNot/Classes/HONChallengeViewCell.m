@@ -156,26 +156,25 @@
 		
 		creatorLabel.frame = CGRectMake(60.0, 5.0, 100.0, 16.0);
 		
-		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 35.0, 100.0, 16.0)];
-		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.creatorLabel = [SNAppDelegate snLinkColor];
+		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 35.0, 100.0, 16.0)];
+		creatorScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		creatorScoreLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		creatorScoreLabel.backgroundColor = [UIColor clearColor];
 		creatorScoreLabel.textAlignment = NSTextAlignmentCenter;
 		creatorScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreCreator];
 		[self addSubview:creatorScoreLabel];
 		
-		
-		UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, 5.0, 100.0, 16.0)];
-		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.creatorLabel = [SNAppDelegate snLinkColor];
+		UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(127.0, 5.0, 100.0, 16.0)];
+		challengerLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		challengerLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		challengerLabel.backgroundColor = [UIColor clearColor];
 		challengerLabel.textAlignment = NSTextAlignmentCenter;
 		challengerLabel.text = self.challengeVO.challengerName;
 		[self addSubview:challengerLabel];
 		
-		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(135.0, 35.0, 100.0, 16.0)];
-		//self.creatorLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//self.creatorLabel = [SNAppDelegate snLinkColor];
+		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(127.0, 35.0, 100.0, 16.0)];
+		challengerScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		challengerScoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		challengerScoreLabel.backgroundColor = [UIColor clearColor];
 		challengerScoreLabel.textAlignment = NSTextAlignmentCenter;
 		challengerScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreChallenger];
@@ -198,9 +197,9 @@
 				timeUntil = [NSString stringWithFormat:@"%d seconds", secs];
 		}
 		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(220.0, 18.0, 90.0, 16.0)];
-		//timeLabel = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:11];
-		//timeLabel = [SNAppDelegate snLinkColor];
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 18.0, 90.0, 16.0)];
+		timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		timeLabel.textColor = [UIColor blackColor];
 		timeLabel.backgroundColor = [UIColor clearColor];
 		timeLabel.textAlignment = NSTextAlignmentCenter;
 		timeLabel.text = timeUntil;

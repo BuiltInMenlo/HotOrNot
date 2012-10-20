@@ -42,6 +42,7 @@
 + (NSArray *)fbPermissions;
 
 + (BOOL)isRetina5;
++ (BOOL)hasNetwork;
 
 + (UIFont *)honHelveticaNeueFontBold;
 + (UIFont *)honHelveticaNeueFontMedium;

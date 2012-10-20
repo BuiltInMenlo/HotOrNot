@@ -15,6 +15,7 @@
 #import "HONAppDelegate.h"
 #import "Parse/Parse.h"
 #import "Mixpanel.h"
+#import "Reachability.h"
 
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
@@ -155,6 +156,18 @@
 	return ([UIScreen mainScreen].scale == 2.f && [UIScreen mainScreen].bounds.size.height == 568.0f);
 }
 
++(BOOL)hasNetwork {
+	//Reachability *wifiReachability = [Reachability reachabilityForLocalWiFi];
+	//[[Reachability reachabilityForLocalWiFi] startNotifier];
+	
+	//return ([wifiReachability currentReachabilityStatus] == kReachableViaWiFi);
+	
+	[[Reachability reachabilityForInternetConnection] startNotifier];
+	NetworkStatus networkStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
+	
+	return !(networkStatus == NotReachable);
+}
+
 + (UIFont *)honHelveticaNeueFontBold {
 	return [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0];
 }
@@ -214,6 +227,16 @@
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
 	NSLog(@"TOKEN:[%@]", [HONAppDelegate deviceToken]);
+	
+	if (![HONAppDelegate hasNetwork]) {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Network Connection"
+																		message:@"This app requires a network connection to work."
+																	  delegate:nil
+														  cancelButtonTitle:@"Yes"
+														  otherButtonTitles:@"No", nil];
+		[alert show];
+	}
+	
 	
 	NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 	[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
