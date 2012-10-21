@@ -64,9 +64,8 @@
 	lHolderView.clipsToBounds = YES;
 	[self addSubview:lHolderView];
 	
-	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(lHolderView.frame.size.width * -0.5, 0.0, kMediumW * 1.25, kMediumH * 1.25)];
+	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
 	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
-	lImgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[lHolderView addSubview:lImgView];
 	
 	UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -78,9 +77,8 @@
 	rHolderView.clipsToBounds = YES;
 	[self addSubview:rHolderView];
 	
-	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(rHolderView.frame.size.width * -0.5, 0.0, kMediumW * 1.25, kMediumH * 1.25)];
+	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
 	[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
-	rImgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[rHolderView addSubview:rImgView];
 	
 	UIButton *rZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];

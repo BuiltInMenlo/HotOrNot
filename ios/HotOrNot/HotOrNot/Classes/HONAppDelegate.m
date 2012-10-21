@@ -106,7 +106,9 @@
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"] isEqualToString:@"YES"]);
 }
 
-
++ (UIViewController *)appTabBarController {
+	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
+}
 
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
 	UIGraphicsBeginImageContext(size);
@@ -156,7 +158,7 @@
 	return ([UIScreen mainScreen].scale == 2.f && [UIScreen mainScreen].bounds.size.height == 568.0f);
 }
 
-+(BOOL)hasNetwork {
++ (BOOL)hasNetwork {
 	//Reachability *wifiReachability = [Reachability reachabilityForLocalWiFi];
 	//[[Reachability reachabilityForLocalWiFi] startNotifier];
 	
@@ -228,97 +230,99 @@
 	
 	NSLog(@"TOKEN:[%@]", [HONAppDelegate deviceToken]);
 	
-	if (![HONAppDelegate hasNetwork]) {
+	if ([HONAppDelegate hasNetwork]) {
+		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
+		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
+		[UAirship takeOff:takeOffOptions];
+		
+		[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+		
+		[HONAppDelegate openSession];
+		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
+		[PFUser enableAutomaticUser];
+		PFACL *defaultACL = [PFACL ACL];
+		
+		// If you would like all objects to be private by default, remove this line.
+		[defaultACL setPublicReadAccess:YES];
+		
+		[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
+		
+		
+	//	PFObject *testObject = [PFObject objectWithClassName:@"APIs"];
+	//	[testObject setObject:@"PicChallenge" forKey:@"title"];
+	//	[testObject setObject:@"http://discover.getassembly.com/hotornot/api" forKey:@"server_path"];
+	//	[testObject save];
+		
+		[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
+		[[Mixpanel sharedInstance] track:@"App Boot"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
+		
+		else {
+			int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+			boot_total++;
+		
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+		}
+		
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
+			[HONAppDelegate setAllowsFBPosting:NO];
+		
+			
+		PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
+		PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
+		
+		PFQuery *durationQuery = [PFQuery queryWithClassName:@"Durations"];
+		PFObject *durationObject = [durationQuery getObjectWithId:@"ND1LzmULX5"];
+		
+		PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
+		PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[durationObject objectForKey:@"duration"] forKey:@"challange_duration"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
+		challengesViewController = [[HONChallengesViewController alloc] init];
+		voteViewController = [[HONVoteViewController alloc] init];
+		popularViewController = [[HONPopularViewController alloc] init];
+		createChallengeViewController = [[HONImagePickerViewController alloc] init];
+		settingsViewController = [[HONSettingsViewController alloc] init];
+		
+		UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
+		UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
+		UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
+		UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
+		UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+		
+		[navController1 setNavigationBarHidden:YES];
+		[navController2 setNavigationBarHidden:YES];
+		[navController3 setNavigationBarHidden:YES];
+		[navController4 setNavigationBarHidden:YES];
+		[navController5 setNavigationBarHidden:YES];
+		
+		self.tabBarController = [[HONTabBarController alloc] init];
+		
+		//self.tabBarController = [[UITabBarController alloc] init];
+		self.tabBarController.delegate = self;
+		self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
+		
+		self.window.rootViewController = self.tabBarController;
+	
+	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Network Connection"
 																		message:@"This app requires a network connection to work."
 																	  delegate:nil
-														  cancelButtonTitle:@"Yes"
-														  otherButtonTitles:@"No", nil];
+														  cancelButtonTitle:nil
+														  otherButtonTitles:@"OK", nil];
 		[alert show];
+
 	}
 	
-	
-	NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
-	[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
-	[UAirship takeOff:takeOffOptions];
-	
-	[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-	
-	[HONAppDelegate openSession];
-	[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
-	[PFUser enableAutomaticUser];
-	PFACL *defaultACL = [PFACL ACL];
-	
-	// If you would like all objects to be private by default, remove this line.
-	[defaultACL setPublicReadAccess:YES];
-	
-	[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
-	
-	
-//	PFObject *testObject = [PFObject objectWithClassName:@"APIs"];
-//	[testObject setObject:@"PicChallenge" forKey:@"title"];
-//	[testObject setObject:@"http://discover.getassembly.com/hotornot/api" forKey:@"server_path"];
-//	[testObject save];
-	
-	[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
-	[[Mixpanel sharedInstance] track:@"App Boot"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
-	
-	else {
-		int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-		boot_total++;
-	
-		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
-	}
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
-		[HONAppDelegate setAllowsFBPosting:NO];
-	
-		
-	PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
-	PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
-	
-	PFQuery *durationQuery = [PFQuery queryWithClassName:@"Durations"];
-	PFObject *durationObject = [durationQuery getObjectWithId:@"ND1LzmULX5"];
-	
-	PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
-	PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
-	[[NSUserDefaults standardUserDefaults] setObject:[durationObject objectForKey:@"duration"] forKey:@"challange_duration"];
-	[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
-	challengesViewController = [[HONChallengesViewController alloc] init];
-	voteViewController = [[HONVoteViewController alloc] init];
-	popularViewController = [[HONPopularViewController alloc] init];
-	createChallengeViewController = [[HONImagePickerViewController alloc] init];
-	settingsViewController = [[HONSettingsViewController alloc] init];
-	
-	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
-	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
-	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
-	UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
-	
-	[navController1 setNavigationBarHidden:YES];
-	[navController2 setNavigationBarHidden:YES];
-	[navController3 setNavigationBarHidden:YES];
-	[navController4 setNavigationBarHidden:YES];
-	[navController5 setNavigationBarHidden:YES];
-	
-	self.tabBarController = [[HONTabBarController alloc] init];
-	
-	//self.tabBarController = [[UITabBarController alloc] init];
-	self.tabBarController.delegate = self;
-	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
-	
-	self.window.rootViewController = self.tabBarController;
 	[self.window makeKeyAndVisible];
 	
 	return (YES);

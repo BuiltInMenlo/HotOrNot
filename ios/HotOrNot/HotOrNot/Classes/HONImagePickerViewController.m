@@ -8,9 +8,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
+#import <AVFoundation/AVFoundation.h>
 
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
+#import "UIImage+fixOrientation.h"
 
 #import "HONImagePickerViewController.h"
 #import "HONAppDelegate.h"
@@ -29,6 +31,7 @@
 @property(nonatomic) BOOL needsChallenger;
 @property(nonatomic, strong) UIImagePickerController *imagePicker;
 @property(nonatomic) BOOL isFirstAppearance;
+@property(nonatomic, strong) NSTimer *focusTimer;
 @end
 
 @implementation HONImagePickerViewController
@@ -41,7 +44,7 @@
 @synthesize challengerID = _challengerID;
 @synthesize needsChallenger = _needsChallenger;
 @synthesize isFirstAppearance = _isFirstAppearance;
-
+@synthesize focusTimer = _focusTimer;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -149,7 +152,7 @@
 			_imagePicker = [[UIImagePickerController alloc] init];
 			_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 			_imagePicker.delegate = self;
-			_imagePicker.allowsEditing = YES;
+			_imagePicker.allowsEditing = NO;
 			_imagePicker.navigationBarHidden = YES;
 			_imagePicker.toolbarHidden = YES;
 			_imagePicker.wantsFullScreenLayout = YES;
@@ -179,15 +182,36 @@
 	camerOverlayView.delegate = self;
 	
 	_imagePicker.cameraOverlayView = camerOverlayView;
+	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
+}
+
+- (void)autofocusCamera {
+	NSArray *devices = [AVCaptureDevice devices];
+	NSError *error;
+	for (AVCaptureDevice *device in devices) {
+		if ([device position] == AVCaptureDevicePositionBack) {
+			[device lockForConfiguration:&error];
+			if ([device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+            device.focusMode = AVCaptureFocusModeAutoFocus;
+			}
+			
+			[device unlockForConfiguration];
+		}
+	}
 }
 
 #pragma mark - Navigation
 - (void)_goDone {
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+	[_focusTimer invalidate];
+	_focusTimer = nil;
 }
 
 
 - (void)takePicture {
+	[_focusTimer invalidate];
+	_focusTimer = nil;
+	
 	[_imagePicker takePicture];
 }
 
@@ -207,6 +231,9 @@
 }
 
 - (void)closeCamera {
+	[_focusTimer invalidate];
+	_focusTimer = nil;
+	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void){
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
@@ -214,10 +241,13 @@
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+	[_focusTimer invalidate];
+	_focusTimer = nil;
+	
 	[self dismissViewControllerAnimated:YES completion:nil];
 	
-	UIImage *image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kLargeW, kLargeH)];
-	
+	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+	image = [image fixOrientation];
 	
 	NSLog(@"self.needsChallenger:[%d]", self.needsChallenger);
 	
@@ -229,7 +259,7 @@
 		
 		@try {
 			UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
-			canvasView.image = image;
+			canvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)];
 			
 			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, kLargeH - 84.0, 568.0, 68.0)];
 			watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
@@ -241,11 +271,8 @@
 			UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
 			UIGraphicsEndImageContext();
 
-			
-			//UIImage *lImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kLargeW, kLargeH)];
-			UIImage *mImage = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kMediumW, kMediumH)];
-			UIImage *t1Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kThumb1W, kThumb1H)];
-			//UIImage *t2Image = [HONAppDelegate scaleImage:[info objectForKey:UIImagePickerControllerOriginalImage] toSize:CGSizeMake(kThumb2W, kThumb2H)];
+			UIImage *mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+			UIImage *t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 			
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.labelText = @"Submitting Challenge…";

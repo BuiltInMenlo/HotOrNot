@@ -370,7 +370,7 @@
 				
 				if ($challenge_row['started'] != "0000-00-00 00:00:00") {
 					$now_date = date('Y-m-d H:i:s', time());					
-					$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 8 hours'));				   
+					$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 2 hours'));				   
 
 					if ($now_date > $end_date) {
 						$challenge_row['status_id'] = "5";
@@ -436,7 +436,7 @@
 				
 				if ($challenge_row['started'] != "0000-00-00 00:00:00") {
 					$now_date = date('Y-m-d H:i:s', time());					
-					$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 8 hours'));				   
+					$end_date = date('Y-m-d H:i:s', strtotime($challenge_row['started'] .' + 2 hours'));				   
 
 					if ($now_date > $end_date) {
 						$challenge_row['status_id'] = "5";

@@ -93,7 +93,7 @@
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
+	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[_subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
 	[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
@@ -131,19 +131,21 @@
 	
 	UIView *holderView;
 	
+	float imgSize;
+	
 	if ([HONAppDelegate isRetina5])
-		holderView = [[UIView alloc] initWithFrame:CGRectMake(26.0, 135.0, 263.0, 263.0)];
-	
+		imgSize = 263.0;
+		
 	else
-		holderView = [[UIView alloc] initWithFrame:CGRectMake(73.0, 132.0, 180.0, 180.0)];
+		imgSize = 180.0;
 	
+	holderView = [[UIView alloc] initWithFrame:CGRectMake(26.0 + ((263.0 - imgSize) * 0.5), 135.0, imgSize, imgSize)];
 	holderView.clipsToBounds = YES;
 	[self.view addSubview:holderView];
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(-85.0, -40.0, 480.0, 360.0)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, imgSize, imgSize * kPhotoRatio)];
 	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	imgView.image = self.challengeImage;
-	imgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[holderView addSubview:imgView];
 	
 	NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
@@ -188,8 +190,8 @@
 			 return;
 		 
 		 if (friendPickerController.selection.count == 0) {
-			 [[[UIAlertView alloc] initWithTitle:@"You Picked:"
-												  message:@"<No Friends Selected>"
+			 [[[UIAlertView alloc] initWithTitle:@"No Friend Selected"
+												  message:@"You need to pick a friend."
 												 delegate:nil
 									 cancelButtonTitle:@"OK"
 									 otherButtonTitles:nil]
@@ -225,8 +227,8 @@
 		UIGraphicsEndImageContext();
 		
 		//UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
-		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW, kMediumH)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W, kThumb1H)];
+		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
 		
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
@@ -300,8 +302,8 @@
 		UIGraphicsEndImageContext();
 		
 		//UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
-		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW, kMediumH)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W, kThumb1H)];
+		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
 		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

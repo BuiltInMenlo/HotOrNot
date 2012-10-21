@@ -65,7 +65,7 @@
 		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
 		
 		UIButton *loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		loadMoreButton.frame = CGRectMake(100.0, 0.0, 120.0, 60.0);
+		loadMoreButton.frame = CGRectMake(100.0, -3.0, 120.0, 60.0);
 		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive.png"] forState:UIControlStateNormal];
 		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active.png"] forState:UIControlStateHighlighted];
 		[loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
@@ -95,10 +95,9 @@
 	creatorImgHolderView.clipsToBounds = YES;
 	[self addSubview:creatorImgHolderView];
 	
-	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-15.0, 0.0, 81.0, 60.0)];
+	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kThumb1W, kThumb1H)];
 	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
 	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
-	creatorImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[creatorImgHolderView addSubview:creatorImageView];
 	
 	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 15.0, 100.0, 16.0)];
@@ -147,9 +146,8 @@
 		challengerImgHolderView.clipsToBounds = YES;
 		[self addSubview:challengerImgHolderView];
 		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-15.0, 10.0, 81.0, 60.0)];
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kThumb1W, kThumb1H)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		challengerImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
 
@@ -219,7 +217,6 @@
 		
 		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-15.0, 10.0, 81.0, 60.0)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		challengerImageView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
 		

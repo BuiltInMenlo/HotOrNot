@@ -35,6 +35,8 @@
 + (void)setAllowsFBPosting:(BOOL)canPost;
 + (BOOL)allowsFBPosting;
 
++ (UIViewController *)appTabBarController;
+
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
 + (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor;
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
@@ -60,14 +62,16 @@
 #define kChallengesAPI @"Challenges.php"
 #define kPopularAPI @"Popular.php"
 
-#define kThumb1W 162.0
-#define kThumb1H 121.0
+#define kThumb1W 50.0
+#define kThumb1H 67.0
 
-#define kMediumW 240.0
-#define kMediumH 180.0
+#define kMediumW 182.0
+#define kMediumH 244.0
 
-#define kLargeW 803.0
-#define kLargeH 600.0
+#define kLargeW 620.0
+#define kLargeH 830.0
+
+#define kPhotoRatio 1.33884297520661
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;

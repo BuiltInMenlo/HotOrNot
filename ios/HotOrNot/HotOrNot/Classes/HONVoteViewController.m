@@ -238,7 +238,7 @@
 - (void)_goDailyChallenge {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 
@@ -280,7 +280,7 @@
 															 destructiveButtonTitle:nil
 																	otherButtonTitles:@"Flag Challenge", @"Share Challenge", @"ReChallenge", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet showInView:self.view];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
 - (void)_zoomImage:(NSNotification *)notification {
@@ -355,6 +355,8 @@
 	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:self.challengeVO.creatorID]];
 	
+	NSLog(@"BUTTON:[%d]", buttonIndex);
+	
 	switch (buttonIndex ) {
 		case 0:
 			[voteRequest setDelegate:self];
@@ -372,6 +374,9 @@
 		case 2:
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
+			break;
+			
+		case 3:
 			break;
 	}
 }

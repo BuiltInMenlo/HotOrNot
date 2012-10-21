@@ -209,6 +209,11 @@
 			
 		case 1:
 			_activatedSwitch.on = !_activatedSwitch.on;
+			if (_activatedSwitch == _tournamentSwitch) {
+				[[NSUserDefaults standardUserDefaults] setObject:(_tournamentSwitch.on) ? @"YES" : @"NO" forKey:@"fb_posting"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+			}
+			
 			break;
 	}
 }

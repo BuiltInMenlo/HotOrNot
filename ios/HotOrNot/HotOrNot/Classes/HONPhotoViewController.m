@@ -53,14 +53,13 @@
 	_progressHUD.graceTime = 2.0;
 	_progressHUD.taskInProgress = YES;
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(-100.0, 0.0, kLargeW, kLargeH)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 45.0, kLargeW * 0.5, kLargeH * 0.5)];
 	imgView.userInteractionEnabled = YES;
 	[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", self.imgURL]] placeholderImage:nil options:0 success:^(UIImage *image, BOOL cached) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	} failure:nil];
 	 
-	imgView.transform = CGAffineTransformMakeRotation(M_PI / 2);
 	[self.view addSubview:imgView];
 	
 //	UIImageView *tmpView = [[UIImageView alloc] initWithFrame:CGRectMake(50.0, 100.0, 100.0, 100.0)];
@@ -71,7 +70,7 @@
 	[self.view addSubview:headerView];
 		
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(263.0, 5.0, 54.0, 34.0);
+	doneButton.frame = CGRectMake(261.0, 5.0, 54.0, 34.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive.png"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active.png"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
