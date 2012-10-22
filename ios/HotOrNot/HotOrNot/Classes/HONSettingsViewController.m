@@ -29,7 +29,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		//self.tabBarItem.image = [UIImage imageNamed:@"tab05_nonActive"];
-		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		self.view.backgroundColor = [UIColor whiteColor];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -52,7 +52,7 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings"];
 	[self.view addSubview:headerView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 69.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -170,7 +170,14 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (70.0);
+	if (indexPath.row == 0)
+		return (22.0);
+	
+	else if (indexPath.row == 5)
+		return (15.0);
+	
+	else
+		return (70.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -212,6 +219,8 @@
 			if (_activatedSwitch == _tournamentSwitch) {
 				[[NSUserDefaults standardUserDefaults] setObject:(_tournamentSwitch.on) ? @"YES" : @"NO" forKey:@"fb_posting"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_FB_POSTING" object:nil];
 			}
 			
 			break;

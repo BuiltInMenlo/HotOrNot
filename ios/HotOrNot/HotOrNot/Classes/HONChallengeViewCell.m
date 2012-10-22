@@ -43,14 +43,14 @@
 		
 		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
 		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		ptsLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		ptsLabel.textColor = [UIColor whiteColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
 		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
 		[self addSubview:ptsLabel];
 		
 		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 140.0, 16.0)];
 		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textAlignment = NSTextAlignmentCenter;
 		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
@@ -123,6 +123,8 @@
 	
 	if ([self.challengeVO.status isEqualToString:@"Waiting"]) {
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
+		creatorLabel.text = self.challengeVO.challengerName;
+		
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive.png"] forState:UIControlStateNormal];
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active.png"] forState:UIControlStateHighlighted];
 		[ctaButton removeTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
@@ -215,7 +217,7 @@
 		challengerImgHolderView.clipsToBounds = YES;
 		[self addSubview:challengerImgHolderView];
 		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-15.0, 10.0, 81.0, 60.0)];
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kThumb1W, kThumb1H)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
@@ -247,6 +249,8 @@
 		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_nonActive.png"] forState:UIControlStateNormal];
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_Active.png"] forState:UIControlStateHighlighted];
+			[ctaButton removeTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
+			[ctaButton addTarget:self action:@selector(_goWinButton) forControlEvents:UIControlEventTouchUpInside];
 			
 //			if (self.challengeVO.scoreCreator == 1)
 //				[ctaButton setTitle:@"1 point" forState:UIControlStateNormal];
@@ -288,6 +292,10 @@
 #pragma mark - Navigation
 - (void)_goCTA {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:self.challengeVO];
+}
+
+- (void)_goWinButton {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_RESULTS" object:nil];
 }
 
 - (void)_goDailyChallenge {

@@ -20,24 +20,29 @@
 @interface HONVoteViewController() <UIActionSheetDelegate, ASIHTTPRequestDelegate>
 - (void)_retrieveChallenges;
 @property(nonatomic) int subjectID;
+@property(nonatomic, strong) UIImageView *toggleImgView;
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) ASIFormDataRequest *challengesRequest;
 @property(nonatomic) BOOL isPushView;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
+@property(nonatomic, strong)  UIButton *refreshButton;
+@property(nonatomic) int submitAction;
 @end
 
 @implementation HONVoteViewController
 @synthesize subjectID = _subjectID;
+@synthesize toggleImgView = _toggleImgView;
 @synthesize tableView = _tableView;
 @synthesize challenges = _challenges;
 @synthesize challengesRequest = _challengesRequest;
 @synthesize isPushView = _isPushView;
 @synthesize challengeVO = _challengeVO;
+@synthesize refreshButton = _refreshButton;
+@synthesize submitAction = _submitAction;
 
 - (id)init {
 	if ((self = [super init])) {
-		self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
 		self.subjectID = 0;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
@@ -57,7 +62,6 @@
 	if ((self = [super init])) {
 		_isPushView = YES;
 		
-		//self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
 		self.subjectID = subjectID;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
@@ -77,7 +81,6 @@
 	if ((self = [super init])) {
 		_isPushView = YES;
 		
-		//self.tabBarItem.image = [UIImage imageNamed:@"tab02_nonActive"];
 		self.subjectID = 0;
 		self.challengeVO = vo;
 		
@@ -104,7 +107,7 @@
 	
 	NSLog(@"SUBJECT:[%d][%d]", self.subjectID, _isPushView);
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Popular"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:headerView];
 		
 	if (_isPushView) {
@@ -116,14 +119,33 @@
 		[headerView addSubview:backButton];
 	}
 	
-	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
-	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:refreshButton];
+	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 0.0, 169.0, 44.0)];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_trending.png"];
+	[headerView addSubview:_toggleImgView];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
+	UIButton *trendingButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	trendingButton.frame = CGRectMake(76.0, 5.0, 84.0, 34.0);
+	[trendingButton addTarget:self action:@selector(_goTrending) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:trendingButton];
+	
+	UIButton *recentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	recentButton.frame = CGRectMake(161.0, 5.0, 84.0, 34.0);
+	[recentButton addTarget:self action:@selector(_goRecent) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:recentButton];
+	
+	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+	activityIndicatorView.frame = CGRectMake(282.0, 12.0, 24.0, 24.0);
+	[activityIndicatorView startAnimating];
+	[headerView addSubview:activityIndicatorView];
+	
+	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
+	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:_refreshButton];
+	
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 249.0;
@@ -232,6 +254,7 @@
 }
 
 - (void)_goRefresh {
+	_refreshButton.hidden = YES;
 	[self _retrieveChallenges];
 }
 
@@ -239,6 +262,28 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goTrending {
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_trending.png"];
+	self.submitAction = 5;
+	
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	[self.challengesRequest setDelegate:self];
+	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	[self.challengesRequest startAsynchronous];
+}
+
+- (void)_goRecent {
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_recent.png"];
+	self.submitAction = 14;
+	
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	[self.challengesRequest setDelegate:self];
+	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 14] forKey:@"action"];
+	[self.challengesRequest startAsynchronous];
 }
 
 
@@ -306,7 +351,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONVoteHeaderView *headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 50.0)];
+	HONVoteHeaderView *headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 54.0)];
 	[headerView setChallengeVO:[_challenges objectAtIndex:section]];
 	
 	return (headerView);
@@ -338,7 +383,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (45.0);
+	return (54.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -411,6 +456,8 @@
 	
 	} else {
 	}
+	
+	_refreshButton.hidden = NO;
 }
 
 -(void)requestFailed:(ASIHTTPRequest *)request {

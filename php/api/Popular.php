@@ -94,7 +94,7 @@
 				array_push($user_arr, array(
 					"id" => $user_row['id'], 
 					"username" => $user_row['username'], 					
-					"img_url" => "https://graph.facebook.com/". $user_row['fb_id'] ."/picture",   
+					"img_url" => "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square",   
 					"score" => $user_row['points']
 				));	
 			}

@@ -30,7 +30,7 @@
 	if ((self = [super init])) {
 		self.backgroundColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0];
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 0.0, 300.0, 340.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 340.0)];
 		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
 		[self addSubview:bgImgView];
 				

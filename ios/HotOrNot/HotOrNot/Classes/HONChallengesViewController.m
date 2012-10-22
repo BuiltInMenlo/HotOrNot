@@ -23,9 +23,11 @@
 #import "HONLoginViewController.h"
 #import "HONPhotoViewController.h"
 #import "HONVoteViewController.h"
+#import "HONResultsViewController.h"
 #import "HONHeaderView.h"
 
-@interface HONChallengesViewController() <UIAlertViewDelegate, ASIHTTPRequestDelegate>
+
+@interface HONChallengesViewController() <UIAlertViewDelegate, FBLoginViewDelegate, ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic) BOOL isFirstRun;
@@ -34,6 +36,7 @@
 @property(nonatomic, strong) ASIFormDataRequest *nextChallengesRequest;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) NSIndexPath *idxPath;
+@property(nonatomic, strong)  UIButton *refreshButton;
 
 - (void)_retrieveChallenges;
 @end
@@ -48,6 +51,7 @@
 @synthesize nextChallengesRequest = _nextChallengesRequest;
 @synthesize challengeVO = _challengeVO;
 @synthesize idxPath = _idxPath;
+@synthesize refreshButton = _refreshButton;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -88,7 +92,7 @@
 	
 	[self.view addSubview:bgImgView];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 50.0) style:UITableViewStylePlain];
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 69.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 70.0;
@@ -157,6 +161,8 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
+	NSLog(@"viewDidAppear");
+	
 	[self _retrieveChallenges];
 	
 	if (FBSession.activeSession.state != 513 && self.isFirstRun) {
@@ -165,6 +171,10 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONResultsViewController alloc] initWithChallenges:_challenges]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -191,17 +201,24 @@
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
 	//[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
+	if (FBSession.activeSession.state == 513) {
+		[[Mixpanel sharedInstance] track:@"Create Challenge"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	[[Mixpanel sharedInstance] track:@"Create Challenge"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)_goRefresh {
+	_refreshButton.hidden = YES;
 	[self _retrieveChallenges];
 }
 
@@ -235,15 +252,29 @@
 
 #pragma mark - Notifications
 - (void)_acceptChallenge:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[notification object]]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	if (FBSession.activeSession.state == 513) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[notification object]]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)_dailyChallenge:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	if (FBSession.activeSession.state == 513) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)_nextChallengeBlock:(NSNotification *)notification {
@@ -283,12 +314,17 @@
 		//NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
 		[headerView addSubview:[[HONHeaderView alloc] initWithTitle:@"Challenges"]];
 		
-		UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
-		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
-		[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-		[headerView addSubview:refreshButton];
+		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		activityIndicatorView.frame = CGRectMake(282.0, 12.0, 24.0, 24.0);
+		[activityIndicatorView startAnimating];
+		[headerView addSubview:activityIndicatorView];
+		
+		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
+		[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+		[headerView addSubview:_refreshButton];
 	
 	} else {
 		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -381,7 +417,6 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		self.idxPath = indexPath;
-		self.challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
 		
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Delete Challenge"
 																		message:@"Are you sure you want to remove this challenge?"
@@ -471,10 +506,20 @@
 			}
 		}
 	}
+	
+	_refreshButton.hidden = NO;
 }
 
 -(void)requestFailed:(ASIHTTPRequest *)request {
 	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 
+
+- (void)loginViewShowingLoggedInUser:(FBLoginView *)loginView {
+	NSLog(@"LOGGED IN");
+}
+
+- (void)loginViewShowingLoggedOutUser:(FBLoginView *)loginView {
+	NSLog(@"LOGGED OUT");
+}
 @end

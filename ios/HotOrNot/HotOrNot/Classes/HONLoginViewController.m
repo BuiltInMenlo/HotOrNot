@@ -36,13 +36,13 @@
 	bgImgView.image = [UIImage imageNamed:[NSString stringWithFormat:@"firstUserExperience_Background_00%d.png", ((arc4random() % 4) + 1)]];
 	[self.view addSubview:bgImgView];
 	
-	UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];
-	footerImgView.image = [UIImage imageNamed:@"footerBackground.png"];
+	UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 68.0, 320.0, 68.0)];
+	footerImgView.image = [UIImage imageNamed:@"firstUserExperience_footerBackground.png"];
 	footerImgView.userInteractionEnabled = YES;
 	[self.view addSubview:footerImgView];
 	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	facebookButton.frame = CGRectMake(12.0, 0.0, 296.0, 49.0);
+	facebookButton.frame = CGRectMake(12.0, 10.0, 296.0, 49.0);
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
 	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];

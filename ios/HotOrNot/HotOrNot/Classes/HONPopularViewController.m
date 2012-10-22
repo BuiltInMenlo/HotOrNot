@@ -9,6 +9,7 @@
 #import "HONPopularViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONVoteViewController.h"
+#import "HONLoginViewController.h"
 
 #import "HONPopularUserViewCell.h"
 #import "HONPopularSubjectViewCell.h"
@@ -32,6 +33,7 @@
 @property(nonatomic, strong) NSArray *sectionTitles;
 @property(nonatomic, strong) ASIFormDataRequest *subjectsRequest;
 @property(nonatomic, strong) ASIFormDataRequest *usersRequest;
+@property(nonatomic, strong)  UIButton *refreshButton;
 @end
 
 @implementation HONPopularViewController
@@ -43,6 +45,7 @@
 @synthesize subjects = _subjects;
 @synthesize isUsersList = _isUsersList;
 @synthesize sectionTitles = _sectionTitles;
+@synthesize refreshButton = _refreshButton;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -57,6 +60,8 @@
 		self.isUsersList = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_randomChallenge:) name:@"RANDOM_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_popularUserChallenge:) name:@"POPULAR_USER_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_popularSubjectChallenge:) name:@"POPULAR_SUBJECT_CHALLENGE" object:nil];
 	}
 	
 	return (self);
@@ -88,14 +93,19 @@
 	[tagsButton addTarget:self action:@selector(_goTags) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:tagsButton];
 	
-	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
-	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:refreshButton];
+	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+	activityIndicatorView.frame = CGRectMake(282.0, 12.0, 24.0, 24.0);
+	[activityIndicatorView startAnimating];
+	[headerView addSubview:activityIndicatorView];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 95.0) style:UITableViewStylePlain];
+	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
+	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:_refreshButton];
+	
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 70.0;
@@ -191,6 +201,8 @@
 }
 
 - (void)_goRefresh {
+	_refreshButton.hidden = YES;
+	
 	if (self.isUsersList)
 		[self _retrievePopularUsers];
 	
@@ -200,15 +212,52 @@
 
 #pragma mark - Notifications
 - (void)_randomChallenge:(NSNotification *)notification {
-	HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:(arc4random() % [_users count])];
+	if (FBSession.activeSession.state == 513) {
+		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:(arc4random() % [_users count])];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)_refreshList:(NSNotification *)notification {
 	[self _goRefresh];
+}
+
+- (void)_popularUserChallenge:(NSNotification *)notification {
+	if (FBSession.activeSession.state == 513) {
+		HONPopularUserVO *vo = (HONPopularUserVO *)[notification object];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
+}
+
+- (void)_popularSubjectChallenge:(NSNotification *)notification {
+	if (FBSession.activeSession.state == 513) {
+		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[notification object];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 
@@ -271,11 +320,10 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (indexPath.row == 0)
+		return (22.0);
 	
-//	if (indexPath.row == 0)
-//		return (30.0);
-//	
-//	else
+	else
 		return (70.0);
 }
 
@@ -320,9 +368,8 @@
 		if (vo.actives > 0)
 			[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithSubject:vo.subjectID] animated:YES];
 		
-		else {
+		else
 			[[[UIAlertView alloc] initWithTitle:@"No Challenges" message:@"No games available!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-		}
 	}
 	
 	//	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -402,6 +449,7 @@
 				[_tableView reloadData];
 			}
 		}
+	_refreshButton.hidden = NO;
 }
 
 -(void)requestFailed:(ASIHTTPRequest *)request {

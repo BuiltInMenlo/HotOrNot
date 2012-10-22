@@ -115,9 +115,10 @@
 			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $rndUser_id .';';
 			$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 			
-			$query = 'SELECT `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$fb_id = mysql_fetch_object(mysql_query($query))->fb_id;
-			$points = mysql_fetch_object(mysql_query($query))->points;			
+			$query = 'SELECT `username`, `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$creator_obj = mysql_fetch_object(mysql_query($query));
+			$fb_id = $creator_obj->fb_id;
+			$points = $creator_obj->points;			
 			
 			$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
 			$result = mysql_query($query);
@@ -139,7 +140,7 @@
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!", "sound": "push_01.caf"}}');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $creator_obj->username .' has sent you a #'. $subject .' challenge!", "sound": "push_01.caf"}}');
 		 	$res = curl_exec($ch);
 			$err_no = curl_errno($ch);
 			$err_msg = curl_error($ch);
@@ -153,8 +154,8 @@
 				"id" => $row->id, 
 				"status" => "Waiting", 
 				"subject" => $subject, 
-				"creator_id" => $row->creator_id, 
-				"creator" => "", 
+				"creator_id" => $user_id, 
+				"creator" => $creator_obj->username, 
 				"creator_fb" => $fb_id, 				
 				"challenger_id" => $rndUser_id, 
 				"challenger" => "",
@@ -197,9 +198,10 @@
 				$challenger_id = mysql_fetch_object(mysql_query($query))->id;
 				$device_token =  mysql_fetch_object(mysql_query($query))->device_token;
 						
-				$query = 'SELECT `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-				$fb_id = mysql_fetch_object(mysql_query($query))->fb_id;
-				$points = mysql_fetch_object(mysql_query($query))->points;
+				$query = 'SELECT `username`, `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+				$creator_obj = mysql_fetch_object(mysql_query($query));
+				$fb_id = $creator_obj->fb_id;
+				$points = $creator_obj->points;
 				$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
 				$result = mysql_query($query);
 			
@@ -220,7 +222,7 @@
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_POST, 1);
-				curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!", "sound": "push_01.caf"}}');
+				curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $creator_obj->username .' has sent you a #'. $subject .' challenge!", "sound": "push_01.caf"}}');
 			 	$res = curl_exec($ch);
 				$err_no = curl_errno($ch);
 				$err_msg = curl_error($ch);
@@ -236,7 +238,7 @@
 					"status" => "Waiting", 
 					"subject" => $subject, 
 					"creator_id" => $row->creator_id, 
-					"creator" => "", 
+					"creator" => $creator_obj->username, 
 					"creator_fb" => $fb_id, 
 					"challenger_id" => $challenger_id, 
 					"challenger" => "",
@@ -279,9 +281,10 @@
 			}
 			
 						
-			$query = 'SELECT `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$fb_id = mysql_fetch_object(mysql_query($query))->fb_id;
-			$points = mysql_fetch_object(mysql_query($query))->points;
+			$query = 'SELECT `username`, `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$creator_obj = mysql_fetch_object(mysql_query($query));
+			$fb_id = $creator_obj->fb_id;
+			$points = $creator_obj->points;
 			$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
 			$result = mysql_query($query);
 			
@@ -305,7 +308,7 @@
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "You have been invited to a challenge!", "sound": "push_01.caf"}}');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $creator_obj->username .' has sent you a #'. $subject .' challenge!", "sound": "push_01.caf"}}');
 		 	$res = curl_exec($ch);
 			$err_no = curl_errno($ch);
 			$err_msg = curl_error($ch);
@@ -479,12 +482,16 @@
 			$img_id = mysql_insert_id();
 						
 			
-			$query = 'SELECT `name` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$user_name = mysql_fetch_object(mysql_query($query))->name; 
+			$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$challenger_name = mysql_fetch_object(mysql_query($query))->name; 
 			
-			$query = 'SELECT `creator_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
-			$creator_id = mysql_fetch_object(mysql_query($query))->creator_id;			
-			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $creator_id .';';			
+			$query = 'SELECT `subject_id`, `creator_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+			$challenge_obj = mysql_fetch_object(mysql_query($query));
+			
+			$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
+			$subject_name = mysql_fetch_object(mysql_query($query))->title;
+						
+			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';			
 			$device_token = mysql_fetch_object(mysql_query($query))->device_token; 
 			
 			$ch = curl_init();
@@ -493,7 +500,7 @@
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $user_name .' has accepted your challenge!", "sound": "push_01.caf"}}');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $challenger_name .' has accepted your #'. $subject_name .' challenge!", "sound": "push_01.caf"}}');
 		 	$res = curl_exec($ch);
 			$err_no = curl_errno($ch);
 			$err_msg = curl_error($ch);
@@ -511,7 +518,7 @@
 			return (true);	
 		}
 		
-		function getActiveVotes($user_id) {
+		function getActiveVotesByActivity($user_id) {
 			$challenge_arr = array();			
 			$id_arr = array();
 			
@@ -569,6 +576,53 @@
 			}
 			
 						
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);
+		}
+		
+		function getActiveVotesByDate($user_id) {
+			$challenge_arr = array();
+			
+			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 4 ORDER BY `started` DESC;';
+			$result = mysql_query($query);
+			
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+				$creator_id = $row['creator_id'];
+				
+				$query = 'SELECT `user_id` FROM `tblChallengeParticipants` WHERE `challenge_id` = '. $row['id'] .';';
+				$challenger_id = mysql_fetch_object(mysql_query($query))->user_id;
+				
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row['subject_id'] .';';
+				$sub_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['creator_id'] .';';
+				$user_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $row['id'] .';';
+				$img_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $row['id'] .' AND `challenger_id` = '. $creator_id .';';
+				$score1 = mysql_num_rows(mysql_query($query));
+				
+				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $row['id'] .' AND `challenger_id` = '. $challenger_id .';';
+				$score2 = mysql_num_rows(mysql_query($query));
+												
+				array_push($challenge_arr, array(
+					"id" => $row['id'], 
+					"status" => "Started", 
+					"creator_id" => $row['creator_id'], 
+					"creator" => $user_obj->username,
+					"creator_fb" => $user_obj->fb_id,  
+					"subject" => $sub_obj->title,
+					"img_url" => $row['img_url'],
+					"img2_url" => $img_obj->url,
+					"score1" => $score1,
+					"score2" => $score2, 
+					"started" => $row['started'], 
+					"added" => $row['added']
+				));
+			}
+			
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
 		}
@@ -775,7 +829,7 @@
 				
 			case "5":
 				if (isset($_POST['userID']))
-					$challenges->getActiveVotes($_POST['userID']);
+					$challenges->getActiveVotesByActivity($_POST['userID']);
 				break;
 				
 			case "6":
@@ -816,6 +870,11 @@
 			case "13":
 				if (isset($_POST['userID']) && isset($_POST['challengeID']))
 					$challenges->getActiveVotesForChallenge($_POST['userID'], $_POST['challengeID']);
+				break;
+				
+			case "14":
+				if (isset($_POST['userID']))
+					$challenges->getActiveVotesByDate($_POST['userID']);
 				break;
     	}
 	}

@@ -7,6 +7,9 @@
 //
 
 #import "HONTabBarController.h"
+#import <FacebookSDK/FacebookSDK.h>
+
+#import "HONResultsViewController.h"
 
 @interface HONTabBarController ()
 
@@ -15,6 +18,14 @@
 @implementation HONTabBarController
 
 @synthesize btn1, btn2, btn3, btn4, btn5;
+
+- (id)init {
+	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showResults:) name:@"SHOW_RESULTS" object:nil];
+	}
+	
+	return (self);
+}
 
 - (void)loadView {
 	[super loadView];
@@ -202,7 +213,13 @@
 			break;
 	}
 	
-	if (tabID == 2) {
+	if (tabID == 0) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONResultsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
+	
+	if (tabID == 2 && FBSession.activeSession.state == 513) {
 		UINavigationController *navController = (UINavigationController *)[self selectedViewController];
 		[navController popToRootViewControllerAnimated:YES];
 	
@@ -216,6 +233,12 @@
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 	// Dispose of any resources that can be recreated.
+}
+
+- (void)_showResults:(NSNotification *)notification {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONResultsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 @end

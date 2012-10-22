@@ -25,7 +25,7 @@
 #import "HONVoteViewController.h"
 #import "HONSettingsViewController.h"
 
-@interface HONAppDelegate() <ASIHTTPRequestDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate>
 - (void)_registerUser;
 @end
 
@@ -258,15 +258,30 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"]) {
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 		
-		else {
+		}else {
 			int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 			boot_total++;
 		
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
 		}
+		
+		int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
+		if (daysSinceInstall == 5) {
+			UIAlertView *alert = [[UIAlertView alloc]
+										 initWithTitle:@"Rate PicChallenge"
+										 message:@"Why not rate PicChallenge in the app store!"
+										 delegate:self
+										 cancelButtonTitle:nil
+										 otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
+			
+			[alert show];
+		}
+		
+		
 		
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 			[HONAppDelegate setAllowsFBPosting:NO];
@@ -339,6 +354,8 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[FBSession.activeSession handleDidBecomeActive];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -477,6 +494,25 @@
 
 - (void)tabBarController:(UITabBarController *)tabBarController didEndCustomizingViewControllers:(NSArray *)viewControllers changed:(BOOL)changed {
 }
+
+
+#pragma mark - AlertView delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	switch(buttonIndex) {
+		case 0:
+			break;
+			
+		case 1:
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			break;
+			
+		case 2:
+			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms://itunes.apple.com/us/app/id541336885?mt=8"]];
+			break;
+	}
+}
+
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
