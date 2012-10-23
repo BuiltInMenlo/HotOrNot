@@ -28,7 +28,7 @@
 
 - (void)loadView {
 	[super loadView];
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"About"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"About" hasFBSwitch:NO];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

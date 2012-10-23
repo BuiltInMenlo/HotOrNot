@@ -60,7 +60,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 16.0, 119.0, 244.0)];
+	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 17.0, 120.0, 245.0)];
 	lHolderView.clipsToBounds = YES;
 	[self addSubview:lHolderView];
 	
@@ -73,7 +73,7 @@
 	[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
 	[lHolderView addSubview:lZoomButton];
 	
-	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 16.0, 119.0, 244.0)];
+	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 17.0, 120.0, 245.0)];
 	rHolderView.clipsToBounds = YES;
 	[self addSubview:rHolderView];
 	

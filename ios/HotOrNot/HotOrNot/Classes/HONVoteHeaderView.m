@@ -24,21 +24,21 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 54.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 56.0)];
 		bgImgView.image = [UIImage imageNamed:@"challengeHeader.png"];
 		[self addSubview:bgImgView];
 		
 		_creatorImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 15.0, 25.0, 25.0)];
 		//[self addSubview:_creatorImgView];
 		
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 14.0, 200.0, 16.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 200.0, 16.0)];
 		_titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 		_titleLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:_titleLabel];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(265.0, 7.0, 34.0, 34.0);
+		moreButton.frame = CGRectMake(265.0, 16.0, 34.0, 34.0);
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];

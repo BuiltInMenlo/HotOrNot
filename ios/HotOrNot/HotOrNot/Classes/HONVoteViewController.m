@@ -28,6 +28,7 @@
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong)  UIButton *refreshButton;
 @property(nonatomic) int submitAction;
+@property(nonatomic, strong) HONHeaderView *headerView;
 @end
 
 @implementation HONVoteViewController
@@ -40,6 +41,7 @@
 @synthesize challengeVO = _challengeVO;
 @synthesize refreshButton = _refreshButton;
 @synthesize submitAction = _submitAction;
+@synthesize headerView = _headerView;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -107,8 +109,8 @@
 	
 	NSLog(@"SUBJECT:[%d][%d]", self.subjectID, _isPushView);
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasFBSwitch:!_isPushView];
+	[self.view addSubview:_headerView];
 		
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -116,34 +118,34 @@
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-		[headerView addSubview:backButton];
+		[_headerView addSubview:backButton];
 	}
 	
 	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 0.0, 169.0, 44.0)];
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_trending.png"];
-	[headerView addSubview:_toggleImgView];
+	[_headerView addSubview:_toggleImgView];
 	
 	UIButton *trendingButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	trendingButton.frame = CGRectMake(76.0, 5.0, 84.0, 34.0);
 	[trendingButton addTarget:self action:@selector(_goTrending) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:trendingButton];
+	[_headerView addSubview:trendingButton];
 	
 	UIButton *recentButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	recentButton.frame = CGRectMake(161.0, 5.0, 84.0, 34.0);
 	[recentButton addTarget:self action:@selector(_goRecent) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:recentButton];
+	[_headerView addSubview:recentButton];
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectMake(282.0, 12.0, 24.0, 24.0);
+	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
 	[activityIndicatorView startAnimating];
-	[headerView addSubview:activityIndicatorView];
+	[_headerView addSubview:activityIndicatorView];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:_refreshButton];
+	[_headerView addSubview:_refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -255,6 +257,7 @@
 
 - (void)_goRefresh {
 	_refreshButton.hidden = YES;
+	[_headerView updateFBSwitch];
 	[self _retrieveChallenges];
 }
 
@@ -383,7 +386,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (54.0);
+	return (56.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -36,7 +36,8 @@
 @property(nonatomic, strong) ASIFormDataRequest *nextChallengesRequest;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) NSIndexPath *idxPath;
-@property(nonatomic, strong)  UIButton *refreshButton;
+@property(nonatomic, strong) UIButton *refreshButton;
+@property(nonatomic, strong) HONHeaderView *headerView;
 
 - (void)_retrieveChallenges;
 @end
@@ -52,6 +53,7 @@
 @synthesize challengeVO = _challengeVO;
 @synthesize idxPath = _idxPath;
 @synthesize refreshButton = _refreshButton;
+@synthesize headerView = _headerView;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -219,6 +221,7 @@
 
 - (void)_goRefresh {
 	_refreshButton.hidden = YES;
+	[_headerView updateFBSwitch];
 	[self _retrieveChallenges];
 }
 
@@ -312,10 +315,12 @@
 	
 	if (section == 0) {
 		//NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
-		[headerView addSubview:[[HONHeaderView alloc] initWithTitle:@"Challenges"]];
+		
+		_headerView = [[HONHeaderView alloc] initWithTitle:@"Challenges" hasFBSwitch:NO];
+		[headerView addSubview:_headerView];
 		
 		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-		activityIndicatorView.frame = CGRectMake(282.0, 12.0, 24.0, 24.0);
+		activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
 		[activityIndicatorView startAnimating];
 		[headerView addSubview:activityIndicatorView];
 		
@@ -369,7 +374,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (70.0);
+	if (indexPath.row == 0)
+		return (55.0);
+	
+	else
+		return (70.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

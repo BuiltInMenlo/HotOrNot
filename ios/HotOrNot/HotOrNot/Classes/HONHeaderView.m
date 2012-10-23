@@ -18,7 +18,7 @@
 
 @synthesize fbButton = _fbButton;
 
-- (id)initWithTitle:(NSString *)title {
+- (id)initWithTitle:(NSString *)title hasFBSwitch:(BOOL)hasSwitch {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleFBPosting:) name:@"TOGGLE_FB_POSTING" object:nil];
 		
@@ -31,9 +31,9 @@
 		[_fbButton setBackgroundImage:[UIImage imageNamed:@"facebookToggle_off"] forState:UIControlStateNormal];
 		[_fbButton setBackgroundImage:[UIImage imageNamed:@"facebookToggle_on"] forState:UIControlStateSelected];
 		[_fbButton addTarget:self action:@selector(_goFBToggle) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_fbButton];
 		
-		[_fbButton setSelected:[HONAppDelegate allowsFBPosting]];
+		if (hasSwitch)
+			[self addSubview:_fbButton];
 		
 		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, 25.0)];
 		titleLabel.backgroundColor = [UIColor clearColor];
@@ -44,17 +44,26 @@
 		titleLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		titleLabel.text = title;
 		[self addSubview:titleLabel];
+		
+		[self updateFBSwitch];
 	}
 	
 	return (self);
 }
 
 - (void)_goFBToggle {
-	[HONAppDelegate setAllowsFBPosting:![HONAppDelegate allowsFBPosting]];
-	[_fbButton setSelected:[HONAppDelegate allowsFBPosting]];//[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_FB_POSTING" object:nil];
+	BOOL canPost = [HONAppDelegate allowsFBPosting];
+	
+	[HONAppDelegate setAllowsFBPosting:!canPost];
+	[self updateFBSwitch];
 }
 
 - (void)_toggleFBPosting:(NSNotification *)notification {
+	[self updateFBSwitch];
+}
+
+- (void)updateFBSwitch {
+	NSLog(@"FB POSTING:[%d]", [HONAppDelegate allowsFBPosting]);
 	[_fbButton setSelected:[HONAppDelegate allowsFBPosting]];
 }
 

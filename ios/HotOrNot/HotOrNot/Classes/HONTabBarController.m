@@ -12,16 +12,18 @@
 #import "HONResultsViewController.h"
 
 @interface HONTabBarController ()
-
+@property (nonatomic) int challengeHits;
 @end
 
 @implementation HONTabBarController
 
 @synthesize btn1, btn2, btn3, btn4, btn5;
+@synthesize challengeHits;
 
 - (id)init {
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showResults:) name:@"SHOW_RESULTS" object:nil];
+		self.challengeHits = 0;
 	}
 	
 	return (self);
@@ -149,6 +151,8 @@
 	
 	switch(tabID) {
 		case 0:
+			self.challengeHits++;
+			
 			[btn1 setSelected:true];
 			[btn1 setEnabled:NO];
 			[btn2 setSelected:false];
@@ -213,11 +217,14 @@
 			break;
 	}
 	
-	if (tabID == 0) {
+	int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
+	if (daysSinceInstall >= 1 && tabID == 0) {
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONResultsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}
+	
 	
 	if (tabID == 2 && FBSession.activeSession.state == 513) {
 		UINavigationController *navController = (UINavigationController *)[self selectedViewController];
@@ -226,8 +233,10 @@
 	} else
 		self.selectedIndex = tabID;
 	
+	
 	[self.delegate tabBarController:self didSelectViewController:[self.viewControllers objectAtIndex:tabID]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_FB_POSTING" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

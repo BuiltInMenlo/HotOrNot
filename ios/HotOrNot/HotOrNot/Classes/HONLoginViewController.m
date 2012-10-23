@@ -32,8 +32,10 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 548.0)];
-	bgImgView.image = [UIImage imageNamed:[NSString stringWithFormat:@"firstUserExperience_Background_00%d.png", ((arc4random() % 4) + 1)]];
+	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? [NSString stringWithFormat:@"firstUserExperience_Background_00%d-568h.png", ((arc4random() % 4) + 1)] : [NSString stringWithFormat:@"FUE_00%d.jpg", ((arc4random() % 4) + 1)];
+	
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
+	bgImgView.image = [UIImage imageNamed:bgAsset];
 	[self.view addSubview:bgImgView];
 	
 	UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 68.0, 320.0, 68.0)];

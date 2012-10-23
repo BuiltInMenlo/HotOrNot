@@ -61,7 +61,7 @@
 	[super loadView];
 	
 	if (_isPushView) {
-		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Create Challenge"];
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Create Challenge" hasFBSwitch:NO];
 		[self.view addSubview:headerView];
 		
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

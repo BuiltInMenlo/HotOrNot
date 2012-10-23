@@ -33,7 +33,10 @@
 @property(nonatomic, strong) NSArray *sectionTitles;
 @property(nonatomic, strong) ASIFormDataRequest *subjectsRequest;
 @property(nonatomic, strong) ASIFormDataRequest *usersRequest;
-@property(nonatomic, strong)  UIButton *refreshButton;
+@property(nonatomic, strong) UIButton *refreshButton;
+@property(nonatomic, strong) HONHeaderView *headerView;
+@property(nonatomic, strong) HONPopularUserVO *popularUserVO;
+@property(nonatomic, strong) HONPopularSubjectVO *popularSubjectVO;
 @end
 
 @implementation HONPopularViewController
@@ -46,6 +49,9 @@
 @synthesize isUsersList = _isUsersList;
 @synthesize sectionTitles = _sectionTitles;
 @synthesize refreshButton = _refreshButton;
+@synthesize headerView = _headerView;
+@synthesize popularUserVO = _popularUserVO;
+@synthesize popularSubjectVO = _popularSubjectVO;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -76,34 +82,34 @@
 - (void)loadView {
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Popular"];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Popular" hasFBSwitch:NO];
+	[self.view addSubview:_headerView];
 	
 	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 0.0, 169.0, 44.0)];
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
-	[headerView addSubview:_toggleImgView];
+	[_headerView addSubview:_toggleImgView];
 	
 	UIButton *leadersButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	leadersButton.frame = CGRectMake(76.0, 5.0, 84.0, 34.0);
 	[leadersButton addTarget:self action:@selector(_goLeaders) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:leadersButton];
+	[_headerView addSubview:leadersButton];
 	
 	UIButton *tagsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	tagsButton.frame = CGRectMake(161.0, 5.0, 84.0, 34.0);
 	[tagsButton addTarget:self action:@selector(_goTags) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:tagsButton];
+	[_headerView addSubview:tagsButton];
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectMake(282.0, 12.0, 24.0, 24.0);
+	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
 	[activityIndicatorView startAnimating];
-	[headerView addSubview:activityIndicatorView];
+	[_headerView addSubview:activityIndicatorView];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:_refreshButton];
+	[_headerView addSubview:_refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -227,37 +233,57 @@
 }
 
 - (void)_refreshList:(NSNotification *)notification {
+	[_headerView updateFBSwitch];
 	[self _goRefresh];
 }
 
 - (void)_popularUserChallenge:(NSNotification *)notification {
-	if (FBSession.activeSession.state == 513) {
-		HONPopularUserVO *vo = (HONPopularUserVO *)[notification object];
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
+	_popularUserVO = (HONPopularUserVO *)[notification object];
 	
-	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Challenge User"
+																	message:[NSString stringWithFormat:@"Want to challenge %@?", _popularUserVO.username]
+																  delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"No", nil];
+	[alert show];
+	
+	
+//	if (FBSession.activeSession.state == 513) {
+//		HONPopularUserVO *vo = (HONPopularUserVO *)[notification object];
+//		
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:NO completion:nil];
+//	
+//	} else {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
+//	}
 }
 
 - (void)_popularSubjectChallenge:(NSNotification *)notification {
-	if (FBSession.activeSession.state == 513) {
-		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[notification object];
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
+	_popularSubjectVO = (HONPopularSubjectVO *)[notification object];
 	
-	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Challenge User"
+																	message:[NSString stringWithFormat:@"Want to start a #%@ challenge?", _popularSubjectVO.subjectName]
+																  delegate:self
+													  cancelButtonTitle:@"Yes"
+													  otherButtonTitles:@"No", nil];
+	[alert show];
+		
+//	if (FBSession.activeSession.state == 513) {
+//		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[notification object];
+//		
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:NO completion:nil];
+//	
+//	} else {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
+//	}
 }
 
 
@@ -321,7 +347,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0)
-		return (22.0);
+		return (24.0);
 	
 	else
 		return (70.0);
@@ -382,6 +408,41 @@
 	//[self.navigationController pushViewController:[[SNFriendProfileViewController alloc] initWithTwitterUser:(SNTwitterUserVO *)[_friends objectAtIndex:indexPath.row]] animated:YES];
 }
 
+#pragma mark - AlerView Delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	switch(buttonIndex) {
+		case 0:
+			if (self.isUsersList) {
+				if (FBSession.activeSession.state == 513) {					
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_popularUserVO.userID]];
+					[navigationController setNavigationBarHidden:YES];
+					[self presentViewController:navigationController animated:NO completion:nil];
+					
+				} else {
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+					[navigationController setNavigationBarHidden:YES];
+					[self presentViewController:navigationController animated:YES completion:nil];
+				}
+			
+			} else {
+				if (FBSession.activeSession.state == 513) {
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:_popularSubjectVO.subjectName]];
+					[navigationController setNavigationBarHidden:YES];
+					[self presentViewController:navigationController animated:NO completion:nil];
+					
+				} else {
+					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+					[navigationController setNavigationBarHidden:YES];
+					[self presentViewController:navigationController animated:YES completion:nil];
+				}
+			}
+			break;
+			
+		case 1:
+			break;
+	}
+}
+
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
@@ -439,7 +500,7 @@
 						HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
 						//NSLog(@"VO:[%@]", vo.subjectName);
 						
-						if (vo != nil)
+						if (vo != nil && [list count] < 25)
 							[list addObject:vo];
 					}
 					

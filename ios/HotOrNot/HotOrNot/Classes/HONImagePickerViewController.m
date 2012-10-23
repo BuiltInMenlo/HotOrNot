@@ -32,6 +32,7 @@
 @property(nonatomic, strong) UIImagePickerController *imagePicker;
 @property(nonatomic) BOOL isFirstAppearance;
 @property(nonatomic, strong) NSTimer *focusTimer;
+@property(nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @end
 
 @implementation HONImagePickerViewController
@@ -45,6 +46,7 @@
 @synthesize needsChallenger = _needsChallenger;
 @synthesize isFirstAppearance = _isFirstAppearance;
 @synthesize focusTimer = _focusTimer;
+@synthesize cameraOverlayView = _cameraOverlayView;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -102,14 +104,14 @@
 - (void)loadView {
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Choose Photo"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Choose Photo" hasFBSwitch:NO];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(5.0, 5.0, 74.0, 44.0);
+	backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:backButton];
 }
 
@@ -125,12 +127,9 @@
 		
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
-			
-			HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
-			camerOverlayView.delegate = self;
-			
+						
 			if (self.subjectName != @"")
-				[camerOverlayView setSubjectName:self.subjectName];
+				[_cameraOverlayView setSubjectName:self.subjectName];
 			
 			_imagePicker = [[UIImagePickerController alloc] init];
 			_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
@@ -178,10 +177,10 @@
 }
 
 - (void)_showOverlay {
-	HONCameraOverlayView *camerOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
-	camerOverlayView.delegate = self;
+	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
+	_cameraOverlayView.delegate = self;
 	
-	_imagePicker.cameraOverlayView = camerOverlayView;
+	_imagePicker.cameraOverlayView = _cameraOverlayView;
 	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
 
@@ -201,10 +200,11 @@
 }
 
 #pragma mark - Navigation
-- (void)_goDone {
-	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+- (void)_goBack {
 	[_focusTimer invalidate];
 	_focusTimer = nil;
+	
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 
@@ -216,7 +216,7 @@
 }
 
 - (void)showLibrary {
-	_imagePicker.sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)changeCamera {
@@ -244,15 +244,25 @@
 	[_focusTimer invalidate];
 	_focusTimer = nil;
 	
-	[self dismissViewControllerAnimated:YES completion:nil];
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary || self.needsChallenger)
+		[self dismissViewControllerAnimated:YES completion:nil];
 	
 	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+	
+	if (image.size.width > image.size.height) {
+		CGAffineTransform transform = CGAffineTransformIdentity;
+		transform = CGAffineTransformTranslate(transform, image.size.width, image.size.height);
+		transform = CGAffineTransformRotate(transform, M_PI / 2.0);
+	}
+	
 	image = [image fixOrientation];
 	
-	NSLog(@"self.needsChallenger:[%d]", self.needsChallenger);
+	NSLog(@"imageOrientation:[%d]", image.imageOrientation);
 	
 	if (!self.needsChallenger) {
-		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
+		[_cameraOverlayView hidePreview];
+		
+		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 		
 		NSString *filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", filename);
@@ -261,7 +271,7 @@
 			UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
 			canvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)];
 			
-			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, kLargeH - 84.0, 568.0, 68.0)];
+			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(27.0, kLargeH - 84.0, 568.0, 68.0)];
 			watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
 			[canvasView addSubview:watermarkImgView];
 			
@@ -283,7 +293,7 @@
 			[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 			S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", filename] inBucket:@"hotornot-challenges"];
 			por1.contentType = @"image/jpeg";
-			por1.data = UIImageJPEGRepresentation(t1Image, 1.0);
+			por1.data = UIImageJPEGRepresentation(t1Image, 0.5);
 			[s3 putObject:por1];
 			
 //			S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", filename] inBucket:@"hotornot-challenges"];
@@ -293,12 +303,12 @@
 			
 			S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", filename] inBucket:@"hotornot-challenges"];
 			por3.contentType = @"image/jpeg";
-			por3.data = UIImageJPEGRepresentation(mImage, 1.0);
+			por3.data = UIImageJPEGRepresentation(mImage, 0.5);
 			[s3 putObject:por3];
 			
 			S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", filename] inBucket:@"hotornot-challenges"];
 			por4.contentType = @"image/jpeg";
-			por4.data = UIImageJPEGRepresentation(lImage, 1.0);
+			por4.data = UIImageJPEGRepresentation(lImage, 0.5);
 			[s3 putObject:por4];
 			
 			

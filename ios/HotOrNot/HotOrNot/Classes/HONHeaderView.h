@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface HONHeaderView : UIView
-- (id)initWithTitle:(NSString *)title;
+- (id)initWithTitle:(NSString *)title hasFBSwitch:(BOOL)hasSwitch;
+
+- (void)updateFBSwitch;
 
 @end

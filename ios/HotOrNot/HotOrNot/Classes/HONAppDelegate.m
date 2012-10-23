@@ -50,6 +50,14 @@
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"daily_challenge"]);
 }
 
++ (NSDictionary *)s3Credentials {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"s3_creds"]);
+}
+
++ (NSString *)facebookCanvasURL {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"facebook_url"]);
+}
+
 + (void)openSession {
 	[FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions] allowLoginUI:YES completionHandler:
 	 ^(FBSession *session, FBSessionState state, NSError *error) {
@@ -91,15 +99,8 @@
 }
 
 + (void)setAllowsFBPosting:(BOOL)canPost {
-	NSString *allows;
-	
-	if (canPost)
-		allows = @"YES";
-	
-	else
-		allows = @"NO";
-	
-	[[NSUserDefaults standardUserDefaults] setObject:allows forKey:@"fb_posting"];
+	[[NSUserDefaults standardUserDefaults] setObject:(canPost) ? @"YES" : @"NO" forKey:@"fb_posting"];	
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 + (BOOL)allowsFBPosting {
@@ -170,6 +171,25 @@
 	return !(networkStatus == NotReachable);
 }
 
++ (BOOL)canPingServers {
+	NetworkStatus apiStatus = [[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus];
+	NetworkStatus parseStatus = [[Reachability reachabilityWithHostName:@"api.parse.com"] currentReachabilityStatus];
+	
+	return (!(apiStatus == NotReachable) && !(parseStatus == NotReachable));
+}
+
++ (BOOL)canPingAPIServer {
+	NetworkStatus apiStatus = [[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus];
+	
+	return (!(apiStatus == NotReachable));
+}
+
++ (BOOL)canPingParseServer {
+	NetworkStatus parseStatus = [[Reachability reachabilityWithHostName:@"api.parse.com"] currentReachabilityStatus];
+	
+	return (!(parseStatus == NotReachable));
+}
+
 + (UIFont *)honHelveticaNeueFontBold {
 	return [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0];
 }
@@ -228,9 +248,9 @@
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
-	NSLog(@"TOKEN:[%@]", [HONAppDelegate deviceToken]);
+	NSLog(@"Servers:[%d]", [HONAppDelegate canPingServers]);
 	
-	if ([HONAppDelegate hasNetwork]) {
+	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
 		[UAirship takeOff:takeOffOptions];
@@ -258,19 +278,21 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"]) {
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+		int boot_total = 0;
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
 		
-		}else {
-			int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+		else {
+			boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 			boot_total++;
 		
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
 		}
 		
-		int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
-		if (daysSinceInstall == 5) {
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+		
+		if (boot_total == 5) {
 			UIAlertView *alert = [[UIAlertView alloc]
 										 initWithTitle:@"Rate PicChallenge"
 										 message:@"Why not rate PicChallenge in the app store!"
@@ -286,6 +308,8 @@
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 			[HONAppDelegate setAllowsFBPosting:NO];
 		
+		
+		
 			
 		PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
 		PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
@@ -296,37 +320,55 @@
 		PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
 		PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
 		
+		PFQuery *s3Query = [PFQuery queryWithClassName:@"S3Credentials"];
+		PFObject *s3Object = [s3Query getObjectWithId:@"zofEGq6sLT"];
+		
+		PFQuery *fbQuery = [PFQuery queryWithClassName:@"FacebookPaths"];
+		PFObject *fbObject = [fbQuery getObjectWithId:@"9YC4DWz1AY"];
+		
 		[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[durationObject objectForKey:@"duration"] forKey:@"challange_duration"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[s3Object objectForKey:@"key"], @"key", [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
+		[[NSUserDefaults standardUserDefaults] setObject:[fbObject objectForKey:@"canvas_url"] forKey:@"facebook_url"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
-		challengesViewController = [[HONChallengesViewController alloc] init];
-		voteViewController = [[HONVoteViewController alloc] init];
-		popularViewController = [[HONPopularViewController alloc] init];
-		createChallengeViewController = [[HONImagePickerViewController alloc] init];
-		settingsViewController = [[HONSettingsViewController alloc] init];
+		if ([HONAppDelegate canPingAPIServer]) {
+			UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
+			challengesViewController = [[HONChallengesViewController alloc] init];
+			voteViewController = [[HONVoteViewController alloc] init];
+			popularViewController = [[HONPopularViewController alloc] init];
+			createChallengeViewController = [[HONImagePickerViewController alloc] init];
+			settingsViewController = [[HONSettingsViewController alloc] init];
+			
+			UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
+			UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
+			UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
+			UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
+			UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+			
+			[navController1 setNavigationBarHidden:YES];
+			[navController2 setNavigationBarHidden:YES];
+			[navController3 setNavigationBarHidden:YES];
+			[navController4 setNavigationBarHidden:YES];
+			[navController5 setNavigationBarHidden:YES];
+			
+			self.tabBarController = [[HONTabBarController alloc] init];
+			
+			//self.tabBarController = [[UITabBarController alloc] init];
+			self.tabBarController.delegate = self;
+			self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
+			
+			self.window.rootViewController = self.tabBarController;
 		
-		UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-		UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
-		UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
-		UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
-		UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
-		
-		[navController1 setNavigationBarHidden:YES];
-		[navController2 setNavigationBarHidden:YES];
-		[navController3 setNavigationBarHidden:YES];
-		[navController4 setNavigationBarHidden:YES];
-		[navController5 setNavigationBarHidden:YES];
-		
-		self.tabBarController = [[HONTabBarController alloc] init];
-		
-		//self.tabBarController = [[UITabBarController alloc] init];
-		self.tabBarController.delegate = self;
-		self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
-		
-		self.window.rootViewController = self.tabBarController;
+		} else {
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bad Network Connection"
+																			message:@"Could not connect to PicChallenge servers, please try again."
+																		  delegate:nil
+															  cancelButtonTitle:nil
+															  otherButtonTitles:@"OK", nil];
+			[alert show];
+		}
 	
 	} else {
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Network Connection"

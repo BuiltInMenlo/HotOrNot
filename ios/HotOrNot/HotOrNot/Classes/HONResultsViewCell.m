@@ -18,7 +18,7 @@
 
 - (id)initAsTopCell {
 	if ((self = [super init])) {
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 22.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 24.0)];
 		bgImgView.image = [UIImage imageNamed:@"leaderTableHeader.png"];
 		[self addSubview:bgImgView];
 	}
@@ -44,7 +44,7 @@
 				break;
 				
 			case HONChallengesTie:
-				resultImgViewAsset = @"";
+				resultImgViewAsset = @"notBad.png";
 				break;
 				
 		}
@@ -59,8 +59,8 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -1.0, 320.0, 22.0)];
-		bgImgView.image = [[UIImage imageNamed:@"genericTableFooter.png"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:10.0];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -1.0, 320.0, 24.0)];
+		bgImgView.image = [UIImage imageNamed:@"genericTableFooter.png"];
 		[self addSubview:bgImgView];
 	}
 	

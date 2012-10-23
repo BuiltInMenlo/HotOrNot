@@ -24,7 +24,7 @@
 + (void)postToActivity:(HONChallengeVO *)vo withAction:(NSString *)action {
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSMutableDictionary *params = [NSMutableDictionary new];
-		[params setObject:[NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID] forKey:@"challenge"];
+		[params setObject:[NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID] forKey:@"challenge"];
 		[params setObject:[NSString stringWithFormat:@"%@_l.jpg", vo.imageURL] forKey:@"image[0][url]"];
 		
 		[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"me/pchallenge:%@", action] parameters:params HTTPMethod:@"POST" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
@@ -45,7 +45,7 @@
 + (void)postToTimeline:(HONChallengeVO *)vo {
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-													  [NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID], @"link",
+													  [NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID], @"link",
 													  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
 													  vo.subjectName, @"name",
 													  vo.subjectName, @"caption",
@@ -70,7 +70,7 @@
 + (void)postToFriendTimeline:(NSString *)fbID article:(HONChallengeVO *)vo {
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-													  [NSString stringWithFormat:@"http://discover.getassembly.com/hotornot/facebook/?cID=%d", vo.challengeID], @"link",
+													  [NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID], @"link",
 													  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
 													  vo.subjectName, @"name",
 													  vo.subjectName, @"caption",
@@ -96,7 +96,7 @@
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
 													  msg, @"message",
-													  @"http://discover.getassembly.com", @"link",
+													  [NSString stringWithFormat:@"%@", [HONAppDelegate facebookCanvasURL]], @"link",
 													  @"name here", @"name",
 													  @"caption", @"caption",
 													  @"info", @"description", nil];

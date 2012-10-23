@@ -483,7 +483,7 @@
 						
 			
 			$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$challenger_name = mysql_fetch_object(mysql_query($query))->name; 
+			$challenger_name = mysql_fetch_object(mysql_query($query))->username; 
 			
 			$query = 'SELECT `subject_id`, `creator_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
 			$challenge_obj = mysql_fetch_object(mysql_query($query));

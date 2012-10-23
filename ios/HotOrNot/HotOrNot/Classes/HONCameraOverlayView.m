@@ -12,17 +12,24 @@
 #import "HONHeaderView.h"
 
 @interface HONCameraOverlayView()
+@property (nonatomic, strong) UIImageView *overlayImgView;
 @end
 
 @implementation HONCameraOverlayView
 
 @synthesize delegate, flashButton, captureButton, cameraRollButton;
+@synthesize overlayImgView = _overlayImgView;
 
 - (id)initWithFrame:(CGRect)frame {
 	if (self = [super initWithFrame:frame]) {
 		self.opaque = NO;
 		
 		float gutterHeight = ([[UIApplication sharedApplication] delegate].window.frame.size.height - 320.0) * 0.5;
+		
+		_overlayImgView = [[UIImageView alloc] initWithFrame:self.bounds];
+		_overlayImgView.image = [UIImage imageNamed:@"cameraCover.png"];
+		_overlayImgView.hidden = YES;
+		[self addSubview:_overlayImgView];
 		
 		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, gutterHeight)];
 		headerGutterView.backgroundColor = [UIColor blackColor];
@@ -32,7 +39,7 @@
 		footerGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:footerGutterView];
 		
-		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo"];
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo" hasFBSwitch:NO];
 		[self addSubview:headerView];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -115,6 +122,9 @@
 	[self.delegate closeCamera];
 }
 
+- (void)hidePreview {
+	_overlayImgView.hidden = NO;
+}
 
 /*
 // Only override drawRect: if you perform custom drawing.

@@ -53,7 +53,7 @@
 	_progressHUD.graceTime = 2.0;
 	_progressHUD.taskInProgress = YES;
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 45.0, kLargeW * 0.5, kLargeH * 0.5)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 82.0 : 43.0, 320.0, 426.0)];
 	imgView.userInteractionEnabled = YES;
 	[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", self.imgURL]] placeholderImage:nil options:0 success:^(UIImage *image, BOOL cached) {
 		[_progressHUD hide:YES];
@@ -66,7 +66,7 @@
 //	tmpView.image = [HONAppDelegate cropImage:[UIImage imageNamed:@"firstRun_image01.png"] toRect:CGRectMake(30.0, 30.0, 100.0, 100.0)];
 //	[self.view addSubview:tmpView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"#%@", _subjectTitle]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"#%@", _subjectTitle] hasFBSwitch:NO];
 	[self.view addSubview:headerView];
 		
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -77,11 +77,11 @@
 	[headerView addSubview:doneButton];
 	
 	
-	UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_goPinch:)];
-	[imgView addGestureRecognizer:pinchRecognizer];
+//	UIPinchGestureRecognizer *pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_goPinch:)];
+//	[imgView addGestureRecognizer:pinchRecognizer];
 	
-	UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_goPan:)];
-	[imgView addGestureRecognizer:panRecognizer];
+//	UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_goPan:)];
+//	[imgView addGestureRecognizer:panRecognizer];
 }
 
 - (void)viewDidLoad {

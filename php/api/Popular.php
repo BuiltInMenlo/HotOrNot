@@ -87,7 +87,7 @@
 		function getPopularByUsers($user_id) {
 			$user_arr = array();
 			
-			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC;';
+			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC LIMIT 25;';
 			$user_result = mysql_query($query);
 			
 			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {				

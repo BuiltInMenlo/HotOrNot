@@ -35,20 +35,20 @@
 	if ((self = [self init])) {
 		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		//dailyButton.backgroundColor = [UIColor redColor];
-		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
+		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
 		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
 		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
 		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:dailyButton];
 		
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
+		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 25.0, 50.0, 16.0)];
 		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		ptsLabel.textColor = [UIColor whiteColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
 		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
 		[self addSubview:ptsLabel];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 140.0, 16.0)];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 25.0, 140.0, 16.0)];
 		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
@@ -118,7 +118,6 @@
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	ctaButton.frame = CGRectMake(210.0, 4.0, 98.0, 60.0);
-	[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:ctaButton];
 	
 	if ([self.challengeVO.status isEqualToString:@"Waiting"]) {
@@ -127,13 +126,13 @@
 		
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive.png"] forState:UIControlStateNormal];
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active.png"] forState:UIControlStateHighlighted];
-		[ctaButton removeTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 		[ctaButton addTarget:self action:@selector(_goWaitingAlert) forControlEvents:UIControlEventTouchUpInside];
 	
 	} else if ([self.challengeVO.status isEqualToString:@"Accept"]) {
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive.png"] forState:UIControlStateNormal];
 		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active.png"] forState:UIControlStateHighlighted];
+		[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 		
 	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
 		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
@@ -208,6 +207,7 @@
 	} else if ([challengeVO.status isEqualToString:@"Completed"]) {
 		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
 		[subjectLabel removeFromSuperview];
+		[ctaButton addTarget:self action:@selector(_goResults) forControlEvents:UIControlEventTouchUpInside];
 		
 		creatorLabel.frame = CGRectMake(65.0, 5.0, 100.0, 16.0);
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
@@ -249,8 +249,6 @@
 		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_nonActive.png"] forState:UIControlStateNormal];
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_Active.png"] forState:UIControlStateHighlighted];
-			[ctaButton removeTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
-			[ctaButton addTarget:self action:@selector(_goWinButton) forControlEvents:UIControlEventTouchUpInside];
 			
 //			if (self.challengeVO.scoreCreator == 1)
 //				[ctaButton setTitle:@"1 point" forState:UIControlStateNormal];
@@ -294,7 +292,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:self.challengeVO];
 }
 
-- (void)_goWinButton {
+- (void)_goResults {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_RESULTS" object:nil];
 }
 

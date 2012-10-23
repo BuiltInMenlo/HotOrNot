@@ -49,7 +49,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings" hasFBSwitch:NO];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 69.0) style:UITableViewStylePlain];
@@ -171,10 +171,10 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0)
-		return (22.0);
+		return (24.0);
 	
 	else if (indexPath.row == 5)
-		return (15.0);
+		return (24.0);
 	
 	else
 		return (70.0);
@@ -208,21 +208,21 @@
 	}
 }
 
+
 #pragma mark - AlerView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	NSLog(@"%d", buttonIndex);
+	
 	switch(buttonIndex) {
 		case 0:
+			if (_activatedSwitch == _tournamentSwitch) {
+				[HONAppDelegate setAllowsFBPosting:_tournamentSwitch.on];				
+				//[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_FB_POSTING" object:nil];
+			}
 			break;
 			
 		case 1:
 			_activatedSwitch.on = !_activatedSwitch.on;
-			if (_activatedSwitch == _tournamentSwitch) {
-				[[NSUserDefaults standardUserDefaults] setObject:(_tournamentSwitch.on) ? @"YES" : @"NO" forKey:@"fb_posting"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_FB_POSTING" object:nil];
-			}
-			
 			break;
 	}
 }

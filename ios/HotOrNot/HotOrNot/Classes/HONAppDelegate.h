@@ -21,6 +21,8 @@
 + (NSString *)apiServerPath;
 + (NSNumber *)challengeDuration;
 + (NSString *)dailySubjectName;
++ (NSDictionary *)s3Credentials;
++ (NSString *)facebookCanvasURL;
 
 + (void)openSession;
 + (void)writeDeviceToken:(NSString *)token;
@@ -45,6 +47,9 @@
 
 + (BOOL)isRetina5;
 + (BOOL)hasNetwork;
++ (BOOL)canPingServers;
++ (BOOL)canPingAPIServer;
++ (BOOL)canPingParseServer;
 
 + (UIFont *)honHelveticaNeueFontBold;
 + (UIFont *)honHelveticaNeueFontMedium;

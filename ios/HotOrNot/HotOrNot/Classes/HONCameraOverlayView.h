@@ -11,6 +11,8 @@
 
 @interface HONCameraOverlayView : UIView
 
+- (void)hidePreview;
+
 @property (nonatomic, weak) HONImagePickerViewController *delegate;
 @property (nonatomic, weak) UIButton *captureButton;
 @property (nonatomic, weak) UIButton *flashButton;
