@@ -14,6 +14,8 @@
 #import "HONChallengeVO.h"
 #import "HONHeaderView.h"
 #import "HONResultsViewCell.h"
+#import "HONImagePickerViewController.h"
+#import "HONLoginViewController.h"
 
 @interface HONResultsViewController () <UITableViewDataSource, UITableViewDelegate, ASIHTTPRequestDelegate>
 @property(nonatomic, strong) NSArray *challenges;
@@ -35,7 +37,8 @@
 		
 		_winTotal = 0;
 		_lossTotal = 0;
-
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showDailyChallenge:) name:@"SHOW_DAILY_CHALLENGE" object:nil];
 	}
 	
 	return (self);
@@ -49,7 +52,7 @@
 		_lossTotal = 0;
 		
 		
-		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showDailyChallenge:) name:@"SHOW_DAILY_CHALLENGE" object:nil];
 	}
 	
 	return (self);
@@ -72,7 +75,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:doneButton];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 65.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.delegate = self;
@@ -102,6 +105,20 @@
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
+
+#pragma mark - Notifications
+- (void)_showDailyChallenge:(NSNotification *)notification {
+	if (FBSession.activeSession.state == 513) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+		
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
+}
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -162,11 +179,8 @@
 	else if (indexPath.row == 1)
 		return (150.0);
 	
-	else if (indexPath.row < 5)
-		return (70.0);
-	
 	else
-		return (24.0);
+		return (70.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

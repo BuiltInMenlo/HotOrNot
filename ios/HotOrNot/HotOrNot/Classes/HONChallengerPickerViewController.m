@@ -8,10 +8,12 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
-#import <FacebookSDK/FacebookSDK.h>
+//#import <FacebookSDK/FacebookSDK.h>
+#import "Facebook.h"
 
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
+#import "Mixpanel.h"
 
 #import "HONChallengerPickerViewController.h"
 #import "HONAppDelegate.h"
@@ -21,13 +23,15 @@
 
 @interface HONChallengerPickerViewController () <UITextFieldDelegate, FBFriendPickerDelegate>
 @property(nonatomic, strong) NSString *subjectName;
-@property (nonatomic) int challengerID;
+@property(nonatomic) int challengerID;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) UIImage *challengeImage;
 @property(nonatomic, strong) NSString *fbID;
+@property(nonatomic, strong) NSString *fbName;
 @property(nonatomic, strong) NSString *filename;
-@property (nonatomic, strong) UILabel *placeholderLabel;
-@property (nonatomic, strong) UITextField *subjectTextField;
+@property(nonatomic, strong) UILabel *placeholderLabel;
+@property(nonatomic, strong) UITextField *subjectTextField;
+@property(nonatomic, strong) NSString *rndSubject;
 @end
 
 @implementation HONChallengerPickerViewController
@@ -36,15 +40,21 @@
 @synthesize challengerID = _challengerID;
 @synthesize progressHUD = _progressHUD;
 @synthesize fbID = _fbID;
+@synthesize fbName = _fbName;
 @synthesize challengeImage = _challengeImage;
 @synthesize filename = _filename;
 @synthesize placeholderLabel = _placeholderLabel;
 @synthesize subjectTextField = _subjectTextField;
+@synthesize rndSubject = _rndSubject;
 
 - (id)init {
 	if ((self = [super init])) {
 		NSLog(@"init");
 		self.view.backgroundColor = [UIColor whiteColor];
+		
+		[[Mixpanel sharedInstance] track:@"Pick Challenger"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	}
 	
 	return (self);
@@ -55,6 +65,10 @@
 		NSLog(@"initWithImage:[%f, %f]", img.size.width, img.size.height);
 		self.view.backgroundColor = [UIColor whiteColor];
 		self.challengeImage = img;
+		
+		[[Mixpanel sharedInstance] track:@"Pick Challenger"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	}
 	
 	return (self);
@@ -77,17 +91,19 @@
 	
 	UIImageView *bgImgView;
 	
-	if ([HONAppDelegate isRetina5]) {
-		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 56.0, 320.0, 480.0)];
-		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground-568h.png"]];
-	
-	} else {
-		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 56.0, 320.0, 419.0)];
+//	if ([HONAppDelegate isRetina5]) {
+//		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 56.0, 320.0, 480.0)];
+//		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground-568h.png"]];
+//	
+//	} else {
+		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 40.0, 320.0, 419.0)];
 		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground.png"]];
-	}
+//	}
 	
 	bgImgView.userInteractionEnabled = YES;
 	[self.view addSubview:bgImgView];
+	
+	_rndSubject = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(40.0, 30.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -108,10 +124,10 @@
 	_placeholderLabel.textColor = [UIColor colorWithWhite:0.29803921568627 alpha:1.0];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.textAlignment = NSTextAlignmentCenter;
-	_placeholderLabel.text = @"tap here to add challenge #hashtag";
+	_placeholderLabel.text = _rndSubject;//@"tap here to add challenge #hashtag";
 	[bgImgView addSubview:self.placeholderLabel];
 	
-	int offset = ([HONAppDelegate isRetina5]) ? 0 : 6;	
+	int offset = 0;//([HONAppDelegate isRetina5]) ? 0 : 6;
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	friendsButton.frame = CGRectMake(18.0, offset + (self.view.frame.size.height - 129.0), 284.0, 49.0);
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_nonActive.png"] forState:UIControlStateNormal];
@@ -140,7 +156,8 @@
 	else
 		imgSize = 200.0;
 	
-	int offset = ([HONAppDelegate isRetina5]) ? 0 : 9;
+	imgSize = 200.0;
+	int offset = 0;//([HONAppDelegate isRetina5]) ? 0 : 9;
 	holderView = [[UIView alloc] initWithFrame:CGRectMake(26.0 + ((269.0 - imgSize) * 0.5), offset + 128.0, imgSize, imgSize)];
 	holderView.clipsToBounds = YES;
 	[self.view addSubview:holderView];
@@ -156,10 +173,18 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
+	[[Mixpanel sharedInstance] track:@"Pick Challenger Back"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goChallengeFriends {
+	[[Mixpanel sharedInstance] track:@"Pick Challenger - Friend"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"]) {
 			//NSLog(@"FRIEND:[%@]", friend);
@@ -203,6 +228,8 @@
 			 // submit
 			 self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 			 self.fbID = [[friendPickerController.selection lastObject] objectForKey:@"id"];
+			 self.fbName = [[friendPickerController.selection lastObject] objectForKey:@"first_name"];
+			 //NSLog(@"FRIEND:[%@]", [friendPickerController.selection lastObject]);
 			 
 			 [self _goFriendChallenge];
 		 }
@@ -212,13 +239,13 @@
 - (void)_goFriendChallenge {
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
-	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
+	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
 		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
 		canvasView.image = self.challengeImage;
 		
-		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(27.0, kLargeH - 84.0, 568.0, 68.0)];
+		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 23.0, 620.0, 830.0)];
 		watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
 		[canvasView addSubview:watermarkImgView];
 		
@@ -228,10 +255,8 @@
 		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
 		UIGraphicsEndImageContext();
 		
-		//UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
 		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
 		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-		//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
 		
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -245,12 +270,7 @@
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, 0.5);
 		[s3 putObject:por1];
-		
-//		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", self.filename] inBucket:@"hotornot-challenges"];
-//		por2.contentType = @"image/jpeg";
-//		por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
-//		[s3 putObject:por2];
-		
+				
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
 		por3.data = UIImageJPEGRepresentation(mImage, 0.5);
@@ -268,6 +288,7 @@
 		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename] forKey:@"imgURL"];
 		[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
 		[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
+		[submitChallengeRequest setPostValue:self.fbName forKey:@"fbName"];
 		[submitChallengeRequest startAsynchronous];
 		
 	} @catch (AmazonClientException *exception) {
@@ -282,9 +303,13 @@
 
 
 - (void)_goRandomChallenge {
+	[[Mixpanel sharedInstance] track:@"Pick Challenger - Random"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
-	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:@"AKIAJVS6Y36AQCMRWLQQ" withSecretKey:@"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"];
+	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
@@ -303,10 +328,8 @@
 		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
 		UIGraphicsEndImageContext();
 		
-		//UIImage *lImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)];
 		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
 		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-		//UIImage *t2Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb2W, kThumb2H)];
 		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
@@ -319,12 +342,7 @@
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, 1.0);
 		[s3 putObject:por1];
-		
-//		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", self.filename] inBucket:@"hotornot-challenges"];
-//		por2.contentType = @"image/jpeg";
-//		por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
-//		[s3 putObject:por2];
-		
+				
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
 		por3.data = UIImageJPEGRepresentation(mImage, 1.0);
@@ -357,6 +375,9 @@
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	self.placeholderLabel.hidden = YES;
+	
+	if ([textField.text length] == 0)
+		textField.text = _rndSubject;
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -403,8 +424,13 @@
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 			
-//			if (self.fbID != nil)
-//				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];
+			if ([[challengeResult objectForKey:@"status"] intValue] == 7) {
+				NSLog(@"-----------SEND INVITE-------------");
+				[HONFacebookCaller sendAppRequest:self.fbID];
+			}
+			
+			if ([self.fbID length] > 0)
+				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];
 			
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];

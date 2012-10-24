@@ -6,7 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <FacebookSDK/FacebookSDK.h>
 #import <Parse/Parse.h>
 
 #import "UAirship.h"
@@ -26,6 +25,7 @@
 #import "HONSettingsViewController.h"
 
 @interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate>
+@property (nonatomic, strong) UIAlertView *networkAlertView;
 - (void)_registerUser;
 @end
 
@@ -33,6 +33,7 @@
 
 @synthesize window = _window;
 @synthesize tabBarController = _tabBarController;
+@synthesize networkAlertView = _networkAlertView;
 
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
@@ -56,6 +57,11 @@
 
 + (NSString *)facebookCanvasURL {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"facebook_url"]);
+}
+
++ (NSString *)rndDefaultSubject {
+	NSArray *subjects = [[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"];
+	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
 }
 
 + (void)openSession {
@@ -326,11 +332,20 @@
 		PFQuery *fbQuery = [PFQuery queryWithClassName:@"FacebookPaths"];
 		PFObject *fbObject = [fbQuery getObjectWithId:@"9YC4DWz1AY"];
 		
+		PFQuery *subjectQuery = [PFQuery queryWithClassName:@"PicChallegeDefaultSubjects"];
+		NSMutableArray *subjects = [NSMutableArray array];
+		for (PFObject *obj in [subjectQuery findObjects]) {
+			[subjects addObject:[obj objectForKey:@"title"]];
+		}
+		
+		
+		
 		[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[durationObject objectForKey:@"duration"] forKey:@"challange_duration"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[s3Object objectForKey:@"key"], @"key", [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 		[[NSUserDefaults standardUserDefaults] setObject:[fbObject objectForKey:@"canvas_url"] forKey:@"facebook_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"default_subjects"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		if ([HONAppDelegate canPingAPIServer]) {
@@ -371,12 +386,12 @@
 		}
 	
 	} else {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Network Connection"
+		_networkAlertView = [[UIAlertView alloc] initWithTitle:@"No Network Connection"
 																		message:@"This app requires a network connection to work."
-																	  delegate:nil
+																	  delegate:self
 														  cancelButtonTitle:nil
 														  otherButtonTitles:@"OK", nil];
-		[alert show];
+		[_networkAlertView show];
 
 	}
 	
@@ -540,18 +555,24 @@
 
 #pragma mark - AlertView delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	switch(buttonIndex) {
-		case 0:
-			break;
-			
-		case 1:
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-			break;
-			
-		case 2:
-			[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms://itunes.apple.com/us/app/id541336885?mt=8"]];
-			break;
+	
+	if (alertView == _networkAlertView)
+		exit(0);
+	
+	else {
+		switch(buttonIndex) {
+			case 0:
+				break;
+				
+			case 1:
+				[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				break;
+				
+			case 2:
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms://itunes.apple.com/us/app/id541336885?mt=8"]];
+				break;
+		}
 	}
 }
 

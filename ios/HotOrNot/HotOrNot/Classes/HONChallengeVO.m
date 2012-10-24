@@ -37,6 +37,10 @@
 		case 5:
 			vo.status = @"Completed";
 			break;
+		
+		case 7:
+			vo.status = @"Waiting";
+			break;
 			
 		default:
 			vo.status = @"Accept";

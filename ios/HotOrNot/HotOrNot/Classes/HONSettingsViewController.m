@@ -6,20 +6,24 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <FacebookSDK/FacebookSDK.h>
+//#import <FacebookSDK/FacebookSDK.h>
+#import "Facebook.h"
+#import "ASIFormDataRequest.h"
+#import "Mixpanel.h"
 
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
 #import "HONAppDelegate.h"
 
 #import "HONPrivacyViewController.h"
+#import "HONSupportViewController.h"
 #import "HONLoginViewController.h"
 #import "HONHeaderView.h"
 
-@interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, FBLoginViewDelegate>
+@interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, ASIHTTPRequestDelegate, FBLoginViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
-@property (nonatomic, strong) UISwitch *tournamentSwitch;
+@property (nonatomic, strong) UISwitch *fbSwitch;
 @property (nonatomic, strong) UISwitch *activatedSwitch;
 @property (nonatomic, strong) NSArray *captions;
 @end
@@ -31,13 +35,15 @@
 		//self.tabBarItem.image = [UIImage imageNamed:@"tab05_nonActive"];
 		self.view.backgroundColor = [UIColor whiteColor];
 		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSupport:) name:@"SHOW_SUPPORT" object:nil];
+		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
-		_notificationSwitch.on = YES;
+		_notificationSwitch.on = [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"];
 		
-		_tournamentSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-		[_tournamentSwitch addTarget:self action:@selector(_goTournamentsSwitch:) forControlEvents:UIControlEventValueChanged];
-		_tournamentSwitch.on = [HONAppDelegate allowsFBPosting];
+		_fbSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+		[_fbSwitch addTarget:self action:@selector(_goFBSwitch:) forControlEvents:UIControlEventValueChanged];
+		_fbSwitch.on = [HONAppDelegate allowsFBPosting];
 		
 		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Facebook Posting", @"Logout", @"Privacy Policy", @"", nil];
 	}
@@ -116,7 +122,7 @@
 	_activatedSwitch = switchView;
 }
 
--(void)_goTournamentsSwitch:(UISwitch *)switchView {
+-(void)_goFBSwitch:(UISwitch *)switchView {
 	NSString *msg;
 	
 	[HONAppDelegate setAllowsFBPosting:switchView.on];
@@ -134,6 +140,12 @@
 													  otherButtonTitles:@"No", nil];
 	[alert show];
 	_activatedSwitch = switchView;
+}
+
+
+#pragma mark - Notifications
+- (void)_showSupport:(NSNotification *)notification {
+	[self.navigationController pushViewController:[[HONSupportViewController alloc] init] animated:YES];
 }
 
 
@@ -161,7 +173,7 @@
 		cell.accessoryView = _notificationSwitch;
 	
 	if (indexPath.row == 2)
-		cell.accessoryView = _tournamentSwitch;
+		cell.accessoryView = _fbSwitch;
 		
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);
@@ -173,8 +185,8 @@
 	if (indexPath.row == 0)
 		return (24.0);
 	
-	else if (indexPath.row == 5)
-		return (24.0);
+//	else if (indexPath.row == 5)
+//		return (24.0);
 	
 	else
 		return (70.0);
@@ -209,15 +221,32 @@
 }
 
 
-#pragma mark - AlerView Delegates
+#pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	NSLog(@"%d", buttonIndex);
-	
 	switch(buttonIndex) {
 		case 0:
-			if (_activatedSwitch == _tournamentSwitch) {
-				[HONAppDelegate setAllowsFBPosting:_tournamentSwitch.on];				
+			if (_activatedSwitch == _fbSwitch) {
+				[[Mixpanel sharedInstance] track:@"Facebook Posting"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d", _fbSwitch.on], @"switch", nil]];
+				
+				[HONAppDelegate setAllowsFBPosting:_fbSwitch.on];
 				//[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_FB_POSTING" object:nil];
+			
+			} else {
+				//NSLog(@"-----loginViewShowingLoggedInUser-----");
+				[[Mixpanel sharedInstance] track:@"Notifications"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d", _fbSwitch.on], @"switch", nil]];
+				
+				ASIFormDataRequest *toggleRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
+				[toggleRequest setDelegate:self];
+				[toggleRequest setPostValue:[NSString stringWithFormat:@"%d", 4] forKey:@"action"];
+				[toggleRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+				[toggleRequest setPostValue:(_notificationSwitch.on) ? @"Y" : @"N" forKey:@"isNotifications"];
+				[toggleRequest startAsynchronous];
 			}
 			break;
 			
@@ -239,5 +268,27 @@
 
 - (void)loginViewShowingLoggedOutUser:(FBLoginView *)loginView {
 	NSLog(@"-----loginViewShowingLoggedOutUser-----");
+}
+
+
+#pragma mark - ASI Delegates
+-(void)requestFinished:(ASIHTTPRequest *)request {
+	NSLog(@"HONSettingsViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	
+	@autoreleasepool {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+		
+		if (error != nil)
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		
+		else {
+			[HONAppDelegate writeUserInfo:userResult];
+		}
+	}
+}
+
+-(void)requestFailed:(ASIHTTPRequest *)request {
+	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 @end

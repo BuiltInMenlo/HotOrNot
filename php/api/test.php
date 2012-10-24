@@ -4,24 +4,27 @@ $db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could 
 mysql_select_db('hotornot') or die("Could not select database.");
 
 
-$id_arr = array();
+$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = 3;';			
+$creator_obj = mysql_fetch_object(mysql_query($query));
+$device_token = $creator_obj->device_token;
+$isPush = ($creator_obj->notifications == "Y");
 
-$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id`;';
-$result = mysql_query($query);
-while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
-	$id_arr[$row['id']] = 0;
-}
+echo ("isPush[".$isPush."] (".$device_token.")\n");
 
-$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id`;';
-$result = mysql_query($query);
-while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
-	$id_arr[$row['id']]++;
-}
-
-arsort($id_arr);
-foreach ($id_arr as $key => $val) {
-	echo ("id_arr[". $key ."] = (". $val .")\n");
-}
+//if ($isPush == true) { 			
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+	curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, '{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "DERP has accepted your #lame challenge!", "sound": "push_01.caf"}}');
+ 	$res = curl_exec($ch);
+	$err_no = curl_errno($ch);
+	$err_msg = curl_error($ch);
+	$header = curl_getinfo($ch);
+	curl_close($ch); 
+//}
 
 
 if ($db_conn) {

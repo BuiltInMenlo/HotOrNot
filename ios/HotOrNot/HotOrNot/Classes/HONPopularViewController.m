@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo. All rights reserved.
 //
 
+#import "Mixpanel.h"
 #import "HONPopularViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONVoteViewController.h"
@@ -185,6 +186,11 @@
 
 #pragma mark - Navigation
 - (void)_goLeaders {
+	[[Mixpanel sharedInstance] track:@"Popular Toggle - Leaders"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+
+	
 	self.isUsersList = YES;
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
 	
@@ -196,6 +202,11 @@
 }
 
 - (void)_goTags {
+	[[Mixpanel sharedInstance] track:@"Voting Toggle - Hashtags"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+
+	
 	self.isUsersList = NO;
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_hashTags.png"];
 	
@@ -207,6 +218,10 @@
 }
 
 - (void)_goRefresh {
+	[[Mixpanel sharedInstance] track:@"Refresh - Popular"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_refreshButton.hidden = YES;
 	
 	if (self.isUsersList)

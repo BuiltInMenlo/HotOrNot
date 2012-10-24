@@ -12,6 +12,8 @@
 
 @implementation HONFacebookCaller
 
+@synthesize facebook  =_facebook;
+
 + (void)postStatus:(NSString *)msg {
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSDictionary *params = [NSDictionary dictionaryWithObject:msg forKey:@"message"];
@@ -115,5 +117,18 @@
 			 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
 		 }];
 	}
+}
+
++ (void)sendAppRequest:(NSString *)fbID {
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 @"I'm inviting you to a PicChallenge!",  @"message",
+											 fbID, @"to", 
+											 nil];
+	
+	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	[facebook enableFrictionlessRequests];
+	[facebook dialog:@"apprequests"
+					andParams:params
+				 andDelegate:nil];
 }
 @end

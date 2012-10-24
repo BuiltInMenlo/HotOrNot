@@ -53,7 +53,7 @@
 	_progressHUD.graceTime = 2.0;
 	_progressHUD.taskInProgress = YES;
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 82.0 : 43.0, 320.0, 426.0)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 82.0 : 35.0, kLargeW * 0.5, kLargeH * 0.5)];
 	imgView.userInteractionEnabled = YES;
 	[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", self.imgURL]] placeholderImage:nil options:0 success:^(UIImage *image, BOOL cached) {
 		[_progressHUD hide:YES];

@@ -45,6 +45,9 @@
 		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		ptsLabel.textColor = [UIColor whiteColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
+		ptsLabel.textAlignment = NSTextAlignmentCenter;
+		ptsLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+		ptsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
 		[self addSubview:ptsLabel];
 		
@@ -53,6 +56,8 @@
 		subjectLabel.textColor = [UIColor whiteColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.textAlignment = NSTextAlignmentCenter;
+		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
 		[self addSubview:subjectLabel];
 	}

@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <FacebookSDK/FacebookSDK.h>
+//#import <FacebookSDK/FacebookSDK.h>
+#import "Facebook.h"
 
 @class SMClient;
 
@@ -23,6 +24,7 @@
 + (NSString *)dailySubjectName;
 + (NSDictionary *)s3Credentials;
 + (NSString *)facebookCanvasURL;
++ (NSString *)rndDefaultSubject;
 
 + (void)openSession;
 + (void)writeDeviceToken:(NSString *)token;
@@ -73,10 +75,10 @@
 #define kMediumW 182.0
 #define kMediumH 244.0
 
-#define kLargeW 620.0
-#define kLargeH 830.0
+#define kLargeW 640.0
+#define kLargeH 853.0
 
-#define kPhotoRatio 1.33884297520661
+#define kPhotoRatio 1.333333333
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;

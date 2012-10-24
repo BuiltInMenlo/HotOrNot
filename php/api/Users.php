@@ -101,10 +101,10 @@
 				$query = 'SELECT `challenge_id` FROM `tblChallengeParticipants` WHERE `user_id` = '. $row->id .';';
 				$total += mysql_num_rows(mysql_query($query));				
 				
-			} else {
+			} else {				
 				$query = 'INSERT INTO `tblUsers` (';
-				$query .= '`id`, `username`, `device_token`, `paid`, `points`, `last_login`, `added`) ';
-				$query .= 'VALUES (NULL, "", "'. $device_token .'", "N", "0", CURRENT_TIMESTAMP, NOW());';
+				$query .= '`id`, `username`, `device_token`, `fb_id`, `paid`, `points`, `notifications`, `last_login`, `added`) ';
+				$query .= 'VALUES (NULL, "", "'. $device_token .'", "", "N", "0", "Y", CURRENT_TIMESTAMP, NOW());';
 				$result = mysql_query($query);
 				$user_id = mysql_insert_id();
 				
@@ -121,7 +121,8 @@
 				"token" => $row->device_token, 
 				"paid" => $row->paid, 
 				"points" => $row->points, 
-				"matches" => $total
+				"matches" => $total,
+				"notifications" => $row->notifications
 			);
 			
 			$this->sendResponse(200, json_encode($user_arr));
@@ -132,6 +133,12 @@
 		function updateName($user_id, $username, $fb_id) {
 			$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = '. $fb_id .' WHERE `id` ='. $user_id .';';
 			$result = mysql_query($query);
+			
+			/*$query = 'SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = "'. $fb_id .'";';
+			if (mysql_num_rows(mysql_query($query)) > 0) {
+				$query
+			}*/
+			
 			
 			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
 			$row = mysql_fetch_object(mysql_query($query));
@@ -145,7 +152,8 @@
 				"token" => $row->device_token, 
 				"paid" => $row->paid,
 				"points" => $row->points + $score,
-				"matches" => $total
+				"matches" => $total,
+				"notifications" => $row->notifications
 			);
 			
 			$this->sendResponse(200, json_encode($user_arr));
@@ -153,10 +161,10 @@
 		}
 		
 		function updatePaid($user_id, $isPaid) {
-			$query = 'UPDATE `tblUsers` SET `paid` = "'. $isPaid .'" WHERE `id` ='. $user_id .';';
+			$query = 'UPDATE `tblUsers` SET `paid` = "'. $isPaid .'" WHERE `id` = '. $user_id .';';
 			$result = mysql_query($query);
 			
-			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
+			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
 			$row = mysql_fetch_object(mysql_query($query));
 			
 			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
@@ -168,7 +176,34 @@
 				"token" => $row->device_token, 
 				"paid" => $row->paid, 
 				"points" => $row->points + $score, 
-				"matches" => $total
+				"matches" => 0,
+				"notifications" => $row->notifications
+			);
+			
+			$this->sendResponse(200, json_encode($user_arr));
+			return (true);
+		}
+		
+		function updateNotifications($user_id, $isNotifications) {
+			$user_arr = array();
+			
+			$query = 'UPDATE `tblUsers` SET `notifications` = "'. $isNotifications .'" WHERE `id` = '. $user_id .';';
+			$result = mysql_query($query);
+			
+			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$row = mysql_fetch_object(mysql_query($query));
+			
+			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
+			$score = mysql_num_rows(mysql_query($query));
+			
+			$user_arr = array(
+				"id" => $row->id, 
+				"name" => $row->username, 
+				"token" => $row->device_token, 
+				"paid" => $row->paid, 
+				"points" => $row->points + $score, 
+				"matches" => 0,
+				"notifications" => $row->notifications
 			);
 			
 			$this->sendResponse(200, json_encode($user_arr));
@@ -206,7 +241,12 @@
 			case "3":
 				if (isset($_POST['userID']) && isset($_POST['isPaid']))
 					$users->updatePaid($_POST['userID'], $_POST['isPaid']);
-				break;			
+				break;
+				
+			case "4":
+				if (isset($_POST['userID']) && isset($_POST['isNotifications']))
+					$users->updateNotifications($_POST['userID'], $_POST['isNotifications']);
+				break;
     	}
 	}
 ?>

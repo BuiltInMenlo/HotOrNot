@@ -13,6 +13,7 @@
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
 #import "UIImage+fixOrientation.h"
+#import "Mixpanel.h"
 
 #import "HONImagePickerViewController.h"
 #import "HONAppDelegate.h"
@@ -50,6 +51,10 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Create Challenge"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		self.view.backgroundColor = [UIColor blackColor];
 		//self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
 		self.subjectName = @"";
@@ -63,6 +68,10 @@
 
 - (id)initWithUser:(int)userID {
 	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Create Challenge"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		self.subjectName = @"";
 		self.challengerID = userID;
 		self.needsChallenger = NO;
@@ -75,6 +84,10 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Accept Challenge"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.challengeVO = vo;
@@ -89,6 +102,10 @@
 
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Create Challenge"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.subjectName = subject;
@@ -133,12 +150,13 @@
 			
 			_imagePicker = [[UIImagePickerController alloc] init];
 			_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
+			_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
 			_imagePicker.delegate = self;
 			_imagePicker.allowsEditing = NO;
 			_imagePicker.cameraOverlayView = nil;
 			_imagePicker.navigationBarHidden = YES;
 			_imagePicker.toolbarHidden = YES;
-			_imagePicker.wantsFullScreenLayout = YES;
+			_imagePicker.wantsFullScreenLayout = NO;
 			_imagePicker.showsCameraControls = NO;
 			_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
@@ -154,7 +172,7 @@
 			_imagePicker.allowsEditing = NO;
 			_imagePicker.navigationBarHidden = YES;
 			_imagePicker.toolbarHidden = YES;
-			_imagePicker.wantsFullScreenLayout = YES;
+			_imagePicker.wantsFullScreenLayout = NO;
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:nil];
@@ -216,10 +234,19 @@
 }
 
 - (void)showLibrary {
+	[[Mixpanel sharedInstance] track:@"Camera Roll Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)changeCamera {
+	[[Mixpanel sharedInstance] track:@"Switch Camera"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d", _imagePicker.cameraDevice], nil]];
+	
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 		//overlay.flashButton.hidden = NO;
@@ -233,8 +260,13 @@
 - (void)closeCamera {
 	[_focusTimer invalidate];
 	_focusTimer = nil;
+	[[Mixpanel sharedInstance] track:@"Canceled Create Challenge"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[_imagePicker dismissViewControllerAnimated:NO completion:^(void){
+	
+	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
 }
@@ -243,6 +275,13 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	[_focusTimer invalidate];
 	_focusTimer = nil;
+	
+	[[Mixpanel sharedInstance] track:@"Take Photo"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO];
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary || self.needsChallenger)
 		[self dismissViewControllerAnimated:YES completion:nil];
@@ -271,7 +310,7 @@
 			UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
 			canvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)];
 			
-			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(27.0, kLargeH - 84.0, 568.0, 68.0)];
+			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 23.0, 620.0, 830.0)];
 			watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
 			[canvasView addSubview:watermarkImgView];
 			
@@ -351,15 +390,17 @@
 		_imagePicker.cameraOverlayView = nil;
 		_imagePicker.navigationBarHidden = YES;
 		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = YES;
+		_imagePicker.wantsFullScreenLayout = NO;
 		_imagePicker.showsCameraControls = NO;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 	
 		[self _showOverlay];
 	
-	} else
+	} else {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	}
 }
 
 #pragma mark - ASI Delegates

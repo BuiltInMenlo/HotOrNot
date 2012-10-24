@@ -64,8 +64,14 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, -1.0, 320.0, 24.0);
-		_bgImgView.image = [UIImage imageNamed:@"genericTableFooter.png"];
+		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
+		
+		UIButton *supportButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		supportButton.frame = CGRectMake(18.0, 8.0, 284.0, 39.0);
+		[supportButton addTarget:self action:@selector(_goSupport) forControlEvents:UIControlEventTouchUpInside];
+		[supportButton setBackgroundImage:[UIImage imageNamed:@"needHelp_nonActive.png"] forState:UIControlStateNormal];
+		[supportButton setBackgroundImage:[UIImage imageNamed:@"needHelp_Active.png"] forState:UIControlStateHighlighted];
+		[self addSubview:supportButton];
 	}
 	
 	return (self);
@@ -93,6 +99,10 @@
 
 - (void)_resetBG {
 	_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage.png"];
+}
+
+- (void)_goSupport {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUPPORT" object:nil];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

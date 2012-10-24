@@ -10,6 +10,9 @@
 
 #import "HONAppDelegate.h"
 
+@interface HONResultsViewCell()
+@end
+
 @implementation HONResultsViewCell
 
 + (NSString *)cellReuseIdentifier {
@@ -59,9 +62,16 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -1.0, 320.0, 24.0)];
-		bgImgView.image = [UIImage imageNamed:@"genericTableFooter.png"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
+		bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
 		[self addSubview:bgImgView];
+		
+		UIButton *dailyChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		dailyChallengeButton.frame = CGRectMake(18.0, 8.0, 284.0, 39.0);
+		[dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"needHelp_nonActive.png"] forState:UIControlStateNormal];
+		[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"needHelp_Active.png"] forState:UIControlStateHighlighted];
+		[self addSubview:dailyChallengeButton];
 	}
 	
 	return (self);
@@ -88,5 +98,9 @@
 	[super setSelected:selected animated:animated];
 }
 
+
+- (void)_goDailyChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_DAILY_CHALLENGE" object:nil];
+}
 
 @end

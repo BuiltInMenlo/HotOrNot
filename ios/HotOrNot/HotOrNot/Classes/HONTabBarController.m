@@ -7,8 +7,11 @@
 //
 
 #import "HONTabBarController.h"
-#import <FacebookSDK/FacebookSDK.h>
+//#import <FacebookSDK/FacebookSDK.h>
+#import "Facebook.h"
+#import "Mixpanel.h"
 
+#import "HONAppDelegate.h"
 #import "HONResultsViewController.h"
 
 @interface HONTabBarController ()
@@ -153,6 +156,10 @@
 		case 0:
 			self.challengeHits++;
 			
+			[[Mixpanel sharedInstance] track:@"Tab - Challenge Wall"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
 			[btn1 setSelected:true];
 			[btn1 setEnabled:NO];
 			[btn2 setSelected:false];
@@ -166,6 +173,10 @@
 			break;
 			
 		case 1:
+			[[Mixpanel sharedInstance] track:@"Tab - Voting"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
 			[btn1 setSelected:false];
 			[btn1 setEnabled:YES];
 			[btn2 setSelected:true];
@@ -179,6 +190,10 @@
 			break;
 			
 		case 2:
+			[[Mixpanel sharedInstance] track:@"Tab - Create Challenge"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
 			[btn1 setSelected:(self.selectedIndex == 0)];
 			[btn1 setEnabled:!(self.selectedIndex == 0)];
 			[btn2 setSelected:(self.selectedIndex == 1)];
@@ -191,6 +206,10 @@
 			break;
 			
 		case 3:
+			[[Mixpanel sharedInstance] track:@"Tab - Popular"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
 			[btn1 setSelected:false];
 			[btn1 setEnabled:YES];
 			[btn2 setSelected:false];
@@ -204,6 +223,10 @@
 			break;
 			
 		case 4:
+			[[Mixpanel sharedInstance] track:@"Tab - Settings"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
 			[btn1 setSelected:false];
 			[btn1 setEnabled:YES];
 			[btn2 setSelected:false];

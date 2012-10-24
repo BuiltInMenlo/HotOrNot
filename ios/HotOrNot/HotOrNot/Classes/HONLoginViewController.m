@@ -6,9 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <FacebookSDK/FacebookSDK.h>
-
 #import "ASIFormDataRequest.h"
+#import "Mixpanel.h"
 
 #import "HONLoginViewController.h"
 #import "HONAppDelegate.h"
@@ -32,7 +31,15 @@
 - (void)loadView {
 	[super loadView];
 	
-	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? [NSString stringWithFormat:@"firstUserExperience_Background_00%d-568h.png", ((arc4random() % 4) + 1)] : [NSString stringWithFormat:@"FUE_00%d.jpg", ((arc4random() % 4) + 1)];
+	int ind = (arc4random() % 4) + 1;
+	
+	[[Mixpanel sharedInstance] track:@"Login Screen"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d", ind], @"index", nil]];
+	
+	
+	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? [NSString stringWithFormat:@"firstUserExperience_Background_00%d-568h.png", ind] : [NSString stringWithFormat:@"FUE_00%d.jpg", ((arc4random() % 4) + 1)];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
 	bgImgView.image = [UIImage imageNamed:bgAsset];
@@ -67,6 +74,10 @@
 
 #pragma mark - Navigation
 - (void)_goFacebook {
+	[[Mixpanel sharedInstance] track:@"Login Facebook Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions] allowLoginUI:YES completionHandler:
 	 ^(FBSession *session, FBSessionState state, NSError *error) {
 		 

@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <FacebookSDK/FacebookSDK.h>
-
 #import "ASIFormDataRequest.h"
 #import "UIImageView+WebCache.h"
 #import "Mixpanel.h"
@@ -18,7 +16,6 @@
 #import "HONChallengeVO.h"
 
 #import "HONSettingsViewController.h"
-#import "HONCreateChallengeViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONLoginViewController.h"
 #import "HONPhotoViewController.h"
@@ -116,11 +113,18 @@
 		
 		NSLog(@"HEIGHT:[%f]", screenHeight);
 		
+		int ind = (arc4random() % 4) + 1;
+		[[Mixpanel sharedInstance] track:@"Tutorial"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													 [NSString stringWithFormat:@"%d", ind], @"index", nil]];
+		
+		
 		if ([HONAppDelegate isRetina5])
-			buttonImage = [NSString stringWithFormat:@"tutorial_00%d-568h.png", ((arc4random() % 4) + 1)];
+			buttonImage = [NSString stringWithFormat:@"tutorial_00%d-568h.png", ind];
 		
 		else
-			buttonImage = [NSString stringWithFormat:@"tutorial_00%d.png", ((arc4random() % 4) + 1)];
+			buttonImage = [NSString stringWithFormat:@"tutorial_00%d.png", ind];
 		
 		_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, self.view.frame.size.height)];
 		_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
@@ -202,12 +206,12 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	//[self.navigationController pushViewController:[[HONCreateChallengeViewController alloc] init] animated:YES];
+	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
 	if (FBSession.activeSession.state == 513) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
@@ -220,6 +224,10 @@
 }
 
 - (void)_goRefresh {
+	[[Mixpanel sharedInstance] track:@"Refresh - Challenge Wall"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_refreshButton.hidden = YES;
 	[_headerView updateFBSwitch];
 	[self _retrieveChallenges];
@@ -239,6 +247,10 @@
 }
 
 - (void)_goTutorialClose {
+	[[Mixpanel sharedInstance] track:@"Tutorial Challenge Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 	boot_total++;
 	

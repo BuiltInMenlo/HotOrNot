@@ -26,11 +26,6 @@
 		
 		float gutterHeight = ([[UIApplication sharedApplication] delegate].window.frame.size.height - 320.0) * 0.5;
 		
-		_overlayImgView = [[UIImageView alloc] initWithFrame:self.bounds];
-		_overlayImgView.image = [UIImage imageNamed:@"cameraCover.png"];
-		_overlayImgView.hidden = YES;
-		[self addSubview:_overlayImgView];
-		
 		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, gutterHeight)];
 		headerGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:headerGutterView];
@@ -123,7 +118,9 @@
 }
 
 - (void)hidePreview {
-	_overlayImgView.hidden = NO;
+	_overlayImgView = [[UIImageView alloc] initWithFrame:self.bounds];
+	_overlayImgView.image = [UIImage imageNamed:@"cameraCover.png"];
+	[self addSubview:_overlayImgView];
 }
 
 /*

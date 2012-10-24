@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "Mixpanel.h"
 #import "HONVoteViewController.h"
 #import "HONVoteItemViewCell.h"
 #import "ASIFormDataRequest.h"
@@ -29,6 +30,7 @@
 @property(nonatomic, strong)  UIButton *refreshButton;
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
+@property(nonatomic, strong) UIImageView *emptySetImgView;
 @end
 
 @implementation HONVoteViewController
@@ -42,6 +44,7 @@
 @synthesize refreshButton = _refreshButton;
 @synthesize submitAction = _submitAction;
 @synthesize headerView = _headerView;
+@synthesize emptySetImgView = _emptySetImgView;
 
 - (id)init {
 	if ((self = [super init])) {
@@ -147,7 +150,13 @@
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 225.0, 320.0, 34.0)];
+	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay.png"];
+	[self.view addSubview:_emptySetImgView];
+	
+	NSLog(@"SCREENH:[%f]", [UIScreen mainScreen].bounds.size.height);
+	
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 249.0;
@@ -156,35 +165,7 @@
 	self.tableView.userInteractionEnabled = YES;
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
-	//self.tableView.contentInset = UIEdgeInsetsMake(70.0, 0.0, 0.0, 0.0);
-	//self.tableView.contentOffset = CGPointMake(0.0, -70.0);
 	[self.view addSubview:self.tableView];
-	
-	UIView *tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -70.0, 320.0, 70.0)];
-	tableHeaderView.userInteractionEnabled = YES;
-	
-	UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 70.0);
-	[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
-	[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
-	[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[tableHeaderView addSubview:dailyButton];
-	
-	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 40.0, 50.0, 16.0)];
-	ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-	ptsLabel.textColor = [HONAppDelegate honBlueTxtColor];
-	ptsLabel.backgroundColor = [UIColor clearColor];
-	ptsLabel.text = [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue]];
-	[tableHeaderView addSubview:ptsLabel];
-	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 40.0, 140.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.textAlignment = NSTextAlignmentCenter;
-	subjectLabel.text = [NSString stringWithFormat:@"#%@", [HONAppDelegate dailySubjectName]];
-	[tableHeaderView addSubview:subjectLabel];
-	//[self.tableView addSubview:tableHeaderView];
 	
 	if (self.challengeVO == nil)
 		[self _retrieveChallenges];
@@ -256,6 +237,10 @@
 }
 
 - (void)_goRefresh {
+	[[Mixpanel sharedInstance] track:@"Refresh - Voting"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_refreshButton.hidden = YES;
 	[_headerView updateFBSwitch];
 	[self _retrieveChallenges];
@@ -268,6 +253,10 @@
 }
 
 - (void)_goTrending {
+	[[Mixpanel sharedInstance] track:@"Voting Toggle - Trending"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_trending.png"];
 	self.submitAction = 5;
 	
@@ -279,6 +268,11 @@
 }
 
 - (void)_goRecent {
+	[[Mixpanel sharedInstance] track:@"Voting Toggle - Most Recent"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+
+	
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_recent.png"];
 	self.submitAction = 14;
 	
@@ -296,6 +290,11 @@
 	
 	NSLog(@"VOTE MAIN \n%d", vo.challengeID);
 	
+	[[Mixpanel sharedInstance] track:@"Upvote Left"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
+	
 	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	[voteRequest setDelegate:self];
 	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
@@ -310,6 +309,11 @@
 	
 	NSLog(@"VOTE SUB \n%d", vo.challengeID);
 	
+	[[Mixpanel sharedInstance] track:@"Upvote Right"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
+	
 	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	[voteRequest setDelegate:self];
 	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
@@ -321,6 +325,11 @@
 
 - (void)_voteMore:(NSNotification *)notification {
 	_challengeVO = (HONChallengeVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Vote - More"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																				delegate:self
@@ -407,11 +416,15 @@
 	
 	switch (buttonIndex ) {
 		case 0:
+			[[Mixpanel sharedInstance] track:@"Vote - Flag"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+			
 			[voteRequest setDelegate:self];
-			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
+			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
 			[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
-			[voteRequest setPostValue:@"N" forKey:@"creator"];
 			[voteRequest startAsynchronous];
 			break;
 			
@@ -453,6 +466,7 @@
 				}
 				
 				_challenges = [list copy];
+				_emptySetImgView.hidden = ([_challenges count] > 0);
 				[_tableView reloadData];
 			}
 		}
