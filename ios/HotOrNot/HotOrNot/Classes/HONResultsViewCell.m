@@ -21,7 +21,7 @@
 
 - (id)initAsTopCell {
 	if ((self = [super init])) {
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 24.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 20.0)];
 		bgImgView.image = [UIImage imageNamed:@"leaderTableHeader.png"];
 		[self addSubview:bgImgView];
 	}
@@ -69,8 +69,8 @@
 		UIButton *dailyChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		dailyChallengeButton.frame = CGRectMake(18.0, 8.0, 284.0, 39.0);
 		[dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"needHelp_nonActive.png"] forState:UIControlStateNormal];
-		[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"needHelp_Active.png"] forState:UIControlStateHighlighted];
+		[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"dailyChallenge_nonActive.png"] forState:UIControlStateNormal];
+		[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"dailyChallenge_Active.png"] forState:UIControlStateHighlighted];
 		[self addSubview:dailyChallengeButton];
 	}
 	

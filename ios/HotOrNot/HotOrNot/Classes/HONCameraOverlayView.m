@@ -11,28 +11,42 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
-@interface HONCameraOverlayView()
+@interface HONCameraOverlayView() <UITextFieldDelegate>
 @property (nonatomic, strong) UIImageView *overlayImgView;
+@property(nonatomic, strong) UITextField *subjectTextField;
+@property(nonatomic, strong) UIButton *editButton;
 @end
 
 @implementation HONCameraOverlayView
 
 @synthesize delegate, flashButton, captureButton, cameraRollButton;
 @synthesize overlayImgView = _overlayImgView;
+@synthesize subjectTextField = _subjectTextField;
+@synthesize editButton = _editButton;
+@synthesize subjectName = _subjectName;
 
 - (id)initWithFrame:(CGRect)frame {
 	if (self = [super initWithFrame:frame]) {
 		self.opaque = NO;
 		
-		float gutterHeight = ([[UIApplication sharedApplication] delegate].window.frame.size.height - 320.0) * 0.5;
+		int photoSize = 250.0;
+		CGSize gutterSize = CGSizeMake((320.0 - photoSize) * 0.5, (self.frame.size.height - photoSize) * 0.5);
 		
-		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, gutterHeight)];
+		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, gutterSize.height)];
 		headerGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:headerGutterView];
 		
-		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 350.0, self.frame.size.height - gutterHeight, gutterHeight)];
+		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - gutterSize.height, 320.0, gutterSize.height)];
 		footerGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:footerGutterView];
+		
+		UIView *lGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, gutterSize.width, self.frame.size.height)];
+		lGutterView.backgroundColor = [UIColor blackColor];
+		[self addSubview:lGutterView];
+		
+		UIView *rGutterView = [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width - gutterSize.width, 0.0, gutterSize.width, self.frame.size.height)];
+		rGutterView.backgroundColor = [UIColor blackColor];
+		[self addSubview:rGutterView];
 		
 		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo" hasFBSwitch:NO];
 		[self addSubview:headerView];
@@ -43,6 +57,33 @@
 		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active.png"] forState:UIControlStateHighlighted];
 		[cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[headerView addSubview:cancelButton];
+		
+		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
+		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
+		[_subjectTextField setTextColor:[UIColor whiteColor]];
+		[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
+		_subjectTextField.text = self.subjectName;
+		_subjectTextField.delegate = self;
+		[self addSubview:_subjectTextField];
+		
+		_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_editButton.frame = CGRectMake(265.0, 60.0, 44.0, 44.0);
+		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive.png"] forState:UIControlStateNormal];
+		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active.png"] forState:UIControlStateHighlighted];
+		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_editButton];
+		
+		
+		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, headerGutterView.frame.size.height, 250.0, 250.0)];
+		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding.png"];
+		overlayImgView.userInteractionEnabled = YES;
+		[self addSubview:overlayImgView];
 		
 //		UIImage *buttonImageNormal;
 //		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {
@@ -64,7 +105,7 @@
 //		}
 		
 		// Add the bottom bar
-		UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 70.0, 320.0, 70.0)];
+		UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 70.0, 320.0, 70.0)];
 		footerImgView.image = [UIImage imageNamed:@"cameraFooterBG.png"];
 		footerImgView.userInteractionEnabled = YES;
 		[self addSubview:footerImgView];
@@ -119,8 +160,35 @@
 
 - (void)hidePreview {
 	_overlayImgView = [[UIImageView alloc] initWithFrame:self.bounds];
-	_overlayImgView.image = [UIImage imageNamed:@"cameraCover.png"];
+	_overlayImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"camerModeBackground-568h.jpg" : @"camerModeBackgroundiPhone.jpg"];
 	[self addSubview:_overlayImgView];
+}
+
+- (void)_goEditSubject {
+	_subjectTextField.text = @"";
+	[_subjectTextField becomeFirstResponder];
+}
+
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	_editButton.hidden = YES;
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return YES;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];
+	
+	_editButton.hidden = NO;
+	
+	if ([textField.text length] == 0)
+		textField.text = _subjectName;
+	
+	else
+		_subjectName = textField.text;
 }
 
 /*
@@ -131,5 +199,10 @@
     // Drawing code
 }
 */
+
+- (void)setSubjectName:(NSString *)subjectName {
+	_subjectName = subjectName;
+	_subjectTextField.text = _subjectName;
+}
 
 @end

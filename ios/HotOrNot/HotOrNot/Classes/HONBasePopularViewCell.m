@@ -30,7 +30,7 @@
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 24.0);
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 20.0);
 		_bgImgView.image = [UIImage imageNamed:@"leaderTableHeader.png"];
 	}
 	

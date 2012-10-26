@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 //#import <FacebookSDK/FacebookSDK.h>
 #import "Facebook.h"
+#import "HONLoginViewController.h"
+
+extern NSString *const SCSessionStateChangedNotification;
 
 @class SMClient;
 
@@ -26,7 +29,7 @@
 + (NSString *)facebookCanvasURL;
 + (NSString *)rndDefaultSubject;
 
-+ (void)openSession;
+- (BOOL)openSession;
 + (void)writeDeviceToken:(NSString *)token;
 + (NSString *)deviceToken;
 
@@ -75,12 +78,13 @@
 #define kMediumW 182.0
 #define kMediumH 244.0
 
-#define kLargeW 640.0
-#define kLargeH 853.0
+#define kLargeW 612.0
+#define kLargeH 816.0
 
 #define kPhotoRatio 1.333333333
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;
+@property (strong, nonatomic) HONLoginViewController *loginViewController;
 
 @end

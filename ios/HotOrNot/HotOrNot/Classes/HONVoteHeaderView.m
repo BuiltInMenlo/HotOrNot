@@ -22,7 +22,7 @@
 @synthesize titleLabel = _titleLabel;
 @synthesize creatorImgView = _creatorImgView;
 
-- (id)initWithFrame:(CGRect)frame {
+- (id)initWithFrame:(CGRect)frame asPush:(BOOL)isPush {
 	if ((self = [super initWithFrame:frame])) {
 		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 56.0)];
 		bgImgView.image = [UIImage imageNamed:@"challengeHeader.png"];
@@ -37,12 +37,14 @@
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:_titleLabel];
 		
-		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(265.0, 16.0, 34.0, 34.0);
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
-		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:moreButton];
+		if (!isPush) {
+			UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			moreButton.frame = CGRectMake(265.0, 16.0, 34.0, 34.0);
+			[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
+			[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+			[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+			[self addSubview:moreButton];
+		}
 	}
 	
 	return (self);

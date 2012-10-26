@@ -13,4 +13,6 @@
 @interface HONVoteHeaderView : UIView
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+
+- (id)initWithFrame:(CGRect)frame asPush:(BOOL)isPush;
 @end

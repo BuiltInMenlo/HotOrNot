@@ -14,7 +14,7 @@
 + (NSString *)cellReuseIdentifier;
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject;
-- (id)initAsBottomCell;
+- (id)initAsBottomCell:(BOOL)isEnabled;
 - (id)initAsChallengeCell;
 
 - (void)didSelect;

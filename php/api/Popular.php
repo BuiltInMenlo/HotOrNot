@@ -90,12 +90,15 @@
 			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC LIMIT 25;';
 			$user_result = mysql_query($query);
 			
-			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {				
+			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {
+				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_row['id'] .';';
+				$score = mysql_num_rows(mysql_query($query));
+			
 				array_push($user_arr, array(
 					"id" => $user_row['id'], 
 					"username" => $user_row['username'], 					
 					"img_url" => "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square",   
-					"score" => $user_row['points']
+					"score" => $user_row['points'] + $score
 				));	
 			}
 			

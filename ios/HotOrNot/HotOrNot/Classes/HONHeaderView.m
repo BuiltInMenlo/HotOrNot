@@ -63,7 +63,7 @@
 }
 
 - (void)updateFBSwitch {
-	NSLog(@"FB POSTING:[%d]", [HONAppDelegate allowsFBPosting]);
+	//NSLog(@"FB POSTING:[%d]", [HONAppDelegate allowsFBPosting]);
 	[_fbButton setSelected:[HONAppDelegate allowsFBPosting]];
 }
 

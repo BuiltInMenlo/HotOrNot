@@ -65,7 +65,7 @@
 	return (self);
 }
 
-- (id)initAsBottomCell {
+- (id)initAsBottomCell:(BOOL)isEnabled {
 	if ((self = [self init])) {
 		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
 		
@@ -73,7 +73,10 @@
 		loadMoreButton.frame = CGRectMake(100.0, -3.0, 120.0, 60.0);
 		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive.png"] forState:UIControlStateNormal];
 		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active.png"] forState:UIControlStateHighlighted];
-		[loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+		
+		if (isEnabled)
+			[loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+		
 		[self addSubview:loadMoreButton];
 	}
 	
@@ -190,15 +193,26 @@
 		int secs = [HONAppDelegate secondsBeforeDate:self.challengeVO.endDate];
 		
 		NSString *timeUntil;
-		if (hours > 0)
-			timeUntil = [NSString stringWithFormat:@"%d hours", hours];
+		if (hours == 1)
+			timeUntil = @"1 hour";
 		
-		else {
-			if (mins > 0)
+		else if (hours > 0) {
+				timeUntil = [NSString stringWithFormat:@"%d hours", hours];
+		
+		} else {
+			if (mins == 1)
+				timeUntil = @"1 minute";
+			
+			else if (mins > 0)
 				timeUntil = [NSString stringWithFormat:@"%d minutes", mins];
 				
-			else
-				timeUntil = [NSString stringWithFormat:@"%d seconds", secs];
+			else {
+				if (secs == 1)
+					timeUntil = @"1 second";
+				
+				else
+					timeUntil = [NSString stringWithFormat:@"%d seconds", secs];
+			}
 		}
 		
 		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 18.0, 90.0, 16.0)];

@@ -184,6 +184,27 @@
 			return (true);
 		}
 		
+		function getUser($user_id) {
+			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$row = mysql_fetch_object(mysql_query($query));
+			
+			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
+			$score = mysql_num_rows(mysql_query($query));
+			
+			$user_arr = array(
+				"id" => $row->id, 
+				"name" => $row->username, 
+				"token" => $row->device_token, 
+				"paid" => $row->paid, 
+				"points" => $row->points + $score, 
+				"matches" => 0,
+				"notifications" => $row->notifications
+			);
+			
+			$this->sendResponse(200, json_encode($user_arr));
+			return (true);
+		}
+		
 		function updateNotifications($user_id, $isNotifications) {
 			$user_arr = array();
 			
@@ -246,6 +267,11 @@
 			case "4":
 				if (isset($_POST['userID']) && isset($_POST['isNotifications']))
 					$users->updateNotifications($_POST['userID'], $_POST['isNotifications']);
+				break;
+				
+			case "5":
+				if (isset($_POST['userID']))
+					$users->getUser($_POST['userID']);
 				break;
     	}
 	}

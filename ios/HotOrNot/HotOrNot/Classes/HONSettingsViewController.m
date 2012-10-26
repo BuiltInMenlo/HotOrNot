@@ -55,6 +55,10 @@
 - (void)loadView {
 	[super loadView];
 	
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
+	[self.view addSubview:bgImgView];
+	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings" hasFBSwitch:NO];
 	[self.view addSubview:headerView];
 	
@@ -69,7 +73,7 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
+	//NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
 	
 }
 - (void)viewDidLoad {
@@ -183,7 +187,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0)
-		return (24.0);
+		return (20.0);
 	
 //	else if (indexPath.row == 5)
 //		return (24.0);
@@ -273,7 +277,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONSettingsViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONSettingsViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		NSError *error = nil;

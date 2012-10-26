@@ -110,33 +110,38 @@
 - (void)loadView {
 	[super loadView];
 	
-	NSLog(@"SUBJECT:[%d][%d]", self.subjectID, _isPushView);
+	//NSLog(@"SUBJECT:[%d][%d]", self.subjectID, _isPushView);
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasFBSwitch:!_isPushView];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
+	[self.view addSubview:bgImgView];
+	
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasFBSwitch:NO];
 	[self.view addSubview:_headerView];
 		
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(5.0, 0.0, 74.0, 44.0);
+		backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:backButton];
+	
+	} else {
+		_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 1.0, 169.0, 44.0)];
+		_toggleImgView.image = [UIImage imageNamed:@"toggle_trending.png"];
+		[_headerView addSubview:_toggleImgView];
+		
+		UIButton *trendingButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		trendingButton.frame = CGRectMake(76.0, 5.0, 84.0, 34.0);
+		[trendingButton addTarget:self action:@selector(_goTrending) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:trendingButton];
+		
+		UIButton *recentButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		recentButton.frame = CGRectMake(161.0, 5.0, 84.0, 34.0);
+		[recentButton addTarget:self action:@selector(_goRecent) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:recentButton];
 	}
-	
-	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 0.0, 169.0, 44.0)];
-	_toggleImgView.image = [UIImage imageNamed:@"toggle_trending.png"];
-	[_headerView addSubview:_toggleImgView];
-	
-	UIButton *trendingButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	trendingButton.frame = CGRectMake(76.0, 5.0, 84.0, 34.0);
-	[trendingButton addTarget:self action:@selector(_goTrending) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:trendingButton];
-	
-	UIButton *recentButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	recentButton.frame = CGRectMake(161.0, 5.0, 84.0, 34.0);
-	[recentButton addTarget:self action:@selector(_goRecent) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:recentButton];
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
@@ -153,8 +158,6 @@
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 225.0, 320.0, 34.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay.png"];
 	[self.view addSubview:_emptySetImgView];
-	
-	NSLog(@"SCREENH:[%f]", [UIScreen mainScreen].bounds.size.height);
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -288,7 +291,7 @@
 - (void)_voteMain:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	NSLog(@"VOTE MAIN \n%d", vo.challengeID);
+	//NSLog(@"VOTE MAIN \n%d", vo.challengeID);
 	
 	[[Mixpanel sharedInstance] track:@"Upvote Left"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -307,7 +310,7 @@
 - (void)_voteSub:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	NSLog(@"VOTE SUB \n%d", vo.challengeID);
+	//NSLog(@"VOTE SUB \n%d", vo.challengeID);
 	
 	[[Mixpanel sharedInstance] track:@"Upvote Right"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -335,9 +338,14 @@
 																				delegate:self
 																	cancelButtonTitle:@"Cancel"
 															 destructiveButtonTitle:nil
-																	otherButtonTitles:@"Flag Challenge", @"Share Challenge", @"ReChallenge", nil];
+																	otherButtonTitles:@"Flag Challenge", @"ReChallenge", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	
+//	if (_isPushView)
+//		[actionSheet showInView:self.view];
+//	
+//	else
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
 - (void)_zoomImage:(NSNotification *)notification {
@@ -363,7 +371,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONVoteHeaderView *headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 54.0)];
+	HONVoteHeaderView *headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 54.0) asPush:_isPushView];
 	[headerView setChallengeVO:[_challenges objectAtIndex:section]];
 	
 	return (headerView);
@@ -391,7 +399,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (340.0);
+	return (353.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -412,7 +420,7 @@
 	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:self.challengeVO.creatorID]];
 	
-	NSLog(@"BUTTON:[%d]", buttonIndex);
+	//NSLog(@"BUTTON:[%d]", buttonIndex);
 	
 	switch (buttonIndex ) {
 		case 0:
@@ -427,24 +435,20 @@
 			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
 			[voteRequest startAsynchronous];
 			break;
-			
+						
 		case 1:
-			[HONFacebookCaller postToActivity:self.challengeVO withAction:@"share"];
-			break;
-			
-		case 2:
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
-		case 3:
+		case 2:
 			break;
 	}
 }
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if ([request isEqual:self.challengesRequest]) {
 		@autoreleasepool {

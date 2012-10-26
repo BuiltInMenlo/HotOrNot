@@ -37,6 +37,10 @@
 - (void)loadView {
 	[super loadView];
 	
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
+	[self.view addSubview:bgImgView];
+	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Support" hasFBSwitch:NO];
 	[self.view addSubview:headerView];
 	

@@ -51,13 +51,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
 		self.view.backgroundColor = [UIColor blackColor];
 		//self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
-		self.subjectName = @"";
+		self.subjectName = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
@@ -72,7 +68,7 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		self.subjectName = @"";
+		self.subjectName = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
 		self.challengerID = userID;
 		self.needsChallenger = NO;
 		self.submitAction = 9;
@@ -108,9 +104,26 @@
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
-		self.subjectName = subject;
+		self.subjectName = [NSString stringWithFormat:@"#%@", subject];
 		self.submitAction = 1;
-		self.needsChallenger = NO;
+		self.needsChallenger = YES;
+		self.isFirstAppearance = YES;
+	}
+	
+	return (self);
+}
+
+- (id)initAsDailyChallenge:(NSString *)subject {
+	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Create Challenge"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+		
+		self.subjectName = [NSString stringWithFormat:@"#%@", subject];
+		self.submitAction = 1;
+		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
 	}
 	
@@ -162,7 +175,7 @@
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-				[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:1.33];
+				[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:0.5];
 			}];
 		
 		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -195,8 +208,9 @@
 }
 
 - (void)_showOverlay {
-	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.view.frame.size.height)];
+	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_cameraOverlayView.delegate = self;
+	[_cameraOverlayView setSubjectName:self.subjectName];
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
 	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
@@ -244,8 +258,7 @@
 - (void)changeCamera {
 	[[Mixpanel sharedInstance] track:@"Switch Camera"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d", _imagePicker.cameraDevice], nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
@@ -266,7 +279,7 @@
 	
 	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
 }
@@ -275,31 +288,39 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	[_focusTimer invalidate];
 	_focusTimer = nil;
+	self.subjectName = _cameraOverlayView.subjectName;
 	
 	[[Mixpanel sharedInstance] track:@"Take Photo"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary || self.needsChallenger)
 		[self dismissViewControllerAnimated:YES completion:nil];
 	
 	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-	
-	if (image.size.width > image.size.height) {
-		CGAffineTransform transform = CGAffineTransformIdentity;
-		transform = CGAffineTransformTranslate(transform, image.size.width, image.size.height);
-		transform = CGAffineTransformRotate(transform, M_PI / 2.0);
-	}
-	
 	image = [image fixOrientation];
 	
-	NSLog(@"imageOrientation:[%d]", image.imageOrientation);
+	if (image.size.width > image.size.height) {
+		float offset = image.size.height * (image.size.height / image.size.width);
+		image = [HONAppDelegate cropImage:image toRect:CGRectMake(offset * 0.5, 0.0, offset, image.size.height)];
+	}
+	
+	if (image.size.height / image.size.width == 1.5) {
+		float offset = image.size.height - (image.size.width * kPhotoRatio);
+		image = [HONAppDelegate cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kPhotoRatio))];
+	}
 	
 	if (!self.needsChallenger) {
 		[_cameraOverlayView hidePreview];
+		
+		if ([self.subjectName length] == 0)
+			self.subjectName = [HONAppDelegate rndDefaultSubject];
+		
+		if ([self.subjectName hasPrefix:@"#"])
+			self.subjectName = [self.subjectName substringFromIndex:1];
 		
 		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 		
@@ -307,11 +328,11 @@
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", filename);
 		
 		@try {
-			UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
-			canvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)];
+			UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+			canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 			
-			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 23.0, 620.0, 830.0)];
-			watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
+			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+			watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
 			[canvasView addSubview:watermarkImgView];
 			
 			CGSize size = [canvasView bounds].size;
@@ -380,7 +401,7 @@
 		}
 	
 	} else {
-		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithImage:image] animated:YES];
+		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithImage:image subjectName:_subjectName] animated:YES];
 	}
 }
 
@@ -398,14 +419,14 @@
 		[self _showOverlay];
 	
 	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO animated:NO];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		_progressHUD.taskInProgress = NO;

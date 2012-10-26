@@ -23,6 +23,9 @@
 #import "HONImagePickerViewController.h"
 #import "HONVoteViewController.h"
 #import "HONSettingsViewController.h"
+#import "HONLoginViewController.h"
+
+NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:SCSessionStateChangedNotification";
 
 @interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate>
 @property (nonatomic, strong) UIAlertView *networkAlertView;
@@ -64,14 +67,6 @@
 	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
 }
 
-+ (void)openSession {
-	[FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions] allowLoginUI:YES completionHandler:
-	 ^(FBSession *session, FBSessionState state, NSError *error) {
-		 NSLog(@"STATE:%d", state);
-		 //[self sessionStateChanged:session state:state error:error];
-	 }];
-}
-
 + (void)writeDeviceToken:(NSString *)token {
 	[[NSUserDefaults standardUserDefaults] setObject:token forKey:@"device_token"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -101,7 +96,7 @@
 }
 
 + (NSDictionary *)fbProfileForUser {
-	return [[NSUserDefaults standardUserDefaults] objectForKey:@"fb_profile"];
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"fb_profile"]);
 }
 
 + (void)setAllowsFBPosting:(BOOL)canPost {
@@ -249,21 +244,106 @@
 }
 
 
+- (BOOL)openSession {
+	NSLog(@"openSession");
+//	return ([FBSession openActiveSessionWithReadPermissions:[HONAppDelegate fbPermissions]
+//															 allowLoginUI:NO
+//													  completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+//														  NSLog(@"STATE:%d", state);
+//														  [self sessionStateChanged:session state:state error:error];
+//													  }]);
+	
+	return ([FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions]
+														allowLoginUI:NO
+												 completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+													 NSLog(@"STATE:%d", state);
+													 [self sessionStateChanged:session state:state error:error];
+	 }]);
+}
+
+- (void)sessionStateChanged:(FBSession *)session state:(FBSessionState)state error:(NSError *)error {
+	// FBSample logic
+	// Any time the session is closed, we want to display the login controller (the user
+	// cannot use the application unless they are logged in to Facebook). When the session
+	// is opened successfully, hide the login controller and show the main UI.
+	
+	NSLog(@"sessionStateChanged:[%d]", state);
+	
+	switch (state) {
+		case FBSessionStateOpen: {
+			[self.loginViewController dismissViewControllerAnimated:YES completion:nil];
+			
+			//			if (self.loginViewController != nil) {
+			//				UIViewController *topViewController = [self.tabBarController topViewController];
+			//				[topViewController dismissModalViewControllerAnimated:YES];
+			//				self.loginViewController = nil;
+			//			}
+			
+			// FBSample logic
+			// Pre-fetch and cache the friends for the friend picker as soon as possible to improve
+			// responsiveness when the user tags their friends.
+			FBCacheDescriptor *cacheDescriptor = [FBFriendPickerViewController cacheDescriptor];
+			[cacheDescriptor prefetchAndCacheForSession:session];
+		}
+			break;
+		case FBSessionStateClosed:
+		case FBSessionStateClosedLoginFailed: {
+			// FBSample logic
+			// Once the user has logged out, we want them to be looking at the root view.
+			//			UIViewController *topViewController = [self.navController topViewController];
+			//			UIViewController *modalViewController = [topViewController modalViewController];
+			//			if (modalViewController != nil) {
+			//				[topViewController dismissModalViewControllerAnimated:NO];
+			//			}
+			//			[self.navController popToRootViewControllerAnimated:NO];
+			
+			[FBSession.activeSession closeAndClearTokenInformation];
+			
+			// if the token goes invalid we want to switch right back to
+			// the login view, however we do it with a slight delay in order to
+			// account for a race between this and the login view dissappearing
+			// a moment before
+			
+			self.loginViewController = [[HONLoginViewController alloc] init];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.loginViewController];
+			[navigationController setNavigationBarHidden:YES];
+			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+			
+			//			[self performSelector:@selector(showLoginView)
+			//						  withObject:nil
+			//						  afterDelay:0.5f];
+		}
+			break;
+		default:
+			break;
+	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:SCSessionStateChangedNotification
+																		 object:session];
+	
+	if (error) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
+																			 message:error.localizedDescription
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+	}
+}
+
+
+
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
-	NSLog(@"Servers:[%d]", [HONAppDelegate canPingServers]);
-	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
 		[UAirship takeOff:takeOffOptions];
-		
 		[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 		
-		[HONAppDelegate openSession];
 		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
 		[PFUser enableAutomaticUser];
 		PFACL *defaultACL = [PFACL ACL];
@@ -309,14 +389,13 @@
 			[alert show];
 		}
 		
-		
-		
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 			[HONAppDelegate setAllowsFBPosting:NO];
 		
 		
+		PFQuery *appIDQuery = [PFQuery queryWithClassName:@"AppIDs"];
+		PFObject *appIDObject = [appIDQuery getObjectWithId:@"k2SlH68C62"];
 		
-			
 		PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
 		PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
 		
@@ -334,12 +413,10 @@
 		
 		PFQuery *subjectQuery = [PFQuery queryWithClassName:@"PicChallegeDefaultSubjects"];
 		NSMutableArray *subjects = [NSMutableArray array];
-		for (PFObject *obj in [subjectQuery findObjects]) {
+		for (PFObject *obj in [subjectQuery findObjects])
 			[subjects addObject:[obj objectForKey:@"title"]];
-		}
 		
-		
-		
+		[[NSUserDefaults standardUserDefaults] setObject:[appIDObject objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 		[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[durationObject objectForKey:@"duration"] forKey:@"challange_duration"];
 		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
@@ -369,12 +446,19 @@
 			[navController5 setNavigationBarHidden:YES];
 			
 			self.tabBarController = [[HONTabBarController alloc] init];
-			
-			//self.tabBarController = [[UITabBarController alloc] init];
 			self.tabBarController.delegate = self;
 			self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
 			
 			self.window.rootViewController = self.tabBarController;
+			[self.window makeKeyAndVisible];
+			
+			if (![self openSession]) {
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+			}
+			
+			NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
 		
 		} else {
 			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bad Network Connection"
@@ -394,8 +478,6 @@
 		[_networkAlertView show];
 
 	}
-	
-	[self.window makeKeyAndVisible];
 	
 	return (YES);
 }
@@ -525,7 +607,7 @@
 
 #pragma mark - TabBarController Delegates
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
-	NSLog(@"shouldSelectViewController:[%@]", viewController);
+	//NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
 	if (viewController == [[tabBarController viewControllers] objectAtIndex:2]) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
@@ -570,7 +652,7 @@
 				break;
 				
 			case 2:
-				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"itms://itunes.apple.com/us/app/id541336885?mt=8"]];
+				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/us/app/id%@?mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 				break;
 		}
 	}
@@ -579,7 +661,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		NSError *error = nil;

@@ -8,6 +8,7 @@
 
 #import "HONAboutViewController.h"
 #import "HONHeaderView.h"
+#import "HONAppDelegate.h"
 
 @interface HONAboutViewController ()
 
@@ -28,6 +29,11 @@
 
 - (void)loadView {
 	[super loadView];
+	
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
+	[self.view addSubview:bgImgView];
+	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"About" hasFBSwitch:NO];
 	[self.view addSubview:headerView];
 	

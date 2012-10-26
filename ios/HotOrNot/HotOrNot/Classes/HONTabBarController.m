@@ -16,17 +16,20 @@
 
 @interface HONTabBarController ()
 @property (nonatomic) int challengeHits;
+@property (nonatomic) BOOL hasVisitedSettings;
 @end
 
 @implementation HONTabBarController
 
 @synthesize btn1, btn2, btn3, btn4, btn5;
 @synthesize challengeHits;
+@synthesize hasVisitedSettings;
 
 - (id)init {
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showResults:) name:@"SHOW_RESULTS" object:nil];
 		self.challengeHits = 0;
+		self.hasVisitedSettings = NO;
 	}
 	
 	return (self);
@@ -226,6 +229,17 @@
 			[[Mixpanel sharedInstance] track:@"Tab - Settings"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			if (!self.hasVisitedSettings && ![HONAppDelegate allowsFBPosting]) {
+				self.hasVisitedSettings = YES;
+				
+				UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook Posting"
+																				message:@" Facebook Posts are OFF by default! Turn them on for your friends to see your game challenges."
+																			  delegate:self
+																  cancelButtonTitle:@"OK"
+																  otherButtonTitles:nil];
+				[alert show];
+			}
 			
 			[btn1 setSelected:false];
 			[btn1 setEnabled:YES];

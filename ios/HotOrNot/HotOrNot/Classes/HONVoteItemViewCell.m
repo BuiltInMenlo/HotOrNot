@@ -13,11 +13,16 @@
 
 
 @interface HONVoteItemViewCell()
+@property (nonatomic, strong) UIView *lHolderView;
+@property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UIButton *lVoteButton;
 @property (nonatomic, strong) UIButton *rVoteButton;
 @end
 
 @implementation HONVoteItemViewCell
+
+@synthesize lHolderView = _lHolderView;
+@synthesize rHolderView = _rHolderView;
 
 @synthesize lVoteButton = _lVoteButton;
 @synthesize rVoteButton = _rVoteButton;
@@ -30,7 +35,7 @@
 	if ((self = [super init])) {
 		self.backgroundColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0];
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 340.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 341.0)];
 		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
 		[self addSubview:bgImgView];
 				
@@ -60,31 +65,31 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 17.0, 120.0, 245.0)];
-	lHolderView.clipsToBounds = YES;
-	[self addSubview:lHolderView];
+	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 17.0, 120.0, 245.0)];
+	_lHolderView.clipsToBounds = YES;
+	[self addSubview:_lHolderView];
 	
 	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
 	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
-	[lHolderView addSubview:lImgView];
+	[_lHolderView addSubview:lImgView];
 	
 	UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	lZoomButton.frame = lImgView.frame;
 	[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
-	[lHolderView addSubview:lZoomButton];
+	[_lHolderView addSubview:lZoomButton];
 	
-	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 17.0, 120.0, 245.0)];
-	rHolderView.clipsToBounds = YES;
-	[self addSubview:rHolderView];
+	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 17.0, 120.0, 245.0)];
+	_rHolderView.clipsToBounds = YES;
+	[self addSubview:_rHolderView];
 	
 	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
 	[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
-	[rHolderView addSubview:rImgView];
+	[_rHolderView addSubview:rImgView];
 	
 	UIButton *rZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	rZoomButton.frame = rImgView.frame;
 	[rZoomButton addTarget:self action:@selector(_goRightZoom) forControlEvents:UIControlEventTouchUpInside];
-	[rHolderView addSubview:rZoomButton];
+	[_rHolderView addSubview:rZoomButton];
 }
 
 
@@ -95,6 +100,10 @@
 	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateHighlighted];
 	[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
 	[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
+	
+	UIView *overlayView = [[UIView alloc] initWithFrame:_rHolderView.frame];
+	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
+	[self addSubview:overlayView];
 	
 	UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 92.0, 84.0, 84.0)];
 	lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
@@ -117,6 +126,10 @@
 	[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateHighlighted];
 	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateNormal];
 	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateHighlighted];
+	
+	UIView *overlayView = [[UIView alloc] initWithFrame:_lHolderView.frame];
+	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
+	[self addSubview:overlayView];
 	
 	UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 92.0, 84.0, 84.0)];
 	rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];

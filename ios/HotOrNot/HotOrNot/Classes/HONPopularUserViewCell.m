@@ -14,6 +14,7 @@
 @property (nonatomic, strong) UIImageView *userImageView;
 @property (nonatomic, strong) UILabel *usernameLabel;
 @property (nonatomic, strong) UILabel *scoreLabel;
+@property (nonatomic, strong) UIButton *challengeButton;
 @end
 
 @implementation HONPopularUserViewCell
@@ -21,6 +22,7 @@
 @synthesize userImageView = _userImageView;
 @synthesize usernameLabel = _usernameLabel;
 @synthesize scoreLabel = _scoreLabel;
+@synthesize challengeButton = _challengeButton;
 
 - (id)initAsMidCell:(int)index {
 	if ((self = [super initAsMidCell:index])) {
@@ -47,12 +49,12 @@
 		self.scoreLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:self.scoreLabel];
 		
-		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
-		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
-		[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:challengeButton];
+		_challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
+		[_challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
+		[_challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[_challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_challengeButton];
 	}
 	
 	return (self);
@@ -68,6 +70,8 @@
 	[self.userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	self.usernameLabel.text = _userVO.username;
 	self.scoreLabel.text = [NSString stringWithFormat:@"%d points", _userVO.score];
+	
+	_challengeButton.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 }
 
 - (void)_goChallenge {

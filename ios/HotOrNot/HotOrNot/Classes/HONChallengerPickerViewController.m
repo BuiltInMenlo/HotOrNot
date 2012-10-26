@@ -29,9 +29,9 @@
 @property(nonatomic, strong) NSString *fbID;
 @property(nonatomic, strong) NSString *fbName;
 @property(nonatomic, strong) NSString *filename;
-@property(nonatomic, strong) UILabel *placeholderLabel;
 @property(nonatomic, strong) UITextField *subjectTextField;
-@property(nonatomic, strong) NSString *rndSubject;
+@property(nonatomic, strong) UIButton *editButton;
+//@property(nonatomic, strong) NSString *rndSubject;
 @end
 
 @implementation HONChallengerPickerViewController
@@ -43,14 +43,14 @@
 @synthesize fbName = _fbName;
 @synthesize challengeImage = _challengeImage;
 @synthesize filename = _filename;
-@synthesize placeholderLabel = _placeholderLabel;
 @synthesize subjectTextField = _subjectTextField;
-@synthesize rndSubject = _rndSubject;
+@synthesize editButton = _editButton;
+//@synthesize rndSubject = _rndSubject;
 
 - (id)init {
 	if ((self = [super init])) {
-		NSLog(@"init");
-		self.view.backgroundColor = [UIColor whiteColor];
+		//NSLog(@"init");
+		self.view.backgroundColor = [UIColor blackColor];
 		
 		[[Mixpanel sharedInstance] track:@"Pick Challenger"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -60,11 +60,12 @@
 	return (self);
 }
 
-- (id)initWithImage:(UIImage *)img {
+- (id)initWithImage:(UIImage *)img subjectName:(NSString *)subject{
 	if ((self = [super init])) {
 		NSLog(@"initWithImage:[%f, %f]", img.size.width, img.size.height);
-		self.view.backgroundColor = [UIColor whiteColor];
+		self.view.backgroundColor = [UIColor blackColor];
 		self.challengeImage = img;
+		self.subjectName = subject;
 		
 		[[Mixpanel sharedInstance] track:@"Pick Challenger"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -76,10 +77,10 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
-	NSLog(@"loadView");
+	//NSLog(@"loadView");
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Edit Challenge" hasFBSwitch:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Confirm Challenge" hasFBSwitch:NO];
 	[self.view addSubview:headerView];
 		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -88,55 +89,39 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:backButton];
+		
+	//_rndSubject = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
 	
-	UIImageView *bgImgView;
-	
-//	if ([HONAppDelegate isRetina5]) {
-//		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 56.0, 320.0, 480.0)];
-//		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground-568h.png"]];
-//	
-//	} else {
-		bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 40.0, 320.0, 419.0)];
-		[bgImgView setImage:[UIImage imageNamed:@"challengeCameraBackground.png"]];
-//	}
-	
-	bgImgView.userInteractionEnabled = YES;
-	[self.view addSubview:bgImgView];
-	
-	_rndSubject = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
-	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(40.0, 30.0, 240.0, 20.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[UIColor colorWithWhite:0.482 alpha:1.0]];
+	[_subjectTextField setTextColor:[UIColor whiteColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
+	_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
-	_subjectTextField.text = @"";
+	_subjectTextField.text = self.subjectName;
 	_subjectTextField.delegate = self;
-	[bgImgView addSubview:_subjectTextField];
+	[self.view addSubview:_subjectTextField];
+		
+	_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_editButton.frame = CGRectMake(265.0, 60.0, 44.0, 44.0);
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive.png"] forState:UIControlStateNormal];
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active.png"] forState:UIControlStateHighlighted];
+	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_editButton];
 	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:_subjectTextField.frame];
-	_placeholderLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
-	_placeholderLabel.textColor = [UIColor colorWithWhite:0.29803921568627 alpha:1.0];
-	_placeholderLabel.backgroundColor = [UIColor clearColor];
-	_placeholderLabel.textAlignment = NSTextAlignmentCenter;
-	_placeholderLabel.text = _rndSubject;//@"tap here to add challenge #hashtag";
-	[bgImgView addSubview:self.placeholderLabel];
-	
-	int offset = 0;//([HONAppDelegate isRetina5]) ? 0 : 6;
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(18.0, offset + (self.view.frame.size.height - 129.0), 284.0, 49.0);
+	friendsButton.frame = CGRectMake(18.0, 338.0, 284.0, 49.0);
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_nonActive.png"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_Active.png"] forState:UIControlStateHighlighted];
 	[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:friendsButton];
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(18.0, offset + (self.view.frame.size.height - 72.0), 284.0, 49.0);
+	randomButton.frame = CGRectMake(18.0, 398.0, 284.0, 49.0);
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_nonActive.png"] forState:UIControlStateNormal];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_Active.png"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -146,28 +131,17 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	UIView *holderView;
-	
-	float imgSize;
-	
-	if ([HONAppDelegate isRetina5])
-		imgSize = 269.0;
-		
-	else
-		imgSize = 200.0;
-	
-	imgSize = 200.0;
-	int offset = 0;//([HONAppDelegate isRetina5]) ? 0 : 9;
-	holderView = [[UIView alloc] initWithFrame:CGRectMake(26.0 + ((269.0 - imgSize) * 0.5), offset + 128.0, imgSize, imgSize)];
-	holderView.clipsToBounds = YES;
-	[self.view addSubview:holderView];
-	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, imgSize, imgSize * kPhotoRatio)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 117.0, 200.0, 200.0)];
 	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	imgView.image = self.challengeImage;
-	[holderView addSubview:imgView];
+	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
+	[self.view addSubview:imgView];
 	
-	NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
+	UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 200.0, 200.0)];
+	watermarkImgView.image = [UIImage imageNamed:@"512x512_cameraOverlay.png"];
+	[imgView addSubview:watermarkImgView];
+	
+	_subjectTextField.text = self.subjectName;
+	//NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
 }
 
 
@@ -178,6 +152,11 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)_goEditSubject {
+	_subjectTextField.text = @"";
+	[_subjectTextField becomeFirstResponder];
 }
 
 - (void)_goChallengeFriends {
@@ -242,11 +221,11 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
-		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
-		canvasView.image = self.challengeImage;
+		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 		
-		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 23.0, 620.0, 830.0)];
-		watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
+		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
 		[canvasView addSubview:watermarkImgView];
 		
 		CGSize size = [canvasView bounds].size;
@@ -281,6 +260,12 @@
 		por4.data = UIImageJPEGRepresentation(lImage, 0.5);
 		[s3 putObject:por4];
 		
+		if ([self.subjectName length] == 0)
+			self.subjectName = [HONAppDelegate rndDefaultSubject];
+		
+		if ([self.subjectName hasPrefix:@"#"])
+			self.subjectName = [self.subjectName substringFromIndex:1];
+		
 		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 		[submitChallengeRequest setDelegate:self];
 		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 8] forKey:@"action"];
@@ -309,17 +294,23 @@
 	
 	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
 	
+	if ([self.subjectName length] == 0)
+		self.subjectName = [HONAppDelegate rndDefaultSubject];
+	
+	if ([self.subjectName hasPrefix:@"#"])
+		self.subjectName = [self.subjectName substringFromIndex:1];
+	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
 	
 	@try {
-		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeH)];
-		canvasView.image = self.challengeImage;
+		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 		
-		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, kLargeH - 84.0, 568.0, 68.0)];
-		watermarkImgView.image = [UIImage imageNamed:@"waterMark.png"];
+		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
 		[canvasView addSubview:watermarkImgView];
 		
 		CGSize size = [canvasView bounds].size;
@@ -374,10 +365,7 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	self.placeholderLabel.hidden = YES;
-	
-	if ([textField.text length] == 0)
-		textField.text = _rndSubject;
+	_editButton.hidden = YES;
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -388,16 +376,19 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	if ([textField.text length] == 0)
-		self.placeholderLabel.hidden = NO;
+	_editButton.hidden = NO;
 	
-	self.subjectName = textField.text;
+	if ([textField.text length] == 0)
+		textField.text = self.subjectName;
+	
+	else
+		self.subjectName = textField.text;
 }
 
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONChallengerPickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONChallengerPickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		_progressHUD.taskInProgress = NO;

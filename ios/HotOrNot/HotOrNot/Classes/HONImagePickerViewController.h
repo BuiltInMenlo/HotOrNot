@@ -15,6 +15,7 @@
 - (id)initWithUser:(int)userID;
 - (id)initWithSubject:(NSString *)subject;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
+- (id)initAsDailyChallenge:(NSString *)subject;
 
 - (void)showLibrary;
 - (void)takePicture;

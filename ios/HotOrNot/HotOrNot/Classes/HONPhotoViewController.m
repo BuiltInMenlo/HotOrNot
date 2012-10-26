@@ -47,13 +47,17 @@
 - (void)loadView {
 	[super loadView];
 	
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
+	[self.view addSubview:bgImgView];
+	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading Photo…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.graceTime = 2.0;
 	_progressHUD.taskInProgress = YES;
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 82.0 : 35.0, kLargeW * 0.5, kLargeH * 0.5)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 53.0, kLargeW * 0.5, kLargeW * 0.5)];
 	imgView.userInteractionEnabled = YES;
 	[imgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", self.imgURL]] placeholderImage:nil options:0 success:^(UIImage *image, BOOL cached) {
 		[_progressHUD hide:YES];
@@ -126,50 +130,6 @@
 		
 		_lastScale = [recognizer scale];  // Store the previous scale factor for the next pinch gesture call
 	}
-
-
-
-	//NSLog(@"%f", recognizer.scale);
-
-//	//if (recognizer.view.transform.a >= 1.0 && recognizer.view.transform.a <= 2.0) {
-//	recognizer.view.transform = CGAffineTransformScale(recognizer.view.transform, recognizer.scale, recognizer.scale);
-//	recognizer.scale = 1.0;
-//	//}
-//	
-//	if (recognizer.state == UIGestureRecognizerStateEnded) {
-//		if (recognizer.view.transform.a < 0.25) {
-//			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
-//				CGAffineTransform transform = CGAffineTransformMake(0.25, 0.0, 0.0, 0.25, 0.0, 0.0);
-//				recognizer.view.transform = CGAffineTransformRotate(transform, M_PI / 2);
-//			} completion:nil];
-//		}
-//		
-//		
-//		if (recognizer.view.transform.a > 2.5) {
-//			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
-//				CGAffineTransform transform = CGAffineTransformMake(2.5, 0.0, 0.0, 2.5, 0.0, 0.0);
-//				recognizer.view.transform = CGAffineTransformRotate(transform, M_PI / 2);
-//			} completion:nil];
-//		}
-//		
-//		CGPoint finalPoint = recognizer.view.center;
-//		if (recognizer.view.frame.size.width < self.view.bounds.size.width)
-//			finalPoint.x = MIN(MAX(finalPoint.x, recognizer.view.frame.size.width * 0.5), self.view.bounds.size.width - (recognizer.view.frame.size.width * 0.5));
-//		else
-//			finalPoint.x = MAX(MIN(finalPoint.x, recognizer.view.frame.size.width * 0.5), self.view.bounds.size.width - (recognizer.view.frame.size.width * 0.5));
-//		
-//		if (recognizer.view.frame.size.height < self.view.bounds.size.height)
-//			finalPoint.y = MIN(MAX(finalPoint.y, recognizer.view.frame.size.height * 0.5), self.view.bounds.size.height - (recognizer.view.frame.size.height * 0.5));
-//		else
-//			finalPoint.y = MAX(MIN(finalPoint.y, recognizer.view.frame.size.height * 0.5), self.view.bounds.size.height - (recognizer.view.frame.size.height * 0.5));
-//		
-//		[UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationCurveLinear animations:^{
-//			recognizer.view.center = finalPoint;
-//		} completion:nil];
-//	}
-//	
-//	//CGFloat scale = MIN(MAX(recognizer.view.transform.a, 1.0), 2.0);
-//	NSLog(@"(%f, %f)", recognizer.view.transform.a, recognizer.view.transform.a);
 }
 
 
