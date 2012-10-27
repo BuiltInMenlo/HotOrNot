@@ -156,12 +156,14 @@
 }
 
 - (void)_retrieveUser {
-	ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-	[userRequest setDelegate:self];
-	[userRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-	[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[userRequest setTag:0];
-	[userRequest startAsynchronous];
+	if ([HONAppDelegate infoForUser]) {
+		ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
+		[userRequest setDelegate:self];
+		[userRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+		[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+		[userRequest setTag:0];
+		[userRequest startAsynchronous];
+	}
 }
 
 
@@ -509,7 +511,8 @@
 				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			else {
-				[HONAppDelegate writeUserInfo:userResult];
+				if ([userResult objectForKey:@"id"] != [NSNull null])
+					[HONAppDelegate writeUserInfo:userResult];
 			}
 		}
 		

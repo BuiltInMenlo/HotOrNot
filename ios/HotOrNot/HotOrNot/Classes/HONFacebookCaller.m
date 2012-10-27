@@ -125,6 +125,9 @@
 											 nil];
 	
 	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	facebook.accessToken = FBSession.activeSession.accessToken;
+	facebook.expirationDate = FBSession.activeSession.expirationDate;
+	
 	[facebook enableFrictionlessRequests];
 	[facebook dialog:@"apprequests"
 					andParams:params

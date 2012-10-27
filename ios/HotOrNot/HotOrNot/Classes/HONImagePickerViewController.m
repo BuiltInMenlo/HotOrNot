@@ -87,7 +87,7 @@
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.challengeVO = vo;
-		self.subjectName = vo.subjectName;
+		self.subjectName = [NSString stringWithFormat:@"#%@", vo.subjectName];
 		self.submitAction = 4;
 		self.needsChallenger = NO;
 		self.isFirstAppearance = YES;

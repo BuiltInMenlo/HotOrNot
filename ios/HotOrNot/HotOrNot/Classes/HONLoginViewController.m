@@ -80,10 +80,7 @@
 	
 	[FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions] allowLoginUI:YES completionHandler:
 	 ^(FBSession *session, FBSessionState state, NSError *error) {
-		 NSLog(@"---------OPEN SESSION------------");
-		 
-		 if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
-			 [[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TUTORIAL" object:nil];
+		 NSLog(@"///////////// OPEN SESSION /////////////");
 		 
 		 if (FBSession.activeSession.isOpen) {
 			 [[FBRequest requestForMe] startWithCompletionHandler:
@@ -109,6 +106,7 @@
 		 
 		 switch (state) {
 			 case FBSessionStateOpen: {
+				 NSLog(@"--FBSessionStateOpen--");
 				 FBCacheDescriptor *cacheDescriptor = [FBFriendPickerViewController cacheDescriptor];
 				 [cacheDescriptor prefetchAndCacheForSession:session];
 				 				 
@@ -116,7 +114,11 @@
 			 }
 				 break;
 			 case FBSessionStateClosed:
+				 NSLog(@"--FBSessionStateClosed--");
+				 break;
+				 
 			 case FBSessionStateClosedLoginFailed:
+				 NSLog(@"--FBSessionStateClosedLoginFailed--");
 				 break;
 			 default:
 				 break;
@@ -138,7 +140,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONLoginViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONLoginViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		NSError *error = nil;
@@ -149,6 +151,9 @@
 		
 		else {
 			[HONAppDelegate writeUserInfo:userResult];
+			
+			if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TUTORIAL" object:nil];
 		}
 	}
 }

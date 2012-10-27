@@ -153,7 +153,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 }
 
 + (NSArray *)fbPermissions {
-	return ([NSArray arrayWithObjects:@"publish_actions", @"user_photos", @"read_stream", @"status_update", @"publish_stream", nil]);
+	return ([NSArray arrayWithObjects:@"publish_actions", @"status_update", @"publish_stream", nil]);
 }
 
 + (BOOL)isRetina5 {
@@ -271,6 +271,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 	
 	switch (state) {
 		case FBSessionStateOpen: {
+			NSLog(@"--FBSessionStateOpen--");
 			[self.loginViewController dismissViewControllerAnimated:YES completion:nil];
 			
 			//			if (self.loginViewController != nil) {
@@ -287,7 +288,11 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 		}
 			break;
 		case FBSessionStateClosed:
+			NSLog(@"--FBSessionStateClosed--");
+			break;
+			
 		case FBSessionStateClosedLoginFailed: {
+			NSLog(@"--FBSessionStateClosedLoginFailed--");
 			// FBSample logic
 			// Once the user has logged out, we want them to be looking at the root view.
 			//			UIViewController *topViewController = [self.navController topViewController];
@@ -307,7 +312,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 			self.loginViewController = [[HONLoginViewController alloc] init];
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.loginViewController];
 			[navigationController setNavigationBarHidden:YES];
-			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+			[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
 			
 			//			[self performSelector:@selector(showLoginView)
 			//						  withObject:nil
@@ -455,7 +460,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 			if (![self openSession]) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
-				[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+				[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
 			}
 			
 			NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
@@ -493,6 +498,12 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[FBSession.activeSession handleDidBecomeActive];
+	
+	PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
+	PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 }
@@ -661,7 +672,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		NSError *error = nil;
@@ -671,7 +682,8 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			[HONAppDelegate writeUserInfo:userResult];
+			if ([userResult objectForKey:@"id"] != [NSNull null])
+				[HONAppDelegate writeUserInfo:userResult];
 		}
 	}
 }

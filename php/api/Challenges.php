@@ -107,9 +107,12 @@
 			
 			$rndUser_id = $user_id;
 			while ($rndUser_id == $user_id) {
-				$range_result = mysql_query("SELECT MAX(`id`) AS max_id, MIN(`id`) AS min_id FROM `tblUsers`");
+				$range_result = mysql_query("SELECT MAX(`id`) AS max_id, MIN(`id`) AS min_id, `username` FROM `tblUsers`");
 				$range_row = mysql_fetch_object($range_result); 
 				$rndUser_id = mt_rand(2, $range_row->max_id);
+				
+				if (substr($range_row->username, 0, 12) == "PicChallenge")
+					$rndUser_id = $user_id;
 			}
 			
 			$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $rndUser_id .';';
@@ -139,8 +142,8 @@
 			if ($isPush) {
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-				//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
-				curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw");
+			    curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+				//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_POST, 1);
@@ -226,8 +229,8 @@
 				if ($isPush) {
 					$ch = curl_init();
 					curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-					//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
-					curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw");
+					curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+					//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
 					curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 					curl_setopt($ch, CURLOPT_POST, 1);
@@ -360,8 +363,8 @@
 			if ($isPush) {
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-				//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
-				curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw");
+				curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+				//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_POST, 1);
@@ -567,8 +570,8 @@
 			if ($isPush) { 			
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-				//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ");
-				curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw");
+				curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+				//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
 				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_POST, 1);

@@ -39,7 +39,11 @@
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
-		_notificationSwitch.on = [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"];
+		if ([HONAppDelegate infoForUser] != nil)
+			_notificationSwitch.on = [[[HONAppDelegate infoForUser] objectForKey:@"notifications"] isEqualToString:@"Y"];
+		
+		else
+			_notificationSwitch.on = YES;
 		
 		_fbSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
 		[_fbSwitch addTarget:self action:@selector(_goFBSwitch:) forControlEvents:UIControlEventValueChanged];

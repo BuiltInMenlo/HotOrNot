@@ -91,6 +91,9 @@
 			$user_result = mysql_query($query);
 			
 			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {
+				if (substr($user_row['username'], 0, 12) == "PicChallenge")
+					continue;
+				
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_row['id'] .';';
 				$score = mysql_num_rows(mysql_query($query));
 			
