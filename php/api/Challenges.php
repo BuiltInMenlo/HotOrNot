@@ -111,8 +111,11 @@
 				$range_row = mysql_fetch_object($range_result); 
 				$rndUser_id = mt_rand(2, $range_row->max_id);
 				
-				if (substr($range_row->username, 0, 12) == "PicChallenge")
+				if (mysql_num_rows(mysql_query('SELECT `id` FROM `tblUsers` WHERE `id` = '. $rndUser_id .';')) == 0)
 					$rndUser_id = $user_id;
+					
+				if (substr($range_row->username, 0, 12) == "PicChallenge")
+					$rndUser_id = $user_id;				   
 			}
 			
 			$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $rndUser_id .';';

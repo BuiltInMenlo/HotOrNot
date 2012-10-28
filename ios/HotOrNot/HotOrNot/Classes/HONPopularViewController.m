@@ -428,7 +428,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONPopularViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONPopularViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	
 		@autoreleasepool {
@@ -437,56 +437,29 @@
 				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
 			
 			else {
-				NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+				NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+				NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
+												 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
 				
 				if (_isUsersList) {
 					_users = [NSMutableArray new];
-					
-					NSMutableArray *list = [NSMutableArray array];
 					for (NSDictionary *serverList in parsedLists) {
 						HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
 						//NSLog(@"VO:[%d]", vo.userID);
 						
 						if (vo != nil)
-							[list addObject:vo];
-						
-						for (HONPopularUserVO *vo in list) {
-							NSString *firstLetter = [[vo.username substringToIndex:1] uppercaseString];
-							
-							if ([firstLetter isEqualToString:@"0"] || [firstLetter isEqualToString:@"1"] || [firstLetter isEqualToString:@"2"] || [firstLetter isEqualToString:@"3"] || [firstLetter isEqualToString:@"4"] || [firstLetter isEqualToString:@"5"] || [firstLetter isEqualToString:@"6"] || [firstLetter isEqualToString:@"7"] || [firstLetter isEqualToString:@"8"] || [firstLetter isEqualToString:@"9"])
-								firstLetter = @"#";
-							
-							if ([_usersDictionary objectForKey:firstLetter] == nil) {
-								NSMutableArray * tmpArray = [NSMutableArray array];
-								[tmpArray addObject:vo];
-								[_usersDictionary setObject:tmpArray forKey:firstLetter];
-								
-							} else {
-								NSMutableArray *letterArray = [_usersDictionary objectForKey:firstLetter];
-								[letterArray addObject:vo];
-								[_usersDictionary setObject:letterArray forKey:firstLetter];
-							}
-						}
+							[_users addObject:vo];
 					}
 					
-					_users = [list copy];
-				
-				} else {
-					NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-					NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]]];
-					
+				} else {					
 					_subjects = [NSMutableArray new];
-					
-					NSMutableArray *list = [NSMutableArray array];
 					for (NSDictionary *serverList in parsedLists) {
 						HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
 						//NSLog(@"VO:[%@]", vo.subjectName);
 						
-						if (vo != nil && [list count] < 25)
-							[list addObject:vo];
+						if (vo != nil && [_subjects count] < 25)
+							[_subjects addObject:vo];
 					}
-					
-					_subjects = [list copy];
 				}
 				
 				[_tableView reloadData];

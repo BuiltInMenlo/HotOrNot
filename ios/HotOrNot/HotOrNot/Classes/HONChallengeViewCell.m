@@ -265,6 +265,8 @@
 		challengerScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreChallenger];
 		[self addSubview:challengerScoreLabel];
 		
+		creatorLabel.text = self.challengeVO.creatorName;
+		
 		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_nonActive.png"] forState:UIControlStateNormal];
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_Active.png"] forState:UIControlStateHighlighted];
@@ -274,13 +276,9 @@
 //			else
 //				[ctaButton setTitle:[NSString stringWithFormat:@"%d points", self.challengeVO.scoreCreator] forState:UIControlStateNormal];
 			
-			creatorLabel.text = self.challengeVO.creatorName;
-			
 		} else if (self.challengeVO.scoreCreator < self.challengeVO.scoreChallenger) {
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonLoser_nonActive.png"] forState:UIControlStateNormal];
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonLoser_Active.png"] forState:UIControlStateHighlighted];
-			
-			creatorLabel.text = self.challengeVO.challengerName;
 		
 		} else {
 			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_nonActive.png"] forState:UIControlStateNormal];

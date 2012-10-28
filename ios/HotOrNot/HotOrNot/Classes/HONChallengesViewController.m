@@ -398,13 +398,17 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
+	if (indexPath.row < [_challenges count] + 1) {
+		
+		HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
+		if ([vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Started"])
+			return (indexPath);
+		
+		else
+			return (nil);
+	}
 	
-	if ([vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Started"])
-		return (indexPath);
-	
-	else
-		return (nil);
+	return (nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -426,7 +430,8 @@
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
 	// Return YES if you want the specified item to be editable.
-	return (YES);
+	
+	return (indexPath.row > 0 && indexPath.row < [_challenges count] + 1);
 }
 
 // Override to support editing the table view.

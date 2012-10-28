@@ -49,6 +49,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.subjectID = 0;
+		self.submitAction = 5;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		self.challenges = [NSMutableArray new];
@@ -215,7 +216,7 @@
 	[self.challengesRequest setDelegate:self];
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	if (self.subjectID == 0)
-		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", self.submitAction] forKey:@"action"];
 	
 	else {
 		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];

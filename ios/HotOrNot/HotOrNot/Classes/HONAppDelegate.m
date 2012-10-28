@@ -650,7 +650,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	
 	if (alertView == _networkAlertView)
-		exit(0);
+		NSLog(@"EXIT APP");//exit(0);
 	
 	else {
 		switch(buttonIndex) {
