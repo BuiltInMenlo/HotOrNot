@@ -417,7 +417,7 @@
 			
 			if ([[challengeResult objectForKey:@"status"] intValue] == 7) {
 				NSLog(@"-----------SEND INVITE-------------");
-				[HONFacebookCaller sendAppRequest:self.fbID];
+				[HONFacebookCaller sendAppRequestToUser:self.fbID];
 			}
 			
 			if ([self.fbID length] > 0)

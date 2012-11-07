@@ -16,12 +16,17 @@
 
 @property (strong, nonatomic) Facebook *facebook;
 
++ (NSArray *)friendIDsFromUser:(NSString *)fbID;
 + (void)postToActivity:(HONChallengeVO *)vo withAction:(NSString *)action;
 + (void)postStatus:(NSString *)msg;
 + (void)postToTimeline:(HONChallengeVO *)vo;
 + (void)postToTicker:(NSString *)msg;
 + (void)postToFriendTimeline:(NSString *)fbID article:(HONChallengeVO *)vo;
 + (void)postMessageToFriendTimeline:(NSString *)fbID message:(NSString *)msg;
-+ (void)sendAppRequest:(NSString *)fbID;
++ (void)sendAppRequestToUser:(NSString *)fbID;
++ (void)sendAppRequestBroadcast;
++ (void)sendAppRequestBroadcastWithIDs:(NSArray *)ids;
+
+
 
 @end

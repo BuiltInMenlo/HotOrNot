@@ -246,6 +246,8 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 
 - (BOOL)openSession {
 	NSLog(@"openSession");
+	//	[FBSession openActiveSessionWithPublishPermissions:<#(NSArray *)#> defaultAudience:<#(FBSessionDefaultAudience)#> allowLoginUI:<#(BOOL)#> completionHandler:<#^(FBSession *session, FBSessionState status, NSError *error)handler#>]
+	
 //	return ([FBSession openActiveSessionWithReadPermissions:[HONAppDelegate fbPermissions]
 //															 allowLoginUI:NO
 //													  completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {

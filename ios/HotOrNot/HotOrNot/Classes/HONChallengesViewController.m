@@ -22,6 +22,7 @@
 #import "HONVoteViewController.h"
 #import "HONResultsViewController.h"
 #import "HONHeaderView.h"
+#import "HONFacebookCaller.h"
 
 
 @interface HONChallengesViewController() <UIAlertViewDelegate, FBLoginViewDelegate, ASIHTTPRequestDelegate>
@@ -35,6 +36,8 @@
 @property(nonatomic, strong) NSIndexPath *idxPath;
 @property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) HONHeaderView *headerView;
+@property(nonatomic, strong) NSMutableArray *friends;
+@property(nonatomic) int blockCounter;
 
 - (void)_retrieveChallenges;
 - (void)_retrieveUser;
@@ -58,6 +61,7 @@
 		//self.tabBarItem.image = [UIImage imageNamed:@"tab01_nonActive"];
 		self.challenges = [NSMutableArray array];
 		self.isFirstRun = YES;
+		_blockCounter = 0;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dailyChallenge:) name:@"DAILY_CHALLENGE" object:nil];
@@ -169,29 +173,51 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	_friends = [NSMutableArray array];
 	
+	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"]) {
+			[_friends addObject: [friend objectForKey:@"id"]];
+		}
+		
+		NSLog(@"RETRIEVED FRIENDS");
+	}];
 	
-	if (FBSession.activeSession.state == 513) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	
-	} else
-		[self _goLogin];
+//	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+//	
+//	
+//	if (FBSession.activeSession.state == 513) {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:NO completion:nil];
+//	
+//	} else
+//		[self _goLogin];
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Refresh - Challenge Wall"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_refreshButton.hidden = YES;
-	[_headerView updateFBSwitch];
-	[self _retrieveChallenges];
-	[self _retrieveUser];
+	NSRange range;
+	range.length = 50;
+	range.location = _blockCounter * range.length;
+	
+	if (range.location + range.length > [_friends count])
+		range.length = [_friends count] - range.location;
+	
+	NSLog(@"INVITING (%d-%d)/%d", range.location, range.location + range.length, [_friends count]);
+	[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends subarrayWithRange:range]];
+	_blockCounter++;
+	
+//	[[Mixpanel sharedInstance] track:@"Refresh - Challenge Wall"
+//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+//	
+//	_refreshButton.hidden = YES;
+//	[_headerView updateFBSwitch];
+//	[self _retrieveChallenges];
+//	[self _retrieveUser];
 }
 
 - (void)_goTutorialCancel {

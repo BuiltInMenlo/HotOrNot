@@ -1,6 +1,6 @@
 <?php session_start();
 
-header('Location: https://www.facebook.com/PicChallengeGame');
+header('Location: https://itunes.apple.com/us/app/picchallenge/id573754057?ls=1&mt=8');
 
 /*
 require './_db_open.php'; 

@@ -14,6 +14,18 @@
 
 @synthesize facebook  =_facebook;
 
++ (NSArray *)friendIDsFromUser:(NSString *)fbID {
+	NSMutableArray *friends = [NSMutableArray array];
+	
+	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"]) {
+			[friends addObject:friend];
+		}
+	}];
+	
+	return ([friends copy]);
+}
+
 + (void)postStatus:(NSString *)msg {
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSDictionary *params = [NSDictionary dictionaryWithObject:msg forKey:@"message"];
@@ -118,7 +130,7 @@
 	}
 }
 
-+ (void)sendAppRequest:(NSString *)fbID {
++ (void)sendAppRequestToUser:(NSString *)fbID {
 	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 											 @"I'm inviting you to a PicChallenge!",  @"message",
 											 fbID, @"to", 
@@ -133,4 +145,43 @@
 					andParams:params
 				 andDelegate:nil];
 }
+
++ (void)sendAppRequestBroadcast {
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 @"I'm inviting you to a PicChallenge!",  @"message",
+											 nil];
+	
+	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	facebook.accessToken = FBSession.activeSession.accessToken;
+	facebook.expirationDate = FBSession.activeSession.expirationDate;
+	
+	[facebook enableFrictionlessRequests];
+	[facebook dialog:@"apprequests"
+			 andParams:params
+		  andDelegate:nil];
+}
+
++ (void)sendAppRequestBroadcastWithIDs:(NSArray *)ids {
+	NSString *list = @"";
+	
+	for (NSString *fbID in ids) {
+		list = [list stringByAppendingFormat:@"%@,", fbID];
+	}
+	
+	list = [list substringToIndex:[list length] - 1];
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 @"I'm inviting you to a PicChallenge!",  @"message",
+											 list, @"to",
+											 nil];
+	
+	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	facebook.accessToken = FBSession.activeSession.accessToken;
+	facebook.expirationDate = FBSession.activeSession.expirationDate;
+	
+	[facebook enableFrictionlessRequests];
+	[facebook dialog:@"apprequests"
+			 andParams:params
+		  andDelegate:nil];
+}
+
 @end
