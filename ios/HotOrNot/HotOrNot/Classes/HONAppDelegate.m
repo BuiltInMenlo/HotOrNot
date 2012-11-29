@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <KiipSDK/KiipSDK.h>
 #import <Parse/Parse.h>
 
 #import "UAirship.h"
@@ -15,6 +16,8 @@
 #import "Parse/Parse.h"
 #import "Mixpanel.h"
 #import "Reachability.h"
+#import "TapForTap.h"
+#import "Chartboost.h"
 
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
@@ -24,10 +27,11 @@
 #import "HONVoteViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONLoginViewController.h"
+#import "HONChallengeVO.h"
 
 NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:SCSessionStateChangedNotification";
 
-@interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate, KiipDelegate>
 @property (nonatomic, strong) UIAlertView *networkAlertView;
 - (void)_registerUser;
 @end
@@ -107,6 +111,28 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 + (BOOL)allowsFBPosting {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"] isEqualToString:@"YES"]);
 }
+
++ (BOOL)hasVoted:(int)challengeID {
+	NSArray *voteArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"votes"];
+	
+	for (NSNumber *cID in voteArray) {
+		NSLog(@"cID:[%d] <> challengeID:[%d]", [cID intValue], challengeID);
+		if ([cID intValue] == challengeID) {
+			return (YES);
+		}
+	}
+	
+	return (NO);
+}
+
++ (void)setVote:(int)challengeID {
+	NSMutableArray *voteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
+	[voteArray addObject:[NSNumber numberWithInt:challengeID]];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:voteArray forKey:@"votes"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 
 + (UIViewController *)appTabBarController {
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
@@ -345,6 +371,9 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
+	[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
@@ -432,6 +461,12 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"default_subjects"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
+		[TapForTap initializeWithAPIKey:@"13654ee85567a679c190698d04ee87e2"];
+		
+		Kiip *kiip = [[Kiip alloc] initWithAppKey:@"app_key" andSecret:@"app_secret"];
+		kiip.delegate = self;
+		[Kiip setSharedInstance:kiip];
+		
 		if ([HONAppDelegate canPingAPIServer]) {
 			UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
 			challengesViewController = [[HONChallengesViewController alloc] init];
@@ -458,6 +493,8 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 			
 			self.window.rootViewController = self.tabBarController;
 			[self.window makeKeyAndVisible];
+			
+			[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 			
 			if (![self openSession]) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
@@ -508,6 +545,17 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+	
+	// Configure Chartboost
+    Chartboost *cb = [Chartboost sharedChartboost];
+    cb.appId = @"50aa71ce17ba472f08000000";
+    cb.appSignature = @"7ce4ac44c9ff1a9f4b32757554957a295eb603ca";
+    
+    // Notify the beginning of a user session
+    [cb startSession];
+    
+    // Show an interstitial
+    [cb showInterstitial];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

@@ -90,6 +90,11 @@
 	rZoomButton.frame = rImgView.frame;
 	[rZoomButton addTarget:self action:@selector(_goRightZoom) forControlEvents:UIControlEventTouchUpInside];
 	[_rHolderView addSubview:rZoomButton];
+	
+	if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
+		[_lVoteButton removeTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
+		[_rVoteButton removeTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
+	}
 }
 
 

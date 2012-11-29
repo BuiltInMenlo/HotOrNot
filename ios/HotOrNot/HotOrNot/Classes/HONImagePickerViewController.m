@@ -313,6 +313,19 @@
 		image = [HONAppDelegate cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kPhotoRatio))];
 	}
 	
+//	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
+//		NSLog(@"_imagePicker.cameraDevice[%d] == UIImagePickerControllerCameraDeviceFront[%d]", _imagePicker.cameraDevice, UIImagePickerControllerCameraDeviceFront);
+//		
+//		UIImageView *frontImgView = [[UIImageView alloc] initWithImage:image];
+//		CGAffineTransform rotate = CGAffineTransformMakeRotation(1.0 / 180.0 * 3.14);
+//		[frontImgView setTransform:rotate];
+//		
+//		UIGraphicsBeginImageContext(frontImgView.bounds.size);
+//		[frontImgView.layer renderInContext:UIGraphicsGetCurrentContext()];
+//		image = UIGraphicsGetImageFromCurrentImageContext();
+//		UIGraphicsEndImageContext();
+//	}
+	
 	if (!self.needsChallenger) {
 		[_cameraOverlayView hidePreview];
 		
@@ -401,7 +414,11 @@
 		}
 	
 	} else {
-		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithImage:image subjectName:_subjectName] animated:YES];
+		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
+			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithFlippedImage:image subjectName:_subjectName] animated:YES];
+		
+		else
+			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithImage:image subjectName:_subjectName] animated:YES];
 	}
 }
 

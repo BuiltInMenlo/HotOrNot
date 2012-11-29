@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>PicChallenge</string>
+	<string>PicChallengeMe</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
@@ -53,7 +53,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2136</string>
+	<string>2186</string>
 	<key>FacebookAppID</key>
 	<string>529054720443694</string>
 	<key>LSRequiresIPhoneOS</key>

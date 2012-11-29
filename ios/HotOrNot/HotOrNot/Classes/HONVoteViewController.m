@@ -306,6 +306,8 @@
 	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
 	[voteRequest setPostValue:@"Y" forKey:@"creator"];
 	[voteRequest startAsynchronous];
+	
+	[HONAppDelegate setVote:vo.challengeID];
 }
 
 - (void)_voteSub:(NSNotification *)notification {
@@ -325,6 +327,8 @@
 	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
 	[voteRequest setPostValue:@"N" forKey:@"creator"];
 	[voteRequest startAsynchronous];
+	
+	[HONAppDelegate setVote:vo.challengeID];
 }
 
 - (void)_voteMore:(NSNotification *)notification {

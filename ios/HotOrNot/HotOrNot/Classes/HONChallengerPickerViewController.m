@@ -31,6 +31,7 @@
 @property(nonatomic, strong) NSString *filename;
 @property(nonatomic, strong) UITextField *subjectTextField;
 @property(nonatomic, strong) UIButton *editButton;
+@property(nonatomic) BOOL isFlipped;
 //@property(nonatomic, strong) NSString *rndSubject;
 @end
 
@@ -63,6 +64,7 @@
 - (id)initWithImage:(UIImage *)img subjectName:(NSString *)subject{
 	if ((self = [super init])) {
 		NSLog(@"initWithImage:[%f, %f]", img.size.width, img.size.height);
+		self.isFlipped = NO;
 		self.view.backgroundColor = [UIColor blackColor];
 		self.challengeImage = img;
 		self.subjectName = subject;
@@ -70,6 +72,22 @@
 		[[Mixpanel sharedInstance] track:@"Pick Challenger"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	}
+	
+	return (self);
+}
+
+- (id)initWithFlippedImage:(UIImage *)img subjectName:(NSString *)subject {
+	if ((self = [super init])) {
+		NSLog(@"initWithFlippedImage:[%f, %f]", img.size.width, img.size.height);
+		self.isFlipped = YES;
+		self.view.backgroundColor = [UIColor blackColor];
+		self.challengeImage = img;
+		self.subjectName = subject;
+		
+		[[Mixpanel sharedInstance] track:@"Pick Challenger"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	}
 	
 	return (self);
@@ -91,6 +109,9 @@
 	[headerView addSubview:backButton];
 		
 	//_rndSubject = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
+	
+	if (![self.subjectName hasPrefix:@"#"])
+		self.subjectName = [NSString stringWithFormat:@"#%@", self.subjectName];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -118,10 +139,11 @@
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_nonActive.png"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_Active.png"] forState:UIControlStateHighlighted];
 	[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
+	friendsButton.hidden = (FBSession.activeSession.state != 513);
 	[self.view addSubview:friendsButton];
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(18.0, 398.0, 284.0, 49.0);
+	randomButton.frame = CGRectMake(18.0, 338.0 + ((int)(FBSession.activeSession.state == 513) * 60), 284.0, 49.0);
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_nonActive.png"] forState:UIControlStateNormal];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_Active.png"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -135,6 +157,9 @@
 	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
 	[self.view addSubview:imgView];
+	
+	if (self.isFlipped)
+		imgView.image = [UIImage imageWithCGImage:imgView.image.CGImage scale:1.0 orientation:UIImageOrientationUpMirrored];
 	
 	UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 200.0, 200.0)];
 	watermarkImgView.image = [UIImage imageNamed:@"512x512_cameraOverlay.png"];

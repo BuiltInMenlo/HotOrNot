@@ -237,18 +237,18 @@
 
 #pragma mark - Notifications
 - (void)_randomChallenge:(NSNotification *)notification {
-	if (FBSession.activeSession.state == 513) {
+//	if (FBSession.activeSession.state == 513) {
 		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:(arc4random() % [_users count])];
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+//	} else {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
+//	}
 }
 
 - (void)_refreshList:(NSNotification *)notification {
@@ -395,28 +395,28 @@
 	switch(buttonIndex) {
 		case 0:
 			if (self.isUsersList) {
-				if (FBSession.activeSession.state == 513) {					
+//				if (FBSession.activeSession.state == 513) {					
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_popularUserVO.userID]];
 					[navigationController setNavigationBarHidden:YES];
 					[self presentViewController:navigationController animated:NO completion:nil];
 					
-				} else {
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-					[navigationController setNavigationBarHidden:YES];
-					[self presentViewController:navigationController animated:YES completion:nil];
-				}
+//				} else {
+//					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+//					[navigationController setNavigationBarHidden:YES];
+//					[self presentViewController:navigationController animated:YES completion:nil];
+//				}
 			
 			} else {
-				if (FBSession.activeSession.state == 513) {
+//				if (FBSession.activeSession.state == 513) {
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:_popularSubjectVO.subjectName]];
 					[navigationController setNavigationBarHidden:YES];
 					[self presentViewController:navigationController animated:NO completion:nil];
 					
-				} else {
-					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-					[navigationController setNavigationBarHidden:YES];
-					[self presentViewController:navigationController animated:YES completion:nil];
-				}
+//				} else {
+//					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+//					[navigationController setNavigationBarHidden:YES];
+//					[self presentViewController:navigationController animated:YES completion:nil];
+//				}
 			}
 			break;
 			

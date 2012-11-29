@@ -9,6 +9,7 @@
 #import "ASIFormDataRequest.h"
 #import "UIImageView+WebCache.h"
 #import "Mixpanel.h"
+#import "MBProgressHUD.h"
 
 #import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
@@ -28,6 +29,7 @@
 @interface HONChallengesViewController() <UIAlertViewDelegate, FBLoginViewDelegate, ASIHTTPRequestDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
+@property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic) BOOL isFirstRun;
 @property(nonatomic) BOOL isMoreLoading;
 @property(nonatomic, strong) UIImageView *tutorialOverlayImgView;
@@ -173,51 +175,58 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	_friends = [NSMutableArray array];
+	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"]) {
-			[_friends addObject: [friend objectForKey:@"id"]];
-		}
-		
-		NSLog(@"RETRIEVED FRIENDS");
-	}];
 	
-//	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
-//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	
 //	if (FBSession.activeSession.state == 513) {
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:NO completion:nil];
-//	
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	
 //	} else
 //		[self _goLogin];
 }
 
+- (void)_goInvite {
+	_friends = [NSMutableArray array];
+	
+	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+		NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
+		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"])
+			[_friends addObject: [friend objectForKey:@"id"]];
+		
+		NSLog(@"RETRIEVED (%d) FRIENDS", [_friends count]);
+		
+		NSRange range;
+		range.length = 50;
+		range.location = _blockCounter * range.length;
+		
+		if (range.location + range.length > [_friends count])
+			range.length = [_friends count] - range.location;
+		
+		NSLog(@"INVITING (%d-%d)/%d", range.location, range.location + range.length, [_friends count]);
+		[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends subarrayWithRange:range]];
+		_blockCounter++;
+	}];
+}
+
 - (void)_goRefresh {
+	[[Mixpanel sharedInstance] track:@"Refresh - Challenge Wall"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	NSRange range;
-	range.length = 50;
-	range.location = _blockCounter * range.length;
+	_refreshButton.hidden = YES;
+	[_headerView updateFBSwitch];
+	[self _retrieveChallenges];
+	[self _retrieveUser];
 	
-	if (range.location + range.length > [_friends count])
-		range.length = [_friends count] - range.location;
-	
-	NSLog(@"INVITING (%d-%d)/%d", range.location, range.location + range.length, [_friends count]);
-	[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends subarrayWithRange:range]];
-	_blockCounter++;
-	
-//	[[Mixpanel sharedInstance] track:@"Refresh - Challenge Wall"
-//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	_refreshButton.hidden = YES;
-//	[_headerView updateFBSwitch];
-//	[self _retrieveChallenges];
-//	[self _retrieveUser];
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Refreshing…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.graceTime = 2.0;
+	_progressHUD.taskInProgress = YES;
 }
 
 - (void)_goTutorialCancel {
@@ -256,23 +265,23 @@
 
 #pragma mark - Notifications
 - (void)_acceptChallenge:(NSNotification *)notification {
-	if (FBSession.activeSession.state == 513) {
+//	if (FBSession.activeSession.state == 513) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[notification object]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	} else
-		[self _goLogin];
+//	} else
+//		[self _goLogin];
 }
 
 - (void)_dailyChallenge:(NSNotification *)notification {
-	if (FBSession.activeSession.state == 513) {
+//	if (FBSession.activeSession.state == 513) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsDailyChallenge:[HONAppDelegate dailySubjectName]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	} else
-		[self _goLogin];
+//	} else
+//		[self _goLogin];
 }
 
 - (void)_nextChallengeBlock:(NSNotification *)notification {
@@ -362,6 +371,14 @@
 		activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
 		[activityIndicatorView startAnimating];
 		[headerView addSubview:activityIndicatorView];
+		
+		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		inviteButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
+		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+		inviteButton.hidden = (FBSession.activeSession.state != 513);
+		[headerView addSubview:inviteButton];
 		
 		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
@@ -579,6 +596,10 @@
 	}
 	
 	_refreshButton.hidden = NO;
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 }
 
 -(void)requestFailed:(ASIHTTPRequest *)request {

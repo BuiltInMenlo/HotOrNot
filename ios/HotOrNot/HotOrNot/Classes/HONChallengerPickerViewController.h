@@ -10,4 +10,5 @@
 
 @interface HONChallengerPickerViewController : UIViewController
 - (id)initWithImage:(UIImage *)img subjectName:(NSString *)subject;
+- (id)initWithFlippedImage:(UIImage *)img subjectName:(NSString *)subject;
 @end

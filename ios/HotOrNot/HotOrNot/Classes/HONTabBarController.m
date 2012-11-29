@@ -263,7 +263,7 @@
 	}
 	
 	
-	if (tabID == 2 && FBSession.activeSession.state == 513) {
+	if (tabID == 2) { //&& FBSession.activeSession.state == 513) {
 		UINavigationController *navController = (UINavigationController *)[self selectedViewController];
 		[navController popToRootViewControllerAnimated:YES];
 	

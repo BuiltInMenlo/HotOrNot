@@ -42,6 +42,9 @@ extern NSString *const SCSessionStateChangedNotification;
 + (void)setAllowsFBPosting:(BOOL)canPost;
 + (BOOL)allowsFBPosting;
 
++ (BOOL)hasVoted:(int)challengeID;
++ (void)setVote:(int)challengeID;
+
 + (UIViewController *)appTabBarController;
 
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
