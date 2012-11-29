@@ -378,7 +378,7 @@
 		[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 		inviteButton.hidden = (FBSession.activeSession.state != 513);
-		[headerView addSubview:inviteButton];
+		//[headerView addSubview:inviteButton];
 		
 		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
