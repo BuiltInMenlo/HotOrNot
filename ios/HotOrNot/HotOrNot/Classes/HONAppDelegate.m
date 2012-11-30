@@ -371,10 +371,16 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"shown_settings"];
+	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+	NSLog(@"hasNetwork[%d] canPingParseServer[%d]", [HONAppDelegate hasNetwork], [HONAppDelegate canPingParseServer]);
+	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
+		NSLog(@"WTF");
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
 		[UAirship takeOff:takeOffOptions];
@@ -383,10 +389,10 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
 		[PFUser enableAutomaticUser];
 		PFACL *defaultACL = [PFACL ACL];
-		
+	
 		// If you would like all objects to be private by default, remove this line.
 		[defaultACL setPublicReadAccess:YES];
-		
+	
 		[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
 		
 		
@@ -538,11 +544,13 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[FBSession.activeSession handleDidBecomeActive];
 	
-	PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
-	PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
+	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
+		PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
+		PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 	

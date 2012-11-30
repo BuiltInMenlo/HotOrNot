@@ -444,7 +444,7 @@
 	if (indexPath.row < [_challenges count] + 1) {
 		
 		HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
-		if ([vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Started"])
+		if ([vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"])
 			return (indexPath);
 		
 		else
@@ -465,7 +465,7 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	
-	} else if ([vo.status isEqualToString:@"Started"]) {
+	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
 		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithChallenge:vo] animated:YES];
 	}
 }

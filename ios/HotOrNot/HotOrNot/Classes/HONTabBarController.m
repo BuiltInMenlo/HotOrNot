@@ -29,7 +29,7 @@
 	if ((self = [super init])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showResults:) name:@"SHOW_RESULTS" object:nil];
 		self.challengeHits = 0;
-		self.hasVisitedSettings = NO;
+		self.hasVisitedSettings = [[[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"] isEqualToString:@"YES"];
 	}
 	
 	return (self);
@@ -232,6 +232,8 @@
 			
 			if (!self.hasVisitedSettings && ![HONAppDelegate allowsFBPosting]) {
 				self.hasVisitedSettings = YES;
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"shown_settings"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
 				
 				UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook Posting"
 																				message:@" Facebook Posts are OFF by default! Turn them on for your friends to see your game challenges."
