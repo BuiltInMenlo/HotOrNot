@@ -555,15 +555,15 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 	
 	// Configure Chartboost
-    Chartboost *cb = [Chartboost sharedChartboost];
-    cb.appId = @"50aa71ce17ba472f08000000";
-    cb.appSignature = @"7ce4ac44c9ff1a9f4b32757554957a295eb603ca";
-    
-    // Notify the beginning of a user session
-    [cb startSession];
-    
-    // Show an interstitial
-    [cb showInterstitial];
+	Chartboost *cb = [Chartboost sharedChartboost];
+	cb.appId = @"50ba9e2717ba47d426000002";
+	cb.appSignature = @"8526c7d52c380c02cc8e59c1c29e8cf4bf779646";
+	
+	// Notify the beginning of a user session
+	[cb startSession];
+	
+	// Show an interstitial
+	[cb showInterstitial];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

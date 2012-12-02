@@ -10,6 +10,7 @@
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 //#import <FacebookSDK/FacebookSDK.h>
 #import "Facebook.h"
+#import "TapForTap.h"
 
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
@@ -21,7 +22,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONChallengerPickerViewController () <UITextFieldDelegate, FBFriendPickerDelegate>
+@interface HONChallengerPickerViewController () <UITextFieldDelegate, FBFriendPickerDelegate, TapForTapAdViewDelegate>
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic) int challengerID;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -448,7 +449,6 @@
 			if ([self.fbID length] > 0)
 				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];
 			
-			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 			//[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 		}
@@ -459,5 +459,7 @@
 	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 
+
+- (UIViewController *) rootViewController { return self; }
 
 @end

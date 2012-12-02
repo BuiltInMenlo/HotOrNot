@@ -8,8 +8,10 @@
 
 #import "ASIFormDataRequest.h"
 #import "UIImageView+WebCache.h"
+#import <KiipSDK/KiipSDK.h>
 #import "Mixpanel.h"
 #import "MBProgressHUD.h"
+#import "TapForTap.h"
 
 #import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
@@ -26,7 +28,7 @@
 #import "HONFacebookCaller.h"
 
 
-@interface HONChallengesViewController() <UIAlertViewDelegate, FBLoginViewDelegate, ASIHTTPRequestDelegate>
+@interface HONChallengesViewController() <UIAlertViewDelegate, FBLoginViewDelegate, ASIHTTPRequestDelegate, TapForTapAdViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -107,10 +109,23 @@
 	
 	[self _retrieveChallenges];
 	[self _retrieveUser];
+	
+	[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	
+	// banner
+	[self.view addSubview:[[TapForTapAdView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0) delegate:self]];
+	
+	// ad modal
+//	[TapForTapInterstitial prepare];
+//	[TapForTapInterstitial showWithRootViewController: self]; // or possibly self.navigationController
+	
+	// app wall
+//	[TapForTapAppWall prepare];
+//	[TapForTapAppWall showWithRootViewController: self]; // or possibly self.navigationController
 }
 
 - (void)viewDidUnload {
@@ -614,4 +629,11 @@
 - (void)loginViewShowingLoggedOutUser:(FBLoginView *)loginView {
 	NSLog(@"-------LOGGED OUT-------");
 }
+
+
+#pragma mark - TapForTapAdViewDelegates
+- (UIViewController *)rootViewController {
+	return (self);
+}
+
 @end
