@@ -66,6 +66,18 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"facebook_url"]);
 }
 
++ (BOOL)isCharboostEnabled {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"ad_networks"] objectForKey:@"chartboost"] isEqualToString:@"Y"]);
+}
+
++ (BOOL)isKiipEnabled {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"ad_networks"] objectForKey:@"kiip"] isEqualToString:@"Y"]);
+}
+
++ (BOOL)isTapForTapEnabled {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"ad_networks"] objectForKey:@"tapfortap"] isEqualToString:@"Y"]);
+}
+
 + (NSString *)rndDefaultSubject {
 	NSArray *subjects = [[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"];
 	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
@@ -453,6 +465,16 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 		PFQuery *fbQuery = [PFQuery queryWithClassName:@"FacebookPaths"];
 		PFObject *fbObject = [fbQuery getObjectWithId:@"9YC4DWz1AY"];
 		
+		PFQuery *adNetworkQuery = [PFQuery queryWithClassName:@"AdNetworks"];
+		PFObject *adNetworkObject = [adNetworkQuery getObjectWithId:@"iGkIPYYO4y"];
+		
+		NSDictionary *adNetworkDict = [NSDictionary dictionaryWithObjectsAndKeys:
+												 [adNetworkObject objectForKey:@"chartboost"], @"chartboost",
+												 [adNetworkObject objectForKey:@"kiip"], @"kiip",
+												 [adNetworkObject objectForKey:@"tapfortap"], @"tapfortap", nil];
+		
+		NSLog(@"%@", adNetworkDict);
+		
 		PFQuery *subjectQuery = [PFQuery queryWithClassName:@"PicChallegeDefaultSubjects"];
 		NSMutableArray *subjects = [NSMutableArray array];
 		for (PFObject *obj in [subjectQuery findObjects])
@@ -464,6 +486,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[s3Object objectForKey:@"key"], @"key", [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 		[[NSUserDefaults standardUserDefaults] setObject:[fbObject objectForKey:@"canvas_url"] forKey:@"facebook_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:adNetworkDict forKey:@"ad_networks"];
 		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"default_subjects"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
@@ -554,16 +577,13 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 	
-	// Configure Chartboost
 	Chartboost *cb = [Chartboost sharedChartboost];
 	cb.appId = @"50ba9e2717ba47d426000002";
 	cb.appSignature = @"8526c7d52c380c02cc8e59c1c29e8cf4bf779646";
-	
-	// Notify the beginning of a user session
 	[cb startSession];
 	
-	// Show an interstitial
-	[cb showInterstitial];
+	if ([HONAppDelegate isCharboostEnabled])
+		[cb showInterstitial];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

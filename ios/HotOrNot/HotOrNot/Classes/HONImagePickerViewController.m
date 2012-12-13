@@ -34,7 +34,12 @@
 @property(nonatomic) BOOL isFirstAppearance;
 @property(nonatomic, strong) NSTimer *focusTimer;
 @property(nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
+
+@property(nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
+@property(nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @end
+
+NSString* kIrisViewClassName = @"PLCameraIrisAnimationView";
 
 @implementation HONImagePickerViewController
 
@@ -57,6 +62,11 @@
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_didShowViewController:)
+																	name:@"UINavigationControllerDidShowViewControllerNotification"
+																 object:nil];
 	}
 	
 	return (self);
@@ -73,6 +83,11 @@
 		self.needsChallenger = NO;
 		self.submitAction = 9;
 		self.isFirstAppearance = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_didShowViewController:)
+																	name:@"UINavigationControllerDidShowViewControllerNotification"
+																 object:nil];
 	}
 	
 	return (self);
@@ -87,10 +102,16 @@
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.challengeVO = vo;
+		self.fbID = vo.creatorFB;
 		self.subjectName = [NSString stringWithFormat:@"#%@", vo.subjectName];
 		self.submitAction = 4;
 		self.needsChallenger = NO;
 		self.isFirstAppearance = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_didShowViewController:)
+																	name:@"UINavigationControllerDidShowViewControllerNotification"
+																 object:nil];
 	}
 	
 	return (self);
@@ -108,6 +129,11 @@
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_didShowViewController:)
+																	name:@"UINavigationControllerDidShowViewControllerNotification"
+																 object:nil];
 	}
 	
 	return (self);
@@ -125,10 +151,64 @@
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_didShowViewController:)
+																	name:@"UINavigationControllerDidShowViewControllerNotification"
+																 object:nil];		
 	}
 	
 	return (self);
 }
+
+
+#pragma mark - Notifications
+- (void)_didShowViewController:(NSNotification *)notification {
+	UIView *view = _imagePicker.view;
+	_plCameraIrisAnimationView = nil;
+	_cameraIrisImageView = nil;
+	
+	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
+		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
+			for (UIView *subview in view.subviews) {
+				if ([subview isKindOfClass:[UIImageView class]])
+					_cameraIrisImageView = (UIImageView *)subview;
+
+				else if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
+					for (UIView *subsubview in subview.subviews) {
+						if ([[[subsubview class] description] isEqualToString:@"PLCameraIrisAnimationView"])
+							_plCameraIrisAnimationView = subsubview;
+					}
+				}
+			}
+		}
+	}
+	_cameraIrisImageView.hidden = YES;
+	[_plCameraIrisAnimationView removeFromSuperview];
+	
+	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+}
+
+- (void)_irisAnimationEnded:(NSNotification *)notification {
+	_cameraIrisImageView.hidden = NO;
+	
+	UIView *view = _imagePicker.view;
+	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
+		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
+			for (UIView *subview in view.subviews) {
+				if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
+					[subview insertSubview:_plCameraIrisAnimationView atIndex:1];
+					_plCameraIrisAnimationView = nil;
+					break;
+				}
+			}
+		}
+	}
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -151,7 +231,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
+		
 	if (self.isFirstAppearance) {
 		self.isFirstAppearance = NO;
 		
@@ -175,7 +255,8 @@
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-				[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:0.5];
+				//[self _showOverlay];
+				[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:0.25];
 			}];
 		
 		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -468,6 +549,7 @@
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 			
+			NSLog(@"fbID:[%@][%@]", self.fbID, _fbID);
 			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			[HONFacebookCaller postToFriendTimeline:self.fbID article:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			

@@ -89,6 +89,8 @@
 													  vo.subjectName, @"caption",
 													  vo.creatorName, @"description", nil];
 		
+		NSLog(@"fbID:[%@]", fbID);
+		
 		[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"%@/feed", fbID] parameters:postParams HTTPMethod:@"POST" completionHandler:
 		 ^(FBRequestConnection *connection, id result, NSError *error) {
 			 NSString *alertText;
@@ -100,7 +102,7 @@
 				 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
 			 
 			 
-			 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
+			 [[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
 		 }];
 	}
 }

@@ -446,6 +446,7 @@
 				[HONFacebookCaller sendAppRequestToUser:self.fbID];
 			}
 			
+			NSLog(@"fbID:[%@][%@]", self.fbID, _fbID);
 			if ([self.fbID length] > 0)
 				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];
 			

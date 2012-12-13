@@ -27,6 +27,9 @@ extern NSString *const SCSessionStateChangedNotification;
 + (NSString *)dailySubjectName;
 + (NSDictionary *)s3Credentials;
 + (NSString *)facebookCanvasURL;
++ (BOOL)isCharboostEnabled;
++ (BOOL)isKiipEnabled;
++ (BOOL)isTapForTapEnabled;
 + (NSString *)rndDefaultSubject;
 
 - (BOOL)openSession;
