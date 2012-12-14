@@ -186,7 +186,7 @@
 }
 
 - (void)showPreview:(UIImage *)image {
-	UIImageView *imgView = [[UIImageView alloc] initWithImage:image];
+	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
 	
@@ -213,7 +213,7 @@
 }
 
 - (void)goNext:(id)sender {
-	[self.delegate acceptPhoto];
+	[self.delegate closePreview];
 }
 
 - (void)_goEditSubject {

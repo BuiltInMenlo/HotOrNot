@@ -21,5 +21,5 @@
 - (void)takePicture;
 - (void)closeCamera;
 - (void)changeCamera;
-- (void)acceptPhoto;
+- (void)closePreview;
 @end

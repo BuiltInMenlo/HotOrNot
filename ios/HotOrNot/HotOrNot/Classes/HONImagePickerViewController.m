@@ -375,10 +375,7 @@
 
 	
 	//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	
-//	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary || self.needsChallenger)
-//		[self dismissViewControllerAnimated:YES completion:nil];
-	
+		
 	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
 	image = [image fixOrientation];
 	
@@ -393,17 +390,32 @@
 	}
 	
 	_challangeImage = image;
-	[_cameraOverlayView showPreview:image];
+	
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {		
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+			[self _acceptPhoto];
+		}];
+		
+	} else
+		[_cameraOverlayView showPreview:image];
 }
 
-- (void)acceptPhoto {
+- (void)closePreview {
+	[_cameraOverlayView hidePreview];
+	
+	if (self.needsChallenger)
+		[self dismissViewControllerAnimated:YES completion:nil];
+	
+	[self _acceptPhoto];
+}
+
+- (void)_acceptPhoto {
 	UIImage *image = _challangeImage;
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
-	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary || self.needsChallenger)
+	if (self.needsChallenger)
 		[self dismissViewControllerAnimated:YES completion:nil];
-	
 
 //	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 //		NSLog(@"_imagePicker.cameraDevice[%d] == UIImagePickerControllerCameraDeviceFront[%d]", _imagePicker.cameraDevice, UIImagePickerControllerCameraDeviceFront);
@@ -419,8 +431,6 @@
 //	}
 	
 	if (!self.needsChallenger) {
-		[_cameraOverlayView hidePreview];
-		
 		if ([self.subjectName length] == 0)
 			self.subjectName = [HONAppDelegate rndDefaultSubject];
 		
