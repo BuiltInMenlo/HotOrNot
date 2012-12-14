@@ -34,12 +34,10 @@
 @property(nonatomic) BOOL isFirstAppearance;
 @property(nonatomic, strong) NSTimer *focusTimer;
 @property(nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
-
 @property(nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property(nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
+@property(nonatomic, strong) UIImage *challangeImage;
 @end
-
-NSString* kIrisViewClassName = @"PLCameraIrisAnimationView";
 
 @implementation HONImagePickerViewController
 
@@ -49,6 +47,7 @@ NSString* kIrisViewClassName = @"PLCameraIrisAnimationView";
 @synthesize progressHUD = _progressHUD;
 @synthesize fbID = _fbID;
 @synthesize challengerID = _challengerID;
+@synthesize challangeImage = _challangeImage;
 @synthesize needsChallenger = _needsChallenger;
 @synthesize isFirstAppearance = _isFirstAppearance;
 @synthesize focusTimer = _focusTimer;
@@ -255,8 +254,7 @@ NSString* kIrisViewClassName = @"PLCameraIrisAnimationView";
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-				//[self _showOverlay];
-				[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:0.25];
+				[self _showOverlay];
 			}];
 		
 		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -376,10 +374,10 @@ NSString* kIrisViewClassName = @"PLCameraIrisAnimationView";
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
-	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary || self.needsChallenger)
-		[self dismissViewControllerAnimated:YES completion:nil];
+//	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary || self.needsChallenger)
+//		[self dismissViewControllerAnimated:YES completion:nil];
 	
 	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
 	image = [image fixOrientation];
@@ -394,6 +392,19 @@ NSString* kIrisViewClassName = @"PLCameraIrisAnimationView";
 		image = [HONAppDelegate cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kPhotoRatio))];
 	}
 	
+	_challangeImage = image;
+	[_cameraOverlayView showPreview:image];
+}
+
+- (void)acceptPhoto {
+	UIImage *image = _challangeImage;
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary || self.needsChallenger)
+		[self dismissViewControllerAnimated:YES completion:nil];
+	
+
 //	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 //		NSLog(@"_imagePicker.cameraDevice[%d] == UIImagePickerControllerCameraDeviceFront[%d]", _imagePicker.cameraDevice, UIImagePickerControllerCameraDeviceFront);
 //		

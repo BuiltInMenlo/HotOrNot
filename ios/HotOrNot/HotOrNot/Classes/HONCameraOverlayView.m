@@ -12,17 +12,22 @@
 #import "HONHeaderView.h"
 
 @interface HONCameraOverlayView() <UITextFieldDelegate>
-@property (nonatomic, strong) UIImageView *overlayImgView;
+@property (nonatomic, strong) UIView *previewHolderView;
+@property (nonatomic, strong) UIView *footerHolderView;
 @property(nonatomic, strong) UITextField *subjectTextField;
 @property(nonatomic, strong) UIButton *editButton;
+@property(nonatomic) CGSize gutterSize;
 @end
 
 @implementation HONCameraOverlayView
 
 @synthesize delegate, flashButton, captureButton, cameraRollButton;
-@synthesize overlayImgView = _overlayImgView;
+@synthesize previewHolderView = _previewHolderView;
+@synthesize footerHolderView = _footerHolderView;
 @synthesize subjectTextField = _subjectTextField;
 @synthesize editButton = _editButton;
+@synthesize nextButton = _nextButton;
+@synthesize backButton = _backButton;
 @synthesize subjectName = _subjectName;
 
 - (id)initWithFrame:(CGRect)frame {
@@ -30,21 +35,24 @@
 		self.opaque = NO;
 		
 		int photoSize = 250.0;
-		CGSize gutterSize = CGSizeMake((320.0 - photoSize) * 0.5, (self.frame.size.height - photoSize) * 0.5);
+		_gutterSize = CGSizeMake((320.0 - photoSize) * 0.5, (self.frame.size.height - photoSize) * 0.5);
 		
-		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, gutterSize.height)];
+		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
+		[self addSubview:_previewHolderView];
+		
+		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _gutterSize.height)];
 		headerGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:headerGutterView];
 		
-		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - gutterSize.height, 320.0, gutterSize.height)];
+		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - _gutterSize.height, 320.0, _gutterSize.height)];
 		footerGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:footerGutterView];
 		
-		UIView *lGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, gutterSize.width, self.frame.size.height)];
+		UIView *lGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _gutterSize.width, self.frame.size.height)];
 		lGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:lGutterView];
 		
-		UIView *rGutterView = [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width - gutterSize.width, 0.0, gutterSize.width, self.frame.size.height)];
+		UIView *rGutterView = [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width - _gutterSize.width, 0.0, _gutterSize.width, self.frame.size.height)];
 		rGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:rGutterView];
 		
@@ -110,13 +118,16 @@
 		footerImgView.userInteractionEnabled = YES;
 		[self addSubview:footerImgView];
 		
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, 70.0)];
+		[footerImgView addSubview:_footerHolderView];
+		
 		// Add the capture button
 		self.captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		self.captureButton.frame = CGRectMake(103.0, 3.0, 114.0, 64.0);
 		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive.png"] forState:UIControlStateNormal];
 		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active.png"] forState:UIControlStateHighlighted];
 		[self.captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
-		[footerImgView addSubview:self.captureButton];
+		[_footerHolderView addSubview:self.captureButton];
 				
 		// Add the gallery button
 		self.cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -124,14 +135,30 @@
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
 		[self.cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
-		[footerImgView addSubview:self.cameraRollButton];
+		[_footerHolderView addSubview:self.cameraRollButton];
 		
 		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		changeCameraButton.frame = CGRectMake(263.0, 10.0, 49.0, 49.0);
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive.png"] forState:UIControlStateNormal];
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active.png"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
-		[footerImgView addSubview:changeCameraButton];
+		[_footerHolderView addSubview:changeCameraButton];
+		
+		// Add the capture button
+		self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		self.backButton.frame = CGRectMake(360.0, 10.0, 49.0, 49.0);
+		[self.backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive.png"] forState:UIControlStateNormal];
+		[self.backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active.png"] forState:UIControlStateHighlighted];
+		[self.backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+		[_footerHolderView addSubview:self.backButton];
+		
+		// Add the gallery button
+		self.nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		self.nextButton.frame = CGRectMake(570.0, 10.0, 49.0, 49.0);
+		[self.nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
+		[self.nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
+		[self.nextButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
+		[_footerHolderView addSubview:self.nextButton];
 	}
 	
 	return (self);
@@ -158,10 +185,35 @@
 	[self.delegate closeCamera];
 }
 
+- (void)showPreview:(UIImage *)image {
+	UIImageView *imgView = [[UIImageView alloc] initWithImage:image];
+	[_previewHolderView addSubview:imgView];
+	_previewHolderView.hidden = NO;
+	
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+		_footerHolderView.frame = CGRectMake(-320.0, 0.0, 640.0, 70.0);
+	} completion:nil];
+}
+
 - (void)hidePreview {
-	_overlayImgView = [[UIImageView alloc] initWithFrame:self.bounds];
-	_overlayImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"camerModeBackground-568h.jpg" : @"camerModeBackgroundiPhone.jpg"];
-	[self addSubview:_overlayImgView];
+	_previewHolderView.hidden = YES;
+	
+	for (UIView *subview in _previewHolderView.subviews) {
+		[subview removeFromSuperview];
+	}
+	
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+		_footerHolderView.frame = CGRectMake(0.0, 0.0, 640.0, 70.0);
+	} completion:nil];
+}
+
+- (void)goBack:(id)sender {
+	self.captureButton.enabled = YES;
+	[self hidePreview];
+}
+
+- (void)goNext:(id)sender {
+	[self.delegate acceptPhoto];
 }
 
 - (void)_goEditSubject {
