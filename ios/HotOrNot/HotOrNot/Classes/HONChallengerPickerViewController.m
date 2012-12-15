@@ -164,7 +164,7 @@
 	
 	UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 200.0, 200.0)];
 	watermarkImgView.image = [UIImage imageNamed:@"512x512_cameraOverlay.png"];
-	[imgView addSubview:watermarkImgView];
+	//[imgView addSubview:watermarkImgView];
 	
 	_subjectTextField.text = self.subjectName;
 	//NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);

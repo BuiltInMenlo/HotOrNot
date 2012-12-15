@@ -256,14 +256,7 @@
 			break;
 	}
 	
-	int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
-	if (daysSinceInstall >= 1 && tabID == 0) {
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONResultsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
-	
+	//int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
 	
 	if (tabID == 2) { //&& FBSession.activeSession.state == 513) {
 		UINavigationController *navController = (UINavigationController *)[self selectedViewController];

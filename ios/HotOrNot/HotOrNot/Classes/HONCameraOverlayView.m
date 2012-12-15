@@ -91,7 +91,7 @@
 		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, headerGutterView.frame.size.height, 250.0, 250.0)];
 		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding.png"];
 		overlayImgView.userInteractionEnabled = YES;
-		[self addSubview:overlayImgView];
+		//[self addSubview:overlayImgView];
 		
 //		UIImage *buttonImageNormal;
 //		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {
