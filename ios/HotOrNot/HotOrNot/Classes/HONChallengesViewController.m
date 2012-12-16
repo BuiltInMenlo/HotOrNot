@@ -537,8 +537,6 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"request.tag:[%d]", request.tag);
-	
 	NSLog(@"HONChallengesViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if (request.tag == 2) {

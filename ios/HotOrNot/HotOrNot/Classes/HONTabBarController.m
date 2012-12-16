@@ -78,9 +78,9 @@
 	[self.view addSubview:bgImgView];
 	
 	// Initialise our two images
-	UIImage *btnImage = [UIImage imageNamed:@"tabbar_001_nonActive.png"];
-	UIImage *btnImageActive = [UIImage imageNamed:@"tabbar_001_active.png"];
-	UIImage *btnImageSelected = [UIImage imageNamed:@"tabbar_001_tapped.png"];
+	UIImage *btnImage = [UIImage imageNamed:@"tabbar_002_nonActive.png"];
+	UIImage *btnImageActive = [UIImage imageNamed:@"tabbar_002_active.png"];
+	UIImage *btnImageSelected = [UIImage imageNamed:@"tabbar_002_tapped.png"];
 	
 	self.btn1 = [UIButton buttonWithType:UIButtonTypeCustom]; //Setup the button
 	btn1.frame = CGRectMake(0.0, self.view.frame.size.height - 48.0, 64.0, 48.0); // Set the frame (size and position) of the button)
@@ -92,9 +92,9 @@
 	[btn1 setEnabled:NO];
 	
 	// Now we repeat the process for the other buttons
-	btnImage = [UIImage imageNamed:@"tabbar_002_nonActive.png"];
-	btnImageActive = [UIImage imageNamed:@"tabbar_002_active.png"];
-	btnImageSelected = [UIImage imageNamed:@"tabbar_002_tapped.png"];
+	btnImage = [UIImage imageNamed:@"tabbar_001_nonActive.png"];
+	btnImageActive = [UIImage imageNamed:@"tabbar_001_active.png"];
+	btnImageSelected = [UIImage imageNamed:@"tabbar_001_tapped.png"];
 	self.btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
 	btn2.frame = CGRectMake(64.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
 	[btn2 setBackgroundImage:btnImage forState:UIControlStateNormal];

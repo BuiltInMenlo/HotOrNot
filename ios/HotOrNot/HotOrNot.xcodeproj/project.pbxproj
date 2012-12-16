@@ -284,6 +284,9 @@
 		4CAAEDA3161CE023005AB2E1 /* HONVoteHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAEDA2161CE023005AB2E1 /* HONVoteHeaderView.m */; };
 		4CAAEDAA161E069D005AB2E1 /* HONTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */; };
 		4CAAEDB1161E3A26005AB2E1 /* HONPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAEDB0161E3A26005AB2E1 /* HONPhotoViewController.m */; };
+		4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */; };
+		4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9609167D676C0036E849 /* HONVoterViewCell.m */; };
+		4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF960C167D68B40036E849 /* HONVoterVO.m */; };
 		4CB0BDD6162D3395000EC97F /* challengePreviewBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0BDD4162D3395000EC97F /* challengePreviewBG.png */; };
 		4CB0BDD7162D3395000EC97F /* challengePreviewBG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0BDD5162D3395000EC97F /* challengePreviewBG@2x.png */; };
 		4CB0BDDD162D3CCC000EC97F /* blankRowBackground_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0BDD9162D3CCC000EC97F /* blankRowBackground_Active.png */; };
@@ -789,6 +792,12 @@
 		4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTabBarController.m; sourceTree = "<group>"; };
 		4CAAEDAF161E3A26005AB2E1 /* HONPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPhotoViewController.h; sourceTree = "<group>"; };
 		4CAAEDB0161E3A26005AB2E1 /* HONPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPhotoViewController.m; sourceTree = "<group>"; };
+		4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVotersViewController.h; sourceTree = "<group>"; };
+		4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVotersViewController.m; sourceTree = "<group>"; };
+		4CAF9608167D676C0036E849 /* HONVoterViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoterViewCell.h; sourceTree = "<group>"; };
+		4CAF9609167D676C0036E849 /* HONVoterViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterViewCell.m; sourceTree = "<group>"; };
+		4CAF960B167D68B40036E849 /* HONVoterVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoterVO.h; sourceTree = "<group>"; };
+		4CAF960C167D68B40036E849 /* HONVoterVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterVO.m; sourceTree = "<group>"; };
 		4CB0BDD4162D3395000EC97F /* challengePreviewBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = challengePreviewBG.png; sourceTree = "<group>"; };
 		4CB0BDD5162D3395000EC97F /* challengePreviewBG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "challengePreviewBG@2x.png"; sourceTree = "<group>"; };
 		4CB0BDD9162D3CCC000EC97F /* blankRowBackground_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blankRowBackground_Active.png; sourceTree = "<group>"; };
@@ -959,6 +968,8 @@
 				B3BE3EA91608E42500E7E2B7 /* HONPopularUserVO.m */,
 				B3BE3EAC1608E43800E7E2B7 /* HONPopularSubjectVO.h */,
 				B3BE3EAD1608E43800E7E2B7 /* HONPopularSubjectVO.m */,
+				4CAF960B167D68B40036E849 /* HONVoterVO.h */,
+				4CAF960C167D68B40036E849 /* HONVoterVO.m */,
 			);
 			name = VO;
 			sourceTree = "<group>";
@@ -972,6 +983,10 @@
 				4C62673F15F96E5600AA7FCE /* HONVoteViewController.m */,
 				4CAAEDA1161CE023005AB2E1 /* HONVoteHeaderView.h */,
 				4CAAEDA2161CE023005AB2E1 /* HONVoteHeaderView.m */,
+				4CAF9608167D676C0036E849 /* HONVoterViewCell.h */,
+				4CAF9609167D676C0036E849 /* HONVoterViewCell.m */,
+				4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */,
+				4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */,
 			);
 			name = Voting;
 			sourceTree = "<group>";
@@ -2313,6 +2328,9 @@
 				4CBE870D1634DDEE004084DF /* HONResultsViewController.m in Sources */,
 				4CBE871816350CD0004084DF /* HONResultsViewCell.m in Sources */,
 				4CBE874C16371D24004084DF /* HONSupportViewController.m in Sources */,
+				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
+				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
+				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

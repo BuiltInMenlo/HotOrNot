@@ -13,6 +13,7 @@
 @interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 - (id)initWithUser:(int)userID;
+- (id)initWithUser:(int)userID withSubject:(NSString *)subject;
 - (id)initWithSubject:(NSString *)subject;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 - (id)initAsDailyChallenge:(NSString *)subject;

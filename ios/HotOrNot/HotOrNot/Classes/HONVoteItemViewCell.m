@@ -91,6 +91,14 @@
 	[rZoomButton addTarget:self action:@selector(_goRightZoom) forControlEvents:UIControlEventTouchUpInside];
 	[_rHolderView addSubview:rZoomButton];
 	
+	UIButton *scoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	scoreButton.frame = CGRectMake(20.0, 350.0, 84.0, 16.0);
+	[scoreButton setTitleColor:[HONAppDelegate honBlueTxtColor] forState:UIControlStateNormal];
+	scoreButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+	[scoreButton setTitle:[NSString stringWithFormat:@"%d votes", (_challengeVO.scoreCreator + _challengeVO.scoreChallenger)] forState:UIControlStateNormal];
+	[scoreButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:scoreButton];
+	
 	if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
 		[_lVoteButton removeTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
 		[_rVoteButton removeTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
@@ -157,6 +165,10 @@
 
 - (void)_goRightZoom {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:[NSDictionary dictionaryWithObjectsAndKeys:self.challengeVO.image2URL, @"img", self.challengeVO.subjectName, @"title", nil]];
+}
+
+- (void)_goScore {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:self.challengeVO];
 }
 
 @end

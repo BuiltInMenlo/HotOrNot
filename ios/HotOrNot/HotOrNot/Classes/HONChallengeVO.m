@@ -49,8 +49,8 @@
 	
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	vo.image2URL = [dictionary objectForKey:@"img2_url"];
-	vo.scoreCreator = [[dictionary objectForKey:@"score1"] intValue];
-	vo.scoreChallenger = [[dictionary objectForKey:@"score2"] intValue];
+	vo.scoreCreator = [[[dictionary objectForKey:@"score"] objectForKey:@"creator"] intValue];
+	vo.scoreChallenger = [[[dictionary objectForKey:@"score"] objectForKey:@"challenger"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"subject"];
 	vo.creatorName = [dictionary objectForKey:@"creator"];
 	vo.creatorFB = [dictionary objectForKey:@"creator_fb"];

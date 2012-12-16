@@ -386,8 +386,8 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"shown_settings"];
 	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
 	
 	NSLog(@"hasNetwork[%d] canPingParseServer[%d]", [HONAppDelegate hasNetwork], [HONAppDelegate canPingParseServer]);
 	
@@ -473,8 +473,6 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 												 [adNetworkObject objectForKey:@"kiip"], @"kiip",
 												 [adNetworkObject objectForKey:@"tapfortap"], @"tapfortap", nil];
 		
-		NSLog(@"%@", adNetworkDict);
-		
 		PFQuery *subjectQuery = [PFQuery queryWithClassName:@"PicChallegeDefaultSubjects"];
 		NSMutableArray *subjects = [NSMutableArray array];
 		for (PFObject *obj in [subjectQuery findObjects])
@@ -504,8 +502,8 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 			createChallengeViewController = [[HONImagePickerViewController alloc] init];
 			settingsViewController = [[HONSettingsViewController alloc] init];
 			
-			UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-			UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
+			UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
+			UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
 			UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
 			UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
 			UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
@@ -750,7 +748,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		NSError *error = nil;

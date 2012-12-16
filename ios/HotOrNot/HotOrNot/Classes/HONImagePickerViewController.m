@@ -92,6 +92,27 @@
 	return (self);
 }
 
+- (id)initWithUser:(int)userID withSubject:(NSString *)subject {
+	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Create Challenge"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		self.subjectName = [NSString stringWithFormat:@"#%@", subject];
+		self.challengerID = userID;
+		self.needsChallenger = NO;
+		self.submitAction = 9;
+		self.isFirstAppearance = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_didShowViewController:)
+																	name:@"UINavigationControllerDidShowViewControllerNotification"
+																 object:nil];
+	}
+	
+	return (self);
+}
+
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		[[Mixpanel sharedInstance] track:@"Accept Challenge"
