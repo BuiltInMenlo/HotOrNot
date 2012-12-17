@@ -243,6 +243,8 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:backButton];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 }
 
 - (void)viewDidLoad {
@@ -483,7 +485,7 @@
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.labelText = @"Submitting Challenge…";
 			_progressHUD.mode = MBProgressHUDModeIndeterminate;
-			_progressHUD.graceTime = 2.0;
+			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.taskInProgress = YES;
 			
 			[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
@@ -576,7 +578,7 @@
 		
 		if (error != nil) {
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			_progressHUD.graceTime = 0.0;
+			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
 			_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
@@ -595,7 +597,9 @@
 			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			[HONFacebookCaller postToFriendTimeline:self.fbID article:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+			}];
 			//[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 		}
 	}
@@ -603,6 +607,11 @@
 
 -(void)requestFailed:(ASIHTTPRequest *)request {
 	NSLog(@"requestFailed:\n[%@]", request.error);
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 }
 
 

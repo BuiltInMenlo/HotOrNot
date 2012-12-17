@@ -202,6 +202,7 @@
 		4C51173F1623A20D00370D3A /* MPCSerializedJSONData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5117371623A20D00370D3A /* MPCSerializedJSONData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C5117401623A20D00370D3A /* NSData+MPBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51173A1623A20D00370D3A /* NSData+MPBase64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C5117411623A20D00370D3A /* Mixpanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51173C1623A20D00370D3A /* Mixpanel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		4C516437167EC39E00EB3C09 /* HONFacebookSwitchView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C516436167EC39D00EB3C09 /* HONFacebookSwitchView.m */; };
 		4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652915F96C7100AA7FCE /* UIKit.framework */; };
 		4C62652C15F96C7100AA7FCE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652B15F96C7100AA7FCE /* Foundation.framework */; };
 		4C62652E15F96C7100AA7FCE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652D15F96C7100AA7FCE /* CoreGraphics.framework */; };
@@ -566,6 +567,8 @@
 		4C51173A1623A20D00370D3A /* NSData+MPBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+MPBase64.m"; sourceTree = "<group>"; };
 		4C51173B1623A20D00370D3A /* Mixpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mixpanel.h; sourceTree = "<group>"; };
 		4C51173C1623A20D00370D3A /* Mixpanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Mixpanel.m; sourceTree = "<group>"; };
+		4C516435167EC39D00EB3C09 /* HONFacebookSwitchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFacebookSwitchView.h; sourceTree = "<group>"; };
+		4C516436167EC39D00EB3C09 /* HONFacebookSwitchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFacebookSwitchView.m; sourceTree = "<group>"; };
 		4C62652515F96C7100AA7FCE /* HotOrNot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HotOrNot.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C62652915F96C7100AA7FCE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		4C62652B15F96C7100AA7FCE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1472,6 +1475,8 @@
 				4CAAEDB0161E3A26005AB2E1 /* HONPhotoViewController.m */,
 				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
 				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
+				4C516435167EC39D00EB3C09 /* HONFacebookSwitchView.h */,
+				4C516436167EC39D00EB3C09 /* HONFacebookSwitchView.m */,
 			);
 			name = Root;
 			sourceTree = "<group>";
@@ -2331,6 +2336,7 @@
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
+				4C516437167EC39E00EB3C09 /* HONFacebookSwitchView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2370,7 +2376,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6101CD23-CD8B-42EA-A6FF-EC212BC92156";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8E359DCC-75FC-441A-ABB8-1D0EE3EB0B9B";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";

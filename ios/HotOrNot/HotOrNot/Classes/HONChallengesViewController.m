@@ -241,7 +241,7 @@
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Refreshing…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.graceTime = 2.0;
+	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 }
 
@@ -618,6 +618,11 @@
 
 -(void)requestFailed:(ASIHTTPRequest *)request {
 	NSLog(@"requestFailed:\n[%@]", request.error);
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 }
 
 

@@ -54,8 +54,9 @@
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading Photo…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.graceTime = 2.0;
+	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
+	[_progressHUD hide:YES afterDelay:2.0];
 	
 	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 53.0, kLargeW * 0.5, kLargeW * 0.5)];
 	imgView.userInteractionEnabled = YES;

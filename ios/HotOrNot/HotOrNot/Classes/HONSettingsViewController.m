@@ -32,10 +32,11 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		//self.tabBarItem.image = [UIImage imageNamed:@"tab05_nonActive"];
 		self.view.backgroundColor = [UIColor whiteColor];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSupport:) name:@"SHOW_SUPPORT" object:nil];
+		
+		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Facebook Posting", (FBSession.activeSession.state == 513) ? @"Logout" : @"Login", @"Privacy Policy", @"", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -48,8 +49,6 @@
 		_fbSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
 		[_fbSwitch addTarget:self action:@selector(_goFBSwitch:) forControlEvents:UIControlEventValueChanged];
 		_fbSwitch.on = [HONAppDelegate allowsFBPosting];
-		
-		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Facebook Posting", @"Logout", @"Privacy Policy", @"", nil];
 	}
 	
 	return (self);
@@ -216,7 +215,8 @@
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
 	switch (indexPath.row) {
 		case 3:
-			[FBSession.activeSession closeAndClearTokenInformation];
+			if (FBSession.activeSession.state == 513)
+				[FBSession.activeSession closeAndClearTokenInformation];
 			
 			[navController setNavigationBarHidden:YES];
 			[self presentViewController:navController animated:YES completion:nil];

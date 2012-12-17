@@ -102,7 +102,7 @@
 				 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
 			 
 			 
-			 [[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
+			 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
 		 }];
 	}
 }

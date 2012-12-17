@@ -28,8 +28,9 @@
 #import "HONSettingsViewController.h"
 #import "HONLoginViewController.h"
 #import "HONChallengeVO.h"
+#import "HONFacebookSwitchView.h"
 
-NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:SCSessionStateChangedNotification";
+NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
 
 @interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate, KiipDelegate>
 @property (nonatomic, strong) UIAlertView *networkAlertView;
@@ -363,7 +364,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 			break;
 	}
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:SCSessionStateChangedNotification
+	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification
 																		 object:session];
 	
 	if (error) {
@@ -521,7 +522,7 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 			self.window.rootViewController = self.tabBarController;
 			[self.window makeKeyAndVisible];
 			
-			[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
+			//[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 			
 			if (![self openSession]) {
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
@@ -530,6 +531,9 @@ NSString *const SCSessionStateChangedNotification = @"com.facebook.Scrumptious:S
 			}
 			
 			NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
+			
+			HONFacebookSwitchView *facebookSwitchView = [[HONFacebookSwitchView alloc] init];
+			[self.window addSubview:facebookSwitchView];
 		
 		} else {
 			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bad Network Connection"

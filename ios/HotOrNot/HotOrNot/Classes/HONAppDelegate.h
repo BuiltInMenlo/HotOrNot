@@ -11,7 +11,7 @@
 #import "Facebook.h"
 #import "HONLoginViewController.h"
 
-extern NSString *const SCSessionStateChangedNotification;
+extern NSString *const HONSessionStateChangedNotification;
 
 @class SMClient;
 
@@ -77,6 +77,7 @@ extern NSString *const SCSessionStateChangedNotification;
 #define kUsersAPI @"Users.php"
 #define kChallengesAPI @"Challenges.php"
 #define kPopularAPI @"Popular.php"
+#define kVoteAPI @"Vote.php"
 
 #define kThumb1W 50.0
 #define kThumb1H 67.0
@@ -88,6 +89,8 @@ extern NSString *const SCSessionStateChangedNotification;
 #define kLargeH 816.0
 
 #define kPhotoRatio 1.333333333
+
+#define kHUDTime 0.5
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;

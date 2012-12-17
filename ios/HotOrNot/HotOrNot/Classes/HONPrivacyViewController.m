@@ -61,7 +61,7 @@
 		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
 		_progressHUD.taskInProgress = YES;
-		_progressHUD.graceTime = 5.0;
+		_progressHUD.minShowTime = kHUDTime;
 		
 		[self performSelector:@selector(_removeHUD) withObject:nil afterDelay:8.0];
 	}

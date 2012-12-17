@@ -137,9 +137,15 @@
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	friendsButton.frame = CGRectMake(18.0, 338.0, 284.0, 49.0);
-	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_nonActive.png"] forState:UIControlStateNormal];
-	[friendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFriendsButton_Active.png"] forState:UIControlStateHighlighted];
-	[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
+	[friendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive.png" : @"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
+	[friendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active.png" : @"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
+	
+	if (FBSession.activeSession.state == 513)
+		[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
+	
+	else
+		[friendsButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+	
 	friendsButton.hidden = (FBSession.activeSession.state != 513);
 	[self.view addSubview:friendsButton];
 	
@@ -178,6 +184,14 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)_goLogin {
+	[FBSession.activeSession closeAndClearTokenInformation];
+	
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+	[navController setNavigationBarHidden:YES];
+	[self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)_goEditSubject {
@@ -267,7 +281,7 @@
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.graceTime = 2.0;
+		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.taskInProgress = YES;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
@@ -351,7 +365,7 @@
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.graceTime = 2.0;
+		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.taskInProgress = YES;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
@@ -424,7 +438,7 @@
 		
 		if (error != nil) {
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			_progressHUD.graceTime = 0.0;
+			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
 			_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
@@ -450,7 +464,9 @@
 			if ([self.fbID length] > 0)
 				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];
 			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+			}];
 			//[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 		}
 	}
@@ -458,6 +474,11 @@
 
 -(void)requestFailed:(ASIHTTPRequest *)request {
 	NSLog(@"requestFailed:\n[%@]", request.error);
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 }
 
 

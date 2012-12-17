@@ -124,7 +124,7 @@
 				 break;
 		 }
 		 
-		 //		 [[NSNotificationCenter defaultCenter] postNotificationName:SCSessionStateChangedNotification object:session];
+		 [[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:session];
 		 
 		 if (error) {
 			 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
