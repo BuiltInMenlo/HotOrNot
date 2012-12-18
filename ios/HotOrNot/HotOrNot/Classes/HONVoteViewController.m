@@ -121,7 +121,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"" hasFBSwitch:NO];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[self.view addSubview:_headerView];
 		
 	if (_isPushView) {
@@ -250,7 +250,6 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_refreshButton.hidden = YES;
-	[_headerView updateFBSwitch];
 	[self _retrieveChallenges];
 }
 
@@ -258,6 +257,21 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goCreateChallenge {
+	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
+	//	if (FBSession.activeSession.state == 513) {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+	
+	//	} else
+	//		[self _goLogin];
 }
 
 - (void)_goTrending {
@@ -377,16 +391,22 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (1);
+	return ([_challenges count] + 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ([_challenges count]);
+	return (1);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONVoteHeaderView *headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 54.0) asPush:_isPushView];
-	[headerView setChallengeVO:[_challenges objectAtIndex:section]];
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	
+	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:createChallengeButton];
 	
 	return (headerView);
 }
@@ -401,10 +421,15 @@
 	
 	
 	if (cell == nil) {
-		cell = [[HONVoteItemViewCell alloc] init];
+		if (indexPath.row == 0)
+			cell = [[HONVoteItemViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
+		
+		else {
+			cell = [[HONVoteItemViewCell alloc] init];
+			cell.challengeVO = [_challenges objectAtIndex:indexPath.row - 1];
+		}
 	}
 	
-	cell.challengeVO = [_challenges objectAtIndex:indexPath.section];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -413,11 +438,15 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (370.0);
+	if (indexPath.row == 0)
+		return (55.0);
+	
+	else
+		return (424.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (56.0);
+	return (78.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -462,7 +491,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if ([request isEqual:self.challengesRequest]) {
 		@autoreleasepool {

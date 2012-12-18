@@ -67,7 +67,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Daily Stats" hasFBSwitch:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Daily Stats"];
 	[self.view addSubview:headerView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -56,7 +56,7 @@
 		rGutterView.backgroundColor = [UIColor blackColor];
 		[self addSubview:rGutterView];
 		
-		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo" hasFBSwitch:NO];
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo"];
 		[self addSubview:headerView];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];

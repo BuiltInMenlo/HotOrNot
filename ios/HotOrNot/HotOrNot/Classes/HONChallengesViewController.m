@@ -96,7 +96,30 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"backgroundBG-568h.png" : @"backgroundBG.png"];
 	[self.view addSubview:bgImgView];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 64.0) style:UITableViewStylePlain];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Challenges"];
+	[self.view addSubview:_headerView];
+	
+	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
+	[activityIndicatorView startAnimating];
+	[_headerView addSubview:activityIndicatorView];
+	
+	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
+	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+	inviteButton.hidden = (FBSession.activeSession.state != 513);
+	//[headerView addSubview:inviteButton];
+	
+	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
+	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:_refreshButton];
+	
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 70.0;
@@ -234,7 +257,6 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_refreshButton.hidden = YES;
-	[_headerView updateFBSwitch];
 	[self _retrieveChallenges];
 	[self _retrieveUser];
 	
@@ -362,55 +384,22 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	
-	if (section == 0)
-		return (0);
-	
-	else
-		return ([self.challenges count] + 2);
+	return ([self.challenges count] + 2);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (1);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 45.0)];
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
 	
-	if (section == 0) {
-		//NSLog(@"PROFILE URL:[%@]", [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture", [[HONAppDelegate fbProfileForUser] objectForKey:@"id"]]);
-		
-		_headerView = [[HONHeaderView alloc] initWithTitle:@"Challenges" hasFBSwitch:NO];
-		[headerView addSubview:_headerView];
-		
-		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-		activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
-		[activityIndicatorView startAnimating];
-		[headerView addSubview:activityIndicatorView];
-		
-		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		inviteButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
-		[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
-		[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
-		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
-		inviteButton.hidden = (FBSession.activeSession.state != 513);
-		//[headerView addSubview:inviteButton];
-		
-		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
-		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
-		[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-		[headerView addSubview:_refreshButton];
-	
-	} else {
-		UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
-		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-		[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
-		[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[headerView addSubview:createChallengeButton];
-	}
+	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:createChallengeButton];
 	
 	return (headerView);
 }
@@ -448,12 +437,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	
-	if (section == 0)
-		return (45.0);
-	
-	else
-		return (78.0);
+	return (78.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -537,7 +521,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONChallengesViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONChallengesViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if (request.tag == 2) {
 		@autoreleasepool {

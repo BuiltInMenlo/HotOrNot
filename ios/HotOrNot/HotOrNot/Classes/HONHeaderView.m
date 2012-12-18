@@ -10,31 +10,19 @@
 #import "HONAppDelegate.h"
 
 @interface HONHeaderView()
-@property (nonatomic, strong) UIButton *fbButton;
-
 @end
 
 @implementation HONHeaderView
 
-@synthesize fbButton = _fbButton;
 
-- (id)initWithTitle:(NSString *)title hasFBSwitch:(BOOL)hasSwitch {
+- (id)initWithTitle:(NSString *)title {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleFBPosting:) name:@"TOGGLE_FB_POSTING" object:nil];
 		
 		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:self.frame];
 		[headerImgView setImage:[UIImage imageNamed:@"header.png"]];
 		[self addSubview:headerImgView];
-		
-		_fbButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_fbButton.frame = CGRectMake(5.0, 5.0, 59.0, 34.0);
-		[_fbButton setBackgroundImage:[UIImage imageNamed:@"facebookToggle_off"] forState:UIControlStateNormal];
-		[_fbButton setBackgroundImage:[UIImage imageNamed:@"facebookToggle_on"] forState:UIControlStateSelected];
-		[_fbButton addTarget:self action:@selector(_goFBToggle) forControlEvents:UIControlEventTouchUpInside];
-		
-		if (hasSwitch)
-			[self addSubview:_fbButton];
-		
+				
 		UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, 25.0)];
 		titleLabel.backgroundColor = [UIColor clearColor];
 		titleLabel.font = [HONAppDelegate honHelveticaNeueFontBold];
@@ -44,27 +32,9 @@
 		titleLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		titleLabel.text = title;
 		[self addSubview:titleLabel];
-		
-		[self updateFBSwitch];
 	}
 	
 	return (self);
-}
-
-- (void)_goFBToggle {
-	BOOL canPost = [HONAppDelegate allowsFBPosting];
-	
-	[HONAppDelegate setAllowsFBPosting:!canPost];
-	[self updateFBSwitch];
-}
-
-- (void)_toggleFBPosting:(NSNotification *)notification {
-	[self updateFBSwitch];
-}
-
-- (void)updateFBSwitch {
-	//NSLog(@"FB POSTING:[%d]", [HONAppDelegate allowsFBPosting]);
-	[_fbButton setSelected:[HONAppDelegate allowsFBPosting]];
 }
 
 @end

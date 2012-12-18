@@ -19,11 +19,11 @@
 #import "HONSupportViewController.h"
 #import "HONLoginViewController.h"
 #import "HONHeaderView.h"
+#import "HONImagePickerViewController.h"
 
 @interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, ASIHTTPRequestDelegate, FBLoginViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
-@property (nonatomic, strong) UISwitch *fbSwitch;
 @property (nonatomic, strong) UISwitch *activatedSwitch;
 @property (nonatomic, strong) NSArray *captions;
 @end
@@ -36,7 +36,7 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSupport:) name:@"SHOW_SUPPORT" object:nil];
 		
-		_captions = [NSArray arrayWithObjects:@"", @"Notifications", @"Facebook Posting", (FBSession.activeSession.state == 513) ? @"Logout" : @"Login", @"Privacy Policy", @"", nil];
+		_captions = [NSArray arrayWithObjects:@"", @"Notifications", (FBSession.activeSession.state == 513) ? @"Logout" : @"Login", @"Privacy Policy", @"", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -45,10 +45,6 @@
 		
 		else
 			_notificationSwitch.on = YES;
-		
-		_fbSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-		[_fbSwitch addTarget:self action:@selector(_goFBSwitch:) forControlEvents:UIControlEventValueChanged];
-		_fbSwitch.on = [HONAppDelegate allowsFBPosting];
 	}
 	
 	return (self);
@@ -62,10 +58,10 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings" hasFBSwitch:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings"];
 	[self.view addSubview:headerView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 69.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -107,6 +103,21 @@
 
 
 #pragma mark - Navigation
+- (void)_goCreateChallenge {
+	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
+//	if (FBSession.activeSession.state == 513) {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+	
+//	} else
+//		[self _goLogin];
+}
+
 - (void)_goDone {
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -158,18 +169,34 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (6);
+	return (5);
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (1);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	
+	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:createChallengeButton];
+	
+	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	
 	HONSettingsViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
 		if (indexPath.row == 0)
 			cell = [[HONSettingsViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
 		
-		else if (indexPath.row == 5)
+		else if (indexPath.row == 4)
 			cell = [[HONSettingsViewCell alloc] initAsBottomCell];
 		
 		else
@@ -178,10 +205,7 @@
 	
 	if (indexPath.row == 1)
 		cell.accessoryView = _notificationSwitch;
-	
-	if (indexPath.row == 2)
-		cell.accessoryView = _fbSwitch;
-		
+			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);
 }
@@ -190,18 +214,19 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0)
-		return (20.0);
-	
-//	else if (indexPath.row == 5)
-//		return (24.0);
+		return (55.0);
 	
 	else
 		return (70.0);
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (78.0);
+}
+
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	if (indexPath.row == 3 || indexPath.row == 4)
+	if (indexPath.row == 2 || indexPath.row == 3)
 		return (indexPath);
 	
 	else
@@ -214,7 +239,7 @@
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
 	switch (indexPath.row) {
-		case 3:
+		case 2:
 			if (FBSession.activeSession.state == 513)
 				[FBSession.activeSession closeAndClearTokenInformation];
 			
@@ -222,7 +247,7 @@
 			[self presentViewController:navController animated:YES completion:nil];
 			break;
 			
-		case 4:
+		case 3:
 			[self.navigationController pushViewController:[[HONPrivacyViewController alloc] init] animated:YES];
 			break;
 	}
@@ -231,31 +256,22 @@
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	ASIFormDataRequest *toggleRequest;
+	
 	switch(buttonIndex) {
 		case 0:
-			if (_activatedSwitch == _fbSwitch) {
-				[[Mixpanel sharedInstance] track:@"Facebook Posting"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d", _fbSwitch.on], @"switch", nil]];
-				
-				[HONAppDelegate setAllowsFBPosting:_fbSwitch.on];
-				//[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_FB_POSTING" object:nil];
-			
-			} else {
 				//NSLog(@"-----loginViewShowingLoggedInUser-----");
 				[[Mixpanel sharedInstance] track:@"Notifications"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d", _fbSwitch.on], @"switch", nil]];
+															 [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
 				
-				ASIFormDataRequest *toggleRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
+				toggleRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 				[toggleRequest setDelegate:self];
 				[toggleRequest setPostValue:[NSString stringWithFormat:@"%d", 4] forKey:@"action"];
 				[toggleRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 				[toggleRequest setPostValue:(_notificationSwitch.on) ? @"Y" : @"N" forKey:@"isNotifications"];
 				[toggleRequest startAsynchronous];
-			}
 			break;
 			
 		case 1:

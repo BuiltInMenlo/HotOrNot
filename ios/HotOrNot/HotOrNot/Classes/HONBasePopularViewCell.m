@@ -7,6 +7,7 @@
 //
 
 #import "HONBasePopularViewCell.h"
+#import "HONAppDelegate.h"
 
 @interface HONBasePopularViewCell()
 @property (nonatomic, strong) UIImageView *bgImgView;
@@ -30,8 +31,32 @@
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 20.0);
-		_bgImgView.image = [UIImage imageNamed:@"leaderTableHeader.png"];
+		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:dailyButton];
+		
+		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 25.0, 50.0, 16.0)];
+		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		ptsLabel.textColor = [UIColor whiteColor];
+		ptsLabel.backgroundColor = [UIColor clearColor];
+		ptsLabel.textAlignment = NSTextAlignmentCenter;
+		ptsLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+		ptsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
+		[self addSubview:ptsLabel];
+		
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 25.0, 140.0, 16.0)];
+		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		subjectLabel.textColor = [UIColor whiteColor];
+		subjectLabel.backgroundColor = [UIColor clearColor];
+		subjectLabel.textAlignment = NSTextAlignmentCenter;
+		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
+		[self addSubview:subjectLabel];
 	}
 	
 	return (self);
@@ -76,6 +101,10 @@
 
 - (void)_goRandomChallenge {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"RANDOM_CHALLENGE" object:nil];
+}
+
+- (void)_goDailyChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"DAILY_CHALLENGE" object:nil];
 }
 
 @end

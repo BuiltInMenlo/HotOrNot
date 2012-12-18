@@ -10,6 +10,7 @@
 #import "UIImageView+WebCache.h"
 
 #import "HONAppDelegate.h"
+#import "HONVoteHeaderView.h"
 
 
 @interface HONVoteItemViewCell()
@@ -31,23 +32,54 @@
 	return (NSStringFromClass(self));
 }
 
+- (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
+	if ((self = [self init])) {
+		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:dailyButton];
+		
+		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 25.0, 50.0, 16.0)];
+		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		ptsLabel.textColor = [UIColor whiteColor];
+		ptsLabel.backgroundColor = [UIColor clearColor];
+		ptsLabel.textAlignment = NSTextAlignmentCenter;
+		ptsLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+		ptsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
+		[self addSubview:ptsLabel];
+		
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 25.0, 140.0, 16.0)];
+		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		subjectLabel.textColor = [UIColor whiteColor];
+		subjectLabel.backgroundColor = [UIColor clearColor];
+		subjectLabel.textAlignment = NSTextAlignmentCenter;
+		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
+		[self addSubview:subjectLabel];
+	}
+	
+	return (self);
+}
+
 - (id)init {
 	if ((self = [super init])) {
-		self.backgroundColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1.0];
-		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 341.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 54.0, 320.0, 341.0)];
 		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
 		[self addSubview:bgImgView];
 				
 		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_lVoteButton.frame = CGRectMake(30.0, 270.0, 106.0, 61.0);
+		_lVoteButton.frame = CGRectMake(30.0, 324.0, 106.0, 61.0);
 		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
 		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active.png"] forState:UIControlStateHighlighted];
 		[_lVoteButton addTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_lVoteButton];
 		
 		_rVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_rVoteButton.frame = CGRectMake(182.0, 270.0, 106.0, 61.0);
+		_rVoteButton.frame = CGRectMake(182.0, 324.0, 106.0, 61.0);
 		[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
 		[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active.png"] forState:UIControlStateHighlighted];
 		[_rVoteButton addTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
@@ -65,7 +97,11 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 17.0, 120.0, 245.0)];
+	HONVoteHeaderView *headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
+	[headerView setChallengeVO:challengeVO];
+	[self addSubview:headerView];
+	
+	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 71.0, 120.0, 245.0)];
 	_lHolderView.clipsToBounds = YES;
 	[self addSubview:_lHolderView];
 	
@@ -78,7 +114,7 @@
 	[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
 	[_lHolderView addSubview:lZoomButton];
 	
-	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 17.0, 120.0, 245.0)];
+	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 71.0, 120.0, 245.0)];
 	_rHolderView.clipsToBounds = YES;
 	[self addSubview:_rHolderView];
 	
@@ -92,7 +128,7 @@
 	[_rHolderView addSubview:rZoomButton];
 	
 	UIButton *scoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	scoreButton.frame = CGRectMake(20.0, 350.0, 84.0, 16.0);
+	scoreButton.frame = CGRectMake(20.0, 404.0, 84.0, 16.0);
 	[scoreButton setTitleColor:[HONAppDelegate honBlueTxtColor] forState:UIControlStateNormal];
 	scoreButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 	[scoreButton setTitle:[NSString stringWithFormat:@"%d votes", (_challengeVO.scoreCreator + _challengeVO.scoreChallenger)] forState:UIControlStateNormal];
@@ -118,7 +154,7 @@
 	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
 	[self addSubview:overlayView];
 	
-	UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 92.0, 84.0, 84.0)];
+	UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
 	lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
 	[self addSubview:lScoreImgView];
 	
@@ -144,7 +180,7 @@
 	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
 	[self addSubview:overlayView];
 	
-	UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 92.0, 84.0, 84.0)];
+	UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
 	rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
 	[self addSubview:rScoreImgView];
 	
@@ -169,6 +205,10 @@
 
 - (void)_goScore {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:self.challengeVO];
+}
+
+- (void)_goDailyChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"DAILY_CHALLENGE" object:nil];
 }
 
 @end

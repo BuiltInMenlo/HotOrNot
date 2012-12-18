@@ -99,7 +99,7 @@
 	//NSLog(@"loadView");
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Confirm Challenge" hasFBSwitch:NO];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Confirm Challenge"];
 	[self.view addSubview:headerView];
 		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -318,11 +318,16 @@
 		
 	} @catch (AmazonClientException *exception) {
 		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+			_progressHUD.labelText = NSLocalizedString(@"Upload Error", @"Status message when internet connectivity is lost");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
 		}
 		
-		[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 	}
 }
 

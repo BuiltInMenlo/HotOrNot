@@ -87,7 +87,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Popular" hasFBSwitch:NO];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Popular"];
 	[self.view addSubview:_headerView];
 	
 	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 1.0, 169.0, 44.0)];
@@ -189,6 +189,21 @@
 
 
 #pragma mark - Navigation
+- (void)_goCreateChallenge {
+	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
+//	if (FBSession.activeSession.state == 513) {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+	
+//	} else
+//		[self _goLogin];
+}
+
 - (void)_goLeaders {
 	[[Mixpanel sharedInstance] track:@"Popular Toggle - Leaders"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -252,7 +267,6 @@
 }
 
 - (void)_refreshList:(NSNotification *)notification {
-	[_headerView updateFBSwitch];
 	[self _goRefresh];
 }
 
@@ -287,6 +301,23 @@
 	
 	} else
 		return ([_subjects count] + 2);
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (1);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	
+	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:createChallengeButton];
+	
+	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -337,10 +368,14 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0)
-		return (20.0);
+		return (55.0);
 	
 	else
 		return (70.0);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (78.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

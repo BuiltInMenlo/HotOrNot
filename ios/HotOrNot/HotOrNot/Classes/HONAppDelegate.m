@@ -129,10 +129,8 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	NSArray *voteArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"votes"];
 	
 	for (NSNumber *cID in voteArray) {
-		NSLog(@"cID:[%d] <> challengeID:[%d]", [cID intValue], challengeID);
-		if ([cID intValue] == challengeID) {
+		if ([cID intValue] == challengeID)
 			return (YES);
-		}
 	}
 	
 	return (NO);

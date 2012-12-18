@@ -892,7 +892,7 @@
 					$score_arr['challenger']++;
 			}
 			
-			if ($winningUser_id == $creator_id && ($score_arr['creator'] == 5 || $score_arr['creator'] == 10 || $score_arr['creator'] == 25 || $score_arr['creator'] == 50)) {
+			if ($winningUser_id == $creator_id && ($score_arr['creator'] == 10 || $score_arr['creator'] == 20 || $score_arr['creator'] == 30)) {
 				$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 				$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 				
@@ -911,7 +911,7 @@
 				curl_close($ch);	
 			}
 			
-			if ($winningUser_id == $challenger_id && ($score_arr['challenger'] == 5 || $score_arr['challenger'] == 10 || $score_arr['challenger'] == 25 || $score_arr['challenger'] == 50)) {
+			if ($winningUser_id == $challenger_id && ($score_arr['challenger'] == 10 || $score_arr['challenger'] == 20 || $score_arr['challenger'] == 30)) {
 				$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 				$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 				

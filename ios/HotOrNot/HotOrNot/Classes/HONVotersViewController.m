@@ -73,7 +73,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"Voters for #%@", _challengeVO.subjectName] hasFBSwitch:NO];
+	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"Voters for #%@", _challengeVO.subjectName]];
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -198,7 +198,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONVotersViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONVotersViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	
 	@autoreleasepool {

@@ -12,7 +12,7 @@
 @interface HONVoteItemViewCell : UITableViewCell
 
 + (NSString *)cellReuseIdentifier;
-
+- (id)initAsTopCell:(int)points withSubject:(NSString *)subject;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 
 @end
