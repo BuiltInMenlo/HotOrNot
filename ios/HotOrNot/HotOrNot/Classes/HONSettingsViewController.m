@@ -20,6 +20,7 @@
 #import "HONLoginViewController.h"
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
+#import "HONUsernameViewController.h"
 
 @interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, ASIHTTPRequestDelegate, FBLoginViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -36,7 +37,7 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSupport:) name:@"SHOW_SUPPORT" object:nil];
 		
-		_captions = [NSArray arrayWithObjects:@"", @"Notifications", (FBSession.activeSession.state == 513) ? @"Logout" : @"Login", @"Privacy Policy", @"", nil];
+		_captions = [NSArray arrayWithObjects:@"", @"Notifications", (FBSession.activeSession.state == 513) ? @"Logout" : @"Login", @"Username", @"Privacy Policy", @"", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -77,8 +78,6 @@
 }
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(_goDone)];
 }
 
 - (void)viewDidUnload {
@@ -169,7 +168,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (5);
+	return (6);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -196,7 +195,7 @@
 		if (indexPath.row == 0)
 			cell = [[HONSettingsViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
 		
-		else if (indexPath.row == 4)
+		else if (indexPath.row == 5)
 			cell = [[HONSettingsViewCell alloc] initAsBottomCell];
 		
 		else
@@ -226,7 +225,7 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	if (indexPath.row == 2 || indexPath.row == 3)
+	if (indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4)
 		return (indexPath);
 	
 	else
@@ -237,17 +236,24 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
-	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+	UINavigationController *navController;
 	switch (indexPath.row) {
 		case 2:
 			if (FBSession.activeSession.state == 513)
 				[FBSession.activeSession closeAndClearTokenInformation];
 			
+			navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
 			[navController setNavigationBarHidden:YES];
 			[self presentViewController:navController animated:YES completion:nil];
 			break;
 			
 		case 3:
+			navController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
+			[navController setNavigationBarHidden:YES];
+			[self presentViewController:navController animated:YES completion:nil];
+			break;
+			
+		case 4:
 			[self.navigationController pushViewController:[[HONPrivacyViewController alloc] init] animated:YES];
 			break;
 	}

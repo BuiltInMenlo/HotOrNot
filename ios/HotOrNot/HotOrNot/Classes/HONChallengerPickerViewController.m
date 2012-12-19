@@ -32,6 +32,7 @@
 @property(nonatomic, strong) NSString *filename;
 @property(nonatomic, strong) UITextField *subjectTextField;
 @property(nonatomic, strong) UIButton *editButton;
+@property(nonatomic, strong) UIButton *loginFriendsButton;
 @property(nonatomic) BOOL isFlipped;
 //@property(nonatomic, strong) NSString *rndSubject;
 @end
@@ -57,6 +58,11 @@
 		[[Mixpanel sharedInstance] track:@"Pick Challenger"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_sessionStateChanged:)
+																	name:HONSessionStateChangedNotification
+																 object:nil];
 	}
 	
 	return (self);
@@ -73,6 +79,11 @@
 		[[Mixpanel sharedInstance] track:@"Pick Challenger"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_sessionStateChanged:)
+																	name:HONSessionStateChangedNotification
+																 object:nil];
 	}
 	
 	return (self);
@@ -89,6 +100,11 @@
 		[[Mixpanel sharedInstance] track:@"Pick Challenger"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_sessionStateChanged:)
+																	name:HONSessionStateChangedNotification
+																 object:nil];
 	}
 	
 	return (self);
@@ -135,22 +151,20 @@
 	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_editButton];
 	
-	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(18.0, 338.0, 284.0, 49.0);
-	[friendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive.png" : @"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
-	[friendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active.png" : @"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
+	_loginFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_loginFriendsButton.frame = CGRectMake(18.0, 338.0, 284.0, 49.0);
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive.png" : @"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active.png" : @"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
 	
 	if (FBSession.activeSession.state == 513)
-		[friendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
-	
+		[_loginFriendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
 	else
-		[friendsButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+		[_loginFriendsButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 	
-	friendsButton.hidden = (FBSession.activeSession.state != 513);
-	[self.view addSubview:friendsButton];
+	[self.view addSubview:_loginFriendsButton];
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(18.0, 338.0 + ((int)(FBSession.activeSession.state == 513) * 60), 284.0, 49.0);
+	randomButton.frame = CGRectMake(18.0, 398.0, 284.0, 49.0);
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_nonActive.png"] forState:UIControlStateNormal];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_Active.png"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -407,6 +421,23 @@
 	[super didReceiveMemoryWarning];
 }
 
+
+#pragma mark - Notifications
+- (void)_sessionStateChanged:(NSNotification *)notification {
+	FBSession *session = (FBSession *)[notification object];
+	NSLog(@"FBSession:[%d]", session.state);
+	
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive.png" : @"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active.png" : @"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
+	
+	[_loginFriendsButton removeTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
+	[_loginFriendsButton removeTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+	
+	if (FBSession.activeSession.state == 513)
+		[_loginFriendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
+	else
+		[_loginFriendsButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+}
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {

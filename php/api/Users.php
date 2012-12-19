@@ -112,6 +112,7 @@
 				"id" => $row->id, 
 				"name" => $row->username, 
 				"token" => $row->device_token, 
+				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points, 
 				"notifications" => $row->notifications
@@ -153,6 +154,7 @@
 				"id" => $row->id, 
 				"name" => $row->username, 
 				"token" => $row->device_token, 
+				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid,
 				"points" => $row->points + $score,
 				"notifications" => $row->notifications
@@ -176,6 +178,7 @@
 				"id" => $row->id, 
 				"name" => $row->username, 
 				"token" => $row->device_token, 
+				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points + $score, 
 				"notifications" => $row->notifications
@@ -196,6 +199,7 @@
 				"id" => $row->id, 
 				"name" => $row->username, 
 				"token" => $row->device_token, 
+				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points + $score, 
 				"notifications" => $row->notifications
@@ -221,6 +225,7 @@
 				"id" => $row->id, 
 				"name" => $row->username, 
 				"token" => $row->device_token, 
+				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points + $score, 
 				"notifications" => $row->notifications

@@ -34,6 +34,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 
 @interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate, KiipDelegate>
 @property (nonatomic, strong) UIAlertView *networkAlertView;
+@property (nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 - (void)_registerUser;
 @end
 
@@ -310,54 +311,30 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	
 	switch (state) {
 		case FBSessionStateOpen: {
-			NSLog(@"--FBSessionStateOpen--");
+			NSLog(@"--FBSessionStateOpen--AppDelegate");
 			[self.loginViewController dismissViewControllerAnimated:YES completion:nil];
-			
-			//			if (self.loginViewController != nil) {
-			//				UIViewController *topViewController = [self.tabBarController topViewController];
-			//				[topViewController dismissModalViewControllerAnimated:YES];
-			//				self.loginViewController = nil;
-			//			}
-			
+						
 			// FBSample logic
 			// Pre-fetch and cache the friends for the friend picker as soon as possible to improve
 			// responsiveness when the user tags their friends.
 			FBCacheDescriptor *cacheDescriptor = [FBFriendPickerViewController cacheDescriptor];
 			[cacheDescriptor prefetchAndCacheForSession:session];
-		}
-			break;
+		} break;
+		
 		case FBSessionStateClosed:
-			NSLog(@"--FBSessionStateClosed--");
+			NSLog(@"--FBSessionStateClosed--AppDelegate");
 			break;
 			
 		case FBSessionStateClosedLoginFailed: {
-			NSLog(@"--FBSessionStateClosedLoginFailed--");
-			// FBSample logic
-			// Once the user has logged out, we want them to be looking at the root view.
-			//			UIViewController *topViewController = [self.navController topViewController];
-			//			UIViewController *modalViewController = [topViewController modalViewController];
-			//			if (modalViewController != nil) {
-			//				[topViewController dismissModalViewControllerAnimated:NO];
-			//			}
-			//			[self.navController popToRootViewControllerAnimated:NO];
+			NSLog(@"--FBSessionStateClosedLoginFailed--AppDelegate");
 			
 			[FBSession.activeSession closeAndClearTokenInformation];
-			
-			// if the token goes invalid we want to switch right back to
-			// the login view, however we do it with a slight delay in order to
-			// account for a race between this and the login view dissappearing
-			// a moment before
-			
 			self.loginViewController = [[HONLoginViewController alloc] init];
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.loginViewController];
 			[navigationController setNavigationBarHidden:YES];
 			[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
-			
-			//			[self performSelector:@selector(showLoginView)
-			//						  withObject:nil
-			//						  afterDelay:0.5f];
-		}
-			break;
+		} break;
+		
 		default:
 			break;
 	}
@@ -376,6 +353,12 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 }
 
 
+#pragma mark - Notifications
+- (void)_fbSwitchHidden:(NSNotification *)notification {
+	if ([(NSString *)[notification object] isEqualToString:@"N"])
+		[[[UIApplication sharedApplication] delegate].window addSubview:_facebookSwitchView]; //[self addSubview:_switchButton];
+}
+
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -389,6 +372,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
 	
 	NSLog(@"hasNetwork[%d] canPingParseServer[%d]", [HONAppDelegate hasNetwork], [HONAppDelegate canPingParseServer]);
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		NSLog(@"WTF");
@@ -530,8 +514,8 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 			
 			NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
 			
-			HONFacebookSwitchView *facebookSwitchView = [[HONFacebookSwitchView alloc] init];
-			[self.window addSubview:facebookSwitchView];
+			_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
+			[self.window addSubview:_facebookSwitchView];
 		
 		} else {
 			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bad Network Connection"

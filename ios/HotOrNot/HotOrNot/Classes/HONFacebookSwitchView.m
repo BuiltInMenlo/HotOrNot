@@ -6,8 +6,11 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "Facebook.h"
+
 #import "HONFacebookSwitchView.h"
 #import "HONAppDelegate.h"
+#import "HONLoginViewController.h"
 
 @implementation HONFacebookSwitchView
 
@@ -37,6 +40,14 @@
 	
 	[HONAppDelegate setAllowsFBPosting:!canPost];
 	[self _updateSwitch];
+	
+	if ([HONAppDelegate allowsFBPosting] && FBSession.activeSession.state != 513) {
+		UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navController setNavigationBarHidden:YES];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController presentViewController:navController animated:YES completion:nil];
+	
+	} else
+		[FBSession.activeSession closeAndClearTokenInformation];
 }
 
 #pragma mark - Notifications
@@ -45,7 +56,9 @@
 }
 
 - (void)_fbSwitchHidden:(NSNotification *)notification {
-	_switchButton.hidden = [(NSString *)[notification object] isEqualToString:@"Y"];
+	if ([(NSString *)[notification object] isEqualToString:@"Y"])
+		[self removeFromSuperview];//[_switchButton removeFromSuperview];
+	
 	[self _updateSwitch];
 }
 

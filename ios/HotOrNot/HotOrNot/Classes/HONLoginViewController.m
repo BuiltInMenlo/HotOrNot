@@ -56,6 +56,8 @@
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
 	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];
 	[footerImgView addSubview:facebookButton];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 }
 
 - (void)viewDidLoad {
@@ -89,6 +91,8 @@
 					NSLog(@"user [%@]", user);
 					  
 					[HONAppDelegate writeFBProfile:user];
+					[HONAppDelegate setAllowsFBPosting:YES];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
 					
 					//if ([[HONAppDelegate infoForUser] objectForKey:@"id"] != @"1") {
 						ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
@@ -106,7 +110,7 @@
 		 
 		 switch (state) {
 			 case FBSessionStateOpen: {
-				 NSLog(@"--FBSessionStateOpen--");
+				 NSLog(@"--FBSessionStateOpen--Login");
 				 FBCacheDescriptor *cacheDescriptor = [FBFriendPickerViewController cacheDescriptor];
 				 [cacheDescriptor prefetchAndCacheForSession:session];
 				 				 
@@ -114,11 +118,11 @@
 			 }
 				 break;
 			 case FBSessionStateClosed:
-				 NSLog(@"--FBSessionStateClosed--");
+				 NSLog(@"--FBSessionStateClosed--Login");
 				 break;
 				 
 			 case FBSessionStateClosedLoginFailed:
-				 NSLog(@"--FBSessionStateClosedLoginFailed--");
+				 NSLog(@"--FBSessionStateClosedLoginFailed--Login");
 				 break;
 			 default:
 				 break;
