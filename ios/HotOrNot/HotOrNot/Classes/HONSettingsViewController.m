@@ -103,7 +103,7 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Settings"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	

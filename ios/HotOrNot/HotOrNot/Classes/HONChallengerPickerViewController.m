@@ -201,6 +201,10 @@
 }
 
 - (void)_goLogin {
+	[[Mixpanel sharedInstance] track:@"Preview Challenge - Facebook Login"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[FBSession.activeSession closeAndClearTokenInformation];
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
@@ -209,6 +213,10 @@
 }
 
 - (void)_goEditSubject {
+	[[Mixpanel sharedInstance] track:@"Preview Challenge - Edit Hashtag"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_subjectTextField.text = @"";
 	[_subjectTextField becomeFirstResponder];
 }
@@ -427,6 +435,8 @@
 	FBSession *session = (FBSession *)[notification object];
 	NSLog(@"FBSession:[%d]", session.state);
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	
 	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive.png" : @"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
 	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active.png" : @"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
 	
@@ -441,6 +451,10 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
+	[[Mixpanel sharedInstance] track:@"Preview Challenge - Edit Hashtag"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_editButton.hidden = YES;
 }
 

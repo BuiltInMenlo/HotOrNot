@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "Mixpanel.h"
+
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
 
@@ -24,6 +26,10 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Change Username"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		self.view.backgroundColor = [UIColor whiteColor];
 		_username = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 	}
@@ -110,15 +116,27 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
+	[[Mixpanel sharedInstance] track:@"Change Username - Close"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_goEditSubject {
+	[[Mixpanel sharedInstance] track:@"Change Username - Edit"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_usernameTextField.text = @"";
 	[_usernameTextField becomeFirstResponder];
 }
 
 - (void)_goSubmit {
+	[[Mixpanel sharedInstance] track:@"Change Username - Submit"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[_usernameTextField resignFirstResponder];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

@@ -138,6 +138,10 @@
 	
 	switch(buttonIndex) {
 		case 0:
+			[[Mixpanel sharedInstance] track:@"Challenge Voters - Create Challenge"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_voterVO.userID withSubject:_challengeVO.subjectName]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];

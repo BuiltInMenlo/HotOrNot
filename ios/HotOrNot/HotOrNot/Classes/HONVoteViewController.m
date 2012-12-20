@@ -245,7 +245,7 @@
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Refresh - Voting"
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -254,13 +254,17 @@
 }
 
 - (void)_goDailyChallenge {
+	[[Mixpanel sharedInstance] track:@"Daily Challenge - Vote Wall"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Vote Wall"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -384,6 +388,11 @@
 }
 
 - (void)_showVoters:(NSNotification *)notification {
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Voters"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:vo] animated:YES];
 }

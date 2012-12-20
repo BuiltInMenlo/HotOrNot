@@ -7,6 +7,7 @@
 //
 
 #import "Facebook.h"
+#import "Mixpanel.h"
 
 #import "HONFacebookSwitchView.h"
 #import "HONAppDelegate.h"
@@ -38,16 +39,18 @@
 - (void)_goToggle {
 	BOOL canPost = [HONAppDelegate allowsFBPosting];
 	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Toggle Facebook - (%d)", canPost]
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[HONAppDelegate setAllowsFBPosting:!canPost];
 	[self _updateSwitch];
 	
-	if ([HONAppDelegate allowsFBPosting] && FBSession.activeSession.state != 513) {
+	if (FBSession.activeSession.state != 513) {
 		UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
 		[navController setNavigationBarHidden:YES];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController presentViewController:navController animated:YES completion:nil];
-	
-	} else
-		[FBSession.activeSession closeAndClearTokenInformation];
+	}
 }
 
 #pragma mark - Notifications

@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "Mixpanel.h"
+
 #import "HONPrivacyViewController.h"
 #import "HONAppDelegate.h"
 
@@ -22,6 +24,10 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[Mixpanel sharedInstance] track:@"Privacy Policy"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	}
 	

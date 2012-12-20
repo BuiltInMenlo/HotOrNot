@@ -92,8 +92,9 @@
 					  
 					[HONAppDelegate writeFBProfile:user];
 					[HONAppDelegate setAllowsFBPosting:YES];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
 					
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					//if ([[HONAppDelegate infoForUser] objectForKey:@"id"] != @"1") {
 						ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 						[userRequest setDelegate:self];

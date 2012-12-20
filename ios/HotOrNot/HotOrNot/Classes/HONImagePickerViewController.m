@@ -456,6 +456,10 @@
 //	}
 	
 	if (!self.needsChallenger) {
+		[[Mixpanel sharedInstance] track:@"Submit Challenge"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		if ([self.subjectName length] == 0)
 			self.subjectName = [HONAppDelegate rndDefaultSubject];
 		

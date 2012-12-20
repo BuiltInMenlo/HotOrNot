@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "Mixpanel.h"
+
 #import "HONBasePopularViewCell.h"
 #import "HONAppDelegate.h"
 
@@ -104,6 +106,10 @@
 }
 
 - (void)_goDailyChallenge {
+	[[Mixpanel sharedInstance] track:@"Daily Challenge - Popular"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"DAILY_CHALLENGE" object:nil];
 }
 

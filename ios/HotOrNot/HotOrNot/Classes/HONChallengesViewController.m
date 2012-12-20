@@ -214,7 +214,7 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Create Challenge Button"
+	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Challenge Wall"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -252,7 +252,7 @@
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Refresh - Challenge Wall"
+	[[Mixpanel sharedInstance] track:@"Challenge Wall - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -314,6 +314,10 @@
 
 - (void)_dailyChallenge:(NSNotification *)notification {
 //	if (FBSession.activeSession.state == 513) {
+	[[Mixpanel sharedInstance] track:@"Daily Challenge - Challenge Wall"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsDailyChallenge:[HONAppDelegate dailySubjectName]]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];

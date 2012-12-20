@@ -6,8 +6,9 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONCameraOverlayView.h"
+#import "Mixpanel.h"
 
+#import "HONCameraOverlayView.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
@@ -42,19 +43,19 @@
 		
 		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _gutterSize.height)];
 		headerGutterView.backgroundColor = [UIColor blackColor];
-		[self addSubview:headerGutterView];
+		//[self addSubview:headerGutterView];
 		
 		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - _gutterSize.height, 320.0, _gutterSize.height)];
 		footerGutterView.backgroundColor = [UIColor blackColor];
-		[self addSubview:footerGutterView];
+		//[self addSubview:footerGutterView];
 		
 		UIView *lGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _gutterSize.width, self.frame.size.height)];
 		lGutterView.backgroundColor = [UIColor blackColor];
-		[self addSubview:lGutterView];
+		//[self addSubview:lGutterView];
 		
 		UIView *rGutterView = [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width - _gutterSize.width, 0.0, _gutterSize.width, self.frame.size.height)];
 		rGutterView.backgroundColor = [UIColor blackColor];
-		[self addSubview:rGutterView];
+		//[self addSubview:rGutterView];
 		
 		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo"];
 		[self addSubview:headerView];
@@ -186,6 +187,10 @@
 }
 
 - (void)showPreview:(UIImage *)image {
+	[[Mixpanel sharedInstance] track:@"Image Preview"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
@@ -196,6 +201,10 @@
 }
 
 - (void)hidePreview {
+	[[Mixpanel sharedInstance] track:@"Image Preview - Back"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_previewHolderView.hidden = YES;
 	
 	for (UIView *subview in _previewHolderView.subviews) {
@@ -213,16 +222,28 @@
 }
 
 - (void)goNext:(id)sender {
+	[[Mixpanel sharedInstance] track:@"Image Preview - Accept"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[self.delegate closePreview];
 }
 
 - (void)_goEditSubject {
+	[[Mixpanel sharedInstance] track:@"Camera - Edit Hashtag"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_subjectTextField.text = @"";
 	[_subjectTextField becomeFirstResponder];
 }
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
+	[[Mixpanel sharedInstance] track:@"Camers - Edit Hashtag"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_editButton.hidden = YES;
 }
 

@@ -29,11 +29,13 @@
 #import "HONLoginViewController.h"
 #import "HONChallengeVO.h"
 #import "HONFacebookSwitchView.h"
+#import "HONUsernameViewController.h"
 
 NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
 
 @interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate, KiipDelegate>
 @property (nonatomic, strong) UIAlertView *networkAlertView;
+@property (nonatomic, strong) UIAlertView *loginAlertView;
 @property (nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 - (void)_registerUser;
 @end
@@ -329,10 +331,6 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 			NSLog(@"--FBSessionStateClosedLoginFailed--AppDelegate");
 			
 			[FBSession.activeSession closeAndClearTokenInformation];
-			self.loginViewController = [[HONLoginViewController alloc] init];
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.loginViewController];
-			[navigationController setNavigationBarHidden:YES];
-			[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
 		} break;
 		
 		default:
@@ -507,9 +505,15 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 			//[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 			
 			if (![self openSession]) {
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
+				self.loginViewController = [[HONLoginViewController alloc] init];
+				//[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
+				
+				_loginAlertView = [[UIAlertView alloc] initWithTitle:@"Username"
+																			message:@"Login to Facebook to see your friends or change your username."
+																		  delegate:self
+															  cancelButtonTitle:nil
+															  otherButtonTitles:@"Login", @"Change Username", nil];
+				[_loginAlertView show];
 			}
 			
 			NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
@@ -710,9 +714,27 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 
 #pragma mark - AlertView delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	NSLog(@"BUTTON:[%d]", buttonIndex);
 	
 	if (alertView == _networkAlertView)
 		NSLog(@"EXIT APP");//exit(0);
+	
+	else if (alertView == _loginAlertView) {
+		UINavigationController *navigationController;
+		
+		switch (buttonIndex) {
+			case 0:
+				navigationController = [[UINavigationController alloc] initWithRootViewController:self.loginViewController];
+				break;
+				
+			case 1:
+				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
+				break;
+		}
+		
+		[navigationController setNavigationBarHidden:YES];
+		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+	}
 	
 	else {
 		switch(buttonIndex) {
