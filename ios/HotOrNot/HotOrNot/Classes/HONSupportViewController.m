@@ -79,6 +79,7 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 

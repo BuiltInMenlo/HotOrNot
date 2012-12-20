@@ -57,7 +57,7 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor blackColor];
 		//self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
-		self.subjectName = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
+		self.subjectName = [HONAppDelegate rndDefaultSubject];
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
@@ -77,7 +77,7 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		self.subjectName = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
+		self.subjectName = [HONAppDelegate rndDefaultSubject];
 		self.challengerID = userID;
 		self.needsChallenger = NO;
 		self.submitAction = 9;
@@ -98,7 +98,7 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		self.subjectName = [NSString stringWithFormat:@"#%@", subject];
+		self.subjectName = subject;
 		self.challengerID = userID;
 		self.needsChallenger = NO;
 		self.submitAction = 9;
@@ -123,7 +123,7 @@
 		
 		self.challengeVO = vo;
 		self.fbID = vo.creatorFB;
-		self.subjectName = [NSString stringWithFormat:@"#%@", vo.subjectName];
+		self.subjectName = vo.subjectName;
 		self.submitAction = 4;
 		self.needsChallenger = NO;
 		self.isFirstAppearance = YES;
@@ -145,7 +145,7 @@
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
-		self.subjectName = [NSString stringWithFormat:@"#%@", subject];
+		self.subjectName = subject;
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
@@ -167,7 +167,7 @@
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
-		self.subjectName = [NSString stringWithFormat:@"#%@", subject];
+		self.subjectName = subject;
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
@@ -463,9 +463,6 @@
 		if ([self.subjectName length] == 0)
 			self.subjectName = [HONAppDelegate rndDefaultSubject];
 		
-		if ([self.subjectName hasPrefix:@"#"])
-			self.subjectName = [self.subjectName substringFromIndex:1];
-		
 		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 		
 		NSString *filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
@@ -556,10 +553,10 @@
 	
 	} else {
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithFlippedImage:image subjectName:_subjectName] animated:YES];
+			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithFlippedImage:image subjectName:_subjectName] animated:NO];
 		
 		else
-			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithImage:image subjectName:_subjectName] animated:YES];
+			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithImage:image subjectName:_subjectName] animated:NO];
 	}
 }
 

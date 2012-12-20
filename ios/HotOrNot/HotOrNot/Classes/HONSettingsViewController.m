@@ -35,9 +35,7 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSupport:) name:@"SHOW_SUPPORT" object:nil];
-		
-		_captions = [NSArray arrayWithObjects:@"", @"Notifications", (FBSession.activeSession.state == 513) ? @"Logout" : @"Login", @"Username", @"Privacy Policy", @"", nil];
+		_captions = [NSArray arrayWithObjects:@"", @"Notifications", (FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook", @"Username", @"Privacy Policy", @"Support", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -161,9 +159,6 @@
 
 
 #pragma mark - Notifications
-- (void)_showSupport:(NSNotification *)notification {
-	[self.navigationController pushViewController:[[HONSupportViewController alloc] init] animated:YES];
-}
 
 
 #pragma mark - TableView DataSource Delegates
@@ -195,9 +190,6 @@
 		if (indexPath.row == 0)
 			cell = [[HONSettingsViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
 		
-		else if (indexPath.row == 5)
-			cell = [[HONSettingsViewCell alloc] initAsBottomCell];
-		
 		else
 			cell = [[HONSettingsViewCell alloc] initAsMidCell:[_captions objectAtIndex:indexPath.row]];
 	}
@@ -225,7 +217,7 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	if (indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4)
+	if (indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 5)
 		return (indexPath);
 	
 	else
@@ -254,7 +246,13 @@
 			break;
 			
 		case 4:
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 			[self.navigationController pushViewController:[[HONPrivacyViewController alloc] init] animated:YES];
+			break;
+			
+		case 5:
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+			[self.navigationController pushViewController:[[HONSupportViewController alloc] init] animated:YES];
 			break;
 	}
 }

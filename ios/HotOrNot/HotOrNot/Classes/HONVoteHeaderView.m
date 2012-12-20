@@ -53,7 +53,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	[_creatorImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture", _challengeVO.creatorFB]] placeholderImage:nil options:SDWebImageProgressiveDownload];
-	_titleLabel.text = [NSString stringWithFormat:@"#%@", challengeVO.subjectName];
+	_titleLabel.text = challengeVO.subjectName;
 }
 
 #pragma mark - Navigation

@@ -127,9 +127,6 @@
 		
 	//_rndSubject = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
 	
-	if (![self.subjectName hasPrefix:@"#"])
-		self.subjectName = [NSString stringWithFormat:@"#%@", self.subjectName];
-	
 	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -197,7 +194,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self.navigationController popViewControllerAnimated:YES];
+	[self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)_goLogin {
@@ -325,9 +322,6 @@
 		if ([self.subjectName length] == 0)
 			self.subjectName = [HONAppDelegate rndDefaultSubject];
 		
-		if ([self.subjectName hasPrefix:@"#"])
-			self.subjectName = [self.subjectName substringFromIndex:1];
-		
 		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 		[submitChallengeRequest setDelegate:self];
 		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 8] forKey:@"action"];
@@ -363,9 +357,6 @@
 	
 	if ([self.subjectName length] == 0)
 		self.subjectName = [HONAppDelegate rndDefaultSubject];
-	
-	if ([self.subjectName hasPrefix:@"#"])
-		self.subjectName = [self.subjectName substringFromIndex:1];
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	

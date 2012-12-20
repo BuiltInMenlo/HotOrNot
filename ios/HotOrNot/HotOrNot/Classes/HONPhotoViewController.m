@@ -71,7 +71,7 @@
 //	tmpView.image = [HONAppDelegate cropImage:[UIImage imageNamed:@"firstRun_image01.png"] toRect:CGRectMake(30.0, 30.0, 100.0, 100.0)];
 //	[self.view addSubview:tmpView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"#%@", _subjectTitle]];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_subjectTitle];
 	[self.view addSubview:headerView];
 		
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];

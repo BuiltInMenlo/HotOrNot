@@ -6,10 +6,12 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "ASIFormDataRequest.h"
+#import "MBProgressHUD.h"
 #import "Mixpanel.h"
+
 #import "HONVoteViewController.h"
 #import "HONVoteItemViewCell.h"
-#import "ASIFormDataRequest.h"
 #import "HONAppDelegate.h"
 #import "HONVoteHeaderView.h"
 #import "HONChallengeVO.h"
@@ -28,6 +30,7 @@
 @property(nonatomic, strong) ASIFormDataRequest *challengesRequest;
 @property(nonatomic) BOOL isPushView;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
+@property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong)  UIButton *refreshButton;
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
@@ -174,6 +177,12 @@
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:self.tableView];
+	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Getting Challenges…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
 	
 	if (self.challengeVO == nil)
 		[self _retrieveChallenges];
@@ -364,8 +373,8 @@
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																				delegate:self
 																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:nil
-																	otherButtonTitles:@"Flag Challenge", @"ReChallenge", nil];
+															 destructiveButtonTitle:@"Report Abuse"
+																	otherButtonTitles:@"Share on Facebook", @"ReChallenge", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	
 //	if (_isPushView)
@@ -393,6 +402,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:vo] animated:YES];
 }
@@ -472,7 +482,7 @@
 	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:self.challengeVO.creatorID]];
 	
-	//NSLog(@"BUTTON:[%d]", buttonIndex);
+	NSLog(@"BUTTON:[%d]", buttonIndex);
 	
 	switch (buttonIndex ) {
 		case 0:
@@ -530,11 +540,21 @@
 	} else {
 	}
 	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+	
 	_refreshButton.hidden = NO;
 }
 
 -(void)requestFailed:(ASIHTTPRequest *)request {
 	NSLog(@"requestFailed:\n[%@]", request.error);
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 }
 
 @end

@@ -18,6 +18,7 @@
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UIButton *lVoteButton;
 @property (nonatomic, strong) UIButton *rVoteButton;
+@property (nonatomic, strong) HONVoteHeaderView *headerView;
 @end
 
 @implementation HONVoteItemViewCell
@@ -58,7 +59,7 @@
 		subjectLabel.textAlignment = NSTextAlignmentCenter;
 		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
+		subjectLabel.text = subject;
 		[self addSubview:subjectLabel];
 	}
 	
@@ -70,6 +71,9 @@
 		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 54.0, 320.0, 341.0)];
 		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
 		[self addSubview:bgImgView];
+		
+		_headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
+		[self addSubview:_headerView];
 				
 		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_lVoteButton.frame = CGRectMake(30.0, 324.0, 106.0, 61.0);
@@ -97,9 +101,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	HONVoteHeaderView *headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
-	[headerView setChallengeVO:challengeVO];
-	[self addSubview:headerView];
+	[_headerView setChallengeVO:challengeVO];
 	
 	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 71.0, 120.0, 245.0)];
 	_lHolderView.clipsToBounds = YES;

@@ -55,7 +55,7 @@
 - (void)setSubjectVO:(HONPopularSubjectVO *)subjectVO {
 	_subjectVO = subjectVO;
 	
-	self.subjectLabel.text = [NSString stringWithFormat:@"#%@", _subjectVO.subjectName];
+	self.subjectLabel.text = _subjectVO.subjectName;
 	
 	if (_subjectVO.score == 1)
 		self.scoreLabel.text = @"1 challenge";

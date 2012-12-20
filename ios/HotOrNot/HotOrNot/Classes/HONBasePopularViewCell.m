@@ -57,7 +57,7 @@
 		subjectLabel.textAlignment = NSTextAlignmentCenter;
 		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		subjectLabel.text = [NSString stringWithFormat:@"#%@", subject];
+		subjectLabel.text = subject;
 		[self addSubview:subjectLabel];
 	}
 	
