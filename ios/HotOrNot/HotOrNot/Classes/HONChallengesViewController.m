@@ -105,19 +105,19 @@
 	[_headerView addSubview:activityIndicatorView];
 	
 	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
+	inviteButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 	inviteButton.hidden = (FBSession.activeSession.state != 513);
-	//[headerView addSubview:inviteButton];
+	[_headerView addSubview:inviteButton];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_refreshButton];
+	//[_headerView addSubview:_refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -232,7 +232,7 @@
 	_friends = [NSMutableArray array];
 	
 	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-		NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
+		//NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
 		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"])
 			[_friends addObject: [friend objectForKey:@"id"]];
 		
@@ -241,6 +241,9 @@
 		NSRange range;
 		range.length = 50;
 		range.location = _blockCounter * range.length;
+		
+		if (range.location >= [_friends count])
+			range.location = 0;
 		
 		if (range.location + range.length > [_friends count])
 			range.length = [_friends count] - range.location;
