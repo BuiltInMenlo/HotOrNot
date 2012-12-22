@@ -195,7 +195,7 @@
 				$result = mysql_query($query);
 			
 				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img` `started`, `added`) ';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `started`, `added`) ';
 				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "0000-00-00 00:00:00", NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
@@ -240,7 +240,7 @@
 				$creator_obj = mysql_fetch_object(mysql_query($query));
 								
 				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img` `started`, `added`) ';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `started`, `added`) ';
 				$query .= 'VALUES (NULL, "7", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "" "0000-00-00 00:00:00", NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();

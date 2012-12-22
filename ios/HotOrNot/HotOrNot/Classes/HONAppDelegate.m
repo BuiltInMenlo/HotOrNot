@@ -5,7 +5,7 @@
 //  Created by Matthew Holcombe on 09.06.12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
-
+#import <AVFoundation/AVFoundation.h>
 #import <KiipSDK/KiipSDK.h>
 #import <Parse/Parse.h>
 
@@ -281,6 +281,17 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
 	return ([date timeIntervalSinceDate:utcDate] / 3600);
+}
+
++ (void)playMP3:(NSString *)filename {
+	NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@.mp3", [[NSBundle mainBundle] resourcePath], filename]];
+	
+	NSError *error;
+	AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
+	audioPlayer.numberOfLoops = -1;
+	[audioPlayer play];
+	
+	NSLog(@"PLAY:[%@]", url);
 }
 
 

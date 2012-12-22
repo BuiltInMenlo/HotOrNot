@@ -107,20 +107,6 @@
 		
 		_headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
 		[self addSubview:_headerView];
-		
-		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_lVoteButton.frame = CGRectMake(30.0, 324.0, 106.0, 61.0);
-		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
-		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active.png"] forState:UIControlStateHighlighted];
-		[_lVoteButton addTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_lVoteButton];
-		
-		_rVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_rVoteButton.frame = CGRectMake(182.0, 324.0, 106.0, 61.0);
-		[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
-		[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active.png"] forState:UIControlStateHighlighted];
-		[_rVoteButton addTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_rVoteButton];
 	}
 	
 	return (self);
@@ -145,11 +131,6 @@
 		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		[_lHolderView addSubview:lImgView];
 		
-		UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		lZoomButton.frame = lImgView.frame;
-		[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
-		[_lHolderView addSubview:lZoomButton];
-		
 		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 71.0, 120.0, 245.0)];
 		_rHolderView.clipsToBounds = YES;
 		[self addSubview:_rHolderView];
@@ -158,10 +139,16 @@
 		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		[_rHolderView addSubview:rImgView];
 		
-		UIButton *rZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		rZoomButton.frame = rImgView.frame;
-		[rZoomButton addTarget:self action:@selector(_goRightZoom) forControlEvents:UIControlEventTouchUpInside];
-		[_rHolderView addSubview:rZoomButton];
+		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_lVoteButton.frame = _lHolderView.frame;
+		[_lVoteButton addTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_lVoteButton];
+		
+		_rVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_rVoteButton.frame = _rHolderView.frame;
+		[_rVoteButton addTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_rVoteButton];
+		
 		
 		UIButton *scoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		scoreButton.frame = CGRectMake(20.0, 404.0, 84.0, 16.0);
@@ -174,6 +161,50 @@
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
 			[_lVoteButton removeTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
 			[_rVoteButton removeTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
+			
+			UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
+			lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+			[self addSubview:lScoreImgView];
+			
+			UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
+			rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+			[self addSubview:rScoreImgView];
+			
+			UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
+			lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+			lScoreLabel.backgroundColor = [UIColor clearColor];
+			lScoreLabel.textColor = [UIColor whiteColor];
+			lScoreLabel.textAlignment = NSTextAlignmentCenter;
+			[lScoreImgView addSubview:lScoreLabel];
+			
+			UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
+			rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+			rScoreLabel.backgroundColor = [UIColor clearColor];
+			rScoreLabel.textColor = [UIColor whiteColor];
+			rScoreLabel.textAlignment = NSTextAlignmentCenter;
+			[rScoreImgView addSubview:rScoreLabel];
+
+			
+			if (_challengeVO.scoreCreator > _challengeVO.scoreChallenger) {
+//				UIView *overlayView = [[UIView alloc] initWithFrame:_rHolderView.frame];
+//				overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
+//				[self addSubview:overlayView];
+				
+				lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreCreator + 1)];
+				rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreChallenger + 1)];
+				
+			} else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger) {
+//				UIView *overlayView = [[UIView alloc] initWithFrame:_lHolderView.frame];
+//				overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
+//				[self addSubview:overlayView];
+				
+				lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
+				rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreChallenger + 1)];
+			
+			} else {
+				lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreCreator + 1)];
+				rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreChallenger + 1)];
+			}
 		}
 		
 	} else {
@@ -186,7 +217,7 @@
 		
 		UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		lZoomButton.frame = lImgView.frame;
-		[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
+		[lZoomButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 		[_lHolderView addSubview:lZoomButton];
 	}
 }
@@ -194,9 +225,6 @@
 
 #pragma mark - Navigation
 - (void)_goLeftVote {
-	[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateNormal];
-	[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateHighlighted];
-	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateHighlighted];
 	[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
 	[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
 	
@@ -216,15 +244,20 @@
 	lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreCreator + 1)];
 	[lScoreImgView addSubview:lScoreLabel];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MAIN" object:self.challengeVO];
+	if (_challengeVO.scoreCreator > _challengeVO.scoreChallenger)
+		lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreCreator + 1)];
+	
+	else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger)
+		lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
+	
+	[HONAppDelegate playMP3:@"plumb_damaged"];
+	
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MAIN" object:self.challengeVO];
 }
 
 - (void)_goRightVote {
 	[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
 	[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
-	[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateHighlighted];
-	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateNormal];
-	[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_tapped.png"] forState:UIControlStateHighlighted];
 	
 	UIView *overlayView = [[UIView alloc] initWithFrame:_lHolderView.frame];
 	overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
@@ -242,15 +275,15 @@
 	rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreChallenger + 1)];
 	[rScoreImgView addSubview:rScoreLabel];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_SUB" object:self.challengeVO];
-}
-
-- (void)_goLeftZoom {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:[NSDictionary dictionaryWithObjectsAndKeys:self.challengeVO.imageURL, @"img", self.challengeVO.subjectName, @"title", nil]];
-}
-
-- (void)_goRightZoom {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ZOOM_IMAGE" object:[NSDictionary dictionaryWithObjectsAndKeys:self.challengeVO.image2URL, @"img", self.challengeVO.subjectName, @"title", nil]];
+	if (_challengeVO.scoreCreator > _challengeVO.scoreChallenger)
+		rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreCreator + 1)];
+	
+	else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger)
+		rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
+	
+	[HONAppDelegate playMP3:@"plumb_damaged"];
+	
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_SUB" object:self.challengeVO];
 }
 
 - (void)_goScore {
@@ -259,6 +292,10 @@
 
 - (void)_goDailyChallenge {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"DAILY_CHALLENGE" object:nil];
+}
+
+- (void)_goMore {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MORE" object:self.challengeVO];
 }
 
 @end

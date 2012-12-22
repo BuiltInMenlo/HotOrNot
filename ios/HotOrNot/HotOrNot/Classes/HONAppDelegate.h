@@ -72,6 +72,8 @@ extern NSString *const HONSessionStateChangedNotification;
 + (int)minutesBeforeDate:(NSDate *)date;
 + (int)hoursBeforeDate:(NSDate *)date;
 
++ (void)playMP3:(NSString *)filename;
+
 
 #define kServerPath @"http://discover.getassembly.com/hotornot/api"
 #define kUsersAPI @"Users.php"
