@@ -12,7 +12,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, status, subjectName, creatorName, creatorFB, challengerName, addedDate, startedDate, endDate;
+@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, statusID, status, subjectName, creatorName, creatorFB, challengerName, addedDate, startedDate, endDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -20,14 +20,19 @@
 	
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.creatorID = [[dictionary objectForKey:@"creator_id"] intValue];
+	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
 	
-	switch ([[dictionary objectForKey:@"status"] intValue]) {
+	switch (vo.statusID) {
 		case 1:
 			vo.status = @"Accept";
 			break;
 			
 		case 2:
 			vo.status = @"Waiting";
+			break;
+			
+		case 3:
+			vo.status = @"Canceled";
 			break;
 			
 		case 4:
@@ -47,8 +52,8 @@
 			break;
 	}
 	
-	vo.imageURL = [dictionary objectForKey:@"img_url"];
-	vo.image2URL = [dictionary objectForKey:@"img2_url"];
+	vo.imageURL = [dictionary objectForKey:@"creator_img"];
+	vo.image2URL = [dictionary objectForKey:@"challenger_img"];
 	vo.scoreCreator = [[[dictionary objectForKey:@"score"] objectForKey:@"creator"] intValue];
 	vo.scoreChallenger = [[[dictionary objectForKey:@"score"] objectForKey:@"challenger"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"subject"];

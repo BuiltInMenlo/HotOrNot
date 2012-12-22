@@ -19,6 +19,7 @@
 @property (nonatomic, strong) UIButton *lVoteButton;
 @property (nonatomic, strong) UIButton *rVoteButton;
 @property (nonatomic, strong) HONVoteHeaderView *headerView;
+@property (nonatomic) BOOL hasChallenger;
 @end
 
 @implementation HONVoteItemViewCell
@@ -34,7 +35,7 @@
 }
 
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
-	if ((self = [self init])) {
+	if ((self = [super init])) {
 		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
 		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
@@ -66,15 +67,47 @@
 	return (self);
 }
 
-- (id)init {
+- (id)initAsWaitingCell {
 	if ((self = [super init])) {
+		_hasChallenger = NO;
+		
 		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 54.0, 320.0, 341.0)];
 		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
 		[self addSubview:bgImgView];
 		
 		_headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
 		[self addSubview:_headerView];
-				
+		
+		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_lVoteButton.frame = CGRectMake(30.0, 324.0, 106.0, 61.0);
+		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
+		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active.png"] forState:UIControlStateHighlighted];
+		[_lVoteButton addTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_lVoteButton];
+		
+		_rVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_rVoteButton.frame = CGRectMake(182.0, 324.0, 106.0, 61.0);
+		[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
+		[_rVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active.png"] forState:UIControlStateHighlighted];
+		[_rVoteButton addTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_rVoteButton];
+	}
+	
+	return (self);
+}
+
+
+- (id)initAsStartedCell {
+	if ((self = [super init])) {
+		_hasChallenger = YES;
+		
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 54.0, 320.0, 341.0)];
+		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
+		[self addSubview:bgImgView];
+		
+		_headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
+		[self addSubview:_headerView];
+		
 		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_lVoteButton.frame = CGRectMake(30.0, 324.0, 106.0, 61.0);
 		[_lVoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive.png"] forState:UIControlStateNormal];
@@ -103,43 +136,58 @@
 	
 	[_headerView setChallengeVO:challengeVO];
 	
-	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 71.0, 120.0, 245.0)];
-	_lHolderView.clipsToBounds = YES;
-	[self addSubview:_lHolderView];
-	
-	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
-	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
-	[_lHolderView addSubview:lImgView];
-	
-	UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	lZoomButton.frame = lImgView.frame;
-	[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
-	[_lHolderView addSubview:lZoomButton];
-	
-	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 71.0, 120.0, 245.0)];
-	_rHolderView.clipsToBounds = YES;
-	[self addSubview:_rHolderView];
-	
-	UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
-	[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
-	[_rHolderView addSubview:rImgView];
-	
-	UIButton *rZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	rZoomButton.frame = rImgView.frame;
-	[rZoomButton addTarget:self action:@selector(_goRightZoom) forControlEvents:UIControlEventTouchUpInside];
-	[_rHolderView addSubview:rZoomButton];
-	
-	UIButton *scoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	scoreButton.frame = CGRectMake(20.0, 404.0, 84.0, 16.0);
-	[scoreButton setTitleColor:[HONAppDelegate honBlueTxtColor] forState:UIControlStateNormal];
-	scoreButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	[scoreButton setTitle:[NSString stringWithFormat:@"%d votes", (_challengeVO.scoreCreator + _challengeVO.scoreChallenger)] forState:UIControlStateNormal];
-	[scoreButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:scoreButton];
-	
-	if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
-		[_lVoteButton removeTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
-		[_rVoteButton removeTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
+	if (_hasChallenger) {
+		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 71.0, 120.0, 245.0)];
+		_lHolderView.clipsToBounds = YES;
+		[self addSubview:_lHolderView];
+		
+		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
+		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+		[_lHolderView addSubview:lImgView];
+		
+		UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		lZoomButton.frame = lImgView.frame;
+		[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
+		[_lHolderView addSubview:lZoomButton];
+		
+		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 71.0, 120.0, 245.0)];
+		_rHolderView.clipsToBounds = YES;
+		[self addSubview:_rHolderView];
+		
+		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
+		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+		[_rHolderView addSubview:rImgView];
+		
+		UIButton *rZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		rZoomButton.frame = rImgView.frame;
+		[rZoomButton addTarget:self action:@selector(_goRightZoom) forControlEvents:UIControlEventTouchUpInside];
+		[_rHolderView addSubview:rZoomButton];
+		
+		UIButton *scoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		scoreButton.frame = CGRectMake(20.0, 404.0, 84.0, 16.0);
+		[scoreButton setTitleColor:[HONAppDelegate honBlueTxtColor] forState:UIControlStateNormal];
+		scoreButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		[scoreButton setTitle:[NSString stringWithFormat:@"%d votes", (_challengeVO.scoreCreator + _challengeVO.scoreChallenger)] forState:UIControlStateNormal];
+		[scoreButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:scoreButton];
+		
+		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
+			[_lVoteButton removeTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
+			[_rVoteButton removeTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
+		}
+		
+	} else {
+		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 71.0, kLargeW * 0.5, kLargeW * 0.5)];
+		[self addSubview:_lHolderView];
+		
+		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW * 0.5, kLargeW * 0.5)];
+		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+		[_lHolderView addSubview:lImgView];
+		
+		UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		lZoomButton.frame = lImgView.frame;
+		[lZoomButton addTarget:self action:@selector(_goLeftZoom) forControlEvents:UIControlEventTouchUpInside];
+		[_lHolderView addSubview:lZoomButton];
 	}
 }
 

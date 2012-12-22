@@ -6,7 +6,7 @@
 	  	function __construct() {
 		
 			$this->db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
-			mysql_select_db('hotornot') or die("Could not select database.");
+			mysql_select_db('hotornot-dev') or die("Could not select database.");
 		}
 	
 		function __destruct() {	
@@ -17,14 +17,8 @@
 		}
 		
 		
-		/**
-		 * Helper method to get a string description for an HTTP status code
-		 * http://www.gen-x-design.com/archives/create-a-rest-api-with-php/ 
-		 * @returns status
-		 */
-		function getStatusCodeMessage($status) {
-			
-			$codes = Array(
+		function getStatusCodeMessage($status) {			
+			$codes = array(
 				100 => 'Continue',
 				101 => 'Switching Protocols',
 				200 => 'OK',
@@ -67,20 +61,16 @@
 				504 => 'Gateway Timeout',
 				505 => 'HTTP Version Not Supported');
 
-			return (isset($codes[$status])) ? $codes[$status] : '';
+			return ((isset($codes[$status])) ? $codes[$status] : '');
 		}
-		
-		
-		/**
-		 * Helper method to send a HTTP response code/message
-		 * @returns body
-		 */
-		function sendResponse($status=200, $body='', $content_type='text/html') {
-			
+				
+		function sendResponse($status=200, $body='', $content_type='text/html') {			
 			$status_header = "HTTP/1.1 ". $status ." ". $this->getStatusCodeMessage($status);
+			
 			header($status_header);
 			header("Content-type: ". $content_type);
-			echo $body;
+			
+			echo ($body);
 		}
 	    
 		
@@ -131,14 +121,11 @@
 			if (mysql_num_rows(mysql_query($query)) > 0) {
 				$invite_id = mysql_fetch_object(mysql_query($query))->id;
 				
-				$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeParticipants` ON `tblChallenges`.`id` = `tblChallengeParticipants`.`challenge_id` WHERE `tblChallenges`.`status_id` = 7 AND `tblChallengeParticipants`.`user_id` = '. $invite_id .';';
+				$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 7 AND `challenger_id` = '. $invite_id .';';
 				$invite_result = mysql_query($query);
 				
 				while ($challenge_row = mysql_fetch_array($invite_result, MYSQL_BOTH)) {
-					$query = 'UPDATE `tblChallengeParticipants` SET `user_id` = '. $user_id .' WHERE `challenge_id` = '. $challenge_row['id'] .';';
-					$result = mysql_query($query);
-					
-					$query = 'UPDATE `tblChallenges` SET `status_id` = 2 WHERE `id` = '. $challenge_row['id'] .';';
+					$query = 'UPDATE `tblChallenges` SET `status_id` = 2, `challenger_id` = "'. $user_id .'" WHERE `id` = '. $challenge_row['id'] .';';
 					$result = mysql_query($query);
 				}
 			}

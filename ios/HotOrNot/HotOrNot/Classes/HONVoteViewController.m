@@ -53,7 +53,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.subjectID = 0;
-		self.submitAction = 5;
+		self.submitAction = 1;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		self.challenges = [NSMutableArray new];
@@ -225,14 +225,14 @@
 }
 
 - (void)_retrieveChallenges {
-	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
 	[self.challengesRequest setDelegate:self];
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	if (self.subjectID == 0)
 		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", self.submitAction] forKey:@"action"];
 	
 	else {
-		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
+		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
 		[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", self.subjectID] forKey:@"subjectID"];
 	}
 	
@@ -240,9 +240,9 @@
 }
 
 - (void)_retrieveSingleChallenge:(HONChallengeVO *)vo {
-	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
 	[self.challengesRequest setDelegate:self];
-	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 13] forKey:@"action"];
+	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 3] forKey:@"action"];
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
 	[self.challengesRequest startAsynchronous];
@@ -293,12 +293,12 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_trending.png"];
-	self.submitAction = 5;
+	self.submitAction = 1;
 	
-	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
 	[self.challengesRequest setDelegate:self];
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
 	[self.challengesRequest startAsynchronous];
 }
 
@@ -309,12 +309,12 @@
 
 	
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_recent.png"];
-	self.submitAction = 14;
+	self.submitAction = 4;
 	
-	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	self.challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
 	[self.challengesRequest setDelegate:self];
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 14] forKey:@"action"];
+	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 4] forKey:@"action"];
 	[self.challengesRequest startAsynchronous];
 }
 
@@ -330,7 +330,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 	
-	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
 	[voteRequest setDelegate:self];
 	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 	[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
@@ -351,7 +351,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 	
-	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
 	[voteRequest setDelegate:self];
 	[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 	[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
@@ -444,8 +444,10 @@
 			cell = [[HONVoteItemViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
 		
 		else {
-			cell = [[HONVoteItemViewCell alloc] init];
-			cell.challengeVO = [_challenges objectAtIndex:indexPath.row - 1];
+			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
+			
+			cell = (vo.statusID == 2) ? [[HONVoteItemViewCell alloc] initAsWaitingCell] : [[HONVoteItemViewCell alloc] initAsStartedCell];
+			cell.challengeVO = vo;
 		}
 	}
 	
@@ -510,7 +512,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if ([request isEqual:self.challengesRequest]) {
 		@autoreleasepool {

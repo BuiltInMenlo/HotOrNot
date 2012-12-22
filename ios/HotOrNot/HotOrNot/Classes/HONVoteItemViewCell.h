@@ -13,6 +13,8 @@
 
 + (NSString *)cellReuseIdentifier;
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject;
+- (id)initAsWaitingCell;
+- (id)initAsStartedCell;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 
 @end

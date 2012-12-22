@@ -46,9 +46,9 @@
 }
 
 - (void)_retrieveUsers {
-	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
 	[usersRequest setDelegate:self];
-	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", 15] forKey:@"action"];
+	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
 	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
 	//[usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[usersRequest startAsynchronous];

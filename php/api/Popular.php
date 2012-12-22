@@ -6,7 +6,7 @@
 	  	function __construct() {
 		
 			$this->db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
-			mysql_select_db('hotornot') or die("Could not select database.");
+			mysql_select_db('hotornot-dev') or die("Could not select database.");
 		}
 	
 		function __destruct() {	
@@ -17,14 +17,8 @@
 		}
 		
 		
-		/**
-		 * Helper method to get a string description for an HTTP status code
-		 * http://www.gen-x-design.com/archives/create-a-rest-api-with-php/ 
-		 * @returns status
-		 */
-		function getStatusCodeMessage($status) {
-			
-			$codes = Array(
+		function getStatusCodeMessage($status) {			
+			$codes = array(
 				100 => 'Continue',
 				101 => 'Switching Protocols',
 				200 => 'OK',
@@ -67,20 +61,16 @@
 				504 => 'Gateway Timeout',
 				505 => 'HTTP Version Not Supported');
 
-			return (isset($codes[$status])) ? $codes[$status] : '';
+			return ((isset($codes[$status])) ? $codes[$status] : '');
 		}
-		
-		
-		/**
-		 * Helper method to send a HTTP response code/message
-		 * @returns body
-		 */
-		function sendResponse($status=200, $body='', $content_type='text/html') {
-			
+				
+		function sendResponse($status=200, $body='', $content_type='text/html') {			
 			$status_header = "HTTP/1.1 ". $status ." ". $this->getStatusCodeMessage($status);
+			
 			header($status_header);
 			header("Content-type: ". $content_type);
-			echo $body;
+			
+			echo ($body);
 		}
 	    
 		
@@ -90,10 +80,7 @@
 			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC LIMIT 25;';
 			$user_result = mysql_query($query);
 			
-			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {
-				if (substr($user_row['username'], 0, 12) == "PicChallenge")
-					continue;
-				
+			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {				
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_row['id'] .';';
 				$score = mysql_num_rows(mysql_query($query));
 			

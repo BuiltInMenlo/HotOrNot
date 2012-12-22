@@ -22,6 +22,7 @@
 @property (nonatomic) int scoreChallenger;
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic, retain) NSString *status;
+@property (nonatomic) int statusID;
 @property (nonatomic, retain) NSString *creatorName;
 @property (nonatomic, retain) NSString *creatorFB;
 @property (nonatomic, retain) NSString *challengerName;

@@ -77,7 +77,7 @@ extern NSString *const HONSessionStateChangedNotification;
 #define kUsersAPI @"Users.php"
 #define kChallengesAPI @"Challenges.php"
 #define kPopularAPI @"Popular.php"
-#define kVoteAPI @"Vote.php"
+#define kVotesAPI @"Votes.php"
 
 #define kThumb1W 50.0
 #define kThumb1H 67.0

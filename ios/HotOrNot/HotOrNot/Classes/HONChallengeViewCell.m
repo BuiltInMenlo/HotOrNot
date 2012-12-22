@@ -221,7 +221,7 @@
 		timeLabel.backgroundColor = [UIColor clearColor];
 		timeLabel.textAlignment = NSTextAlignmentCenter;
 		timeLabel.text = timeUntil;
-		[self addSubview:timeLabel];
+		//[self addSubview:timeLabel];
 		
 	} else if ([challengeVO.status isEqualToString:@"Completed"]) {
 		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];

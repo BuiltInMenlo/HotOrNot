@@ -432,7 +432,8 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		PFObject *appIDObject = [appIDQuery getObjectWithId:@"k2SlH68C62"];
 		
 		PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
-		PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"];
+		//PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"]; // live - 1.0
+		PFObject *appObject = [query getObjectWithId:@"eFLGKQWRzD"]; // dev - 1.1
 		
 		PFQuery *durationQuery = [PFQuery queryWithClassName:@"Durations"];
 		PFObject *durationObject = [durationQuery getObjectWithId:@"ND1LzmULX5"];
