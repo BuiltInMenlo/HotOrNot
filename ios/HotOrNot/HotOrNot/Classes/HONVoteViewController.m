@@ -488,7 +488,7 @@
 			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
 			[voteRequest startAsynchronous];
 			break;
-						
+		
 		case 1:
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:self.challengeVO.subjectName]];
 			[navigationController setNavigationBarHidden:YES];
@@ -496,7 +496,7 @@
 			break;
 			
 		case 2:
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:self.challengeVO.creatorID]];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:self.challengeVO.creatorID withSubject:self.challengeVO.subjectName]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;

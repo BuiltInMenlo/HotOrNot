@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AVFoundation/AVFoundation.h>
+
 #import "HONVoteItemViewCell.h"
 #import "UIImageView+WebCache.h"
 
@@ -13,13 +15,14 @@
 #import "HONVoteHeaderView.h"
 
 
-@interface HONVoteItemViewCell()
+@interface HONVoteItemViewCell() <AVAudioPlayerDelegate>
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UIButton *lVoteButton;
 @property (nonatomic, strong) UIButton *rVoteButton;
 @property (nonatomic, strong) HONVoteHeaderView *headerView;
 @property (nonatomic) BOOL hasChallenger;
+@property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
 @end
 
 @implementation HONVoteItemViewCell
@@ -139,6 +142,14 @@
 		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		[_rHolderView addSubview:rImgView];
 		
+		UIImageView *creatorAvatarImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 25.0, 25.0)];
+		[creatorAvatarImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.creatorFB]] placeholderImage:nil];
+		[_lHolderView addSubview:creatorAvatarImgView];
+		
+		UIImageView *challengerAvatarImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 25.0, 25.0)];
+		[challengerAvatarImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.challengerFB]] placeholderImage:nil];
+		[_rHolderView addSubview:challengerAvatarImgView];
+		
 		_lVoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_lVoteButton.frame = _lHolderView.frame;
 		[_lVoteButton addTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
@@ -215,6 +226,10 @@
 		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		[_lHolderView addSubview:lImgView];
 		
+		UIImageView *creatorAvatarImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 25.0, 25.0)];
+		[creatorAvatarImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.creatorFB]] placeholderImage:nil];
+		[_lHolderView addSubview:creatorAvatarImgView];
+		
 		UIButton *lZoomButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		lZoomButton.frame = lImgView.frame;
 		[lZoomButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
@@ -250,7 +265,9 @@
 	else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger)
 		lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
 	
-	[HONAppDelegate playMP3:@"plumb_damaged"];
+	_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
+	_sfxPlayer.delegate = self;
+	[_sfxPlayer play];
 	
 	//[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MAIN" object:self.challengeVO];
 }
@@ -281,7 +298,9 @@
 	else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger)
 		rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
 	
-	[HONAppDelegate playMP3:@"plumb_damaged"];
+	_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
+	_sfxPlayer.delegate = self;
+	[_sfxPlayer play];
 	
 	//[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_SUB" object:self.challengeVO];
 }

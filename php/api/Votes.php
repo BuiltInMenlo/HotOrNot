@@ -139,6 +139,9 @@
 				
 				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['creator_id'] .';';
 				$user_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['challenger_id'] .';';
+				$challenger_obj = mysql_fetch_object(mysql_query($query));
 								
 				array_push($challenge_arr, array(
 					"id" => $row['id'], 
@@ -147,7 +150,10 @@
 					"creator" => $user_obj->username, 
 					"creator_fb" => $user_obj->fb_id, 
 					"subject" => $sub_obj->title,
-					"creator_img" => $row['creator_img'],
+					"creator_img" => $row['creator_img'], 
+					"challenger_id" => $row['challenger_id'], 
+					"challenger" => $challenger_obj->username, 
+					"challenger_fb" => $challenger_obj->fb_id, 
 					"challenger_img" => $row['challenger_img'], 
 					"score" => $this->calcChallengeScores($key, $creator_id),  
 					"started" => $row['started'], 
@@ -178,6 +184,9 @@
 				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['creator_id'] .';';
 				$user_obj = mysql_fetch_object(mysql_query($query));
 				
+				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['challenger_id'] .';';
+				$challenger_obj = mysql_fetch_object(mysql_query($query));
+				
 				array_push($challenge_arr, array(
 					"id" => $row['id'], 
 					"status" => $row['status_id'],
@@ -185,7 +194,10 @@
 					"creator" => $user_obj->username,
 					"creator_fb" => $user_obj->fb_id,  
 					"subject" => $sub_obj->title,
-					"creator_img" => $row['creator_img'],
+					"creator_img" => $row['creator_img'], 
+					"challenger_id" => $row['challenger_id'], 
+					"challenger" => $challenger_obj->username, 
+					"challenger_fb" => $challenger_obj->fb_id, 
 					"challenger_img" => $row['challenger_img'], 
 					"score" => $this->calcChallengeScores($row['id'], $creator_id), 
 					"started" => $row['started'], 
@@ -211,7 +223,10 @@
 				$sub_obj = mysql_fetch_object(mysql_query($query));
 				
 				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['creator_id'] .';';
-				$user_obj = mysql_fetch_object(mysql_query($query));				
+				$user_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['challenger_id'] .';';
+				$challenger_obj = mysql_fetch_object(mysql_query($query));				
 				
 				array_push($challenge_arr, array(
 					"id" => $row['id'], 
@@ -220,7 +235,10 @@
 					"creator" => $user_obj->username,
 					"creator_fb" => $user_obj->fb_id,  
 					"subject" => $sub_obj->title,
-					"creator_img" => $row['creator_img'],
+					"creator_img" => $row['creator_img'], 
+					"challenger_id" => $row['challenger_id'], 
+					"challenger" => $challenger_obj->username, 
+					"challenger_fb" => $challenger_obj->fb_id,
 					"challenger_img" => $row['challenger_img'], 
 					"score" => $this->calcChallengeScores($row['id'], $creator_id), 
 					"started" => $row['started'], 
@@ -246,6 +264,9 @@
 			$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $creator_id .';';
 			$user_obj = mysql_fetch_object(mysql_query($query));
 			
+			$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $challenger_id .';';
+			$challenger_obj = mysql_fetch_object(mysql_query($query));
+			
 			array_push($challenge_arr, array(
 				"id" => $challenge_id, 
 				"status" => $challenge_obj->status_id, 
@@ -253,7 +274,10 @@
 				"creator" => $user_obj->username, 
 				"creator_fb" => $user_obj->fb_id, 
 				"subject" => $sub_obj->title,
-				"creator_img" => $challenge_obj->creator_img,
+				"creator_img" => $challenge_obj->creator_img, 
+				"challenger_id" => $challenger_id, 
+				"challenger" => $challenger_obj->username, 
+				"challenger_fb" => $challenger_obj->fb_id, 
 				"challenger_img" => $challenge_obj->challenger_img, 
 				"score" => $this->calcChallengeScores($challenge_id, $creator_id), 
 				"started" => $challenge_obj->started, 

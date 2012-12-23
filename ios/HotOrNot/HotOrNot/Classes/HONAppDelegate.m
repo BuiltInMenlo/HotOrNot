@@ -37,6 +37,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 @property (nonatomic, strong) UIAlertView *networkAlertView;
 @property (nonatomic, strong) UIAlertView *loginAlertView;
 @property (nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
+@property (nonatomic, strong) AVAudioPlayer *mp3Player;
 - (void)_registerUser;
 @end
 
@@ -284,11 +285,11 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 }
 
 + (void)playMP3:(NSString *)filename {
-	NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@.mp3", [[NSBundle mainBundle] resourcePath], filename]];
+	NSURL *url = [[NSBundle mainBundle] URLForResource:filename withExtension:@"mp3"];
 	
 	NSError *error;
 	AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
-	audioPlayer.numberOfLoops = -1;
+	//audioPlayer.delegate = self;
 	[audioPlayer play];
 	
 	NSLog(@"PLAY:[%@]", url);

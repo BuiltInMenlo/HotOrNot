@@ -352,7 +352,6 @@
 		4CEE1CA2161A3A3E00C54FBF /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1CA1161A3A3E00C54FBF /* Parse.framework */; };
 		4CF07C141686756C00E0FBC1 /* fpo_upvote.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4CF07C131686756C00E0FBC1 /* fpo_upvote.mp3 */; };
 		4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF07C151686770100E0FBC1 /* MediaPlayer.framework */; };
-		4CF07C181686791E00E0FBC1 /* plumb_damaged.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4CF07C171686791E00E0FBC1 /* plumb_damaged.mp3 */; };
 		4CF9B6C0165BDF7A00165083 /* libTapForTapAds.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF9B6BB165BDF7A00165083 /* libTapForTapAds.a */; };
 		4CF9B6C7165BE1BD00165083 /* libChartboost.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF9B6C5165BE1BD00165083 /* libChartboost.a */; };
 		4CF9B6C8165BE1BD00165083 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4CF9B6C6165BE1BD00165083 /* README.md */; };
@@ -888,7 +887,6 @@
 		4CEE1CA1161A3A3E00C54FBF /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		4CF07C131686756C00E0FBC1 /* fpo_upvote.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fpo_upvote.mp3; sourceTree = "<group>"; };
 		4CF07C151686770100E0FBC1 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
-		4CF07C171686791E00E0FBC1 /* plumb_damaged.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = plumb_damaged.mp3; sourceTree = "<group>"; };
 		4CF9B6BB165BDF7A00165083 /* libTapForTapAds.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTapForTapAds.a; sourceTree = "<group>"; };
 		4CF9B6BC165BDF7A00165083 /* TapForTap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapForTap.h; sourceTree = "<group>"; };
 		4CF9B6BD165BDF7A00165083 /* TapForTapAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapForTapAdView.h; sourceTree = "<group>"; };
@@ -1459,7 +1457,6 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				4CF07C171686791E00E0FBC1 /* plumb_damaged.mp3 */,
 				4CF07C11168672D900E0FBC1 /* SFX */,
 				4C81A005163216F800AB188B /* Sounds */,
 				4C0C4185162CD2BA007F0DA3 /* Fonts */,
@@ -2280,7 +2277,6 @@
 				4CF9B6CC165BE36C00165083 /* KiipSDKResources.bundle in Resources */,
 				4C51643A1680082800EB3C09 /* error.png in Resources */,
 				4CF07C141686756C00E0FBC1 /* fpo_upvote.mp3 in Resources */,
-				4CF07C181686791E00E0FBC1 /* plumb_damaged.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

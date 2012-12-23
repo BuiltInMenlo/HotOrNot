@@ -25,7 +25,9 @@
 @property (nonatomic) int statusID;
 @property (nonatomic, retain) NSString *creatorName;
 @property (nonatomic, retain) NSString *creatorFB;
+@property (nonatomic) int challengerID;
 @property (nonatomic, retain) NSString *challengerName;
+@property (nonatomic, retain) NSString *challengerFB;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *endDate;

@@ -110,14 +110,14 @@
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 	inviteButton.hidden = (FBSession.activeSession.state != 513);
-	[_headerView addSubview:inviteButton];
+	//[_headerView addSubview:inviteButton];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	//[_headerView addSubview:_refreshButton];
+	[_headerView addSubview:_refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
