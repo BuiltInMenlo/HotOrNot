@@ -13,11 +13,14 @@
 
 @interface HONSettingsViewCell()
 @property (nonatomic, strong) UIImageView *bgImgView;
+@property (nonatomic, strong) NSString *caption;
+@property (nonatomic, strong) UILabel *captionLabel;
 @end
 
 @implementation HONSettingsViewCell
 
 @synthesize bgImgView = _bgImgView;
+@synthesize caption = _caption;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -83,16 +86,22 @@
 - (id)initAsMidCell:(NSString *)caption {
 	if ((self = [self init])) {
 		_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage.png"];
+		_caption = caption;
 		
-		UILabel *indexLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 26.0, 250.0, 16.0)];
-		indexLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:15];
-		indexLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		indexLabel.backgroundColor = [UIColor clearColor];
-		indexLabel.text = caption;
-		[self addSubview:indexLabel];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 26.0, 250.0, 16.0)];
+		_captionLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:15];
+		_captionLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_captionLabel.backgroundColor = [UIColor clearColor];
+		_captionLabel.text = _caption;
+		[self addSubview:_captionLabel];
 	}
 	
 	return (self);
+}
+
+- (void)updateCaption:(NSString *)caption {
+	_caption = caption;
+	_captionLabel.text = _caption;
 }
 
 - (void)didSelect {

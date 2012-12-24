@@ -608,7 +608,7 @@
 			
 			NSLog(@"fbID:[%@][%@]", self.fbID, _fbID);
 			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
-			[HONFacebookCaller postToFriendTimeline:self.fbID article:[HONChallengeVO challengeWithDictionary:challengeResult]];
+			[HONFacebookCaller postToFriendTimeline:self.fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];

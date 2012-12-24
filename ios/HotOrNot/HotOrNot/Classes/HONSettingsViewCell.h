@@ -14,6 +14,7 @@
 - (id)initAsTopCell:(int)points withSubject:(NSString *)subject;
 - (id)initAsBottomCell;
 - (id)initAsMidCell:(NSString *)caption;
+- (void)updateCaption:(NSString *)caption;
 
 - (void)didSelect;
 @end

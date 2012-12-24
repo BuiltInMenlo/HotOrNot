@@ -424,7 +424,7 @@
 #pragma mark - Notifications
 - (void)_sessionStateChanged:(NSNotification *)notification {
 	FBSession *session = (FBSession *)[notification object];
-	NSLog(@"FBSession:[%d]", session.state);
+	NSLog(@"FBSession:[%d] (HONChallengerPickerViewController)", session.state);
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
@@ -496,19 +496,18 @@
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 			
-			if ([[challengeResult objectForKey:@"status"] intValue] == 7) {
-				NSLog(@"-----------SEND INVITE-------------");
-				[HONFacebookCaller sendAppRequestToUser:self.fbID];
-			}
+//			if ([[challengeResult objectForKey:@"status"] intValue] == 7)
+//				[HONFacebookCaller sendAppRequestToUser:self.fbID];
 			
-			NSLog(@"fbID:[%@][%@]", self.fbID, _fbID);
-			if ([self.fbID length] > 0)
-				[HONFacebookCaller postToFriendTimeline:self.fbID article:vo];
+
+			if ([self.fbID length] > 0) {
+				[HONFacebookCaller sendAppRequestToUser:self.fbID challenge:vo];
+				[HONFacebookCaller postToFriendTimeline:self.fbID challenge:vo];
+			}
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 			}];
-			//[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 		}
 	}
 }
@@ -523,6 +522,8 @@
 }
 
 
-- (UIViewController *) rootViewController { return self; }
+- (UIViewController *)rootViewController {
+	return (self);
+}
 
 @end

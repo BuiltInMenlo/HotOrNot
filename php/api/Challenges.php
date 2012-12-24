@@ -200,7 +200,8 @@
 				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "0000-00-00 00:00:00", NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
-			
+			    
+				
 				if ($isPush)
 					$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"2", "aps": {"alert": "'. $creator_obj->username .' has sent you a #'. $subject .' challenge!", "sound": "push_01.caf"}}');
 		 			
@@ -243,10 +244,10 @@
 								
 				$query = 'INSERT INTO `tblChallenges` (';
 				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "7", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "" "0000-00-00 00:00:00", NOW());';
+				$query .= 'VALUES (NULL, "7", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "0000-00-00 00:00:00", NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
-			
+			   
 				$query = 'SELECT * FROM `tblChallenges` WHERE `id` = "'. $challenge_id .'";';
 				$row = mysql_fetch_object(mysql_query($query));
 			

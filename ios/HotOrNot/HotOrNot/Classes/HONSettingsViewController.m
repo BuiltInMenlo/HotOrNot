@@ -44,6 +44,11 @@
 		
 		else
 			_notificationSwitch.on = YES;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+															  selector:@selector(_sessionStateChanged:)
+																	name:HONSessionStateChangedNotification
+																 object:nil];
 	}
 	
 	return (self);
@@ -159,6 +164,12 @@
 
 
 #pragma mark - Notifications
+- (void)_sessionStateChanged:(NSNotification *)notification {
+	FBSession *session = (FBSession *)[notification object];
+	
+	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+	[cell updateCaption:(session.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
+}
 
 
 #pragma mark - TableView DataSource Delegates
@@ -196,6 +207,9 @@
 	
 	if (indexPath.row == 1)
 		cell.accessoryView = _notificationSwitch;
+	
+	else if (indexPath.row == 2)
+		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
 			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);
@@ -229,14 +243,23 @@
 	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	UINavigationController *navController;
+	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	
 	switch (indexPath.row) {
 		case 2:
-			if (FBSession.activeSession.state == 513)
+			if (FBSession.activeSession.state == 513) {
 				[FBSession.activeSession closeAndClearTokenInformation];
+				[cell updateCaption:@"Login to Facebook"];
 			
-			navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-			[navController setNavigationBarHidden:YES];
-			[self presentViewController:navController animated:YES completion:nil];
+			} else {
+				navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+				[navController setNavigationBarHidden:YES];
+				[self presentViewController:navController animated:YES completion:nil];
+				//[cell updateCaption:@"Logout of Facebook"];
+			}
+			
+			[HONAppDelegate setAllowsFBPosting:(FBSession.activeSession.state == 513)];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
 			break;
 			
 		case 3:

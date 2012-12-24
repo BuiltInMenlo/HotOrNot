@@ -21,9 +21,10 @@
 + (void)postStatus:(NSString *)msg;
 + (void)postToTimeline:(HONChallengeVO *)vo;
 + (void)postToTicker:(NSString *)msg;
-+ (void)postToFriendTimeline:(NSString *)fbID article:(HONChallengeVO *)vo;
++ (void)postToFriendTimeline:(NSString *)fbID challenge:(HONChallengeVO *)vo;
 + (void)postMessageToFriendTimeline:(NSString *)fbID message:(NSString *)msg;
 + (void)sendAppRequestToUser:(NSString *)fbID;
++ (void)sendAppRequestToUser:(NSString *)fbID challenge:(HONChallengeVO *)vo;
 + (void)sendAppRequestBroadcast;
 + (void)sendAppRequestBroadcastWithIDs:(NSArray *)ids;
 

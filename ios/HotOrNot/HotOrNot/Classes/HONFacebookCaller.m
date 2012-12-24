@@ -60,9 +60,9 @@
 		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
 													  [NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID], @"link",
 													  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
-													  vo.subjectName, @"name",
+													  @"PicChallengeMe", @"name",
 													  vo.subjectName, @"caption",
-													  vo.creatorName, @"description", nil];
+													  [NSString stringWithFormat:@"%@ just challenged %@ to take the %@ challenge! Tap here to ReChallenge this photo!", vo.creatorName, vo.challengerName, vo.subjectName], @"description", nil];
 		
 		[FBRequestConnection startWithGraphPath:@"me/feed" parameters:postParams HTTPMethod:@"POST" completionHandler:
 		 ^(FBRequestConnection *connection, id result, NSError *error) {
@@ -80,14 +80,14 @@
 	}
 }
 
-+ (void)postToFriendTimeline:(NSString *)fbID article:(HONChallengeVO *)vo {
++ (void)postToFriendTimeline:(NSString *)fbID challenge:(HONChallengeVO *)vo {
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
 													  [NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID], @"link",
 													  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
-													  vo.subjectName, @"name",
+													  @"PicChallengeMe", @"name",
 													  vo.subjectName, @"caption",
-													  vo.creatorName, @"description", nil];
+													  [NSString stringWithFormat:@"%@ just challenged %@ to take the %@ challenge! Tap here to ReChallenge this photo!", vo.creatorName, vo.challengerName, vo.subjectName], @"description", nil];
 		
 		NSLog(@"fbID:[%@]", fbID);
 		
@@ -146,6 +146,22 @@
 	[facebook dialog:@"apprequests"
 					andParams:params
 				 andDelegate:nil];
+}
+
++ (void)sendAppRequestToUser:(NSString *)fbID challenge:(HONChallengeVO *)vo {
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 [NSString stringWithFormat:@"It's your turn at a %@ PicChallenge!", vo.subjectName],  @"message",
+											 fbID, @"to",
+											 nil];
+	
+	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	facebook.accessToken = FBSession.activeSession.accessToken;
+	facebook.expirationDate = FBSession.activeSession.expirationDate;
+	
+	[facebook enableFrictionlessRequests];
+	[facebook dialog:@"apprequests"
+			 andParams:params
+		  andDelegate:nil];
 }
 
 + (void)sendAppRequestBroadcast {

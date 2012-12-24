@@ -269,6 +269,7 @@
 	[self.delegate tabBarController:self didSelectViewController:[self.viewControllers objectAtIndex:tabID]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 	//[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_FB_POSTING" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
 }
 
 - (void)didReceiveMemoryWarning {
