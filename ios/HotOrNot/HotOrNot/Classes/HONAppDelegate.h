@@ -10,6 +10,7 @@
 //#import <FacebookSDK/FacebookSDK.h>
 #import "Facebook.h"
 #import "HONLoginViewController.h"
+#import "HONChallengeVO.h"
 
 extern NSString *const HONSessionStateChangedNotification;
 
@@ -27,6 +28,7 @@ extern NSString *const HONSessionStateChangedNotification;
 + (NSString *)dailySubjectName;
 + (NSDictionary *)s3Credentials;
 + (NSString *)facebookCanvasURL;
++ (NSString *)ctaForChallenge:(HONChallengeVO *)vo;
 + (BOOL)isCharboostEnabled;
 + (BOOL)isKiipEnabled;
 + (BOOL)isTapForTapEnabled;

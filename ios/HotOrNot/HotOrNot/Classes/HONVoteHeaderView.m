@@ -11,8 +11,8 @@
 #import "HONAppDelegate.h"
 
 @interface HONVoteHeaderView()
+@property (nonatomic, strong) UILabel *ctaLabel;
 @property (nonatomic, strong) UILabel *titleLabel;
-@property (nonatomic, strong) UIImageView *creatorImgView;
 
 @end
 
@@ -20,7 +20,6 @@
 
 @synthesize challengeVO = _challengeVO;
 @synthesize titleLabel = _titleLabel;
-@synthesize creatorImgView = _creatorImgView;
 
 - (id)initWithFrame:(CGRect)frame asPush:(BOOL)isPush {
 	if ((self = [super initWithFrame:frame])) {
@@ -28,8 +27,11 @@
 		bgImgView.image = [UIImage imageNamed:@"challengeHeader.png"];
 		[self addSubview:bgImgView];
 		
-		_creatorImgView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 15.0, 25.0, 25.0)];
-		//[self addSubview:_creatorImgView];
+		_ctaLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 5.0, 260.0, 16.0)];
+		_ctaLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		_ctaLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_ctaLabel.backgroundColor = [UIColor clearColor];
+		[self addSubview:_ctaLabel];
 		
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 200.0, 16.0)];
 		_titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
@@ -52,7 +54,8 @@
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	[_creatorImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture", _challengeVO.creatorFB]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+	
+	_ctaLabel.text = [HONAppDelegate ctaForChallenge:_challengeVO];
 	_titleLabel.text = challengeVO.subjectName;
 }
 

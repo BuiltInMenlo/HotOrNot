@@ -1,0 +1,122 @@
+/usr/sbin/mysqld, Version: 5.5.28-0ubuntu0.12.04.3-log ((Ubuntu)). started with:
+Tcp port: 3306  Unix socket: /var/run/mysqld/mysqld.sock
+Time                 Id Command    Argument
+# Time: 121225  1:09:33
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000314  Lock_time: 0.000083 Rows_sent: 0  Rows_examined: 1
+use mysql;
+SET timestamp=1356397773;
+set @have_old_pfs= (select count(*) from information_schema.schemata where schema_name='performance_schema');
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000707  Lock_time: 0.000033 Rows_sent: 0  Rows_examined: 17
+SET timestamp=1356397773;
+SET @broken_tables = (select count(*) from information_schema.tables where engine != 'PERFORMANCE_SCHEMA' and table_schema='performance_schema');
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000474  Lock_time: 0.000197 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397773;
+SET @broken_views = (select count(*) from information_schema.views where table_schema='performance_schema');
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000152  Lock_time: 0.000057 Rows_sent: 0  Rows_examined: 9
+SET timestamp=1356397773;
+set @have_pfs= (select count(engine) from information_schema.engines where engine='PERFORMANCE_SCHEMA' and support != 'NO');
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000143  Lock_time: 0.000041 Rows_sent: 10  Rows_examined: 10
+SET timestamp=1356397773;
+SELECT @hadGrantPriv:=1 FROM user WHERE Grant_priv LIKE '%';
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000300  Lock_time: 0.000217 Rows_sent: 10  Rows_examined: 10
+SET timestamp=1356397773;
+SELECT @hadShowDbPriv:=1 FROM user WHERE Show_db_priv LIKE '%';
+/usr/sbin/mysqld, Version: 5.5.28-0ubuntu0.12.04.3-log ((Ubuntu)). started with:
+Tcp port: 3306  Unix socket: /var/run/mysqld/mysqld.sock
+Time                 Id Command    Argument
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000313  Lock_time: 0.000226 Rows_sent: 10  Rows_examined: 10
+use mysql;
+SET timestamp=1356397773;
+SELECT @hadCreateViewPriv:=1 FROM user WHERE Create_view_priv LIKE '%';
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000100  Lock_time: 0.000028 Rows_sent: 10  Rows_examined: 10
+SET timestamp=1356397773;
+SELECT @hadCreateRoutinePriv:=1 FROM user WHERE Create_routine_priv LIKE '%';
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000114  Lock_time: 0.000031 Rows_sent: 10  Rows_examined: 10
+SET timestamp=1356397773;
+SELECT @hadCreateUserPriv:=1 FROM user WHERE Create_user_priv LIKE '%';
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000087  Lock_time: 0.000029 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397773;
+UPDATE proc SET character_set_client = @@character_set_client 
+                      WHERE character_set_client IS NULL;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000060  Lock_time: 0.000028 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397773;
+UPDATE proc SET collation_connection = @@collation_connection
+                      WHERE collation_connection IS NULL;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000139  Lock_time: 0.000065 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397773;
+UPDATE proc AS p SET db_collation  = 
+                      ( SELECT DEFAULT_COLLATION_NAME 
+                        FROM INFORMATION_SCHEMA.SCHEMATA 
+                        WHERE SCHEMA_NAME = p.db)
+                      WHERE db_collation IS NULL;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000112  Lock_time: 0.000030 Rows_sent: 10  Rows_examined: 10
+SET timestamp=1356397773;
+SELECT @hadEventPriv :=1 FROM user WHERE Event_priv LIKE '%';
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000115  Lock_time: 0.000031 Rows_sent: 10  Rows_examined: 10
+SET timestamp=1356397773;
+SELECT @hadTriggerPriv :=1 FROM user WHERE Trigger_priv LIKE '%';
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000102  Lock_time: 0.000028 Rows_sent: 10  Rows_examined: 10
+SET timestamp=1356397773;
+SELECT @hadCreateTablespacePriv :=1 FROM user WHERE Create_tablespace_priv LIKE '%';
+# Time: 121225  1:09:34
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000169  Lock_time: 0.000050 Rows_sent: 1  Rows_examined: 10
+SET timestamp=1356397774;
+SELECT count(*) FROM mysql.user WHERE user='root' and password='';
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.017957  Lock_time: 0.000103 Rows_sent: 31  Rows_examined: 186
+SET timestamp=1356397774;
+select concat('select count(*) into @discard from `',
+                    TABLE_SCHEMA, '`.`', TABLE_NAME, '`') 
+      from information_schema.TABLES where ENGINE='MyISAM';
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.059101  Lock_time: 0.001728 Rows_sent: 0  Rows_examined: 1362
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`COLUMNS`;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000639  Lock_time: 0.000494 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`EVENTS`;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000420  Lock_time: 0.000321 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`PARAMETERS`;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.033046  Lock_time: 0.000301 Rows_sent: 0  Rows_examined: 186
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`PARTITIONS`;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000684  Lock_time: 0.000261 Rows_sent: 0  Rows_examined: 23
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`PLUGINS`;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000372  Lock_time: 0.000212 Rows_sent: 0  Rows_examined: 1
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`PROCESSLIST`;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.000453  Lock_time: 0.000348 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`ROUTINES`;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.006363  Lock_time: 0.000305 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`TRIGGERS`;
+# User@Host: debian-sys-maint[debian-sys-maint] @ localhost []
+# Query_time: 0.005608  Lock_time: 0.000295 Rows_sent: 0  Rows_examined: 0
+SET timestamp=1356397774;
+select count(*) into @discard from `information_schema`.`VIEWS`;
