@@ -35,7 +35,7 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
 		
-		_captions = [NSArray arrayWithObjects:@"", @"Notifications", (FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook", @"Username", @"Privacy Policy", @"Support", nil];
+		_captions = [NSArray arrayWithObjects:@"", @"Notifications", (FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook", @"Change Username", @"Privacy Policy", @"Support", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -120,6 +120,14 @@
 //		[self _goLogin];
 }
 
+- (void)_goInviteFriends {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Settings"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
+}
+
 - (void)_goDone {
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -185,11 +193,18 @@
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
+	createChallengeButton.frame = CGRectMake(0.0, 0.0, 160.0, 78.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:createChallengeButton];
+	
+	UIButton *inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteFriendsButton.frame = CGRectMake(160.0, 0.0, 160.0, 78.0);
+	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
+	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+	[inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:inviteFriendsButton];
 	
 	return (headerView);
 }

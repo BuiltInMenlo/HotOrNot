@@ -30,6 +30,8 @@
 #import "HONChallengeVO.h"
 #import "HONFacebookSwitchView.h"
 #import "HONUsernameViewController.h"
+#import "HONWebCTAViewController.h"
+#import "HONInviteFriendsViewController.h"
 
 NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
 
@@ -38,6 +40,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 @property (nonatomic, strong) UIAlertView *loginAlertView;
 @property (nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
+@property (nonatomic) BOOL isFromBackground;
 - (void)_registerUser;
 @end
 
@@ -384,6 +387,20 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		[[[UIApplication sharedApplication] delegate].window addSubview:_facebookSwitchView]; //[self addSubview:_switchButton];
 }
 
+- (void)_inviteFriends:(NSNotification *)notification {
+	
+	if (FBSession.activeSession.state == 513) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteFriendsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+		
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+	}
+}
+
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -396,8 +413,12 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
 		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
 	
+	
+	_isFromBackground = NO;
+	
 	NSLog(@"hasNetwork[%d] canPingParseServer[%d]", [HONAppDelegate hasNetwork], [HONAppDelegate canPingParseServer]);
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
@@ -475,6 +496,9 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		PFQuery *fbPostQuery = [PFQuery queryWithClassName:@"FacebookPosting"];
 		PFObject *fbPostObject = [fbPostQuery getObjectWithId:@"CKjJvA5R01"];
 		
+		PFQuery *backgroundCTAQuery = [PFQuery queryWithClassName:@"BackgroundCTA"];
+		PFObject *backgroundCTAObject = [backgroundCTAQuery getObjectWithId:@"UQXiwWaTDK"];
+		
 		NSLog(@"fbPostObject:\n%@", fbPostObject);
 		
 		PFQuery *ctaQuery = [PFQuery queryWithClassName:@"PicChallengeCTAs"];
@@ -503,6 +527,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[s3Object objectForKey:@"key"], @"key", [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 		[[NSUserDefaults standardUserDefaults] setObject:[fbObject objectForKey:@"canvas_url"] forKey:@"facebook_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[fbPostObject objectForKey:@"friend_wall"], @"friend_wall", [fbPostObject objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[backgroundCTAObject objectForKey:@"title"], @"title", [backgroundCTAObject objectForKey:@"url"], @"url", nil] forKey:@"background_cta"];
 		[[NSUserDefaults standardUserDefaults] setObject:ctaArray forKey:@"ctas"];
 		[[NSUserDefaults standardUserDefaults] setObject:adNetworkDict forKey:@"ad_networks"];
 		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"default_subjects"];
@@ -589,6 +614,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+	_isFromBackground = YES;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -611,6 +637,12 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	
 	if ([HONAppDelegate isCharboostEnabled])
 		[cb showInterstitial];
+	
+	if (_isFromBackground) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONWebCTAViewController alloc] initWithURL:[[[NSUserDefaults standardUserDefaults] objectForKey:@"background_cta"] objectForKey:@"url"] andTitle:[[[NSUserDefaults standardUserDefaults] objectForKey:@"background_cta"] objectForKey:@"title"]]];
+		[navigationController setNavigationBarHidden:YES];
+		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

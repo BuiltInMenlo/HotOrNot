@@ -191,9 +191,19 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	NSLog(@"IMAGE:[%f][%f]", image.size.width, image.size.height);
+	
+	if (image.size.width > 480.0 && image.size.height > 640.0)
+		image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
+	
+	if ([HONAppDelegate isRetina5]) {
+		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
+		imgView.frame = frame;
+	}
 	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(-320.0, 0.0, 640.0, 70.0);

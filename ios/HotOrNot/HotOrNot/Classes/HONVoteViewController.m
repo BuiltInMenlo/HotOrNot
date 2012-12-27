@@ -284,6 +284,14 @@
 	//		[self _goLogin];
 }
 
+- (void)_goInviteFriends {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Vote Wall"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
+}
+
 - (void)_goTrending {
 	[[Mixpanel sharedInstance] track:@"Voting Toggle - Trending"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -382,6 +390,7 @@
 }
 
 - (void)_refreshList:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 }
 
@@ -410,11 +419,18 @@
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(0.0, 0.0, 320.0, 78.0);
+	createChallengeButton.frame = CGRectMake(0.0, 0.0, 160.0, 78.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:createChallengeButton];
+	
+	UIButton *inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteFriendsButton.frame = CGRectMake(160.0, 0.0, 160.0, 78.0);
+	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
+	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+	[inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:inviteFriendsButton];
 	
 	return (headerView);
 }

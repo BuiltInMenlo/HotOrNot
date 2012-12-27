@@ -472,9 +472,9 @@
 			UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
 			canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 			
-			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-			watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
-			[canvasView addSubview:watermarkImgView];
+//			UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//			watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
+//			[canvasView addSubview:watermarkImgView];
 			
 			CGSize size = [canvasView bounds].size;
 			UIGraphicsBeginImageContext(size);

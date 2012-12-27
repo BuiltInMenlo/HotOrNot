@@ -298,6 +298,8 @@
 		4CB0BDE0162D3CCC000EC97F /* blankRowBackground_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0BDDC162D3CCC000EC97F /* blankRowBackground_nonActive@2x.png */; };
 		4CB0BDE3162E8892000EC97F /* likeOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0BDE1162E8892000EC97F /* likeOverlay.png */; };
 		4CB0BDE4162E8892000EC97F /* likeOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB0BDE2162E8892000EC97F /* likeOverlay@2x.png */; };
+		4CB472F5168C176D007153DF /* HONWebCTAViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB472F4168C176D007153DF /* HONWebCTAViewController.m */; };
+		4CB472F9168C26AC007153DF /* HONInviteFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB472F8168C26AC007153DF /* HONInviteFriendsViewController.m */; };
 		4CBE87011634AAE6004084DF /* toggle_recent.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE86FD1634AAE6004084DF /* toggle_recent.png */; };
 		4CBE87021634AAE6004084DF /* toggle_recent@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE86FE1634AAE6004084DF /* toggle_recent@2x.png */; };
 		4CBE87031634AAE6004084DF /* toggle_trending.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE86FF1634AAE6004084DF /* toggle_trending.png */; };
@@ -816,6 +818,10 @@
 		4CB0BDDC162D3CCC000EC97F /* blankRowBackground_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blankRowBackground_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CB0BDE1162E8892000EC97F /* likeOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = likeOverlay.png; sourceTree = "<group>"; };
 		4CB0BDE2162E8892000EC97F /* likeOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "likeOverlay@2x.png"; sourceTree = "<group>"; };
+		4CB472F3168C176D007153DF /* HONWebCTAViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONWebCTAViewController.h; sourceTree = "<group>"; };
+		4CB472F4168C176D007153DF /* HONWebCTAViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONWebCTAViewController.m; sourceTree = "<group>"; };
+		4CB472F7168C26AB007153DF /* HONInviteFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteFriendsViewController.h; sourceTree = "<group>"; };
+		4CB472F8168C26AC007153DF /* HONInviteFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteFriendsViewController.m; sourceTree = "<group>"; };
 		4CBE86FD1634AAE6004084DF /* toggle_recent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = toggle_recent.png; sourceTree = "<group>"; };
 		4CBE86FE1634AAE6004084DF /* toggle_recent@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "toggle_recent@2x.png"; sourceTree = "<group>"; };
 		4CBE86FF1634AAE6004084DF /* toggle_trending.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = toggle_trending.png; sourceTree = "<group>"; };
@@ -1489,6 +1495,10 @@
 				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
 				4C516435167EC39D00EB3C09 /* HONFacebookSwitchView.h */,
 				4C516436167EC39D00EB3C09 /* HONFacebookSwitchView.m */,
+				4CB472F3168C176D007153DF /* HONWebCTAViewController.h */,
+				4CB472F4168C176D007153DF /* HONWebCTAViewController.m */,
+				4CB472F7168C26AB007153DF /* HONInviteFriendsViewController.h */,
+				4CB472F8168C26AC007153DF /* HONInviteFriendsViewController.m */,
 			);
 			name = Root;
 			sourceTree = "<group>";
@@ -2363,6 +2373,8 @@
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
 				4C516437167EC39E00EB3C09 /* HONFacebookSwitchView.m in Sources */,
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
+				4CB472F5168C176D007153DF /* HONWebCTAViewController.m in Sources */,
+				4CB472F9168C26AC007153DF /* HONInviteFriendsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
