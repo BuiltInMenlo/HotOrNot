@@ -28,6 +28,7 @@ extern NSString *const HONSessionStateChangedNotification;
 + (NSString *)dailySubjectName;
 + (NSDictionary *)s3Credentials;
 + (NSString *)facebookCanvasURL;
++ (NSDictionary *)facebookFriendPosting;
 + (NSString *)ctaForChallenge:(HONChallengeVO *)vo;
 + (BOOL)isCharboostEnabled;
 + (BOOL)isKiipEnabled;

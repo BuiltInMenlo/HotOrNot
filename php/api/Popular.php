@@ -77,7 +77,7 @@
 		function getPopularByUsers($user_id) {
 			$user_arr = array();
 			
-			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC LIMIT 25;';
+			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC LIMIT 100;';
 			$user_result = mysql_query($query);
 			
 			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {				
@@ -100,7 +100,7 @@
 		function getPopularBySubject($user_id) {
 			$subject_arr = array();
 			
-			$query = 'SELECT * FROM `tblChallengeSubjects`;';
+			$query = 'SELECT * FROM `tblChallengeSubjects` LIMIT 100;';
 			$subject_result = mysql_query($query);
 			
 			while ($subject_row = mysql_fetch_array($subject_result, MYSQL_BOTH)) {

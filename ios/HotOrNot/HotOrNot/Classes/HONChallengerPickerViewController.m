@@ -22,7 +22,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONChallengerPickerViewController () <UITextFieldDelegate, FBFriendPickerDelegate, TapForTapAdViewDelegate>
+@interface HONChallengerPickerViewController () <UITextFieldDelegate, UISearchBarDelegate, FBFriendPickerDelegate, TapForTapAdViewDelegate>
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic) int challengerID;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -34,6 +34,11 @@
 @property(nonatomic, strong) UIButton *editButton;
 @property(nonatomic, strong) UIButton *loginFriendsButton;
 @property(nonatomic) BOOL isFlipped;
+
+@property (retain, nonatomic) FBFriendPickerViewController *friendPickerController;
+@property (retain, nonatomic) UISearchBar *searchBar;
+@property (retain, nonatomic) NSString *searchText;
+
 //@property(nonatomic, strong) NSString *rndSubject;
 @end
 
@@ -48,6 +53,13 @@
 @synthesize filename = _filename;
 @synthesize subjectTextField = _subjectTextField;
 @synthesize editButton = _editButton;
+
+
+@synthesize friendPickerController = _friendPickerController;
+@synthesize searchBar = _searchBar;
+@synthesize searchText = _searchText;
+
+
 //@synthesize rndSubject = _rndSubject;
 
 - (id)init {
@@ -230,48 +242,52 @@
 	}];
 	
 	
-	FBFriendPickerViewController *friendPickerController = [[FBFriendPickerViewController alloc] init];
-	friendPickerController.title = @"Pick Friends";
-	friendPickerController.allowsMultipleSelection = NO;
-	friendPickerController.delegate = self;
-	friendPickerController.sortOrdering = FBFriendDisplayByLastName;
-	friendPickerController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+	self.friendPickerController = [[FBFriendPickerViewController alloc] init];
+	self.friendPickerController.title = @"Pick Friends";
+	self.friendPickerController.allowsMultipleSelection = NO;
+	self.friendPickerController.delegate = self;
+	self.friendPickerController.sortOrdering = FBFriendDisplayByLastName;
+	self.friendPickerController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
 																				  initWithTitle:@"Cancel!"
 																				  style:UIBarButtonItemStyleBordered
 																				  target:self
 																				  action:@selector(cancelButtonWasPressed:)];
 	
-	friendPickerController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+	self.friendPickerController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
 																					initWithTitle:@"Done!"
 																					style:UIBarButtonItemStyleBordered
 																					target:self
 																					action:@selector(doneButtonWasPressed:)];
-	[friendPickerController loadData];
+	[self.friendPickerController loadData];
+	[self.friendPickerController clearSelection];
 	
 	// Use the modal wrapper method to display the picker.
-	[friendPickerController presentModallyFromViewController:self animated:YES handler:
-	 ^(FBViewController *sender, BOOL donePressed) {
-		 if (!donePressed)
-			 return;
-		 
-		 if (friendPickerController.selection.count == 0) {
-			 [[[UIAlertView alloc] initWithTitle:@"No Friend Selected"
-												  message:@"You need to pick a friend."
-												 delegate:nil
-									 cancelButtonTitle:@"OK"
-									 otherButtonTitles:nil]
-			  show];
-			 
-		 } else {
-			 // submit
-			 self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
-			 self.fbID = [[friendPickerController.selection lastObject] objectForKey:@"id"];
-			 self.fbName = [[friendPickerController.selection lastObject] objectForKey:@"first_name"];
-			 //NSLog(@"FRIEND:[%@]", [friendPickerController.selection lastObject]);
-			 
-			 [self _goFriendChallenge];
-		 }
-	 }];
+	[self presentViewController:self.friendPickerController animated:YES completion:^(void){[self addSearchBarToFriendPickerView];}];
+	
+	
+//	[friendPickerController presentModallyFromViewController:self animated:YES handler:
+//	 ^(FBViewController *sender, BOOL donePressed) {
+//		 if (!donePressed)
+//			 return;
+//		 
+//		 if (friendPickerController.selection.count == 0) {
+//			 [[[UIAlertView alloc] initWithTitle:@"No Friend Selected"
+//												  message:@"You need to pick a friend."
+//												 delegate:nil
+//									 cancelButtonTitle:@"OK"
+//									 otherButtonTitles:nil]
+//			  show];
+//			 
+//		 } else {
+//			 // submit
+//			 self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+//			 self.fbID = [[friendPickerController.selection lastObject] objectForKey:@"id"];
+//			 self.fbName = [[friendPickerController.selection lastObject] objectForKey:@"first_name"];
+//			 //NSLog(@"FRIEND:[%@]", [friendPickerController.selection lastObject]);
+//			 
+//			 [self _goFriendChallenge];
+//		 }
+//	 }];
 }
 
 - (void)_goFriendChallenge {
@@ -420,6 +436,115 @@
 	[super didReceiveMemoryWarning];
 }
 
+#pragma mark - Custom Facebook Select Friends Search Methods
+// Method to that adds a search bar to the built-in Friend Selector View.
+// We add this search bar to the canvasView of the FBFriendPickerViewController.
+- (void)addSearchBarToFriendPickerView
+{
+	if (self.searchBar == nil) {
+		CGFloat searchBarHeight = 44.0;
+		self.searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0,0, self.view.bounds.size.width, searchBarHeight)];
+		self.searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
+		self.searchBar.delegate = self;
+		self.searchBar.showsCancelButton = YES;
+		
+		[self.friendPickerController.canvasView addSubview:self.searchBar];
+		CGRect newFrame = self.friendPickerController.view.bounds;
+		newFrame.size.height -= searchBarHeight;
+		newFrame.origin.y = searchBarHeight;
+		self.friendPickerController.tableView.frame = newFrame;
+	}
+	
+	UITextField *searchField = [self.searchBar valueForKey:@"_searchField"];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchBarSearchTextDidChange:)name:UITextFieldTextDidChangeNotification object:searchField];
+}
+
+// There is no delegate UISearchBarDelegate method for when text changes.
+// This is a custom method using NSNotificationCenter
+- (void)searchBarSearchTextDidChange:(NSNotification*)notification
+{
+	UITextField *searchField = notification.object;
+	self.searchText = searchField.text;
+	[self.friendPickerController updateView];
+}
+
+// Private Method that handles the search functionality
+- (void)handleSearch:(UISearchBar *)searchBar {
+	[searchBar resignFirstResponder];
+	self.searchText = searchBar.text;
+	[self.friendPickerController updateView];
+}
+
+// Method that actually does the sorting.
+// This filters the data without having to call the server.
+- (BOOL)friendPickerViewController:(FBFriendPickerViewController *)friendPicker shouldIncludeUser:(id<FBGraphUser>)user
+{
+	if (self.searchText && ![self.searchText isEqualToString:@""]) {
+		NSRange result = [user.name rangeOfString:self.searchText options:NSCaseInsensitiveSearch];
+		if (result.location != NSNotFound) {
+			return YES;
+		} else {
+			return NO;
+		}
+	} else {
+		return YES;
+	}
+	return YES;
+}
+
+#pragma mark - Facebook FBFriendPickerDelegate Methods
+- (void)facebookViewControllerCancelWasPressed:(id)sender
+{
+	NSLog(@"Friend selection cancelled.");
+	[self handlePickerDone];
+}
+
+- (void)facebookViewControllerDoneWasPressed:(id)sender
+{
+	for (id<FBGraphUser> user in self.friendPickerController.selection) {
+		NSLog(@"Friend selected: %@", user.name);
+	}
+	
+	if (self.friendPickerController.selection.count == 0) {
+		[[[UIAlertView alloc] initWithTitle:@"No Friend Selected"
+											 message:@"You need to pick a friend."
+											delegate:nil
+								cancelButtonTitle:@"OK"
+								otherButtonTitles:nil]
+		 show];
+		
+		[self handlePickerDone];
+	} else {
+	
+		self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+		self.fbID = [[self.friendPickerController.selection lastObject] objectForKey:@"id"];
+		self.fbName = [[self.friendPickerController.selection lastObject] objectForKey:@"first_name"];
+		NSLog(@"FRIEND:[%@]", [self.friendPickerController.selection lastObject]);
+		
+		[self handlePickerDone];
+		[self _goFriendChallenge];
+	}
+}
+
+- (void)handlePickerDone
+{
+	self.searchBar = nil;
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - UISearchBarDelegate Methods
+- (void)searchBarSearchButtonClicked:(UISearchBar*)searchBar
+{
+	[self handleSearch:searchBar];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *) searchBar {
+	self.searchText = nil;
+	[searchBar resignFirstResponder];
+}
+
+
+
 
 #pragma mark - Notifications
 - (void)_sessionStateChanged:(NSNotification *)notification {
@@ -501,8 +626,11 @@
 			
 
 			if ([self.fbID length] > 0) {
-				[HONFacebookCaller sendAppRequestToUser:self.fbID challenge:vo];
-				[HONFacebookCaller postToFriendTimeline:self.fbID challenge:vo];
+				if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"invite"] isEqualToString:@"Y"])
+					[HONFacebookCaller sendAppRequestToUser:self.fbID challenge:vo];
+				
+				if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"friend_wall"] isEqualToString:@"Y"])
+					[HONFacebookCaller postToFriendTimeline:self.fbID challenge:vo];
 			}
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){

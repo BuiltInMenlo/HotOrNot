@@ -71,6 +71,10 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"facebook_url"]);
 }
 
++ (NSDictionary *)facebookFriendPosting {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"fb_network"]);
+}
+
 + (NSString *)ctaForChallenge:(HONChallengeVO *)vo {
 	NSString *message = (vo.statusID == 2) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:0] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:1];
 	
@@ -396,7 +400,6 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
-		NSLog(@"WTF");
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
 		[UAirship takeOff:takeOffOptions];
@@ -450,7 +453,6 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 			[HONAppDelegate setAllowsFBPosting:NO];
 		
-		
 		PFQuery *appIDQuery = [PFQuery queryWithClassName:@"AppIDs"];
 		PFObject *appIDObject = [appIDQuery getObjectWithId:@"k2SlH68C62"];
 		
@@ -469,6 +471,11 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		
 		PFQuery *fbQuery = [PFQuery queryWithClassName:@"FacebookPaths"];
 		PFObject *fbObject = [fbQuery getObjectWithId:@"9YC4DWz1AY"];
+		
+		PFQuery *fbPostQuery = [PFQuery queryWithClassName:@"FacebookPosting"];
+		PFObject *fbPostObject = [fbPostQuery getObjectWithId:@"CKjJvA5R01"];
+		
+		NSLog(@"fbPostObject:\n%@", fbPostObject);
 		
 		PFQuery *ctaQuery = [PFQuery queryWithClassName:@"PicChallengeCTAs"];
 		PFObject *ctaWaitingObject = [ctaQuery getObjectWithId:@"Ey2aUi2yQP"];
@@ -495,6 +502,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[s3Object objectForKey:@"key"], @"key", [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 		[[NSUserDefaults standardUserDefaults] setObject:[fbObject objectForKey:@"canvas_url"] forKey:@"facebook_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[fbPostObject objectForKey:@"friend_wall"], @"friend_wall", [fbPostObject objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
 		[[NSUserDefaults standardUserDefaults] setObject:ctaArray forKey:@"ctas"];
 		[[NSUserDefaults standardUserDefaults] setObject:adNetworkDict forKey:@"ad_networks"];
 		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"default_subjects"];
