@@ -303,7 +303,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 }
 
 + (void)playMP3:(NSString *)filename {
-	NSURL *url = [[NSBundle mainBundle] URLForResource:filename withExtension:@"mp3"];
+	NSURL *url = [NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"];
 	
 	NSError *error;
 	AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
@@ -402,6 +402,16 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 }
 
 
+- (void)_webCTA:(NSNotification *)notification {
+	NSString *url = [[notification object] objectForKey:@"url"];
+	NSString *title = [[notification object] objectForKey:@"title"];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONWebCTAViewController alloc] initWithURL:url andTitle:title]];
+	[navigationController setNavigationBarHidden:YES];
+	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+}
+
+
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -419,6 +429,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	NSLog(@"hasNetwork[%d] canPingParseServer[%d]", [HONAppDelegate hasNetwork], [HONAppDelegate canPingParseServer]);
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
@@ -496,15 +507,24 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		PFQuery *fbPostQuery = [PFQuery queryWithClassName:@"FacebookPosting"];
 		PFObject *fbPostObject = [fbPostQuery getObjectWithId:@"CKjJvA5R01"];
 		
-		PFQuery *backgroundCTAQuery = [PFQuery queryWithClassName:@"BackgroundCTA"];
-		PFObject *backgroundCTAObject = [backgroundCTAQuery getObjectWithId:@"UQXiwWaTDK"];
+		PFQuery *webCTAQuery = [PFQuery queryWithClassName:@"WebCTAs"];
+		PFObject *backgroundCTAObject = [webCTAQuery getObjectWithId:@"QiQDqTAqXc"];
+		PFObject *submitCTAObject = [webCTAQuery getObjectWithId:@"pERUzecrqr"];
+		
+		NSDictionary *backgroundCTA = [NSDictionary dictionaryWithObjectsAndKeys:
+												 [backgroundCTAObject objectForKey:@"title"], @"title",
+												 [backgroundCTAObject objectForKey:@"url"], @"url",
+												 [backgroundCTAObject objectForKey:@"enabled"], @"enabled", nil];
+		NSDictionary *submitCTA = [NSDictionary dictionaryWithObjectsAndKeys:
+												 [submitCTAObject objectForKey:@"title"], @"title",
+												 [submitCTAObject objectForKey:@"url"], @"url",
+												 [submitCTAObject objectForKey:@"enabled"], @"enabled", nil];
 		
 		NSLog(@"fbPostObject:\n%@", fbPostObject);
 		
 		PFQuery *ctaQuery = [PFQuery queryWithClassName:@"PicChallengeCTAs"];
 		PFObject *ctaWaitingObject = [ctaQuery getObjectWithId:@"Ey2aUi2yQP"];
 		PFObject *ctaPlayingObject = [ctaQuery getObjectWithId:@"HlpX4VkGqT"];
-		
 		NSArray *ctaArray = [NSArray arrayWithObjects:[ctaWaitingObject objectForKey:@"copy"], [ctaPlayingObject objectForKey:@"copy"], nil];
 		
 		PFQuery *adNetworkQuery = [PFQuery queryWithClassName:@"AdNetworks"];
@@ -527,7 +547,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[s3Object objectForKey:@"key"], @"key", [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 		[[NSUserDefaults standardUserDefaults] setObject:[fbObject objectForKey:@"canvas_url"] forKey:@"facebook_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[fbPostObject objectForKey:@"friend_wall"], @"friend_wall", [fbPostObject objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[backgroundCTAObject objectForKey:@"title"], @"title", [backgroundCTAObject objectForKey:@"url"], @"url", nil] forKey:@"background_cta"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:backgroundCTA, submitCTA, nil] forKey:@"web_ctas"];
 		[[NSUserDefaults standardUserDefaults] setObject:ctaArray forKey:@"ctas"];
 		[[NSUserDefaults standardUserDefaults] setObject:adNetworkDict forKey:@"ad_networks"];
 		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"default_subjects"];
@@ -638,10 +658,8 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	if ([HONAppDelegate isCharboostEnabled])
 		[cb showInterstitial];
 	
-	if (_isFromBackground) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONWebCTAViewController alloc] initWithURL:[[[NSUserDefaults standardUserDefaults] objectForKey:@"background_cta"] objectForKey:@"url"] andTitle:[[[NSUserDefaults standardUserDefaults] objectForKey:@"background_cta"] objectForKey:@"title"]]];
-		[navigationController setNavigationBarHidden:YES];
-		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+	if (_isFromBackground && [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"] isEqualToString:@"Y"]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0]];
 	}
 }
 

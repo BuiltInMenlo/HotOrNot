@@ -15,13 +15,17 @@
 #import "HONHeaderView.h"
 #import "HONFacebookCaller.h"
 
-@interface HONInviteFriendsViewController () <UISearchBarDelegate, FBFriendPickerDelegate>
+@interface HONInviteFriendsViewController () <UISearchBarDelegate, FBFriendPickerDelegate> {
+	CGFloat fbHeaderHeight;
+}
+
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSMutableArray *friends;
 
 @property (retain, nonatomic) FBFriendPickerViewController *friendPickerController;
 @property (retain, nonatomic) UISearchBar *searchBar;
 @property (retain, nonatomic) NSString *searchText;
+@property (nonatomic, retain) HONHeaderView *friendPickerHeaderView;
 @end
 
 @implementation HONInviteFriendsViewController
@@ -74,6 +78,7 @@
 	self.friendPickerController.allowsMultipleSelection = NO;
 	self.friendPickerController.delegate = self;
 	self.friendPickerController.sortOrdering = FBFriendDisplayByLastName;
+	[self addCustomHeaderToFriendPickerView];
 	[self.friendPickerController loadData];
 	[self.friendPickerController clearSelection];
 	
@@ -90,6 +95,40 @@
 
 
 
+#pragma mark - Custom Facebook Select Friends Header Methods
+// Method to that adds a custom header bar to the built-in Friend Selector View.
+// We add this to the canvasView of the FBFriendPickerViewController.
+// We have to set cancelButton and doneButton to nil so that default header is removed.
+// We then add a UIView as a header.
+- (void)addCustomHeaderToFriendPickerView
+{
+	self.friendPickerController.cancelButton = nil;
+	self.friendPickerController.doneButton = nil;
+	
+	CGFloat headerBarHeight = 45.0;
+	fbHeaderHeight = headerBarHeight;
+	
+	self.friendPickerHeaderView = [[HONHeaderView alloc] initWithTitle:@"Select Friends"];
+	self.friendPickerHeaderView.autoresizingMask = self.friendPickerHeaderView.autoresizingMask | UIViewAutoresizingFlexibleWidth;
+	
+	// Cancel Button
+	UIButton *customCancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[customCancelButton addTarget:self action:@selector(facebookViewControllerCancelWasPressed:) forControlEvents:UIControlEventTouchUpInside];
+	customCancelButton.frame = CGRectMake(0, 0, 74.0, 44.0);
+	[self.friendPickerHeaderView addSubview:customCancelButton];
+	
+	// Done Button
+	UIButton *customDoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[customDoneButton addTarget:self action:@selector(facebookViewControllerDoneWasPressed:) forControlEvents:UIControlEventTouchUpInside];
+	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 59.0, 5.0, 54.0, 34.0);
+	[self.friendPickerHeaderView addSubview:customDoneButton];
+	
+}
+
 #pragma mark - Custom Facebook Select Friends Search Methods
 // Method to that adds a search bar to the built-in Friend Selector View.
 // We add this search bar to the canvasView of the FBFriendPickerViewController.
@@ -97,16 +136,21 @@
 {
 	if (self.searchBar == nil) {
 		CGFloat searchBarHeight = 44.0;
-		self.searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0,0, self.view.bounds.size.width, searchBarHeight)];
+		self.searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 45.0, self.view.bounds.size.width, searchBarHeight)];
 		self.searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
+		self.searchBar.tintColor = [UIColor colorWithRed:0.2863 green:0.2706 blue:0.7098 alpha:1.0];
 		self.searchBar.delegate = self;
-		self.searchBar.showsCancelButton = YES;
+		self.searchBar.showsCancelButton = NO;
 		
+		[self.friendPickerController.canvasView addSubview:self.friendPickerHeaderView];
 		[self.friendPickerController.canvasView addSubview:self.searchBar];
-		CGRect newFrame = self.friendPickerController.view.bounds;
-		newFrame.size.height -= searchBarHeight;
-		newFrame.origin.y = searchBarHeight;
-		self.friendPickerController.tableView.frame = newFrame;
+		CGRect updatedFrame = self.friendPickerController.view.bounds;
+		updatedFrame.size.height -= (fbHeaderHeight + searchBarHeight);
+		updatedFrame.origin.y = fbHeaderHeight + searchBarHeight;
+		self.friendPickerController.tableView.frame = updatedFrame;
+		
+		self.friendPickerController.parentViewController.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.3137 green:0.6431 blue:0.9333 alpha:1.0];
+		//setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
 	}
 	
 	UITextField *searchField = [self.searchBar valueForKey:@"_searchField"];
@@ -145,6 +189,7 @@
 	}
 	return YES;
 }
+
 
 #pragma mark - Facebook FBFriendPickerDelegate Methods
 - (void)facebookViewControllerCancelWasPressed:(id)sender

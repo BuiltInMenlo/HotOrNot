@@ -22,7 +22,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONImagePickerViewController () <ASIHTTPRequestDelegate>
+@interface HONImagePickerViewController () <AVAudioPlayerDelegate, ASIHTTPRequestDelegate>
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -37,6 +37,7 @@
 @property(nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property(nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property(nonatomic, strong) UIImage *challangeImage;
+@property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
 @end
 
 @implementation HONImagePickerViewController
@@ -245,6 +246,10 @@
 	[headerView addSubview:backButton];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	
+	_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"] error:NULL];
+	_sfxPlayer.delegate = self;
+	[_sfxPlayer play];
 }
 
 - (void)viewDidLoad {
