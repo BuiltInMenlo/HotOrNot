@@ -105,6 +105,7 @@
 				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points, 
+				"pokes" => 0, 
 				"notifications" => $row->notifications
 			);
 			
@@ -137,13 +138,17 @@
 			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
 			$score = mysql_num_rows(mysql_query($query));
 			
+			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
+			$pokes = mysql_num_rows(mysql_query($query));
+			
 			$user_arr = array(
 				"id" => $row->id, 
 				"name" => $row->username, 
 				"token" => $row->device_token, 
 				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid,
-				"points" => $row->points + $score,
+				"points" => $row->points + $score, 
+				"pokes" => $pokes, 
 				"notifications" => $row->notifications
 			);
 			
@@ -161,6 +166,9 @@
 			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
 			$score = mysql_num_rows(mysql_query($query));
 			
+			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
+			$pokes = mysql_num_rows(mysql_query($query));
+			
 			$user_arr = array(
 				"id" => $row->id, 
 				"name" => $row->username, 
@@ -168,6 +176,7 @@
 				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points + $score, 
+				"pokes" => $pokes, 
 				"notifications" => $row->notifications
 			);
 			
@@ -182,6 +191,9 @@
 			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
 			$score = mysql_num_rows(mysql_query($query));
 			
+			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
+			$pokes = mysql_num_rows(mysql_query($query));
+			
 			$user_arr = array(
 				"id" => $row->id, 
 				"name" => $row->username, 
@@ -189,6 +201,7 @@
 				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points + $score, 
+				"pokes" => $pokes, 
 				"notifications" => $row->notifications
 			);
 			
@@ -208,6 +221,9 @@
 			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
 			$score = mysql_num_rows(mysql_query($query));
 			
+			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
+			$pokes = mysql_num_rows(mysql_query($query));
+			
 			$user_arr = array(
 				"id" => $row->id, 
 				"name" => $row->username, 
@@ -215,10 +231,24 @@
 				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points + $score, 
+				"pokes" => $pokes, 
 				"notifications" => $row->notifications
 			);
 			
 			$this->sendResponse(200, json_encode($user_arr));
+			return (true);
+		}
+		
+		function pokeUser($poker_id, $pokee_id) {
+			$query = 'INSERT INTO `tblUserPokes` (';
+			$query .= '`id`, `user_id`, `poker_id`, `added`) ';
+			$query .= 'VALUES (NULL, "'. $pokee_id .'", "'. $poker_id .'", NOW());';
+			$result = mysql_query($query);
+			$poke_id = mysql_insert_id();
+			
+			$this->sendResponse(200, json_encode(array(
+				"id" => $poke_id
+			)));
 			return (true);
 		}
 		
@@ -263,6 +293,11 @@
 			case "5":
 				if (isset($_POST['userID']))
 					$users->getUser($_POST['userID']);
+				break;
+				
+			case "6":
+				if (isset($_POST['pokerID']) && isset($_POST['pokeeID']))
+					$users->pokeUser($_POST['pokerID'], $_POST['pokeeID']);
 				break;
     	}
 	}
