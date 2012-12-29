@@ -7,18 +7,22 @@
 //
 
 #import "HONPopularUserVO.h"
+#import "HONAppDelegate.h"
 
 @implementation HONPopularUserVO
 
 @synthesize dictionary;
-@synthesize userID, username, score, imageURL;
+@synthesize userID, username, points, votes, pokes, score, imageURL;
 
 + (HONPopularUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONPopularUserVO *vo = [[HONPopularUserVO alloc] init];
 	vo.dictionary = dictionary;
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
-	vo.score = [[dictionary objectForKey:@"score"] intValue];
+	vo.points = [[dictionary objectForKey:@"points"] intValue];
+	vo.votes = [[dictionary objectForKey:@"votes"] intValue];
+	vo.pokes = [[dictionary objectForKey:@"pokes"] intValue];
+	vo.score = vo.points + (vo.votes * [HONAppDelegate votePointMultiplier]) + (vo.pokes * [HONAppDelegate pokePointMultiplier]);
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	

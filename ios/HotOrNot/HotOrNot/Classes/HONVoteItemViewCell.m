@@ -165,10 +165,10 @@
 		
 		
 		UIButton *scoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		scoreButton.frame = CGRectMake(20.0, 404.0, 84.0, 16.0);
+		scoreButton.frame = CGRectMake(20.0, 370.0, 84.0, 16.0);
 		[scoreButton setTitleColor:[HONAppDelegate honBlueTxtColor] forState:UIControlStateNormal];
 		scoreButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		[scoreButton setTitle:[NSString stringWithFormat:@"%d votes", (_challengeVO.scoreCreator + _challengeVO.scoreChallenger)] forState:UIControlStateNormal];
+		[scoreButton setTitle:[NSString stringWithFormat:@"%d likes", (_challengeVO.scoreCreator + _challengeVO.scoreChallenger)] forState:UIControlStateNormal];
 		[scoreButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:scoreButton];
 		

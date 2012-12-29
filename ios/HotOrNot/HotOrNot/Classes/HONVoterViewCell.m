@@ -75,7 +75,7 @@
 	scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 	scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	scoreLabel.backgroundColor = [UIColor clearColor];
-	scoreLabel.text = [NSString stringWithFormat:@"%d points", _voterVO.points];
+	scoreLabel.text = [NSString stringWithFormat:@"%d points", _voterVO.score];
 	[self addSubview:scoreLabel];
 	
 	UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];

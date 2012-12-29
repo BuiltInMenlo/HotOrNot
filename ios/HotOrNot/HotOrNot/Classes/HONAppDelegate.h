@@ -29,6 +29,8 @@ extern NSString *const HONSessionStateChangedNotification;
 + (NSDictionary *)s3Credentials;
 + (NSString *)facebookCanvasURL;
 + (NSDictionary *)facebookFriendPosting;
++ (int)votePointMultiplier;
++ (int)pokePointMultiplier;
 + (NSString *)ctaForChallenge:(HONChallengeVO *)vo;
 + (BOOL)isCharboostEnabled;
 + (BOOL)isKiipEnabled;

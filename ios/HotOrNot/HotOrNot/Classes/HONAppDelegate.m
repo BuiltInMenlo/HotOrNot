@@ -89,6 +89,13 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	return (message);
 }
 
++ (int)votePointMultiplier {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:0] intValue]);
+}
++ (int)pokePointMultiplier {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:1] intValue]);
+}
+
 + (BOOL)isCharboostEnabled {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"ad_networks"] objectForKey:@"chartboost"] isEqualToString:@"Y"]);
 }
@@ -507,6 +514,10 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		PFQuery *fbPostQuery = [PFQuery queryWithClassName:@"FacebookPosting"];
 		PFObject *fbPostObject = [fbPostQuery getObjectWithId:@"CKjJvA5R01"];
 		
+		PFQuery *pointQuery = [PFQuery queryWithClassName:@"PointMultipliers"];
+		PFObject *votePointsObject = [pointQuery getObjectWithId:@"osbeGeV4Pf"];
+		PFObject *pokePointsObject = [pointQuery getObjectWithId:@"HSKePBKNFh"];
+		
 		PFQuery *webCTAQuery = [PFQuery queryWithClassName:@"WebCTAs"];
 		PFObject *backgroundCTAObject = [webCTAQuery getObjectWithId:@"QiQDqTAqXc"];
 		PFObject *submitCTAObject = [webCTAQuery getObjectWithId:@"pERUzecrqr"];
@@ -547,6 +558,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[s3Object objectForKey:@"key"], @"key", [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 		[[NSUserDefaults standardUserDefaults] setObject:[fbObject objectForKey:@"canvas_url"] forKey:@"facebook_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[fbPostObject objectForKey:@"friend_wall"], @"friend_wall", [fbPostObject objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:[votePointsObject objectForKey:@"amount"], [pokePointsObject objectForKey:@"amount"], nil] forKey:@"point_mult"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:backgroundCTA, submitCTA, nil] forKey:@"web_ctas"];
 		[[NSUserDefaults standardUserDefaults] setObject:ctaArray forKey:@"ctas"];
 		[[NSUserDefaults standardUserDefaults] setObject:adNetworkDict forKey:@"ad_networks"];

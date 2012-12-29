@@ -72,6 +72,30 @@
 			
 			echo ($body);
 		}
+		
+		
+		function userObject($user_id) {
+			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
+			$row = mysql_fetch_object(mysql_query($query));
+			
+			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
+			$votes = mysql_num_rows(mysql_query($query));
+			
+			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
+			$pokes = mysql_num_rows(mysql_query($query));
+			
+			return(array(
+				"id" => $row->id, 
+				"name" => $row->username, 
+				"token" => $row->device_token, 
+				"fb_id" => $row->fb_id, 
+				"paid" => $row->paid,
+				"points" => $row->points, 
+				"votes" => $votes, 
+				"pokes" => $pokes, 
+				"notifications" => $row->notifications
+			));
+		}
 	    
 		
 		function submitNewUser($device_token) {
@@ -80,9 +104,10 @@
 			
 			if (mysql_num_rows($result) > 0) {
 				$row = mysql_fetch_object($result);
+				$user_id = $row->id;
 				
-				$query = 'UPDATE `tblUsers` SET `last_login` = CURRENT_TIMESTAMP WHERE `id` = '. $row->id .';';
-				$result = mysql_query($query);
+				$query = 'UPDATE `tblUsers` SET `last_login` = CURRENT_TIMESTAMP WHERE `id` = '. $user_id .';';
+				$result = mysql_query($query);				
 				
 			} else {				
 				$query = 'INSERT INTO `tblUsers` (';
@@ -92,11 +117,11 @@
 				$user_id = mysql_insert_id();
 				
 				$query = 'UPDATE `tblUsers` SET `username` = "PicChallenge'. $user_id .'" WHERE `id` = '. $user_id .';';
-				$result = mysql_query($query);
-								
-				$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
-				$row = mysql_fetch_object(mysql_query($query));				
+				$result = mysql_query($query);																
 			}
+			
+			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$row = mysql_fetch_object(mysql_query($query));
 			
 	   		$user_arr = array(
 				"id" => $row->id, 
@@ -105,6 +130,7 @@
 				"fb_id" => $row->fb_id, 
 				"paid" => $row->paid, 
 				"points" => $row->points, 
+				"votes" => 0,
 				"pokes" => 0, 
 				"notifications" => $row->notifications
 			);
@@ -131,27 +157,7 @@
 				}
 			}
 			
-			
-			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
-			$row = mysql_fetch_object(mysql_query($query));
-			
-			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
-			$score = mysql_num_rows(mysql_query($query));
-			
-			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
-			$pokes = mysql_num_rows(mysql_query($query));
-			
-			$user_arr = array(
-				"id" => $row->id, 
-				"name" => $row->username, 
-				"token" => $row->device_token, 
-				"fb_id" => $row->fb_id, 
-				"paid" => $row->paid,
-				"points" => $row->points + $score, 
-				"pokes" => $pokes, 
-				"notifications" => $row->notifications
-			);
-			
+			$user_arr = $this->userObject($user_id);
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
 		}
@@ -159,52 +165,14 @@
 		function updatePaid($user_id, $isPaid) {
 			$query = 'UPDATE `tblUsers` SET `paid` = "'. $isPaid .'" WHERE `id` = '. $user_id .';';
 			$result = mysql_query($query);
-			
-			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$row = mysql_fetch_object(mysql_query($query));
-			
-			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
-			$score = mysql_num_rows(mysql_query($query));
-			
-			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
-			$pokes = mysql_num_rows(mysql_query($query));
-			
-			$user_arr = array(
-				"id" => $row->id, 
-				"name" => $row->username, 
-				"token" => $row->device_token, 
-				"fb_id" => $row->fb_id, 
-				"paid" => $row->paid, 
-				"points" => $row->points + $score, 
-				"pokes" => $pokes, 
-				"notifications" => $row->notifications
-			);
-			
+					   
+			$user_arr = $this->userObject($user_id);			
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
 		}
 		
 		function getUser($user_id) {
-			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$row = mysql_fetch_object(mysql_query($query));
-			
-			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
-			$score = mysql_num_rows(mysql_query($query));
-			
-			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
-			$pokes = mysql_num_rows(mysql_query($query));
-			
-			$user_arr = array(
-				"id" => $row->id, 
-				"name" => $row->username, 
-				"token" => $row->device_token, 
-				"fb_id" => $row->fb_id, 
-				"paid" => $row->paid, 
-				"points" => $row->points + $score, 
-				"pokes" => $pokes, 
-				"notifications" => $row->notifications
-			);
-			
+			$user_arr = $this->userObject($user_id);			
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
 		}
@@ -215,26 +183,7 @@
 			$query = 'UPDATE `tblUsers` SET `notifications` = "'. $isNotifications .'" WHERE `id` = '. $user_id .';';
 			$result = mysql_query($query);
 			
-			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$row = mysql_fetch_object(mysql_query($query));
-			
-			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_id .';';
-			$score = mysql_num_rows(mysql_query($query));
-			
-			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
-			$pokes = mysql_num_rows(mysql_query($query));
-			
-			$user_arr = array(
-				"id" => $row->id, 
-				"name" => $row->username, 
-				"token" => $row->device_token, 
-				"fb_id" => $row->fb_id, 
-				"paid" => $row->paid, 
-				"points" => $row->points + $score, 
-				"pokes" => $pokes, 
-				"notifications" => $row->notifications
-			);
-			
+			$user_arr = $this->userObject($user_id);			
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
 		}

@@ -7,10 +7,11 @@
 //
 
 #import "HONVoterVO.h"
+#import "HONAppDelegate.h"
 
 @implementation HONVoterVO
 @synthesize dictionary;
-@synthesize userID, fbID, username, points, challenges, imageURL;
+@synthesize userID, fbID, username, points, votes, pokes, score, challenges, imageURL;
 
 + (HONVoterVO *)voterWithDictionary:(NSDictionary *)dictionary {
 	HONVoterVO *vo = [[HONVoterVO alloc] init];
@@ -19,6 +20,9 @@
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
 	vo.points = [[dictionary objectForKey:@"points"] intValue];
+	vo.votes = [[dictionary objectForKey:@"votes"] intValue];
+	vo.pokes = [[dictionary objectForKey:@"pokes"] intValue];
+	vo.score = vo.score = vo.points + (vo.votes * [HONAppDelegate votePointMultiplier]) + (vo.pokes * [HONAppDelegate pokePointMultiplier]);
 	vo.challenges = [[dictionary objectForKey:@"challenges"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.imageURL = [dictionary objectForKey:@"img_url"];

@@ -82,13 +82,18 @@
 			
 			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {				
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_row['id'] .';';
-				$score = mysql_num_rows(mysql_query($query));
+				$votes = mysql_num_rows(mysql_query($query));
+				
+				$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_row['id'] .';';
+				$pokes = mysql_num_rows(mysql_query($query));
 			
 				array_push($user_arr, array(
 					"id" => $user_row['id'], 
 					"username" => $user_row['username'], 					
 					"img_url" => "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square",   
-					"score" => $user_row['points'] + $score
+					"points" => $user_row['points'],
+					"votes" => $votes,
+					"pokes" => $pokes
 				));	
 			}
 			

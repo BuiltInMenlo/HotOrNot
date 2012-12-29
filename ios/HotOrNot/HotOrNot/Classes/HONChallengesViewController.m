@@ -432,10 +432,11 @@
 	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 
 	if (cell == nil) {
-		if (indexPath.row == 0)
-			cell = [[HONChallengeViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
+		if (indexPath.row == 0) {
+			int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+			cell = [[HONChallengeViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
 		
-		else if (indexPath.row == [_challenges count] + 1)
+		}else if (indexPath.row == [_challenges count] + 1)
 			cell = [[HONChallengeViewCell alloc] initAsBottomCell:_isMoreLoading];
 				
 		else
@@ -468,7 +469,7 @@
 	if (indexPath.row < [_challenges count] + 1) {
 		
 		HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
-		if ([vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"])
+		if ([vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"])
 			return (indexPath);
 		
 		else
@@ -483,6 +484,8 @@
 	//[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
+	
+	NSLog(@"STATUS:[%@]", vo.status);
 	
 	if ([vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Waiting"]) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL withTitle:vo.subjectName]];

@@ -302,7 +302,10 @@
 				$challenge_tot = mysql_num_rows(mysql_query($query));
 				
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_obj->id .';';
-				$points = mysql_num_rows(mysql_query($query));
+				$votes = mysql_num_rows(mysql_query($query));
+				
+				$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_obj->id .';';
+				$pokes = mysql_num_rows(mysql_query($query));
 				
 				array_push($user_arr, array(
 					"id" => $user_obj->id, 
@@ -310,6 +313,8 @@
 					"username" => $user_obj->username, 					
 					"img_url" => "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square",   
 					"points" => $user_obj->points + $points,
+					"votes" => $votes,
+					"pokes" => $pokes, 
 					"challenges" => $challenge_tot
 				));	
 			}

@@ -430,10 +430,11 @@
 	
 	
 	if (cell == nil) {
-		if (indexPath.row == 0)
-			cell = [[HONVoteItemViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
+		if (indexPath.row == 0) {
+			int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+			cell = [[HONVoteItemViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
 		
-		else {
+		} else {
 			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
 			
 			cell = (vo.statusID == 2) ? [[HONVoteItemViewCell alloc] initAsWaitingCell] : [[HONVoteItemViewCell alloc] initAsStartedCell];

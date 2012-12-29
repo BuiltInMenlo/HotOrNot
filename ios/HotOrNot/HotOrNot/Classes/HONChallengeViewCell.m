@@ -108,6 +108,8 @@
 	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 	[creatorImgHolderView addSubview:creatorImageView];
 	
+	
+	
 	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 15.0, 100.0, 16.0)];
 	creatorLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 	creatorLabel.textColor = [HONAppDelegate honGreyTxtColor];

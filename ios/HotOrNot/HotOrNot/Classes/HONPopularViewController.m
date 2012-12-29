@@ -343,10 +343,11 @@
 		HONPopularUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			if (indexPath.row == 0)
-				cell = [[HONPopularUserViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
+			if (indexPath.row == 0) {
+				int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+				cell = [[HONPopularUserViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
 			
-			else if (indexPath.row == [_users count] + 1)
+			} else if (indexPath.row == [_users count] + 1)
 				cell = [[HONPopularUserViewCell alloc] initAsBottomCell];
 			
 			else
@@ -363,10 +364,11 @@
 		HONPopularSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			if (indexPath.row == 0)
-				cell = [[HONPopularSubjectViewCell alloc] initAsTopCell:[[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] withSubject:[HONAppDelegate dailySubjectName]];
+			if (indexPath.row == 0) {
+				int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+				cell = [[HONPopularSubjectViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
 			
-			else if (indexPath.row == [_subjects count] + 1)
+			} else if (indexPath.row == [_subjects count] + 1)
 				cell = [[HONPopularSubjectViewCell alloc] initAsBottomCell];
 			
 			else
@@ -492,12 +494,10 @@
 			
 			else {
 				NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-				NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
-												 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
 				
 				if (_isUsersList) {
 					_users = [NSMutableArray new];
-					for (NSDictionary *serverList in parsedLists) {
+					for (NSDictionary *serverList in unsortedList) {
 						HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
 						//NSLog(@"VO:[%d]", vo.userID);
 						
@@ -505,7 +505,14 @@
 							[_users addObject:vo];
 					}
 					
-				} else {					
+					NSArray * sortedUsers = [_users sortedArrayUsingDescriptors:
+													 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+					_users = [NSMutableArray arrayWithArray:sortedUsers];
+					
+				} else {
+					NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
+													 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+					
 					_subjects = [NSMutableArray new];
 					for (NSDictionary *serverList in parsedLists) {
 						HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
