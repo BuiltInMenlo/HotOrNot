@@ -9,6 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
 
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"

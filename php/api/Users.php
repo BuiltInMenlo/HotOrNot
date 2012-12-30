@@ -88,6 +88,7 @@
 				"name" => $row->username, 
 				"token" => $row->device_token, 
 				"fb_id" => $row->fb_id, 
+				"gender" => $row->gender, 
 				"paid" => $row->paid,
 				"points" => $row->points, 
 				"votes" => $votes, 
@@ -155,8 +156,8 @@
 		}
 		
 		
-		function updateName($user_id, $username, $fb_id) {
-			$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = '. $fb_id .' WHERE `id` ='. $user_id .';';
+		function updateName($user_id, $username, $fb_id, $gender) {
+			$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = "'. $fb_id .'", `gender` = "'. $gender .'" WHERE `id` ='. $user_id .';';
 			$result = mysql_query($query);
 			
 			$query = 'SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = "'. $fb_id .'";';
@@ -249,8 +250,8 @@
 				break;
 				
 			case "2":
-				if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']))
-					$users->updateName($_POST['userID'], $_POST['username'], $_POST['fbID']);
+				if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']) && isset($_POST['gender']))
+					$users->updateName($_POST['userID'], $_POST['username'], $_POST['fbID'], $_POST['gender']);
 				break;
 			
 			case "3":

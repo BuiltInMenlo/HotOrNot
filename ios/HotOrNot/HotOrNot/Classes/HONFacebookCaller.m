@@ -62,7 +62,7 @@
 													  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
 													  @"PicChallengeMe", @"name",
 													  vo.subjectName, @"caption",
-													  [NSString stringWithFormat:@"%@ just challenged %@ to take the %@ challenge! Tap here to ReChallenge this photo!", vo.creatorName, vo.challengerName, vo.subjectName], @"description", nil];
+													  [NSString stringWithFormat:@"%@ just challenged %@ to take the %@ challenge, tap here to challenge back!", vo.creatorName, vo.challengerName, vo.subjectName], @"description", nil];
 		
 		[FBRequestConnection startWithGraphPath:@"me/feed" parameters:postParams HTTPMethod:@"POST" completionHandler:
 		 ^(FBRequestConnection *connection, id result, NSError *error) {
@@ -87,7 +87,7 @@
 													  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
 													  @"PicChallengeMe", @"name",
 													  vo.subjectName, @"caption",
-													  [NSString stringWithFormat:@"%@ just challenged %@ to take the %@ challenge! Tap here to ReChallenge this photo!", vo.creatorName, vo.challengerName, vo.subjectName], @"description", nil];
+													  [NSString stringWithFormat:@"%@ just challenged you to a %@ photo, tap here to challenge back!", vo.creatorName, vo.subjectName], @"description", nil];
 		
 		NSLog(@"fbID:[%@]", fbID);
 		
