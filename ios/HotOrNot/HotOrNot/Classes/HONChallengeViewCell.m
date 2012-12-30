@@ -108,7 +108,10 @@
 	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 	[creatorImgHolderView addSubview:creatorImageView];
 	
-	
+	UIButton *imgButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	imgButton.frame = creatorImageView.frame;
+	[imgButton addTarget:self action:@selector(_goPreview) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:imgButton];
 	
 	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 15.0, 100.0, 16.0)];
 	creatorLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
@@ -126,28 +129,20 @@
 	subjectLabel.text = self.challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	ctaButton.frame = CGRectMake(210.0, 4.0, 98.0, 60.0);
-	[self addSubview:ctaButton];
+	UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(280.0, 20.0, 24.0, 24.0)];
+	chevronImageView.image = [UIImage imageNamed:@"chevron.png"];
+	[self addSubview:chevronImageView];
 	
 	if ([self.challengeVO.status isEqualToString:@"Waiting"]) {
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
 		creatorLabel.text = self.challengeVO.challengerName;
 		
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive.png"] forState:UIControlStateNormal];
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active.png"] forState:UIControlStateHighlighted];
-		[ctaButton addTarget:self action:@selector(_goWaitingAlert) forControlEvents:UIControlEventTouchUpInside];
-	
 	} else if ([self.challengeVO.status isEqualToString:@"Accept"]) {
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive.png"] forState:UIControlStateNormal];
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active.png"] forState:UIControlStateHighlighted];
-		[ctaButton addTarget:self action:@selector(_goCTA) forControlEvents:UIControlEventTouchUpInside];
 		
 	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
 		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
 		
-		[ctaButton removeFromSuperview];
 		[subjectLabel removeFromSuperview];
 		
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
@@ -228,7 +223,6 @@
 	} else if ([challengeVO.status isEqualToString:@"Completed"]) {
 		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
 		[subjectLabel removeFromSuperview];
-		[ctaButton addTarget:self action:@selector(_goResults) forControlEvents:UIControlEventTouchUpInside];
 		
 		creatorLabel.frame = CGRectMake(65.0, 5.0, 100.0, 16.0);
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
@@ -269,22 +263,14 @@
 		
 		creatorLabel.text = self.challengeVO.creatorName;
 		
+		// winning
 		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
-			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_nonActive.png"] forState:UIControlStateNormal];
-			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWinner_Active.png"] forState:UIControlStateHighlighted];
-			
-//			if (self.challengeVO.scoreCreator == 1)
-//				[ctaButton setTitle:@"1 point" forState:UIControlStateNormal];
-//			else
-//				[ctaButton setTitle:[NSString stringWithFormat:@"%d points", self.challengeVO.scoreCreator] forState:UIControlStateNormal];
-			
-		} else if (self.challengeVO.scoreCreator < self.challengeVO.scoreChallenger) {
-			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonLoser_nonActive.png"] forState:UIControlStateNormal];
-			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonLoser_Active.png"] forState:UIControlStateHighlighted];
 		
+			// losing
+		} else if (self.challengeVO.scoreCreator < self.challengeVO.scoreChallenger) {
+		
+			// tie
 		} else {
-			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_nonActive.png"] forState:UIControlStateNormal];
-			[ctaButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_Active.png"] forState:UIControlStateHighlighted];
 		}
 	}
 }
@@ -292,7 +278,7 @@
 
 //- (void)willTransitionToState:(UITableViewCellStateMask)state {
 //	[super willTransitionToState:state];
-//	
+//
 //	NSLog(@"willTransitionToState");
 //	
 //	if ((state & UITableViewCellStateShowingDeleteConfirmationMask) == UITableViewCellStateShowingDeleteConfirmationMask) {
@@ -307,10 +293,6 @@
 //}
 
 #pragma mark - Navigation
-- (void)_goCTA {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:self.challengeVO];
-}
-
 - (void)_goResults {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_RESULTS" object:nil];
 }
@@ -319,17 +301,12 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"DAILY_CHALLENGE" object:nil];
 }
 
-- (void)_goLoadMore {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
+- (void)_goPreview {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PREVIEW" object:self.challengeVO];
 }
 
-- (void)_goWaitingAlert {
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Waiting Challenge"
-																	message:@"This challenge hasn't been accepted yet."
-																  delegate:self
-													  cancelButtonTitle:nil
-													  otherButtonTitles:@"OK", nil];
-	[alert show];
+- (void)_goLoadMore {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
 }
 
 - (void)didSelect {

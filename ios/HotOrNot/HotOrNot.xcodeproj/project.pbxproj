@@ -121,10 +121,6 @@
 		4C0C4150162C9769007F0DA3 /* icon_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414F162C9769007F0DA3 /* icon_114x114.png */; };
 		4C0C4167162C99B0007F0DA3 /* firstUserExperience_footerBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4163162C99AF007F0DA3 /* firstUserExperience_footerBackground.png */; };
 		4C0C4168162C99B0007F0DA3 /* firstUserExperience_footerBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4164162C99B0007F0DA3 /* firstUserExperience_footerBackground@2x.png */; };
-		4C0C416D162C9A7E007F0DA3 /* liveTableRow_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4169162C9A7E007F0DA3 /* liveTableRow_Active.png */; };
-		4C0C416E162C9A7E007F0DA3 /* liveTableRow_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C416A162C9A7E007F0DA3 /* liveTableRow_Active@2x.png */; };
-		4C0C416F162C9A7E007F0DA3 /* liveTableRow_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C416B162C9A7E007F0DA3 /* liveTableRow_nonActive.png */; };
-		4C0C4170162C9A7E007F0DA3 /* liveTableRow_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C416C162C9A7E007F0DA3 /* liveTableRow_nonActive@2x.png */; };
 		4C0C4175162C9B36007F0DA3 /* commonTableRow_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4171162C9B36007F0DA3 /* commonTableRow_Active.png */; };
 		4C0C4176162C9B36007F0DA3 /* commonTableRow_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4172162C9B36007F0DA3 /* commonTableRow_Active@2x.png */; };
 		4C0C4177162C9B36007F0DA3 /* commonTableRow_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4173162C9B36007F0DA3 /* commonTableRow_nonActive.png */; };
@@ -147,6 +143,7 @@
 		4C0C4199162CF627007F0DA3 /* likeButton_tapped@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4193162CF626007F0DA3 /* likeButton_tapped@2x.png */; };
 		4C19BF0D168E811E006D241E /* chevron.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0B168E811E006D241E /* chevron.png */; };
 		4C19BF0E168E811E006D241E /* chevron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0C168E811E006D241E /* chevron@2x.png */; };
+		4C19BF16168F98B2006D241E /* HONChallengePreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C19BF15168F98B2006D241E /* HONChallengePreviewView.m */; };
 		4C31AFAF1638745100358022 /* mainBG-568h.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C31AFAC1638745100358022 /* mainBG-568h.png */; };
 		4C31AFB01638745100358022 /* mainBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C31AFAD1638745100358022 /* mainBG.png */; };
 		4C31AFB11638745100358022 /* mainBG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C31AFAE1638745100358022 /* mainBG@2x.png */; };
@@ -481,10 +478,6 @@
 		4C0C414F162C9769007F0DA3 /* icon_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_114x114.png; sourceTree = "<group>"; };
 		4C0C4163162C99AF007F0DA3 /* firstUserExperience_footerBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = firstUserExperience_footerBackground.png; sourceTree = "<group>"; };
 		4C0C4164162C99B0007F0DA3 /* firstUserExperience_footerBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "firstUserExperience_footerBackground@2x.png"; sourceTree = "<group>"; };
-		4C0C4169162C9A7E007F0DA3 /* liveTableRow_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = liveTableRow_Active.png; sourceTree = "<group>"; };
-		4C0C416A162C9A7E007F0DA3 /* liveTableRow_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "liveTableRow_Active@2x.png"; sourceTree = "<group>"; };
-		4C0C416B162C9A7E007F0DA3 /* liveTableRow_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = liveTableRow_nonActive.png; sourceTree = "<group>"; };
-		4C0C416C162C9A7E007F0DA3 /* liveTableRow_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "liveTableRow_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C0C4171162C9B36007F0DA3 /* commonTableRow_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = commonTableRow_Active.png; sourceTree = "<group>"; };
 		4C0C4172162C9B36007F0DA3 /* commonTableRow_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "commonTableRow_Active@2x.png"; sourceTree = "<group>"; };
 		4C0C4173162C9B36007F0DA3 /* commonTableRow_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = commonTableRow_nonActive.png; sourceTree = "<group>"; };
@@ -507,6 +500,8 @@
 		4C0C4193162CF626007F0DA3 /* likeButton_tapped@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "likeButton_tapped@2x.png"; sourceTree = "<group>"; };
 		4C19BF0B168E811E006D241E /* chevron.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron.png; sourceTree = "<group>"; };
 		4C19BF0C168E811E006D241E /* chevron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron@2x.png"; sourceTree = "<group>"; };
+		4C19BF14168F98B2006D241E /* HONChallengePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengePreviewView.h; sourceTree = "<group>"; };
+		4C19BF15168F98B2006D241E /* HONChallengePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengePreviewView.m; sourceTree = "<group>"; };
 		4C31AFAC1638745100358022 /* mainBG-568h.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mainBG-568h.png"; sourceTree = "<group>"; };
 		4C31AFAD1638745100358022 /* mainBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mainBG.png; sourceTree = "<group>"; };
 		4C31AFAE1638745100358022 /* mainBG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mainBG@2x.png"; sourceTree = "<group>"; };
@@ -978,6 +973,8 @@
 				4CBE870C1634DDED004084DF /* HONResultsViewController.m */,
 				4CBE871616350CCF004084DF /* HONResultsViewCell.h */,
 				4CBE871716350CD0004084DF /* HONResultsViewCell.m */,
+				4C19BF14168F98B2006D241E /* HONChallengePreviewView.h */,
+				4C19BF15168F98B2006D241E /* HONChallengePreviewView.m */,
 			);
 			name = Challenges;
 			sourceTree = "<group>";
@@ -1711,10 +1708,6 @@
 				4C0C4172162C9B36007F0DA3 /* commonTableRow_Active@2x.png */,
 				4C0C4173162C9B36007F0DA3 /* commonTableRow_nonActive.png */,
 				4C0C4174162C9B36007F0DA3 /* commonTableRow_nonActive@2x.png */,
-				4C0C4169162C9A7E007F0DA3 /* liveTableRow_Active.png */,
-				4C0C416A162C9A7E007F0DA3 /* liveTableRow_Active@2x.png */,
-				4C0C416B162C9A7E007F0DA3 /* liveTableRow_nonActive.png */,
-				4C0C416C162C9A7E007F0DA3 /* liveTableRow_nonActive@2x.png */,
 				4C0C411B162BF138007F0DA3 /* tableButtonAccept_Active.png */,
 				4C0C411C162BF138007F0DA3 /* tableButtonAccept_Active@2x.png */,
 				4C0C411D162BF138007F0DA3 /* tableButtonAccept_nonActive.png */,
@@ -2170,10 +2163,6 @@
 				4C0C4150162C9769007F0DA3 /* icon_114x114.png in Resources */,
 				4C0C4167162C99B0007F0DA3 /* firstUserExperience_footerBackground.png in Resources */,
 				4C0C4168162C99B0007F0DA3 /* firstUserExperience_footerBackground@2x.png in Resources */,
-				4C0C416D162C9A7E007F0DA3 /* liveTableRow_Active.png in Resources */,
-				4C0C416E162C9A7E007F0DA3 /* liveTableRow_Active@2x.png in Resources */,
-				4C0C416F162C9A7E007F0DA3 /* liveTableRow_nonActive.png in Resources */,
-				4C0C4170162C9A7E007F0DA3 /* liveTableRow_nonActive@2x.png in Resources */,
 				4C0C4175162C9B36007F0DA3 /* commonTableRow_Active.png in Resources */,
 				4C0C4176162C9B36007F0DA3 /* commonTableRow_Active@2x.png in Resources */,
 				4C0C4177162C9B36007F0DA3 /* commonTableRow_nonActive.png in Resources */,
@@ -2383,6 +2372,7 @@
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
 				4CB472F5168C176D007153DF /* HONWebCTAViewController.m in Sources */,
 				4CB472F9168C26AC007153DF /* HONInviteFriendsViewController.m in Sources */,
+				4C19BF16168F98B2006D241E /* HONChallengePreviewView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

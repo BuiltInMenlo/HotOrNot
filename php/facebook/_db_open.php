@@ -5,7 +5,7 @@ $db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could 
 //$db_conn = mysql_connect('internal-db.s41232.gridserver.com', 'db41232_sn_usr', 'dope911t') or die("Could not connect to database.");
 
 // select the proper db
-mysql_select_db('hotornot') or die("Could not select database.");
+mysql_select_db('hotornot-dev') or die("Could not select database.");
 //mysql_select_db('db41232_assembly') or die("Could not select database.");
 
 // get the current date / time from mysql

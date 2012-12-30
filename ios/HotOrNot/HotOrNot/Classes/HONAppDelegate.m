@@ -509,7 +509,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 		PFObject *s3Object = [s3Query getObjectWithId:@"zofEGq6sLT"];
 		
 		PFQuery *fbQuery = [PFQuery queryWithClassName:@"FacebookPaths"];
-		PFObject *fbObject = [fbQuery getObjectWithId:@"9YC4DWz1AY"];
+		PFObject *fbObject = [fbQuery getObjectWithId:@"pFp8O7n9FK"];
 		
 		PFQuery *fbPostQuery = [PFQuery queryWithClassName:@"FacebookPosting"];
 		PFObject *fbPostObject = [fbPostQuery getObjectWithId:@"CKjJvA5R01"];

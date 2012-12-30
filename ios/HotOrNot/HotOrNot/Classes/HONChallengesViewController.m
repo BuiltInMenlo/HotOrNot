@@ -17,7 +17,6 @@
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
 #import "HONChallengeVO.h"
-
 #import "HONSettingsViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONLoginViewController.h"
@@ -26,9 +25,10 @@
 #import "HONResultsViewController.h"
 #import "HONHeaderView.h"
 #import "HONFacebookCaller.h"
+#import "HONChallengePreviewView.h"
 
 
-@interface HONChallengesViewController() <UIAlertViewDelegate, FBLoginViewDelegate, ASIHTTPRequestDelegate, TapForTapAdViewDelegate>
+@interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, FBLoginViewDelegate, ASIHTTPRequestDelegate, TapForTapAdViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -41,6 +41,7 @@
 @property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) NSMutableArray *friends;
+@property(nonatomic, retain) HONChallengePreviewView *previewView;
 @property(nonatomic) int blockCounter;
 
 - (void)_retrieveChallenges;
@@ -67,7 +68,7 @@
 		self.isFirstRun = YES;
 		_blockCounter = 0;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPreview:) name:@"SHOW_PREVIEW" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dailyChallenge:) name:@"DAILY_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
@@ -133,6 +134,12 @@
 	
 	[self _retrieveChallenges];
 	[self _retrieveUser];
+	
+	
+	UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+	lpgr.minimumPressDuration = 1.0;
+	lpgr.delegate = self;
+	[self.tableView addGestureRecognizer:lpgr];
 	
 	[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 }
@@ -212,6 +219,48 @@
 	}
 }
 
+
+-(void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+	NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:self.tableView]];
+	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
+	self.challengeVO = vo;
+	
+	if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		if (indexPath == nil)
+			NSLog(@"long press on table view but not on a row");
+		
+		else {
+			NSLog(@"long press on table view at row %d", indexPath.row);
+			
+			if ([vo.status isEqualToString:@"Accept"]) {
+				_previewView = [[HONChallengePreviewView alloc] initWithFrame:CGRectMake(7.0, 70.0, 320.0, (kLargeH * 0.5)) andChallenge:vo];
+				[self.view addSubview:_previewView];
+			
+			} else if ([vo.status isEqualToString:@"Waiting"]) {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Waiting Challenge"
+																				message:@"Do you want to poke this user? (Tip: Poking users gives the other person points.)"
+																			  delegate:self
+																  cancelButtonTitle:@"NO"
+																  otherButtonTitles:@"YES", nil];
+				[alertView setTag:1];
+				[alertView show];
+			}
+		}
+	
+	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+		if (_previewView != nil) {
+			[_previewView removeFromSuperview];
+			_previewView = nil;
+			
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Accept Challenge"
+																			message:@"Do you want to accept this challenge?"
+																		  delegate:nil
+															  cancelButtonTitle:@"Report"
+															  otherButtonTitles:@"Yes", @"No", nil];
+			[alert show];
+		}
+	}
+}
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
@@ -314,14 +363,12 @@
 
 
 #pragma mark - Notifications
-- (void)_acceptChallenge:(NSNotification *)notification {
-//	if (FBSession.activeSession.state == 513) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[notification object]]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
+- (void)_showPreview:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-//	} else
-//		[self _goLogin];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL withTitle:vo.subjectName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_dailyChallenge:(NSNotification *)notification {
@@ -484,15 +531,38 @@
 	//[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
+	self.challengeVO = vo;
 	
 	NSLog(@"STATUS:[%@]", vo.status);
-	
-	if ([vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Waiting"]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL withTitle:vo.subjectName]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+	if ([vo.status isEqualToString:@"Waiting"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Waiting Challenge"
+																		message:@"Do you want to poke this user? (Tip: Poking users gives the other person points.)"
+																	  delegate:self
+														  cancelButtonTitle:@"Yes"
+														  otherButtonTitles:@"No", nil];
+		[alertView setTag:1];
+		[alertView show];
+		
+	} else if ([vo.status isEqualToString:@"Accept"]) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Accept Challenge"
+																		message:@"Do you want to accept this challenge? (Tip: Tap and hold to view images.)"
+																	  delegate:self
+														  cancelButtonTitle:@"Yes"
+														  otherButtonTitles:@"No", nil];
+		[alertView setTag:2];
+		[alertView show];
 	
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
+		NSString *msg = (vo.scoreCreator > vo.scoreChallenger) ? [NSString stringWithFormat:@"You are winning this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger] : [NSString stringWithFormat:@"You are losing this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
+		
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Challenge Stats"
+																		message:msg
+																	  delegate:nil
+														  cancelButtonTitle:nil
+														  otherButtonTitles:@"OK", nil];
+		[alert show];
+		
+		
 		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithChallenge:vo] animated:YES];
 	}
 }
@@ -509,12 +579,13 @@
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		self.idxPath = indexPath;
 		
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Delete Challenge"
-																		message:@"Are you sure you want to remove this challenge?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete Challenge"
+																		message:@"Do you want to report abuse?"
 																	  delegate:self
 														  cancelButtonTitle:@"Yes"
 														  otherButtonTitles:@"No", nil];
-		[alert show];
+		[alertView setTag:0];
+		[alertView show];
 	}
 }
 
@@ -524,24 +595,99 @@
 	ASIFormDataRequest *challengeRequest;
 	HONChallengeVO *vo;
 	
-	switch(buttonIndex) {
-		case 0:
-			vo = (HONChallengeVO *)[_challenges objectAtIndex:self.idxPath.row - 1];
-			
-			[self.challenges removeObjectAtIndex:self.idxPath.row - 1];
-			[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.idxPath] withRowAnimation:UITableViewRowAnimationFade];
-			
-			
-			//NSLog(@"VO:[%d]", vo.challengeID);
-			
-			challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-			[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
-			[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
-			[challengeRequest startAsynchronous];
-			break;
-			
-		case 1:
-			break;
+	NSLog(@"BUTTON INDEX:[%d]", buttonIndex);
+	
+	// delete
+	if (alertView.tag == 0) {
+		[[Mixpanel sharedInstance] track:@"Challenge Wall - Delete"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+		
+		vo = (HONChallengeVO *)[_challenges objectAtIndex:self.idxPath.row - 1];
+		
+		[self.challenges removeObjectAtIndex:self.idxPath.row - 1];
+		[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.idxPath] withRowAnimation:UITableViewRowAnimationFade];
+		
+		challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
+		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
+		[challengeRequest startAsynchronous];
+		
+		switch(buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Challenge Wall - Flag"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+				
+				ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
+				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+				[voteRequest startAsynchronous];
+				break;
+		}
+	
+	} else if (alertView.tag == 1) {
+		switch (buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Challenge Wall - Poke Challenger"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+				
+				ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
+				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"pokerID"];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengerID] forKey:@"pokeeID"];
+				[voteRequest startAsynchronous];
+				break;
+		}
+		
+	} else if (alertView.tag == 2) {
+		switch (buttonIndex) {
+			case 0: {
+				[[Mixpanel sharedInstance] track:@"Challenge Wall - Accept"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+				
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:self.challengeVO]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:NO completion:nil];
+				break;}
+		}
+		
+		// accept / report
+	} else if (alertView.tag == 3) {
+		switch (buttonIndex) {
+				// report
+			case 0: {
+				[[Mixpanel sharedInstance] track:@"Challenge Wall - Flag"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+				
+				ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
+				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+				[voteRequest startAsynchronous];
+				break;}
+				
+			case 1: {
+				[[Mixpanel sharedInstance] track:@"Challenge Wall - Accept"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+				
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:self.challengeVO]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:NO completion:nil];
+			break;}
+		}
+		
 	}
 }
 
@@ -550,6 +696,7 @@
 -(void)requestFinished:(ASIHTTPRequest *)request {
 	//NSLog(@"HONChallengesViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
+	// load more
 	if (request.tag == 2) {
 		@autoreleasepool {
 			NSError *error = nil;
@@ -575,6 +722,7 @@
 			}
 		}
 	
+		// user
 	} else if (request.tag == 0) {
 		@autoreleasepool {
 			NSError *error = nil;
@@ -591,7 +739,8 @@
 		
 		[_tableView reloadData];
 		
-	} else {
+		// 1st challenges
+	} else if (request.tag == 1) {
 		@autoreleasepool {
 			NSError *error = nil;
 			if (error != nil)

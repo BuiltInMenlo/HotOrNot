@@ -71,8 +71,7 @@
 			header("Content-type: ". $content_type);
 			
 			echo ($body);
-		}
-		
+		}		
 		
 		function userObject($user_id) {
 			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
@@ -97,6 +96,22 @@
 			));
 		}
 	    
+		function sendPush($msg) {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+			//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+			curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
+		 	$res = curl_exec($ch);
+			$err_no = curl_errno($ch);
+			$err_msg = curl_error($ch);
+			$header = curl_getinfo($ch);
+			curl_close($ch);	
+		}
+		
 		
 		function submitNewUser($device_token) {
 			$query = 'SELECT * FROM `tblUsers` WHERE `device_token` = "'. $device_token .'";';
@@ -194,6 +209,15 @@
 			$query .= 'VALUES (NULL, "'. $pokee_id .'", "'. $poker_id .'", NOW());';
 			$result = mysql_query($query);
 			$poke_id = mysql_insert_id();
+			
+			$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $poker_id .';';
+			$poker_name = mysql_fetch_object(mysql_query($query))->username;
+			
+			$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $pokee_id .';';
+			$pokee_obj = mysql_fetch_object(mysql_query($query));			
+			
+			if ($pokee_obj->notifications == "Y")
+				$this->sendPush('{"device_tokens": ["'. $pokee_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $poker_name .' has poked you!", "sound": "push_01.caf"}}');
 			
 			$this->sendResponse(200, json_encode(array(
 				"id" => $poke_id
