@@ -9,18 +9,25 @@ require './_db_open.php';
 if (isset($_GET['cID'])) {
 	$challenge_id = $_GET['cID'];
 	
-	$query = 'SELECT `status_id`, `subject_id`, `creator_img`, `challenger_img` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+	/*
+	$query = 'SELECT `subject_id`, `creator_img`, `challenger_img` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
 	$challenge_obj = mysql_fetch_object(mysql_query($query));
-	$status_id = $challenge_obj->status_id;
 	$creator_img = $challenge_obj->creator_img . "_l.jpg";
 	$challenger_img = $challenge_obj->challenger_img . "_l.jpg";
+	*/
+	
+	$query = 'SELECT `subject_id`, img_url FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+	$challenge_obj = mysql_fetch_object(mysql_query($query));
+	$creator_img = $challenge_obj->img_url . "_l.jpg";
 	
 	$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
 	$title = mysql_fetch_object(mysql_query($query))->title;
 	
-	$blurb = "PicChallenge - #challenge friends and strangers with photos, memes, quotes, and more!";
+	$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $challenge_id .';';
+	$challenger_img = mysql_fetch_object(mysql_query($query))->url . "_l.jpg";	
 }
 
+$blurb = "PicChallenge - #challenge friends and strangers with photos, memes, quotes, and more!";
 
 require './_db_close.php'; 
 
@@ -41,8 +48,25 @@ require './_db_close.php';
   <body>
 	<div id="fb-root"></div>
 	<!-- <script src="http://connect.facebook.net/en_US/all.js"></script> -->
+	
+	<form id="frmSubmit" name="frmSubmit" method="post" action="./submit.php">
+		<input id="hidFBID" name="hidFBID" type="hidden" value="" />
+		<input id="hidUsername" name="hidUsername" type="hidden" value="" />
+		<input id="hidGender" name="hidGender" type="hidden" value="" />
+	</form>
 		
 	<script>
+	function getQueryString() {
+	  var result = {}, queryString = location.search.substring(1),
+	      re = /([^&=]+)=([^&]*)/g, m;
+
+	  while (m = re.exec(queryString)) {
+	    result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+	  }
+
+	  return result;
+	}
+
 	function login() {
 	    FB.login(function(response) {
 	        if (response.authResponse) {
@@ -58,7 +82,19 @@ require './_db_close.php';
 	    console.log('Welcome!  Fetching your information.... ');
 	    FB.api('/me', function(response) {
 	        console.log('Good to see you, ' + response.name + '.');
-			alert ("YOU ARE: " + response.name);
+			//alert ("YOU ARE: [" + response.id + "] '" + response.username + "' (" + response.gender + ") {" + getQueryString()["submit"] + "}");
+			
+			var frmSubmit = document.getElementById('frmSubmit');
+			if (getQueryString()["submit"] != "1") {				
+				frmSubmit.hidFBID.value = response.id;
+				frmSubmit.hidUsername.value = response.username;
+				frmSubmit.hidGender.value = response.gender.toUpperCase().charAt(0);
+				
+				if (getQueryString()["cID"] != undefined)
+					frmSubmit.action = "./submit.php?cID=<?php echo ($_GET['cID']); ?>";
+				
+				frmSubmit.submit();
+			}
 	    });
 	}
 	
@@ -102,10 +138,15 @@ require './_db_close.php';
 	     ref.parentNode.insertBefore(js, ref);
 	   }(document, /*debug*/ false));
 	</script>
-
-	<h2>#<?php echo ($title); ?></h2>
-	<hr />
-	<p><?php echo ($blurb); ?></p>
-	<center><p><img src="<?php echo ($creator_img); ?>" /><hr /><img src="<?php echo ($challenger_img); ?>" /></p></center>
+    
+	<?php if (isset($_GET['cID'])) {
+		echo ("<h2>#". $title ."</h2>\n");
+		echo ("<hr />\n");
+		echo ("<p>". $blurb ."</p>\n");
+		echo ("<center><p><img src='". $creator_img ."' /><hr /><img src='". $challenger_img ."' /></p></center>\n");
+	
+	} else {
+		echo ("<h4>". $blurb ."</h4><hr />\n");
+	} ?>
   </body>  
 </html>

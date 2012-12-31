@@ -112,14 +112,14 @@
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 	inviteButton.hidden = (FBSession.activeSession.state != 513);
-	//[_headerView addSubview:inviteButton];
+	[_headerView addSubview:inviteButton];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_refreshButton];
+	//[_headerView addSubview:_refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -295,10 +295,8 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
-}
-
-- (void)_goInvite {
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
+	
 	_friends = [NSMutableArray array];
 	
 	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
@@ -307,21 +305,23 @@
 			[_friends addObject: [friend objectForKey:@"id"]];
 		
 		NSLog(@"RETRIEVED (%d) FRIENDS", [_friends count]);
-		
-		NSRange range;
-		range.length = 50;
-		range.location = _blockCounter * range.length;
-		
-		if (range.location >= [_friends count])
-			range.location = 0;
-		
-		if (range.location + range.length > [_friends count])
-			range.length = [_friends count] - range.location;
-		
-		NSLog(@"INVITING (%d-%d)/%d", range.location, range.location + range.length, [_friends count]);
-		[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends subarrayWithRange:range]];
-		_blockCounter++;
 	}];
+}
+
+- (void)_goInvite {
+	NSRange range;
+	range.length = 50;
+	range.location = _blockCounter * range.length;
+	
+	if (range.location >= [_friends count])
+		range.location = 0;
+	
+	if (range.location + range.length > [_friends count])
+		range.length = [_friends count] - range.location;
+	
+	NSLog(@"INVITING (%d-%d)/%d", range.location, range.location + range.length, [_friends count]);
+	[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends subarrayWithRange:range]];
+	_blockCounter++;
 }
 
 - (void)_goRefresh {

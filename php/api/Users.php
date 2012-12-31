@@ -127,8 +127,8 @@
 				
 			} else {				
 				$query = 'INSERT INTO `tblUsers` (';
-				$query .= '`id`, `username`, `device_token`, `fb_id`, `paid`, `points`, `notifications`, `last_login`, `added`) ';
-				$query .= 'VALUES (NULL, "", "'. $device_token .'", "", "N", "0", "Y", CURRENT_TIMESTAMP, NOW());';
+				$query .= '`id`, `username`, `device_token`, `fb_id`, `gender`, `paid`, `points`, `notifications`, `last_login`, `added`) ';
+				$query .= 'VALUES (NULL, "", "'. $device_token .'", "", "N", "N", "0", "Y", CURRENT_TIMESTAMP, NOW());';
 				$result = mysql_query($query);
 				$user_id = mysql_insert_id();
 				
