@@ -18,12 +18,24 @@
 
 @implementation HONChallengePreviewView
 
-- (id)initWithFrame:(CGRect)frame andChallenge:(HONChallengeVO *)vo {
+- (id)initWithFrame:(CGRect)frame withCreator:(HONChallengeVO *)vo {
 	if ((self = [super initWithFrame:frame])) {
 		_challengeVO = vo;
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW * 0.5, kLargeW * 0.5)];
 		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+		[self addSubview:imageView];
+	}
+	
+	return (self);
+}
+
+- (id)initWithFrame:(CGRect)frame withChallenger:(HONChallengeVO *)vo {
+	if ((self = [super initWithFrame:frame])) {
+		_challengeVO = vo;
+		
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW * 0.5, kLargeW * 0.5)];
+		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		[self addSubview:imageView];
 	}
 	

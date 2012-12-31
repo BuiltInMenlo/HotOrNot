@@ -233,16 +233,25 @@
 			NSLog(@"long press on table view at row %d", indexPath.row);
 			
 			if ([vo.status isEqualToString:@"Accept"]) {
-				_previewView = [[HONChallengePreviewView alloc] initWithFrame:CGRectMake(7.0, 70.0, 320.0, (kLargeH * 0.5)) andChallenge:vo];
+				_previewView = [[HONChallengePreviewView alloc] initWithFrame:CGRectMake(7.0, 70.0, 320.0, (kLargeH * 0.5)) withCreator:vo];
 				[self.view addSubview:_previewView];
 			
 			} else if ([vo.status isEqualToString:@"Waiting"]) {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Waiting Challenge"
-																				message:@"Do you want to poke this user? (Tip: Poking users gives the other person points.)"
-																			  delegate:self
-																  cancelButtonTitle:@"Yes"
-																  otherButtonTitles:@"No", nil];
-				[alertView setTag:1];
+				_previewView = [[HONChallengePreviewView alloc] initWithFrame:CGRectMake(7.0, 70.0, 320.0, (kLargeH * 0.5)) withCreator:vo];
+				[self.view addSubview:_previewView];
+			
+			} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
+				NSString *msg = (vo.scoreCreator > vo.scoreChallenger) ? [NSString stringWithFormat:@"You are winning this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger] : [NSString stringWithFormat:@"You are losing this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
+				
+				if (vo.scoreCreator == vo.scoreChallenger)
+					msg = [NSString stringWithFormat:@"You are tied in this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge Stats"
+																					 message:msg
+																					delegate:self
+																		cancelButtonTitle:@"Yes"
+																		otherButtonTitles:@"No", nil];
+				[alertView setTag:3];
 				[alertView show];
 			}
 		}
@@ -251,7 +260,9 @@
 		if (_previewView != nil) {
 			[_previewView removeFromSuperview];
 			_previewView = nil;
-			
+		}
+		
+		if ([vo.status isEqualToString:@"Accept"]) {
 			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Accept Challenge"
 																				 message:@"Do you want to accept this challenge? (Tip: Tap and hold to view images.)"
 																				delegate:self
@@ -400,6 +411,8 @@
 }
 
 - (void)_refreshList:(NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 	[self _retrieveUser];
@@ -554,19 +567,6 @@
 		[alertView show];
 	
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
-		NSString *msg = (vo.scoreCreator > vo.scoreChallenger) ? [NSString stringWithFormat:@"You are winning this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger] : [NSString stringWithFormat:@"You are losing this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
-		
-		if (vo.scoreCreator == vo.scoreChallenger)
-			msg = [NSString stringWithFormat:@"You are tied for challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge Stats"
-																		message:msg
-																	  delegate:self
-														  cancelButtonTitle:@"Yes"
-														  otherButtonTitles:@"No", nil];
-		[alertView setTag:3];
-		[alertView show];
-		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithChallenge:vo] animated:YES];
 	}

@@ -68,14 +68,14 @@ while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
 }
 */
 
-
+/*
 $prev_arr = array('challenge_id' => 0, 'user_id' => 0);
 $curr_arr = array('challenge_id' => 0, 'user_id' => 0);
 
 
 $cnt = 0;
 $id_arr = array();
-$query = 'SELECT * FROM `tblChallengeVotes` ORDER BY `challenge_id`, `user_id`';
+$query = 'SELECT * FROM `tblChallengeVotes` ORDER BY `challenge_id`, `user_id`;';
 $vote_result = mysql_query($query);
 while ($vote_row = mysql_fetch_array($vote_result, MYSQL_BOTH)) {
 	$prev_arr = $curr_arr;
@@ -90,6 +90,15 @@ foreach ($id_arr as $key) {
 	
 	$query = 'DELETE FROM `tblChallengeVotes` WHERE `id` = '. $key .';';
 	$result = mysql_query($query);
+}
+*/
+
+
+$query = 'SELECT * FROM `tblChallengeSubjects`;';
+$result = mysql_query($query);
+while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {	
+	$query = 'UPDATE `tblChallengeSubjects` SET `title` = "'. "#" . $row['title'] .'" WHERE `id` = '. $row['id'] .';';
+	$res = mysql_query($query);
 }
 
 

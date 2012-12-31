@@ -12,6 +12,7 @@
 
 @interface HONChallengePreviewView : UIView
 
-- (id)initWithFrame:(CGRect)frame andChallenge:(HONChallengeVO *)vo;
+- (id)initWithFrame:(CGRect)frame withCreator:(HONChallengeVO *)vo;
+- (id)initWithFrame:(CGRect)frame withChallenger:(HONChallengeVO *)vo;
 
 @end

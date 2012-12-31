@@ -213,6 +213,11 @@
 	[super viewDidAppear:animated];
 	[self _retrieveChallenges];
 	
+	NSLog(@"viewDidAppear %d", _isPushView);
+	
+	if (_isPushView)
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	
 	if ([_challenges count] == 0)
 		[[[UIAlertView alloc] initWithTitle:@"Nothing Here!" message:@"No PicChallenges in session. You should start one." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 }
@@ -314,6 +319,8 @@
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
 	[self.challengesRequest startAsynchronous];
+	
+	[_tableView setContentOffset:CGPointZero animated:YES];
 }
 
 - (void)_goRecent {
@@ -330,6 +337,8 @@
 	[self.challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[self.challengesRequest setPostValue:[NSString stringWithFormat:@"%d", 4] forKey:@"action"];
 	[self.challengesRequest startAsynchronous];
+	
+	[_tableView setContentOffset:CGPointZero animated:YES];
 }
 
 
@@ -368,7 +377,8 @@
 																				delegate:self
 																	cancelButtonTitle:@"Cancel"
 															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:@"Challenge", @"Share", nil];
+																	otherButtonTitles:[NSString stringWithFormat:@"Challenge - %dpts", 5],
+											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	
 	[actionSheet setTag:0];
@@ -376,6 +386,8 @@
 }
 
 - (void)_refreshList:(NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 }

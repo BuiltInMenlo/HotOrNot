@@ -246,8 +246,11 @@
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																				delegate:self
 																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:@"Challenge", @"Like", @"Poke", nil];
+															 destructiveButtonTitle:nil
+																	otherButtonTitles:
+											[NSString stringWithFormat:@"Like - %dpts", [HONAppDelegate votePointMultiplier]],
+											[NSString stringWithFormat:@"Challenge - %dpts", 5],
+											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	
 	[actionSheet setTag:0];
@@ -258,8 +261,11 @@
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																				delegate:self
 																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:@"Challenge", @"Like", @"Poke", nil];
+															 destructiveButtonTitle:nil
+																	otherButtonTitles:
+											[NSString stringWithFormat:@"Like - %dpts", [HONAppDelegate votePointMultiplier]],
+											[NSString stringWithFormat:@"Challenge - %dpts", 5],
+											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	
 	[actionSheet setTag:1];
@@ -287,30 +293,7 @@
 	
 	if (actionSheet.tag == 0) {
 		switch (buttonIndex) {
-			case 0:
-				[[Mixpanel sharedInstance] track:@"Vote Wall - Flag"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-				
-				voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-				[voteRequest setDelegate:self];
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
-				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-				[voteRequest startAsynchronous];
-				break;
-				
-			case 1:
-				[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Creator"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHALLENGE_MAIN" object:_challengeVO];
-				break;
-				
-			case 2: {
+			case 0: {
 				[[Mixpanel sharedInstance] track:@"Upvote Left"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -353,8 +336,17 @@
 				[voteRequest setPostValue:@"Y" forKey:@"creator"];
 				[voteRequest startAsynchronous];
 				
-				//[HONAppDelegate setVote:self.challengeVO.challengeID];
+				[HONAppDelegate setVote:self.challengeVO.challengeID];
 				break;}
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Creator"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHALLENGE_MAIN" object:_challengeVO];
+				break;
 				
 			case 3:
 				[[Mixpanel sharedInstance] track:@"Poke Creator"
@@ -373,30 +365,7 @@
 		
 	} else if (actionSheet.tag == 1) {
 		switch (buttonIndex) {
-			case 0:
-				[[Mixpanel sharedInstance] track:@"Vote Wall - Flag"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-				
-				voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-				[voteRequest setDelegate:self];
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
-				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
-				[voteRequest startAsynchronous];
-				break;
-				
-			case 1:
-				[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Challenger"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHALLENGE_SUB" object:_challengeVO];
-				break;
-				
-			case 2: {
+			case 0:{
 				[[Mixpanel sharedInstance] track:@"Upvote Right"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -440,8 +409,17 @@
 				[voteRequest setPostValue:@"N" forKey:@"creator"];
 				[voteRequest startAsynchronous];
 				
-				//[HONAppDelegate setVote:self.challengeVO.challengeID];
+				[HONAppDelegate setVote:self.challengeVO.challengeID];
 				break;}
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Challenger"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"CHALLENGE_SUB" object:_challengeVO];
+				break;
 				
 			case 3:
 				[[Mixpanel sharedInstance] track:@"Vote Wall - Poke Challenger"
