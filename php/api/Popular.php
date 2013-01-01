@@ -101,7 +101,7 @@
 			return (true);	
 		}
 		
-		
+		//https://itunes.apple.com/us/album/call-me-maybe/id557372575?i=557373187&uo=4&v0=WWW-NAUS-ITSTOP100-SONGS
 		function getPopularBySubject($user_id) {
 			$subject_arr = array();
 			
@@ -113,6 +113,22 @@
 				$result = mysql_query($query);
 				$row = mysql_fetch_object($result);
 				
+				$preview_url = "";
+				if ($subject_row['itunes_id'] != "") {
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $subject_row['itunes_id']);
+					curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					$response = curl_exec($ch);
+				    curl_close ($ch);    
+					$json_arr = json_decode($response, true);
+				
+					if (count($json_arr['results']) > 0) {
+						$json_results = $json_arr['results'][0];
+						$preview_url = $json_results['previewUrl'];
+					}
+				}
+				
 				$active = 0;
 				if ($row->status_id == 4)
 					$active++;
@@ -120,7 +136,8 @@
 				array_push($subject_arr, array(
 					"id" => $subject_row['id'], 
 					"name" => $subject_row['title'], 					
-					"img_url" => "",   
+					"img_url" => "", 
+					"preview_url" => $preview_url,   
 					"score" => mysql_num_rows($result), 
 					"active" => $active
 				));	

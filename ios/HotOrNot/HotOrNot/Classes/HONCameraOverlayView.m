@@ -224,6 +224,8 @@
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(0.0, 0.0, 640.0, 70.0);
 	} completion:nil];
+	
+	[self.delegate previewBack];
 }
 
 - (void)goBack:(id)sender {

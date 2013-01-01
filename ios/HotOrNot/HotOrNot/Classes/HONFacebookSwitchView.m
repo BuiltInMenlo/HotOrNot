@@ -60,7 +60,7 @@
 
 - (void)_fbSwitchHidden:(NSNotification *)notification {
 	if ([(NSString *)[notification object] isEqualToString:@"Y"])
-		[self removeFromSuperview];//[_switchButton removeFromSuperview];
+		[self removeFromSuperview];
 	
 	[self _updateSwitch];
 }

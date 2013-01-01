@@ -26,7 +26,7 @@ if (isset($_POST['hidFBID']) && isset($_POST['hidUsername']) && isset($_POST['hi
 		}
 	
 	} else {
-		$query = 'UPDATE `tblUsers` SET `username` = "'. $_POST['hidUsername'] .'", `gender` = "'. $_POST['hidGender'] .'" `last_login` = CURRENT_TIMESTAMP WHERE `fb_id` = '. $_POST['hidFBID'] .';';
+		$query = 'UPDATE `tblUsers` SET `username` = "'. $_POST['hidUsername'] .'", `gender` = "'. $_POST['hidGender'] .'", `last_login` = CURRENT_TIMESTAMP WHERE `fb_id` = '. $_POST['hidFBID'] .';';
 		$result = mysql_query($query);
 		
 		$query = 'SELECT `id` FROM `tblUsers` WHERE `fb_id` = "'. $_POST['hidFBID'] .'";';

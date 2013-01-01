@@ -11,7 +11,7 @@
 @implementation HONPopularSubjectVO
 
 @synthesize dictionary;
-@synthesize subjectID, subjectName, score, actives;
+@synthesize subjectID, subjectName, itunesPreview, score, actives;
 
 + (HONPopularSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary {
 	HONPopularSubjectVO *vo = [[HONPopularSubjectVO alloc] init];
@@ -22,6 +22,7 @@
 	vo.actives = [[dictionary objectForKey:@"active"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"name"];
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
+	vo.itunesPreview = [dictionary objectForKey:@"preview_url"];
 	
 	return (vo);
 }
@@ -29,6 +30,7 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.subjectName = nil;
+	self.itunesPreview = nil;
 	self.imageURL = nil;
 }
 

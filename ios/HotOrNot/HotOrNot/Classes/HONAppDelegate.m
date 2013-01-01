@@ -391,7 +391,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 #pragma mark - Notifications
 - (void)_fbSwitchHidden:(NSNotification *)notification {
 	if ([(NSString *)[notification object] isEqualToString:@"N"])
-		[[[UIApplication sharedApplication] delegate].window addSubview:_facebookSwitchView]; //[self addSubview:_switchButton];
+		[[[UIApplication sharedApplication] delegate].window addSubview:_facebookSwitchView];
 }
 
 - (void)_inviteFriends:(NSNotification *)notification {

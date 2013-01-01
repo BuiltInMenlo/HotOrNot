@@ -298,7 +298,6 @@
 	//[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
 	
 	_friends = [NSMutableArray array];
-	
 	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 		//NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
 		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"])
@@ -411,8 +410,6 @@
 }
 
 - (void)_refreshList:(NSNotification *)notification {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-	
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 	[self _retrieveUser];

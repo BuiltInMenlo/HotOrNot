@@ -23,4 +23,5 @@
 - (void)closeCamera;
 - (void)changeCamera;
 - (void)closePreview;
+- (void)previewBack;
 @end

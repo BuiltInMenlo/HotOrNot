@@ -21,6 +21,7 @@
 @property (nonatomic) int scoreCreator;
 @property (nonatomic) int scoreChallenger;
 @property (nonatomic, retain) NSString *subjectName;
+@property (nonatomic, retain) NSString *itunesPreview;
 @property (nonatomic, retain) NSString *status;
 @property (nonatomic) int statusID;
 @property (nonatomic, retain) NSString *creatorName;

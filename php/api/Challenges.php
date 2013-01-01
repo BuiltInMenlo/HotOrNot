@@ -159,6 +159,7 @@
 				"id" => $row->id, 
 				"status" => "Waiting", 
 				"subject" => $subject, 
+				"preview_url" => "",
 				"creator_id" => $user_id, 
 				"creator" => $creator_obj->username, 
 				"creator_fb" => $fb_id, 				
@@ -214,6 +215,7 @@
 					"id" => $row->id, 
 					"status" => "Waiting", 
 					"subject" => $subject, 
+					"preview_url" => "",
 					"creator_id" => $row->creator_id, 
 					"creator" => $creator_obj->username, 
 					"creator_fb" => $fb_id, 
@@ -254,7 +256,8 @@
 				$challenge_arr = array(
 					"id" => $row->id, 
 					"status" => $row->status_id, 
-					"subject" => $subject, 
+					"subject" => $subject,
+					"preview_url" => "", 
 					"creator_id" => $row->creator_id, 
 					"creator" => $creator_obj->username, 
 					"creator_fb" => $creator_obj->fb_id, 
@@ -306,6 +309,7 @@
 				"id" => $row->id, 
 				"status" => "Waiting", 
 				"subject" => $subject, 
+				"preview_url" => "",
 				"creator_id" => $row->creator_id, 
 				"creator" => $creator_obj->username, 
 				"creator_fb" => $fb_id, 
@@ -332,7 +336,7 @@
 			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
 				$challenger_id = $challenge_row['challenger_id'];
 				
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				$query = 'SELECT `title`, `itunes_id` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
 				$sub_obj = mysql_fetch_object(mysql_query($query));
 				
 				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
@@ -347,6 +351,22 @@
 				$challenger_obj = mysql_fetch_object(mysql_query($query));
 				$challenger_name = $challenger_obj->username;
 				$challenger_fb = $challenger_obj->fb_id;
+				
+				$preview_url = "";
+				if ($sub_obj->itunes_id != "") {
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $sub_obj->itunes_id);
+					curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					$response = curl_exec($ch);
+				    curl_close ($ch);    
+					$json_arr = json_decode($response, true);
+									
+					if (count($json_arr['results']) > 0) {
+						$json_results = $json_arr['results'][0];
+						$preview_url = $json_results['previewUrl'];
+					}
+				}
 				
 				$query = 'SELECT `challenger_id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_row['id'] .';';
 				$score_result = mysql_query($query);
@@ -370,6 +390,7 @@
 					"creator" => $user_obj->username, 
 					"creator_fb" => $user_obj->fb_id, 
 					"subject" => $sub_obj->title, 
+					"preview_url" => $preview_url, 
 					"challenger_id" => $challenger_id, 
 					"challenger" => $challenger_name, 
 					"challenger_fb" => $challenger_fb, 
@@ -411,6 +432,22 @@
 				$challenger_name = $challenger_obj->username;
 				$challenger_fb = $challenger_obj->fb_id;
 				
+				$preview_url = "";
+				if ($sub_obj->itunes_id != "") {
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $sub_obj->itunes_id);
+					curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					$response = curl_exec($ch);
+				    curl_close ($ch);    
+					$json_arr = json_decode($response, true);
+				
+					if (count($json_arr['results']) > 0) {
+						$json_results = $json_arr['results'][0];
+						$preview_url = $json_results['previewUrl'];
+					}
+				}
+				
 				if ($challenger_id == $user_id && $challenge_row['status_id'] == "2")
 					$challenge_row['status_id'] = "1";
 				
@@ -422,6 +459,7 @@
 					"creator" => $user_obj->username, 
 					"creator_fb" => $user_obj->fb_id, 
 					"subject" => $sub_obj->title, 
+					"preview_url" => $preview_url, 
 					"challenger_id" => $challenger_id, 
 					"challenger" => $challenger_name, 
 					"challenger_fb" => $challenger_fb, 

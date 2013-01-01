@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <AVFoundation/AVFoundation.h>
-
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
@@ -24,7 +22,7 @@
 #import "HONVotersViewController.h"
 #import "HONLoginViewController.h"
 
-@interface HONVoteViewController() <AVAudioPlayerDelegate, UIActionSheetDelegate, ASIHTTPRequestDelegate>
+@interface HONVoteViewController() <UIActionSheetDelegate, ASIHTTPRequestDelegate>
 - (void)_retrieveChallenges;
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) UIImageView *toggleImgView;
@@ -38,7 +36,6 @@
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
-@property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
 @end
 
 @implementation HONVoteViewController
@@ -191,10 +188,6 @@
 	else {
 		[self _retrieveSingleChallenge:self.challengeVO];
 	}
-	
-	_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"] error:NULL];
-	_sfxPlayer.delegate = self;
-	[_sfxPlayer play];
 }
 
 - (void)viewDidLoad {
@@ -386,8 +379,6 @@
 }
 
 - (void)_refreshList:(NSNotification *)notification {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-	
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 }

@@ -23,7 +23,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONImagePickerViewController () <AVAudioPlayerDelegate, ASIHTTPRequestDelegate>
+@interface HONImagePickerViewController () <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -33,12 +33,13 @@
 @property(nonatomic) BOOL needsChallenger;
 @property(nonatomic, strong) UIImagePickerController *imagePicker;
 @property(nonatomic) BOOL isFirstAppearance;
+@property(nonatomic) BOOL hasPlayedAudio;
 @property(nonatomic, strong) NSTimer *focusTimer;
 @property(nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property(nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property(nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property(nonatomic, strong) UIImage *challangeImage;
-@property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
+@property (nonatomic, strong) MPMoviePlayerController *mpMoviePlayerController;// *sfxPlayer;
 @end
 
 @implementation HONImagePickerViewController
@@ -246,11 +247,9 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:backButton];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	_hasPlayedAudio = NO;
 	
-	_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"] error:NULL];
-	_sfxPlayer.delegate = self;
-	[_sfxPlayer play];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 }
 
 - (void)viewDidLoad {
@@ -262,6 +261,17 @@
 		
 	if (self.isFirstAppearance) {
 		self.isFirstAppearance = NO;
+		
+		if (!_hasPlayedAudio) {
+			_hasPlayedAudio = YES;
+			_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
+			//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:]];
+			_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
+			_mpMoviePlayerController.view.hidden = YES;
+			[self.view addSubview:_mpMoviePlayerController.view];
+			[_mpMoviePlayerController prepareToPlay];
+			[_mpMoviePlayerController play];
+		}
 		
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
@@ -354,6 +364,7 @@
 	_focusTimer = nil;
 	
 	[_imagePicker takePicture];
+	[_mpMoviePlayerController stop];
 }
 
 - (void)showLibrary {
@@ -429,6 +440,12 @@
 		
 	} else
 		[_cameraOverlayView showPreview:image];
+}
+
+- (void)previewBack {
+	[_mpMoviePlayerController setContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
+	[_mpMoviePlayerController prepareToPlay];
+	[_mpMoviePlayerController play];
 }
 
 - (void)closePreview {
