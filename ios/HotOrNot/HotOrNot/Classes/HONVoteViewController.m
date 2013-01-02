@@ -516,7 +516,8 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	if (_isPushView)
+		NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if ([request isEqual:self.challengesRequest]) {
 		@autoreleasepool {
@@ -528,16 +529,13 @@
 				NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
 				_challenges = [NSMutableArray new];
 				
-				NSMutableArray *list = [NSMutableArray array];
 				for (NSDictionary *serverList in parsedLists) {
 					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-					//NSLog(@"VO:[%@]", vo.image2URL);
 					
 					if (vo != nil)
-						[list addObject:vo];
+						[_challenges addObject:vo];
 				}
 				
-				_challenges = [list copy];
 				_emptySetImgView.hidden = ([_challenges count] > 0);
 				[_tableView reloadData];
 			}

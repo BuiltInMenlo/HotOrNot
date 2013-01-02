@@ -73,20 +73,99 @@
 			echo ($body);
 		}
 		
-		function calcChallengeScores($challenge_id, $creator_id) {
-			$query = 'SELECT `challenger_id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';
-			$score_result = mysql_query($query);
+		function getChallengeObj ($challenge_id) {
+			$challenge_arr = array();
 			
-			$score_arr = array('creator' => 0, 'challenger' => 0);
-			while ($score_row = mysql_fetch_array($score_result, MYSQL_BOTH)) {										
-				if ($score_row['challenger_id'] == $creator_id)
-					$score_arr['creator']++;
-				
-				else
-					$score_arr['challenger']++;					
+			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+			$challenge_obj = mysql_fetch_object(mysql_query($query));
+			
+			$query = 'SELECT `title`, `itunes_id` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
+			$subject_obj = mysql_fetch_object(mysql_query($query));
+			
+			$challenge_arr = array(
+				'id' => $challenge_obj->id, 
+				'status' => $challenge_obj->status_id, 
+				'subject' => $subject_obj->title, 
+				'preview_url' => $this->itunesPreviewURL($subject_obj->itunes_id),										
+				'has_viewed' => $challenge_obj->hasPreviewed, 
+				'started' => $challenge_obj->started, 
+				'added' => $challenge_obj->added, 
+				'creator' => $this->userForChallenge($challenge_obj->creator_id, $challenge_obj->id),
+				'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id) 
+			); 
+			
+			
+			return ($challenge_arr);
+		}
+		
+		function itunesPreviewURL ($itunes_id) {
+			$preview_url = "";
+			
+			if ($itunes_id != "") {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $itunes_id);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				$response = curl_exec($ch);
+			    curl_close ($ch);    
+				$json_arr = json_decode($response, true);
+			
+				if (count($json_arr['results']) > 0) {
+					$json_results = $json_arr['results'][0];
+					$preview_url = $json_results['previewUrl'];
+				}
 			}
 			
-			return ($score_arr);
+			return ($preview_url);
+		}
+		
+		function userForChallenge($user_id, $challenge_id) {
+			
+			// prime the user
+			$user_arr = array(
+				'id' => $user_id, 
+				'fb_id' => "",
+				'username' => "",
+				'img' => "",
+				'score' => 0				
+			);
+			
+			// challenge object
+			$query = 'SELECT `status_id`, `creator_id`, `challenger_id`, `creator_img`, `challenger_img` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+			$challenge_obj = mysql_fetch_object(mysql_query($query));
+			
+			// user is the creator
+			if ($user_id == $challenge_obj->creator_id) {
+				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+				$user_arr['img'] = $challenge_obj->creator_img;
+							
+			// user is the challenger
+			} else {
+				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+				$user_arr['img'] = $challenge_obj->challenger_img;			
+				
+				// invited challenger
+				if ($challenge_obj->status_id == "7")
+					$query = 'SELECT `fb_id`, `username` FROM `tblInvitedUsers` WHERE `id` = '. $user_id .';';
+			}
+			
+			// user object
+			$user_obj = mysql_fetch_object(mysql_query($query));
+			
+			// votes for challenger
+			$query = 'SELECT `challenger_id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';
+		   	$score_result = mysql_query($query);
+						
+			while ($score_row = mysql_fetch_array($score_result, MYSQL_BOTH)) {										
+				if ($score_row['challenger_id'] == $user_id)
+					$user_arr['score']++;
+			}
+			
+			// user info
+			$user_arr['fb_id'] = $user_obj->fb_id;
+			$user_arr['username'] = $user_obj->username; 		   			
+			
+			return ($user_arr);
 		}
 		
 	    function sendPush($msg) {
@@ -106,60 +185,28 @@
 		}
 		
 		
-		function getActiveChallengeVotesByActivity($user_id) {
+		function getChallengesByActivity($user_id) {
 			$challenge_arr = array();			
 			$id_arr = array();
 			
 			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 2 OR `status_id` = 4;';
 			$result = mysql_query($query);
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH))
 				$id_arr[$row['id']] = 0;
-			}
-
+			
 			$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 2 OR `tblChallenges`.`status_id` = 4;';
 			$result = mysql_query($query);
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH))
 				$id_arr[$row['id']]++;
-			}
             
 			$cnt = 0;
 			arsort($id_arr);
+			
 			foreach ($id_arr as $key => $val) {
 				if ($cnt == 100)
 					break;
-								
-				$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $key .';';
-				$row = mysql_fetch_array(mysql_query($query), MYSQL_BOTH);
-				
-				$creator_id = $row['creator_id'];				
-				$challenger_id = $row['challenger_id'];
-				
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row['subject_id'] .';';
-				$sub_obj = mysql_fetch_object(mysql_query($query));
-				
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['creator_id'] .';';
-				$user_obj = mysql_fetch_object(mysql_query($query));
-				
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['challenger_id'] .';';
-				$challenger_obj = mysql_fetch_object(mysql_query($query));
-								
-				array_push($challenge_arr, array(
-					'id' => $row['id'], 
-					'status' => $row['status_id'], 
-					'creator_id' => $row['creator_id'], 
-					'creator' => $user_obj->username, 
-					'creator_fb' => $user_obj->fb_id, 
-					'subject' => $sub_obj->title,
-					'creator_img' => $row['creator_img'], 
-					'challenger_id' => $row['challenger_id'], 
-					'challenger' => $challenger_obj->username, 
-					'challenger_fb' => $challenger_obj->fb_id, 
-					'challenger_img' => $row['challenger_img'], 
-					'score' => $this->calcChallengeScores($key, $creator_id),  
-					'started' => $row['started'], 
-					'added' => $row['added']
-				));
-				
+					
+				array_push($challenge_arr, $this->getChallengeObj($key));
 				$cnt++;
 			}
 			
@@ -168,121 +215,37 @@
 			return (true);
 		}
 		
-		function getActiveChallengeVotesByDate($user_id) {
+		function getChallengesByDate($user_id) {
 			$challenge_arr = array();
 			
 			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 2 OR `status_id` = 4 ORDER BY `added` DESC LIMIT 100;';
 			$result = mysql_query($query);
 			
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
-				$creator_id = $row['creator_id'];
-				$challenger_id = $row['challenger_id'];
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH))
+				array_push($challenge_arr, $this->getChallengeObj($row['id']));
 				
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row['subject_id'] .';';
-				$sub_obj = mysql_fetch_object(mysql_query($query));
-				
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['creator_id'] .';';
-				$user_obj = mysql_fetch_object(mysql_query($query));
-				
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['challenger_id'] .';';
-				$challenger_obj = mysql_fetch_object(mysql_query($query));
-				
-				array_push($challenge_arr, array(
-					'id' => $row['id'], 
-					'status' => $row['status_id'],
-					'creator_id' => $row['creator_id'], 
-					'creator' => $user_obj->username,
-					'creator_fb' => $user_obj->fb_id,  
-					'subject' => $sub_obj->title,
-					'creator_img' => $row['creator_img'], 
-					'challenger_id' => $row['challenger_id'], 
-					'challenger' => $challenger_obj->username, 
-					'challenger_fb' => $challenger_obj->fb_id, 
-					'challenger_img' => $row['challenger_img'], 
-					'score' => $this->calcChallengeScores($row['id'], $creator_id), 
-					'started' => $row['started'], 
-					'added' => $row['added']
-				));
-			}
 			
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
 		}
 		
-		function getActiveChallengeVotesForSubject($user_id, $subject_id) {
+		function getChallengesForSubject($user_id, $subject_id) {
 			$challenge_arr = array();
 			
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 2 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 2 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
 			$result = mysql_query($query);
 			
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
-				$creator_id = $row['creator_id'];
-				$challenger_id = $row['challenger_id'];
-				
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row['subject_id'] .';';
-				$sub_obj = mysql_fetch_object(mysql_query($query));
-				
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['creator_id'] .';';
-				$user_obj = mysql_fetch_object(mysql_query($query));
-				
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $row['challenger_id'] .';';
-				$challenger_obj = mysql_fetch_object(mysql_query($query));				
-				
-				array_push($challenge_arr, array(
-					'id' => $row['id'], 
-					'status' => $row['status_id'],
-					'creator_id' => $row['creator_id'], 
-					'creator' => $user_obj->username,
-					'creator_fb' => $user_obj->fb_id,  
-					'subject' => $sub_obj->title,
-					'creator_img' => $row['creator_img'], 
-					'challenger_id' => $row['challenger_id'], 
-					'challenger' => $challenger_obj->username, 
-					'challenger_fb' => $challenger_obj->fb_id,
-					'challenger_img' => $row['challenger_img'], 
-					'score' => $this->calcChallengeScores($row['id'], $creator_id), 
-					'started' => $row['started'], 
-					'added' => $row['added']
-				));
-			}
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH))
+				array_push($challenge_arr, $this->getChallengeObj($row['id']));				
+
 			
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
 		}
 		
-		function getActiveChallengeVotesForChallenge($user_id, $challenge_id) {
+		function getChallengeForChallengeID($user_id, $challenge_id) {
 			$challenge_arr = array();
-			
-			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
-			$challenge_obj = mysql_fetch_object(mysql_query($query));			
-			$creator_id = $challenge_obj->creator_id;
-			$challenger_id = $challenge_obj->challenger_id;
-			
-			$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
-			$sub_obj = mysql_fetch_object(mysql_query($query));
-			
-			$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $creator_id .';';
-			$user_obj = mysql_fetch_object(mysql_query($query));
-			
-			$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $challenger_id .';';
-			$challenger_obj = mysql_fetch_object(mysql_query($query));
-			
-			array_push($challenge_arr, array(
-				'id' => $challenge_id, 
-				'status' => $challenge_obj->status_id, 
-				'creator_id' => $creator_id, 
-				'creator' => $user_obj->username, 
-				'creator_fb' => $user_obj->fb_id, 
-				'subject' => $sub_obj->title,
-				'creator_img' => $challenge_obj->creator_img, 
-				'challenger_id' => $challenger_id, 
-				'challenger' => $challenger_obj->username, 
-				'challenger_fb' => $challenger_obj->fb_id, 
-				'challenger_img' => $challenge_obj->challenger_img, 
-				'score' => $this->calcChallengeScores($challenge_id, $creator_id), 
-				'started' => $challenge_obj->started, 
-				'added' => $challenge_obj->added
-			));
+			array_push($challenge_arr, $this->getChallengeObj($challenge_id));
 			
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
@@ -312,7 +275,7 @@
 					'fb_id' => $user_obj->fb_id, 
 					'username' => $user_obj->username, 					
 					'img_url' => "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square",   
-					'points' => $user_obj->points + $points,
+					'points' => $user_obj->points,
 					'votes' => $votes,
 					'pokes' => $pokes, 
 					'challenges' => $challenge_tot
@@ -403,22 +366,22 @@
 				
 			case "1":				
 				if (isset($_POST['userID']))
-					$votes->getActiveChallengeVotesByActivity($_POST['userID']);
+					$votes->getChallengesByActivity($_POST['userID']);
 				break;
 				
 			case "2":
 				if (isset($_POST['userID']) && isset($_POST['subjectID']))
-					$votes->getActiveChallengeVotesForSubject($_POST['userID'], $_POST['subjectID']);
+					$votes->getChallengesForSubject($_POST['userID'], $_POST['subjectID']);
 				break;
 							
 			case "3":
 				if (isset($_POST['userID']) && isset($_POST['challengeID']))
-					$votes->getActiveChallengeVotesForChallenge($_POST['userID'], $_POST['challengeID']);
+					$votes->getChallengeForChallengeID($_POST['userID'], $_POST['challengeID']);
 				break;
 				
 			case "4":
 				if (isset($_POST['userID']))
-					$votes->getActiveChallengeVotesByDate($_POST['userID']);
+					$votes->getChallengesByDate($_POST['userID']);
 				break;
 				
 			case "5":

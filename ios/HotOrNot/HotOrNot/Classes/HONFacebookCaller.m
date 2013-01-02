@@ -39,7 +39,7 @@
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSMutableDictionary *params = [NSMutableDictionary new];
 		[params setObject:[NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID] forKey:@"challenge"];
-		[params setObject:[NSString stringWithFormat:@"%@_l.jpg", vo.imageURL] forKey:@"image[0][url]"];
+		[params setObject:[NSString stringWithFormat:@"%@_l.jpg", vo.creatorImgPrefix] forKey:@"image[0][url]"];
 		
 		[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"me/pchallenge:%@", action] parameters:params HTTPMethod:@"POST" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 			NSLog(@"POSTED TO ACTVITY :[%@]",[result objectForKey:@"id"]);
@@ -59,7 +59,7 @@
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
 													  [NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID], @"link",
-													  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
+													  [NSString stringWithFormat:@"%@_l.jpg", vo.creatorImgPrefix], @"picture",
 													  @"PicChallengeMe", @"name",
 													  vo.subjectName, @"caption",
 													  [NSString stringWithFormat:@"%@ just challenged %@ to take the %@ challenge, tap here to challenge back!", vo.creatorName, vo.challengerName, vo.subjectName], @"description", nil];
@@ -84,7 +84,7 @@
 	if ([HONAppDelegate allowsFBPosting]) {
 		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
 													  [NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID], @"link",
-													  [NSString stringWithFormat:@"%@_l.jpg", vo.imageURL], @"picture",
+													  [NSString stringWithFormat:@"%@_l.jpg", vo.creatorImgPrefix], @"picture",
 													  @"PicChallengeMe", @"name",
 													  vo.subjectName, @"caption",
 													  [NSString stringWithFormat:@"%@ just challenged you to a %@ photo, tap here to challenge back!", vo.creatorName, vo.subjectName], @"description", nil];
@@ -138,7 +138,7 @@
 											 fbID, @"to", 
 											 nil];
 	
-	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
 	facebook.accessToken = FBSession.activeSession.accessToken;
 	facebook.expirationDate = FBSession.activeSession.expirationDate;
 	
@@ -154,7 +154,7 @@
 											 fbID, @"to",
 											 nil];
 	
-	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
 	facebook.accessToken = FBSession.activeSession.accessToken;
 	facebook.expirationDate = FBSession.activeSession.expirationDate;
 	
@@ -169,7 +169,7 @@
 											 @"I'm inviting you to a PicChallenge!",  @"message",
 											 nil];
 	
-	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
 	facebook.accessToken = FBSession.activeSession.accessToken;
 	facebook.expirationDate = FBSession.activeSession.expirationDate;
 	
@@ -192,7 +192,7 @@
 											 list, @"to",
 											 nil];
 	
-	Facebook *facebook = [[Facebook alloc] initWithAppId:@"529054720443694" andDelegate:nil];
+	Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
 	facebook.accessToken = FBSession.activeSession.accessToken;
 	facebook.expirationDate = FBSession.activeSession.expirationDate;
 	

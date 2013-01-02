@@ -105,7 +105,7 @@
 	
 	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kThumb1W, kThumb1H)];
 	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
-	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
+	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[creatorImgHolderView addSubview:creatorImageView];
 	
 //	UIButton *imgButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -147,7 +147,7 @@
 		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
 		
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
-		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
+		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.creatorImgPrefix]] placeholderImage:nil];
 		
 		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
 		challengerImgHolderView.clipsToBounds = YES;
@@ -155,7 +155,7 @@
 		
 		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kThumb1W, kThumb1H)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
+		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.challengerImgPrefix]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
 		
 		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 34.0, 22, 16.0)];
@@ -165,7 +165,7 @@
 		creatorScoreLabel.shadowColor = [UIColor blackColor];
 		creatorScoreLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		creatorScoreLabel.textAlignment = NSTextAlignmentCenter;
-		creatorScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreCreator];
+		creatorScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.creatorScore];
 		[creatorImgHolderView addSubview:creatorScoreLabel];
 				
 		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 34.0, 22.0, 16.0)];
@@ -175,7 +175,7 @@
 		challengerScoreLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		challengerScoreLabel.backgroundColor = [UIColor clearColor];
 		challengerScoreLabel.textAlignment = NSTextAlignmentCenter;
-		challengerScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreChallenger];
+		challengerScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.challengerScore];
 		[challengerImgHolderView addSubview:challengerScoreLabel];
 		
 		challengeLabel.text = (self.challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? [NSString stringWithFormat:@"You have challenged %@ to \n%@\nOpened & Accepted", self.challengeVO.challengerName, self.challengeVO.subjectName] : [NSString stringWithFormat:@"%@ has challenged you to \n%@\nOpened & Accepted", self.challengeVO.creatorName, self.challengeVO.subjectName];

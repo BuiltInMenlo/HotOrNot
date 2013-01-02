@@ -219,10 +219,10 @@
 			_challenges = [list copy];
 			
 			for (HONChallengeVO *vo in _challenges) {
-				if (vo.scoreCreator > vo.scoreChallenger)
+				if (vo.creatorScore > vo.challengerScore)
 					_winTotal++;
 				
-				else if (vo.scoreCreator < vo.scoreChallenger)
+				else if (vo.creatorScore < vo.challengerScore)
 					_lossTotal++;
 			}
 			

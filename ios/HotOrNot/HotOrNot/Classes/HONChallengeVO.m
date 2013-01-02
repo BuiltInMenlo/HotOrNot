@@ -12,15 +12,33 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, statusID, status, subjectName, itunesPreview, creatorName, creatorFB, challengerID, challengerFB, challengerName, hasViewed, addedDate, startedDate, endDate;
+@synthesize challengeID, statusID, status, subjectName, itunesPreview, hasViewed, addedDate, startedDate;
+@synthesize creatorID, creatorFB, creatorName, creatorImgPrefix, creatorScore;
+@synthesize challengerID, challengerFB, challengerName, challengerImgPrefix, challengerScore;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
 	vo.dictionary = dictionary;
 	
+	NSLog(@"CREATOR[%d]:\n%@", [[dictionary objectForKey:@"id"] intValue], [dictionary objectForKey:@"creator"]);
+	NSLog(@"CHALLENGER[%d]:\n%@", [[dictionary objectForKey:@"id"] intValue], [dictionary objectForKey:@"challenger"]);
+	
+	NSDictionary *creator = [dictionary objectForKey:@"creator"];
+	NSDictionary *challenger = [dictionary objectForKey:@"challenger"];
+	//NSLog(@"CREATOR[%d]:\n%@\nCHALLENGER[%d]:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", [[dictionary objectForKey:@"id"] intValue], creator, [[dictionary objectForKey:@"id"] intValue], challenger);
+	
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
-	vo.creatorID = [[dictionary objectForKey:@"creator_id"] intValue];
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
+	vo.subjectName = [dictionary objectForKey:@"subject"];
+	vo.itunesPreview = [dictionary objectForKey:@"preview_url"];	
+	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
+	//NSLog(@"CHALENGE OK");
+	
+	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
+	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
+	//NSLog(@"DATES OK");
 	
 	switch (vo.statusID) {
 		case 1:
@@ -52,34 +70,29 @@
 			break;
 	}
 	
-	vo.imageURL = [dictionary objectForKey:@"creator_img"];
-	vo.image2URL = [dictionary objectForKey:@"challenger_img"];
-	vo.scoreCreator = [[[dictionary objectForKey:@"score"] objectForKey:@"creator"] intValue];
-	vo.scoreChallenger = [[[dictionary objectForKey:@"score"] objectForKey:@"challenger"] intValue];
-	vo.subjectName = [dictionary objectForKey:@"subject"];
-	vo.itunesPreview = [dictionary objectForKey:@"preview_url"];
-	vo.creatorID = [[dictionary objectForKey:@"creator_id"] intValue];
-	vo.creatorName = [dictionary objectForKey:@"creator"];
-	vo.creatorFB = [dictionary objectForKey:@"creator_fb"];
-	vo.challengerID = [[dictionary objectForKey:@"challenger_id"] intValue];
-	vo.challengerName = [dictionary objectForKey:@"challenger"];
-	vo.challengerFB = [dictionary objectForKey:@"challenger_fb"];
-	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
+	//NSLog(@"CHALLENGE OK");
+	vo.creatorID = [[creator objectForKey:@"id"] intValue];
+	vo.creatorFB = [creator objectForKey:@"fb_id"];
+	vo.creatorName = [creator objectForKey:@"username"];
+	vo.creatorImgPrefix = [creator objectForKey:@"img"];
+	vo.creatorScore = [[creator objectForKey:@"score"] intValue];
 	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
-	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
-	vo.endDate = [vo.startedDate dateByAddingTimeInterval:(60 * 60 * [[HONAppDelegate challengeDuration] intValue])];
+	//NSLog(@"CREATOR OK");
+	vo.challengerID = [[challenger objectForKey:@"id"] intValue];
+	vo.challengerFB = [challenger objectForKey:@"fb_id"];
+	vo.challengerName = [challenger objectForKey:@"username"];
+	vo.challengerImgPrefix = [challenger objectForKey:@"img"];
+	vo.challengerScore = [[challenger objectForKey:@"score"] intValue];
 	
+	//NSLog(@"CHALLENGER_OK");
 	return (vo);
 }
 
 - (void)dealloc {
 	self.dictionary = nil;
 	self.status = nil;
-	self.imageURL = nil;
-	self.image2URL = nil;
+	self.creatorImgPrefix = nil;
+	self.challengerImgPrefix = nil;
 	self.subjectName = nil;
 	self.itunesPreview = nil;
 	self.creatorName = nil;
@@ -88,7 +101,6 @@
 	self.challengerName = nil;
 	self.startedDate = nil;
 	self.addedDate = nil;
-	self.endDate = nil;
 }
 
 @end

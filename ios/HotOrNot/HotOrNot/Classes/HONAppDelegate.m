@@ -34,6 +34,7 @@
 #import "HONInviteFriendsViewController.h"
 
 NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
+NSString *const FacebookAppID = @"529054720443694";
 
 @interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate, KiipDelegate>
 @property (nonatomic, strong) UIAlertView *networkAlertView;

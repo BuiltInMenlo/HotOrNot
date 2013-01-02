@@ -6,11 +6,6 @@
 //https://discover.getassembly.com/hotornot/facebook/
 require './_db_open.php'; 
 
-$title = "";
-$creator_img = "";
-$challenger_img = "";
-$blurb = "PicChallenge - #challenge friends and strangers with photos, memes, quotes, and more!";
-
 if (isset($_GET['cID'])) {
 	$challenge_id = $_GET['cID'];
 	
@@ -31,6 +26,8 @@ if (isset($_GET['cID'])) {
 	$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $challenge_id .';';
 	$challenger_img = mysql_fetch_object(mysql_query($query))->url . "_l.jpg";	
 }
+
+$blurb = "PicChallenge - #challenge friends and strangers with photos, memes, quotes, and more!";
 
 require './_db_close.php'; 
 

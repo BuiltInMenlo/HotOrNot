@@ -119,7 +119,7 @@
 		[self addSubview:_lHolderView];
 		
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
-		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
 		
@@ -128,7 +128,7 @@
 		[self addSubview:_rHolderView];
 		
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
-		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.image2URL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
@@ -160,7 +160,7 @@
 		scoreButton.frame = CGRectMake(20.0, 370.0, 84.0, 16.0);
 		[scoreButton setTitleColor:[HONAppDelegate honBlueTxtColor] forState:UIControlStateNormal];
 		scoreButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		[scoreButton setTitle:[NSString stringWithFormat:@"%d likes", (_challengeVO.scoreCreator + _challengeVO.scoreChallenger)] forState:UIControlStateNormal];
+		[scoreButton setTitle:[NSString stringWithFormat:@"%d likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)] forState:UIControlStateNormal];
 		[scoreButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:scoreButton];
 		
@@ -197,17 +197,17 @@
 			[rScoreImgView addSubview:rScoreLabel];
 
 			
-			if (_challengeVO.scoreCreator > _challengeVO.scoreChallenger) {
-				lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreCreator + 1)];
-				rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreChallenger + 1)];
+			if (_challengeVO.creatorScore > _challengeVO.challengerScore) {
+				lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.creatorScore + 1)];
+				rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.challengerScore + 1)];
 				
-			} else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger) {
-				lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
-				rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreChallenger + 1)];
+			} else if (_challengeVO.creatorScore < _challengeVO.challengerScore) {
+				lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.creatorScore + 1)];
+				rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.challengerScore + 1)];
 			
 			} else {
-				lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreCreator + 1)];
-				rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreChallenger + 1)];
+				lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
+				rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.challengerScore + 1)];
 			}
 		}
 		
@@ -216,7 +216,7 @@
 		[self addSubview:_lHolderView];
 		
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW * 0.5, kLargeW * 0.5)];
-		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.imageURL]] placeholderImage:nil options:SDWebImageProgressiveDownload];
+		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil options:SDWebImageProgressiveDownload];
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
 		
@@ -303,14 +303,14 @@
 			lScoreLabel.backgroundColor = [UIColor clearColor];
 			lScoreLabel.textColor = [UIColor whiteColor];
 			lScoreLabel.textAlignment = NSTextAlignmentCenter;
-			lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreCreator + 1)];
+			lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
 			[lScoreImgView addSubview:lScoreLabel];
 			
-			if (_challengeVO.scoreCreator > _challengeVO.scoreChallenger)
-				lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreCreator + 1)];
+			if (_challengeVO.creatorScore > _challengeVO.challengerScore)
+				lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.creatorScore + 1)];
 			
-			else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger)
-				lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
+			else if (_challengeVO.creatorScore < _challengeVO.challengerScore)
+				lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.creatorScore + 1)];
 			
 			_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
 			_sfxPlayer.delegate = self;
@@ -355,14 +355,14 @@
 			rScoreLabel.backgroundColor = [UIColor clearColor];
 			rScoreLabel.textColor = [UIColor whiteColor];
 			rScoreLabel.textAlignment = NSTextAlignmentCenter;
-			rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreChallenger + 1)];
+			rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.challengerScore + 1)];
 			[rScoreImgView addSubview:rScoreLabel];
 			
-			if (_challengeVO.scoreCreator > _challengeVO.scoreChallenger)
-				rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreCreator + 1)];
+			if (_challengeVO.creatorScore > _challengeVO.challengerScore)
+				rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.creatorScore + 1)];
 			
-			else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger)
-				rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
+			else if (_challengeVO.creatorScore < _challengeVO.challengerScore)
+				rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.creatorScore + 1)];
 			
 			_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
 			_sfxPlayer.delegate = self;
@@ -468,14 +468,14 @@
 				lScoreLabel.backgroundColor = [UIColor clearColor];
 				lScoreLabel.textColor = [UIColor whiteColor];
 				lScoreLabel.textAlignment = NSTextAlignmentCenter;
-				lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreCreator + 1)];
+				lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
 				[lScoreImgView addSubview:lScoreLabel];
 				
-				if (_challengeVO.scoreCreator > _challengeVO.scoreChallenger)
-					lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreCreator + 1)];
+				if (_challengeVO.creatorScore > _challengeVO.challengerScore)
+					lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.creatorScore + 1)];
 				
-				else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger)
-					lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
+				else if (_challengeVO.creatorScore < _challengeVO.challengerScore)
+					lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.creatorScore + 1)];
 				
 				_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
 				_sfxPlayer.delegate = self;
@@ -547,14 +547,14 @@
 				rScoreLabel.backgroundColor = [UIColor clearColor];
 				rScoreLabel.textColor = [UIColor whiteColor];
 				rScoreLabel.textAlignment = NSTextAlignmentCenter;
-				rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.scoreChallenger + 1)];
+				rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.challengerScore + 1)];
 				[rScoreImgView addSubview:rScoreLabel];
 				
-				if (_challengeVO.scoreCreator > _challengeVO.scoreChallenger)
-					rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.scoreCreator + 1)];
+				if (_challengeVO.creatorScore > _challengeVO.challengerScore)
+					rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.creatorScore + 1)];
 				
-				else if (_challengeVO.scoreCreator < _challengeVO.scoreChallenger)
-					rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.scoreCreator + 1)];
+				else if (_challengeVO.creatorScore < _challengeVO.challengerScore)
+					rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.creatorScore + 1)];
 				
 				_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
 				_sfxPlayer.delegate = self;

@@ -13,6 +13,7 @@
 #import "HONChallengeVO.h"
 
 extern NSString *const HONSessionStateChangedNotification;
+extern NSString *const FacebookAppID;
 
 @class SMClient;
 
