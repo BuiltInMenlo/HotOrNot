@@ -12,7 +12,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, statusID, status, subjectName, itunesPreview, creatorName, creatorFB, challengerID, challengerFB, challengerName, addedDate, startedDate, endDate;
+@synthesize challengeID, creatorID, imageURL, image2URL, scoreCreator, scoreChallenger, statusID, status, subjectName, itunesPreview, creatorName, creatorFB, challengerID, challengerFB, challengerName, hasViewed, addedDate, startedDate, endDate;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
@@ -24,7 +24,7 @@
 	
 	switch (vo.statusID) {
 		case 1:
-			vo.status = @"Accept";
+			vo.status = @"Created";
 			break;
 			
 		case 2:
@@ -64,6 +64,7 @@
 	vo.challengerID = [[dictionary objectForKey:@"challenger_id"] intValue];
 	vo.challengerName = [dictionary objectForKey:@"challenger"];
 	vo.challengerFB = [dictionary objectForKey:@"challenger_fb"];
+	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];

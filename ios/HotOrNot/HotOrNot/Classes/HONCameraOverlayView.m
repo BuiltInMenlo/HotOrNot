@@ -41,21 +41,21 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
 		
-		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _gutterSize.height)];
-		headerGutterView.backgroundColor = [UIColor blackColor];
-		//[self addSubview:headerGutterView];
-		
-		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - _gutterSize.height, 320.0, _gutterSize.height)];
-		footerGutterView.backgroundColor = [UIColor blackColor];
-		//[self addSubview:footerGutterView];
-		
-		UIView *lGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _gutterSize.width, self.frame.size.height)];
-		lGutterView.backgroundColor = [UIColor blackColor];
-		//[self addSubview:lGutterView];
-		
-		UIView *rGutterView = [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width - _gutterSize.width, 0.0, _gutterSize.width, self.frame.size.height)];
-		rGutterView.backgroundColor = [UIColor blackColor];
-		//[self addSubview:rGutterView];
+//		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _gutterSize.height)];
+//		headerGutterView.backgroundColor = [UIColor blackColor];
+//		[self addSubview:headerGutterView];
+//		
+//		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - _gutterSize.height, 320.0, _gutterSize.height)];
+//		footerGutterView.backgroundColor = [UIColor blackColor];
+//		[self addSubview:footerGutterView];
+//		
+//		UIView *lGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _gutterSize.width, self.frame.size.height)];
+//		lGutterView.backgroundColor = [UIColor blackColor];
+//		[self addSubview:lGutterView];
+//		
+//		UIView *rGutterView = [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width - _gutterSize.width, 0.0, _gutterSize.width, self.frame.size.height)];
+//		rGutterView.backgroundColor = [UIColor blackColor];
+//		[self addSubview:rGutterView];
 		
 		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo"];
 		[self addSubview:headerView];
@@ -89,7 +89,7 @@
 		[self addSubview:_editButton];
 		
 		
-		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, headerGutterView.frame.size.height, 250.0, 250.0)];
+		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, _gutterSize.height, 250.0, 250.0)];
 		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding.png"];
 		overlayImgView.userInteractionEnabled = YES;
 		//[self addSubview:overlayImgView];
@@ -136,7 +136,7 @@
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
 		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
 		[self.cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:self.cameraRollButton];
+		//[_footerHolderView addSubview:self.cameraRollButton];
 		
 		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		changeCameraButton.frame = CGRectMake(263.0, 10.0, 49.0, 49.0);
@@ -145,7 +145,7 @@
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:changeCameraButton];
 		
-		// Add the capture button
+		// Add the back button
 		self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		self.backButton.frame = CGRectMake(360.0, 10.0, 49.0, 49.0);
 		[self.backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive.png"] forState:UIControlStateNormal];
@@ -153,7 +153,7 @@
 		[self.backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:self.backButton];
 		
-		// Add the gallery button
+		// Add the next button
 		self.nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		self.nextButton.frame = CGRectMake(570.0, 10.0, 49.0, 49.0);
 		[self.nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
@@ -246,7 +246,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_subjectTextField.text = @"";
+	_subjectTextField.text = @"#";
 	[_subjectTextField becomeFirstResponder];
 }
 

@@ -149,8 +149,9 @@
 	[userRequest setDelegate:self];
 	[userRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
 	[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[userRequest setPostValue:_username forKey:@"username"];
 	[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"fb_id"] forKey:@"fbID"];
+	[userRequest setPostValue:[[[[HONAppDelegate infoForUser] objectForKey:@"gender"] uppercaseString] substringToIndex:1] forKey:@"gender"];
+	[userRequest setPostValue:_username forKey:@"username"];
 	[userRequest startAsynchronous];
 }
 
@@ -190,17 +191,27 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
-			_progressHUD.labelText = NSLocalizedString(@"Update Failed", @"Status message when downloading fails");
+			_progressHUD.labelText = NSLocalizedString(@"Update Failed", @"Status message when update fails");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
 		
 		} else {
-			if ([userResult objectForKey:@"id"] != [NSNull null])
+			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+				
 				[HONAppDelegate writeUserInfo:userResult];
 			
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
+			} else {
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+				_progressHUD.labelText = NSLocalizedString(@"Username taken!", @"Status message when update fails");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+			}
 		}
 	}
 }

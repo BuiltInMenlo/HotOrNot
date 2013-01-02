@@ -25,6 +25,7 @@
 
 @interface HONImagePickerViewController () <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) NSString *subjectName;
+@property(nonatomic, strong) NSString *iTunesPreview;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) NSString *fbID;
@@ -45,6 +46,7 @@
 @implementation HONImagePickerViewController
 
 @synthesize subjectName = _subjectName;
+@synthesize iTunesPreview = _iTunesPreview;
 @synthesize submitAction = _submitAction;
 @synthesize challengeVO = _challengeVO;
 @synthesize progressHUD = _progressHUD;
@@ -61,6 +63,7 @@
 		self.view.backgroundColor = [UIColor blackColor];
 		//self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
 		self.subjectName = [HONAppDelegate rndDefaultSubject];
+		self.iTunesPreview = @"";
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
@@ -81,6 +84,7 @@
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		self.subjectName = [HONAppDelegate rndDefaultSubject];
+		self.iTunesPreview = @"";
 		self.challengerID = userID;
 		self.needsChallenger = NO;
 		self.submitAction = 9;
@@ -102,6 +106,7 @@
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		self.subjectName = subject;
+		self.iTunesPreview = @"";
 		self.challengerID = userID;
 		self.needsChallenger = NO;
 		self.submitAction = 9;
@@ -127,6 +132,7 @@
 		self.challengeVO = vo;
 		self.fbID = vo.creatorFB;
 		self.subjectName = vo.subjectName;
+		self.iTunesPreview = vo.itunesPreview;
 		self.submitAction = 4;
 		self.needsChallenger = NO;
 		self.isFirstAppearance = YES;
@@ -149,6 +155,7 @@
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.subjectName = subject;
+		self.iTunesPreview = @"";
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
@@ -171,6 +178,7 @@
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		self.subjectName = subject;
+		self.iTunesPreview = @"";
 		self.submitAction = 1;
 		self.needsChallenger = YES;
 		self.isFirstAppearance = YES;
@@ -264,13 +272,15 @@
 		
 		if (!_hasPlayedAudio) {
 			_hasPlayedAudio = YES;
-			_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
-			//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:]];
-			_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
-			_mpMoviePlayerController.view.hidden = YES;
-			[self.view addSubview:_mpMoviePlayerController.view];
-			[_mpMoviePlayerController prepareToPlay];
-			[_mpMoviePlayerController play];
+			
+			if (self.subjectName.length > 0) {
+				ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+				[subjectRequest setDelegate:self];
+				[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+				[subjectRequest setPostValue:self.subjectName forKey:@"subjectName"];
+				[subjectRequest setTag:1];
+				[subjectRequest startAsynchronous];
+			}
 		}
 		
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
@@ -354,6 +364,8 @@
 	[_focusTimer invalidate];
 	_focusTimer = nil;
 	
+	[_mpMoviePlayerController stop];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
@@ -364,7 +376,6 @@
 	_focusTimer = nil;
 	
 	[_imagePicker takePicture];
-	[_mpMoviePlayerController stop];
 }
 
 - (void)showLibrary {
@@ -393,6 +404,8 @@
 - (void)closeCamera {
 	[_focusTimer invalidate];
 	_focusTimer = nil;
+	
+	[_mpMoviePlayerController stop];
 	
 	[[Mixpanel sharedInstance] track:@"Canceled Create Challenge"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -443,9 +456,6 @@
 }
 
 - (void)previewBack {
-	[_mpMoviePlayerController setContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
-	[_mpMoviePlayerController prepareToPlay];
-	[_mpMoviePlayerController play];
 }
 
 - (void)closePreview {
@@ -460,6 +470,7 @@
 - (void)_acceptPhoto {
 	UIImage *image = _challangeImage;
 	
+	[_mpMoviePlayerController stop];
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	
 	if (self.needsChallenger)
@@ -558,6 +569,7 @@
 				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengerID] forKey:@"challengerID"];
 			}
 			
+			[submitChallengeRequest setTag:0];
 			[submitChallengeRequest startAsynchronous];
 			
 		} @catch (AmazonClientException *exception) {
@@ -606,37 +618,68 @@
 -(void)requestFinished:(ASIHTTPRequest *)request {
 	//NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
-	@autoreleasepool {
-		_progressHUD.taskInProgress = NO;
-		
-		NSError *error = nil;
-		NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-		
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
-			_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
-			_progressHUD = nil;
+	if (request.tag == 0) {
+		@autoreleasepool {
+			_progressHUD.taskInProgress = NO;
+			
+			NSError *error = nil;
+			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+			
+			if (error != nil) {
+				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+				_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+			}
+			
+			else {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+				
+				NSLog(@"fbID:[%@][%@]", self.fbID, _fbID);
+				[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
+				[HONFacebookCaller postToFriendTimeline:self.fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+				}];
+				//[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+			}
 		}
-		
-		else {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
+	
+	} else if (request.tag == 1) {
+		@autoreleasepool {
+			NSError *error = nil;
+			NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+			if (error != nil) {
+				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			}
 			
-			NSLog(@"fbID:[%@][%@]", self.fbID, _fbID);
-			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
-			[HONFacebookCaller postToFriendTimeline:self.fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
-			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-			}];
-			//[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+			else {
+				self.iTunesPreview = [subjectResult objectForKey:@"preview_url"];
+				
+				if (self.iTunesPreview.length > 0) {
+					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+					//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
+					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:self.iTunesPreview]];
+					_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
+					_mpMoviePlayerController.view.hidden = YES;
+					[self.view addSubview:_mpMoviePlayerController.view];
+					[_mpMoviePlayerController prepareToPlay];
+					[_mpMoviePlayerController play];
+				}
+				
+//					[UIView animateWithDuration:3.0 animations:^(void) {
+//						[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+//					}];
+			}
 		}
 	}
 }

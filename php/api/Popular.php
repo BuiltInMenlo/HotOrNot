@@ -88,12 +88,12 @@
 				$pokes = mysql_num_rows(mysql_query($query));
 			
 				array_push($user_arr, array(
-					"id" => $user_row['id'], 
-					"username" => $user_row['username'], 					
-					"img_url" => "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square",   
-					"points" => $user_row['points'],
-					"votes" => $votes,
-					"pokes" => $pokes
+					'id' => $user_row['id'], 
+					'username' => $user_row['username'], 					
+					'img_url' => "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square",   
+					'points' => $user_row['points'],
+					'votes' => $votes,
+					'pokes' => $pokes
 				));	
 			}
 			
@@ -134,12 +134,12 @@
 					$active++;
 					
 				array_push($subject_arr, array(
-					"id" => $subject_row['id'], 
-					"name" => $subject_row['title'], 					
-					"img_url" => "", 
-					"preview_url" => $preview_url,   
-					"score" => mysql_num_rows($result), 
-					"active" => $active
+					'id' => $subject_row['id'], 
+					'name' => $subject_row['title'], 					
+					'img_url' => "", 
+					'preview_url' => $preview_url,   
+					'score' => mysql_num_rows($result), 
+					'active' => $active
 				));	
 			}
 				
@@ -151,7 +151,7 @@
 		
 		function test() {
 			$this->sendResponse(200, json_encode(array(
-				"result" => true
+				'result' => true
 			)));
 			return (true);	
 		}

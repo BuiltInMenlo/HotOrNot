@@ -20,15 +20,14 @@
 #import "HONSettingsViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONLoginViewController.h"
-#import "HONPhotoViewController.h"
 #import "HONVoteViewController.h"
 #import "HONResultsViewController.h"
 #import "HONHeaderView.h"
 #import "HONFacebookCaller.h"
-#import "HONChallengePreviewView.h"
+#import "HONChallengePreviewViewController.h"
 
 
-@interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, FBLoginViewDelegate, ASIHTTPRequestDelegate, TapForTapAdViewDelegate>
+@interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, ASIHTTPRequestDelegate, TapForTapAdViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -41,7 +40,7 @@
 @property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) NSMutableArray *friends;
-@property(nonatomic, retain) HONChallengePreviewView *previewView;
+@property(nonatomic, retain) HONChallengePreviewViewController *previewViewController;
 @property(nonatomic) int blockCounter;
 
 - (void)_retrieveChallenges;
@@ -68,7 +67,10 @@
 		self.isFirstRun = YES;
 		_blockCounter = 0;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPreview:) name:@"SHOW_PREVIEW" object:nil];
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPreview:) name:@"SHOW_PREVIEW" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_createChallenge:) name:@"CREATE_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closePreview:) name:@"CLOSE_PREVIEW" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dailyChallenge:) name:@"DAILY_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
@@ -136,12 +138,12 @@
 	[self _retrieveUser];
 	
 	
-	UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-	lpgr.minimumPressDuration = 1.0;
-	lpgr.delegate = self;
-	[self.tableView addGestureRecognizer:lpgr];
+//	UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//	lpgr.minimumPressDuration = 1.0;
+//	lpgr.delegate = self;
+//	[self.tableView addGestureRecognizer:lpgr];
 	
-	[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
+//	[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 }
 
 - (void)viewDidLoad {
@@ -219,60 +221,6 @@
 	}
 }
 
-
--(void)handleLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
-	NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:self.tableView]];
-	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
-	self.challengeVO = vo;
-	
-	if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		if (indexPath == nil)
-			NSLog(@"long press on table view but not on a row");
-		
-		else {
-			NSLog(@"long press on table view at row %d", indexPath.row);
-			
-			if ([vo.status isEqualToString:@"Accept"]) {
-				_previewView = [[HONChallengePreviewView alloc] initWithFrame:CGRectMake(7.0, 70.0, 320.0, (kLargeH * 0.5)) withCreator:vo];
-				[self.view addSubview:_previewView];
-			
-			} else if ([vo.status isEqualToString:@"Waiting"]) {
-				_previewView = [[HONChallengePreviewView alloc] initWithFrame:CGRectMake(7.0, 70.0, 320.0, (kLargeH * 0.5)) withCreator:vo];
-				[self.view addSubview:_previewView];
-			
-			} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
-				NSString *msg = (vo.scoreCreator > vo.scoreChallenger) ? [NSString stringWithFormat:@"You are winning this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger] : [NSString stringWithFormat:@"You are losing this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
-				
-				if (vo.scoreCreator == vo.scoreChallenger)
-					msg = [NSString stringWithFormat:@"You are tied in this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
-				
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge Stats"
-																					 message:msg
-																					delegate:self
-																		cancelButtonTitle:@"Yes"
-																		otherButtonTitles:@"No", nil];
-				[alertView setTag:3];
-				[alertView show];
-			}
-		}
-	
-	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-		if (_previewView != nil) {
-			[_previewView removeFromSuperview];
-			_previewView = nil;
-		}
-		
-		if ([vo.status isEqualToString:@"Accept"]) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Accept Challenge"
-																				 message:@"Do you want to accept this challenge? (Tip: Tap and hold to view images.)"
-																				delegate:self
-																	cancelButtonTitle:@"Yes"
-																	otherButtonTitles:@"No", nil];
-			[alertView setTag:2];
-			[alertView show];
-		}
-	}
-}
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
@@ -372,15 +320,104 @@
 	[self _goCreateChallenge];
 }
 
+-(void)_goLongPress:(UILongPressGestureRecognizer *)gestureRecognizer {
+	NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:[gestureRecognizer locationInView:self.tableView]];
+	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
+	self.challengeVO = vo;
+	
+	if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		if (indexPath == nil)
+			NSLog(@"long press on table view but not on a row");
+		
+		else {
+			NSLog(@"long press on table view at row %d", indexPath.row);
+			
+			if ([vo.status isEqualToString:@"Accept"]) {
+				_previewViewController = [[HONChallengePreviewViewController alloc] initAsChallenger:vo];
+				[self.view addSubview:_previewViewController.view];
+				
+			} else if ([vo.status isEqualToString:@"Waiting"]) {
+				_previewViewController = [[HONChallengePreviewViewController alloc] initAsCreator:vo];
+				[self.view addSubview:_previewViewController.view];
+				
+			} /*else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
+				NSString *msg = (vo.scoreCreator > vo.scoreChallenger) ? [NSString stringWithFormat:@"You are winning this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger] : [NSString stringWithFormat:@"You are losing this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
+				
+				if (vo.scoreCreator == vo.scoreChallenger)
+					msg = [NSString stringWithFormat:@"You are tied in this challenge! %d to %d! Do you want to challenge another friend?", vo.scoreCreator, vo.scoreChallenger];
+				
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge Stats"
+																					 message:msg
+																					delegate:self
+																		cancelButtonTitle:@"Yes"
+																		otherButtonTitles:@"No", nil];
+				[alertView setTag:3];
+				[alertView show];
+			}*/
+		}
+		
+	} else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+		if (_previewViewController != nil) {
+			[_previewViewController.view removeFromSuperview];
+			_previewViewController = nil;
+		}
+		
+		if ([vo.status isEqualToString:@"Accept"]) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Accept Challenge"
+																				 message:@"Do you want to accept this challenge? (Tip: Tap and hold to view images.)"
+																				delegate:self
+																	cancelButtonTitle:@"Yes"
+																	otherButtonTitles:@"No", nil];
+			[alertView setTag:2];
+			[alertView show];
+		}
+	}
+}
+
 
 #pragma mark - Notifications
-- (void)_showPreview:(NSNotification *)notification {
+//- (void)_showPreview:(NSNotification *)notification {
+//	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL withTitle:vo.subjectName]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
+//}
+
+- (void)_acceptChallenge:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+
+	[[Mixpanel sharedInstance] track:@"Challenge Wall - Accept"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_createChallenge:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPhotoViewController alloc] initWithImagePath:vo.imageURL withTitle:vo.subjectName]];
+	[[Mixpanel sharedInstance] track:@"Challenge Wall - Re-Challenge"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
+
+- (void)_closePreview:(NSNotification *)notification {
+	if (_previewViewController != nil) {
+		[_previewViewController.view removeFromSuperview];
+		_previewViewController = nil;
+	}
+}
+
+
 
 - (void)_dailyChallenge:(NSNotification *)notification {
 //	if (FBSession.activeSession.state == 513) {
@@ -546,22 +583,27 @@
 	
 	NSLog(@"STATUS:[%@]", vo.status);
 	if ([vo.status isEqualToString:@"Waiting"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Waiting Challenge"
-																		message:@"Do you want to poke this user? (Tip: Poking users gives the other person points.)"
-																	  delegate:self
-														  cancelButtonTitle:@"Yes"
-														  otherButtonTitles:@"No", nil];
-		[alertView setTag:1];
-		[alertView show];
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Waiting Challenge"
+//																		message:@"Do you want to poke this user? (Tip: Poking users gives the other person points.)"
+//																	  delegate:self
+//														  cancelButtonTitle:@"Yes"
+//														  otherButtonTitles:@"No", nil];
+//		[alertView setTag:1];
+//		[alertView show];
+		_previewViewController = [[HONChallengePreviewViewController alloc] initAsCreator:vo];
+		[self.view addSubview:_previewViewController.view];
 		
 	} else if ([vo.status isEqualToString:@"Accept"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Accept Challenge"
-																		message:@"Do you want to accept this challenge? (Tip: Tap and hold to view images.)"
-																	  delegate:self
-														  cancelButtonTitle:@"Yes"
-														  otherButtonTitles:@"No", nil];
-		[alertView setTag:2];
-		[alertView show];
+		_previewViewController = [[HONChallengePreviewViewController alloc] initAsChallenger:vo];
+		[self.view addSubview:_previewViewController.view];
+			
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Accept Challenge"
+//																		message:@"Do you want to accept this challenge? (Tip: Tap and hold to view images.)"
+//																	  delegate:self
+//														  cancelButtonTitle:@"Yes"
+//														  otherButtonTitles:@"No", nil];
+//		[alertView setTag:2];
+//		[alertView show];
 	
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
@@ -747,8 +789,6 @@
 				if ([parsedLists count] % 10 != 0)
 					_isMoreLoading = NO;
 				
-				//_challenges = [list copy];
-				
 				self.lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
 				[_tableView reloadData];
 			}
@@ -769,15 +809,6 @@
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
-}
-
-
-- (void)loginViewShowingLoggedInUser:(FBLoginView *)loginView {
-	NSLog(@"------LOGGED IN-------");
-}
-
-- (void)loginViewShowingLoggedOutUser:(FBLoginView *)loginView {
-	NSLog(@"-------LOGGED OUT-------");
 }
 
 

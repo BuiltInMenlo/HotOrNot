@@ -29,6 +29,7 @@
 @property (nonatomic) int challengerID;
 @property (nonatomic, retain) NSString *challengerName;
 @property (nonatomic, retain) NSString *challengerFB;
+@property (nonatomic) BOOL hasViewed;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *endDate;

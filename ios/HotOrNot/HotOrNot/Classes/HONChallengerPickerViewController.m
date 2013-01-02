@@ -36,12 +36,13 @@
 @property(nonatomic, strong) UITextField *subjectTextField;
 @property(nonatomic, strong) UIButton *editButton;
 @property(nonatomic, strong) UIButton *loginFriendsButton;
+@property(nonatomic, strong) UITextField *usernameTextField;
 @property(nonatomic) BOOL isFlipped;
 
 @property (retain, nonatomic) FBFriendPickerViewController *friendPickerController;
 @property (retain, nonatomic) UISearchBar *searchBar;
 @property (retain, nonatomic) NSString *searchText;
-//@property (retain, nonatomic) UIView *headerView;
+@property (retain, nonatomic) NSMutableArray *friends;
 @property (nonatomic, retain) HONHeaderView *friendPickerHeaderView;
 
 //@property(nonatomic, strong) NSString *rndSubject;
@@ -156,6 +157,7 @@
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = self.subjectName;
 	_subjectTextField.delegate = self;
+	[_subjectTextField setTag:0];
 	[self.view addSubview:_subjectTextField];
 		
 	_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -202,6 +204,29 @@
 	
 	_subjectTextField.text = self.subjectName;
 	//NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
+	
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 308.0, 200.0, 20.0)];
+	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
+	[_usernameTextField setTextColor:[UIColor whiteColor]];
+	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
+	_usernameTextField.text = @"Enter a username…";
+	_usernameTextField.delegate = self;
+	[_usernameTextField setTag:1];
+	[self.view addSubview:_usernameTextField];
+	
+	UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	acceptButton.frame = CGRectMake(220.0, 280.0, 96.0, 60.0);
+	[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive.png"] forState:UIControlStateNormal];
+	[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active.png"] forState:UIControlStateHighlighted];
+	[acceptButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:acceptButton];
 }
 
 
@@ -235,17 +260,20 @@
 	[_subjectTextField becomeFirstResponder];
 }
 
+- (void)_goUsernameSubmit {
+	[[Mixpanel sharedInstance] track:@"Preview Challenge - Username Submit"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	self.fbName = _usernameTextField.text;
+	[self _goUsernameChallenge];
+}
+
 - (void)_goChallengeFriends {
 	[[Mixpanel sharedInstance] track:@"Pick Challenger - Friend"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"]) {
-			//NSLog(@"FRIEND:[%@]", friend);
-		}
-	}];
-	
 	
 	self.friendPickerController = [[FBFriendPickerViewController alloc] init];
 	self.friendPickerController.title = @"Pick Friends";
@@ -294,9 +322,9 @@
 		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
 		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 		
-		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
-		[canvasView addSubview:watermarkImgView];
+//		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
+//		[canvasView addSubview:watermarkImgView];
 		
 		CGSize size = [canvasView bounds].size;
 		UIGraphicsBeginImageContext(size);
@@ -341,6 +369,78 @@
 		[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
 		[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
 		[submitChallengeRequest setPostValue:self.fbName forKey:@"fbName"];
+		[submitChallengeRequest startAsynchronous];
+		
+	} @catch (AmazonClientException *exception) {
+		if (_progressHUD != nil) {
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+			_progressHUD.labelText = NSLocalizedString(@"Upload Error", @"Status message when internet connectivity is lost");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+		}
+		
+		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+	}
+}
+
+- (void)_goUsernameChallenge {
+	//NSData *imageData = UIImageJPEGRepresentation(self.image, 1.0);
+	
+	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	
+	@try {
+		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+		
+//		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
+//		[canvasView addSubview:watermarkImgView];
+		
+		CGSize size = [canvasView bounds].size;
+		UIGraphicsBeginImageContext(size);
+		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+		UIGraphicsEndImageContext();
+		
+		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		
+		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.labelText = @"Submitting Challenge…";
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.taskInProgress = YES;
+		
+		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		por1.contentType = @"image/jpeg";
+		por1.data = UIImageJPEGRepresentation(t1Image, 0.5);
+		[s3 putObject:por1];
+		
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		por3.contentType = @"image/jpeg";
+		por3.data = UIImageJPEGRepresentation(mImage, 0.5);
+		[s3 putObject:por3];
+		
+		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		por4.contentType = @"image/jpeg";
+		por4.data = UIImageJPEGRepresentation(lImage, 0.5);
+		[s3 putObject:por4];
+		
+		if ([self.subjectName length] == 0)
+			self.subjectName = [HONAppDelegate rndDefaultSubject];
+		
+		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+		[submitChallengeRequest setDelegate:self];
+		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
+		[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename] forKey:@"imgURL"];
+		[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
+		[submitChallengeRequest setPostValue:self.fbName forKey:@"username"];
 		[submitChallengeRequest startAsynchronous];
 		
 	} @catch (AmazonClientException *exception) {
@@ -554,7 +654,7 @@
 	
 		self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 		self.fbID = [[self.friendPickerController.selection lastObject] objectForKey:@"id"];
-		self.fbName = [[self.friendPickerController.selection lastObject] objectForKey:@"first_name"];
+		self.fbName = [[self.friendPickerController.selection lastObject] objectForKey:@"username"];
 		NSLog(@"FRIEND:[%@]", [self.friendPickerController.selection lastObject]);
 		
 		[self handlePickerDone];
@@ -603,28 +703,48 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	[[Mixpanel sharedInstance] track:@"Preview Challenge - Edit Hashtag"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_editButton.hidden = YES;
+	if (textField.tag == 0) {
+		[[Mixpanel sharedInstance] track:@"Preview Challenge - Edit Hashtag"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		_editButton.hidden = YES;
+	
+	} else if (textField.tag == 1) {
+		[[Mixpanel sharedInstance] track:@"Preview Challenge - Edit Usernme"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		textField.text = @"#";
+	}
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
-	return YES;
+	
+	return (YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	_editButton.hidden = NO;
+	if (textField.tag == 0) {
+		_editButton.hidden = NO;
+		
+		if ([textField.text length] == 0)
+			textField.text = self.subjectName;
+		
+		else
+			self.subjectName = textField.text;
 	
-	if ([textField.text length] == 0)
-		textField.text = self.subjectName;
-	
-	else
-		self.subjectName = textField.text;
+	} else if (textField.tag == 1) {
+		if ([textField.text length] == 0)
+			textField.text = @"Enter a username…";
+		
+		else
+			self.fbName = textField.text;
+	}
 }
 
 
@@ -649,32 +769,43 @@
 			_progressHUD = nil;
 		
 		} else {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-			
-			HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
-			[HONFacebookCaller postToTimeline:vo];
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
-			
-//			if ([[challengeResult objectForKey:@"status"] intValue] == 7)
-//				[HONFacebookCaller sendAppRequestToUser:self.fbID];
-			
-			
-			if ([self.fbID length] > 0) {
-				if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"invite"] isEqualToString:@"Y"])
-					[HONFacebookCaller sendAppRequestToUser:self.fbID challenge:vo];
+			if (![[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
 				
-				if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"friend_wall"] isEqualToString:@"Y"])
-					[HONFacebookCaller postToFriendTimeline:self.fbID challenge:vo];
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
+				[HONFacebookCaller postToTimeline:vo];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+				
+//				if ([[challengeResult objectForKey:@"status"] intValue] == 7)
+//					[HONFacebookCaller sendAppRequestToUser:self.fbID];
+				
+				
+				if ([self.fbID length] > 0) {
+					if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"invite"] isEqualToString:@"Y"])
+						[HONFacebookCaller sendAppRequestToUser:self.fbID challenge:vo];
+					
+					if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"friend_wall"] isEqualToString:@"Y"])
+						[HONFacebookCaller postToFriendTimeline:self.fbID challenge:vo];
+				}
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+					
+					if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
+				}];
+			
+			} else {
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+				_progressHUD.labelText = NSLocalizedString(@"Username not found!", @"Status message when username isn't in the system");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
 			}
-			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-				
-				if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
-			}];
 		}
 	}
 }

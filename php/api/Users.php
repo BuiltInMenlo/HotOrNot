@@ -84,16 +84,16 @@
 			$pokes = mysql_num_rows(mysql_query($query));
 			
 			return(array(
-				"id" => $row->id, 
-				"name" => $row->username, 
-				"token" => $row->device_token, 
-				"fb_id" => $row->fb_id, 
-				"gender" => $row->gender, 
-				"paid" => $row->paid,
-				"points" => $row->points, 
-				"votes" => $votes, 
-				"pokes" => $pokes, 
-				"notifications" => $row->notifications
+				'id' => $row->id, 
+				'name' => $row->username, 
+				'token' => $row->device_token, 
+				'fb_id' => $row->fb_id, 
+				'gender' => $row->gender, 
+				'paid' => $row->paid,
+				'points' => $row->points, 
+				'votes' => $votes, 
+				'pokes' => $pokes, 
+				'notifications' => $row->notifications
 			));
 		}
 	    
@@ -140,15 +140,15 @@
 			$row = mysql_fetch_object(mysql_query($query));
 			
 	   		$user_arr = array(
-				"id" => $row->id, 
-				"name" => $row->username, 
-				"token" => $row->device_token, 
-				"fb_id" => $row->fb_id, 
-				"paid" => $row->paid, 
-				"points" => $row->points, 
-				"votes" => 0,
-				"pokes" => 0, 
-				"notifications" => $row->notifications
+				'id' => $row->id, 
+				'name' => $row->username, 
+				'token' => $row->device_token, 
+				'fb_id' => $row->fb_id, 
+				'paid' => $row->paid, 
+				'points' => $row->points, 
+				'votes' => 0,
+				'pokes' => 0, 
+				'notifications' => $row->notifications
 			);
 			
 			$this->sendResponse(200, json_encode($user_arr));
@@ -157,23 +157,30 @@
 		
 		
 		function updateName($user_id, $username, $fb_id, $gender) {
-			$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = "'. $fb_id .'", `gender` = "'. $gender .'" WHERE `id` ='. $user_id .';';
-			$result = mysql_query($query);
+			$query = 'SELECT `id` FROM `tblUsers` WHERE `username` = "'. $username .'" AND `fb_id` != "'. $fb_id .'";';
 			
-			$query = 'SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = "'. $fb_id .'";';
-			if (mysql_num_rows(mysql_query($query)) > 0) {
-				$invite_id = mysql_fetch_object(mysql_query($query))->id;
+			if (mysql_num_rows(mysql_query($query)) == 0) {
+				$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = "'. $fb_id .'", `gender` = "'. $gender .'" WHERE `id` ='. $user_id .';';
+				$result = mysql_query($query);
+			
+				$query = 'SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = "'. $fb_id .'";';
+				if (mysql_num_rows(mysql_query($query)) > 0) {
+					$invite_id = mysql_fetch_object(mysql_query($query))->id;
 				
-				$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 7 AND `challenger_id` = '. $invite_id .';';
-				$invite_result = mysql_query($query);
+					$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 7 AND `challenger_id` = '. $invite_id .';';
+					$invite_result = mysql_query($query);
 				
-				while ($challenge_row = mysql_fetch_array($invite_result, MYSQL_BOTH)) {
-					$query = 'UPDATE `tblChallenges` SET `status_id` = 2, `challenger_id` = "'. $user_id .'" WHERE `id` = '. $challenge_row['id'] .';';
-					$result = mysql_query($query);
+					while ($challenge_row = mysql_fetch_array($invite_result, MYSQL_BOTH)) {
+						$query = 'UPDATE `tblChallenges` SET `status_id` = 2, `challenger_id` = "'. $user_id .'" WHERE `id` = '. $challenge_row['id'] .';';
+						$result = mysql_query($query);
+					}
 				}
-			}
 			
-			$user_arr = $this->userObject($user_id);
+				$user_arr = $this->userObject($user_id);
+				
+			} else
+				$user_arr = array('result' => "fail");
+			
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
 		}
@@ -221,14 +228,14 @@
 				$this->sendPush('{"device_tokens": ["'. $pokee_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $poker_name .' has poked you!", "sound": "push_01.caf"}}');
 			
 			$this->sendResponse(200, json_encode(array(
-				"id" => $poke_id
+				'id' => $poke_id
 			)));
 			return (true);
 		}
 		
 		function test() {
 			$this->sendResponse(200, json_encode(array(
-				"result" => true
+				'result' => true
 			)));
 			return (true);	
 		}

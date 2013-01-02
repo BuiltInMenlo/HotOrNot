@@ -273,41 +273,41 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 	return ([UIColor colorWithWhite:0.482 alpha:1.0]);
 }
 
-+ (int)secondsBeforeDate:(NSDate *)date {
-	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
-	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-	
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
-	
-	return ([date timeIntervalSinceDate:utcDate]);
-}
-
-+ (int)minutesBeforeDate:(NSDate *)date {
-	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
-	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-	
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
-	
-	return ([date timeIntervalSinceDate:utcDate] / 60);
-}
-
-+ (int)hoursBeforeDate:(NSDate *)date {
-	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
-	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-	
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
-	
-	return ([date timeIntervalSinceDate:utcDate] / 3600);
-}
+//+ (int)secondsBeforeDate:(NSDate *)date {
+//	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
+//	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+//	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+//	
+//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+//	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
+//	
+//	return ([date timeIntervalSinceDate:utcDate]);
+//}
+//
+//+ (int)minutesBeforeDate:(NSDate *)date {
+//	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
+//	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+//	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+//	
+//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+//	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
+//	
+//	return ([date timeIntervalSinceDate:utcDate] / 60);
+//}
+//
+//+ (int)hoursBeforeDate:(NSDate *)date {
+//	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
+//	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+//	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+//	
+//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+//	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
+//	
+//	return ([date timeIntervalSinceDate:utcDate] / 3600);
+//}
 
 + (void)playMP3:(NSString *)filename {
 	NSURL *url = [NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"];
@@ -531,7 +531,7 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 												 [submitCTAObject objectForKey:@"url"], @"url",
 												 [submitCTAObject objectForKey:@"enabled"], @"enabled", nil];
 		
-		NSLog(@"fbPostObject:\n%@", fbPostObject);
+		//NSLog(@"fbPostObject:\n%@", fbPostObject);
 		
 		PFQuery *ctaQuery = [PFQuery queryWithClassName:@"PicChallengeCTAs"];
 		PFObject *ctaWaitingObject = [ctaQuery getObjectWithId:@"Ey2aUi2yQP"];

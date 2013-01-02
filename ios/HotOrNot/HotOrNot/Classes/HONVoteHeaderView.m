@@ -27,7 +27,7 @@
 		bgImgView.image = [UIImage imageNamed:@"challengeHeader.png"];
 		[self addSubview:bgImgView];
 		
-		_ctaLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 5.0, 260.0, 16.0)];
+		_ctaLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 260.0, 16.0)];
 		_ctaLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 		_ctaLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		_ctaLabel.backgroundColor = [UIColor clearColor];
@@ -37,7 +37,7 @@
 		_titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 		_titleLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		[self addSubview:_titleLabel];
+		//[self addSubview:_titleLabel];
 		
 		if (!isPush) {
 			UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];

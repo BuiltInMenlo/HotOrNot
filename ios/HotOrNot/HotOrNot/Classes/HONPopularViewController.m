@@ -295,7 +295,7 @@
 	_popularSubjectVO = (HONPopularSubjectVO *)[notification object];
 	
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-																	message:[NSString stringWithFormat:@"Want to start a #%@ challenge?", _popularSubjectVO.subjectName]
+																	message:[NSString stringWithFormat:@"Want to start a %@ challenge?", _popularSubjectVO.subjectName]
 																  delegate:self
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"No", nil];
@@ -484,7 +484,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONPopularViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONPopularViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 		@autoreleasepool {
 			NSError *error = nil;

@@ -140,13 +140,20 @@ require './_db_close.php';
 	</script>
     
 	<?php if (isset($_GET['cID'])) {
-		echo ("<h2>#". $title ."</h2>\n");
-		echo ("<hr />\n");
-		echo ("<p>". $blurb ."</p>\n");
-		echo ("<center><p><img src='". $creator_img ."' /><hr /><img src='". $challenger_img ."' /></p></center>\n");
+		//echo ("<h2>#". $title ."</h2>\n");
+		//echo ("<hr />\n");
+		//echo ("<p>". $blurb ."</p>\n");
+		//echo ("<center><p><img src='". $creator_img ."' /><hr /><img src='". $challenger_img ."' /></p></center>\n");
+		echo ("<center>\n");
+		echo ("<a href='http://bit.ly/VukhMo' target='_blank'><img src='./images/header.jpg'></img></a><br /><br />");
+		echo ("<a href='http://bit.ly/VukhMo' target='_blank'><img src='./images/badge.png'></img></a>");
+		echo ("</center>\n");
 	
-	} else {
-		echo ("<h4>". $blurb ."</h4><hr />\n");
-	} ?>
+	} else { ?>
+		<center>
+			<a href="http://bit.ly/VukhMo" target="_blank"><img src="./images/header.jpg"></img></a><br /><br />
+			<a href="http://bit.ly/VukhMo" target="_blank"><img src="./images/badge.png"></img></a>
+		</center>
+	<?php } ?>
   </body>  
 </html>

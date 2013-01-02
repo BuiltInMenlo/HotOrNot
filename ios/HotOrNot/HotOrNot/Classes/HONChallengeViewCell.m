@@ -108,42 +108,43 @@
 	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
 	[creatorImgHolderView addSubview:creatorImageView];
 	
-	UIButton *imgButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	imgButton.frame = creatorImageView.frame;
-	[imgButton addTarget:self action:@selector(_goPreview) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:imgButton];
+//	UIButton *imgButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	imgButton.frame = creatorImageView.frame;
+//	[imgButton addTarget:self action:@selector(_goPreview) forControlEvents:UIControlEventTouchUpInside];
+//	[self addSubview:imgButton];
 	
-	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 15.0, 100.0, 16.0)];
-	creatorLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	creatorLabel.textColor = [HONAppDelegate honGreyTxtColor];
-	creatorLabel.backgroundColor = [UIColor clearColor];
-	creatorLabel.textAlignment = NSTextAlignmentCenter;
-	creatorLabel.text = self.challengeVO.creatorName;
-	[self addSubview:creatorLabel];
+	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(85.0, 10.0, 200.0, 55.0)];
+	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	challengeLabel.numberOfLines = 0;
+	challengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	challengeLabel.backgroundColor = [UIColor clearColor];
+	[self addSubview:challengeLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(89.0, 33.0, 100.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.textAlignment = NSTextAlignmentCenter;
-	subjectLabel.text = self.challengeVO.subjectName;
-	[self addSubview:subjectLabel];
 	
 	UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(280.0, 20.0, 24.0, 24.0)];
 	chevronImageView.image = [UIImage imageNamed:@"chevron.png"];
 	[self addSubview:chevronImageView];
 	
-	if ([self.challengeVO.status isEqualToString:@"Waiting"]) {
+	if ([self.challengeVO.status isEqualToString:@"Created"]) {
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
-		creatorLabel.text = self.challengeVO.challengerName;
+		challengeLabel.text = [NSString stringWithFormat:@"You are waiting for someone to accept your \n%@", self.challengeVO.subjectName];
+		
+	} else if ([self.challengeVO.status isEqualToString:@"Waiting"]) {
+		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
+		challengeLabel.text = [NSString stringWithFormat:@"You have challenged %@ to \n%@", self.challengeVO.challengerName, self.challengeVO.subjectName];
+		
+		if (self.challengeVO.hasViewed)
+			challengeLabel.text = [challengeLabel.text stringByAppendingString:@"\nOpened"];
 		
 	} else if ([self.challengeVO.status isEqualToString:@"Accept"]) {
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
+		challengeLabel.text = [NSString stringWithFormat:@"%@ has challenged you to \n%@", self.challengeVO.creatorName, self.challengeVO.subjectName];
 		
-	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
+		if (self.challengeVO.hasViewed)
+			challengeLabel.text = [challengeLabel.text stringByAppendingString:@"\nOpened"];
+		
+	} else if ([self.challengeVO.status isEqualToString:@"Started"] || [self.challengeVO.status isEqualToString:@"Completed"]) {
 		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
-		
-		[subjectLabel removeFromSuperview];
 		
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
 		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
@@ -156,122 +157,64 @@
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
-
 		
-		creatorLabel.frame = CGRectMake(60.0, 5.0, 100.0, 16.0);
-		
-		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 35.0, 100.0, 16.0)];
+		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 34.0, 22, 16.0)];
 		creatorScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		creatorScoreLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		creatorScoreLabel.textColor = [UIColor whiteColor];
 		creatorScoreLabel.backgroundColor = [UIColor clearColor];
+		creatorScoreLabel.shadowColor = [UIColor blackColor];
+		creatorScoreLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		creatorScoreLabel.textAlignment = NSTextAlignmentCenter;
 		creatorScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreCreator];
-		[self addSubview:creatorScoreLabel];
-		
-		UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(127.0, 5.0, 100.0, 16.0)];
-		challengerLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		challengerLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		challengerLabel.backgroundColor = [UIColor clearColor];
-		challengerLabel.textAlignment = NSTextAlignmentCenter;
-		challengerLabel.text = self.challengeVO.challengerName;
-		[self addSubview:challengerLabel];
-		
-		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(127.0, 35.0, 100.0, 16.0)];
+		[creatorImgHolderView addSubview:creatorScoreLabel];
+				
+		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 34.0, 22.0, 16.0)];
 		challengerScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		challengerScoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		challengerScoreLabel.textColor = [UIColor whiteColor];
+		challengerScoreLabel.shadowColor = [UIColor blackColor];
+		challengerScoreLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		challengerScoreLabel.backgroundColor = [UIColor clearColor];
 		challengerScoreLabel.textAlignment = NSTextAlignmentCenter;
 		challengerScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreChallenger];
-		[self addSubview:challengerScoreLabel];
+		[challengerImgHolderView addSubview:challengerScoreLabel];
+		
+		challengeLabel.text = (self.challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? [NSString stringWithFormat:@"You have challenged %@ to \n%@\nOpened & Accepted", self.challengeVO.challengerName, self.challengeVO.subjectName] : [NSString stringWithFormat:@"%@ has challenged you to \n%@\nOpened & Accepted", self.challengeVO.creatorName, self.challengeVO.subjectName];
 		
 		
-		int hours = [HONAppDelegate hoursBeforeDate:self.challengeVO.endDate];
-		int mins = [HONAppDelegate minutesBeforeDate:self.challengeVO.endDate];
-		int secs = [HONAppDelegate secondsBeforeDate:self.challengeVO.endDate];
-		
-		NSString *timeUntil;
-		if (hours == 1)
-			timeUntil = @"1 hour";
-		
-		else if (hours > 0) {
-				timeUntil = [NSString stringWithFormat:@"%d hours", hours];
-		
-		} else {
-			if (mins == 1)
-				timeUntil = @"1 minute";
-			
-			else if (mins > 0)
-				timeUntil = [NSString stringWithFormat:@"%d minutes", mins];
-				
-			else {
-				if (secs == 1)
-					timeUntil = @"1 second";
-				
-				else
-					timeUntil = [NSString stringWithFormat:@"%d seconds", secs];
-			}
-		}
-		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 18.0, 90.0, 16.0)];
-		timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-		timeLabel.textColor = [UIColor blackColor];
-		timeLabel.backgroundColor = [UIColor clearColor];
-		timeLabel.textAlignment = NSTextAlignmentCenter;
-		timeLabel.text = timeUntil;
-		//[self addSubview:timeLabel];
-		
-	} else if ([challengeVO.status isEqualToString:@"Completed"]) {
-		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
-		[subjectLabel removeFromSuperview];
-		
-		creatorLabel.frame = CGRectMake(65.0, 5.0, 100.0, 16.0);
-		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
-		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.imageURL]] placeholderImage:nil];
-		
-		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(47.0, 10.0, 22.0, 50.0)];
-		challengerImgHolderView.clipsToBounds = YES;
-		[self addSubview:challengerImgHolderView];
-		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kThumb1W, kThumb1H)];
-		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", self.challengeVO.image2URL]] placeholderImage:nil];
-		[challengerImgHolderView addSubview:challengerImageView];
-		
-		UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 35.0, 100.0, 16.0)];
-		creatorScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		creatorScoreLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		creatorScoreLabel.backgroundColor = [UIColor clearColor];
-		creatorScoreLabel.textAlignment = NSTextAlignmentCenter;
-		creatorScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreCreator];
-		[self addSubview:creatorScoreLabel];
-		
-		UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(127.0, 5.0, 100.0, 16.0)];
-		challengerLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		challengerLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		challengerLabel.backgroundColor = [UIColor clearColor];
-		challengerLabel.textAlignment = NSTextAlignmentCenter;
-		challengerLabel.text = self.challengeVO.challengerName;
-		[self addSubview:challengerLabel];
-		
-		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(127.0, 35.0, 100.0, 16.0)];
-		challengerScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		challengerScoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		challengerScoreLabel.backgroundColor = [UIColor clearColor];
-		challengerScoreLabel.textAlignment = NSTextAlignmentCenter;
-		challengerScoreLabel.text = [NSString stringWithFormat:@"%d", self.challengeVO.scoreChallenger];
-		[self addSubview:challengerScoreLabel];
-		
-		creatorLabel.text = self.challengeVO.creatorName;
-		
-		// winning
-		if (self.challengeVO.scoreCreator > self.challengeVO.scoreChallenger) {
-		
-			// losing
-		} else if (self.challengeVO.scoreCreator < self.challengeVO.scoreChallenger) {
-		
-			// tie
-		} else {
-		}
+//		int hours = [HONAppDelegate hoursBeforeDate:self.challengeVO.endDate];
+//		int mins = [HONAppDelegate minutesBeforeDate:self.challengeVO.endDate];
+//		int secs = [HONAppDelegate secondsBeforeDate:self.challengeVO.endDate];
+//		
+//		NSString *timeUntil;
+//		if (hours == 1)
+//			timeUntil = @"1 hour";
+//		
+//		else if (hours > 0) {
+//				timeUntil = [NSString stringWithFormat:@"%d hours", hours];
+//		
+//		} else {
+//			if (mins == 1)
+//				timeUntil = @"1 minute";
+//			
+//			else if (mins > 0)
+//				timeUntil = [NSString stringWithFormat:@"%d minutes", mins];
+//				
+//			else {
+//				if (secs == 1)
+//					timeUntil = @"1 second";
+//				
+//				else
+//					timeUntil = [NSString stringWithFormat:@"%d seconds", secs];
+//			}
+//		}
+//		
+//		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 18.0, 90.0, 16.0)];
+//		timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+//		timeLabel.textColor = [UIColor blackColor];
+//		timeLabel.backgroundColor = [UIColor clearColor];
+//		timeLabel.textAlignment = NSTextAlignmentCenter;
+//		timeLabel.text = timeUntil;
+//		[self addSubview:timeLabel];
 	}
 }
 
@@ -301,9 +244,9 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"DAILY_CHALLENGE" object:nil];
 }
 
-- (void)_goPreview {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PREVIEW" object:self.challengeVO];
-}
+//- (void)_goPreview {
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PREVIEW" object:self.challengeVO];
+//}
 
 - (void)_goLoadMore {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];

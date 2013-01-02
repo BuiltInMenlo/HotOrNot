@@ -73,9 +73,9 @@ extern NSString *const HONSessionStateChangedNotification;
 + (UIColor *)honBlueTxtColor;
 + (UIColor *)honGreyTxtColor;
 
-+ (int)secondsBeforeDate:(NSDate *)date;
-+ (int)minutesBeforeDate:(NSDate *)date;
-+ (int)hoursBeforeDate:(NSDate *)date;
+//+ (int)secondsBeforeDate:(NSDate *)date;
+//+ (int)minutesBeforeDate:(NSDate *)date;
+//+ (int)hoursBeforeDate:(NSDate *)date;
 
 + (void)playMP3:(NSString *)filename;
 
