@@ -147,10 +147,8 @@
 	
 	ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 	[userRequest setDelegate:self];
-	[userRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
+	[userRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
 	[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"fb_id"] forKey:@"fbID"];
-	[userRequest setPostValue:[[[[HONAppDelegate infoForUser] objectForKey:@"gender"] uppercaseString] substringToIndex:1] forKey:@"gender"];
 	[userRequest setPostValue:_username forKey:@"username"];
 	[userRequest startAsynchronous];
 }

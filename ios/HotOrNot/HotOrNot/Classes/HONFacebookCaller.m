@@ -87,7 +87,7 @@
 													  [NSString stringWithFormat:@"%@_l.jpg", vo.creatorImgPrefix], @"picture",
 													  @"PicChallengeMe", @"name",
 													  vo.subjectName, @"caption",
-													  [NSString stringWithFormat:@"%@ just challenged you to a %@ photo, tap here to challenge back!", vo.creatorName, vo.subjectName], @"description", nil];
+													  [NSString stringWithFormat:@"%@ just challenged you to a %@ photo\n, tap here to\n challenge back!", vo.creatorName, vo.subjectName], @"description", nil];
 		
 		NSLog(@"fbID:[%@]", fbID);
 		

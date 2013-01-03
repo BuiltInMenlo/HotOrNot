@@ -528,22 +528,22 @@
 			[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 			S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", filename] inBucket:@"hotornot-challenges"];
 			por1.contentType = @"image/jpeg";
-			por1.data = UIImageJPEGRepresentation(t1Image, 0.5);
+			por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
 			[s3 putObject:por1];
 			
 //			S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", filename] inBucket:@"hotornot-challenges"];
 //			por2.contentType = @"image/jpeg";
-//			por2.data = UIImageJPEGRepresentation(t2Image, 1.0);
+//			por2.data = UIImageJPEGRepresentation(t2Image, kJPEGCompress);
 //			[s3 putObject:por2];
 			
 			S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", filename] inBucket:@"hotornot-challenges"];
 			por3.contentType = @"image/jpeg";
-			por3.data = UIImageJPEGRepresentation(mImage, 0.5);
+			por3.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
 			[s3 putObject:por3];
 			
 			S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", filename] inBucket:@"hotornot-challenges"];
 			por4.contentType = @"image/jpeg";
-			por4.data = UIImageJPEGRepresentation(lImage, 0.5);
+			por4.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
 			[s3 putObject:por4];
 			
 			

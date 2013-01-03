@@ -516,8 +516,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	if (_isPushView)
-		NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONVoteViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if ([request isEqual:self.challengesRequest]) {
 		@autoreleasepool {

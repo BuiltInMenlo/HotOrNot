@@ -59,10 +59,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 }
 
-+ (NSNumber *)challengeDuration {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"challange_duration"]);
-}
-
 + (NSString *)dailySubjectName {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"daily_challenge"]);
 }
@@ -258,6 +254,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	return (!(parseStatus == NotReachable));
 }
 
+
 + (UIFont *)honHelveticaNeueFontBold {
 	return [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0];
 }
@@ -272,53 +269,6 @@ NSString *const FacebookAppID = @"529054720443694";
 
 + (UIColor *)honGreyTxtColor {
 	return ([UIColor colorWithWhite:0.482 alpha:1.0]);
-}
-
-//+ (int)secondsBeforeDate:(NSDate *)date {
-//	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
-//	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-//	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-//	
-//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-//	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
-//	
-//	return ([date timeIntervalSinceDate:utcDate]);
-//}
-//
-//+ (int)minutesBeforeDate:(NSDate *)date {
-//	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
-//	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-//	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-//	
-//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-//	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
-//	
-//	return ([date timeIntervalSinceDate:utcDate] / 60);
-//}
-//
-//+ (int)hoursBeforeDate:(NSDate *)date {
-//	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
-//	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
-//	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-//	
-//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-//	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
-//	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
-//	
-//	return ([date timeIntervalSinceDate:utcDate] / 3600);
-//}
-
-+ (void)playMP3:(NSString *)filename {
-	NSURL *url = [NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"];
-	
-	NSError *error;
-	AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
-	//audioPlayer.delegate = self;
-	[audioPlayer play];
-	
-	NSLog(@"PLAY:[%@]", url);
 }
 
 
@@ -493,78 +443,62 @@ NSString *const FacebookAppID = @"529054720443694";
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 			[HONAppDelegate setAllowsFBPosting:NO];
 		
-		PFQuery *appIDQuery = [PFQuery queryWithClassName:@"AppIDs"];
-		PFObject *appIDObject = [appIDQuery getObjectWithId:@"k2SlH68C62"];
+		PFQuery *appDataQuery = [PFQuery queryWithClassName:@"PicChallenge"];
+		PFObject *appDataObject = [appDataQuery getObjectWithId:@"1ZUKru9Qer"];
 		
-		PFQuery *query = [PFQuery queryWithClassName:@"APIs"];
-		//PFObject *appObject = [query getObjectWithId:@"p8VIk5s3du"]; // live - 1.0
-		PFObject *appObject = [query getObjectWithId:@"eFLGKQWRzD"]; // dev - 1.1
+		NSError *error = nil;
+		NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
+																				  options:NSJSONReadingMutableContainers
+																					 error:&error];
 		
-		PFQuery *durationQuery = [PFQuery queryWithClassName:@"Durations"];
-		PFObject *durationObject = [durationQuery getObjectWithId:@"ND1LzmULX5"];
+		if (error != nil)
+			NSLog(@"Failed to parse app data list JSON: %@", [error localizedFailureReason]);
 		
-		PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
-		PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
+		else {
+			NSLog(@"appDict:\n%@", appDict);
+			
+			NSMutableArray *hashtags = [NSMutableArray array];
+			for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
+				[hashtags addObject:hashtag];
+						
+			[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"daily_challenge"] forKey:@"daily_challenge"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"fb_path"] forKey:@"facebook_url"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																			  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"friend_wall"], @"friend_wall",
+																			  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																			  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"vote"],
+																			  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"poke"],
+																			  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																			  [NSDictionary dictionaryWithObjectsAndKeys:
+																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"title"], @"title",
+																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"url"], @"url",
+																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"], @"enabled", nil],
+																			  [NSDictionary dictionaryWithObjectsAndKeys:
+																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"title"], @"title",
+																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"url"], @"url",
+																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"], @"enabled", nil], nil] forKey:@"web_ctas"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"waiting"],
+																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"], nil] forKey:@"ctas"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																			  [[appDict objectForKey:@"add_networks"] objectForKey:@"chartboost"], @"chartboost",
+																			  [[appDict objectForKey:@"add_networks"] objectForKey:@"kiip"], @"kiip",
+																			  [[appDict objectForKey:@"add_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
+			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
+		}
 		
 		PFQuery *s3Query = [PFQuery queryWithClassName:@"S3Credentials"];
 		PFObject *s3Object = [s3Query getObjectWithId:@"zofEGq6sLT"];
 		
-		PFQuery *fbQuery = [PFQuery queryWithClassName:@"FacebookPaths"];
-		PFObject *fbObject = [fbQuery getObjectWithId:@"pFp8O7n9FK"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [s3Object objectForKey:@"key"], @"key",
+																		  [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 		
-		PFQuery *fbPostQuery = [PFQuery queryWithClassName:@"FacebookPosting"];
-		PFObject *fbPostObject = [fbPostQuery getObjectWithId:@"CKjJvA5R01"];
 		
-		PFQuery *pointQuery = [PFQuery queryWithClassName:@"PointMultipliers"];
-		PFObject *votePointsObject = [pointQuery getObjectWithId:@"osbeGeV4Pf"];
-		PFObject *pokePointsObject = [pointQuery getObjectWithId:@"HSKePBKNFh"];
-		
-		PFQuery *webCTAQuery = [PFQuery queryWithClassName:@"WebCTAs"];
-		PFObject *backgroundCTAObject = [webCTAQuery getObjectWithId:@"QiQDqTAqXc"];
-		PFObject *submitCTAObject = [webCTAQuery getObjectWithId:@"pERUzecrqr"];
-		
-		NSDictionary *backgroundCTA = [NSDictionary dictionaryWithObjectsAndKeys:
-												 [backgroundCTAObject objectForKey:@"title"], @"title",
-												 [backgroundCTAObject objectForKey:@"url"], @"url",
-												 [backgroundCTAObject objectForKey:@"enabled"], @"enabled", nil];
-		NSDictionary *submitCTA = [NSDictionary dictionaryWithObjectsAndKeys:
-												 [submitCTAObject objectForKey:@"title"], @"title",
-												 [submitCTAObject objectForKey:@"url"], @"url",
-												 [submitCTAObject objectForKey:@"enabled"], @"enabled", nil];
-		
-		//NSLog(@"fbPostObject:\n%@", fbPostObject);
-		
-		PFQuery *ctaQuery = [PFQuery queryWithClassName:@"PicChallengeCTAs"];
-		PFObject *ctaWaitingObject = [ctaQuery getObjectWithId:@"Ey2aUi2yQP"];
-		PFObject *ctaPlayingObject = [ctaQuery getObjectWithId:@"HlpX4VkGqT"];
-		NSArray *ctaArray = [NSArray arrayWithObjects:[ctaWaitingObject objectForKey:@"copy"], [ctaPlayingObject objectForKey:@"copy"], nil];
-		
-		PFQuery *adNetworkQuery = [PFQuery queryWithClassName:@"AdNetworks"];
-		PFObject *adNetworkObject = [adNetworkQuery getObjectWithId:@"iGkIPYYO4y"];
-		
-		NSDictionary *adNetworkDict = [NSDictionary dictionaryWithObjectsAndKeys:
-												 [adNetworkObject objectForKey:@"chartboost"], @"chartboost",
-												 [adNetworkObject objectForKey:@"kiip"], @"kiip",
-												 [adNetworkObject objectForKey:@"tapfortap"], @"tapfortap", nil];
-		
-		PFQuery *subjectQuery = [PFQuery queryWithClassName:@"PicChallegeDefaultSubjects"];
-		NSMutableArray *subjects = [NSMutableArray array];
-		for (PFObject *obj in [subjectQuery findObjects])
-			[subjects addObject:[obj objectForKey:@"title"]];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[appIDObject objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[appObject objectForKey:@"server_path"] forKey:@"server_api"];
-		[[NSUserDefaults standardUserDefaults] setObject:[durationObject objectForKey:@"duration"] forKey:@"challange_duration"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[s3Object objectForKey:@"key"], @"key", [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
-		[[NSUserDefaults standardUserDefaults] setObject:[fbObject objectForKey:@"canvas_url"] forKey:@"facebook_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:[fbPostObject objectForKey:@"friend_wall"], @"friend_wall", [fbPostObject objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:[votePointsObject objectForKey:@"amount"], [pokePointsObject objectForKey:@"amount"], nil] forKey:@"point_mult"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:backgroundCTA, submitCTA, nil] forKey:@"web_ctas"];
-		[[NSUserDefaults standardUserDefaults] setObject:ctaArray forKey:@"ctas"];
-		[[NSUserDefaults standardUserDefaults] setObject:adNetworkDict forKey:@"ad_networks"];
-		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"default_subjects"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[TapForTap initializeWithAPIKey:@"13654ee85567a679c190698d04ee87e2"];
 		

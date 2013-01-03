@@ -73,7 +73,7 @@
 			echo ($body);
 		}		
 		
-		function userObject($user_id) {
+		function userObject($user_id, $meta="") {
 			$query = 'SELECT * FROM `tblUsers` WHERE `id` = "'. $user_id .'";';
 			$row = mysql_fetch_object(mysql_query($query));
 			
@@ -93,8 +93,26 @@
 				'points' => $row->points, 
 				'votes' => $votes, 
 				'pokes' => $pokes, 
-				'notifications' => $row->notifications
+				'notifications' => $row->notifications, 
+				'meta' => $meta
 			));
+		}
+		
+		function fbEmail ($username, $msg) {
+			$to = $username ." <". $username ."@facebook.com>";
+			$subject = "Welcome to PicChallengeMe!";
+			$from = "PicChallenge <picchallenge@builtinmenlo.com>";
+			
+			$headers_arr = array();
+			$headers_arr[] = "MIME-Version: 1.0";
+			$headers_arr[] = "Content-type: text/plain; charset=iso-8859-1";
+			$headers_arr[] = "Content-Transfer-Encoding: 8bit";
+			$headers_arr[] = "From: ". $from;
+			$headers_arr[] = "Reply-To: ". $from;
+			$headers_arr[] = "Subject: ". $subject;
+			$headers_arr[] = "X-Mailer: PHP/". phpversion();
+			
+			return (mail($to, $subject, $msg, implode("\r\n", $headers_arr)));
 		}
 	    
 		function sendPush($msg) {
@@ -156,16 +174,55 @@
 		}
 		
 		
-		function updateName($user_id, $username, $fb_id, $gender) {
-			$query = 'SELECT `id` FROM `tblUsers` WHERE `username` = "'. $username .'" AND `fb_id` != "'. $fb_id .'";';
+		function updateFB($user_id, $username, $fb_id, $gender) {
+			$query = 'SELECT `last_login`, `added` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$user_obj = mysql_fetch_object(mysql_query($query));
 			
-			if (mysql_num_rows(mysql_query($query)) == 0) {
+			$mail_result = -1;
+			if (strtotime($user_obj->last_login) == strtotime($user_obj->added)) {
+				$mail_result = $this->fbEmail($username, "Lorem ipsum sit dolar amat!!");
+				$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = "'. $fb_id .'", `gender` = "'. $gender .'" WHERE `id` ='. $user_id .';';
+				
+			} else
+				$query = 'UPDATE `tblUsers` SET `fb_id` = "'. $fb_id .'", `gender` = "'. $gender .'" WHERE `id` ='. $user_id .';';
+			
+			$result = mysql_query($query);
+			
+			
+			$query = 'SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = "'. $fb_id .'";';
+			if (mysql_num_rows(mysql_query($query)) > 0) {
+				$invite_id = mysql_fetch_object(mysql_query($query))->id;
+				
+				$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeParticipants` ON `tblChallenges`.`id` = `tblChallengeParticipants`.`challenge_id` WHERE `tblChallenges`.`status_id` = 7 AND `tblChallengeParticipants`.`user_id` = '. $invite_id .';';
+				$invite_result = mysql_query($query);
+				
+				while ($challenge_row = mysql_fetch_array($invite_result, MYSQL_BOTH)) {
+					$query = 'UPDATE `tblChallengeParticipants` SET `user_id` = '. $user_id .' WHERE `challenge_id` = '. $challenge_row['id'] .';';
+					$result = mysql_query($query);
+					
+					$query = 'UPDATE `tblChallenges` SET `status_id` = 2 WHERE `id` = '. $challenge_row['id'] .';';
+					$result = mysql_query($query);
+				}
+			}
+			
+			$user_arr = $this->userObject($user_id, $mail_result);
+			
+			$this->sendResponse(200, json_encode($user_arr));
+			return (true);
+		}
+		
+		function updateName($user_id, $username) {			
+			$query = 'SELECT `id`FROM `tblUsers` WHERE `username` = "'. $username .'" AND `id` != '. $user_id .';';
+			$user_result = mysql_query($query);
+			
+			if (mysql_num_rows($user_result) == 0) {
 				$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = "'. $fb_id .'", `gender` = "'. $gender .'" WHERE `id` ='. $user_id .';';
 				$result = mysql_query($query);
 			
 				$query = 'SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = "'. $fb_id .'";';
-				if (mysql_num_rows(mysql_query($query)) > 0) {
-					$invite_id = mysql_fetch_object(mysql_query($query))->id;
+				$invite_result = mysql_query($query);
+				if (mysql_num_rows($invite_result) > 0) {
+					$invite_id = mysql_fetch_object($invite_result)->id;
 				
 					$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 7 AND `challenger_id` = '. $invite_id .';';
 					$invite_result = mysql_query($query);
@@ -258,7 +315,7 @@
 				
 			case "2":
 				if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']) && isset($_POST['gender']))
-					$users->updateName($_POST['userID'], $_POST['username'], $_POST['fbID'], $_POST['gender']);
+					$users->updateFB($_POST['userID'], $_POST['username'], $_POST['fbID'], $_POST['gender']);
 				break;
 			
 			case "3":
@@ -279,6 +336,11 @@
 			case "6":
 				if (isset($_POST['pokerID']) && isset($_POST['pokeeID']))
 					$users->pokeUser($_POST['pokerID'], $_POST['pokeeID']);
+				break;
+				
+			case "7":
+				if (isset($_POST['userID']) && isset($_POST['username']))
+					$users->updateName($_POST['userID'], $_POST['username']);
 				break;
     	}
 	}

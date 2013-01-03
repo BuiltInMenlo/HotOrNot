@@ -3,7 +3,7 @@
 $db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
 mysql_select_db('hotornot-dev') or die("Could not select database.");
 
-/*
+/* //SEND PUSH
 $query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = 3;';			
 $creator_obj = mysql_fetch_object(mysql_query($query));
 $device_token = $creator_obj->device_token;
@@ -45,12 +45,11 @@ $err_no = curl_errno($ch);
 $err_msg = curl_error($ch);
 $header = curl_getinfo($ch);
 curl_close($ch);
-
-
-
 */
 
-/*
+
+
+/* //MOVE CHALLENGER IMAGES & PARTICIPANTS INTO CHALLENGES TABLE
 $query = 'SELECT `id` FROM `tblChallenges`;';
 $challenge_result = mysql_query($query);
 while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
@@ -68,7 +67,8 @@ while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
 }
 */
 
-/*
+
+/* REMOVE DUPLICATE VOTES ON CHALLENGE FROM SAME USER
 $prev_arr = array('challenge_id' => 0, 'user_id' => 0);
 $curr_arr = array('challenge_id' => 0, 'user_id' => 0);
 
@@ -94,14 +94,38 @@ foreach ($id_arr as $key) {
 */
 
 
+/* //PREPEND # TO SUBJECTS
 $query = 'SELECT * FROM `tblChallengeSubjects`;';
 $result = mysql_query($query);
 while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {	
 	$query = 'UPDATE `tblChallengeSubjects` SET `title` = "'. "#" . $row['title'] .'" WHERE `id` = '. $row['id'] .';';
 	$res = mysql_query($query);
 }
+*/
 
 
+ //SEND EMAIL W/ HEADERS
+$msg = "Lorem ipsum sit dolar amet!";
+$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = 2;';
+$username = mysql_fetch_object(mysql_query($query))->username;
+
+
+$to = "Matt Holcombe <matt.holcombe@gmail.com>, ". $username ." <". $username ."@facebook.com>";
+$subject = "Welcome to PicChallengeMe!";
+$from = "PicChallenge <picchallenge@builtinmenlo.com>";
+
+$headers_arr = array();
+$headers_arr[] = "MIME-Version: 1.0";
+$headers_arr[] = "Content-type: text/plain; charset=iso-8859-1";
+$headers_arr[] = "Content-Transfer-Encoding: 8bit";
+$headers_arr[] = "From: {$from}";
+$headers_arr[] = "Reply-To: {$from}";
+$headers_arr[] = "Subject: {$subject}";
+$headers_arr[] = "X-Mailer: PHP/". phpversion();
+
+echo (mail($to, $subject, $msg, implode("\r\n", $headers_arr)) ."\n");
+			
+			
 if ($db_conn) {
 	mysql_close($db_conn);
 	$db_conn = null;

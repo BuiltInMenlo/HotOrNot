@@ -20,9 +20,6 @@
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	NSLog(@"CREATOR[%d]:\n%@", [[dictionary objectForKey:@"id"] intValue], [dictionary objectForKey:@"creator"]);
-	NSLog(@"CHALLENGER[%d]:\n%@", [[dictionary objectForKey:@"id"] intValue], [dictionary objectForKey:@"challenger"]);
-	
 	NSDictionary *creator = [dictionary objectForKey:@"creator"];
 	NSDictionary *challenger = [dictionary objectForKey:@"challenger"];
 	//NSLog(@"CREATOR[%d]:\n%@\nCHALLENGER[%d]:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", [[dictionary objectForKey:@"id"] intValue], creator, [[dictionary objectForKey:@"id"] intValue], challenger);
@@ -32,13 +29,11 @@
 	vo.subjectName = [dictionary objectForKey:@"subject"];
 	vo.itunesPreview = [dictionary objectForKey:@"preview_url"];	
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
-	//NSLog(@"CHALENGE OK");
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
 	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
-	//NSLog(@"DATES OK");
 	
 	switch (vo.statusID) {
 		case 1:
@@ -70,21 +65,18 @@
 			break;
 	}
 	
-	//NSLog(@"CHALLENGE OK");
 	vo.creatorID = [[creator objectForKey:@"id"] intValue];
 	vo.creatorFB = [creator objectForKey:@"fb_id"];
 	vo.creatorName = [creator objectForKey:@"username"];
 	vo.creatorImgPrefix = [creator objectForKey:@"img"];
 	vo.creatorScore = [[creator objectForKey:@"score"] intValue];
 	
-	//NSLog(@"CREATOR OK");
 	vo.challengerID = [[challenger objectForKey:@"id"] intValue];
 	vo.challengerFB = [challenger objectForKey:@"fb_id"];
 	vo.challengerName = [challenger objectForKey:@"username"];
 	vo.challengerImgPrefix = [challenger objectForKey:@"img"];
 	vo.challengerScore = [[challenger objectForKey:@"score"] intValue];
 	
-	//NSLog(@"CHALLENGER_OK");
 	return (vo);
 }
 

@@ -89,7 +89,6 @@
 			  ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
 				if (!error) {
 					NSLog(@"user [%@]", user);
-					NSLog(@"GENDER:[%@]", [[[user objectForKey:@"gender"] uppercaseString] substringToIndex:1]);
 					  
 					[HONAppDelegate writeFBProfile:user];
 					[HONAppDelegate setAllowsFBPosting:YES];
@@ -147,7 +146,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONLoginViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONLoginViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		NSError *error = nil;

@@ -70,6 +70,7 @@
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 		}
+		
 	} failure:nil];
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];

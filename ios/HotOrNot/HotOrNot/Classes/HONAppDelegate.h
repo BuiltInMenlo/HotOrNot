@@ -25,7 +25,6 @@ extern NSString *const FacebookAppID;
 
 
 + (NSString *)apiServerPath;
-+ (NSNumber *)challengeDuration;
 + (NSString *)dailySubjectName;
 + (NSDictionary *)s3Credentials;
 + (NSString *)facebookCanvasURL;
@@ -74,14 +73,7 @@ extern NSString *const FacebookAppID;
 + (UIColor *)honBlueTxtColor;
 + (UIColor *)honGreyTxtColor;
 
-//+ (int)secondsBeforeDate:(NSDate *)date;
-//+ (int)minutesBeforeDate:(NSDate *)date;
-//+ (int)hoursBeforeDate:(NSDate *)date;
 
-+ (void)playMP3:(NSString *)filename;
-
-
-#define kServerPath @"http://discover.getassembly.com/hotornot/api"
 #define kUsersAPI @"Users.php"
 #define kChallengesAPI @"Challenges.php"
 #define kPopularAPI @"Popular.php"
@@ -99,6 +91,7 @@ extern NSString *const FacebookAppID;
 #define kPhotoRatio 1.333333333
 
 #define kHUDTime 0.5
+#define kJPEGCompress 0.33
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;

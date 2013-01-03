@@ -216,7 +216,7 @@
 			$itunes_id = mysql_fetch_object(mysql_query($query))->itunes_id;
 			
 			$rndChallenge_arr = array();
-			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 AND `subject_id` = '. $subject_id .' AND `creator_id` != '. $user_id .';';
+			$query = 'SELECT `id`, `creator_id` FROM `tblChallenges` WHERE `status_id` = 1 AND `subject_id` = '. $subject_id .' AND `creator_id` != '. $user_id .';';
 			$challenge_result = mysql_query($query);
 			
 			if (mysql_num_rows($challenge_result) > 0) {			
@@ -601,7 +601,7 @@
 			$query = 'UPDATE `tblChallenges` SET `hasPreviewed` = "Y" WHERE `id` = '. $challenge_id .';';
 			$result = mysql_query($query);
 			
-			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
 			$challenge_row = mysql_fetch_object(mysql_query($query));
 			
 			$this->sendResponse(200, json_encode(array(
