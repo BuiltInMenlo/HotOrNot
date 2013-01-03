@@ -150,8 +150,8 @@
 	[super viewDidLoad];
 	
 	// banner
-	if ([HONAppDelegate isTapForTapEnabled])
-		[self.view addSubview:[[TapForTapAdView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0) delegate:self]];
+//	if ([HONAppDelegate isTapForTapEnabled])
+//		[self.view addSubview:[[TapForTapAdView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0) delegate:self]];
 	
 	// ad modal
 //	[TapForTapInterstitial prepare];

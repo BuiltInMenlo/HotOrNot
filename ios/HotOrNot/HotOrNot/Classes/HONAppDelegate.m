@@ -455,7 +455,7 @@ NSString *const FacebookAppID = @"529054720443694";
 			NSLog(@"Failed to parse app data list JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			NSLog(@"appDict:\n%@", appDict);
+			//NSLog(@"appDict:\n%@", appDict);
 			
 			NSMutableArray *hashtags = [NSMutableArray array];
 			for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
@@ -463,7 +463,6 @@ NSString *const FacebookAppID = @"529054720443694";
 						
 			[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 			[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
-			[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"daily_challenge"] forKey:@"daily_challenge"];
 			[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"fb_path"] forKey:@"facebook_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 																			  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"friend_wall"], @"friend_wall",
@@ -493,18 +492,22 @@ NSString *const FacebookAppID = @"529054720443694";
 		
 		PFQuery *s3Query = [PFQuery queryWithClassName:@"S3Credentials"];
 		PFObject *s3Object = [s3Query getObjectWithId:@"zofEGq6sLT"];
-		
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 																		  [s3Object objectForKey:@"key"], @"key",
 																		  [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 		
+		PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
+		PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
+		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
+		
+		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		
-		[TapForTap initializeWithAPIKey:@"13654ee85567a679c190698d04ee87e2"];
-		
-		Kiip *kiip = [[Kiip alloc] initWithAppKey:@"app_key" andSecret:@"app_secret"];
-		kiip.delegate = self;
-		[Kiip setSharedInstance:kiip];
+//		[TapForTap initializeWithAPIKey:@"13654ee85567a679c190698d04ee87e2"];
+//		
+//		Kiip *kiip = [[Kiip alloc] initWithAppKey:@"app_key" andSecret:@"app_secret"];
+//		kiip.delegate = self;
+//		[Kiip setSharedInstance:kiip];
 		
 		if ([HONAppDelegate canPingAPIServer]) {
 			UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
@@ -595,19 +598,18 @@ NSString *const FacebookAppID = @"529054720443694";
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+//	Chartboost *cb = [Chartboost sharedChartboost];
+//	cb.appId = @"50ba9e2717ba47d426000002";
+//	cb.appSignature = @"8526c7d52c380c02cc8e59c1c29e8cf4bf779646";
+//	[cb startSession];
+//	
+//	if ([HONAppDelegate isCharboostEnabled])
+//		[cb showInterstitial];
 	
-	Chartboost *cb = [Chartboost sharedChartboost];
-	cb.appId = @"50ba9e2717ba47d426000002";
-	cb.appSignature = @"8526c7d52c380c02cc8e59c1c29e8cf4bf779646";
-	[cb startSession];
-	
-	if ([HONAppDelegate isCharboostEnabled])
-		[cb showInterstitial];
-	
-	if (_isFromBackground && [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"] isEqualToString:@"Y"]) {
+	if (_isFromBackground && [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"] isEqualToString:@"Y"])
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0]];
-	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

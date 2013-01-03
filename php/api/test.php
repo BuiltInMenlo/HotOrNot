@@ -104,13 +104,15 @@ while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 */
 
 
+$user_id = 2;
+
  //SEND EMAIL W/ HEADERS
 $msg = "Lorem ipsum sit dolar amet!";
-$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = 2;';
-$username = mysql_fetch_object(mysql_query($query))->username;
+$query = "SELECT `username` FROM `tblUsers` WHERE `id` = {$user_id};";
+$username = "gullinbursti"; //mysql_fetch_object(mysql_query($query))->username;
 
 
-$to = "Matt Holcombe <matt.holcombe@gmail.com>, ". $username ." <". $username ."@facebook.com>";
+$to = "Matt Holcombe <matt.holcombe@gmail.com>, {$username} <{$username}@facebook.com>";
 $subject = "Welcome to PicChallengeMe!";
 $from = "PicChallenge <picchallenge@builtinmenlo.com>";
 
