@@ -65,7 +65,7 @@
 	_progressHUD.taskInProgress = YES;
 	
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 40.0, kLargeW * 0.5, kLargeW * 0.5)];
-	[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil options:SDWebImageProgressiveDownload success:^(UIImage *image, BOOL cached) {
+	[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil options:SDWebImageLowPriority success:^(UIImage *image, BOOL cached) {
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;

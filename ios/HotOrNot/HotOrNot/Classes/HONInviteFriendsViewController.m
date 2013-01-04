@@ -53,10 +53,10 @@
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
-	[self.view addSubview:bgImgView];
+	//[self.view addSubview:bgImgView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Invite Friends"];
-	[self.view addSubview:headerView];
+	//[self.view addSubview:headerView];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	cancelButton.frame = CGRectMake(247.0, 0.0, 74.0, 44.0);
@@ -195,9 +195,7 @@
 - (void)facebookViewControllerCancelWasPressed:(id)sender
 {
 	NSLog(@"Friend selection cancelled.");
-	//[self handlePickerDone];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	[self handlePickerDone];
 }
 
 - (void)facebookViewControllerDoneWasPressed:(id)sender
@@ -209,7 +207,7 @@
 								cancelButtonTitle:@"OK"
 								otherButtonTitles:nil]
 		 show];
-		//[self handlePickerDone];
+		[self handlePickerDone];
 	
 	} else {
 		_friends = [NSMutableArray array];
@@ -219,14 +217,22 @@
 		}
 		
 		[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends copy]];
-		//[self handlePickerDone];
+		[self handlePickerDone];
 	}
 }
 
 - (void)handlePickerDone
 {
-	self.searchBar = nil;
-	[self dismissViewControllerAnimated:NO completion:nil];
+	if (self.searchBar.isFirstResponder)
+		[self.searchBar resignFirstResponder];
+	
+	//self.searchBar = nil;
+	[self dismissViewControllerAnimated:YES completion:^(void){
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+	}];
+	//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 }
 
 #pragma mark - UISearchBarDelegate Methods

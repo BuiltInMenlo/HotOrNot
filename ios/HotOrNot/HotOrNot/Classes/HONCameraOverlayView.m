@@ -7,6 +7,7 @@
 //
 
 #import "Mixpanel.h"
+#import "UIImageView+WebCache.h"
 
 #import "HONCameraOverlayView.h"
 #import "HONAppDelegate.h"
@@ -16,7 +17,11 @@
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *footerHolderView;
 @property(nonatomic, strong) UITextField *subjectTextField;
+@property (nonatomic, strong) UIImageView *albumImageView;
+@property (nonatomic, strong) UIButton *buyTrackButton;
 @property(nonatomic, strong) UIButton *editButton;
+@property (nonatomic, strong) NSString *songName;
+@property (nonatomic, strong) NSString *itunesURL;
 @property(nonatomic) CGSize gutterSize;
 @end
 
@@ -57,7 +62,7 @@
 //		rGutterView.backgroundColor = [UIColor blackColor];
 //		[self addSubview:rGutterView];
 		
-		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo"];
+		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Challenge"];
 		[self addSubview:headerView];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -87,7 +92,18 @@
 		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active.png"] forState:UIControlStateHighlighted];
 		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_editButton];
+				
+		_albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, [UIScreen mainScreen].bounds.size.height - 127.0, 50.0, 50.0)];
+		[self addSubview:_albumImageView];
 		
+		
+		_buyTrackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_buyTrackButton.frame = CGRectMake(210.0, [UIScreen mainScreen].bounds.size.height - 135.0, 106.0, 61.0);
+		[_buyTrackButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
+		[_buyTrackButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
+		[_buyTrackButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
+		_buyTrackButton.hidden = YES;
+		[self addSubview:_buyTrackButton];
 		
 		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, _gutterSize.height, 250.0, 250.0)];
 		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding.png"];
@@ -211,10 +227,6 @@
 }
 
 - (void)hidePreview {
-	[[Mixpanel sharedInstance] track:@"Image Preview - Back"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
 	_previewHolderView.hidden = YES;
 	
 	for (UIView *subview in _previewHolderView.subviews) {
@@ -227,6 +239,23 @@
 	
 	[self.delegate previewBack];
 }
+
+- (void)songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL {
+	_songName = songName;
+	UILabel *songLabel = [[UILabel alloc] initWithFrame:CGRectMake(65.0, [UIScreen mainScreen].bounds.size.height - 100.0, 200.0, 14.0)];
+	songLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	songLabel.textColor = [UIColor whiteColor];
+	songLabel.backgroundColor = [UIColor clearColor];
+	songLabel.text = _songName;
+	[self addSubview:songLabel];
+	
+	[_albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil options:SDWebImageLowPriority];
+	_itunesURL = [itunesURL stringByReplacingOccurrencesOfString:@"https://" withString:@"itms://"];
+	
+	_buyTrackButton.hidden = NO;
+}
+
+#pragma mark -Navigation
 
 - (void)goBack:(id)sender {
 	self.captureButton.enabled = YES;
@@ -249,6 +278,18 @@
 	_subjectTextField.text = @"#";
 	[_subjectTextField becomeFirstResponder];
 }
+
+- (void)_goBuyTrack {
+	NSLog(@"BUY TRACK '%@' (%@)", _songName, _itunesURL);
+	
+	[[Mixpanel sharedInstance] track:@"Camera - Buy Track"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%@ - %@", _subjectName, _songName], @"track", nil]];
+	
+	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_itunesURL]];
+}
+
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
@@ -284,6 +325,8 @@
     // Drawing code
 }
 */
+
+#pragma mark - Accessors
 
 - (void)setSubjectName:(NSString *)subjectName {
 	_subjectName = subjectName;

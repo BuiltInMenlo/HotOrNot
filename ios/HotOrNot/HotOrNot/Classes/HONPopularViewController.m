@@ -277,7 +277,13 @@
 
 - (void)_refreshList:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	[self _goRefresh];
+	_refreshButton.hidden = YES;
+	
+	if (self.isUsersList)
+		[self _retrievePopularUsers];
+	
+	else
+		[self _retrievePopularSubjects];
 }
 
 - (void)_popularUserChallenge:(NSNotification *)notification {

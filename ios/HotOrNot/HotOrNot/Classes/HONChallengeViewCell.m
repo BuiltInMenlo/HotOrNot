@@ -253,24 +253,22 @@
 }
 
 - (void)didSelect {
+	if ([self.challengeVO.status isEqualToString:@"Waiting"] || [self.challengeVO.status isEqualToString:@"Accept"])
+		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_Active"];
 	
-	if ([self.challengeVO.status isEqualToString:@"Accept"]) {
-		_bgImgView.image = [UIImage imageNamed:@"genericRowBackground_active.png"];
+	else if ([self.challengeVO.status isEqualToString:@"Started"] || [self.challengeVO.status isEqualToString:@"Completed"])
+		_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage_active"];
 	
-	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
-		_bgImgView.image = [UIImage imageNamed:@"activeRowBackground_onTap.png"];
-	}
 	
 	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
 }
 
 - (void)_resetBG {
-	if ([self.challengeVO.status isEqualToString:@"Accept"]) {
-		_bgImgView.image = [UIImage imageNamed:@"genericRowBackground.png"];
+	if ([self.challengeVO.status isEqualToString:@"Waiting"] || [self.challengeVO.status isEqualToString:@"Accept"])
+		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
 		
-	} else if ([self.challengeVO.status isEqualToString:@"Started"]) {
-		_bgImgView.image = [UIImage imageNamed:@"activeRowBackground.png"];
-	}
+	else if ([self.challengeVO.status isEqualToString:@"Started"] || [self.challengeVO.status isEqualToString:@"Completed"])
+		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
 }
 
 @end

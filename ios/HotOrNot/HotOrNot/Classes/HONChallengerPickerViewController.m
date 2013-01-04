@@ -29,6 +29,7 @@
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic) int challengerID;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
+@property(nonatomic, strong) UIView *imgHolderView;
 @property(nonatomic, strong) UIImage *challengeImage;
 @property(nonatomic, strong) NSString *fbID;
 @property(nonatomic, strong) NSString *fbName;
@@ -145,6 +146,10 @@
 		
 	//_rndSubject = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
 	
+	
+	_imgHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
+	[self.view addSubview:_imgHolderView];
+	
 	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -166,6 +171,28 @@
 	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active.png"] forState:UIControlStateHighlighted];
 	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_editButton];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 300.0, 200.0, 20.0)];
+	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
+	[_usernameTextField setTextColor:[UIColor whiteColor]];
+	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
+	_usernameTextField.text = @"Enter a username…";
+	_usernameTextField.delegate = self;
+	[_usernameTextField setTag:1];
+	[self.view addSubview:_usernameTextField];
+	
+	UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	acceptButton.frame = CGRectMake(220.0, 280.0, 96.0, 60.0);
+	[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive.png"] forState:UIControlStateNormal];
+	[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active.png"] forState:UIControlStateHighlighted];
+	[acceptButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:acceptButton];
 	
 	_loginFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_loginFriendsButton.frame = CGRectMake(18.0, 338.0, 284.0, 49.0);
@@ -190,10 +217,12 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 117.0, 200.0, 200.0)];
+	//UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 117.0, 200.0, 200.0)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 75.0, 200.0, 266.0)];
 	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
-	[self.view addSubview:imgView];
+	//imgView.image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
+	[_imgHolderView addSubview:imgView];
 	
 	if (self.isFlipped)
 		imgView.image = [UIImage imageWithCGImage:imgView.image.CGImage scale:1.0 orientation:UIImageOrientationUpMirrored];
@@ -204,29 +233,6 @@
 	
 	_subjectTextField.text = self.subjectName;
 	//NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
-	
-	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 308.0, 200.0, 20.0)];
-	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[UIColor whiteColor]];
-	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-	_usernameTextField.text = @"Enter a username…";
-	_usernameTextField.delegate = self;
-	[_usernameTextField setTag:1];
-	[self.view addSubview:_usernameTextField];
-	
-	UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	acceptButton.frame = CGRectMake(220.0, 280.0, 96.0, 60.0);
-	[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive.png"] forState:UIControlStateNormal];
-	[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active.png"] forState:UIControlStateHighlighted];
-	[acceptButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:acceptButton];
 }
 
 
@@ -296,6 +302,7 @@
 	@try {
 		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
 		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+		//canvasView.image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
 		
 //		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
 //		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
@@ -760,8 +767,8 @@
 				if (vo.statusID == 4) {
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
-					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
-					_progressHUD.labelText = [NSString stringWithFormat:@"Matched w/ %@!", vo.challengerName];
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon.png"]];
+					_progressHUD.labelText = @"Challenge Matched!";
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;

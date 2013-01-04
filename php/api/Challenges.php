@@ -141,6 +141,69 @@
 			return ($preview_url);
 		}
 		
+		function itunesSongName ($itunes_id) {
+			$preview_url = "";
+			
+			if ($itunes_id != "") {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $itunes_id);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				$response = curl_exec($ch);
+			    curl_close ($ch);    
+				$json_arr = json_decode($response, true);
+			
+				if (count($json_arr['results']) > 0) {
+					$json_results = $json_arr['results'][0];
+					$preview_url = $json_results['trackName'];
+				}
+			}
+			
+			return ($preview_url);
+		}
+		
+		function itunesArtworkURL ($itunes_id) {
+			$preview_url = "";
+			
+			if ($itunes_id != "") {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $itunes_id);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				$response = curl_exec($ch);
+			    curl_close ($ch);    
+				$json_arr = json_decode($response, true);
+			
+				if (count($json_arr['results']) > 0) {
+					$json_results = $json_arr['results'][0];
+					$preview_url = $json_results['artworkUrl100'];
+				}
+			}
+			
+			return ($preview_url);
+		}
+		
+		function itunesID ($itunes_id) {
+			$preview_url = "";
+			
+			if ($itunes_id != "") {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $itunes_id);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				$response = curl_exec($ch);
+			    curl_close ($ch);    
+				$json_arr = json_decode($response, true);
+			
+				if (count($json_arr['results']) > 0) {
+					$json_results = $json_arr['results'][0];
+					$preview_url = $json_results['trackViewUrl'];
+				}
+			}
+			
+			return ($preview_url);
+		}
+		
 		function userForChallenge($user_id, $challenge_id) {
 			
 			// prime the user
@@ -558,8 +621,17 @@
 			$subject = "Flagged Challenge";
 			$body = "Challenge ID: #". $challenge_id ."\nFlagged By User: #". $user_id;
 			$from = "picchallenge@builtinmenlo.com";
-			$headers = "From:picchallenge@builtinmenlo.com";
-			if (mail($to, $subject, $body, $headers)) 
+			
+			$headers_arr = array();
+			$headers_arr[] = "MIME-Version: 1.0";
+			$headers_arr[] = "Content-type: text/plain; charset=iso-8859-1";
+			$headers_arr[] = "Content-Transfer-Encoding: 8bit";
+			$headers_arr[] = "From: {$from}";
+			$headers_arr[] = "Reply-To: {$from}";
+			$headers_arr[] = "Subject: {$subject}";
+			$headers_arr[] = "X-Mailer: PHP/". phpversion();
+
+			if (mail($to, $subject, $body, implode("\r\n", $headers_arr))) 
 			   $mail_res = true;
 
 			else
@@ -580,7 +652,10 @@
 			$subject_arr = array(
 				'id' => 0, 
 				'title' => $subject_name, 
-				'preview_url' => ""
+				'preview_url' => "",
+				'song_name' => "",
+				'img_url' => "",
+				'itunes_url' => ""
 			);
 			
 			if (mysql_num_rows($result) > 0) {
@@ -589,7 +664,10 @@
 				$subject_arr = array(
 					'id' => $subject_obj->id, 
 					'title' => $subject_name, 
-					'preview_url' => $this->itunesPreviewURL($subject_obj->itunes_id)
+					'preview_url' => $this->itunesPreviewURL($subject_obj->itunes_id),
+					'song_name' => $this->itunesSongName($subject_obj->itunes_id),
+					'img_url' => $this->itunesArtworkURL($subject_obj->itunes_id),
+					'itunes_url' => $this->itunesID($subject_obj->itunes_id)
 				);
 			}  
 			

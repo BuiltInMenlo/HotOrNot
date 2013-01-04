@@ -114,14 +114,14 @@
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 	inviteButton.hidden = (FBSession.activeSession.state != 513);
-	[_headerView addSubview:inviteButton];
+	//[_headerView addSubview:inviteButton];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	//[_headerView addSubview:_refreshButton];
+	[_headerView addSubview:_refreshButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -243,16 +243,16 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
 	
-	_friends = [NSMutableArray array];
-	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-		//NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
-		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"])
-			[_friends addObject: [friend objectForKey:@"id"]];
-		
-		NSLog(@"RETRIEVED (%d) FRIENDS", [_friends count]);
-	}];
+//	_friends = [NSMutableArray array];
+//	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+//		//NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
+//		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"])
+//			[_friends addObject: [friend objectForKey:@"id"]];
+//		
+//		NSLog(@"RETRIEVED (%d) FRIENDS", [_friends count]);
+//	}];
 }
 
 - (void)_goInvite {
@@ -575,8 +575,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	//[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
+	//[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
 	self.challengeVO = vo;

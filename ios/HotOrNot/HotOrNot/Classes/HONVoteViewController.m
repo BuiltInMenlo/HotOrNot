@@ -496,9 +496,9 @@
 			break;
 		
 		case 1:
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:self.challengeVO.subjectName]];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:self.challengeVO.creatorID withSubject:self.challengeVO.subjectName]];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+			[self presentViewController:navigationController animated:NO completion:nil];
 			break;
 			
 		case 2:

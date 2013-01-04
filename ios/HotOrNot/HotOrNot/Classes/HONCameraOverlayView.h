@@ -13,6 +13,7 @@
 
 - (void)hidePreview;
 - (void)showPreview:(UIImage *)image;
+- (void)songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL;
 
 @property (nonatomic, weak) HONImagePickerViewController *delegate;
 @property (nonatomic, weak) UIButton *captureButton;

@@ -26,6 +26,7 @@
 @interface HONImagePickerViewController () <ASIHTTPRequestDelegate>
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *iTunesPreview;
+@property(nonatomic, strong) NSString *iTunesPreviewURL;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) NSString *fbID;
@@ -61,7 +62,6 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor blackColor];
-		//self.tabBarItem.image = [UIImage imageNamed:@"tab03_nonActive"];
 		self.subjectName = [HONAppDelegate rndDefaultSubject];
 		self.iTunesPreview = @"";
 		self.submitAction = 1;
@@ -79,7 +79,7 @@
 
 - (id)initWithUser:(int)userID {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge"
+		[[Mixpanel sharedInstance] track:@"Create Challenge - With User"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
@@ -101,14 +101,13 @@
 
 - (id)initWithUser:(int)userID withSubject:(NSString *)subject {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge"
+		[[Mixpanel sharedInstance] track:@"Create Challenge - With User & Hashtag"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
+		self.needsChallenger = NO;
 		self.subjectName = subject;
 		self.iTunesPreview = @"";
 		self.challengerID = userID;
-		self.needsChallenger = NO;
 		self.submitAction = 9;
 		self.isFirstAppearance = YES;
 		
@@ -116,6 +115,8 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
+		
+		self.needsChallenger = NO;
 	}
 	
 	return (self);
@@ -148,7 +149,7 @@
 
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge"
+		[[Mixpanel sharedInstance] track:@"Create Challenge - With Hashtag"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
@@ -171,7 +172,7 @@
 
 - (id)initAsDailyChallenge:(NSString *)subject {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge"
+		[[Mixpanel sharedInstance] track:@"Create Challenge - Daily Challenge"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
@@ -245,7 +246,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Choose Photo"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Challenge"];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -272,15 +273,7 @@
 		
 		if (!_hasPlayedAudio) {
 			_hasPlayedAudio = YES;
-			
-			if (self.subjectName.length > 0) {
-				ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-				[subjectRequest setDelegate:self];
-				[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-				[subjectRequest setPostValue:self.subjectName forKey:@"subjectName"];
-				[subjectRequest setTag:1];
-				[subjectRequest startAsynchronous];
-			}
+			[self performSelector:@selector(_playAudio) withObject:self afterDelay:0.5];
 		}
 		
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
@@ -333,6 +326,17 @@
 
 - (BOOL)shouldAutorotate {
 	return (NO);
+}
+
+- (void)_playAudio {
+	if (self.subjectName.length > 0) {
+		ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+		[subjectRequest setDelegate:self];
+		[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+		[subjectRequest setPostValue:self.subjectName forKey:@"subjectName"];
+		[subjectRequest setTag:1];
+		[subjectRequest startAsynchronous];
+	}
 }
 
 - (void)_showOverlay {
@@ -460,10 +464,6 @@
 
 - (void)closePreview {
 	[_cameraOverlayView hidePreview];
-	
-	if (self.needsChallenger)
-		[self dismissViewControllerAnimated:YES completion:nil];
-	
 	[self _acceptPhoto];
 }
 
@@ -471,23 +471,6 @@
 	UIImage *image = _challangeImage;
 	
 	[_mpMoviePlayerController stop];
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	
-	if (self.needsChallenger)
-		[self dismissViewControllerAnimated:YES completion:nil];
-
-//	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
-//		NSLog(@"_imagePicker.cameraDevice[%d] == UIImagePickerControllerCameraDeviceFront[%d]", _imagePicker.cameraDevice, UIImagePickerControllerCameraDeviceFront);
-//		
-//		UIImageView *frontImgView = [[UIImageView alloc] initWithImage:image];
-//		CGAffineTransform rotate = CGAffineTransformMakeRotation(1.0 / 180.0 * 3.14);
-//		[frontImgView setTransform:rotate];
-//		
-//		UIGraphicsBeginImageContext(frontImgView.bounds.size);
-//		[frontImgView.layer renderInContext:UIGraphicsGetCurrentContext()];
-//		image = UIGraphicsGetImageFromCurrentImageContext();
-//		UIGraphicsEndImageContext();
-//	}
 	
 	if (!self.needsChallenger) {
 		[[Mixpanel sharedInstance] track:@"Submit Challenge"
@@ -587,6 +570,9 @@
 		}
 	
 	} else {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[self dismissViewControllerAnimated:YES completion:nil];
+		
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
 			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithFlippedImage:image subjectName:_subjectName] animated:NO];
 		
@@ -616,7 +602,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	if (request.tag == 0) {
 		@autoreleasepool {
@@ -639,10 +625,8 @@
 			else {
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
-				
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
-				
-				NSLog(@"fbID:[%@][%@]", self.fbID, _fbID);
 				[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
 				[HONFacebookCaller postToFriendTimeline:self.fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
 				
@@ -664,9 +648,11 @@
 			
 			else {
 				self.iTunesPreview = [subjectResult objectForKey:@"preview_url"];
+				_iTunesPreviewURL = [subjectResult objectForKey:@"itunes_id"];
 				
 				if (self.iTunesPreview.length > 0) {
-					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+					[_cameraOverlayView songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
+					
 					//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
 					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:self.iTunesPreview]];
 					_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
@@ -674,11 +660,9 @@
 					[self.view addSubview:_mpMoviePlayerController.view];
 					[_mpMoviePlayerController prepareToPlay];
 					[_mpMoviePlayerController play];
+					
+					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 				}
-				
-//					[UIView animateWithDuration:3.0 animations:^(void) {
-//						[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
-//					}];
 			}
 		}
 	}
