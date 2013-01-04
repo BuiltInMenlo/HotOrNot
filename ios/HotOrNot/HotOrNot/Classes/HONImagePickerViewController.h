@@ -24,4 +24,5 @@
 - (void)changeCamera;
 - (void)closePreview;
 - (void)previewBack;
+- (void)playTrack:(NSString *)previewURL;
 @end

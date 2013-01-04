@@ -179,42 +179,6 @@
 		[challengerImgHolderView addSubview:challengerScoreLabel];
 		
 		challengeLabel.text = (self.challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? [NSString stringWithFormat:@"You have challenged %@ to \n%@\nOpened & Accepted", self.challengeVO.challengerName, self.challengeVO.subjectName] : [NSString stringWithFormat:@"%@ has challenged you to \n%@\nOpened & Accepted", self.challengeVO.creatorName, self.challengeVO.subjectName];
-		
-		
-//		int hours = [HONAppDelegate hoursBeforeDate:self.challengeVO.endDate];
-//		int mins = [HONAppDelegate minutesBeforeDate:self.challengeVO.endDate];
-//		int secs = [HONAppDelegate secondsBeforeDate:self.challengeVO.endDate];
-//		
-//		NSString *timeUntil;
-//		if (hours == 1)
-//			timeUntil = @"1 hour";
-//		
-//		else if (hours > 0) {
-//				timeUntil = [NSString stringWithFormat:@"%d hours", hours];
-//		
-//		} else {
-//			if (mins == 1)
-//				timeUntil = @"1 minute";
-//			
-//			else if (mins > 0)
-//				timeUntil = [NSString stringWithFormat:@"%d minutes", mins];
-//				
-//			else {
-//				if (secs == 1)
-//					timeUntil = @"1 second";
-//				
-//				else
-//					timeUntil = [NSString stringWithFormat:@"%d seconds", secs];
-//			}
-//		}
-//		
-//		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 18.0, 90.0, 16.0)];
-//		timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-//		timeLabel.textColor = [UIColor blackColor];
-//		timeLabel.backgroundColor = [UIColor clearColor];
-//		timeLabel.textAlignment = NSTextAlignmentCenter;
-//		timeLabel.text = timeUntil;
-//		[self addSubview:timeLabel];
 	}
 }
 
@@ -253,7 +217,7 @@
 }
 
 - (void)didSelect {
-	if ([self.challengeVO.status isEqualToString:@"Waiting"] || [self.challengeVO.status isEqualToString:@"Accept"])
+	if ([self.challengeVO.status isEqualToString:@"Created"] || [self.challengeVO.status isEqualToString:@"Waiting"] || [self.challengeVO.status isEqualToString:@"Accept"])
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_Active"];
 	
 	else if ([self.challengeVO.status isEqualToString:@"Started"] || [self.challengeVO.status isEqualToString:@"Completed"])
@@ -264,7 +228,7 @@
 }
 
 - (void)_resetBG {
-	if ([self.challengeVO.status isEqualToString:@"Waiting"] || [self.challengeVO.status isEqualToString:@"Accept"])
+	if ([self.challengeVO.status isEqualToString:@"Created"] || [self.challengeVO.status isEqualToString:@"Waiting"] || [self.challengeVO.status isEqualToString:@"Accept"])
 		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
 		
 	else if ([self.challengeVO.status isEqualToString:@"Started"] || [self.challengeVO.status isEqualToString:@"Completed"])

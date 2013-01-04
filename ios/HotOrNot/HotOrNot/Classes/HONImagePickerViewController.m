@@ -273,7 +273,7 @@
 		
 		if (!_hasPlayedAudio) {
 			_hasPlayedAudio = YES;
-			[self performSelector:@selector(_playAudio) withObject:self afterDelay:0.5];
+			[self performSelector:@selector(_playAudio) withObject:self afterDelay:1.0];
 		}
 		
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
@@ -420,6 +420,26 @@
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
+}
+
+
+- (void)playTrack:(NSString *)previewURL {
+	self.iTunesPreview = previewURL;
+	
+	if (_mpMoviePlayerController != nil) {
+		[_mpMoviePlayerController stop];
+		[_mpMoviePlayerController setContentURL:[NSURL URLWithString:self.iTunesPreview]];
+	
+	} else {
+		_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:self.iTunesPreview]];
+		_mpMoviePlayerController.view.hidden = YES;
+		[self.view addSubview:_mpMoviePlayerController.view];
+	}
+	
+	_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
+	[_mpMoviePlayerController prepareToPlay];
+	[_mpMoviePlayerController play];
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 }
 
 #pragma mark - ImagePicker Delegates

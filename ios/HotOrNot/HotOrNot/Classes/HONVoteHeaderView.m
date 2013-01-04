@@ -61,7 +61,7 @@
 
 #pragma mark - Navigation
 - (void)_goMore {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MORE" object:self.challengeVO];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTE_MORE" object:self.challengeVO];
 }
 
 @end

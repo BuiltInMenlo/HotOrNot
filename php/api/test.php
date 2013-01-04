@@ -68,7 +68,7 @@ while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
 */
 
 
-/* REMOVE DUPLICATE VOTES ON CHALLENGE FROM SAME USER
+ //REMOVE DUPLICATE VOTES ON CHALLENGE FROM SAME USER
 $prev_arr = array('challenge_id' => 0, 'user_id' => 0);
 $curr_arr = array('challenge_id' => 0, 'user_id' => 0);
 
@@ -91,7 +91,6 @@ foreach ($id_arr as $key) {
 	$query = 'DELETE FROM `tblChallengeVotes` WHERE `id` = '. $key .';';
 	$result = mysql_query($query);
 }
-*/
 
 
 /* //PREPEND # TO SUBJECTS
@@ -104,9 +103,8 @@ while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 */
 
 
+/* //SEND EMAIL W/ HEADERS
 $user_id = 2;
-
- //SEND EMAIL W/ HEADERS
 $msg = "Lorem ipsum sit dolar amet!";
 $query = "SELECT `username` FROM `tblUsers` WHERE `id` = {$user_id};";
 $username = "gullinbursti"; //mysql_fetch_object(mysql_query($query))->username;
@@ -126,7 +124,7 @@ $headers_arr[] = "Subject: {$subject}";
 $headers_arr[] = "X-Mailer: PHP/". phpversion();
 
 echo (mail($to, $subject, $msg, implode("\r\n", $headers_arr)) ."\n");
-			
+/*			
 			
 if ($db_conn) {
 	mysql_close($db_conn);

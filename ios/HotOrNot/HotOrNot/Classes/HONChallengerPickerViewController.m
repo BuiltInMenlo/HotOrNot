@@ -134,6 +134,9 @@
 	//NSLog(@"loadView");
 	[super loadView];
 	
+	_imgHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
+	[self.view addSubview:_imgHolderView];
+	
 	HONHeaderView *mainHeaderView = [[HONHeaderView alloc] initWithTitle:@"Confirm Challenge"];
 	[self.view addSubview:mainHeaderView];
 		
@@ -144,12 +147,6 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[mainHeaderView addSubview:backButton];
 		
-	//_rndSubject = [NSString stringWithFormat:@"#%@", [HONAppDelegate rndDefaultSubject]];
-	
-	
-	_imgHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
-	[self.view addSubview:_imgHolderView];
-	
 	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -216,12 +213,13 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+
+	//UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 75.0, 200.0, 266.0)];
+	//imgView.image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
 	
-	//UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 117.0, 200.0, 200.0)];
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 75.0, 200.0, 266.0)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 117.0, 200.0, 200.0)];
 	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
-	//imgView.image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
 	[_imgHolderView addSubview:imgView];
 	
 	if (self.isFlipped)

@@ -80,8 +80,15 @@
 		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
 		[self addSubview:bgImgView];
 		
-		_headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
-		[self addSubview:_headerView];
+		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		moreButton.frame = CGRectMake(265.0, 16.0, 34.0, 34.0);
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:moreButton];
+		
+		//_headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
+		//[self addSubview:_headerView];
 	}
 	
 	return (self);
@@ -96,8 +103,15 @@
 		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
 		[self addSubview:bgImgView];
 		
-		_headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
-		[self addSubview:_headerView];
+		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		moreButton.frame = CGRectMake(265.0, 16.0, 34.0, 34.0);
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:moreButton];
+		
+//		_headerView = [[HONVoteHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, 54.0) asPush:NO];
+//		[self addSubview:_headerView];
 	}
 	
 	return (self);
@@ -111,7 +125,21 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[_headerView setChallengeVO:challengeVO];
+	UILabel *ctaLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 260.0, 16.0)];
+	ctaLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+	ctaLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	ctaLabel.backgroundColor = [UIColor clearColor];
+	ctaLabel.text = [HONAppDelegate ctaForChallenge:_challengeVO];
+	[self addSubview:ctaLabel];
+	
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 200.0, 16.0)];
+	titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+	titleLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	titleLabel.backgroundColor = [UIColor clearColor];
+	titleLabel.text = _challengeVO.subjectName;
+	//[self addSubview:titleLabel];
+	
+	//[_headerView setChallengeVO:challengeVO];
 	
 	if (_hasChallenger) {
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 71.0, 120.0, 245.0)];
@@ -173,43 +201,60 @@
 			[rImgView removeGestureRecognizer:_rSingleTapRecognizer];
 			[rImgView removeGestureRecognizer:_rDoubleTapRecognizer];
 			
-//			[_lVoteButton removeTarget:self action:@selector(_goLeftVote) forControlEvents:UIControlEventTouchUpInside];
-//			[_rVoteButton removeTarget:self action:@selector(_goRightVote) forControlEvents:UIControlEventTouchUpInside];
-			
-			UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
-			lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
-			[self addSubview:lScoreImgView];
-			
-			UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
-			rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
-			[self addSubview:rScoreImgView];
-			
-			UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
-			lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
-			lScoreLabel.backgroundColor = [UIColor clearColor];
-			lScoreLabel.textColor = [UIColor whiteColor];
-			lScoreLabel.textAlignment = NSTextAlignmentCenter;
-			[lScoreImgView addSubview:lScoreLabel];
-			
-			UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
-			rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
-			rScoreLabel.backgroundColor = [UIColor clearColor];
-			rScoreLabel.textColor = [UIColor whiteColor];
-			rScoreLabel.textAlignment = NSTextAlignmentCenter;
-			[rScoreImgView addSubview:rScoreLabel];
-
-			
 			if (_challengeVO.creatorScore > _challengeVO.challengerScore) {
+				UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
+				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				[self addSubview:lScoreImgView];
+				
+				UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
+				lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+				lScoreLabel.backgroundColor = [UIColor clearColor];
+				lScoreLabel.textColor = [UIColor whiteColor];
+				lScoreLabel.textAlignment = NSTextAlignmentCenter;
 				lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.creatorScore + 1)];
-				rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.challengerScore + 1)];
+				[lScoreImgView addSubview:lScoreLabel];
+				
+				//rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.challengerScore + 1)];
 				
 			} else if (_challengeVO.creatorScore < _challengeVO.challengerScore) {
-				lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.creatorScore + 1)];
+				UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
+				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				[self addSubview:rScoreImgView];
+				
+				UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
+				rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+				rScoreLabel.backgroundColor = [UIColor clearColor];
+				rScoreLabel.textColor = [UIColor whiteColor];
+				rScoreLabel.textAlignment = NSTextAlignmentCenter;
 				rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.challengerScore + 1)];
+				[rScoreImgView addSubview:rScoreLabel];
+				
+				//lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.creatorScore + 1)];
 			
 			} else {
-				lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
+				UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
+				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				[self addSubview:rScoreImgView];
+				
+				UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
+				rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+				rScoreLabel.backgroundColor = [UIColor clearColor];
+				rScoreLabel.textColor = [UIColor whiteColor];
+				rScoreLabel.textAlignment = NSTextAlignmentCenter;
 				rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.challengerScore + 1)];
+				[rScoreImgView addSubview:rScoreLabel];
+				
+				UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
+				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				[self addSubview:lScoreImgView];
+				
+				UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
+				lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+				lScoreLabel.backgroundColor = [UIColor clearColor];
+				lScoreLabel.textColor = [UIColor whiteColor];
+				lScoreLabel.textAlignment = NSTextAlignmentCenter;
+				lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
+				[lScoreImgView addSubview:lScoreLabel];
 			}
 		}
 		
@@ -270,7 +315,7 @@
 		}
 	
 	} else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MORE" object:self.challengeVO];
+		[self _goMore];
 	}
 }
 
@@ -288,9 +333,6 @@
 			
 			[_rSingleTapRecognizer.view removeGestureRecognizer:_rSingleTapRecognizer];
 			[_rDoubleTapRecognizer.view removeGestureRecognizer:_rDoubleTapRecognizer];
-			
-//			[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
-//			[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
 			
 			UIView *overlayView = [[UIView alloc] initWithFrame:_rHolderView.frame];
 			overlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
@@ -326,7 +368,7 @@
 			[voteRequest setPostValue:@"Y" forKey:@"creator"];
 			[voteRequest startAsynchronous];
 			
-			//[HONAppDelegate setVote:self.challengeVO.challengeID];
+			[HONAppDelegate setVote:self.challengeVO.challengeID];
 		
 		} else {
 			[[Mixpanel sharedInstance] track:@"Upvote Right"
@@ -334,9 +376,6 @@
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
 			
-			
-//			[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
-//			[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
 			
 			[_lSingleTapRecognizer.view removeGestureRecognizer:_lSingleTapRecognizer];
 			[_lDoubleTapRecognizer.view removeGestureRecognizer:_lDoubleTapRecognizer];
@@ -378,7 +417,7 @@
 			[voteRequest setPostValue:@"N" forKey:@"creator"];
 			[voteRequest startAsynchronous];
 			
-			//[HONAppDelegate setVote:self.challengeVO.challengeID];
+			[HONAppDelegate setVote:self.challengeVO.challengeID];
 		}
 	
 	} else {
@@ -391,35 +430,35 @@
 	}
 }
 
-- (void)_goLeftVote {
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																				delegate:self
-																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:nil
-																	otherButtonTitles:
-											[NSString stringWithFormat:@"Like - %dpts", [HONAppDelegate votePointMultiplier]],
-											[NSString stringWithFormat:@"Challenge - %dpts", 5],
-											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	
-	[actionSheet setTag:0];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-}
-
-- (void)_goRightVote {
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																				delegate:self
-																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:nil
-																	otherButtonTitles:
-											[NSString stringWithFormat:@"Like - %dpts", [HONAppDelegate votePointMultiplier]],
-											[NSString stringWithFormat:@"Challenge - %dpts", 5],
-											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	
-	[actionSheet setTag:1];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-}
+//- (void)_goLeftVote {
+//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+//																				delegate:self
+//																	cancelButtonTitle:@"Cancel"
+//															 destructiveButtonTitle:nil
+//																	otherButtonTitles:
+//											[NSString stringWithFormat:@"Like - %dpts", [HONAppDelegate votePointMultiplier]],
+//											[NSString stringWithFormat:@"Challenge - %dpts", 5],
+//											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
+//	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+//	
+//	[actionSheet setTag:0];
+//	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+//}
+//
+//- (void)_goRightVote {
+//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+//																				delegate:self
+//																	cancelButtonTitle:@"Cancel"
+//															 destructiveButtonTitle:nil
+//																	otherButtonTitles:
+//											[NSString stringWithFormat:@"Like - %dpts", [HONAppDelegate votePointMultiplier]],
+//											[NSString stringWithFormat:@"Challenge - %dpts", 5],
+//											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
+//	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+//	
+//	[actionSheet setTag:1];
+//	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+//}
 
 - (void)_goScore {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:self.challengeVO];
@@ -430,7 +469,21 @@
 }
 
 - (void)_goMore {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MORE" object:self.challengeVO];
+	[[Mixpanel sharedInstance] track:@"Vote - More"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																				delegate:self
+																	cancelButtonTitle:@"Cancel"
+															 destructiveButtonTitle:@"Report Abuse"
+																	otherButtonTitles:[NSString stringWithFormat:@"Challenge - %dpts", 5],
+											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	
+	[actionSheet setTag:2];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
 
@@ -447,9 +500,6 @@
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-				
-//				[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
-//				[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
 				
 				[_lSingleTapRecognizer.view removeGestureRecognizer:_lSingleTapRecognizer];
 				[_lDoubleTapRecognizer.view removeGestureRecognizer:_lDoubleTapRecognizer];
@@ -491,7 +541,7 @@
 				[voteRequest setPostValue:@"Y" forKey:@"creator"];
 				[voteRequest startAsynchronous];
 				
-				//[HONAppDelegate setVote:self.challengeVO.challengeID];
+				[HONAppDelegate setVote:self.challengeVO.challengeID];
 				break;}
 				
 			case 1:
@@ -525,11 +575,7 @@
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
-				
-				
-//				[_lVoteButton removeTarget:self action:@selector(_goLeftVote:) forControlEvents:UIControlEventTouchUpInside];
-//				[_rVoteButton removeTarget:self action:@selector(_goRightVote:) forControlEvents:UIControlEventTouchUpInside];
-				
+								
 				[_lSingleTapRecognizer.view removeGestureRecognizer:_lSingleTapRecognizer];
 				[_lDoubleTapRecognizer.view removeGestureRecognizer:_lDoubleTapRecognizer];
 				
@@ -570,7 +616,7 @@
 				[voteRequest setPostValue:@"N" forKey:@"creator"];
 				[voteRequest startAsynchronous];
 				
-				//[HONAppDelegate setVote:self.challengeVO.challengeID];
+				[HONAppDelegate setVote:self.challengeVO.challengeID];
 				break;}
 				
 			case 1:
@@ -594,6 +640,30 @@
 				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"pokerID"];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengerID] forKey:@"pokeeID"];
 				[voteRequest startAsynchronous];
+				break;
+		}
+	
+	} else if (actionSheet.tag == 2) {
+		switch (buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Vote Wall - Flag"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+				
+				[voteRequest setDelegate:self];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
+				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+				[voteRequest startAsynchronous];
+				break;
+				
+			case 1:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"VOTE_MORE" object:self.challengeVO];
+				break;
+				
+			case 2:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_CHALLENGE" object:self.challengeVO];
 				break;
 		}
 	}

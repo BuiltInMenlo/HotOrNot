@@ -54,16 +54,6 @@
 	[usersRequest startAsynchronous];
 }
 
-- (void)_voterChallenge:(NSNotification *)notification {
-	_voterVO = (HONVoterVO *)[notification object];
-	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-																	message:[NSString stringWithFormat:@"Want to #%@ challenge %@?", _challengeVO.subjectName, _voterVO.username]
-																  delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
-	[alert show];
-}
 
 #pragma mark - View Lifecycle
 - (void)loadView {
@@ -73,7 +63,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"Voters for #%@", _challengeVO.subjectName]];
+	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"Voters for %@", _challengeVO.subjectName]];
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -132,6 +122,21 @@
 	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
+
+
+#pragma mark - Notifications
+- (void)_voterChallenge:(NSNotification *)notification {
+	NSLog(@"VOTER_CHALLENGE");
+	_voterVO = (HONVoterVO *)[notification object];
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"
+																		 message:[NSString stringWithFormat:@"Want to %@ challenge %@?", _challengeVO.subjectName, _voterVO.username]
+																		delegate:self
+															cancelButtonTitle:@"Yes"
+															otherButtonTitles:@"No", nil];
+	[alertView show];
+}
+
 
 #pragma mark - AlerView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -219,7 +224,7 @@
 				_voters = [NSMutableArray new];
 				for (NSDictionary *serverList in parsedLists) {
 					HONVoterVO *vo = [HONVoterVO voterWithDictionary:serverList];
-					NSLog(@"VO:[%d]", vo.userID);
+					//NSLog(@"VO:[%d]", vo.userID);
 					
 					if (vo != nil)
 						[_voters addObject:vo];

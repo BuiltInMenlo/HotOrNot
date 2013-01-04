@@ -62,6 +62,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	}
@@ -81,6 +82,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	}
@@ -101,6 +103,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	}
@@ -366,16 +369,35 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																				delegate:self
-																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:[NSString stringWithFormat:@"Challenge - %dpts", 5],
-											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_challengeVO.creatorID withSubject:_challengeVO.subjectName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 	
-	[actionSheet setTag:0];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	
+//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+//																				delegate:self
+//																	cancelButtonTitle:@"Cancel"
+//															 destructiveButtonTitle:@"Report Abuse"
+//																	otherButtonTitles:[NSString stringWithFormat:@"Challenge - %dpts", 5],
+//											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
+//	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+//	
+//	[actionSheet setTag:0];
+//	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
+- (void)_shareChallenge:(NSNotification *)notification {
+	_challengeVO = (HONChallengeVO *)[notification object];
+	
+	if (FBSession.activeSession.state == 513)
+		[HONFacebookCaller postToTimeline:_challengeVO];
+	
+	else {
+		UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+		[navController setNavigationBarHidden:YES];
+		[self presentViewController:navController animated:YES completion:nil];
+	}
+
 }
 
 - (void)_refreshList:(NSNotification *)notification {
@@ -425,13 +447,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	//static NSString * MyIdentifier = @"SNTwitterFriendViewCell_iPhone";
-	
-	//SNTwitterFriendViewCell_iPhone *cell = [tableView dequeueReusableCellWithIdentifier:[SNTwitterFriendViewCell_iPhone cellReuseIdentifier]];
 	HONVoteItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-	
-	//NSMutableArray *letterArray = [_friendsDictionary objectForKey:[_sectionTitles objectAtIndex:indexPath.section]];
-	
 	
 	if (cell == nil) {
 		if (indexPath.row == 0) {
@@ -474,45 +490,43 @@
 }
 
 
-#pragma mark - ActionSheet Delegates
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-	UINavigationController *navigationController;
-	
-	NSLog(@"BUTTON:[%d][%d]", buttonIndex, actionSheet.destructiveButtonIndex);
-	
-	switch (buttonIndex) {
-		case 0:
-			[[Mixpanel sharedInstance] track:@"Vote Wall - Flag"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
-			
-			[voteRequest setDelegate:self];
-			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
-			[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
-			[voteRequest startAsynchronous];
-			break;
-		
-		case 1:
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:self.challengeVO.creatorID withSubject:self.challengeVO.subjectName]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-			break;
-			
-		case 2:
-			if (FBSession.activeSession.state == 513)
-				[HONFacebookCaller postToTimeline:self.challengeVO];
-			
-			else {
-				UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-				[navController setNavigationBarHidden:YES];
-				[self presentViewController:navController animated:YES completion:nil];
-			}
-			break;
-	}
-}
+//#pragma mark - ActionSheet Delegates
+//-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+//	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+//	UINavigationController *navigationController;
+//	
+//	NSLog(@"BUTTON:[%d][%d]", buttonIndex, actionSheet.destructiveButtonIndex);
+//	
+//	switch (buttonIndex) {
+//		case 0:
+//			[[Mixpanel sharedInstance] track:@"Vote Wall - Flag"
+//										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+//														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+//			
+//			[voteRequest setDelegate:self];
+//			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
+//			[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+//			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+//			[voteRequest startAsynchronous];
+//			break;
+//		
+//		case 1:
+//			
+//			break;
+//			
+//		case 2:
+//			if (FBSession.activeSession.state == 513)
+//				[HONFacebookCaller postToTimeline:self.challengeVO];
+//			
+//			else {
+//				UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+//				[navController setNavigationBarHidden:YES];
+//				[self presentViewController:navController animated:YES completion:nil];
+//			}
+//			break;
+//	}
+//}
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {

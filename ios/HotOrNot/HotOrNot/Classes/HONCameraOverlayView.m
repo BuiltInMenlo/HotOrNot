@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+
+#import "ASIFormDataRequest.h"
 #import "Mixpanel.h"
 #import "UIImageView+WebCache.h"
 
@@ -13,7 +15,7 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
-@interface HONCameraOverlayView() <UITextFieldDelegate>
+@interface HONCameraOverlayView() <UITextFieldDelegate, ASIHTTPRequestDelegate>
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *footerHolderView;
 @property(nonatomic, strong) UITextField *subjectTextField;
@@ -79,7 +81,7 @@
 		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 		[_subjectTextField setTextColor:[UIColor whiteColor]];
-		[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		//[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = self.subjectName;
@@ -256,7 +258,6 @@
 }
 
 #pragma mark -Navigation
-
 - (void)goBack:(id)sender {
 	self.captureButton.enabled = YES;
 	[self hidePreview];
@@ -290,6 +291,13 @@
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_itunesURL]];
 }
 
+- (void)_goSubjectCheck {
+	ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+	[subjectRequest setDelegate:self];
+	[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	[subjectRequest setPostValue:_subjectName forKey:@"subjectName"];
+	[subjectRequest startAsynchronous];
+}
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
@@ -315,22 +323,39 @@
 	
 	else
 		_subjectName = textField.text;
+	
+	if (_subjectName.length > 0)
+		[self _goSubjectCheck];
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 #pragma mark - Accessors
-
 - (void)setSubjectName:(NSString *)subjectName {
 	_subjectName = subjectName;
 	_subjectTextField.text = _subjectName;
+}
+
+
+
+#pragma mark - ASI Delegates
+-(void)requestFinished:(ASIHTTPRequest *)request {
+	NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	
+	@autoreleasepool {
+		NSError *error = nil;
+		NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+		
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		}
+		
+		else {
+			if ([[subjectResult objectForKey:@"preview_url"] length] > 0) {
+				[self songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
+				[self.delegate playTrack:[subjectResult objectForKey:@"preview_url"]];
+			}
+		}
+	}
 }
 
 @end
