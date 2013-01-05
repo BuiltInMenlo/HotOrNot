@@ -32,6 +32,7 @@
 	if ((self = [super init])) {
 		_challengeVO = vo;
 		
+		[HONAppDelegate toggleViewPushed:YES];
 		self.view.backgroundColor = [UIColor whiteColor];
 		self.voters = [NSMutableArray new];
 		
@@ -66,12 +67,19 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"Voters for %@", _challengeVO.subjectName]];
 	[self.view addSubview:_headerView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:backButton];
+//	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
+//	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
+//	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
+//	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+//	[_headerView addSubview:backButton];
+
+	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cancelButton.frame = CGRectMake(247.0, 0.0, 74.0, 44.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive.png"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active.png"] forState:UIControlStateHighlighted];
+	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:cancelButton];
 	
 	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
@@ -83,8 +91,6 @@
 	self.tableView.scrollsToTop = NO;
 	self.tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:self.tableView];
-	
-	[self _retrieveUsers];
 }
 
 - (void)viewDidLoad {
@@ -102,6 +108,8 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	
+	[self _retrieveUsers];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -110,6 +118,8 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"VOTER_CHALLENGE" object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -119,8 +129,13 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"VOTER_CHALLENGE" object:nil];
 	[self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)_goCancel {
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"VOTER_CHALLENGE" object:nil];
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
 
@@ -218,7 +233,7 @@
 		
 		else {
 			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
+			NSArray *parsedLists = [unsortedList sortedArrayUsingDescriptors:
 											 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
 			
 				_voters = [NSMutableArray new];

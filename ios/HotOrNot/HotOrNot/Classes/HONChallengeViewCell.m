@@ -6,8 +6,10 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONChallengeViewCell.h"
 #import "UIImageView+WebCache.h"
+
+
+#import "HONChallengeViewCell.h"
 #import "HONAppDelegate.h"
 
 @interface HONChallengeViewCell()

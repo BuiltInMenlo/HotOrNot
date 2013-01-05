@@ -265,6 +265,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	} else {
+		[HONAppDelegate toggleViewPushed:NO];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 		self.selectedIndex = tabID;
 	}

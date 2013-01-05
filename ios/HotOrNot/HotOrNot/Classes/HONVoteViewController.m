@@ -73,6 +73,7 @@
 - (id)initWithSubject:(int)subjectID {
 	if ((self = [super init])) {
 		_isPushView = YES;
+		[HONAppDelegate toggleViewPushed:YES];
 		
 		self.subjectID = subjectID;
 		
@@ -256,6 +257,7 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
+	[HONAppDelegate toggleViewPushed:NO];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
@@ -363,7 +365,7 @@
 
 - (void)_voteMore:(NSNotification *)notification {
 	_challengeVO = (HONChallengeVO *)[notification object];
-	
+	[HONAppDelegate toggleViewPushed:YES];
 	[[Mixpanel sharedInstance] track:@"Vote - More"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -413,7 +415,12 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
-	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:vo] animated:YES];
+	
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVotersViewController alloc] initWithChallenge:vo]];
+	[navController setNavigationBarHidden:YES];
+	[self presentViewController:navController animated:YES completion:nil];
+	
+	//[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:vo] animated:YES];
 }
 
 

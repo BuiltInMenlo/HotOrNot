@@ -67,6 +67,8 @@ extern NSString *const FacebookAppID;
 + (BOOL)canPingAPIServer;
 + (BOOL)canPingParseServer;
 
++ (void)toggleViewPushed:(BOOL)isPushed;
+
 + (UIFont *)honHelveticaNeueFontBold;
 + (UIFont *)honHelveticaNeueFontMedium;
 

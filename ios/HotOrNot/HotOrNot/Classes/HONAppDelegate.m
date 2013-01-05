@@ -254,6 +254,11 @@ NSString *const FacebookAppID = @"529054720443694";
 	return (!(parseStatus == NotReachable));
 }
 
++ (void)toggleViewPushed:(BOOL)isPushed {
+	[[NSUserDefaults standardUserDefaults] setObject:(isPushed) ? @"YES" : @"NO" forKey:@"pushed_view"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 
 + (UIFont *)honHelveticaNeueFontBold {
 	return [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0];
@@ -341,7 +346,7 @@ NSString *const FacebookAppID = @"529054720443694";
 
 #pragma mark - Notifications
 - (void)_fbSwitchHidden:(NSNotification *)notification {
-	if ([(NSString *)[notification object] isEqualToString:@"N"])
+	if ([(NSString *)[notification object] isEqualToString:@"N"] && [[[NSUserDefaults standardUserDefaults] objectForKey:@"pushed_view"] isEqualToString:@"NO"])
 		[[[UIApplication sharedApplication] delegate].window addSubview:_facebookSwitchView];
 }
 
@@ -383,6 +388,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	
 	_isFromBackground = NO;
+	
+	[HONAppDelegate toggleViewPushed:NO];
 	
 	NSLog(@"hasNetwork[%d] canPingParseServer[%d]", [HONAppDelegate hasNetwork], [HONAppDelegate canPingParseServer]);
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];

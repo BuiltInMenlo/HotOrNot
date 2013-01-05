@@ -10,12 +10,12 @@
 
 #import "ASIFormDataRequest.h"
 #import "Mixpanel.h"
-
-#import "HONVoteItemViewCell.h"
 #import "UIImageView+WebCache.h"
 
+#import "HONVoteItemViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONVoteHeaderView.h"
+#import "HONVoterVO.h"
 
 
 @interface HONVoteItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate, ASIHTTPRequestDelegate>
@@ -26,6 +26,7 @@
 @property (nonatomic, strong) UITapGestureRecognizer *lSingleTapRecognizer;
 @property (nonatomic, strong) UITapGestureRecognizer *lDoubleTapRecognizer;
 @property (nonatomic, strong) HONVoteHeaderView *headerView;
+@property(nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasChallenger;
 @property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
 @end
@@ -94,7 +95,6 @@
 	return (self);
 }
 
-
 - (id)initAsStartedCell {
 	if ((self = [super init])) {
 		_hasChallenger = YES;
@@ -116,6 +116,16 @@
 	
 	return (self);
 }
+
+
+- (void)_retrieveVoters {
+	ASIFormDataRequest *voterRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
+	[voterRequest setDelegate:self];
+	[voterRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	[voterRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+	[voterRequest startAsynchronous];
+}
+
 
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -361,7 +371,6 @@
 			[_sfxPlayer play];
 			
 			ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
-			[voteRequest setDelegate:self];
 			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 			[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
@@ -410,7 +419,6 @@
 			[_sfxPlayer play];
 			
 			ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
-			[voteRequest setDelegate:self];
 			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 			[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
@@ -429,36 +437,6 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"CHALLENGE_SUB" object:_challengeVO];
 	}
 }
-
-//- (void)_goLeftVote {
-//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-//																				delegate:self
-//																	cancelButtonTitle:@"Cancel"
-//															 destructiveButtonTitle:nil
-//																	otherButtonTitles:
-//											[NSString stringWithFormat:@"Like - %dpts", [HONAppDelegate votePointMultiplier]],
-//											[NSString stringWithFormat:@"Challenge - %dpts", 5],
-//											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
-//	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-//	
-//	[actionSheet setTag:0];
-//	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-//}
-//
-//- (void)_goRightVote {
-//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-//																				delegate:self
-//																	cancelButtonTitle:@"Cancel"
-//															 destructiveButtonTitle:nil
-//																	otherButtonTitles:
-//											[NSString stringWithFormat:@"Like - %dpts", [HONAppDelegate votePointMultiplier]],
-//											[NSString stringWithFormat:@"Challenge - %dpts", 5],
-//											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
-//	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-//	
-//	[actionSheet setTag:1];
-//	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-//}
 
 - (void)_goScore {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:self.challengeVO];
@@ -534,7 +512,6 @@
 				[_sfxPlayer play];
 				
 				voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
-				[voteRequest setDelegate:self];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
@@ -560,7 +537,6 @@
 															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
 				
 				voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-				[voteRequest setDelegate:self];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"pokerID"];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.creatorID] forKey:@"pokeeID"];
@@ -609,7 +585,6 @@
 				[_sfxPlayer play];
 				
 				voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
-				[voteRequest setDelegate:self];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
@@ -635,7 +610,6 @@
 															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
 				
 				voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-				[voteRequest setDelegate:self];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"pokerID"];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengerID] forKey:@"pokeeID"];
@@ -651,7 +625,6 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
 				
-				[voteRequest setDelegate:self];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
 				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
@@ -668,6 +641,39 @@
 		}
 	}
 }
+
+
+#pragma mark - ASI Delegates
+-(void)requestFinished:(ASIHTTPRequest *)request {
+	//NSLog(@"HONVotersItemViewCell [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	
+	
+	@autoreleasepool {
+		NSError *error = nil;
+		if (error != nil)
+			NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
+		
+		else {
+			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+			NSArray *parsedLists = [unsortedList sortedArrayUsingDescriptors:
+											[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+			
+			_voters = [NSMutableArray new];
+			for (NSDictionary *serverList in parsedLists) {
+				HONVoterVO *vo = [HONVoterVO voterWithDictionary:serverList];
+				//NSLog(@"VO:[%d]", vo.userID);
+				
+				if (vo != nil)
+					[_voters addObject:vo];
+			}
+		}
+	}
+}
+
+-(void)requestFailed:(ASIHTTPRequest *)request {
+	NSLog(@"requestFailed:\n[%@]", request.error);
+}
+
 
 @end
 
