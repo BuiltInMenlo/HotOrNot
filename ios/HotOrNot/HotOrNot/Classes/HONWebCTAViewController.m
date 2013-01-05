@@ -22,8 +22,6 @@
 
 @implementation HONWebCTAViewController
 
-@synthesize progressHUD = _progressHUD;
-
 - (id)initWithURL:(NSString *)url andTitle:(NSString *)title {
 	if ((self = [super init])) {
 		[[Mixpanel sharedInstance] track:@"CTA"

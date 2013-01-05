@@ -21,7 +21,6 @@
 
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSMutableArray *friends;
-
 @property (retain, nonatomic) FBFriendPickerViewController *friendPickerController;
 @property (retain, nonatomic) UISearchBar *searchBar;
 @property (retain, nonatomic) NSString *searchText;

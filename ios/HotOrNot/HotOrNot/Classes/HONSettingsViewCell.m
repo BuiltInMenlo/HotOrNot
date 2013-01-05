@@ -19,9 +19,6 @@
 
 @implementation HONSettingsViewCell
 
-@synthesize bgImgView = _bgImgView;
-@synthesize caption = _caption;
-
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }

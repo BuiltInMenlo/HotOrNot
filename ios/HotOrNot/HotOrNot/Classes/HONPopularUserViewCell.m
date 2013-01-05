@@ -19,10 +19,7 @@
 
 @implementation HONPopularUserViewCell
 
-@synthesize userImageView = _userImageView;
-@synthesize usernameLabel = _usernameLabel;
-@synthesize scoreLabel = _scoreLabel;
-@synthesize challengeButton = _challengeButton;
+@synthesize userVO = _userVO;
 
 - (id)initAsMidCell:(int)index {
 	if ((self = [super initAsMidCell:index])) {
@@ -33,21 +30,21 @@
 		indexLabel.text = [NSString stringWithFormat:@"%d.", index];
 		[self addSubview:indexLabel];
 		
-		self.userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(45.0, 10.0, 50.0, 50.0)];
-		self.userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[self addSubview:self.userImageView];
+		_userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(45.0, 10.0, 50.0, 50.0)];
+		_userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		[self addSubview:_userImageView];
 		
-		self.usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(104.0, 19.0, 200.0, 16.0)];
-		self.usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		self.usernameLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		self.usernameLabel.backgroundColor = [UIColor clearColor];
-		[self addSubview:self.usernameLabel];
+		_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(104.0, 19.0, 200.0, 16.0)];
+		_usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		_usernameLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_usernameLabel.backgroundColor = [UIColor clearColor];
+		[self addSubview:_usernameLabel];
 		
-		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(104.0, 36.0, 200.0, 16.0)];
-		self.scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-		self.scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		self.scoreLabel.backgroundColor = [UIColor clearColor];
-		[self addSubview:self.scoreLabel];
+		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(104.0, 36.0, 200.0, 16.0)];
+		_scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+		_scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_scoreLabel.backgroundColor = [UIColor clearColor];
+		[self addSubview:_scoreLabel];
 		
 		_challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
@@ -67,9 +64,9 @@
 - (void)setUserVO:(HONPopularUserVO *)userVO {
 	_userVO = userVO;
 	
-	[self.userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-	self.usernameLabel.text = _userVO.username;
-	self.scoreLabel.text = [NSString stringWithFormat:@"%d points", _userVO.score];
+	[_userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+	_usernameLabel.text = _userVO.username;
+	_scoreLabel.text = [NSString stringWithFormat:@"%d points", _userVO.score];
 	
 	_challengeButton.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 }

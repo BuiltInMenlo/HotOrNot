@@ -15,7 +15,6 @@
 
 
 @interface HONLoginViewController () <ASIHTTPRequestDelegate>
-
 @end
 
 @implementation HONLoginViewController
@@ -157,9 +156,6 @@
 		
 		else {
 			[HONAppDelegate writeUserInfo:userResult];
-			
-			if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TUTORIAL" object:nil];
 		}
 	}
 }

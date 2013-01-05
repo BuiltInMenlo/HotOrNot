@@ -23,7 +23,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONImagePickerViewController () <ASIHTTPRequestDelegate>
+@interface HONImagePickerViewController () <ASIHTTPRequestDelegate, HONCameraOverlayViewDelegate>
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *iTunesPreview;
 @property(nonatomic, strong) NSString *iTunesPreviewURL;
@@ -46,27 +46,14 @@
 
 @implementation HONImagePickerViewController
 
-@synthesize subjectName = _subjectName;
-@synthesize iTunesPreview = _iTunesPreview;
-@synthesize submitAction = _submitAction;
-@synthesize challengeVO = _challengeVO;
-@synthesize progressHUD = _progressHUD;
-@synthesize fbID = _fbID;
-@synthesize challengerID = _challengerID;
-@synthesize challangeImage = _challangeImage;
-@synthesize needsChallenger = _needsChallenger;
-@synthesize isFirstAppearance = _isFirstAppearance;
-@synthesize focusTimer = _focusTimer;
-@synthesize cameraOverlayView = _cameraOverlayView;
-
 - (id)init {
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor blackColor];
-		self.subjectName = [HONAppDelegate rndDefaultSubject];
-		self.iTunesPreview = @"";
-		self.submitAction = 1;
-		self.needsChallenger = YES;
-		self.isFirstAppearance = YES;
+		_subjectName = [HONAppDelegate rndDefaultSubject];
+		_iTunesPreview = @"";
+		_submitAction = 1;
+		_needsChallenger = YES;
+		_isFirstAppearance = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_didShowViewController:)
@@ -83,12 +70,12 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		self.subjectName = [HONAppDelegate rndDefaultSubject];
-		self.iTunesPreview = @"";
-		self.challengerID = userID;
-		self.needsChallenger = NO;
-		self.submitAction = 9;
-		self.isFirstAppearance = YES;
+		_subjectName = [HONAppDelegate rndDefaultSubject];
+		_iTunesPreview = @"";
+		_challengerID = userID;
+		_needsChallenger = NO;
+		_submitAction = 9;
+		_isFirstAppearance = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_didShowViewController:)
@@ -104,19 +91,19 @@
 		[[Mixpanel sharedInstance] track:@"Create Challenge - With User & Hashtag"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		self.needsChallenger = NO;
-		self.subjectName = subject;
-		self.iTunesPreview = @"";
-		self.challengerID = userID;
-		self.submitAction = 9;
-		self.isFirstAppearance = YES;
+		_needsChallenger = NO;
+		_subjectName = subject;
+		_iTunesPreview = @"";
+		_challengerID = userID;
+		_submitAction = 9;
+		_isFirstAppearance = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
 		
-		self.needsChallenger = NO;
+		_needsChallenger = NO;
 	}
 	
 	return (self);
@@ -130,13 +117,13 @@
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
-		self.challengeVO = vo;
-		self.fbID = vo.creatorFB;
-		self.subjectName = vo.subjectName;
-		self.iTunesPreview = vo.itunesPreview;
-		self.submitAction = 4;
-		self.needsChallenger = NO;
-		self.isFirstAppearance = YES;
+		_challengeVO = vo;
+		_fbID = vo.creatorFB;
+		_subjectName = vo.subjectName;
+		_iTunesPreview = vo.itunesPreview;
+		_submitAction = 4;
+		_needsChallenger = NO;
+		_isFirstAppearance = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_didShowViewController:)
@@ -155,11 +142,11 @@
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
-		self.subjectName = subject;
-		self.iTunesPreview = @"";
-		self.submitAction = 1;
-		self.needsChallenger = YES;
-		self.isFirstAppearance = YES;
+		_subjectName = subject;
+		_iTunesPreview = @"";
+		_submitAction = 1;
+		_needsChallenger = YES;
+		_isFirstAppearance = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_didShowViewController:)
@@ -178,11 +165,11 @@
 		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
-		self.subjectName = subject;
-		self.iTunesPreview = @"";
-		self.submitAction = 1;
-		self.needsChallenger = YES;
-		self.isFirstAppearance = YES;
+		_subjectName = subject;
+		_iTunesPreview = @"";
+		_submitAction = 1;
+		_needsChallenger = YES;
+		_isFirstAppearance = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_didShowViewController:)
@@ -268,8 +255,8 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 		
-	if (self.isFirstAppearance) {
-		self.isFirstAppearance = NO;
+	if (_isFirstAppearance) {
+		_isFirstAppearance = NO;
 		
 		if (!_hasPlayedAudio) {
 			_hasPlayedAudio = YES;
@@ -279,8 +266,8 @@
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
 						
-			if (self.subjectName != @"")
-				[_cameraOverlayView setSubjectName:self.subjectName];
+			if (_subjectName != @"")
+				[_cameraOverlayView setSubjectName:_subjectName];
 			
 			_imagePicker = [[UIImagePickerController alloc] init];
 			_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
@@ -317,7 +304,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
 	
-	self.isFirstAppearance = YES;
+	_isFirstAppearance = YES;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -329,11 +316,11 @@
 }
 
 - (void)_playAudio {
-	if (self.subjectName.length > 0) {
+	if (_subjectName.length > 0) {
 		ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 		[subjectRequest setDelegate:self];
 		[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-		[subjectRequest setPostValue:self.subjectName forKey:@"subjectName"];
+		[subjectRequest setPostValue:_subjectName forKey:@"subjectName"];
 		[subjectRequest setTag:1];
 		[subjectRequest startAsynchronous];
 	}
@@ -342,7 +329,7 @@
 - (void)_showOverlay {
 	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_cameraOverlayView.delegate = self;
-	[_cameraOverlayView setSubjectName:self.subjectName];
+	[_cameraOverlayView setSubjectName:_subjectName];
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
 	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
@@ -375,14 +362,15 @@
 }
 
 
-- (void)takePicture {
+#pragma mark - CameraOverlay Delegates
+- (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView {
 	[_focusTimer invalidate];
 	_focusTimer = nil;
 	
 	[_imagePicker takePicture];
 }
 
-- (void)showLibrary {
+- (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Camera Roll Button"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -390,7 +378,7 @@
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
-- (void)changeCamera {
+- (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Switch Camera"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -405,7 +393,7 @@
 	}
 }
 
-- (void)closeCamera {
+- (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
 	[_focusTimer invalidate];
 	_focusTimer = nil;
 	
@@ -422,16 +410,22 @@
 	}];
 }
 
+- (void)cameraOverlayViewClosePreview:(HONCameraOverlayView *)cameraOverlayView {
+	[_cameraOverlayView hidePreview];
+	[self _acceptPhoto];
+}
 
-- (void)playTrack:(NSString *)previewURL {
-	self.iTunesPreview = previewURL;
+
+
+- (void)cameraOverlayViewPlayTrack:(HONCameraOverlayView *)cameraOverlayView audioURL:(NSString *)url {
+	_iTunesPreview = url;
 	
 	if (_mpMoviePlayerController != nil) {
 		[_mpMoviePlayerController stop];
-		[_mpMoviePlayerController setContentURL:[NSURL URLWithString:self.iTunesPreview]];
+		[_mpMoviePlayerController setContentURL:[NSURL URLWithString:_iTunesPreview]];
 	
 	} else {
-		_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:self.iTunesPreview]];
+		_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:_iTunesPreview]];
 		_mpMoviePlayerController.view.hidden = YES;
 		[self.view addSubview:_mpMoviePlayerController.view];
 	}
@@ -446,7 +440,7 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	[_focusTimer invalidate];
 	_focusTimer = nil;
-	self.subjectName = _cameraOverlayView.subjectName;
+	_subjectName = _cameraOverlayView.subjectName;
 	
 	[[Mixpanel sharedInstance] track:@"Take Photo"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -479,26 +473,22 @@
 		[_cameraOverlayView showPreview:image];
 }
 
-- (void)previewBack {
+- (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView {
 }
 
-- (void)closePreview {
-	[_cameraOverlayView hidePreview];
-	[self _acceptPhoto];
-}
 
 - (void)_acceptPhoto {
 	UIImage *image = _challangeImage;
 	
 	[_mpMoviePlayerController stop];
 	
-	if (!self.needsChallenger) {
+	if (!_needsChallenger) {
 		[[Mixpanel sharedInstance] track:@"Submit Challenge"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		if ([self.subjectName length] == 0)
-			self.subjectName = [HONAppDelegate rndDefaultSubject];
+		if ([_subjectName length] == 0)
+			_subjectName = [HONAppDelegate rndDefaultSubject];
 		
 		AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 		
@@ -553,23 +543,23 @@
 			
 			ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 			[submitChallengeRequest setDelegate:self];
-			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.submitAction] forKey:@"action"];
+			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
 			[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", filename] forKey:@"imgURL"];
 			
-			if (self.submitAction == 1)
-				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
+			if (_submitAction == 1)
+				[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
 			
-			else if (self.submitAction == 4) {
-				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+			else if (_submitAction == 4) {
+				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
 			
-			} else if (self.submitAction == 8) {
-				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
-				[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
+			} else if (_submitAction == 8) {
+				[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
+				[submitChallengeRequest setPostValue:_fbID forKey:@"fbID"];
 			
-			} else if (self.submitAction == 9) {
-				[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
-				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengerID] forKey:@"challengerID"];
+			} else if (_submitAction == 9) {
+				[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
+				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
 			}
 			
 			[submitChallengeRequest setTag:0];
@@ -648,7 +638,7 @@
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 				[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
-				[HONFacebookCaller postToFriendTimeline:self.fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
+				[HONFacebookCaller postToFriendTimeline:_fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
@@ -667,14 +657,14 @@
 			}
 			
 			else {
-				self.iTunesPreview = [subjectResult objectForKey:@"preview_url"];
+				_iTunesPreview = [subjectResult objectForKey:@"preview_url"];
 				_iTunesPreviewURL = [subjectResult objectForKey:@"itunes_id"];
 				
-				if (self.iTunesPreview.length > 0) {
+				if (_iTunesPreview.length > 0) {
 					[_cameraOverlayView songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
 					
 					//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
-					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:self.iTunesPreview]];
+					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:_iTunesPreview]];
 					_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
 					_mpMoviePlayerController.view.hidden = YES;
 					[self.view addSubview:_mpMoviePlayerController.view];

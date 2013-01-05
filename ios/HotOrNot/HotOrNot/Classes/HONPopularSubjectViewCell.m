@@ -16,8 +16,7 @@
 
 @implementation HONPopularSubjectViewCell
 
-@synthesize subjectLabel = _subjectLabel;
-@synthesize scoreLabel = _scoreLabel;
+@synthesize subjectVO = _subjectVO;
 
 - (id)initAsMidCell:(int)index {
 	if ((self = [super initAsMidCell:index])) {
@@ -25,17 +24,17 @@
 		bgImgView.image = [UIImage imageNamed:@"blankRowBackground_nonActive.png"];
 		[self addSubview:bgImgView];
 		
-		self.subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 19.0, 200.0, 16.0)];
-		self.subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		self.subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		self.subjectLabel.backgroundColor = [UIColor clearColor];
-		[self addSubview:self.subjectLabel];
+		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 19.0, 200.0, 16.0)];
+		_subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		_subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_subjectLabel.backgroundColor = [UIColor clearColor];
+		[self addSubview:_subjectLabel];
 		
-		self.scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 36.0, 200.0, 16.0)];
-		self.scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-		self.scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		self.scoreLabel.backgroundColor = [UIColor clearColor];
-		[self addSubview:self.scoreLabel];
+		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 36.0, 200.0, 16.0)];
+		_scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+		_scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_scoreLabel.backgroundColor = [UIColor clearColor];
+		[self addSubview:_scoreLabel];
 		
 		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
@@ -55,13 +54,13 @@
 - (void)setSubjectVO:(HONPopularSubjectVO *)subjectVO {
 	_subjectVO = subjectVO;
 	
-	self.subjectLabel.text = _subjectVO.subjectName;
+	_subjectLabel.text = _subjectVO.subjectName;
 	
 	if (_subjectVO.score == 1)
-		self.scoreLabel.text = @"1 challenge";
+		_scoreLabel.text = @"1 challenge";
 	
 	else
-		self.scoreLabel.text = [NSString stringWithFormat:@"%d challenges", _subjectVO.score];
+		_scoreLabel.text = [NSString stringWithFormat:@"%d challenges", _subjectVO.score];
 }
 
 - (void)_goChallenge {

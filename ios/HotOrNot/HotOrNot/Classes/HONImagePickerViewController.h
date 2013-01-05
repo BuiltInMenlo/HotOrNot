@@ -18,11 +18,4 @@
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 - (id)initAsDailyChallenge:(NSString *)subject;
 
-- (void)showLibrary;
-- (void)takePicture;
-- (void)closeCamera;
-- (void)changeCamera;
-- (void)closePreview;
-- (void)previewBack;
-- (void)playTrack:(NSString *)previewURL;
 @end

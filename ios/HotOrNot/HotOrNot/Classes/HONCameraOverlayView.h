@@ -9,19 +9,26 @@
 #import <UIKit/UIKit.h>
 #import "HONImagePickerViewController.h"
 
+@protocol HONCameraOverlayViewDelegate;
 @interface HONCameraOverlayView : UIView
 
 - (void)hidePreview;
 - (void)showPreview:(UIImage *)image;
 - (void)songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL;
 
-@property (nonatomic, weak) HONImagePickerViewController *delegate;
-@property (nonatomic, weak) UIButton *captureButton;
-@property (nonatomic, weak) UIButton *flashButton;
-@property (nonatomic, weak) UIButton *changeCameraButton;
-@property (nonatomic, weak) UIButton *cameraRollButton;
-@property (nonatomic, weak) UIButton *nextButton;
-@property (nonatomic, weak) UIButton *backButton;
+@property(nonatomic, assign) id <HONCameraOverlayViewDelegate> delegate;
 @property (nonatomic, weak) NSString *subjectName;
 
+@end
+
+@protocol HONCameraOverlayViewDelegate
+- (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewClosePreview:(HONCameraOverlayView *)cameraOverlayView;
+@optional
+- (void)cameraOverlayViewChangeFlash:(HONCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewPlayTrack:(HONCameraOverlayView *)cameraOverlayView audioURL:(NSString *)url;
 @end

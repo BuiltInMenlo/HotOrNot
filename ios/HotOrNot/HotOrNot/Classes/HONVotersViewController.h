@@ -11,7 +11,5 @@
 #import "HONChallengeVO.h"
 
 @interface HONVotersViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-
 - (id)initWithChallenge:(HONChallengeVO *)vo;
-
 @end

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C067D121698BF3A004B99BB /* HONChallengeTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */; };
 		4C0C406B162BCCC0007F0DA3 /* cancelButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */; };
 		4C0C406C162BCCC0007F0DA3 /* cancelButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */; };
 		4C0C406D162BCCC0007F0DA3 /* cancelButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */; };
@@ -283,9 +284,7 @@
 		4CAAED6F161CBCB5005AB2E1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CAAED6E161CBCB5005AB2E1 /* Default-568h@2x.png */; };
 		4CAAED8B161CBD65005AB2E1 /* footerBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CAAED89161CBD65005AB2E1 /* footerBackground.png */; };
 		4CAAED8C161CBD65005AB2E1 /* footerBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CAAED8A161CBD65005AB2E1 /* footerBackground@2x.png */; };
-		4CAAEDA3161CE023005AB2E1 /* HONVoteHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAEDA2161CE023005AB2E1 /* HONVoteHeaderView.m */; };
 		4CAAEDAA161E069D005AB2E1 /* HONTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */; };
-		4CAAEDB1161E3A26005AB2E1 /* HONPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAEDB0161E3A26005AB2E1 /* HONPhotoViewController.m */; };
 		4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */; };
 		4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9609167D676C0036E849 /* HONVoterViewCell.m */; };
 		4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF960C167D68B40036E849 /* HONVoterVO.m */; };
@@ -365,6 +364,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C067D101698BF3A004B99BB /* HONChallengeTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeTableHeaderView.h; sourceTree = "<group>"; };
+		4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeTableHeaderView.m; sourceTree = "<group>"; };
 		4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_Active.png; sourceTree = "<group>"; };
 		4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancelButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_nonActive.png; sourceTree = "<group>"; };
@@ -799,12 +800,8 @@
 		4CAAED6E161CBCB5005AB2E1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		4CAAED89161CBD65005AB2E1 /* footerBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = footerBackground.png; sourceTree = "<group>"; };
 		4CAAED8A161CBD65005AB2E1 /* footerBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "footerBackground@2x.png"; sourceTree = "<group>"; };
-		4CAAEDA1161CE023005AB2E1 /* HONVoteHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteHeaderView.h; sourceTree = "<group>"; };
-		4CAAEDA2161CE023005AB2E1 /* HONVoteHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteHeaderView.m; sourceTree = "<group>"; };
 		4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTabBarController.h; sourceTree = "<group>"; };
 		4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTabBarController.m; sourceTree = "<group>"; };
-		4CAAEDAF161E3A26005AB2E1 /* HONPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPhotoViewController.h; sourceTree = "<group>"; };
-		4CAAEDB0161E3A26005AB2E1 /* HONPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPhotoViewController.m; sourceTree = "<group>"; };
 		4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVotersViewController.h; sourceTree = "<group>"; };
 		4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVotersViewController.m; sourceTree = "<group>"; };
 		4CAF9608167D676C0036E849 /* HONVoterViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoterViewCell.h; sourceTree = "<group>"; };
@@ -1005,8 +1002,6 @@
 				4C32B9A715FABBE80023A0EE /* HONVoteItemViewCell.m */,
 				4C62673E15F96E5600AA7FCE /* HONVoteViewController.h */,
 				4C62673F15F96E5600AA7FCE /* HONVoteViewController.m */,
-				4CAAEDA1161CE023005AB2E1 /* HONVoteHeaderView.h */,
-				4CAAEDA2161CE023005AB2E1 /* HONVoteHeaderView.m */,
 				4CAF9608167D676C0036E849 /* HONVoterViewCell.h */,
 				4CAF9609167D676C0036E849 /* HONVoterViewCell.m */,
 				4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */,
@@ -1494,8 +1489,6 @@
 				4CE52264160E3510005F2ADC /* HONLoginViewController.m */,
 				4CE5226E160E4E1E005F2ADC /* HONFacebookCaller.h */,
 				4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */,
-				4CAAEDAF161E3A26005AB2E1 /* HONPhotoViewController.h */,
-				4CAAEDB0161E3A26005AB2E1 /* HONPhotoViewController.m */,
 				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
 				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
 				4C516435167EC39D00EB3C09 /* HONFacebookSwitchView.h */,
@@ -1504,6 +1497,8 @@
 				4CB472F4168C176D007153DF /* HONWebCTAViewController.m */,
 				4CB472F7168C26AB007153DF /* HONInviteFriendsViewController.h */,
 				4CB472F8168C26AC007153DF /* HONInviteFriendsViewController.m */,
+				4C067D101698BF3A004B99BB /* HONChallengeTableHeaderView.h */,
+				4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */,
 			);
 			name = Root;
 			sourceTree = "<group>";
@@ -2360,9 +2355,7 @@
 				4C7341921616C078001F9F11 /* HONPrivacyViewController.m in Sources */,
 				4C7341961616C08B001F9F11 /* HONAboutViewController.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
-				4CAAEDA3161CE023005AB2E1 /* HONVoteHeaderView.m in Sources */,
 				4CAAEDAA161E069D005AB2E1 /* HONTabBarController.m in Sources */,
-				4CAAEDB1161E3A26005AB2E1 /* HONPhotoViewController.m in Sources */,
 				4C51173D1623A20D00370D3A /* MPCJSONDataSerializer.m in Sources */,
 				4C51173E1623A20D00370D3A /* MPCJSONSerializer.m in Sources */,
 				4C51173F1623A20D00370D3A /* MPCSerializedJSONData.m in Sources */,
@@ -2381,6 +2374,7 @@
 				4CB472F5168C176D007153DF /* HONWebCTAViewController.m in Sources */,
 				4CB472F9168C26AC007153DF /* HONInviteFriendsViewController.m in Sources */,
 				4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */,
+				4C067D121698BF3A004B99BB /* HONChallengeTableHeaderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -20,8 +20,6 @@
 
 @implementation HONPrivacyViewController
 
-@synthesize progressHUD = _progressHUD;
-
 - (id)init {
 	if ((self = [super init])) {
 		[[Mixpanel sharedInstance] track:@"Privacy Policy"

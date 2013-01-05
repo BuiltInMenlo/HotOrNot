@@ -25,6 +25,7 @@
 #import "HONHeaderView.h"
 #import "HONFacebookCaller.h"
 #import "HONChallengePreviewViewController.h"
+#import "HONChallengeTableHeaderView.h"
 
 
 @interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, ASIHTTPRequestDelegate, TapForTapAdViewDelegate>
@@ -33,7 +34,6 @@
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic) BOOL isFirstRun;
 @property(nonatomic) BOOL isMoreLoading;
-@property(nonatomic, strong) UIImageView *tutorialOverlayImgView;
 @property(nonatomic, strong) NSDate *lastDate;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) NSIndexPath *idxPath;
@@ -49,22 +49,11 @@
 
 @implementation HONChallengesViewController
 
-@synthesize tableView = _tableView;
-@synthesize challenges = _challenges;
-@synthesize isFirstRun = _isFirstRun;
-@synthesize tutorialOverlayImgView = _tutorialOverlayImgView;
-@synthesize lastDate = _lastDate;
-@synthesize challengeVO = _challengeVO;
-@synthesize idxPath = _idxPath;
-@synthesize refreshButton = _refreshButton;
-@synthesize headerView = _headerView;
-@synthesize isMoreLoading = _isMoreLoading;
-
 - (id)init {
 	if ((self = [super init])) {
-		//self.tabBarItem.image = [UIImage imageNamed:@"tab01_nonActive"];
-		self.challenges = [NSMutableArray array];
-		self.isFirstRun = YES;
+		//_tabBarItem.image = [UIImage imageNamed:@"tab01_nonActive"];
+		_challenges = [NSMutableArray array];
+		_isFirstRun = YES;
 		_blockCounter = 0;
 		
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPreview:) name:@"SHOW_PREVIEW" object:nil];
@@ -74,7 +63,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dailyChallenge:) name:@"DAILY_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
 	}
 	
 	return (self);
@@ -123,16 +111,16 @@
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
-	[self.tableView setBackgroundColor:[UIColor clearColor]];
-	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	self.tableView.rowHeight = 70.0;
-	self.tableView.delegate = self;
-	self.tableView.dataSource = self;
-	self.tableView.userInteractionEnabled = YES;
-	self.tableView.scrollsToTop = NO;
-	self.tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:self.tableView];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.rowHeight = 70.0;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.userInteractionEnabled = YES;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[self.view addSubview:_tableView];
 	
 	[self _retrieveChallenges];
 	[self _retrieveUser];
@@ -281,38 +269,6 @@
 	_progressHUD.taskInProgress = YES;
 }
 
-- (void)_goTutorialCancel {
-	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-	boot_total++;
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	_tutorialOverlayImgView.hidden = YES;
-	[_tutorialOverlayImgView removeFromSuperview];
-	
-	[self _retrieveChallenges];
-	[self _retrieveUser];
-}
-
-- (void)_goTutorialClose {
-	[[Mixpanel sharedInstance] track:@"Tutorial Challenge Button"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-	boot_total++;
-	
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-	_tutorialOverlayImgView.hidden = YES;
-	[_tutorialOverlayImgView removeFromSuperview];
-	
-	[self _retrieveChallenges];
-	[self _retrieveUser];
-	[self _goCreateChallenge];
-}
 
 #pragma mark - Notifications
 - (void)_acceptChallenge:(NSNotification *)notification {
@@ -372,7 +328,7 @@
 	[nextChallengesRequest setDelegate:self];
 	[nextChallengesRequest setPostValue:[NSString stringWithFormat:@"%d", 12] forKey:@"action"];
 	[nextChallengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[nextChallengesRequest setPostValue:[dateFormat stringFromDate:self.lastDate] forKey:@"datetime"];
+	[nextChallengesRequest setPostValue:[dateFormat stringFromDate:_lastDate] forKey:@"datetime"];
 	[nextChallengesRequest setTag:2];
 	[nextChallengesRequest startAsynchronous];
 }
@@ -383,51 +339,10 @@
 	[self _retrieveUser];
 }
 
-- (void)_showTutorial:(NSNotification *)notification {
-	NSString *buttonImage;// = [NSString stringWithFormat:@"tutorial_00%d.png", ((arc4random() % 4) + 1)];
-	
-	int ind = (arc4random() % 4) + 1;
-	[[Mixpanel sharedInstance] track:@"Tutorial"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d", ind], @"index", nil]];
-	
-	
-	if ([HONAppDelegate isRetina5])
-		buttonImage = [NSString stringWithFormat:@"tutorial_00%d-568h.png", ind];
-	
-	else
-		buttonImage = [NSString stringWithFormat:@"tutorial_00%d.png", ind];
-	
-	_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, ([HONAppDelegate isRetina5]) ? 558.0 : 470.0)];
-	_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
-	_tutorialOverlayImgView.userInteractionEnabled = YES;
-	[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
-	
-	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = _tutorialOverlayImgView.frame;
-	[closeTutorialButton addTarget:self action:@selector(_goTutorialCancel) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialOverlayImgView addSubview:closeTutorialButton];
-	
-	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(0.0, 55.0, 320.0, 78.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButtonClear.png"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButtonClear_active.png"] forState:UIControlStateHighlighted];
-	[createChallengeButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialOverlayImgView addSubview:createChallengeButton];
-	
-	UIButton *createChallenge2Button = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallenge2Button.frame = CGRectMake(128.0, _tutorialOverlayImgView.frame.size.height - 48.0, 64.0, 48.0);
-	[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive.png"] forState:UIControlStateNormal];
-	[createChallenge2Button setBackgroundImage:[UIImage imageNamed:@"tabbar_003_active.png"] forState:UIControlStateHighlighted];
-	[createChallenge2Button addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialOverlayImgView addSubview:createChallenge2Button];
-}
-
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([self.challenges count] + 2);
+	return ([_challenges count] + 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -435,21 +350,9 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
-	
-	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(0.0, 0.0, 160.0, 78.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
-	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:createChallengeButton];
-	
-	UIButton *inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteFriendsButton.frame = CGRectMake(160.0, 0.0, 160.0, 78.0);
-	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
-	[inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:inviteFriendsButton];
+	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+	[headerView.dailyChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	return (headerView);
 }
@@ -458,19 +361,21 @@
 	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 
 	if (cell == nil) {
-		if (indexPath.row == 0) {
-			int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-			cell = [[HONChallengeViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
-		
-		}else if (indexPath.row == [_challenges count] + 1)
+//		if (indexPath.row == 0) {
+//			int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+//			cell = [[HONChallengeViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
+//		
+//		} else if (indexPath.row == [_challenges count] + 1)
+		if (indexPath.row == [_challenges count])
 			cell = [[HONChallengeViewCell alloc] initAsBottomCell:_isMoreLoading];
 				
 		else
 			cell = [[HONChallengeViewCell alloc] initAsChallengeCell];
 	}
 	
-	if (indexPath.row > 0 && indexPath.row < [_challenges count] + 1)
-		cell.challengeVO = [_challenges objectAtIndex:indexPath.row - 1];
+	if (indexPath.row < [_challenges count])
+	//if (indexPath.row > 0 && indexPath.row < [_challenges count] + 1)
+		cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
@@ -480,11 +385,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == 0)
-		return (55.0);
-	
-	else
-		return (70.0);
+	return (70.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -492,9 +393,9 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row < [_challenges count] + 1) {
+	if (indexPath.row < [_challenges count]) {
 		
-		HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
+		HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row];
 		if ([vo.status isEqualToString:@"Created"] || [vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"])
 			return (indexPath);
 		
@@ -508,8 +409,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
-	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row - 1];
-	self.challengeVO = vo;
+	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row];
+	_challengeVO = vo;
 	
 	NSLog(@"STATUS:[%@]", vo.status);
 	if ([vo.status isEqualToString:@"Created"]) {
@@ -539,13 +440,14 @@
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
 	// Return YES if you want the specified item to be editable.
 	
-	return (indexPath.row > 0 && indexPath.row < [_challenges count] + 1);
+	//return (indexPath.row > 0 && indexPath.row < [_challenges count] + 1);
+	return (indexPath.row < [_challenges count]);
 }
 
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		self.idxPath = indexPath;
+		_idxPath = indexPath;
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete Challenge"
 																		message:@"Do you want to report abuse?"
@@ -570,12 +472,12 @@
 		[[Mixpanel sharedInstance] track:@"Challenge Wall - Delete"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+													 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
-		vo = (HONChallengeVO *)[_challenges objectAtIndex:self.idxPath.row - 1];
+		vo = (HONChallengeVO *)[_challenges objectAtIndex:_idxPath.row];
 		
-		[self.challenges removeObjectAtIndex:self.idxPath.row - 1];
-		[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:self.idxPath] withRowAnimation:UITableViewRowAnimationFade];
+		[_challenges removeObjectAtIndex:_idxPath.row];
+		[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 		
 		challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
@@ -587,12 +489,12 @@
 				[[Mixpanel sharedInstance] track:@"Challenge Wall - Flag"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 				
 				ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
 				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", self.challengeVO.challengeID] forKey:@"challengeID"];
+				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
 				[voteRequest startAsynchronous];
 				break;
 		}
@@ -631,7 +533,7 @@
 				if ([parsedLists count] == 0)
 					_isMoreLoading = NO;
 				
-				self.lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
+				_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
 				[_tableView reloadData];
 			}
 		}
@@ -675,7 +577,7 @@
 				if ([parsedLists count] % 10 != 0)
 					_isMoreLoading = NO;
 				
-				self.lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
+				_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
 				[_tableView reloadData];
 			}
 		}

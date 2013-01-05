@@ -547,7 +547,6 @@ NSString *const FacebookAppID = @"529054720443694";
 			
 			if (![self openSession]) {
 				self.loginViewController = [[HONLoginViewController alloc] init];
-				//[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
 				
 				_loginAlertView = [[UIAlertView alloc] initWithTitle:@"Username"
 																			message:@"Login to Facebook to see your friends or change your username."
@@ -557,11 +556,10 @@ NSString *const FacebookAppID = @"529054720443694";
 				[_loginAlertView show];
 			}
 			
-			NSLog(@"[FBSession.activeSession] (%d)", FBSession.activeSession.state);
-			
 			_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
 			[self.window addSubview:_facebookSwitchView];
-		
+			
+					
 		} else {
 			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bad Network Connection"
 																			message:@"Could not connect to PicChallenge servers, please try again."

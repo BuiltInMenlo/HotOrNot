@@ -26,14 +26,9 @@
 
 @implementation HONResultsViewController
 
-@synthesize challenges = _challenges;
-@synthesize winTotal = _winTotal;
-@synthesize lossTotal = _lossTotal;
-
-
 - (id)init {
 	if ((self = [super init])) {
-		self.challenges = [NSArray array];
+		_challenges = [NSArray array];
 		
 		_winTotal = 0;
 		_lossTotal = 0;
@@ -46,7 +41,7 @@
 
 - (id)initWithChallenges:(NSArray *)challengeList {
 	if ((self = [super init])) {
-		self.challenges = [challengeList copy];
+		_challenges = [challengeList copy];
 		
 		_winTotal = 0;
 		_lossTotal = 0;
@@ -77,15 +72,15 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:doneButton];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 65.0) style:UITableViewStylePlain];
-	[self.tableView setBackgroundColor:[UIColor clearColor]];
-	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	self.tableView.delegate = self;
-	self.tableView.dataSource = self;
-	self.tableView.userInteractionEnabled = YES;
-	self.tableView.scrollsToTop = NO;
-	self.tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:self.tableView];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 65.0) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.userInteractionEnabled = YES;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[self.view addSubview:_tableView];
 		
 	ASIFormDataRequest *challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 	[challengeRequest setDelegate:self];

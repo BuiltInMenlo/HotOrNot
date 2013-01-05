@@ -39,28 +39,14 @@
 @property(nonatomic, strong) UIButton *loginFriendsButton;
 @property(nonatomic, strong) UITextField *usernameTextField;
 @property(nonatomic) BOOL isFlipped;
-
 @property (retain, nonatomic) FBFriendPickerViewController *friendPickerController;
 @property (retain, nonatomic) UISearchBar *searchBar;
 @property (retain, nonatomic) NSString *searchText;
 @property (retain, nonatomic) NSMutableArray *friends;
 @property (nonatomic, retain) HONHeaderView *friendPickerHeaderView;
-
-//@property(nonatomic, strong) NSString *rndSubject;
 @end
 
 @implementation HONChallengerPickerViewController
-
-@synthesize subjectName = _subjectName;
-@synthesize challengerID = _challengerID;
-@synthesize progressHUD = _progressHUD;
-@synthesize fbID = _fbID;
-@synthesize fbName = _fbName;
-@synthesize challengeImage = _challengeImage;
-@synthesize filename = _filename;
-@synthesize subjectTextField = _subjectTextField;
-@synthesize editButton = _editButton;
-
 
 @synthesize friendPickerController = _friendPickerController;
 @synthesize searchBar = _searchBar;
@@ -90,10 +76,10 @@
 - (id)initWithImage:(UIImage *)img subjectName:(NSString *)subject{
 	if ((self = [super init])) {
 		NSLog(@"initWithImage:[%f, %f]", img.size.width, img.size.height);
-		self.isFlipped = NO;
+		_isFlipped = NO;
 		self.view.backgroundColor = [UIColor blackColor];
-		self.challengeImage = img;
-		self.subjectName = subject;
+		_challengeImage = img;
+		_subjectName = subject;
 				
 		[[Mixpanel sharedInstance] track:@"Pick Challenger"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -111,10 +97,10 @@
 - (id)initWithFlippedImage:(UIImage *)img subjectName:(NSString *)subject {
 	if ((self = [super init])) {
 		NSLog(@"initWithFlippedImage:[%f, %f]", img.size.width, img.size.height);
-		self.isFlipped = YES;
+		_isFlipped = YES;
 		self.view.backgroundColor = [UIColor blackColor];
-		self.challengeImage = img;
-		self.subjectName = subject;
+		_challengeImage = img;
+		_subjectName = subject;
 		
 		[[Mixpanel sharedInstance] track:@"Pick Challenger"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -157,7 +143,7 @@
 	[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
-	_subjectTextField.text = self.subjectName;
+	_subjectTextField.text = _subjectName;
 	_subjectTextField.delegate = self;
 	[_subjectTextField setTag:0];
 	[self.view addSubview:_subjectTextField];
@@ -215,22 +201,22 @@
 	[super viewDidAppear:animated];
 
 	//UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 75.0, 200.0, 266.0)];
-	//imgView.image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
+	//imgView.image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
 	
 	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 117.0, 200.0, 200.0)];
 	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
+	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
 	[_imgHolderView addSubview:imgView];
 	
-	if (self.isFlipped)
+	if (_isFlipped)
 		imgView.image = [UIImage imageWithCGImage:imgView.image.CGImage scale:1.0 orientation:UIImageOrientationUpMirrored];
 	
 	UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 200.0, 200.0)];
 	watermarkImgView.image = [UIImage imageNamed:@"512x512_cameraOverlay.png"];
 	//[imgView addSubview:watermarkImgView];
 	
-	_subjectTextField.text = self.subjectName;
-	//NSLog(@"IMAGE:[%f, %f]", self.challengeImage.size.width, self.challengeImage.size.height);
+	_subjectTextField.text = _subjectName;
+	//NSLog(@"IMAGE:[%f, %f]", _challengeImage.size.width, _challengeImage.size.height);
 }
 
 
@@ -269,8 +255,8 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
-	self.fbName = _usernameTextField.text;
+	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	_fbName = _usernameTextField.text;
 	[self _goUsernameChallenge];
 }
 
@@ -293,14 +279,14 @@
 }
 
 - (void)_goFriendChallenge {
-	//NSData *imageData = UIImageJPEGRepresentation(self.image, kJPEGCompress);
+	//NSData *imageData = UIImageJPEGRepresentation(_image, kJPEGCompress);
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
 		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
-		//canvasView.image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
+		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+		//canvasView.image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
 		
 //		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
 //		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
@@ -312,10 +298,10 @@
 		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
 		UIGraphicsEndImageContext();
 		
-		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		
-		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
+		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -323,32 +309,32 @@
 		_progressHUD.taskInProgress = YES;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
 		[s3 putObject:por1];
 				
-		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
 		por3.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
 		[s3 putObject:por3];
 		
-		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por4.contentType = @"image/jpeg";
 		por4.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
 		[s3 putObject:por4];
 		
-		if ([self.subjectName length] == 0)
-			self.subjectName = [HONAppDelegate rndDefaultSubject];
+		if ([_subjectName length] == 0)
+			_subjectName = [HONAppDelegate rndDefaultSubject];
 		
 		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 		[submitChallengeRequest setDelegate:self];
 		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 8] forKey:@"action"];
 		[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename] forKey:@"imgURL"];
-		[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
-		[submitChallengeRequest setPostValue:self.fbID forKey:@"fbID"];
-		[submitChallengeRequest setPostValue:self.fbName forKey:@"fbName"];
+		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+		[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
+		[submitChallengeRequest setPostValue:_fbID forKey:@"fbID"];
+		[submitChallengeRequest setPostValue:_fbName forKey:@"fbName"];
 		[submitChallengeRequest startAsynchronous];
 		
 	} @catch (AmazonClientException *exception) {
@@ -367,13 +353,13 @@
 }
 
 - (void)_goUsernameChallenge {
-	//NSData *imageData = UIImageJPEGRepresentation(self.image, kJPEGCompress);
+	//NSData *imageData = UIImageJPEGRepresentation(_image, kJPEGCompress);
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
 		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 		
 //		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
 //		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
@@ -385,10 +371,10 @@
 		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
 		UIGraphicsEndImageContext();
 		
-		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		
-		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
+		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
 		_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -396,31 +382,31 @@
 		_progressHUD.taskInProgress = YES;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
 		[s3 putObject:por1];
 		
-		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
 		por3.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
 		[s3 putObject:por3];
 		
-		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por4.contentType = @"image/jpeg";
 		por4.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
 		[s3 putObject:por4];
 		
-		if ([self.subjectName length] == 0)
-			self.subjectName = [HONAppDelegate rndDefaultSubject];
+		if ([_subjectName length] == 0)
+			_subjectName = [HONAppDelegate rndDefaultSubject];
 		
 		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
 		[submitChallengeRequest setDelegate:self];
 		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
 		[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename] forKey:@"imgURL"];
-		[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
-		[submitChallengeRequest setPostValue:self.fbName forKey:@"username"];
+		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+		[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
+		[submitChallengeRequest setPostValue:_fbName forKey:@"username"];
 		[submitChallengeRequest startAsynchronous];
 		
 	} @catch (AmazonClientException *exception) {
@@ -444,19 +430,19 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	//NSData *imageData = UIImageJPEGRepresentation(self.image, kJPEGCompress);
+	//NSData *imageData = UIImageJPEGRepresentation(_image, kJPEGCompress);
 	
-	if ([self.subjectName length] == 0)
-		self.subjectName = [HONAppDelegate rndDefaultSubject];
+	if ([_subjectName length] == 0)
+		_subjectName = [HONAppDelegate rndDefaultSubject];
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
-	self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
-	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename);
+	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 	
 	@try {
 		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 		
 //		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
 //		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
@@ -468,8 +454,8 @@
 		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
 		UIGraphicsEndImageContext();
 		
-		UIImage *mImage = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:self.challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
@@ -478,17 +464,17 @@
 		_progressHUD.taskInProgress = YES;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
 		[s3 putObject:por1];
 				
-		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
 		por3.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
 		[s3 putObject:por3];
 		
-		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", self.filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por4.contentType = @"image/jpeg";
 		por4.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
 		[s3 putObject:por4];
@@ -497,8 +483,8 @@
 		[submitChallengeRequest setDelegate:self];
 		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
 		[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", self.filename] forKey:@"imgURL"];
-		[submitChallengeRequest setPostValue:self.subjectName forKey:@"subject"];
+		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+		[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
 		[submitChallengeRequest startAsynchronous];
 		
 	} @catch (AmazonClientException *exception) {
@@ -632,9 +618,9 @@
 		[self handlePickerDone];
 	} else {
 	
-		self.filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
-		self.fbID = [[self.friendPickerController.selection lastObject] objectForKey:@"id"];
-		self.fbName = [[self.friendPickerController.selection lastObject] objectForKey:@"username"];
+		_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+		_fbID = [[self.friendPickerController.selection lastObject] objectForKey:@"id"];
+		_fbName = [[self.friendPickerController.selection lastObject] objectForKey:@"username"];
 		NSLog(@"FRIEND:[%@]", [self.friendPickerController.selection lastObject]);
 		
 		[self handlePickerDone];
@@ -713,17 +699,17 @@
 		_editButton.hidden = NO;
 		
 		if ([textField.text length] == 0)
-			textField.text = self.subjectName;
+			textField.text = _subjectName;
 		
 		else
-			self.subjectName = textField.text;
+			_subjectName = textField.text;
 	
 	} else if (textField.tag == 1) {
 		if ([textField.text length] == 0)
 			textField.text = @"Enter a username…";
 		
 		else
-			self.fbName = textField.text;
+			_fbName = textField.text;
 	}
 }
 
@@ -759,7 +745,7 @@
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 				
 				if (vo.statusID == 7)
-					[HONFacebookCaller sendAppRequestToUser:self.fbID];
+					[HONFacebookCaller sendAppRequestToUser:_fbID];
 				
 				
 				if (vo.statusID == 4) {
@@ -772,12 +758,12 @@
 					_progressHUD = nil;
 				}
 				
-				if ([self.fbID length] > 0) {
+				if ([_fbID length] > 0) {
 					if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"invite"] isEqualToString:@"Y"])
-						[HONFacebookCaller sendAppRequestToUser:self.fbID challenge:vo];
+						[HONFacebookCaller sendAppRequestToUser:_fbID challenge:vo];
 					
 					if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"friend_wall"] isEqualToString:@"Y"])
-						[HONFacebookCaller postToFriendTimeline:self.fbID challenge:vo];
+						[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
 				}
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){

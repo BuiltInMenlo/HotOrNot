@@ -18,30 +18,24 @@
 @interface HONCameraOverlayView() <UITextFieldDelegate, ASIHTTPRequestDelegate>
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *footerHolderView;
-@property(nonatomic, strong) UITextField *subjectTextField;
+@property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIImageView *albumImageView;
 @property (nonatomic, strong) UIButton *buyTrackButton;
-@property(nonatomic, strong) UIButton *editButton;
+@property (nonatomic, strong) UIButton *editButton;
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *itunesURL;
-@property(nonatomic) CGSize gutterSize;
+@property (nonatomic, strong) UIButton *captureButton;
+@property (nonatomic) CGSize gutterSize;
 @end
 
 @implementation HONCameraOverlayView
 
-@synthesize delegate, flashButton, captureButton, cameraRollButton;
-@synthesize previewHolderView = _previewHolderView;
-@synthesize footerHolderView = _footerHolderView;
-@synthesize subjectTextField = _subjectTextField;
-@synthesize editButton = _editButton;
-@synthesize nextButton = _nextButton;
-@synthesize backButton = _backButton;
 @synthesize subjectName = _subjectName;
+
+@synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame {
 	if (self = [super initWithFrame:frame]) {
-		self.opaque = NO;
-		
 		int photoSize = 250.0;
 		_gutterSize = CGSizeMake((320.0 - photoSize) * 0.5, (self.frame.size.height - photoSize) * 0.5);
 		
@@ -84,7 +78,7 @@
 		//[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
-		_subjectTextField.text = self.subjectName;
+		_subjectTextField.text = _subjectName;
 		_subjectTextField.delegate = self;
 		[self addSubview:_subjectTextField];
 		
@@ -114,21 +108,21 @@
 		
 //		UIImage *buttonImageNormal;
 //		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {
-//			self.flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			self.flashButton.frame = CGRectMake(10, 30, 57.5, 57.5);
+//			UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//			flashButton = CGRectMake(10, 30, 57.5, 57.5);
 //			buttonImageNormal = [UIImage imageNamed:@"flash02"];
-//			[self.flashButton setImage:buttonImageNormal forState:UIControlStateNormal];
-//			[self.flashButton addTarget:self action:@selector(setFlash:) forControlEvents:UIControlEventTouchUpInside];
-//			[self addSubview:self.flashButton];
+//			[flashButton setImage:buttonImageNormal forState:UIControlStateNormal];
+//			[flashButton addTarget:self action:@selector(setFlash:) forControlEvents:UIControlEventTouchUpInside];
+//			[self addSubview:flashButton];
 //		}
 //		
 //		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
-//			self.changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			self.changeCameraButton.frame = CGRectMake(250, 30, 57.5, 57.5);
+//			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//			changeCameraButton = CGRectMake(250, 30, 57.5, 57.5);
 //			buttonImageNormal = [UIImage imageNamed:@"switch_button"];
-//			[self.changeCameraButton setImage:buttonImageNormal forState:UIControlStateNormal];
-//			[self.changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
-//			[self addSubview:self.changeCameraButton];
+//			[changeCameraButton setImage:buttonImageNormal forState:UIControlStateNormal];
+//			[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
+//			[self addSubview:changeCameraButton];
 //		}
 		
 		// Add the bottom bar
@@ -141,20 +135,20 @@
 		[footerImgView addSubview:_footerHolderView];
 		
 		// Add the capture button
-		self.captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		self.captureButton.frame = CGRectMake(103.0, 3.0, 114.0, 64.0);
-		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive.png"] forState:UIControlStateNormal];
-		[self.captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active.png"] forState:UIControlStateHighlighted];
-		[self.captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:self.captureButton];
+		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_captureButton.frame = CGRectMake(103.0, 3.0, 114.0, 64.0);
+		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive.png"] forState:UIControlStateNormal];
+		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active.png"] forState:UIControlStateHighlighted];
+		[_captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
+		[_footerHolderView addSubview:_captureButton];
 				
 		// Add the gallery button
-		self.cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		self.cameraRollButton.frame = CGRectMake(10.0, 10.0, 49.0, 49.0);
-		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
-		[self.cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
-		[self.cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
-		//[_footerHolderView addSubview:self.cameraRollButton];
+		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cameraRollButton.frame = CGRectMake(10.0, 10.0, 49.0, 49.0);
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
+		[cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
+		//[_footerHolderView addSubview:cameraRollButton];
 		
 		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		changeCameraButton.frame = CGRectMake(263.0, 10.0, 49.0, 49.0);
@@ -164,44 +158,44 @@
 		[_footerHolderView addSubview:changeCameraButton];
 		
 		// Add the back button
-		self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		self.backButton.frame = CGRectMake(360.0, 10.0, 49.0, 49.0);
-		[self.backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive.png"] forState:UIControlStateNormal];
-		[self.backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active.png"] forState:UIControlStateHighlighted];
-		[self.backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:self.backButton];
+		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		backButton.frame = CGRectMake(360.0, 10.0, 49.0, 49.0);
+		[backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive.png"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active.png"] forState:UIControlStateHighlighted];
+		[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+		[_footerHolderView addSubview:backButton];
 		
 		// Add the next button
-		self.nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		self.nextButton.frame = CGRectMake(570.0, 10.0, 49.0, 49.0);
-		[self.nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
-		[self.nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
-		[self.nextButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:self.nextButton];
+		UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		nextButton.frame = CGRectMake(570.0, 10.0, 49.0, 49.0);
+		[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
+		[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
+		[nextButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
+		[_footerHolderView addSubview:nextButton];
 	}
 	
 	return (self);
 }
 
 - (void)takePicture:(id)sender {
-	self.captureButton.enabled = NO;
-	[self.delegate takePicture];
+	_captureButton.enabled = NO;
+	[self.delegate cameraOverlayViewTakePicture:self];
 }
 
 - (void)setFlash:(id)sender {
-	//[self.delegate changeFlash:sender];
+	[self.delegate cameraOverlayViewChangeFlash:self];
 }
 
 - (void)changeCamera:(id)sender {
-	[self.delegate changeCamera];
+	[self.delegate cameraOverlayViewChangeCamera:self];
 }
 
 - (void)showCameraRoll:(id)sender {
-	[self.delegate showLibrary];
+	[self.delegate cameraOverlayViewShowCameraRoll:self];
 }
 
 - (void)closeCamera:(id)sender {
-	[self.delegate closeCamera];
+	[self.delegate cameraOverlayViewCloseCamera:self];
 }
 
 - (void)showPreview:(UIImage *)image {
@@ -239,7 +233,7 @@
 		_footerHolderView.frame = CGRectMake(0.0, 0.0, 640.0, 70.0);
 	} completion:nil];
 	
-	[self.delegate previewBack];
+	[self.delegate cameraOverlayViewPreviewBack:self];
 }
 
 - (void)songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL {
@@ -259,7 +253,7 @@
 
 #pragma mark -Navigation
 - (void)goBack:(id)sender {
-	self.captureButton.enabled = YES;
+	_captureButton.enabled = YES;
 	[self hidePreview];
 }
 
@@ -268,7 +262,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self.delegate closePreview];
+	[self.delegate cameraOverlayViewClosePreview:self];
 }
 
 - (void)_goEditSubject {
@@ -352,7 +346,7 @@
 		else {
 			if ([[subjectResult objectForKey:@"preview_url"] length] > 0) {
 				[self songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
-				[self.delegate playTrack:[subjectResult objectForKey:@"preview_url"]];
+				[self.delegate cameraOverlayViewPlayTrack:self audioURL:[subjectResult objectForKey:@"preview_url"]];
 			}
 		}
 	}

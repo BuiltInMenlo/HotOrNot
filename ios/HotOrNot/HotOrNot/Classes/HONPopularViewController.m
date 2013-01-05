@@ -6,18 +6,18 @@
 //  Copyright (c) 2012 Built in Menlo. All rights reserved.
 //
 
+#import "ASIFormDataRequest.h"
 #import "Mixpanel.h"
+
 #import "HONPopularViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONVoteViewController.h"
 #import "HONLoginViewController.h"
-
 #import "HONPopularUserViewCell.h"
 #import "HONPopularSubjectViewCell.h"
 #import "HONAppDelegate.h"
-#import "ASIFormDataRequest.h"
 #import "HONHeaderView.h"
-
+#import "HONChallengeTableHeaderView.h"
 #import "HONPopularSubjectVO.h"
 #import "HONPopularUserVO.h"
 
@@ -29,11 +29,7 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) UIImageView *toggleImgView;
 @property(nonatomic, strong) NSMutableArray *users;
-@property(nonatomic, strong) NSMutableDictionary *usersDictionary;
 @property(nonatomic, strong) NSMutableArray *subjects;
-@property(nonatomic, strong) NSArray *sectionTitles;
-@property(nonatomic, strong) ASIFormDataRequest *subjectsRequest;
-@property(nonatomic, strong) ASIFormDataRequest *usersRequest;
 @property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) HONPopularUserVO *popularUserVO;
@@ -42,31 +38,14 @@
 
 @implementation HONPopularViewController
 
-@synthesize tableView = _tableView;
-@synthesize toggleImgView = _toggleImgView;
-@synthesize users = _users;
-@synthesize usersDictionary = _usersDictionary;
-@synthesize subjects = _subjects;
-@synthesize isUsersList = _isUsersList;
-@synthesize sectionTitles = _sectionTitles;
-@synthesize refreshButton = _refreshButton;
-@synthesize headerView = _headerView;
-@synthesize popularUserVO = _popularUserVO;
-@synthesize popularSubjectVO = _popularSubjectVO;
-
 - (id)init {
 	if ((self = [super init])) {
-		//self.tabBarItem.image = [UIImage imageNamed:@"tab04_nonActive"];
 		self.view.backgroundColor = [UIColor whiteColor];
 		
-		self.users = [NSMutableArray new];
-		self.usersDictionary = [NSMutableDictionary dictionary];
-		self.subjects = [NSMutableArray new];
-		self.sectionTitles = [NSArray arrayWithObjects:@"#", @"A", @"B", @"C", @"D", @"E", @"F", @"G", @"H", @"I", @"J", @"K", @"L", @"M", @"N", @"O", @"P", @"Q", @"R", @"S", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z", nil];
+		_users = [NSMutableArray new];
+		_subjects = [NSMutableArray new];
+		_isUsersList = YES;
 		
-		self.isUsersList = YES;
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_randomChallenge:) name:@"RANDOM_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_popularUserChallenge:) name:@"POPULAR_USER_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_popularSubjectChallenge:) name:@"POPULAR_SUBJECT_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
@@ -117,16 +96,16 @@
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
-	[self.tableView setBackgroundColor:[UIColor clearColor]];
-	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	self.tableView.rowHeight = 70.0;
-	self.tableView.delegate = self;
-	self.tableView.dataSource = self;
-	self.tableView.userInteractionEnabled = YES;
-	self.tableView.scrollsToTop = NO;
-	self.tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:self.tableView];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.rowHeight = 70.0;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.userInteractionEnabled = YES;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[self.view addSubview:_tableView];
 	
 	[self _retrievePopularUsers];
 }
@@ -146,7 +125,7 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	if (self.isUsersList)
+	if (_isUsersList)
 		[self _retrievePopularUsers];
 	
 	else
@@ -166,26 +145,26 @@
 }
 
 - (void)_retrievePopularSubjects {
-	self.isUsersList = NO;
+	_isUsersList = NO;
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_hashTags.png"];
 	
-	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
-	[self.usersRequest setDelegate:self];
-	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[self.usersRequest startAsynchronous];
+	ASIFormDataRequest *subjectsRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
+	[subjectsRequest setDelegate:self];
+	[subjectsRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
+	[subjectsRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[subjectsRequest startAsynchronous];
 }
 
 
 - (void)_retrievePopularUsers {
-	self.isUsersList = YES;
+	_isUsersList = YES;
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
 	
-	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
-	[self.usersRequest setDelegate:self];
-	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
-	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[self.usersRequest startAsynchronous];
+	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
+	[usersRequest setDelegate:self];
+	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
+	[usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[usersRequest startAsynchronous];
 }
 
 
@@ -218,15 +197,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 
-	
-	self.isUsersList = YES;
-	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
-	
-	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
-	[self.usersRequest setDelegate:self];
-	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
-	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[self.usersRequest startAsynchronous];
+	[self _retrievePopularUsers];
 }
 
 - (void)_goTags {
@@ -234,15 +205,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 
-	
-	self.isUsersList = NO;
-	_toggleImgView.image = [UIImage imageNamed:@"toggle_hashTags.png"];
-	
-	self.usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
-	[self.usersRequest setDelegate:self];
-	[self.usersRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-	[self.usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[self.usersRequest startAsynchronous];
+	[self _retrievePopularSubjects];
 }
 
 - (void)_goRefresh {
@@ -252,7 +215,7 @@
 	
 	_refreshButton.hidden = YES;
 	
-	if (self.isUsersList)
+	if (_isUsersList)
 		[self _retrievePopularUsers];
 	
 	else
@@ -260,26 +223,11 @@
 }
 
 #pragma mark - Notifications
-- (void)_randomChallenge:(NSNotification *)notification {
-//	if (FBSession.activeSession.state == 513) {
-		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:(arc4random() % [_users count])];
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	
-//	} else {
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:YES completion:nil];
-//	}
-}
-
 - (void)_refreshList:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	_refreshButton.hidden = YES;
 	
-	if (self.isUsersList)
+	if (_isUsersList)
 		[self _retrievePopularUsers];
 	
 	else
@@ -312,11 +260,11 @@
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	
-	if (self.isUsersList) {
-		return ([_users count] + 2);
+	if (_isUsersList) {
+		return ([_users count] + 1);
 	
 	} else
-		return ([_subjects count] + 2);
+		return ([_subjects count] + 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -324,44 +272,32 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
-	
-	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(0.0, 0.0, 160.0, 78.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
-	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:createChallengeButton];
-	
-	UIButton *inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteFriendsButton.frame = CGRectMake(160.0, 0.0, 160.0, 78.0);
-	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
-	[inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:inviteFriendsButton];
+	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+	[headerView.dailyChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	if (self.isUsersList) {
+	if (_isUsersList) {
 		HONPopularUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			if (indexPath.row == 0) {
-				int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-				cell = [[HONPopularUserViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
-			
-			} else if (indexPath.row == [_users count] + 1)
+//			if (indexPath.row == 0) {
+//				int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+//				cell = [[HONPopularUserViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
+//			
+//			} else if (indexPath.row == [_users count] + 1)
+			if (indexPath.row == [_users count])
 				cell = [[HONPopularUserViewCell alloc] initAsBottomCell];
 			
 			else
 				cell = [[HONPopularUserViewCell alloc] initAsMidCell:indexPath.row];
 		}
 		
-		if (indexPath.row > 0 && indexPath.row < [_users count] + 1)
-			cell.userVO = [_users objectAtIndex:indexPath.row - 1];
+		if (indexPath.row < [_users count])
+			cell.userVO = [_users objectAtIndex:indexPath.row];
 		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
@@ -370,19 +306,20 @@
 		HONPopularSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			if (indexPath.row == 0) {
-				int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-				cell = [[HONPopularSubjectViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
-			
-			} else if (indexPath.row == [_subjects count] + 1)
+//			if (indexPath.row == 0) {
+//				int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+//				cell = [[HONPopularSubjectViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
+//			
+//			} else if (indexPath.row == [_subjects count] + 1)
+			if (indexPath.row == [_subjects count])
 				cell = [[HONPopularSubjectViewCell alloc] initAsBottomCell];
 			
 			else
 				cell = [[HONPopularSubjectViewCell alloc] initAsMidCell:indexPath.row];
 		}
 		
-		if (indexPath.row > 0 && indexPath.row < [_subjects count] + 1)
-			cell.subjectVO = [_subjects objectAtIndex:indexPath.row - 1];
+		if (indexPath.row < [_subjects count])
+			cell.subjectVO = [_subjects objectAtIndex:indexPath.row];
 		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
@@ -392,11 +329,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == 0)
-		return (55.0);
-	
-	else
-		return (70.0);
+	return (70.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -404,26 +337,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	BOOL isSelectable = NO;
-	
 	return (nil);
-	
-	if (self.isUsersList) {
-		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row - 1];
-		
-		if (indexPath.row > 0 && indexPath.row < [_users count] + 1 && vo.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
-			isSelectable = YES;
-	
-	} else {
-		if (indexPath.row > 0 && indexPath.row < [_subjects count] + 1)
-			isSelectable = YES;
-	}
-	
-	if (isSelectable)
-		return (indexPath);
-	
-	else
-		return (nil);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -431,8 +345,8 @@
 	
 	[(HONBasePopularViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
-	if (self.isUsersList) {
-		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row - 1];
+	if (_isUsersList) {
+		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
 		//NSLog(@"CHALLENGE USER");
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
@@ -440,7 +354,7 @@
 		[self presentViewController:navigationController animated:NO completion:nil];
 	
 	} else {
-		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row - 1];
+		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row];
 		
 		//NSLog(@"VOTE SUBJECT :[%d]", vo.actives);
 		
@@ -456,7 +370,7 @@
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	switch(buttonIndex) {
 		case 0:
-			if (self.isUsersList) {
+			if (_isUsersList) {
 //				if (FBSession.activeSession.state == 513) {					
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_popularUserVO.userID]];
 					[navigationController setNavigationBarHidden:YES];
@@ -523,7 +437,7 @@
 						HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
 						//NSLog(@"VO:[%@]", vo.subjectName);
 						
-						if (vo != nil && [_subjects count] < 25)
+						if (vo != nil)
 							[_subjects addObject:vo];
 					}
 				}
