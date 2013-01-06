@@ -86,6 +86,9 @@ NSString *const FacebookAppID = @"529054720443694";
 	return (message);
 }
 
++ (int)createPointMultiplier {
+	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:2] intValue]);
+}
 + (int)votePointMultiplier {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:0] intValue]);
 }

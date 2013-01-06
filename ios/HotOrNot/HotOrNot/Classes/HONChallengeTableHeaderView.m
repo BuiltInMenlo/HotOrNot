@@ -7,6 +7,7 @@
 //
 
 #import "HONChallengeTableHeaderView.h"
+#import "HONAppDelegate.h"
 
 @implementation HONChallengeTableHeaderView
 
@@ -29,6 +30,9 @@
 		_dailyChallengeButton.frame = CGRectMake(91.0, 0.0, 229.0, 70.0);
 		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
 		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
+		_dailyChallengeButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		[_dailyChallengeButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		[_dailyChallengeButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
 		[self addSubview:_dailyChallengeButton];
 	}
 	

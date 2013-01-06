@@ -55,7 +55,7 @@
 		nameLabel.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 		[self addSubview:nameLabel];
 		
-		int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+		int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
 		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 50.0, 200.0, 16.0)];
 		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		ptsLabel.textColor = [UIColor whiteColor];

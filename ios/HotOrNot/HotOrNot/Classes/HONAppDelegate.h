@@ -29,6 +29,7 @@ extern NSString *const FacebookAppID;
 + (NSDictionary *)s3Credentials;
 + (NSString *)facebookCanvasURL;
 + (NSDictionary *)facebookFriendPosting;
++ (int)createPointMultiplier;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
 + (NSString *)ctaForChallenge:(HONChallengeVO *)vo;
