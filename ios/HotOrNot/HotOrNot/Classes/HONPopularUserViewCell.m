@@ -48,8 +48,8 @@
 		
 		_challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
-		[_challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-		[_challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[_challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive"] forState:UIControlStateNormal];
+		[_challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active"] forState:UIControlStateHighlighted];
 		[_challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_challengeButton];
 	}

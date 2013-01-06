@@ -33,7 +33,7 @@
 - (id)initAsTopCell {
 	if ((self = [self init])) {
 		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 20.0);
-		_bgImgView.image = [UIImage imageNamed:@"leaderTableHeader.png"];
+		_bgImgView.image = [UIImage imageNamed:@"leaderTableHeader"];
 	}
 	
 	return (self);
@@ -41,7 +41,7 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
+		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive"];
 	}
 	
 	return (self);
@@ -49,7 +49,7 @@
 
 - (id)initAsMidCell {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"leaderTableRow_nonActive.png"];
+		_bgImgView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 	}
 	
 	return (self);
@@ -80,8 +80,8 @@
 	
 	UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
-	[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-	[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+	[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive"] forState:UIControlStateNormal];
+	[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active"] forState:UIControlStateHighlighted];
 	[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
 	challengeButton.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _voterVO.userID);
 	[self addSubview:challengeButton];

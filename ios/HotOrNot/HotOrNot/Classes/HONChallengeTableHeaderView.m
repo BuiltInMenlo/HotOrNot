@@ -15,16 +15,20 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 71.0)];
+		bgImageView.image = [UIImage imageNamed:@"lockedHeaderBackground.jpg"];
+		[self addSubview:bgImageView];
+		
 		_inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_inviteFriendsButton.frame = CGRectMake(0.0, 0.0, 80.0, 78.0);
-		[_inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-		[_inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+		_inviteFriendsButton.frame = CGRectMake(0.0, 0.0, 91.0, 70.0);
+		[_inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_nonActive"] forState:UIControlStateNormal];
+		[_inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateHighlighted];
 		[self addSubview:_inviteFriendsButton];
 		
 		_dailyChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_dailyChallengeButton.frame = CGRectMake(80.0, 0.0, 240.0, 78.0);
-		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+		_dailyChallengeButton.frame = CGRectMake(91.0, 0.0, 229.0, 70.0);
+		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
+		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
 		[self addSubview:_dailyChallengeButton];
 	}
 	

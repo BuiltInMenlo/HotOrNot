@@ -14,13 +14,13 @@
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
 #import "HONAppDelegate.h"
-
 #import "HONPrivacyViewController.h"
 #import "HONSupportViewController.h"
 #import "HONLoginViewController.h"
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONUsernameViewController.h"
+#import "HONChallengeTableHeaderView.h"
 
 @interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, ASIHTTPRequestDelegate, FBLoginViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -59,10 +59,10 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Settings"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"PROFILE"];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
@@ -190,21 +190,9 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
-	
-	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(0.0, 0.0, 160.0, 78.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
-	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:createChallengeButton];
-	
-	UIButton *inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteFriendsButton.frame = CGRectMake(160.0, 0.0, 160.0, 78.0);
-	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
-	[inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:inviteFriendsButton];
+	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+	[headerView.dailyChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	return (headerView);
 }
@@ -214,8 +202,7 @@
 	
 	if (cell == nil) {
 		if (indexPath.row == 0) {
-			int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-			cell = [[HONSettingsViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
+			cell = [[HONSettingsViewCell alloc] initAsTopCell];
 		
 		} else
 			cell = [[HONSettingsViewCell alloc] initAsMidCell:[_captions objectAtIndex:indexPath.row]];
@@ -235,7 +222,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0)
-		return (55.0);
+		return (140.0);
 	
 	else
 		return (70.0);

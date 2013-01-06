@@ -21,7 +21,7 @@
 - (id)initAsMidCell:(int)index {
 	if ((self = [super initAsMidCell:index])) {
 		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
-		bgImgView.image = [UIImage imageNamed:@"blankRowBackground_nonActive.png"];
+		bgImgView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 		[self addSubview:bgImgView];
 		
 		_subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 19.0, 200.0, 16.0)];
@@ -38,8 +38,8 @@
 		
 		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		challengeButton.frame = CGRectMake(211.0, 13.0, 84.0, 44.0);
-		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive.png"] forState:UIControlStateNormal];
-		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active.png"] forState:UIControlStateHighlighted];
+		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_nonActive"] forState:UIControlStateNormal];
+		[challengeButton setBackgroundImage:[UIImage imageNamed:@"challengeButton_Active"] forState:UIControlStateHighlighted];
 		[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengeButton];
 	}

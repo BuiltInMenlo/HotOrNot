@@ -18,12 +18,12 @@
 @synthesize switchButton = _switchButton;
 
 - (id)init {
-	if ((self = [super initWithFrame:CGRectMake(5.0, 25.0, 59.0, 34.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(5.0, 25.0, 64.0, 34.0)])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateFBPosting:) name:@"UPDATE_FB_POSTING" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 		
 		_switchButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_switchButton.frame = CGRectMake(0.0, 0.0, 59.0, 34.0);
+		_switchButton.frame = CGRectMake(0.0, 0.0, 64.0, 34.0);
 		[_switchButton setBackgroundImage:[UIImage imageNamed:@"facebookToggle_off"] forState:UIControlStateNormal];
 		[_switchButton setBackgroundImage:[UIImage imageNamed:@"facebookToggle_on"] forState:UIControlStateSelected];
 		[_switchButton addTarget:self action:@selector(_goToggle) forControlEvents:UIControlEventTouchUpInside];

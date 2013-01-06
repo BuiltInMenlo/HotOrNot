@@ -30,31 +30,26 @@
 - (void)loadView {
 	[super loadView];
 	
-	int ind = (arc4random() % 4) + 1;
-	
 	[[Mixpanel sharedInstance] track:@"Login Screen"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d", ind], @"index", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? [NSString stringWithFormat:@"firstUserExperience_Background_00%d-568h.png", ind] : [NSString stringWithFormat:@"FUE_00%d.jpg", ((arc4random() % 4) + 1)];
+	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? @"facebookBackground-568h" : @"facebookBackground";
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
 	bgImgView.image = [UIImage imageNamed:bgAsset];
 	[self.view addSubview:bgImgView];
 	
-	UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 68.0, 320.0, 68.0)];
-	footerImgView.image = [UIImage imageNamed:@"firstUserExperience_footerBackground.png"];
-	footerImgView.userInteractionEnabled = YES;
-	[self.view addSubview:footerImgView];
+	HONHeaderView *HeaderView = [[HONHeaderView alloc] initWithTitle:@"FACEBOOK"];
+	[self.view addSubview:HeaderView];
 	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	facebookButton.frame = CGRectMake(12.0, 10.0, 296.0, 49.0);
-	[facebookButton setBackgroundImage:[UIImage imageNamed:@"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
-	[facebookButton setBackgroundImage:[UIImage imageNamed:@"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
+	facebookButton.frame = CGRectMake(18.0, self.view.frame.size.height - 84.0, 283.0, 74.0);
+	[facebookButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_nonActive"] forState:UIControlStateNormal];
+	[facebookButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_Active"] forState:UIControlStateHighlighted];
 	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];
-	[footerImgView addSubview:facebookButton];
+	[self.view addSubview:facebookButton];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 }

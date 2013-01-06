@@ -119,20 +119,19 @@
 	//NSLog(@"SUBJECT:[%d][%d]", _subjectID, _isPushView);
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? _challengeVO.subjectName : @"HOME"];
 	[self.view addSubview:_headerView];
 		
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:backButton];
-	
 	}
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -142,13 +141,13 @@
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 225.0, 320.0, 34.0)];
-	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay.png"];
+	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
 	[self.view addSubview:_emptySetImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
@@ -175,9 +174,9 @@
 		[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-//	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-//	if (boot_total == 0)
-	[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
+	
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
 }
 
 - (void)viewDidLoad {
@@ -331,14 +330,12 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	int ind = (arc4random() % 4) + 1;
 	[[Mixpanel sharedInstance] track:@"Tutorial"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d", ind], @"index", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	NSString *buttonImage = ([HONAppDelegate isRetina5]) ? [NSString stringWithFormat:@"tutorial_00%d-568h.png", ind] : [NSString stringWithFormat:@"tutorial_00%d.png", ind];
+	NSString *buttonImage = ([HONAppDelegate isRetina5]) ? @"tutorial-568h" : @"tutorial";
 	
 	_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, ([HONAppDelegate isRetina5]) ? 558.0 : 470.0)];
 	_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
@@ -351,23 +348,23 @@
 	[_tutorialOverlayImgView addSubview:closeTutorialButton];
 
 	UIButton *inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteFriendsButton.frame = CGRectMake(0.0, 0.0, 80.0, 78.0);
-	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+	inviteFriendsButton.frame = CGRectMake(0.0, 0.0, 91.0, 70.0);
+	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_nonActive"] forState:UIControlStateNormal];
+	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateHighlighted];
 	[inviteFriendsButton addTarget:self action:@selector(_goTutorialInviteFriends) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialOverlayImgView addSubview:inviteFriendsButton];
 
 	UIButton *dailyChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dailyChallengeButton.frame = CGRectMake(80.0, 0.0, 240.0, 78.0);
-	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton.png"] forState:UIControlStateNormal];
-	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startChallengeButton_active.png"] forState:UIControlStateHighlighted];
+	dailyChallengeButton.frame = CGRectMake(80.0, 0.0, 229.0, 70.0);
+	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
+	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
 	[dailyChallengeButton addTarget:self action:@selector(_goTutorialDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialOverlayImgView addSubview:dailyChallengeButton];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createChallengeButton.frame = CGRectMake(128.0, _tutorialOverlayImgView.frame.size.height - 48.0, 64.0, 48.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive.png"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_active.png"] forState:UIControlStateHighlighted];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goTutorialChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialOverlayImgView addSubview:createChallengeButton];
 }

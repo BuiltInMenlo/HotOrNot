@@ -37,8 +37,8 @@
 		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		//dailyButton.backgroundColor = [UIColor redColor];
 		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive"] forState:UIControlStateNormal];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active"] forState:UIControlStateHighlighted];
 		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:dailyButton];
 		
@@ -68,12 +68,12 @@
 
 - (id)initAsBottomCell:(BOOL)isEnabled {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
+		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive"];
 		
 		UIButton *loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		loadMoreButton.frame = CGRectMake(100.0, -3.0, 120.0, 60.0);
-		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive.png"] forState:UIControlStateNormal];
-		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active.png"] forState:UIControlStateHighlighted];
+		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
+		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 		
 		if (isEnabled)
 			[loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
@@ -86,7 +86,7 @@
 
 - (id)initAsChallengeCell {
 	if ((self = [self init])) {
-		
+		_bgImgView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 	}
 	
 	return (self);
@@ -122,31 +122,26 @@
 	[self addSubview:challengeLabel];
 	
 	
-	UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(280.0, 20.0, 24.0, 24.0)];
-	chevronImageView.image = [UIImage imageNamed:@"chevron.png"];
+	UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(275.0, 15.0, 34.0, 34.0)];
+	chevronImageView.image = [UIImage imageNamed:@"chevron"];
 	[self addSubview:chevronImageView];
 	
 	if ([_challengeVO.status isEqualToString:@"Created"]) {
-		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
 		challengeLabel.text = [NSString stringWithFormat:@"You are waiting for someone to accept your \n%@", _challengeVO.subjectName];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Waiting"]) {
-		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
 		challengeLabel.text = [NSString stringWithFormat:@"You have challenged %@ to \n%@", _challengeVO.challengerName, _challengeVO.subjectName];
 		
 		if (_challengeVO.hasViewed)
 			challengeLabel.text = [challengeLabel.text stringByAppendingString:@"\nOpened"];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
-		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
 		challengeLabel.text = [NSString stringWithFormat:@"%@ has challenged you to \n%@", _challengeVO.creatorName, _challengeVO.subjectName];
 		
 		if (_challengeVO.hasViewed)
 			challengeLabel.text = [challengeLabel.text stringByAppendingString:@"\nOpened"];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"]) {
-		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
-		
 		creatorImgHolderView.frame = CGRectMake(20.0, 10.0, 22.0, 50.0);
 		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 		
@@ -193,7 +188,7 @@
 //		for (UIView *subview in self.subviews) {
 //			if ([NSStringFromClass([subview class]) isEqualToString:@"UITableViewCellDeleteConfirmationControl"]) {
 //				UIImageView *deleteBtn = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 80, 40)];
-//				[deleteBtn setImage:[UIImage imageNamed:@"genericGrayButton_nonActive.png"]];
+//				[deleteBtn setImage:[UIImage imageNamed:@"genericGrayButton_nonActive"]];
 //				[[subview.subviews objectAtIndex:0] addSubview:deleteBtn];
 //			}
 //		}
@@ -218,22 +213,12 @@
 }
 
 - (void)didSelect {
-	if ([_challengeVO.status isEqualToString:@"Created"] || [_challengeVO.status isEqualToString:@"Waiting"] || [_challengeVO.status isEqualToString:@"Accept"])
-		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_Active"];
-	
-	else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"])
-		_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage_active"];
-	
-	
+	_bgImgView.image = [UIImage imageNamed:@"rowGray_Active"];
 	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
 }
 
 - (void)_resetBG {
-	if ([_challengeVO.status isEqualToString:@"Created"] || [_challengeVO.status isEqualToString:@"Waiting"] || [_challengeVO.status isEqualToString:@"Accept"])
-		_bgImgView.image = [UIImage imageNamed:@"commonTableRow_nonActive.png"];
-		
-	else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"])
-		_bgImgView.image = [UIImage imageNamed:@"liveTableRow_nonActive.png"];
+	_bgImgView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 }
 
 @end

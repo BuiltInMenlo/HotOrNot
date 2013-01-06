@@ -34,8 +34,8 @@
 	if ((self = [self init])) {
 		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive"] forState:UIControlStateNormal];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active"] forState:UIControlStateHighlighted];
 		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:dailyButton];
 		
@@ -65,7 +65,7 @@
 
 - (id)initAsBottomCell {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
+		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive"];
 	}
 	
 	return (self);
@@ -73,20 +73,19 @@
 
 - (id)initAsMidCell:(int)index {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"leaderTableRow_nonActive.png"];
+		_bgImgView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 	}
 	
 	return (self);
 }
 
 - (void)didSelect {
-	_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage_active.png"];
-	
+	_bgImgView.image = [UIImage imageNamed:@"rowGray_Active"];
 	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
 }
 
 - (void)_resetBG {
-	_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage.png"];
+	_bgImgView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

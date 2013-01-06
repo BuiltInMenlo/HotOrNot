@@ -39,8 +39,8 @@
 	if ((self = [super init])) {
 		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive"] forState:UIControlStateNormal];
+		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active"] forState:UIControlStateHighlighted];
 		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:dailyButton];
 		
@@ -73,13 +73,13 @@
 		_hasChallenger = NO;
 		
 		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 54.0, 320.0, 341.0)];
-		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
+		//bgImgView.image = [UIImage imageNamed:@"challengeBackground"];
 		[self addSubview:bgImgView];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		moreButton.frame = CGRectMake(265.0, 16.0, 34.0, 34.0);
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
 		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:moreButton];
 	}
@@ -92,13 +92,13 @@
 		_hasChallenger = YES;
 		
 		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 54.0, 320.0, 341.0)];
-		bgImgView.image = [UIImage imageNamed:@"challengeBackground.png"];
+		//bgImgView.image = [UIImage imageNamed:@"challengeBackground"];
 		[self addSubview:bgImgView];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		moreButton.frame = CGRectMake(265.0, 16.0, 34.0, 34.0);
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive.png"] forState:UIControlStateNormal];
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
 		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:moreButton];
 	}
@@ -192,7 +192,7 @@
 			
 			if (_challengeVO.creatorScore > _challengeVO.challengerScore) {
 				UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
-				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
 				[self addSubview:lScoreImgView];
 				
 				UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
@@ -207,7 +207,7 @@
 				
 			} else if (_challengeVO.creatorScore < _challengeVO.challengerScore) {
 				UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
-				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
 				[self addSubview:rScoreImgView];
 				
 				UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
@@ -222,7 +222,7 @@
 			
 			} else {
 				UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
-				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
 				[self addSubview:rScoreImgView];
 				
 				UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
@@ -234,7 +234,7 @@
 				[rScoreImgView addSubview:rScoreLabel];
 				
 				UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
-				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
 				[self addSubview:lScoreImgView];
 				
 				UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
@@ -328,7 +328,7 @@
 			[self addSubview:overlayView];
 			
 			UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
-			lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+			lScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
 			[self addSubview:lScoreImgView];
 			
 			UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
@@ -376,7 +376,7 @@
 			[self addSubview:overlayView];
 			
 			UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
-			rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+			rScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
 			[self addSubview:rScoreImgView];
 			
 			UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
@@ -469,7 +469,7 @@
 				[self addSubview:overlayView];
 				
 				UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
-				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
 				[self addSubview:lScoreImgView];
 				
 				UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
@@ -542,7 +542,7 @@
 				[self addSubview:overlayView];
 				
 				UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
-				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay.png"];
+				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
 				[self addSubview:rScoreImgView];
 				
 				UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];

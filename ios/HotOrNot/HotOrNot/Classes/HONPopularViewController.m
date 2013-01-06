@@ -64,14 +64,14 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h.png" : @"mainBG.png"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Popular"];
 	[self.view addSubview:_headerView];
 	
-	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 1.0, 169.0, 44.0)];
-	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
+	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(68.0, 0.0, 184.0, 45.0)];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders"];
 	[_headerView addSubview:_toggleImgView];
 	
 	UIButton *leadersButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -91,8 +91,8 @@
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive.png"] forState:UIControlStateNormal];
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active.png"] forState:UIControlStateHighlighted];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
 	
@@ -146,7 +146,7 @@
 
 - (void)_retrievePopularSubjects {
 	_isUsersList = NO;
-	_toggleImgView.image = [UIImage imageNamed:@"toggle_hashTags.png"];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_tags"];
 	
 	ASIFormDataRequest *subjectsRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[subjectsRequest setDelegate:self];
@@ -158,7 +158,7 @@
 
 - (void)_retrievePopularUsers {
 	_isUsersList = YES;
-	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders.png"];
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders"];
 	
 	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[usersRequest setDelegate:self];

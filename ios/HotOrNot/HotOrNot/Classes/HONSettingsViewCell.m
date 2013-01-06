@@ -7,6 +7,7 @@
 //
 
 #import "Mixpanel.h"
+#import "UIImageView+WebCache.h"
 
 #import "HONSettingsViewCell.h"
 #import "HONAppDelegate.h"
@@ -32,49 +33,46 @@
 	return (self);
 }
 
-- (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
+- (id)initAsTopCell {
 	if ((self = [self init])) {
-		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive.png"] forState:UIControlStateNormal];
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active.png"] forState:UIControlStateHighlighted];
-		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:dailyButton];
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 140.0);
+		_bgImgView.image = [UIImage imageNamed:@"settingsRowZeroBackground"];
 		
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 25.0, 50.0, 16.0)];
+		UIView *imgHolderView = [[UIView alloc] initWithFrame:CGRectMake(30.0, 30.0, 100.0, 100.0)];
+		imgHolderView.clipsToBounds = YES;
+		[self addSubview:imgHolderView];
+		
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 100.0, 100.0)];
+		[avatarImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", [[HONAppDelegate infoForUser] objectForKey:@"fb_id"]]] placeholderImage:nil options:SDWebImageLowPriority];
+		[imgHolderView addSubview:avatarImageView];
+		
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 25.0, 180.0, 16.0)];
+		nameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		nameLabel.textColor = [UIColor whiteColor];
+		nameLabel.backgroundColor = [UIColor clearColor];
+		nameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+		nameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		nameLabel.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
+		[self addSubview:nameLabel];
+		
+		int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
+		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 50.0, 200.0, 16.0)];
 		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		ptsLabel.textColor = [UIColor whiteColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
-		ptsLabel.textAlignment = NSTextAlignmentCenter;
 		ptsLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 		ptsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
+		ptsLabel.text = [NSString stringWithFormat:@"%d PTS", score];
 		[self addSubview:ptsLabel];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 25.0, 140.0, 16.0)];
-		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		subjectLabel.textColor = [UIColor whiteColor];
-		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.textAlignment = NSTextAlignmentCenter;
-		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		subjectLabel.text = subject;
-		[self addSubview:subjectLabel];
-	}
-	
-	return (self);
-}
-
-- (id)initAsBottomCell {
-	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"footerTableRow_nonActive.png"];
-		
-		UIButton *supportButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		supportButton.frame = CGRectMake(18.0, 8.0, 284.0, 39.0);
-		[supportButton addTarget:self action:@selector(_goSupport) forControlEvents:UIControlEventTouchUpInside];
-		[supportButton setBackgroundImage:[UIImage imageNamed:@"needHelp_nonActive.png"] forState:UIControlStateNormal];
-		[supportButton setBackgroundImage:[UIImage imageNamed:@"needHelp_Active.png"] forState:UIControlStateHighlighted];
-		[self addSubview:supportButton];
+		UILabel *rankLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 75.0, 140.0, 16.0)];
+		rankLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		rankLabel.textColor = [UIColor whiteColor];
+		rankLabel.backgroundColor = [UIColor clearColor];
+		rankLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+		rankLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		rankLabel.text = [NSString stringWithFormat:@"RANK: %d", (arc4random() % 100)];
+		[self addSubview:rankLabel];
 	}
 	
 	return (self);
@@ -82,7 +80,7 @@
 
 - (id)initAsMidCell:(NSString *)caption {
 	if ((self = [self init])) {
-		_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage.png"];
+		_bgImgView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 		_caption = caption;
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 26.0, 250.0, 16.0)];
@@ -102,12 +100,12 @@
 }
 
 - (void)didSelect {
-	_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage_active.png"];
+	_bgImgView.image = [UIImage imageNamed:@"rowGray_Active"];
 	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
 }
 
 - (void)_resetBG {
-	_bgImgView.image = [UIImage imageNamed:@"genericRowBackgroundnoImage.png"];
+	_bgImgView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 }
 
 - (void)_goSupport {

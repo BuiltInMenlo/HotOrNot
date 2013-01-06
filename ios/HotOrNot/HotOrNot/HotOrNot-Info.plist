@@ -53,13 +53,17 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2886</string>
+	<string>2915</string>
 	<key>FacebookAppID</key>
 	<string>529054720443694</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
+		<string>picChallenge-Bold.otf</string>
+		<string>picChallenge-Light.otf</string>
+		<string>picChallenge-Regular.otf</string>
+		<string>picChallenge-Semibold.otf</string>
 		<string>HelveticaNeueLTStd-Md.otf</string>
 		<string>HelveticaNeueLTStd-Bd.otf</string>
 	</array>

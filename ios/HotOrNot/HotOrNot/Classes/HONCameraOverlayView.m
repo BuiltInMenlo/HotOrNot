@@ -16,15 +16,15 @@
 #import "HONHeaderView.h"
 
 @interface HONCameraOverlayView() <UITextFieldDelegate, ASIHTTPRequestDelegate>
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *footerHolderView;
 @property (nonatomic, strong) UITextField *subjectTextField;
-@property (nonatomic, strong) UIImageView *albumImageView;
-@property (nonatomic, strong) UIButton *buyTrackButton;
 @property (nonatomic, strong) UIButton *editButton;
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *itunesURL;
 @property (nonatomic, strong) UIButton *captureButton;
+@property (nonatomic, strong) UIImageView *trackBGImageView;
 @property (nonatomic) CGSize gutterSize;
 @end
 
@@ -42,67 +42,52 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
 		
-//		UIView *headerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _gutterSize.height)];
-//		headerGutterView.backgroundColor = [UIColor blackColor];
-//		[self addSubview:headerGutterView];
-//		
-//		UIView *footerGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - _gutterSize.height, 320.0, _gutterSize.height)];
-//		footerGutterView.backgroundColor = [UIColor blackColor];
-//		[self addSubview:footerGutterView];
-//		
-//		UIView *lGutterView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, _gutterSize.width, self.frame.size.height)];
-//		lGutterView.backgroundColor = [UIColor blackColor];
-//		[self addSubview:lGutterView];
-//		
-//		UIView *rGutterView = [[UIView alloc] initWithFrame:CGRectMake(self.frame.size.width - _gutterSize.width, 0.0, _gutterSize.width, self.frame.size.height)];
-//		rGutterView.backgroundColor = [UIColor blackColor];
-//		[self addSubview:rGutterView];
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 45.0, 320.0, ([HONAppDelegate isRetina5]) ? 523.0 : 425.0)];
+		bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
+		bgImageView.userInteractionEnabled = YES;
+		[self addSubview:bgImageView];
 		
-		HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Challenge"];
-		[self addSubview:headerView];
+		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE CHALLENGE"];
+		[self addSubview:_headerView];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cancelButton.frame = CGRectMake(247.0, 0.0, 74.0, 44.0);
-		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive.png"] forState:UIControlStateNormal];
-		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active.png"] forState:UIControlStateHighlighted];
+		cancelButton.frame = CGRectMake(247.0, 5.0, 74.0, 34.0);
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 		[cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
-		[headerView addSubview:cancelButton];
+		[_headerView addSubview:cancelButton];
 		
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
+		UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(18.0, 70.0, 284.0, 34.0)];
+		subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
+		subjectBGImageView.userInteractionEnabled = YES;
+		[self addSubview:subjectBGImageView];
+		
+		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 7.0, 240.0, 20.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[UIColor whiteColor]];
+		[_subjectTextField setTextColor:[UIColor blackColor]];
 		//[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = _subjectName;
 		_subjectTextField.delegate = self;
-		[self addSubview:_subjectTextField];
+		[subjectBGImageView addSubview:_subjectTextField];
 		
 		_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_editButton.frame = CGRectMake(265.0, 60.0, 44.0, 44.0);
-		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive.png"] forState:UIControlStateNormal];
-		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active.png"] forState:UIControlStateHighlighted];
+		_editButton.frame = CGRectMake(260.0, 5.0, 34.0, 34.0);
+		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive"] forState:UIControlStateNormal];
+		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active"] forState:UIControlStateHighlighted];
 		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_editButton];
-				
-		_albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, [UIScreen mainScreen].bounds.size.height - 127.0, 50.0, 50.0)];
-		[self addSubview:_albumImageView];
+		[subjectBGImageView addSubview:_editButton];
 		
-		
-		_buyTrackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_buyTrackButton.frame = CGRectMake(210.0, [UIScreen mainScreen].bounds.size.height - 135.0, 106.0, 61.0);
-		[_buyTrackButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
-		[_buyTrackButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
-		[_buyTrackButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
-		_buyTrackButton.hidden = YES;
-		[self addSubview:_buyTrackButton];
+		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, [UIScreen mainScreen].bounds.size.height - 127.0, 306.0, 50.0)];
+		_trackBGImageView.hidden = YES;
 		
 		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, _gutterSize.height, 250.0, 250.0)];
-		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding.png"];
+		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding"];
 		overlayImgView.userInteractionEnabled = YES;
 		//[self addSubview:overlayImgView];
 		
@@ -126,50 +111,45 @@
 //		}
 		
 		// Add the bottom bar
-		UIImageView *footerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 70.0, 320.0, 70.0)];
-		footerImgView.image = [UIImage imageNamed:@"cameraFooterBG.png"];
-		footerImgView.userInteractionEnabled = YES;
-		[self addSubview:footerImgView];
-		
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, 70.0)];
-		[footerImgView addSubview:_footerHolderView];
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 120.0, 640.0, 70.0)];
+		[self addSubview:_footerHolderView];
 		
 		// Add the capture button
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(103.0, 3.0, 114.0, 64.0);
-		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive.png"] forState:UIControlStateNormal];
-		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active.png"] forState:UIControlStateHighlighted];
+		_captureButton.frame = CGRectMake(103.0, 3.0, 105.0, 105.0);
+		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
+		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:_captureButton];
 				
 		// Add the gallery button
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(10.0, 10.0, 49.0, 49.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
+		cameraRollButton.frame = CGRectMake(10.0, 10.0, 75.0, 75.0);
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
 		//[_footerHolderView addSubview:cameraRollButton];
 		
 		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		changeCameraButton.frame = CGRectMake(263.0, 10.0, 49.0, 49.0);
-		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive.png"] forState:UIControlStateNormal];
-		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active.png"] forState:UIControlStateHighlighted];
+		changeCameraButton.frame = CGRectMake(243.0, 10.0, 75.0, 75.0);
+		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive"] forState:UIControlStateNormal];
+		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:changeCameraButton];
 		
 		// Add the back button
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(360.0, 10.0, 49.0, 49.0);
-		[backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive.png"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active.png"] forState:UIControlStateHighlighted];
+		backButton.frame = CGRectMake(320.0, 10.0, 147.0, 62.0);
+		[backButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_nonActive"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:backButton];
 		
 		// Add the next button
 		UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		nextButton.frame = CGRectMake(570.0, 10.0, 49.0, 49.0);
-		[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive.png"] forState:UIControlStateNormal];
-		[nextButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active.png"] forState:UIControlStateHighlighted];
+		nextButton.frame = CGRectMake(485.0, 10.0, 147.0, 62.0);
+		[nextButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_nonActive"] forState:UIControlStateNormal];
+		[nextButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_Active"] forState:UIControlStateHighlighted];
 		[nextButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:nextButton];
 	}
@@ -217,8 +197,17 @@
 		imgView.frame = frame;
 	}
 	
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(0.0, 5.0, 74.0, 34.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:backButton];
+	
+	[_headerView setTitle:@"PREVIEW"];
+	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
-		_footerHolderView.frame = CGRectMake(-320.0, 0.0, 640.0, 70.0);
+		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
 	} completion:nil];
 }
 
@@ -229,26 +218,35 @@
 		[subview removeFromSuperview];
 	}
 	
+	[_headerView setTitle:@"TAKE CHALLENGE"];
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
-		_footerHolderView.frame = CGRectMake(0.0, 0.0, 640.0, 70.0);
+		_footerHolderView.frame = CGRectMake(0.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
 	} completion:nil];
 	
 	[self.delegate cameraOverlayViewPreviewBack:self];
 }
 
 - (void)songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL {
+	_itunesURL = [itunesURL stringByReplacingOccurrencesOfString:@"https://" withString:@"itms://"];
 	_songName = songName;
-	UILabel *songLabel = [[UILabel alloc] initWithFrame:CGRectMake(65.0, [UIScreen mainScreen].bounds.size.height - 100.0, 200.0, 14.0)];
+	
+	UIImageView *albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 7.0, 50.0, 50.0)];
+	[albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil options:SDWebImageLowPriority];
+	[_trackBGImageView addSubview:albumImageView];
+	
+	UILabel *songLabel = [[UILabel alloc] initWithFrame:CGRectMake(65.0, 15.0, 200.0, 14.0)];
 	songLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	songLabel.textColor = [UIColor whiteColor];
 	songLabel.backgroundColor = [UIColor clearColor];
 	songLabel.text = _songName;
-	[self addSubview:songLabel];
+	[_trackBGImageView addSubview:songLabel];
 	
-	[_albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil options:SDWebImageLowPriority];
-	_itunesURL = [itunesURL stringByReplacingOccurrencesOfString:@"https://" withString:@"itms://"];
-	
-	_buyTrackButton.hidden = NO;
+	UIButton *buyTrackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	buyTrackButton.frame = CGRectMake(210.0, 5.0, 64.0, 34.0);
+	[buyTrackButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateNormal];
+	[buyTrackButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateHighlighted];
+	[buyTrackButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
+	[_trackBGImageView addSubview:buyTrackButton];
 }
 
 #pragma mark -Navigation

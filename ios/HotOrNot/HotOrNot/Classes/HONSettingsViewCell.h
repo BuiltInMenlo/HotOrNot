@@ -11,8 +11,7 @@
 @interface HONSettingsViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
-- (id)initAsTopCell:(int)points withSubject:(NSString *)subject;
-- (id)initAsBottomCell;
+- (id)initAsTopCell;
 - (id)initAsMidCell:(NSString *)caption;
 - (void)updateCaption:(NSString *)caption;
 

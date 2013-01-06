@@ -72,6 +72,11 @@ extern NSString *const FacebookAppID;
 + (UIFont *)honHelveticaNeueFontBold;
 + (UIFont *)honHelveticaNeueFontMedium;
 
++ (UIFont *)qualcommBold;
++ (UIFont *)qualcommLight;
++ (UIFont *)qualcommRegular;
++ (UIFont *)qualcommSemibold;
+
 + (UIColor *)honBlueTxtColor;
 + (UIColor *)honGreyTxtColor;
 

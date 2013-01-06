@@ -268,6 +268,22 @@ NSString *const FacebookAppID = @"529054720443694";
 	return [UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0];
 }
 
++ (UIFont *)qualcommBold {
+	return [UIFont fontWithName:@"Qualcomm-Bold" size:18.0];
+}
+
++ (UIFont *)qualcommLight {
+	return [UIFont fontWithName:@"Qualcomm-Light" size:18.0];
+}
+
++ (UIFont *)qualcommRegular {
+	return [UIFont fontWithName:@"Qualcomm-Regular" size:18.0];
+}
+
++ (UIFont *)qualcommSemibold {
+	return [UIFont fontWithName:@"Qualcomm-Semibold" size:18.0];
+}
+
 + (UIColor *)honBlueTxtColor {
 	return ([UIColor colorWithRed:0.17647058823529 green:0.33333333333333 blue:0.6078431372549 alpha:1.0]);
 }

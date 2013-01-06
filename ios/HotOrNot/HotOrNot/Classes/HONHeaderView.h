@@ -10,4 +10,6 @@
 
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
+
+@property (nonatomic, strong) NSString *title;
 @end

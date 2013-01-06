@@ -120,40 +120,56 @@
 	//NSLog(@"loadView");
 	[super loadView];
 	
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
+	[self.view addSubview:bgImgView];
+	
 	_imgHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_imgHolderView];
 	
-	HONHeaderView *mainHeaderView = [[HONHeaderView alloc] initWithTitle:@"Confirm Challenge"];
+	HONHeaderView *mainHeaderView = [[HONHeaderView alloc] initWithTitle:@"SUBMIT"];
 	[self.view addSubview:mainHeaderView];
 		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive.png"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active.png"] forState:UIControlStateHighlighted];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[mainHeaderView addSubview:backButton];
+	
+	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cancelButton.frame = CGRectMake(247.0, 5.0, 74.0, 34.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+	[mainHeaderView addSubview:cancelButton];
+	
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(140.0, 70.0, 174.0, 44.0)];
+	subjectBGImageView.image = [UIImage imageNamed:@"cameraExperience3rdStepInutField"];
+	subjectBGImageView.userInteractionEnabled = YES;
+	[self.view addSubview:subjectBGImageView];
 		
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 5.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[UIColor whiteColor]];
+	[_subjectTextField setTextColor:[UIColor blackColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = _subjectName;
 	_subjectTextField.delegate = self;
 	[_subjectTextField setTag:0];
-	[self.view addSubview:_subjectTextField];
+	[subjectBGImageView addSubview:_subjectTextField];
 		
 	_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_editButton.frame = CGRectMake(265.0, 60.0, 44.0, 44.0);
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive.png"] forState:UIControlStateNormal];
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active.png"] forState:UIControlStateHighlighted];
+	_editButton.frame = CGRectMake(270.0, 65.0, 44.0, 44.0);
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive"] forState:UIControlStateNormal];
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active"] forState:UIControlStateHighlighted];
 	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_editButton];
+	[subjectBGImageView addSubview:_editButton];
 	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 300.0, 200.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -170,17 +186,17 @@
 	[_usernameTextField setTag:1];
 	[self.view addSubview:_usernameTextField];
 	
-	UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	acceptButton.frame = CGRectMake(220.0, 280.0, 96.0, 60.0);
-	[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive.png"] forState:UIControlStateNormal];
-	[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active.png"] forState:UIControlStateHighlighted];
-	[acceptButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:acceptButton];
+	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	sendButton.frame = CGRectMake(220.0, 280.0, 92.0, 70.0);
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
+	[sendButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:sendButton];
 	
 	_loginFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_loginFriendsButton.frame = CGRectMake(18.0, 338.0, 284.0, 49.0);
-	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive.png" : @"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
-	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active.png" : @"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
+	_loginFriendsButton.frame = CGRectMake(18.0, 338.0, 284.0, 70.0);
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_nonActive"] forState:UIControlStateNormal];
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_Active"] forState:UIControlStateHighlighted];
 	
 	if (FBSession.activeSession.state == 513)
 		[_loginFriendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
@@ -190,9 +206,9 @@
 	[self.view addSubview:_loginFriendsButton];
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(18.0, 398.0, 284.0, 49.0);
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_nonActive.png"] forState:UIControlStateNormal];
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"challengeRandomButton_Active.png"] forState:UIControlStateHighlighted];
+	randomButton.frame = CGRectMake(18.0, 398.0, 284.0, 70.0);
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_nonActive"] forState:UIControlStateNormal];
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:randomButton];
 }
@@ -212,7 +228,7 @@
 		imgView.image = [UIImage imageWithCGImage:imgView.image.CGImage scale:1.0 orientation:UIImageOrientationUpMirrored];
 	
 	UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 200.0, 200.0)];
-	watermarkImgView.image = [UIImage imageNamed:@"512x512_cameraOverlay.png"];
+	watermarkImgView.image = [UIImage imageNamed:@"512x512_cameraOverlay"];
 	//[imgView addSubview:watermarkImgView];
 	
 	_subjectTextField.text = _subjectName;
@@ -227,6 +243,16 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self.navigationController popViewControllerAnimated:NO];
+}
+
+- (void)_goCancel {
+	[[Mixpanel sharedInstance] track:@"Pick Challenger Cancel"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	}];
 }
 
 - (void)_goLogin {
@@ -289,7 +315,7 @@
 		//canvasView.image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
 		
 //		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
+//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x"];
 //		[canvasView addSubview:watermarkImgView];
 		
 		CGSize size = [canvasView bounds].size;
@@ -341,7 +367,7 @@
 		if (_progressHUD != nil) {
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"Upload Error", @"Status message when internet connectivity is lost");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
@@ -362,7 +388,7 @@
 		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 		
 //		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
+//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x"];
 //		[canvasView addSubview:watermarkImgView];
 		
 		CGSize size = [canvasView bounds].size;
@@ -413,7 +439,7 @@
 		if (_progressHUD != nil) {
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"Upload Error", @"Status message when internet connectivity is lost");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
@@ -445,7 +471,7 @@
 		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
 		
 //		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x.png"];
+//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x"];
 //		[canvasView addSubview:watermarkImgView];
 		
 		CGSize size = [canvasView bounds].size;
@@ -519,7 +545,7 @@
 	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[customCancelButton addTarget:self action:@selector(facebookViewControllerCancelWasPressed:) forControlEvents:UIControlEventTouchUpInside];
-	customCancelButton.frame = CGRectMake(0, 0, 74.0, 44.0);
+	customCancelButton.frame = CGRectMake(0.0, 5.0, 74.0, 34.0);
 	[self.friendPickerHeaderView addSubview:customCancelButton];
 	
 	// Done Button
@@ -655,8 +681,8 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
-	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive.png" : @"loginFacebook_nonActive.png"] forState:UIControlStateNormal];
-	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active.png" : @"loginFacebook_Active.png"] forState:UIControlStateHighlighted];
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive" : @"loginFacebook_nonActive"] forState:UIControlStateNormal];
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active" : @"loginFacebook_Active"] forState:UIControlStateHighlighted];
 	
 	[_loginFriendsButton removeTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
 	[_loginFriendsButton removeTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
@@ -728,7 +754,7 @@
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
@@ -751,7 +777,7 @@
 				if (vo.statusID == 4) {
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
-					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon.png"]];
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon"]];
 					_progressHUD.labelText = @"Challenge Matched!";
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
@@ -776,7 +802,7 @@
 			} else {
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error.png"]];
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 				_progressHUD.labelText = NSLocalizedString(@"Username not found!", @"Status message when username isn't in the system");
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:1.5];

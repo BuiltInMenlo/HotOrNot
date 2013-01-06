@@ -89,8 +89,8 @@
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	pokeButton.frame = CGRectMake(7.0, 340.0, 96.0, 60.0);
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive.png"] forState:UIControlStateNormal];
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active.png"] forState:UIControlStateHighlighted];
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive"] forState:UIControlStateNormal];
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active"] forState:UIControlStateHighlighted];
 	[self.view addSubview:pokeButton];
 	
 	if (_isCreator) {
@@ -98,8 +98,8 @@
 		
 		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		challengeButton.frame = CGRectMake(160.0, 340.0, 96.0, 60.0);
-		[challengeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_nonActive.png"] forState:UIControlStateNormal];
-		[challengeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_Active.png"] forState:UIControlStateHighlighted];
+		[challengeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_nonActive"] forState:UIControlStateNormal];
+		[challengeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_Active"] forState:UIControlStateHighlighted];
 		[challengeButton addTarget:self action:@selector(_goRechallenge) forControlEvents:UIControlEventTouchUpInside];
 		[self.view addSubview:challengeButton];
 	
@@ -108,8 +108,8 @@
 		
 		UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		acceptButton.frame = CGRectMake(160.0, 340.0, 96.0, 60.0);
-		[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive.png"] forState:UIControlStateNormal];
-		[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active.png"] forState:UIControlStateHighlighted];
+		[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive"] forState:UIControlStateNormal];
+		[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active"] forState:UIControlStateHighlighted];
 		[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];
 		[self.view addSubview:acceptButton];
 		
