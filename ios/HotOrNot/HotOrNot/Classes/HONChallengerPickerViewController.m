@@ -29,7 +29,6 @@
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic) int challengerID;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) UIView *imgHolderView;
 @property(nonatomic, strong) UIImage *challengeImage;
 @property(nonatomic, strong) NSString *fbID;
 @property(nonatomic, strong) NSString *fbName;
@@ -120,12 +119,9 @@
 	//NSLog(@"loadView");
 	[super loadView];
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.frame];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
 	[self.view addSubview:bgImgView];
-	
-	_imgHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
-	[self.view addSubview:_imgHolderView];
 	
 	HONHeaderView *mainHeaderView = [[HONHeaderView alloc] initWithTitle:@"SUBMIT"];
 	[self.view addSubview:mainHeaderView];
@@ -149,7 +145,7 @@
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 		
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 5.0, 240.0, 20.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 12.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -165,52 +161,54 @@
 	[subjectBGImageView addSubview:_subjectTextField];
 		
 	_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_editButton.frame = CGRectMake(270.0, 65.0, 44.0, 44.0);
+	_editButton.frame = CGRectMake(137.0, 6.0, 34.0, 34.0);
 	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive"] forState:UIControlStateNormal];
 	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active"] forState:UIControlStateHighlighted];
 	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 	[subjectBGImageView addSubview:_editButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 300.0, 200.0, 20.0)];
+	
+	
+	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	randomButton.frame = CGRectMake(18.0, 200.0, 284.0, 70.0);
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_nonActive"] forState:UIControlStateNormal];
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_Active"] forState:UIControlStateHighlighted];
+	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:randomButton];
+	
+	_loginFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_loginFriendsButton.frame = CGRectMake(18.0, 270.0, 284.0, 70.0);
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_nonActive"] forState:UIControlStateNormal];
+	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_Active"] forState:UIControlStateHighlighted];
+	[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_loginFriendsButton];
+	
+	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(30.0, 350.0, 174.0, 44.0)];
+	usernameBGImageView.image = [UIImage imageNamed:@"cameraExperience3rdStepInutField"];
+	usernameBGImageView.userInteractionEnabled = YES;
+	[self.view addSubview:usernameBGImageView];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 12.0, 174.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[UIColor whiteColor]];
+	[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-	_usernameTextField.text = @"Enter a username…";
+	_usernameTextField.text = @"ENTER USERNAME";
 	_usernameTextField.delegate = self;
 	[_usernameTextField setTag:1];
-	[self.view addSubview:_usernameTextField];
+	[usernameBGImageView addSubview:_usernameTextField];
 	
 	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	sendButton.frame = CGRectMake(220.0, 280.0, 92.0, 70.0);
+	sendButton.frame = CGRectMake(210.0, 340.0, 92.0, 70.0);
 	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
 	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
 	[sendButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:sendButton];
-	
-	_loginFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_loginFriendsButton.frame = CGRectMake(18.0, 338.0, 284.0, 70.0);
-	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_nonActive"] forState:UIControlStateNormal];
-	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_Active"] forState:UIControlStateHighlighted];
-	
-	if (FBSession.activeSession.state == 513)
-		[_loginFriendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
-	else
-		[_loginFriendsButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
-	
-	[self.view addSubview:_loginFriendsButton];
-	
-	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(18.0, 398.0, 284.0, 70.0);
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_nonActive"] forState:UIControlStateNormal];
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_Active"] forState:UIControlStateHighlighted];
-	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:randomButton];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -219,10 +217,10 @@
 	//UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 75.0, 200.0, 266.0)];
 	//imgView.image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 117.0, 200.0, 200.0)];
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 55.0, 90.0, 90.0)];
 	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
-	[_imgHolderView addSubview:imgView];
+	[self.view addSubview:imgView];
 	
 	if (_isFlipped)
 		imgView.image = [UIImage imageWithCGImage:imgView.image.CGImage scale:1.0 orientation:UIImageOrientationUpMirrored];
@@ -681,16 +679,9 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
-	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_nonActive" : @"loginFacebook_nonActive"] forState:UIControlStateNormal];
-	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:(FBSession.activeSession.state == 513) ? @"challengeFriendsButton_Active" : @"loginFacebook_Active"] forState:UIControlStateHighlighted];
-	
 	[_loginFriendsButton removeTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
 	[_loginFriendsButton removeTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
-	
-	if (FBSession.activeSession.state == 513)
-		[_loginFriendsButton addTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
-	else
-		[_loginFriendsButton addTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+	[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - TextField Delegates

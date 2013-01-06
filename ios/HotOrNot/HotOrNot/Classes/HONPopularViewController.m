@@ -13,6 +13,7 @@
 #import "HONImagePickerViewController.h"
 #import "HONVoteViewController.h"
 #import "HONLoginViewController.h"
+#import "HONAlternatingRowsViewCell.h"
 #import "HONPopularUserViewCell.h"
 #import "HONPopularSubjectViewCell.h"
 #import "HONAppDelegate.h"
@@ -169,6 +170,16 @@
 
 
 #pragma mark - Navigation
+- (void)_goDailyChallenge {
+	[[Mixpanel sharedInstance] track:@"Daily Challenge - Vote Wall"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Popular"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -234,28 +245,6 @@
 		[self _retrievePopularSubjects];
 }
 
-- (void)_popularUserChallenge:(NSNotification *)notification {
-	_popularUserVO = (HONPopularUserVO *)[notification object];
-	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-																	message:[NSString stringWithFormat:@"Want to challenge %@?", _popularUserVO.username]
-																  delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
-	[alert show];
-}
-
-- (void)_popularSubjectChallenge:(NSNotification *)notification {
-	_popularSubjectVO = (HONPopularSubjectVO *)[notification object];
-	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-																	message:[NSString stringWithFormat:@"Want to start a %@ challenge?", _popularSubjectVO.subjectName]
-																  delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
-	[alert show];
-}
-
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -272,9 +261,9 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
 	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView.dailyChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[headerView.dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	return (headerView);
 }
@@ -284,16 +273,7 @@
 		HONPopularUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-//			if (indexPath.row == 0) {
-//				int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-//				cell = [[HONPopularUserViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
-//			
-//			} else if (indexPath.row == [_users count] + 1)
-			if (indexPath.row == [_users count])
-				cell = [[HONPopularUserViewCell alloc] initAsBottomCell];
-			
-			else
-				cell = [[HONPopularUserViewCell alloc] initAsMidCell:indexPath.row];
+			cell = [[HONPopularUserViewCell alloc] initAsGreyCell:(indexPath.row % 2 == 1)];
 		}
 		
 		if (indexPath.row < [_users count])
@@ -306,16 +286,7 @@
 		HONPopularSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-//			if (indexPath.row == 0) {
-//				int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-//				cell = [[HONPopularSubjectViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
-//			
-//			} else if (indexPath.row == [_subjects count] + 1)
-			if (indexPath.row == [_subjects count])
-				cell = [[HONPopularSubjectViewCell alloc] initAsBottomCell];
-			
-			else
-				cell = [[HONPopularSubjectViewCell alloc] initAsMidCell:indexPath.row];
+			cell = [[HONPopularSubjectViewCell alloc] initAsGreyCell:(indexPath.row % 2 == 1)];
 		}
 		
 		if (indexPath.row < [_subjects count])
@@ -333,36 +304,44 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (78.0);
+	return (71.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	if (_isUsersList) {
+		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID)
+			return (indexPath);
+		
+		else
+			return (nil);
+	
+	} else
+		return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	
-	[(HONBasePopularViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
+	[(HONAlternatingRowsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	if (_isUsersList) {
-		HONPopularUserVO *vo = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
-		//NSLog(@"CHALLENGE USER");
+		_popularUserVO = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.userID]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Challenge User"
+																		message:[NSString stringWithFormat:@"Want to challenge %@?", _popularUserVO.username]
+																	  delegate:self
+														  cancelButtonTitle:@"Yes"
+														  otherButtonTitles:@"No", nil];
+		[alert show];
 	
 	} else {
-		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row];
+		_popularSubjectVO = (HONPopularSubjectVO *)[_subjects objectAtIndex:indexPath.row];
 		
-		//NSLog(@"VOTE SUBJECT :[%d]", vo.actives);
-		
-		if (vo.actives > 0)
-			[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithSubject:vo.subjectID] animated:YES];
-		
-		else
-			[[[UIAlertView alloc] initWithTitle:@"No Challenges" message:@"No games available!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Hashtag Challenge"
+																		message:[NSString stringWithFormat:@"Want to start a %@ challenge?", _popularSubjectVO.subjectName]
+																	  delegate:self
+														  cancelButtonTitle:@"Yes"
+														  otherButtonTitles:@"No", nil];
+		[alert show];
 	}
 }
 

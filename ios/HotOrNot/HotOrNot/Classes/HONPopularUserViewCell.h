@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "HONBasePopularViewCell.h"
+
+#import "HONAlternatingRowsViewCell.h"
 #import "HONPopularUserVO.h"
 
-@interface HONPopularUserViewCell : HONBasePopularViewCell
-- (id)initAsMidCell:(int)index;
-
+@interface HONPopularUserViewCell : HONAlternatingRowsViewCell
++ (NSString *)cellReuseIdentifier;
 @property (nonatomic, strong) HONPopularUserVO *userVO;
 @end

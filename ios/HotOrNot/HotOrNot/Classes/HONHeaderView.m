@@ -28,10 +28,10 @@
 		
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, 25.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [HONAppDelegate qualcommBold];
-		_titleLabel.textColor = [UIColor colorWithRed:0.12549019607843 green:0.31764705882353 blue:0.44705882352941 alpha:1.0];
+		_titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:20];
+		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
-		_titleLabel.shadowColor = [UIColor colorWithWhite:1.0 alpha:0.33];
+		_titleLabel.shadowColor = [HONAppDelegate honGreyTxtColor];
 		_titleLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];

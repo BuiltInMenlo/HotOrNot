@@ -106,7 +106,6 @@
 		4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B99E15FA75BC0023A0EE /* HONChallengeVO.m */; };
 		4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */; };
 		4C32B9A815FABBE80023A0EE /* HONVoteItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9A715FABBE80023A0EE /* HONVoteItemViewCell.m */; };
-		4C32B9AB15FAC0E40023A0EE /* HONBasePopularViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9AA15FAC0E40023A0EE /* HONBasePopularViewCell.m */; };
 		4C32B9AE15FAC1050023A0EE /* HONPopularUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9AD15FAC1050023A0EE /* HONPopularUserViewCell.m */; };
 		4C3D61F4162FC55400D7F0FC /* doneButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3D61F0162FC55400D7F0FC /* doneButton_Active.png */; };
 		4C3D61F5162FC55400D7F0FC /* doneButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3D61F1162FC55400D7F0FC /* doneButton_Active@2x.png */; };
@@ -290,6 +289,10 @@
 		4CA944A61699258000507A08 /* picChallenge-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944A21699258000507A08 /* picChallenge-Semibold.otf */; };
 		4CA944A91699426B00507A08 /* settingsRowZeroBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944A71699426B00507A08 /* settingsRowZeroBackground.png */; };
 		4CA944AA1699426B00507A08 /* settingsRowZeroBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944A81699426B00507A08 /* settingsRowZeroBackground@2x.png */; };
+		4CA944AD169A0D2F00507A08 /* HONAlternatingRowsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA944AC169A0D2E00507A08 /* HONAlternatingRowsViewCell.m */; };
+		4CA944AF169A1E6000507A08 /* ufonts.com_freightsans-black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944AE169A1E6000507A08 /* ufonts.com_freightsans-black.ttf */; };
+		4CA944B2169A29F300507A08 /* smallRowScore_Overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944B0169A29F100507A08 /* smallRowScore_Overlay.png */; };
+		4CA944B3169A29F300507A08 /* smallRowScore_Overlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944B1169A29F200507A08 /* smallRowScore_Overlay@2x.png */; };
 		4CAAED6B161CBC44005AB2E1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CAAED69161CBC43005AB2E1 /* Default.png */; };
 		4CAAED6C161CBC44005AB2E1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CAAED6A161CBC44005AB2E1 /* Default@2x.png */; };
 		4CAAED6F161CBCB5005AB2E1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CAAED6E161CBCB5005AB2E1 /* Default-568h@2x.png */; };
@@ -448,8 +451,6 @@
 		4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewController.m; sourceTree = "<group>"; };
 		4C32B9A615FABBE80023A0EE /* HONVoteItemViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteItemViewCell.h; sourceTree = "<group>"; };
 		4C32B9A715FABBE80023A0EE /* HONVoteItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteItemViewCell.m; sourceTree = "<group>"; };
-		4C32B9A915FAC0E40023A0EE /* HONBasePopularViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBasePopularViewCell.h; sourceTree = "<group>"; };
-		4C32B9AA15FAC0E40023A0EE /* HONBasePopularViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBasePopularViewCell.m; sourceTree = "<group>"; };
 		4C32B9AC15FAC1050023A0EE /* HONPopularUserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularUserViewCell.h; sourceTree = "<group>"; };
 		4C32B9AD15FAC1050023A0EE /* HONPopularUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularUserViewCell.m; sourceTree = "<group>"; };
 		4C3D61F0162FC55400D7F0FC /* doneButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doneButton_Active.png; sourceTree = "<group>"; };
@@ -785,6 +786,11 @@
 		4CA944A21699258000507A08 /* picChallenge-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "picChallenge-Semibold.otf"; sourceTree = "<group>"; };
 		4CA944A71699426B00507A08 /* settingsRowZeroBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = settingsRowZeroBackground.png; sourceTree = "<group>"; };
 		4CA944A81699426B00507A08 /* settingsRowZeroBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "settingsRowZeroBackground@2x.png"; sourceTree = "<group>"; };
+		4CA944AB169A0D2E00507A08 /* HONAlternatingRowsViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlternatingRowsViewCell.h; sourceTree = "<group>"; };
+		4CA944AC169A0D2E00507A08 /* HONAlternatingRowsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAlternatingRowsViewCell.m; sourceTree = "<group>"; };
+		4CA944AE169A1E6000507A08 /* ufonts.com_freightsans-black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ufonts.com_freightsans-black.ttf"; sourceTree = "<group>"; };
+		4CA944B0169A29F100507A08 /* smallRowScore_Overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = smallRowScore_Overlay.png; sourceTree = "<group>"; };
+		4CA944B1169A29F200507A08 /* smallRowScore_Overlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smallRowScore_Overlay@2x.png"; sourceTree = "<group>"; };
 		4CAAED69161CBC43005AB2E1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		4CAAED6A161CBC44005AB2E1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		4CAAED6E161CBCB5005AB2E1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -915,6 +921,7 @@
 		4C0C4185162CD2BA007F0DA3 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				4CA944AE169A1E6000507A08 /* ufonts.com_freightsans-black.ttf */,
 				4CA9449F1699258000507A08 /* picChallenge-Bold.otf */,
 				4CA944A01699258000507A08 /* picChallenge-Light.otf */,
 				4CA944A11699258000507A08 /* picChallenge-Regular.otf */,
@@ -975,8 +982,6 @@
 		4C32B9A415FAB5FA0023A0EE /* Popular */ = {
 			isa = PBXGroup;
 			children = (
-				4C32B9A915FAC0E40023A0EE /* HONBasePopularViewCell.h */,
-				4C32B9AA15FAC0E40023A0EE /* HONBasePopularViewCell.m */,
 				4C41096E15FAE42E00E34F4E /* HONPopularSubjectViewCell.h */,
 				4C41096F15FAE42E00E34F4E /* HONPopularSubjectViewCell.m */,
 				4C32B9AC15FAC1050023A0EE /* HONPopularUserViewCell.h */,
@@ -1461,6 +1466,8 @@
 				4CB472F8168C26AC007153DF /* HONInviteFriendsViewController.m */,
 				4C067D101698BF3A004B99BB /* HONChallengeTableHeaderView.h */,
 				4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */,
+				4CA944AB169A0D2E00507A08 /* HONAlternatingRowsViewCell.h */,
+				4CA944AC169A0D2E00507A08 /* HONAlternatingRowsViewCell.m */,
 			);
 			name = Root;
 			sourceTree = "<group>";
@@ -1588,6 +1595,8 @@
 		4C824FBF16124D7D00C34FD9 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				4CA944B0169A29F100507A08 /* smallRowScore_Overlay.png */,
+				4CA944B1169A29F200507A08 /* smallRowScore_Overlay@2x.png */,
 				4CA9446D16990EC500507A08 /* lockedHeaderBackground.jpg */,
 				4CA9446E16990EC500507A08 /* lockedHeaderBackground@2x.jpg */,
 				4CA944111698FA3300507A08 /* rowGray_Active.png */,
@@ -2203,6 +2212,9 @@
 				4CA944A61699258000507A08 /* picChallenge-Semibold.otf in Resources */,
 				4CA944A91699426B00507A08 /* settingsRowZeroBackground.png in Resources */,
 				4CA944AA1699426B00507A08 /* settingsRowZeroBackground@2x.png in Resources */,
+				4CA944AF169A1E6000507A08 /* ufonts.com_freightsans-black.ttf in Resources */,
+				4CA944B2169A29F300507A08 /* smallRowScore_Overlay.png in Resources */,
+				4CA944B3169A29F300507A08 /* smallRowScore_Overlay@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2249,7 +2261,6 @@
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
 				4C32B9A815FABBE80023A0EE /* HONVoteItemViewCell.m in Sources */,
-				4C32B9AB15FAC0E40023A0EE /* HONBasePopularViewCell.m in Sources */,
 				4C32B9AE15FAC1050023A0EE /* HONPopularUserViewCell.m in Sources */,
 				4C41097015FAE42E00E34F4E /* HONPopularSubjectViewCell.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
@@ -2291,6 +2302,7 @@
 				4CB472F9168C26AC007153DF /* HONInviteFriendsViewController.m in Sources */,
 				4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */,
 				4C067D121698BF3A004B99BB /* HONChallengeTableHeaderView.m in Sources */,
+				4CA944AD169A0D2F00507A08 /* HONAlternatingRowsViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

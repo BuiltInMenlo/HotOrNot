@@ -22,7 +22,7 @@
 #import "HONUsernameViewController.h"
 #import "HONChallengeTableHeaderView.h"
 
-@interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, ASIHTTPRequestDelegate, FBLoginViewDelegate>
+@interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, ASIHTTPRequestDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
 @property (nonatomic, strong) UISwitch *activatedSwitch;
@@ -62,7 +62,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"PROFILE"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
 	[self.view addSubview:headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
@@ -105,6 +105,16 @@
 
 
 #pragma mark - Navigation
+- (void)_goDailyChallenge {
+	[[Mixpanel sharedInstance] track:@"Daily Challenge - Vote Wall"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Settings"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -190,9 +200,9 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
 	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView.dailyChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[headerView.dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	return (headerView);
 }
@@ -205,12 +215,13 @@
 			cell = [[HONSettingsViewCell alloc] initAsTopCell];
 		
 		} else
-			cell = [[HONSettingsViewCell alloc] initAsMidCell:[_captions objectAtIndex:indexPath.row]];
+			cell = [[HONSettingsViewCell alloc] initAsMidCell:[_captions objectAtIndex:indexPath.row] isGrey:(indexPath.row % 2 == 1)];
 	}
 	
-	if (indexPath.row == 1)
+	if (indexPath.row == 1) {
+		[cell hideChevron];
 		cell.accessoryView = _notificationSwitch;
-	
+	}
 	else if (indexPath.row == 2)
 		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
 			
@@ -221,15 +232,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == 0)
-		return (140.0);
-	
-	else
-		return (70.0);
+	return (70.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (78.0);
+	return (71.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -308,20 +315,6 @@
 			_activatedSwitch.on = !_activatedSwitch.on;
 			break;
 	}
-}
-
-
-#pragma mark - Login Delegates
-- (void)loginViewShowingLoggedInUser:(FBLoginView *)loginView {
-	NSLog(@"-----loginViewShowingLoggedInUser-----");
-}
-
-- (void)loginViewFetchedUserInfo:(FBLoginView *)loginView user:(id<FBGraphUser>)user {
-	NSLog(@"-----loginViewFetchedUserInfo\n%@", user);
-}
-
-- (void)loginViewShowingLoggedOutUser:(FBLoginView *)loginView {
-	NSLog(@"-----loginViewShowingLoggedOutUser-----");
 }
 
 

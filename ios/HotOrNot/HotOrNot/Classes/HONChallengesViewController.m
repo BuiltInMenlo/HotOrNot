@@ -60,7 +60,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_createChallenge:) name:@"CREATE_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closePreview:) name:@"CLOSE_PREVIEW" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dailyChallenge:) name:@"DAILY_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 	}
@@ -204,6 +203,20 @@
 
 
 #pragma mark - Navigation
+- (void)_goDailyChallenge {
+	//	if (FBSession.activeSession.state == 513) {
+	[[Mixpanel sharedInstance] track:@"Daily Challenge - Challenge Wall"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsDailyChallenge:[HONAppDelegate dailySubjectName]]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+	
+	//	} else
+	//		[self _goLogin];
+}
+
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Challenge Wall"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -303,22 +316,6 @@
 	}
 }
 
-
-
-- (void)_dailyChallenge:(NSNotification *)notification {
-//	if (FBSession.activeSession.state == 513) {
-	[[Mixpanel sharedInstance] track:@"Daily Challenge - Challenge Wall"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsDailyChallenge:[HONAppDelegate dailySubjectName]]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
-	
-//	} else
-//		[self _goLogin];
-}
-
 - (void)_nextChallengeBlock:(NSNotification *)notification {
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -349,9 +346,9 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 78.0)];
+	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
 	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView.dailyChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[headerView.dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	return (headerView);
 }
@@ -360,20 +357,14 @@
 	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 
 	if (cell == nil) {
-//		if (indexPath.row == 0) {
-//			int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-//			cell = [[HONChallengeViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
-//		
-//		} else if (indexPath.row == [_challenges count] + 1)
 		if (indexPath.row == [_challenges count])
-			cell = [[HONChallengeViewCell alloc] initAsBottomCell:_isMoreLoading];
+			cell = [[HONChallengeViewCell alloc] initAsGreyBottomCell:(indexPath.row % 2 == 1) isEnabled:_isMoreLoading];
 				
 		else
-			cell = [[HONChallengeViewCell alloc] initAsChallengeCell];
+			cell = [[HONChallengeViewCell alloc] initAsGreyChallengeCell:(indexPath.row % 2 == 1)];
 	}
 	
 	if (indexPath.row < [_challenges count])
-	//if (indexPath.row > 0 && indexPath.row < [_challenges count] + 1)
 		cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -388,7 +379,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (78.0);
+	return (71.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

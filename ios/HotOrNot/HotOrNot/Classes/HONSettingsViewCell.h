@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONSettingsViewCell : UITableViewCell
+#import "HONAlternatingRowsViewCell.h"
+
+@interface HONSettingsViewCell : HONAlternatingRowsViewCell
 + (NSString *)cellReuseIdentifier;
 
 - (id)initAsTopCell;
-- (id)initAsMidCell:(NSString *)caption;
+- (id)initAsMidCell:(NSString *)caption isGrey:(BOOL)grey;
 - (void)updateCaption:(NSString *)caption;
-
-- (void)didSelect;
 @end

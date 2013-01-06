@@ -47,7 +47,7 @@
 		bgImageView.userInteractionEnabled = YES;
 		[self addSubview:bgImageView];
 		
-		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE CHALLENGE"];
+		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE PHOTO"];
 		[self addSubview:_headerView];
 		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -77,14 +77,17 @@
 		[subjectBGImageView addSubview:_subjectTextField];
 		
 		_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_editButton.frame = CGRectMake(260.0, 5.0, 34.0, 34.0);
+		_editButton.frame = CGRectMake(248.0, 1.0, 34.0, 34.0);
 		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive"] forState:UIControlStateNormal];
 		[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active"] forState:UIControlStateHighlighted];
 		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 		[subjectBGImageView addSubview:_editButton];
 		
-		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, [UIScreen mainScreen].bounds.size.height - 127.0, 306.0, 50.0)];
+		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, [UIScreen mainScreen].bounds.size.height - 172.0, 306.0, 50.0)];
+		_trackBGImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
+		_trackBGImageView.userInteractionEnabled = YES;
 		_trackBGImageView.hidden = YES;
+		[self addSubview:_trackBGImageView];
 		
 		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, _gutterSize.height, 250.0, 250.0)];
 		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding"];
@@ -131,7 +134,7 @@
 		//[_footerHolderView addSubview:cameraRollButton];
 		
 		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		changeCameraButton.frame = CGRectMake(243.0, 10.0, 75.0, 75.0);
+		changeCameraButton.frame = CGRectMake(220.0, 20.0, 75.0, 75.0);
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive"] forState:UIControlStateNormal];
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
@@ -230,7 +233,7 @@
 	_itunesURL = [itunesURL stringByReplacingOccurrencesOfString:@"https://" withString:@"itms://"];
 	_songName = songName;
 	
-	UIImageView *albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 7.0, 50.0, 50.0)];
+	UIImageView *albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
 	[albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil options:SDWebImageLowPriority];
 	[_trackBGImageView addSubview:albumImageView];
 	
@@ -247,6 +250,8 @@
 	[buyTrackButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateHighlighted];
 	[buyTrackButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
 	[_trackBGImageView addSubview:buyTrackButton];
+	
+	_trackBGImageView.hidden = NO;
 }
 
 #pragma mark -Navigation

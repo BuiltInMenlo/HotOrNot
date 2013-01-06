@@ -271,6 +271,10 @@ NSString *const FacebookAppID = @"529054720443694";
 	return [UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0];
 }
 
++ (UIFont *)freightSansBlack {
+	return [UIFont fontWithName:@"FreightSansBlack" size:18.0];
+}
+
 + (UIFont *)qualcommBold {
 	return [UIFont fontWithName:@"Qualcomm-Bold" size:18.0];
 }
@@ -398,6 +402,18 @@ NSString *const FacebookAppID = @"529054720443694";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
+	
+//	NSMutableArray *fontNames = [[NSMutableArray alloc] init];
+//	NSArray *fontFamilyNames = [UIFont familyNames];
+//	
+//	for (NSString *familyName in fontFamilyNames) {
+//		NSLog(@"Font Family Name = %@", familyName);
+//		
+//		NSArray *names = [UIFont fontNamesForFamilyName:familyName];
+//		NSLog(@"Font Names = %@", fontNames);
+//		
+//		[fontNames addObjectsFromArray:names];
+//	}
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"shown_settings"];

@@ -7,18 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+
+#import "HONAlternatingRowsViewCell.h"
 #import "HONChallengeVO.h"
 
-@interface HONChallengeViewCell : UITableViewCell
-
+@interface HONChallengeViewCell : HONAlternatingRowsViewCell
 + (NSString *)cellReuseIdentifier;
-
-- (id)initAsTopCell:(int)points withSubject:(NSString *)subject;
-- (id)initAsBottomCell:(BOOL)isEnabled;
-- (id)initAsChallengeCell;
-
-- (void)didSelect;
+- (id)initAsGreyChallengeCell:(BOOL)grey;
+- (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-
 @end
