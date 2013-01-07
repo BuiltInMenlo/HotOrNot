@@ -28,7 +28,7 @@
 		
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, 25.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:20];
+		_titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.shadowColor = [HONAppDelegate honGreyTxtColor];

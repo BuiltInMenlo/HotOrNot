@@ -30,8 +30,9 @@
 		_dailyChallengeButton.frame = CGRectMake(91.0, 0.0, 229.0, 70.0);
 		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
 		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
-		_dailyChallengeButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		_dailyChallengeButton.titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:14];
 		[_dailyChallengeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+		_dailyChallengeButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -32.0, -10.0, 32.0);
 		[_dailyChallengeButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
 		[self addSubview:_dailyChallengeButton];
 	}
