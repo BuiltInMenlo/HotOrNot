@@ -35,45 +35,12 @@
 	return (NSStringFromClass(self));
 }
 
-- (id)initAsTopCell:(int)points withSubject:(NSString *)subject {
-	if ((self = [super init])) {
-		UIButton *dailyButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		dailyButton.frame = CGRectMake(0.0, 0.0, 320.0, 55.0);
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_nonActive"] forState:UIControlStateNormal];
-		[dailyButton setBackgroundImage:[UIImage imageNamed:@"headerTableRow_Active"] forState:UIControlStateHighlighted];
-		[dailyButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:dailyButton];
-		
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 25.0, 50.0, 16.0)];
-		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		ptsLabel.textColor = [UIColor whiteColor];
-		ptsLabel.backgroundColor = [UIColor clearColor];
-		ptsLabel.textAlignment = NSTextAlignmentCenter;
-		ptsLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-		ptsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		ptsLabel.text = [NSString stringWithFormat:@"%d", points];
-		[self addSubview:ptsLabel];
-		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 25.0, 140.0, 16.0)];
-		subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		subjectLabel.textColor = [UIColor whiteColor];
-		subjectLabel.backgroundColor = [UIColor clearColor];
-		subjectLabel.textAlignment = NSTextAlignmentCenter;
-		subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-		subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		subjectLabel.text = subject;
-		[self addSubview:subjectLabel];
-	}
-	
-	return (self);
-}
-
 - (id)initAsWaitingCell {
 	if ((self = [super init])) {
 		_hasChallenger = NO;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 54.0, 320.0, 341.0)];
-		//bgImgView.image = [UIImage imageNamed:@"challengeBackground"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 394.0)];
+		bgImgView.image = [UIImage imageNamed:@"challengeWall_notInProgress"];
 		[self addSubview:bgImgView];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -91,8 +58,8 @@
 	if ((self = [super init])) {
 		_hasChallenger = YES;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 54.0, 320.0, 341.0)];
-		//bgImgView.image = [UIImage imageNamed:@"challengeBackground"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 244.0)];
+		bgImgView.image = [UIImage imageNamed:@"challengeWall_inProgress"];
 		[self addSubview:bgImgView];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -114,50 +81,66 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UILabel *ctaLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 260.0, 16.0)];
+	UILabel *ctaLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 5.0, 260.0, 16.0)];
 	ctaLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 	ctaLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	ctaLabel.backgroundColor = [UIColor clearColor];
 	ctaLabel.text = [HONAppDelegate ctaForChallenge:_challengeVO];
 	[self addSubview:ctaLabel];
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 25.0, 200.0, 16.0)];
-	titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	titleLabel.textColor = [HONAppDelegate honBlueTxtColor];
-	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.text = _challengeVO.subjectName;
-	//[self addSubview:titleLabel];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 20.0, 200.0, 16.0)];
+	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.text = _challengeVO.subjectName;
+	[self addSubview:subjectLabel];
 	
-	//[_headerView setChallengeVO:challengeVO];
 	
 	if (_hasChallenger) {
-		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(25.0, 71.0, 120.0, 245.0)];
+		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 47.0, 153.0, 153.0)];
 		_lHolderView.clipsToBounds = YES;
 		[self addSubview:_lHolderView];
 		
-		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
+		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kMediumW, kMediumH)];
 		lImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil options:SDWebImageLowPriority];
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
 		
-		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(173.0, 71.0, 120.0, 245.0)];
+		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
+		lScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
+		[_lHolderView addSubview:lScoreImageView];
+		
+		UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 7.0, 145.0, 18.0)];
+		lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+		lScoreLabel.backgroundColor = [UIColor clearColor];
+		lScoreLabel.textColor = [UIColor whiteColor];
+		lScoreLabel.textAlignment = NSTextAlignmentRight;
+		lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+		[lScoreImageView addSubview:lScoreLabel];
+		
+		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 47.0, 153.0, 153.0)];
 		_rHolderView.clipsToBounds = YES;
 		[self addSubview:_rHolderView];
 		
-		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(-50.0, 0.0, kMediumW, kMediumH)];
+		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kMediumW, kMediumH)];
 		rImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil options:SDWebImageLowPriority];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
-		UIImageView *creatorAvatarImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 25.0, 25.0)];
-		[creatorAvatarImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.creatorFB]] placeholderImage:nil];
-		[_lHolderView addSubview:creatorAvatarImgView];
+		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
+		rScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
+		[_rHolderView addSubview:rScoreImageView];
 		
-		UIImageView *challengerAvatarImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 25.0, 25.0)];
-		[challengerAvatarImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.challengerFB]] placeholderImage:nil];
-		[_rHolderView addSubview:challengerAvatarImgView];
+		UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 7.0, 145.0, 18.0)];
+		rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
+		rScoreLabel.backgroundColor = [UIColor clearColor];
+		rScoreLabel.textColor = [UIColor whiteColor];
+		rScoreLabel.textAlignment = NSTextAlignmentRight;
+		rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+		[rScoreImageView addSubview:rScoreLabel];
+
 		
 		_lSingleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goSingleTap:)];
 		_lDoubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goDoubleTap:)];
@@ -174,9 +157,10 @@
 		[_rDoubleTapRecognizer setNumberOfTapsRequired:2];
 		[rImgView addGestureRecognizer:_rSingleTapRecognizer];
 		[rImgView addGestureRecognizer:_rDoubleTapRecognizer];
-				
+		
+		
 		UIButton *scoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		scoreButton.frame = CGRectMake(20.0, 370.0, 84.0, 16.0);
+		scoreButton.frame = CGRectMake(20.0, 215.0, 84.0, 16.0);
 		[scoreButton setTitleColor:[HONAppDelegate honBlueTxtColor] forState:UIControlStateNormal];
 		scoreButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 		[scoreButton setTitle:[NSString stringWithFormat:@"%d likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)] forState:UIControlStateNormal];
@@ -190,65 +174,28 @@
 			[rImgView removeGestureRecognizer:_rSingleTapRecognizer];
 			[rImgView removeGestureRecognizer:_rDoubleTapRecognizer];
 			
+			
+			UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"challengeWallScore_loserOverlay"]];
+			overlayImageView.frame = CGRectOffset(overlayImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 47.0);
+			[self addSubview:overlayImageView];
+			
+			UIImageView *resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_challengeVO.creatorScore > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
+			resultsImageView.frame = CGRectOffset(resultsImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 55.0 : 130.0, 80.0);
+			[self addSubview:resultsImageView];
+			
+			
+			
 			if (_challengeVO.creatorScore > _challengeVO.challengerScore) {
-				UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
-				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
-				[self addSubview:lScoreImgView];
-				
-				UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
-				lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
-				lScoreLabel.backgroundColor = [UIColor clearColor];
-				lScoreLabel.textColor = [UIColor whiteColor];
-				lScoreLabel.textAlignment = NSTextAlignmentCenter;
-				lScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.creatorScore + 1)];
-				[lScoreImgView addSubview:lScoreLabel];
-				
-				//rScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.challengerScore + 1)];
 				
 			} else if (_challengeVO.creatorScore < _challengeVO.challengerScore) {
-				UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
-				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
-				[self addSubview:rScoreImgView];
-				
-				UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
-				rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
-				rScoreLabel.backgroundColor = [UIColor clearColor];
-				rScoreLabel.textColor = [UIColor whiteColor];
-				rScoreLabel.textAlignment = NSTextAlignmentCenter;
-				rScoreLabel.text = [NSString stringWithFormat:@"%d Winning", (_challengeVO.challengerScore + 1)];
-				[rScoreImgView addSubview:rScoreLabel];
-				
-				//lScoreLabel.text = [NSString stringWithFormat:@"%d Losing", (_challengeVO.creatorScore + 1)];
 			
 			} else {
-				UIImageView *rScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(190.0, 146.0, 84.0, 84.0)];
-				rScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
-				[self addSubview:rScoreImgView];
 				
-				UILabel *rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
-				rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
-				rScoreLabel.backgroundColor = [UIColor clearColor];
-				rScoreLabel.textColor = [UIColor whiteColor];
-				rScoreLabel.textAlignment = NSTextAlignmentCenter;
-				rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.challengerScore + 1)];
-				[rScoreImgView addSubview:rScoreLabel];
-				
-				UIImageView *lScoreImgView = [[UIImageView alloc] initWithFrame:CGRectMake(43.0, 146.0, 84.0, 84.0)];
-				lScoreImgView.image = [UIImage imageNamed:@"likeOverlay"];
-				[self addSubview:lScoreImgView];
-				
-				UILabel *lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 18.0, 84.0, 18.0)];
-				lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18];
-				lScoreLabel.backgroundColor = [UIColor clearColor];
-				lScoreLabel.textColor = [UIColor whiteColor];
-				lScoreLabel.textAlignment = NSTextAlignmentCenter;
-				lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
-				[lScoreImgView addSubview:lScoreLabel];
 			}
 		}
 		
 	} else {
-		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 71.0, kLargeW * 0.5, kLargeW * 0.5)];
+		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 47.0, 306.0, 306.0)];
 		[self addSubview:_lHolderView];
 		
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW * 0.5, kLargeW * 0.5)];

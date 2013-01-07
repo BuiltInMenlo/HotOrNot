@@ -124,7 +124,7 @@
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:_captureButton];
-				
+		
 		// Add the gallery button
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraRollButton.frame = CGRectMake(10.0, 10.0, 75.0, 75.0);

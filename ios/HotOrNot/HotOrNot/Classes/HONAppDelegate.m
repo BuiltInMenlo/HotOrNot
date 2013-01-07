@@ -76,7 +76,16 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 + (NSString *)ctaForChallenge:(HONChallengeVO *)vo {
-	NSString *message = (vo.statusID == 2) ? [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:0] : [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:1];
+	NSString *message;
+	
+	if (vo.statusID == 1)
+		message = [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:2];
+	
+	else if (vo.statusID == 2)
+		message = [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:0];
+	
+	else
+		message = [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:1];
 	
 	message = [message stringByReplacingOccurrencesOfString:@"{{CREATOR}}" withString:vo.creatorName];
 	message = [message stringByReplacingOccurrencesOfString:@"{{CHALLENGER}}" withString:vo.challengerName];
@@ -524,7 +533,8 @@ NSString *const FacebookAppID = @"529054720443694";
 																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"], @"enabled", nil], nil] forKey:@"web_ctas"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
 																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"waiting"],
-																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"], nil] forKey:@"ctas"];
+																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"],
+																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"created"], nil] forKey:@"ctas"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 																			  [[appDict objectForKey:@"add_networks"] objectForKey:@"chartboost"], @"chartboost",
 																			  [[appDict objectForKey:@"add_networks"] objectForKey:@"kiip"], @"kiip",

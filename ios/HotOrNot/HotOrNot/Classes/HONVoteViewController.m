@@ -481,7 +481,7 @@
 //		} else {
 			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
 			
-			cell = (vo.statusID == 2) ? [[HONVoteItemViewCell alloc] initAsWaitingCell] : [[HONVoteItemViewCell alloc] initAsStartedCell];
+			cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONVoteItemViewCell alloc] initAsWaitingCell] : [[HONVoteItemViewCell alloc] initAsStartedCell];
 			cell.challengeVO = vo;
 //		}
 	}
@@ -494,11 +494,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == 0)
-		return (55.0);
-	
-	else
-		return (424.0);
+	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+	return ((vo.statusID == 1 || vo.statusID == 2) ? 394.0 : 244.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
