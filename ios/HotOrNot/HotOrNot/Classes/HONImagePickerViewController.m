@@ -203,6 +203,7 @@
 		}
 	}
 	_cameraIrisImageView.hidden = YES;
+	[_cameraIrisImageView removeFromSuperview];
 	[_plCameraIrisAnimationView removeFromSuperview];
 	
 	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
@@ -258,11 +259,6 @@
 	if (_isFirstAppearance) {
 		_isFirstAppearance = NO;
 		
-		if (!_hasPlayedAudio) {
-			_hasPlayedAudio = YES;
-			[self performSelector:@selector(_playAudio) withObject:self afterDelay:1.0];
-		}
-		
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
 						
@@ -283,7 +279,13 @@
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-				[self _showOverlay];
+				[self performSelector:@selector(_showOverlay) withObject:self afterDelay:0.33];
+				//[self _showOverlay];
+				
+				if (!_hasPlayedAudio) {
+					_hasPlayedAudio = YES;
+					[self performSelector:@selector(_playAudio) withObject:self afterDelay:0.5];
+				}
 			}];
 		
 		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -296,7 +298,12 @@
 			_imagePicker.wantsFullScreenLayout = NO;
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
-			[self.navigationController presentViewController:_imagePicker animated:NO completion:nil];
+			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+				if (!_hasPlayedAudio) {
+					_hasPlayedAudio = YES;
+					[self performSelector:@selector(_playAudio) withObject:self afterDelay:0.5];
+				}
+			}];
 		}
 	}
 }
@@ -332,7 +339,7 @@
 	[_cameraOverlayView setSubjectName:_subjectName];
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
-	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
+	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
 
 - (void)autofocusCamera {
@@ -352,20 +359,34 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[_focusTimer invalidate];
-	_focusTimer = nil;
 	
-	[_mpMoviePlayerController stop];
+	if (_focusTimer != nil) {
+		[_focusTimer invalidate];
+		_focusTimer = nil;
+	}
+	
+	if (_mpMoviePlayerController != nil) {
+		[_mpMoviePlayerController stop];
+		_mpMoviePlayerController = nil;
+	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+		if (_imagePicker != nil)
+			_imagePicker = nil;
+		
+		_cameraOverlayView = nil;
+		;
+	}];
 }
 
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView {
-	[_focusTimer invalidate];
-	_focusTimer = nil;
+	if (_focusTimer != nil) {
+		[_focusTimer invalidate];
+		_focusTimer = nil;
+	}
 	
 	[_imagePicker takePicture];
 }
@@ -394,8 +415,10 @@
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
-	[_focusTimer invalidate];
-	_focusTimer = nil;
+	if (_focusTimer != nil) {
+		[_focusTimer invalidate];
+		_focusTimer = nil;
+	}
 	
 	[_mpMoviePlayerController stop];
 	
@@ -438,8 +461,11 @@
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-	[_focusTimer invalidate];
-	_focusTimer = nil;
+	if (_focusTimer != nil) {
+		[_focusTimer invalidate];
+		_focusTimer = nil;
+	}
+	
 	_subjectName = _cameraOverlayView.subjectName;
 	
 	[[Mixpanel sharedInstance] track:@"Take Photo"
@@ -588,6 +614,8 @@
 		
 		else
 			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithImage:image subjectName:_subjectName] animated:NO];
+		
+		_hasPlayedAudio = NO;
 	}
 }
 
@@ -671,7 +699,7 @@
 					[_mpMoviePlayerController prepareToPlay];
 					[_mpMoviePlayerController play];
 					
-					[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+					//[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 				}
 			}
 		}

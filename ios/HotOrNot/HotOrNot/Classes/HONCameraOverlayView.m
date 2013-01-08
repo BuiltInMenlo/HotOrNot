@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UIView *footerHolderView;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *editButton;
+@property (nonatomic, strong) UIButton *cameraBackButton;
 @property (nonatomic, strong) NSString *artistName;
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *itunesURL;
@@ -84,7 +85,7 @@
 		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 		[subjectBGImageView addSubview:_editButton];
 		
-		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, [UIScreen mainScreen].bounds.size.height - 172.0, 306.0, 50.0)];
+		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 308.0, 306.0, 50.0)];
 		_trackBGImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
 		_trackBGImageView.userInteractionEnabled = YES;
 		_trackBGImageView.hidden = YES;
@@ -115,7 +116,7 @@
 //		}
 		
 		// Add the bottom bar
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 120.0, 640.0, 105.0)];
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 374.0, 640.0, 105.0)];
 		[self addSubview:_footerHolderView];
 		
 		// Add the gallery button
@@ -201,12 +202,12 @@
 		imgView.frame = frame;
 	}
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 5.0, 74.0, 34.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:backButton];
+	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_cameraBackButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
+	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
+	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
+	[_cameraBackButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:_cameraBackButton];
 	
 	[_headerView setTitle:@"PREVIEW"];
 	
@@ -223,6 +224,10 @@
 	}
 	
 	[_headerView setTitle:@"TAKE CHALLENGE"];
+	
+	[_cameraBackButton removeFromSuperview];
+	_cameraBackButton = nil;
+	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(0.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
 	} completion:nil];

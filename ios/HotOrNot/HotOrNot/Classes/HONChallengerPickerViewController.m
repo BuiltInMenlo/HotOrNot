@@ -127,9 +127,9 @@
 	[self.view addSubview:mainHeaderView];
 		
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[mainHeaderView addSubview:backButton];
 	
@@ -140,7 +140,7 @@
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[mainHeaderView addSubview:cancelButton];
 	
-	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(140.0, 70.0, 174.0, 44.0)];
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 78.0, 174.0, 44.0)];
 	subjectBGImageView.image = [UIImage imageNamed:@"cameraExperience3rdStepInutField"];
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
@@ -170,7 +170,7 @@
 	
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(23.0, 205.0, 274.0, 74.0);
+	randomButton.frame = CGRectMake(23.0, 203.0, 274.0, 74.0);
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
