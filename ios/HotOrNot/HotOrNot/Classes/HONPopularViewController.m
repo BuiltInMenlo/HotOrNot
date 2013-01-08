@@ -71,7 +71,7 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Popular"];
 	[self.view addSubview:_headerView];
 	
-	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(68.0, 0.0, 184.0, 45.0)];
+	_toggleImgView = [[UIImageView alloc] initWithFrame:CGRectMake(79.0, 0.0, 184.0, 45.0)];
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders"];
 	[_headerView addSubview:_toggleImgView];
 	

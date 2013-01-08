@@ -54,11 +54,11 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	//[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Invite Friends"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"SELECT FRIENDS"];
 	//[self.view addSubview:headerView];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(247.0, 5.0, 74.0, 34.0);
+	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -107,7 +107,7 @@
 	CGFloat headerBarHeight = 45.0;
 	fbHeaderHeight = headerBarHeight;
 	
-	self.friendPickerHeaderView = [[HONHeaderView alloc] initWithTitle:@"Select Friends"];
+	self.friendPickerHeaderView = [[HONHeaderView alloc] initWithTitle:@"SELECT FRIENDS"];
 	self.friendPickerHeaderView.autoresizingMask = self.friendPickerHeaderView.autoresizingMask | UIViewAutoresizingFlexibleWidth;
 	
 	// Cancel Button
@@ -115,7 +115,7 @@
 	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[customCancelButton addTarget:self action:@selector(facebookViewControllerCancelWasPressed:) forControlEvents:UIControlEventTouchUpInside];
-	customCancelButton.frame = CGRectMake(0.0, 5.0, 74.0, 34.0);
+	customCancelButton.frame = CGRectMake(5.0, 5.0, 64.0, 34.0);
 	[self.friendPickerHeaderView addSubview:customCancelButton];
 	
 	// Done Button
@@ -123,9 +123,8 @@
 	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[customDoneButton addTarget:self action:@selector(facebookViewControllerDoneWasPressed:) forControlEvents:UIControlEventTouchUpInside];
-	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 59.0, 5.0, 54.0, 34.0);
+	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 69.0, 5.0, 64.0, 34.0);
 	[self.friendPickerHeaderView addSubview:customDoneButton];
-	
 }
 
 #pragma mark - Custom Facebook Select Friends Search Methods
@@ -137,7 +136,7 @@
 		CGFloat searchBarHeight = 44.0;
 		self.searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 45.0, self.view.bounds.size.width, searchBarHeight)];
 		self.searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
-		self.searchBar.tintColor = [UIColor colorWithRed:0.2863 green:0.2706 blue:0.7098 alpha:1.0];
+		self.searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
 		self.searchBar.delegate = self;
 		self.searchBar.showsCancelButton = NO;
 		

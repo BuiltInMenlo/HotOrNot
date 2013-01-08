@@ -18,7 +18,7 @@
 @synthesize switchButton = _switchButton;
 
 - (id)init {
-	if ((self = [super initWithFrame:CGRectMake(5.0, 25.0, 64.0, 34.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(6.0, 26.0, 64.0, 34.0)])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateFBPosting:) name:@"UPDATE_FB_POSTING" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 		

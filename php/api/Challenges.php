@@ -141,6 +141,27 @@
 			return ($preview_url);
 		}
 		
+		function itunesArtist ($itunes_id) {
+			$preview_url = "";
+			
+			if ($itunes_id != "") {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $itunes_id);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				$response = curl_exec($ch);
+			    curl_close ($ch);    
+				$json_arr = json_decode($response, true);
+			
+				if (count($json_arr['results']) > 0) {
+					$json_results = $json_arr['results'][0];
+					$preview_url = $json_results['artistName'];
+				}
+			}
+			
+			return ($preview_url);
+		}
+		
 		function itunesSongName ($itunes_id) {
 			$preview_url = "";
 			
@@ -653,6 +674,7 @@
 				'id' => 0, 
 				'title' => $subject_name, 
 				'preview_url' => "",
+				'artist' => "",
 				'song_name' => "",
 				'img_url' => "",
 				'itunes_url' => ""
@@ -664,7 +686,8 @@
 				$subject_arr = array(
 					'id' => $subject_obj->id, 
 					'title' => $subject_name, 
-					'preview_url' => $this->itunesPreviewURL($subject_obj->itunes_id),
+					'preview_url' => $this->itunesPreviewURL($subject_obj->itunes_id),					
+					'artist' => $this->itunesArtist($subject_obj->itunes_id), 
 					'song_name' => $this->itunesSongName($subject_obj->itunes_id),
 					'img_url' => $this->itunesArtworkURL($subject_obj->itunes_id),
 					'itunes_url' => $this->itunesID($subject_obj->itunes_id)

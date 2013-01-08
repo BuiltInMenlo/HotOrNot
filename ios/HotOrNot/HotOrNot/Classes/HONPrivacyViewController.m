@@ -6,12 +6,11 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "MBProgressHUD.h"
 #import "Mixpanel.h"
 
 #import "HONPrivacyViewController.h"
 #import "HONAppDelegate.h"
-
-#import "MBProgressHUD.h"
 #import "HONHeaderView.h"
 
 @interface HONPrivacyViewController () <UIWebViewDelegate>
@@ -45,17 +44,17 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Privacy"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"PRIVACY POLICY"];
 	[self.view addSubview:headerView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:backButton];
+	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:cancelButton];
 	
-	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0)];
+	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0)];
 	[webView setBackgroundColor:[UIColor clearColor]];
 	webView.delegate = self;
 	[webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/privacy.htm", [HONAppDelegate apiServerPath]]]]];
@@ -77,9 +76,9 @@
 }
 
 #pragma mark - Navigation
-- (void)_goBack {
+- (void)_goCancel {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-	[self.navigationController popViewControllerAnimated:YES];
+	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)_removeHUD {

@@ -146,7 +146,7 @@
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
 	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 225.0, 320.0, 34.0)];
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
 	[self.view addSubview:_emptySetImgView];
 	
@@ -326,9 +326,9 @@
 - (void)_goTutorial {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
-	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+//	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+//	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[Mixpanel sharedInstance] track:@"Tutorial"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -337,7 +337,7 @@
 	
 	NSString *buttonImage = ([HONAppDelegate isRetina5]) ? @"tutorial-568h" : @"tutorial";
 	
-	_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 10.0, 320.0, ([HONAppDelegate isRetina5]) ? 558.0 : 470.0)];
+	_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 412.0)];
 	_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
 	_tutorialOverlayImgView.userInteractionEnabled = YES;
 	[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
@@ -348,16 +348,20 @@
 	[_tutorialOverlayImgView addSubview:closeTutorialButton];
 
 	UIButton *inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteFriendsButton.frame = CGRectMake(0.0, 0.0, 91.0, 70.0);
+	inviteFriendsButton.frame = CGRectMake(0.0, 45.0, 91.0, 70.0);
 	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_nonActive"] forState:UIControlStateNormal];
 	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateHighlighted];
 	[inviteFriendsButton addTarget:self action:@selector(_goTutorialInviteFriends) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialOverlayImgView addSubview:inviteFriendsButton];
 
 	UIButton *dailyChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	dailyChallengeButton.frame = CGRectMake(80.0, 0.0, 229.0, 70.0);
+	dailyChallengeButton.frame = CGRectMake(91.0, 45.0, 229.0, 70.0);
 	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
 	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
+	dailyChallengeButton.titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:14];
+	[dailyChallengeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+	dailyChallengeButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -33.0, -10.0, 33.0);
+	[dailyChallengeButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
 	[dailyChallengeButton addTarget:self action:@selector(_goTutorialDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialOverlayImgView addSubview:dailyChallengeButton];
 	

@@ -9,6 +9,7 @@
 #import "HONVotersViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
+#import "HONAlternatingRowsViewCell.h"
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
 #import "HONImagePickerViewController.h"
@@ -75,7 +76,7 @@
 //	[_headerView addSubview:backButton];
 
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(247.0, 5.0, 74.0, 34.0);
+	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -176,26 +177,16 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_voters count] + 2);
+	return ([_voters count]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONVoterViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
-	if (cell == nil) {
-		if (indexPath.row == 0)
-			cell = [[HONVoterViewCell alloc] initAsTopCell];
-		
-		else if (indexPath.row == [_voters count] + 1)
-			cell = [[HONVoterViewCell alloc] initAsBottomCell];
-		
-		else
-			cell = [[HONVoterViewCell alloc] initAsMidCell];
-	}
+	if (cell == nil)
+		cell = [[HONVoterViewCell alloc] initAsGreyCell:indexPath.row % 2 == 1];
 	
-	if (indexPath.row > 0 && indexPath.row < [_voters count] + 1)
-		cell.voterVO = [_voters objectAtIndex:indexPath.row - 1];
-	
+	cell.voterVO = [_voters objectAtIndex:indexPath.row];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	return (cell);
@@ -204,19 +195,24 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == 0)
-		return (20.0);
-	
-	else
-		return (70.0);
+	return (70.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	HONAlternatingRowsViewCell *cell = (HONAlternatingRowsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	[cell didSelect];
+	
+	_voterVO = (HONVoterVO *)[_voters objectAtIndex:indexPath.row];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"
+																		 message:[NSString stringWithFormat:@"Want to %@ challenge %@?", _challengeVO.subjectName, _voterVO.username]
+																		delegate:self
+															cancelButtonTitle:@"Yes"
+															otherButtonTitles:@"No", nil];
+	[alertView show];
 }
 
 

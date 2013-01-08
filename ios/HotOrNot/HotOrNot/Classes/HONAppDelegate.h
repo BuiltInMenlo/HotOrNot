@@ -92,8 +92,8 @@ extern NSString *const FacebookAppID;
 #define kThumb1W 50.0
 #define kThumb1H 67.0
 
-#define kMediumW 182.0
-#define kMediumH 244.0
+#define kMediumW 153.0
+#define kMediumH 205.0
 
 #define kLargeW 612.0
 #define kLargeH 816.0

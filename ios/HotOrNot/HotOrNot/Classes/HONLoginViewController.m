@@ -8,6 +8,7 @@
 
 #import "ASIFormDataRequest.h"
 #import "Mixpanel.h"
+#import "UIImageView+WebCache.h"
 
 #import "HONLoginViewController.h"
 #import "HONAppDelegate.h"
@@ -41,11 +42,23 @@
 	bgImgView.image = [UIImage imageNamed:bgAsset];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *HeaderView = [[HONHeaderView alloc] initWithTitle:@"FACEBOOK"];
-	[self.view addSubview:HeaderView];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"FACEBOOK"];
+	[self.view addSubview:headerView];
+	
+	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:cancelButton];
+	
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 55.0, 300.0, 264.0)];
+	imageView.backgroundColor = [UIColor blackColor];
+	[imageView setImageWithURL:[NSURL URLWithString:@""] placeholderImage:nil];
+	[self.view addSubview:imageView];
 	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	facebookButton.frame = CGRectMake(18.0, self.view.frame.size.height - 84.0, 283.0, 74.0);
+	facebookButton.frame = CGRectMake(19.0, 365.0, 283.0, 74.0);
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_nonActive"] forState:UIControlStateNormal];
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_Active"] forState:UIControlStateHighlighted];
 	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];
@@ -69,6 +82,10 @@
 }
 
 #pragma mark - Navigation
+- (void)_goCancel {
+	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)_goFacebook {
 	[[Mixpanel sharedInstance] track:@"Login Facebook Button"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -88,7 +105,7 @@
 					[HONAppDelegate setAllowsFBPosting:YES];
 					
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+					//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					//if ([[HONAppDelegate infoForUser] objectForKey:@"id"] != @"1") {
 						ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 						[userRequest setDelegate:self];

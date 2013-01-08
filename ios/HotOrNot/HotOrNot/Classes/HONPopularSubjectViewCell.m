@@ -23,16 +23,16 @@
 - (void)setSubjectVO:(HONPopularSubjectVO *)subjectVO {
 	_subjectVO = subjectVO;
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 19.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, 18.0, 200.0, 16.0)];
+	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:14];
+	subjectLabel.textColor = [UIColor blackColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _subjectVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(25.0, 36.0, 200.0, 16.0)];
-	scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-	scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, 35.0, 200.0, 16.0)];
+	scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	scoreLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	scoreLabel.backgroundColor = [UIColor clearColor];
 	scoreLabel.text = (_subjectVO.score == 1) ? @"1 challenge" : [NSString stringWithFormat:@"%d challenges", _subjectVO.score];
 	[self addSubview:scoreLabel];

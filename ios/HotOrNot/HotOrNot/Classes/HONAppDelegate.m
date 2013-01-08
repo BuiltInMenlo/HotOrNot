@@ -305,7 +305,7 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 + (UIColor *)honGreyTxtColor {
-	return ([UIColor colorWithWhite:0.482 alpha:1.0]);
+	return ([UIColor colorWithWhite:0.5922 alpha:1.0]);
 }
 
 
@@ -590,16 +590,16 @@ NSString *const FacebookAppID = @"529054720443694";
 			
 			//[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 			
-			if (![self openSession]) {
-				self.loginViewController = [[HONLoginViewController alloc] init];
-				
-				_loginAlertView = [[UIAlertView alloc] initWithTitle:@"Username"
-																			message:@"Login to Facebook to see your friends or change your username."
-																		  delegate:self
-															  cancelButtonTitle:nil
-															  otherButtonTitles:@"Login", @"Change Username", nil];
-				[_loginAlertView show];
-			}
+//			if (![self openSession]) {
+//				self.loginViewController = [[HONLoginViewController alloc] init];
+//				
+//				_loginAlertView = [[UIAlertView alloc] initWithTitle:@"Username"
+//																			message:@"Login to Facebook to see your friends or change your username."
+//																		  delegate:self
+//															  cancelButtonTitle:nil
+//															  otherButtonTitles:@"Login", @"Change Username", nil];
+//				[_loginAlertView show];
+//			}
 			
 			_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
 			[self.window addSubview:_facebookSwitchView];

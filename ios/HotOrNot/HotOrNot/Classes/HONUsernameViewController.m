@@ -47,42 +47,47 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
 	[self.view addSubview:bgImgView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"CHANGE USERNAME"];
 	[self.view addSubview:headerView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(261.0, 5.0, 54.0, 34.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:doneButton];
+	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:cancelButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 70.0, 240.0, 20.0)];
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 70.0, 274.0, 44.0)];
+	subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
+	subjectBGImageView.userInteractionEnabled = YES;
+	[self.view addSubview:subjectBGImageView];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[HONAppDelegate honBlueTxtColor]];
+	[_usernameTextField setTextColor:[UIColor blackColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+	_usernameTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 	_usernameTextField.delegate = self;
-	[self.view addSubview:_usernameTextField];
+	[subjectBGImageView addSubview:_usernameTextField];
 	
 	_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_editButton.frame = CGRectMake(270.0, 65.0, 44.0, 44.0);
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive"] forState:UIControlStateNormal];
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active"] forState:UIControlStateHighlighted];
+	_editButton.frame = CGRectMake(237.0, 5.0, 34.0, 34.0);
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_nonActive"] forState:UIControlStateNormal];
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_Active"] forState:UIControlStateHighlighted];
 	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_editButton];
+	[subjectBGImageView addSubview:_editButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(18.0, 100.0, 283.0, 78.0);
+	submitButton.frame = CGRectMake(18.0, 187.0, 283.0, 78.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -115,7 +120,7 @@
 
 
 #pragma mark - Navigation
-- (void)_goDone {
+- (void)_goCancel {
 	[[Mixpanel sharedInstance] track:@"Change Username - Close"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

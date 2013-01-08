@@ -26,6 +26,7 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
 @property (nonatomic, strong) UISwitch *activatedSwitch;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSArray *captions;
 @end
 
@@ -35,7 +36,7 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
 		
-		_captions = [NSArray arrayWithObjects:@"", @"Notifications", (FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook", @"Change Username", @"Privacy Policy", @"Support", nil];
+		_captions = [NSArray arrayWithObjects:@"", @"NOTIFICATIONS", (FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK", @"CHANGE USERNAME", @"SUPPORT", @"PRIVACY POLICY", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -62,8 +63,8 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	[self.view addSubview:headerView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+	[self.view addSubview:_headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -185,8 +186,10 @@
 - (void)_sessionStateChanged:(NSNotification *)notification {
 	FBSession *session = (FBSession *)[notification object];
 	
+	[_headerView setTitle:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+	
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
-	[cell updateCaption:(session.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
+	[cell updateCaption:(session.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
 }
 
 
@@ -223,7 +226,7 @@
 		cell.accessoryView = _notificationSwitch;
 	}
 	else if (indexPath.row == 2)
-		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
+		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
 			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);
@@ -252,19 +255,19 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
-	UINavigationController *navController;
+	UINavigationController *navigationController;
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	switch (indexPath.row) {
 		case 2:
 			if (FBSession.activeSession.state == 513) {
 				[FBSession.activeSession closeAndClearTokenInformation];
-				[cell updateCaption:@"Login to Facebook"];
+				[cell updateCaption:@"LOGIN TO FACEBOOK"];
 			
 			} else {
-				navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-				[navController setNavigationBarHidden:YES];
-				[self presentViewController:navController animated:YES completion:nil];
+				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:YES completion:nil];
 				//[cell updateCaption:@"Logout of Facebook"];
 			}
 			
@@ -273,19 +276,24 @@
 			break;
 			
 		case 3:
-			navController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
-			[navController setNavigationBarHidden:YES];
-			[self presentViewController:navController animated:YES completion:nil];
-			break;
-			
-		case 4:
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
-			[self.navigationController pushViewController:[[HONPrivacyViewController alloc] init] animated:YES];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
 		case 5:
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
-			[self.navigationController pushViewController:[[HONSupportViewController alloc] init] animated:YES];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
+			break;
+			
+		case 4:
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSupportViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
 			break;
 	}
 }

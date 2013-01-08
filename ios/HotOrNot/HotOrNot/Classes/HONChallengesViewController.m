@@ -39,6 +39,7 @@
 @property(nonatomic, strong) NSIndexPath *idxPath;
 @property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) HONHeaderView *headerView;
+@property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) NSMutableArray *friends;
 @property(nonatomic, retain) HONChallengePreviewViewController *previewViewController;
 @property(nonatomic) int blockCounter;
@@ -108,6 +109,10 @@
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
+	
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
+	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
+	[self.view addSubview:_emptySetImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -568,6 +573,7 @@
 					_isMoreLoading = NO;
 				
 				_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
+				_emptySetImgView.hidden = ([_challenges count] > 0);
 				[_tableView reloadData];
 			}
 		}

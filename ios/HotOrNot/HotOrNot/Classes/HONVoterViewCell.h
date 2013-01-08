@@ -8,16 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "HONAlternatingRowsViewCell.h"
 #import "HONVoterVO.h"
 
-@interface HONVoterViewCell : UITableViewCell
-
+@interface HONVoterViewCell : HONAlternatingRowsViewCell
 + (NSString *)cellReuseIdentifier;
 
-- (id)initAsTopCell;
-- (id)initAsBottomCell;
-- (id)initAsMidCell;
-
 @property (nonatomic, strong) HONVoterVO *voterVO;
-
 @end

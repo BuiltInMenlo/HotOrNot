@@ -48,17 +48,17 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:_headerTitle];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:[_headerTitle uppercaseString]];
 	[self.view addSubview:headerView];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(247.0, 5.0, 74.0, 34.0);
+	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:cancelButton];
 		
-	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 44.0, self.view.frame.size.width, self.view.frame.size.height - 44.0)];
+	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 45.0, self.view.frame.size.width, self.view.frame.size.height - 45.0)];
 	[webView setBackgroundColor:[UIColor clearColor]];
 	webView.delegate = self;
 	[webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_url]]];

@@ -119,7 +119,7 @@
 	//NSLog(@"loadView");
 	[super loadView];
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.frame];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
 	[self.view addSubview:bgImgView];
 	
@@ -134,7 +134,7 @@
 	[mainHeaderView addSubview:backButton];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(247.0, 5.0, 74.0, 34.0);
+	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -145,7 +145,7 @@
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 		
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 12.0, 240.0, 20.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -153,7 +153,7 @@
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[_subjectTextField setTextColor:[UIColor blackColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+	_subjectTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = _subjectName;
 	_subjectTextField.delegate = self;
@@ -162,33 +162,40 @@
 		
 	_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_editButton.frame = CGRectMake(137.0, 6.0, 34.0, 34.0);
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_nonActive"] forState:UIControlStateNormal];
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"closeXButton_Active"] forState:UIControlStateHighlighted];
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_nonActive"] forState:UIControlStateNormal];
+	[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_Active"] forState:UIControlStateHighlighted];
 	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 	[subjectBGImageView addSubview:_editButton];
 	
 	
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(18.0, 200.0, 284.0, 70.0);
+	randomButton.frame = CGRectMake(23.0, 205.0, 274.0, 74.0);
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:randomButton];
 	
 	_loginFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_loginFriendsButton.frame = CGRectMake(18.0, 270.0, 284.0, 70.0);
+	_loginFriendsButton.frame = CGRectMake(23.0, 300.0, 274.0, 58.0);
 	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_nonActive"] forState:UIControlStateNormal];
 	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_Active"] forState:UIControlStateHighlighted];
 	[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_loginFriendsButton];
 	
-	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(30.0, 350.0, 174.0, 44.0)];
-	usernameBGImageView.image = [UIImage imageNamed:@"cameraExperience3rdStepInutField"];
+	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 380.0, 274.0, 44.0)];
+	usernameBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
 	usernameBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:usernameBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 12.0, 174.0, 20.0)];
+	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	sendButton.frame = CGRectMake(237.0, 6.0, 34.0, 34.0);
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"submitText"] forState:UIControlStateNormal];
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"submitText"] forState:UIControlStateHighlighted];
+	[sendButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[usernameBGImageView addSubview:sendButton];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 250.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -196,19 +203,12 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+	_usernameTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-	_usernameTextField.text = @"ENTER USERNAME";
+	_usernameTextField.text = @"ENTER A USERNAME HERE";
 	_usernameTextField.delegate = self;
 	[_usernameTextField setTag:1];
 	[usernameBGImageView addSubview:_usernameTextField];
-	
-	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	sendButton.frame = CGRectMake(210.0, 340.0, 92.0, 70.0);
-	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
-	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
-	[sendButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:sendButton];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -551,7 +551,7 @@
 	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[customDoneButton addTarget:self action:@selector(facebookViewControllerDoneWasPressed:) forControlEvents:UIControlEventTouchUpInside];
-	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 59.0, 5.0, 54.0, 34.0);
+	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 69.0, 5.0, 64.0, 34.0);
 	[self.friendPickerHeaderView addSubview:customDoneButton];
 	
 }
@@ -699,7 +699,7 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		textField.text = @"#";
+		textField.text = @"";
 	}
 }
 
@@ -723,10 +723,12 @@
 	
 	} else if (textField.tag == 1) {
 		if ([textField.text length] == 0)
-			textField.text = @"Enter a username…";
+			textField.text = @"ENTER A USERNAME HERE";
 		
-		else
+		else {
 			_fbName = textField.text;
+			[self _goUsernameSubmit];
+		}
 	}
 }
 

@@ -35,36 +35,32 @@
 
 - (id)initAsTopCell {
 	if ((self = [self initAsGreyCell:NO])) {
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 50.0, 50.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, 9.0, 50.0, 50.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", [[HONAppDelegate infoForUser] objectForKey:@"fb_id"]]] placeholderImage:nil options:SDWebImageLowPriority];
 		[self addSubview:avatarImageView];
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 10.0, 180.0, 16.0)];
-		nameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		nameLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		nameLabel.backgroundColor = [UIColor clearColor];
-//		nameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-//		nameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		nameLabel.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
-		[self addSubview:nameLabel];
-		
 		int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 30.0, 200.0, 16.0)];
-		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		CGSize size = [[NSString stringWithFormat:@"%d ", score] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:UILineBreakModeClip];
+		
+		UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 15.0, size.width, size.height)];
+		scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		scoreLabel.textColor = [UIColor blackColor];
+		scoreLabel.backgroundColor = [UIColor clearColor];
+		scoreLabel.text = [NSString stringWithFormat:@"%d ", score];
+		[self addSubview:scoreLabel];
+		
+		UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0 + size.width, 22.0, 50.0, 12.0)];
+		ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:8];
 		ptsLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		ptsLabel.backgroundColor = [UIColor clearColor];
-//		ptsLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-//		ptsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		ptsLabel.text = [NSString stringWithFormat:@"%d PTS", score];
+		ptsLabel.text = (score == 1) ? @"PT" : @"PTS";
 		[self addSubview:ptsLabel];
 		
-		UILabel *rankLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 50.0, 140.0, 16.0)];
-		rankLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		UILabel *rankLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 36.0, 140.0, 16.0)];
+		rankLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		rankLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		rankLabel.backgroundColor = [UIColor clearColor];
-//		rankLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-//		rankLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		rankLabel.text = [NSString stringWithFormat:@"RANK: %d", (arc4random() % 100)];
+		rankLabel.text = [NSString stringWithFormat:@"ranked #%d", (arc4random() % 100)];
 		[self addSubview:rankLabel];
 	}
 	
@@ -75,8 +71,8 @@
 	if ((self = [self initAsGreyCell:grey])) {
 		_caption = caption;
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 26.0, 250.0, 16.0)];
-		_captionLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:15];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 29.0, 250.0, 16.0)];
+		_captionLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:14];
 		_captionLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.text = _caption;

@@ -661,7 +661,7 @@
 				_iTunesPreviewURL = [subjectResult objectForKey:@"itunes_id"];
 				
 				if (_iTunesPreview.length > 0) {
-					[_cameraOverlayView songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
+					[_cameraOverlayView artistName:[subjectResult objectForKey:@"artist"] songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
 					
 					//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
 					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:_iTunesPreview]];

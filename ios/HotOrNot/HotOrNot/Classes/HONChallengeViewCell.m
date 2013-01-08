@@ -49,11 +49,11 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UIView *creatorImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(20.0, 10.0, 50.0, 50.0)];
+	UIView *creatorImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(16.0, 10.0, 50.0, 50.0)];
 	creatorImgHolderView.clipsToBounds = YES;
 	[self addSubview:creatorImgHolderView];
 	
-	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kThumb1W, kThumb1H)];
+	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -8.0, kThumb1W, kThumb1H)];
 	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
 	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[creatorImgHolderView addSubview:creatorImageView];
@@ -62,7 +62,7 @@
 	creatorScoreBGImageView.image = [UIImage imageNamed:@"smallRowScore_Overlay"];
 	[creatorImgHolderView addSubview:creatorScoreBGImageView];
 	
-	UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 34.0, 50.0, 16.0)];
+	UILabel *creatorScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 35.0, 49.0, 16.0)];
 	creatorScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 	creatorScoreLabel.textColor = [UIColor whiteColor];
 	creatorScoreLabel.backgroundColor = [UIColor clearColor];
@@ -73,14 +73,14 @@
 	[creatorImgHolderView addSubview:creatorScoreLabel];
 	
 	
-	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(85.0, 10.0, 200.0, 16.0)];
-	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 18.0, 200.0, 16.0)];
+	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 	challengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	challengeLabel.backgroundColor = [UIColor clearColor];
 	[self addSubview:challengeLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(85.0, 26.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 36.0, 200.0, 16.0)];
+	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:12];
 	subjectLabel.textColor = [UIColor blackColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
@@ -110,11 +110,11 @@
 		
 		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 		
-		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(70.0, 10.0, 50.0, 50.0)];
+		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(66.0, 10.0, 50.0, 50.0)];
 		challengerImgHolderView.clipsToBounds = YES;
 		[self addSubview:challengerImgHolderView];
 		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kThumb1W, kThumb1H)];
+		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -8.0, kThumb1W, kThumb1H)];
 		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", _challengeVO.challengerImgPrefix]] placeholderImage:nil];
 		[challengerImgHolderView addSubview:challengerImageView];
@@ -123,7 +123,7 @@
 		challengerScoreBGImageView.image = [UIImage imageNamed:@"smallRowScore_Overlay"];
 		[challengerImgHolderView addSubview:challengerScoreBGImageView];
 				
-		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 34.0, 50.0, 16.0)];
+		UILabel *challengerScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 35.0, 49.0, 16.0)];
 		challengerScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 		challengerScoreLabel.textColor = [UIColor whiteColor];
 		challengerScoreLabel.shadowColor = [UIColor blackColor];
