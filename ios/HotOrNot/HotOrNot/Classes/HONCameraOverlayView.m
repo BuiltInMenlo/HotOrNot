@@ -33,7 +33,6 @@
 @implementation HONCameraOverlayView
 
 @synthesize subjectName = _subjectName;
-
 @synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame {
@@ -44,7 +43,7 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
 		
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 45.0, 320.0, ([HONAppDelegate isRetina5]) ? 503.0 : 405.0)];
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -20.0, 320.0, ([HONAppDelegate isRetina5]) ? 1136.0 : 480.0)];
 		bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
 		bgImageView.userInteractionEnabled = YES;
 		[self addSubview:bgImageView];

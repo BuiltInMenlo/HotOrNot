@@ -37,6 +37,7 @@
 @property(nonatomic, strong) UIButton *editButton;
 @property(nonatomic, strong) UIButton *loginFriendsButton;
 @property(nonatomic, strong) UITextField *usernameTextField;
+@property(nonatomic, strong) UIImageView *bgTextImageView;
 @property(nonatomic) BOOL isFlipped;
 @property (retain, nonatomic) FBFriendPickerViewController *friendPickerController;
 @property (retain, nonatomic) UISearchBar *searchBar;
@@ -182,6 +183,11 @@
 	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_Active"] forState:UIControlStateHighlighted];
 	[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_loginFriendsButton];
+	
+	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 55.0, 320.0, 55.0)];
+	_bgTextImageView.image = [UIImage imageNamed:@"keyboardInputField"];
+	_bgTextImageView.hidden = YES;
+	[self.view addSubview:_bgTextImageView];
 	
 	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 380.0, 274.0, 44.0)];
 	usernameBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
@@ -702,8 +708,10 @@
 		
 		textField.text = @"";
 		
+		_bgTextImageView.hidden = NO;
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
-			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, _usernameTextField.frame.origin.y - 216.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
+			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, _bgTextImageView.frame.origin.y - 235.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, _usernameTextField.frame.origin.y - 182.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
 		} completion:nil];
 	}
 }
@@ -736,8 +744,12 @@
 		}
 		
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
+			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 55.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, 14.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
-		} completion:nil];
+		
+		} completion:^(BOOL finished) {
+			_bgTextImageView.hidden = YES;
+		}];
 	}
 }
 

@@ -390,6 +390,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
@@ -453,6 +454,11 @@
 	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
 }
 
+- (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView {
+}
+
+
+
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	if (_focusTimer != nil) {
@@ -498,8 +504,25 @@
 	}
 }
 
-- (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView {
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+		_imagePicker.cameraOverlayView = nil;
+		_imagePicker.navigationBarHidden = YES;
+		_imagePicker.toolbarHidden = YES;
+		_imagePicker.wantsFullScreenLayout = NO;
+		_imagePicker.showsCameraControls = NO;
+		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
+		
+		[self _showOverlay];
+		
+	} else {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	}
 }
+
 
 
 - (void)_acceptPhoto {
@@ -609,10 +632,11 @@
 		[self dismissViewControllerAnimated:YES completion:nil];
 		
 		NSLog(@"_imagePicker.cameraDevice:[%d]", _imagePicker.cameraDevice);
-		NSLog(@"UIImagePickerControllerCameraDeviceFront:[%d]", UIImagePickerControllerCameraDeviceFront);
-		NSLog(@"UIImagePickerControllerCameraDeviceRear:[%d]", UIImagePickerControllerCameraDeviceRear);
+		NSLog(@"sourceType:[%d]", _imagePicker.sourceType);
+		NSLog(@"UIImagePickerControllerSourceTypeCamera:[%d]", UIImagePickerControllerSourceTypeCamera);
+		NSLog(@"UIImagePickerControllerSourceTypePhotoLibrary:[%d]", UIImagePickerControllerSourceTypePhotoLibrary);
 		
-		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
+		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront && _imagePicker.sourceType != UIImagePickerControllerSourceTypePhotoLibrary)
 			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithFlippedImage:image subjectName:_subjectName] animated:NO];
 		
 		else
@@ -622,24 +646,6 @@
 	}
 }
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.cameraOverlayView = nil;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = NO;
-		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
-	
-		[self _showOverlay];
-	
-	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-	}
-}
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
