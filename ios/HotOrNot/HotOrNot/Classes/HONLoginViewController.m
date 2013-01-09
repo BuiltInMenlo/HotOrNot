@@ -30,10 +30,12 @@
 
 - (void)loadView {
 	[super loadView];
+	int ind = (arc4random() % 5) + 1;
 	
-	[[Mixpanel sharedInstance] track:@"Login Screen"
+	[[Mixpanel sharedInstance] track:@"FB Login"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"FB_00%d", ind], @"Image", nil]];
 	
 	
 	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? @"facebookBackground-568h" : @"facebookBackground";
@@ -54,7 +56,7 @@
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 55.0, 300.0, 264.0)];
 	imageView.backgroundColor = [UIColor blackColor];
-	[imageView setImageWithURL:[NSURL URLWithString:@""] placeholderImage:nil];
+	imageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"FB_00%d", ind]];
 	[self.view addSubview:imageView];
 	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
