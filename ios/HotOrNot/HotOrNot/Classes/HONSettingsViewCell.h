@@ -16,4 +16,5 @@
 - (id)initAsTopCell;
 - (id)initAsMidCell:(NSString *)caption isGrey:(BOOL)grey;
 - (void)updateCaption:(NSString *)caption;
+- (void)updateTopCell;
 @end

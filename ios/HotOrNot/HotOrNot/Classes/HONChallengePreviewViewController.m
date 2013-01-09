@@ -145,13 +145,17 @@
 
 #pragma mark - Navigation
 - (void)_goAccept {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:_challengeVO];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSE_PREVIEW" object:nil];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:_challengeVO];
+	}];
 }
 
 - (void)_goRechallenge {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATE_CHALLENGE" object:_challengeVO];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSE_PREVIEW" object:nil];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATE_CHALLENGE" object:_challengeVO];
+	}];
 }
 
 - (void)_goPokeCreator {
@@ -166,7 +170,9 @@
 	[pokeRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.creatorID] forKey:@"pokeeID"];
 	[pokeRequest startAsynchronous];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSE_PREVIEW" object:nil];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	}];
 }
 
 - (void)_goPokeChallenger {

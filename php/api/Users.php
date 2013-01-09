@@ -203,7 +203,7 @@
 			$user_result = mysql_query($query);
 			
 			if (mysql_num_rows($user_result) == 0) {
-				$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `fb_id` = "'. $fb_id .'", `gender` = "'. $gender .'" WHERE `id` ='. $user_id .';';
+				$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", WHERE `id` ='. $user_id .';';
 				$result = mysql_query($query);
 			
 				$query = 'SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = "'. $fb_id .'";';

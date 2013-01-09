@@ -281,13 +281,25 @@
 }
 
 - (void)_goUsernameSubmit {
-	[[Mixpanel sharedInstance] track:@"Preview Challenge - Username Submit"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"name"] isEqualToString:_usernameTextField.text]) {
+		UIAlertView *alert = [[UIAlertView alloc]
+									 initWithTitle:@"Username Error"
+									 message:@"You cannot challenge yourself!"
+									 delegate:nil
+									 cancelButtonTitle:@"OK"
+									 otherButtonTitles:nil];
+		
+		[alert show];
 	
-	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
-	_fbName = _usernameTextField.text;
-	[self _goUsernameChallenge];
+	} else {
+		[[Mixpanel sharedInstance] track:@"Preview Challenge - Username Submit"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+		_fbName = _usernameTextField.text;
+		[self _goUsernameChallenge];
+	}
 }
 
 - (void)_goChallengeFriends {

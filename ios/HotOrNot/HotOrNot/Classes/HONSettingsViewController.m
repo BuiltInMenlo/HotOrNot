@@ -10,6 +10,7 @@
 #import "Facebook.h"
 #import "ASIFormDataRequest.h"
 #import "Mixpanel.h"
+#import "MBProgressHUD.h"
 
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
@@ -28,6 +29,8 @@
 @property (nonatomic, strong) UISwitch *activatedSwitch;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSArray *captions;
+@property(nonatomic, strong) UIButton *refreshButton;
+@property(nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONSettingsViewController
@@ -65,6 +68,18 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
 	[self.view addSubview:_headerView];
+	
+	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
+	[activityIndicatorView startAnimating];
+	[_headerView addSubview:activityIndicatorView];
+	
+	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:_refreshButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -179,6 +194,27 @@
 													  otherButtonTitles:@"No", nil];
 	[alert show];
 	_activatedSwitch = switchView;
+}
+
+- (void)_goRefresh {
+	[[Mixpanel sharedInstance] track:@"Settings - Refresh"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_refreshButton.hidden = YES;
+	
+	ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
+	[userRequest setDelegate:self];
+	[userRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[userRequest setTag:0];
+	[userRequest startAsynchronous];
+	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Refreshing…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
 }
 
 
@@ -328,7 +364,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONSettingsViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONSettingsViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		NSError *error = nil;
@@ -339,11 +375,25 @@
 		
 		else {
 			[HONAppDelegate writeUserInfo:userResult];
+			HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+			[cell updateTopCell];
+		}
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
 		}
 	}
 }
 
 -(void)requestFailed:(ASIHTTPRequest *)request {
 	NSLog(@"requestFailed:\n[%@]", request.error);
+	
+	_refreshButton.hidden = NO;
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 }
 @end

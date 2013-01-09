@@ -49,6 +49,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallenge:) name:@"NEW_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
@@ -71,6 +72,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallenge:) name:@"NEW_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
@@ -93,6 +95,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallenge:) name:@"NEW_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
@@ -478,6 +481,22 @@
 }
 
 
+- (void)_newChallenge:(NSNotification *)notification {
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Create Challenge"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
+	//	if (FBSession.activeSession.state == 513) {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
+	//	} else
+	//		[self _goLogin];
+}
+
+
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ([_challenges count]);
@@ -513,7 +532,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-	return ((vo.statusID == 1 || vo.statusID == 2) ? 346.0 : 244.0);
+	return ((vo.statusID == 1 || vo.statusID == 2) ? 352.0 : 244.0);//346.0 : 244.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

@@ -17,7 +17,7 @@
 #import "HONVoterVO.h"
 
 
-@interface HONVoteItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate>
+@interface HONVoteItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
@@ -80,14 +80,12 @@
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
-		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(271.0, 6.0, 34.0, 34.0);
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
-		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:moreButton];
-	}
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(271.0, 6.0, 34.0, 34.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) ? @selector(_goMore) : @selector(_goNewChallengeAlert) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:moreButton];
 	
 	if (_hasChallenger) {
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 153.0, 153.0)];
@@ -133,24 +131,34 @@
 		_rScoreLabel.textAlignment = NSTextAlignmentRight;
 		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 		[rScoreImageView addSubview:_rScoreLabel];
-
+		
+		UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"challengeWallScore_loserOverlay"]];
+		overlayImageView.frame = CGRectOffset(overlayImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 46.0);
+		[self addSubview:overlayImageView];
+		
+		UIImageView *vsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(138.0, 97.0, 44.0, 44.0)];
+		vsImageView.image = [UIImage imageNamed:@"orIcon"];
+		[self addSubview:vsImageView];
+		
 		_lSingleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goSingleTap:)];
 		_lDoubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goDoubleTap:)];
+		
+		_rSingleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goSingleTap:)];
+		_rDoubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goDoubleTap:)];
+		
+		[_lSingleTapRecognizer requireGestureRecognizerToFail:_lDoubleTapRecognizer];
+		[lImgView addGestureRecognizer:_lSingleTapRecognizer];
+		
+		[_rSingleTapRecognizer requireGestureRecognizerToFail:_rDoubleTapRecognizer];
+		[rImgView addGestureRecognizer:_rSingleTapRecognizer];
 	
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
-			[_lSingleTapRecognizer requireGestureRecognizerToFail:_lDoubleTapRecognizer];
+		//if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
 			[_lDoubleTapRecognizer setNumberOfTapsRequired:2];
-			[lImgView addGestureRecognizer:_lSingleTapRecognizer];
 			[lImgView addGestureRecognizer:_lDoubleTapRecognizer];
 			
-			_rSingleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goSingleTap:)];
-			_rDoubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goDoubleTap:)];
-			
-			[_rSingleTapRecognizer requireGestureRecognizerToFail:_rDoubleTapRecognizer];
 			[_rDoubleTapRecognizer setNumberOfTapsRequired:2];
-			[rImgView addGestureRecognizer:_rSingleTapRecognizer];
 			[rImgView addGestureRecognizer:_rDoubleTapRecognizer];
-		}
+		//}
 		
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_votesButton.frame = CGRectMake(12.0, 204.0, 84.0, 34.0);
@@ -163,19 +171,14 @@
 		[self addSubview:_votesButton];
 		
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
-			[lImgView removeGestureRecognizer:_lSingleTapRecognizer];
-			[lImgView removeGestureRecognizer:_lDoubleTapRecognizer];
+			//[lImgView removeGestureRecognizer:_lSingleTapRecognizer];
+			//[lImgView removeGestureRecognizer:_lDoubleTapRecognizer];
 			
-			[rImgView removeGestureRecognizer:_rSingleTapRecognizer];
-			[rImgView removeGestureRecognizer:_rDoubleTapRecognizer];
-			
-			
-			UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"challengeWallScore_loserOverlay"]];
-			overlayImageView.frame = CGRectOffset(overlayImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 46.0);
-			[self addSubview:overlayImageView];
+			//[rImgView removeGestureRecognizer:_rSingleTapRecognizer];
+			//[rImgView removeGestureRecognizer:_rDoubleTapRecognizer];
 			
 			UIImageView *resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_challengeVO.creatorScore > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
-			resultsImageView.frame = CGRectOffset(resultsImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 56.0 : 130.0, 90.0);
+			resultsImageView.frame = CGRectOffset(resultsImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 56.0 : 130.0, 88.0);
 			[self addSubview:resultsImageView];
 		}
 		
@@ -206,12 +209,13 @@
 		_lSingleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goSingleTap:)];
 		_lDoubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goDoubleTap:)];
 		
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
-			[_lSingleTapRecognizer requireGestureRecognizerToFail:_lDoubleTapRecognizer];
+		[_lSingleTapRecognizer requireGestureRecognizerToFail:_lDoubleTapRecognizer];
+		[lImgView addGestureRecognizer:_lSingleTapRecognizer];
+		
+		//if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
 			[_lDoubleTapRecognizer setNumberOfTapsRequired:2];
-			[lImgView addGestureRecognizer:_lSingleTapRecognizer];
 			[lImgView addGestureRecognizer:_lDoubleTapRecognizer];
-		}
+		//}
 	}
 }
 
@@ -224,36 +228,44 @@
 	[self performSelector:@selector(_removeTapOverlay) withObject:self afterDelay:0.25];
 	
 	if (_hasChallenger) {
-		if ([recogizer isEqual:_lDoubleTapRecognizer]) {
-			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																						delegate:self
-																			cancelButtonTitle:@"Cancel"
-																	 destructiveButtonTitle:nil
-																			otherButtonTitles:@"Like", @"Challenge", @"Poke", nil];
-			actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+			if ([recogizer isEqual:_lDoubleTapRecognizer]) {
+				UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																							delegate:self
+																				cancelButtonTitle:@"Cancel"
+																		 destructiveButtonTitle:nil
+																				otherButtonTitles:@"Like", @"Challenge", @"Poke", nil];
+				actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+				
+				[actionSheet setTag:0];
+				[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 			
-			[actionSheet setTag:0];
-			[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+			} else {
+				UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																							delegate:self
+																				cancelButtonTitle:@"Cancel"
+																		 destructiveButtonTitle:nil
+																				otherButtonTitles:@"Like", @"Challenge", @"Poke", nil];
+				actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+				
+				[actionSheet setTag:1];
+				[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+			}
 		
-		} else {
-			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																						delegate:self
-																			cancelButtonTitle:@"Cancel"
-																	 destructiveButtonTitle:nil
-																			otherButtonTitles:@"Like", @"Challenge", @"Poke", nil];
-			actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-			
-			[actionSheet setTag:1];
-			[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-		}
+		} else
+			[self _goVotedChallengeAlert];
 	
 	} else {
-		[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Challenger"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+			[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Challenger"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"CHALLENGE_SUB" object:_challengeVO];
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"CHALLENGE_SUB" object:_challengeVO];
+		} else
+			[self _goNewChallengeAlert];
 	}
 }
 
@@ -264,17 +276,31 @@
 	[self performSelector:@selector(_removeTapOverlay) withObject:self afterDelay:0.25];
 	
 	if (_hasChallenger) {
-		[self _upvote];
-		
 		if ([recogizer isEqual:_lSingleTapRecognizer]) {
-			[self _upvoteLeft];
+			if ([HONAppDelegate hasVoted:_challengeVO.challengeID])
+				[self _goVotedChallengeAlert];
+			
+			else {
+				[self _upvote];
+				[self _upvoteLeft];
+			}
 		
 		} else {
-			[self _upvoteRight];
+			if ([HONAppDelegate hasVoted:_challengeVO.challengeID])
+				[self _goVotedChallengeAlert];
+			
+			else {
+				[self _upvote];
+				[self _upvoteRight];
+			}
 		}
 	
 	} else {
-		[self _goMore];
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
+			[self _goMore];
+		
+		else
+			[self _goNewChallengeAlert];
 	}
 }
 
@@ -305,12 +331,36 @@
 
 
 #pragma mark - Behaviors
-- (void)_upvote {
-	[_lSingleTapRecognizer.view removeGestureRecognizer:_lSingleTapRecognizer];
-	[_lDoubleTapRecognizer.view removeGestureRecognizer:_lDoubleTapRecognizer];
+- (void)_goNewChallengeAlert {
+	UIAlertView *alertView = [[UIAlertView alloc]
+								 initWithTitle:@"New Challenge"
+								 message:@"Your challenge is waiting to be accepted, want to challenge someone else?"
+								 delegate:self
+								 cancelButtonTitle:@"Yes"
+								 otherButtonTitles:@"No", nil];
 	
-	[_rSingleTapRecognizer.view removeGestureRecognizer:_rSingleTapRecognizer];
-	[_rDoubleTapRecognizer.view removeGestureRecognizer:_rDoubleTapRecognizer];
+	[alertView setTag:0];
+	[alertView show];
+}
+
+- (void)_goVotedChallengeAlert {
+	UIAlertView *alertView = [[UIAlertView alloc]
+									  initWithTitle:@"New Challenge"
+									  message:@"You already liked this!!! Do you want to challenge another player?"
+									  delegate:self
+									  cancelButtonTitle:@"Yes"
+									  otherButtonTitles:@"No", nil];
+	
+	[alertView setTag:1];
+	[alertView show];
+}
+
+- (void)_upvote {
+//	[_lSingleTapRecognizer.view removeGestureRecognizer:_lSingleTapRecognizer];
+//	[_lDoubleTapRecognizer.view removeGestureRecognizer:_lDoubleTapRecognizer];
+//	
+//	[_rSingleTapRecognizer.view removeGestureRecognizer:_rSingleTapRecognizer];
+//	[_rDoubleTapRecognizer.view removeGestureRecognizer:_rDoubleTapRecognizer];
 	
 	_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
 	_sfxPlayer.delegate = self;
@@ -328,12 +378,8 @@
 	
 	_lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
 	
-	UIImageView *overlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"challengeWallScore_loserOverlay"]];
-	overlayImageView.frame = CGRectOffset(overlayImageView.frame, ((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? 160.0 : 7.0, 46.0);
-	[self addSubview:overlayImageView];
-	
 	UIImageView *resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
-	resultsImageView.frame = CGRectOffset(resultsImageView.frame, ((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? 56.0 : 130.0, 90.0);
+	resultsImageView.frame = CGRectOffset(resultsImageView.frame, ((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? 56.0 : 130.0, 88.0);
 	[self addSubview:resultsImageView];
 	
 	ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
@@ -458,6 +504,25 @@
 				
 			case 2:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_CHALLENGE" object:_challengeVO];
+				break;
+		}
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		switch (buttonIndex) {
+			case 0:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGE" object:_challengeVO];
+				break;
+		}
+	
+	} else if (alertView.tag == 1) {
+		switch (buttonIndex) {
+			case 0:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGE" object:_challengeVO];
 				break;
 		}
 	}

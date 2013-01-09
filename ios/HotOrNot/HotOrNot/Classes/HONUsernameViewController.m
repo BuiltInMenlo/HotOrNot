@@ -205,6 +205,7 @@
 				_progressHUD = nil;
 				
 				[HONAppDelegate writeUserInfo:userResult];
+				[self dismissViewControllerAnimated:YES completion:nil];
 			
 			} else {
 				_progressHUD.minShowTime = kHUDTime;

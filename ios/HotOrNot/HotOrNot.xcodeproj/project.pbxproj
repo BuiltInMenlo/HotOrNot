@@ -99,6 +99,8 @@
 		4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */; };
 		4C32B9A815FABBE80023A0EE /* HONVoteItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9A715FABBE80023A0EE /* HONVoteItemViewCell.m */; };
 		4C32B9AE15FAC1050023A0EE /* HONPopularUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9AD15FAC1050023A0EE /* HONPopularUserViewCell.m */; };
+		4C3A46FC169E1760002FB3C6 /* orIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3A46FA169E1760002FB3C6 /* orIcon.png */; };
+		4C3A46FD169E1760002FB3C6 /* orIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3A46FB169E1760002FB3C6 /* orIcon@2x.png */; };
 		4C3D61F4162FC55400D7F0FC /* doneButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3D61F0162FC55400D7F0FC /* doneButton_Active.png */; };
 		4C3D61F5162FC55400D7F0FC /* doneButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3D61F1162FC55400D7F0FC /* doneButton_Active@2x.png */; };
 		4C3D61F6162FC55400D7F0FC /* doneButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3D61F2162FC55400D7F0FC /* doneButton_nonActive.png */; };
@@ -464,6 +466,8 @@
 		4C32B9A715FABBE80023A0EE /* HONVoteItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteItemViewCell.m; sourceTree = "<group>"; };
 		4C32B9AC15FAC1050023A0EE /* HONPopularUserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularUserViewCell.h; sourceTree = "<group>"; };
 		4C32B9AD15FAC1050023A0EE /* HONPopularUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularUserViewCell.m; sourceTree = "<group>"; };
+		4C3A46FA169E1760002FB3C6 /* orIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orIcon.png; sourceTree = "<group>"; };
+		4C3A46FB169E1760002FB3C6 /* orIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orIcon@2x.png"; sourceTree = "<group>"; };
 		4C3D61F0162FC55400D7F0FC /* doneButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doneButton_Active.png; sourceTree = "<group>"; };
 		4C3D61F1162FC55400D7F0FC /* doneButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doneButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C3D61F2162FC55400D7F0FC /* doneButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doneButton_nonActive.png; sourceTree = "<group>"; };
@@ -1744,6 +1748,8 @@
 		4CA8DA9816140F4A00B7B13C /* Voting */ = {
 			isa = PBXGroup;
 			children = (
+				4C3A46FA169E1760002FB3C6 /* orIcon.png */,
+				4C3A46FB169E1760002FB3C6 /* orIcon@2x.png */,
 				4CBB5C81169CDCE400D44E77 /* waitingImageOverlay.png */,
 				4CBB5C82169CDCE400D44E77 /* waitingImageOverlay@2x.png */,
 				4CBB5C79169CD48500D44E77 /* voteButton_Active.png */,
@@ -2290,6 +2296,8 @@
 				4CBB5CA4169D1E3C00D44E77 /* lockedHeaderBackground@2x.png in Resources */,
 				4CBB5CAB169D310600D44E77 /* keyboardInputField.png in Resources */,
 				4CBB5CAC169D310600D44E77 /* keyboardInputField@2x.png in Resources */,
+				4C3A46FC169E1760002FB3C6 /* orIcon.png in Resources */,
+				4C3A46FD169E1760002FB3C6 /* orIcon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
