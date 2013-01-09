@@ -68,7 +68,7 @@
 
 - (void)_updateSwitch {
 	NSLog(@"FB POSTING:[%d]", [HONAppDelegate allowsFBPosting]);
-	[_switchButton setSelected:[HONAppDelegate allowsFBPosting]];
+	[_switchButton setSelected:([HONAppDelegate allowsFBPosting] && FBSession.activeSession.state == 513)];
 }
 
 @end

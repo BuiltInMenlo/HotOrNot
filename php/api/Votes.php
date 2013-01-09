@@ -218,11 +218,15 @@
 		function getChallengesByDate($user_id) {
 			$challenge_arr = array();
 			
-			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 2 OR `status_id` = 4 ORDER BY `added` DESC LIMIT 100;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 2 OR `status_id` = 4 ORDER BY `added` DESC LIMIT 100;';
 			$result = mysql_query($query);
 			
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH))
+			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+				if ($row['statusID'] == "2" && $row['challenger_id'] == "0")
+					continue;
+					
 				array_push($challenge_arr, $this->getChallengeObj($row['id']));
+			}
 				
 			
 			$this->sendResponse(200, json_encode($challenge_arr));

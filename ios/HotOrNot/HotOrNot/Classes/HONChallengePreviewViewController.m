@@ -17,6 +17,7 @@
 @interface HONChallengePreviewViewController () <ASIHTTPRequestDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic) BOOL isCreator;
+@property (nonatomic, strong) UIView *bgView;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
@@ -49,8 +50,10 @@
 #pragma mark - Touch controls
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];
-	if ([touch view] == _imageView)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSE_PREVIEW" object:nil];
+	if ([touch view] == _imageView || [touch view] == _bgView) {
+		[self dismissViewControllerAnimated:NO completion:nil];//[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSE_PREVIEW" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	}
 }
 
 
@@ -58,13 +61,19 @@
 - (void)loadView {
 	[super loadView];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	
+	_bgView = [[UIView alloc] initWithFrame:self.view.bounds];
+	_bgView.backgroundColor = [UIColor blackColor];
+	[self.view addSubview:_bgView];
+	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Loading Image…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 40.0, kLargeW * 0.5, kLargeW * 0.5)];
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 64.0, kLargeW * 0.5, kLargeW * 0.5)];
 	[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil options:SDWebImageLowPriority success:^(UIImage *image, BOOL cached) {
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
@@ -75,41 +84,49 @@
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
 	
-	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 30.0, 25.0, 25.0)];
-	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.creatorFB]] placeholderImage:nil];
-	[self.view addSubview:creatorImageView];
+	NSString *creatorCaption = (_isCreator) ? [NSString stringWithFormat:@"You challenged %@ to…", _challengeVO.challengerName] : [NSString stringWithFormat:@"%@ challenged you…", _challengeVO.creatorName];
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(85.0, 40.0, 200.0, 14.0)];
-	titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-	titleLabel.textColor = [UIColor whiteColor];
-	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.text = _challengeVO.subjectName;
-	[self.view addSubview:titleLabel];
+	if (_isCreator && _challengeVO.challengerID == 0)
+		creatorCaption = @"You are waiting for someone…";
+	
+	UILabel *creatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 13.0, 200.0, 16.0)];
+	creatorLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+	creatorLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	creatorLabel.backgroundColor = [UIColor clearColor];
+	creatorLabel.text = creatorCaption;
+	[self.view addSubview:creatorLabel];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 33.0, 200.0, 24.0)];
+	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:19];
+	subjectLabel.textColor = [UIColor whiteColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.text = _challengeVO.subjectName;
+	[self.view addSubview:subjectLabel];
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(7.0, 340.0, 96.0, 60.0);
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_nonActive"] forState:UIControlStateNormal];
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonWaiting_Active"] forState:UIControlStateHighlighted];
+	pokeButton.frame = CGRectMake(24.0, 380.0, 124.0, 58.0);
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeUserButton_nonActive"] forState:UIControlStateNormal];
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeUserButton_Active"] forState:UIControlStateHighlighted];
+	pokeButton.hidden = (_challengeVO.challengerID == 0);
 	[self.view addSubview:pokeButton];
 	
 	if (_isCreator) {
 		[pokeButton addTarget:self action:@selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		challengeButton.frame = CGRectMake(160.0, 340.0, 96.0, 60.0);
+		challengeButton.frame = CGRectMake(160.0, 378.0, 96.0, 60.0);
 		[challengeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_nonActive"] forState:UIControlStateNormal];
 		[challengeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_Active"] forState:UIControlStateHighlighted];
 		[challengeButton addTarget:self action:@selector(_goRechallenge) forControlEvents:UIControlEventTouchUpInside];
-		[self.view addSubview:challengeButton];
+		//[self.view addSubview:challengeButton];
 	
 	} else {
 		[pokeButton addTarget:self action:@selector(_goPokeCreator) forControlEvents:UIControlEventTouchUpInside];
 		
 		UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		acceptButton.frame = CGRectMake(160.0, 340.0, 96.0, 60.0);
-		[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_nonActive"] forState:UIControlStateNormal];
-		[acceptButton setBackgroundImage:[UIImage imageNamed:@"tableButtonAccept_Active"] forState:UIControlStateHighlighted];
+		acceptButton.frame = CGRectMake(160.0, 378.0, 147.0, 62.0);
+		[acceptButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_nonActive"] forState:UIControlStateNormal];
+		[acceptButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_Active"] forState:UIControlStateHighlighted];
 		[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];
 		[self.view addSubview:acceptButton];
 		

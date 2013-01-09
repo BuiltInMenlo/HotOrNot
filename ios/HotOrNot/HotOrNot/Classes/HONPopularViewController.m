@@ -7,6 +7,7 @@
 //
 
 #import "ASIFormDataRequest.h"
+#import "MBProgressHUD.h"
 #import "Mixpanel.h"
 
 #import "HONPopularViewController.h"
@@ -35,6 +36,7 @@
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) HONPopularUserVO *popularUserVO;
 @property(nonatomic, strong) HONPopularSubjectVO *popularSubjectVO;
+@property(nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONPopularViewController
@@ -76,12 +78,12 @@
 	[_headerView addSubview:_toggleImgView];
 	
 	UIButton *leadersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	leadersButton.frame = CGRectMake(76.0, 5.0, 84.0, 34.0);
+	leadersButton.frame = CGRectMake(91.0, 5.0, 81.0, 34.0);
 	[leadersButton addTarget:self action:@selector(_goLeaders) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:leadersButton];
 	
 	UIButton *tagsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	tagsButton.frame = CGRectMake(161.0, 5.0, 84.0, 34.0);
+	tagsButton.frame = CGRectMake(171.0, 5.0, 81.0, 34.0);
 	[tagsButton addTarget:self action:@selector(_goTags) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:tagsButton];
 	
@@ -149,6 +151,12 @@
 	_isUsersList = NO;
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_tags"];
 	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Refreshing…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	ASIFormDataRequest *subjectsRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[subjectsRequest setDelegate:self];
 	[subjectsRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
@@ -160,6 +168,12 @@
 - (void)_retrievePopularUsers {
 	_isUsersList = YES;
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders"];
+	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Refreshing…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
 	
 	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
 	[usersRequest setDelegate:self];
@@ -177,7 +191,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goCreateChallenge {
@@ -189,7 +203,7 @@
 //	if (FBSession.activeSession.state == 513) {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 	
 //	} else
 //		[self _goLogin];
@@ -207,7 +221,8 @@
 	[[Mixpanel sharedInstance] track:@"Popular Toggle - Leaders"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-
+	
+	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrievePopularUsers];
 }
 
@@ -215,7 +230,8 @@
 	[[Mixpanel sharedInstance] track:@"Voting Toggle - Hashtags"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-
+	
+	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrievePopularSubjects];
 }
 
@@ -279,7 +295,7 @@
 		if (indexPath.row < [_users count])
 			cell.userVO = [_users objectAtIndex:indexPath.row];
 		
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		return (cell);
 	
 	} else {
@@ -292,7 +308,7 @@
 		if (indexPath.row < [_subjects count])
 			cell.subjectVO = [_subjects objectAtIndex:indexPath.row];
 		
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		return (cell);
 	}
 }
@@ -321,7 +337,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[(HONAlternatingRowsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
+	//[(HONAlternatingRowsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	if (_isUsersList) {
 		_popularUserVO = (HONPopularUserVO *)[_users objectAtIndex:indexPath.row];
@@ -353,7 +370,7 @@
 //				if (FBSession.activeSession.state == 513) {					
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_popularUserVO.userID]];
 					[navigationController setNavigationBarHidden:YES];
-					[self presentViewController:navigationController animated:NO completion:nil];
+					[self presentViewController:navigationController animated:YES completion:nil];
 					
 //				} else {
 //					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
@@ -365,7 +382,7 @@
 //				if (FBSession.activeSession.state == 513) {
 					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:_popularSubjectVO.subjectName]];
 					[navigationController setNavigationBarHidden:YES];
-					[self presentViewController:navigationController animated:NO completion:nil];
+					[self presentViewController:navigationController animated:YES completion:nil];
 					
 //				} else {
 //					UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
@@ -407,6 +424,15 @@
 													 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
 					_users = [NSMutableArray arrayWithArray:sortedUsers];
 					
+					int rank = 0;
+					for (HONPopularUserVO *vo in _users) {
+						rank++;
+						if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+							[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:rank] forKey:@"player_rank"];
+							[[NSUserDefaults standardUserDefaults] synchronize];
+						}
+					}
+					
 				} else {
 					NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
 													 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
@@ -421,6 +447,11 @@
 					}
 				}
 				
+				if (_progressHUD != nil) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+				
 				[_tableView reloadData];
 			}
 		}
@@ -429,6 +460,11 @@
 
 -(void)requestFailed:(ASIHTTPRequest *)request {
 	NSLog(@"requestFailed:\n[%@]", request.error);
+	
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
 }
 
 @end

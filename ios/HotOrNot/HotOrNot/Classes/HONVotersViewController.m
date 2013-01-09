@@ -166,7 +166,7 @@
 			
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_voterVO.userID withSubject:_challengeVO.subjectName]];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
+			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
 		case 1:
@@ -187,7 +187,7 @@
 		cell = [[HONVoterViewCell alloc] initAsGreyCell:indexPath.row % 2 == 1];
 	
 	cell.voterVO = [_voters objectAtIndex:indexPath.row];
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);
 }
@@ -203,8 +203,9 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONAlternatingRowsViewCell *cell = (HONAlternatingRowsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-	[cell didSelect];
+	//[(HONVoterViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
+	
 	
 	_voterVO = (HONVoterVO *)[_voters objectAtIndex:indexPath.row];
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"

@@ -63,7 +63,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+	_headerView = [[HONHeaderView alloc] initWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
 	[self.view addSubview:_headerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
@@ -113,7 +113,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goCreateChallenge {
@@ -125,7 +125,7 @@
 //	if (FBSession.activeSession.state == 513) {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 	
 //	} else
 //		[self _goLogin];
@@ -228,7 +228,7 @@
 	else if (indexPath.row == 2)
 		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
 			
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	return (cell);
 }
 
@@ -253,7 +253,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
+	//[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	UINavigationController *navigationController;
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];

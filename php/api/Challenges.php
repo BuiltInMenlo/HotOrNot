@@ -609,7 +609,7 @@
 				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $challenger_name .' has accepted your '. $subject_name .' challenge!", "sound": "push_01.caf"}}'); 			
 
 			
-			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `started` = NOW() WHERE `id` = '. $challenge_id .';';
+			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `started` = NOW() WHERE `id` = '. $challenge_id .';';
 			$result = mysql_query($query);			
 			
 			$this->sendResponse(200, json_encode(array(

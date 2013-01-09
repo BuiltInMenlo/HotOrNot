@@ -145,7 +145,7 @@
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 		
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(15.0, 14.0, 125.0, 20.0)];
 	//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -171,8 +171,8 @@
 	
 	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	randomButton.frame = CGRectMake(23.0, 203.0, 274.0, 74.0);
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_nonActive"] forState:UIControlStateNormal];
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton_Active"] forState:UIControlStateHighlighted];
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_nonActive"] forState:UIControlStateNormal];
+	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_Active"] forState:UIControlStateHighlighted];
 	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:randomButton];
 	
@@ -195,7 +195,7 @@
 	[sendButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[usernameBGImageView addSubview:sendButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 250.0, 20.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 14.0, 250.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -203,7 +203,7 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+	_usernameTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:14];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 	_usernameTextField.text = @"ENTER A USERNAME HERE";
 	_usernameTextField.delegate = self;
@@ -270,7 +270,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_subjectTextField.text = @"";
+	_subjectTextField.text = @"#";
 	[_subjectTextField becomeFirstResponder];
 }
 
@@ -693,6 +693,7 @@
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		_editButton.hidden = YES;
+		//textField.text = @"#";
 	
 	} else if (textField.tag == 1) {
 		[[Mixpanel sharedInstance] track:@"Preview Challenge - Edit Usernme"
@@ -700,6 +701,10 @@
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		textField.text = @"";
+		
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
+			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, _usernameTextField.frame.origin.y - 216.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
+		} completion:nil];
 	}
 }
 
@@ -715,7 +720,7 @@
 	if (textField.tag == 0) {
 		_editButton.hidden = NO;
 		
-		if ([textField.text length] == 0)
+		if ([textField.text length] == 0 || [textField.text isEqualToString:@"#"])
 			textField.text = _subjectName;
 		
 		else
@@ -729,6 +734,10 @@
 			_fbName = textField.text;
 			[self _goUsernameSubmit];
 		}
+		
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
+			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, 14.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
+		} completion:nil];
 	}
 }
 

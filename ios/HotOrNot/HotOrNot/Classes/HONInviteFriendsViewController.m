@@ -36,7 +36,6 @@
 - (id)init {
 	if ((self = [super init])) {
 		_friends = [NSMutableArray array];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	}
 	
 	return (self);
@@ -71,6 +70,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	self.friendPickerController = [[FBFriendPickerViewController alloc] init];
 	self.friendPickerController.title = @"Pick Friends";

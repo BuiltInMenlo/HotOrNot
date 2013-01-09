@@ -148,6 +148,7 @@
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
+	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
@@ -215,6 +216,12 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Refreshing…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	ASIFormDataRequest *challengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
 	[challengesRequest setDelegate:self];
 	[challengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
@@ -261,7 +268,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goCreateChallenge {
@@ -273,7 +280,7 @@
 	//	if (FBSession.activeSession.state == 513) {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 	
 	//	} else
 	//		[self _goLogin];
@@ -358,9 +365,9 @@
 	dailyChallengeButton.frame = CGRectMake(91.0, 45.0, 229.0, 70.0);
 	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
 	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
-	dailyChallengeButton.titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:14];
+	dailyChallengeButton.titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:15];
 	[dailyChallengeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-	dailyChallengeButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -33.0, -10.0, 33.0);
+	dailyChallengeButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
 	[dailyChallengeButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
 	[dailyChallengeButton addTarget:self action:@selector(_goTutorialDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialOverlayImgView addSubview:dailyChallengeButton];
@@ -379,10 +386,15 @@
 	
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	_challengeVO = vo;
+	UINavigationController *navigationController;
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.creatorID withSubject:vo.subjectName]];
+	if (vo.statusID == 1)
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]];
+	else
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.creatorID withSubject:vo.subjectName]];
+	
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_challengeSub:(NSNotification *)notification {
@@ -393,20 +405,29 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.challengerID withSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_voteMore:(NSNotification *)notification {
 	_challengeVO = (HONChallengeVO *)[notification object];
+	
+	NSLog(@"STATUS:[%d]", _challengeVO.statusID);
+	
 	[HONAppDelegate toggleViewPushed:YES];
 	[[Mixpanel sharedInstance] track:@"Vote - More"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_challengeVO.creatorID withSubject:_challengeVO.subjectName]];
+	UINavigationController *navigationController;
+	if (_challengeVO.statusID == 1)
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:_challengeVO]];
+	
+	else
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_challengeVO.creatorID withSubject:_challengeVO.subjectName]];
+	
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 	
 	
 //	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
@@ -451,7 +472,7 @@
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVotersViewController alloc] initWithChallenge:vo]];
 	[navController setNavigationBarHidden:YES];
-	[self presentViewController:navController animated:YES completion:nil];
+	[self presentViewController:navController animated:NO completion:nil];
 	
 	//[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:vo] animated:YES];
 }
@@ -478,16 +499,9 @@
 	HONVoteItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
-//		if (indexPath.row == 0) {
-//			int score = [[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-//			cell = [[HONVoteItemViewCell alloc] initAsTopCell:score withSubject:[HONAppDelegate dailySubjectName]];
-//		
-//		} else {
 			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-			
 			cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONVoteItemViewCell alloc] initAsWaitingCell] : [[HONVoteItemViewCell alloc] initAsStartedCell];
 			cell.challengeVO = vo;
-//		}
 	}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -499,7 +513,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-	return ((vo.statusID == 1 || vo.statusID == 2) ? 394.0 : 244.0);
+	return ((vo.statusID == 1 || vo.statusID == 2) ? 346.0 : 244.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

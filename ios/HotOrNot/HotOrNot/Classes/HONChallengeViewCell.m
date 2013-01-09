@@ -24,7 +24,7 @@
 - (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled {
 	if ((self = [self initAsGreyCell:grey])) {
 		UIButton *loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		loadMoreButton.frame = CGRectMake(100.0, -3.0, 120.0, 60.0);
+		loadMoreButton.frame = CGRectMake(107.0, 18.0, 106.0, 34.0);
 		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
 		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 		
@@ -49,7 +49,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UIView *creatorImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(16.0, 10.0, 50.0, 50.0)];
+	UIView *creatorImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(14.0, 10.0, 50.0, 50.0)];
 	creatorImgHolderView.clipsToBounds = YES;
 	[self addSubview:creatorImgHolderView];
 	
@@ -80,7 +80,7 @@
 	[self addSubview:challengeLabel];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 36.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:12];
+	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:13];
 	subjectLabel.textColor = [UIColor blackColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;

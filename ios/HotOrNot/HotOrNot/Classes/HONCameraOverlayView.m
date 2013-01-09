@@ -62,7 +62,12 @@
 		UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 60.0, 274.0, 44.0)];
 		subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
 		subjectBGImageView.userInteractionEnabled = YES;
+		subjectBGImageView.alpha = 0.0;
 		[self addSubview:subjectBGImageView];
+		
+		[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationCurveLinear animations:^(void) {
+			subjectBGImageView.alpha = 1.0;
+		} completion:nil];
 		
 		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -88,7 +93,7 @@
 		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 308.0, 306.0, 50.0)];
 		_trackBGImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
 		_trackBGImageView.userInteractionEnabled = YES;
-		_trackBGImageView.hidden = YES;
+		_trackBGImageView.alpha = 0.0;
 		[self addSubview:_trackBGImageView];
 		
 		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, _gutterSize.height, 250.0, 250.0)];
@@ -121,11 +126,11 @@
 		
 		// Add the gallery button
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(10.0, 10.0, 75.0, 75.0);
+		cameraRollButton.frame = CGRectMake(20.0, 20.0, 75.0, 75.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
-		//[_footerHolderView addSubview:cameraRollButton];
+		[_footerHolderView addSubview:cameraRollButton];
 		
 		// Add the capture button
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -184,6 +189,39 @@
 }
 
 - (void)showPreview:(UIImage *)image {
+	[[Mixpanel sharedInstance] track:@"Image Preview"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	NSLog(@"IMAGE:[%f][%f]", image.size.width, image.size.height);
+	
+	if (image.size.width > 480.0 && image.size.height > 640.0)
+		image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	
+	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp]];
+	[_previewHolderView addSubview:imgView];
+	_previewHolderView.hidden = NO;
+	
+	if ([HONAppDelegate isRetina5]) {
+		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
+		imgView.frame = frame;
+	}
+	
+	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_cameraBackButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
+	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
+	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
+	[_cameraBackButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:_cameraBackButton];
+	
+	[_headerView setTitle:@"PREVIEW"];
+	
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
+	} completion:nil];
+}
+
+- (void)showPreviewFlipped:(UIImage *)image {
 	[[Mixpanel sharedInstance] track:@"Image Preview"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -265,7 +303,9 @@
 	[buyTrackButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
 	[_trackBGImageView addSubview:buyTrackButton];
 	
-	_trackBGImageView.hidden = NO;
+	[UIView animateWithDuration:0.5 animations:^(void) {
+		_trackBGImageView.alpha = 1.0;
+	}];
 }
 
 #pragma mark -Navigation
@@ -329,7 +369,7 @@
 	
 	_editButton.hidden = NO;
 	
-	if ([textField.text length] == 0)
+	if ([textField.text length] == 0 || [textField.text isEqualToString:@"#"])
 		textField.text = _subjectName;
 	
 	else

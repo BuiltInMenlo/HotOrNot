@@ -115,8 +115,6 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-		
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
@@ -140,8 +138,6 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-		
 		_subjectName = subject;
 		_iTunesPreview = @"";
 		_submitAction = 1;
@@ -162,8 +158,6 @@
 		[[Mixpanel sharedInstance] track:@"Create Challenge - Daily Challenge"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		
 		_subjectName = subject;
 		_iTunesPreview = @"";
@@ -235,7 +229,7 @@
 	[super loadView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Challenge"];
-	[self.view addSubview:headerView];
+	//[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
@@ -495,8 +489,13 @@
 			[self _acceptPhoto];
 		}];
 		
-	} else
-		[_cameraOverlayView showPreview:image];
+	} else {
+		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
+			[_cameraOverlayView showPreviewFlipped:image];
+	
+		else
+			[_cameraOverlayView showPreview:image];
+	}
 }
 
 - (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView {
@@ -609,6 +608,10 @@
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self dismissViewControllerAnimated:YES completion:nil];
 		
+		NSLog(@"_imagePicker.cameraDevice:[%d]", _imagePicker.cameraDevice);
+		NSLog(@"UIImagePickerControllerCameraDeviceFront:[%d]", UIImagePickerControllerCameraDeviceFront);
+		NSLog(@"UIImagePickerControllerCameraDeviceRear:[%d]", UIImagePickerControllerCameraDeviceRear);
+		
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
 			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithFlippedImage:image subjectName:_subjectName] animated:NO];
 		
@@ -699,7 +702,12 @@
 					[_mpMoviePlayerController prepareToPlay];
 					[_mpMoviePlayerController play];
 					
-					//[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+//					MPVolumeView *volumeView = [[MPVolumeView alloc] initWithFrame:CGRectMake(0.0, 100.0, 200.0, 60.0)];
+//					[_cameraOverlayView addSubview:volumeView];
+//					[volumeView sizeToFit];
+					
+					if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.67)
+						[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.67];
 				}
 			}
 		}

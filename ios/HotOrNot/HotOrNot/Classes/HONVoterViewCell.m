@@ -24,7 +24,7 @@
 - (void)setVoterVO:(HONVoterVO *)voterVO {
 	_voterVO = voterVO;
 	
-	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, 10.0, 50.0, 50.0)];
+	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 10.0, 50.0, 50.0)];
 	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[userImageView setImageWithURL:[NSURL URLWithString:_voterVO.imageURL] placeholderImage:nil];
 	[self addSubview:userImageView];

@@ -112,6 +112,7 @@
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
+	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
@@ -216,7 +217,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsDailyChallenge:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 	
 	//	} else
 	//		[self _goLogin];
@@ -231,7 +232,7 @@
 //	if (FBSession.activeSession.state == 513) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	
 //	} else
 //		[self _goLogin];
@@ -298,7 +299,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_createChallenge:(NSNotification *)notification {
@@ -311,7 +312,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_closePreview:(NSNotification *)notification {
@@ -372,7 +373,7 @@
 	if (indexPath.row < [_challenges count])
 		cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
 	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);
 }
@@ -402,7 +403,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
+	//[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row];
 	_challengeVO = vo;
@@ -419,11 +421,19 @@
 		
 	} else if ([vo.status isEqualToString:@"Waiting"]) {
 		_previewViewController = [[HONChallengePreviewViewController alloc] initAsCreator:vo];
-		[self.view addSubview:_previewViewController.view];
+		//[self.view addSubview:_previewViewController.view];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
 		
 	} else if ([vo.status isEqualToString:@"Accept"]) {
 		_previewViewController = [[HONChallengePreviewViewController alloc] initAsChallenger:vo];
-		[self.view addSubview:_previewViewController.view];
+		//[self.view addSubview:_previewViewController.view];
+		
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
 			
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];

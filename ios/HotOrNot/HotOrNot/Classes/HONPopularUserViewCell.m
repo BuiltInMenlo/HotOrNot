@@ -26,12 +26,12 @@
 - (void)setUserVO:(HONPopularUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, 9.0, 50.0, 50.0)];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
 	[imageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil options:SDWebImageLowPriority success:^(UIImage *image, BOOL cached){} failure:nil];
 	[self addSubview:imageView];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 18.0, 200.0, 16.0)];
-	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	usernameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = _userVO.username;

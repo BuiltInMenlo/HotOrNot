@@ -35,7 +35,7 @@
 
 - (id)initAsTopCell {
 	if ((self = [self initAsGreyCell:NO])) {
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, 9.0, 50.0, 50.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", [[HONAppDelegate infoForUser] objectForKey:@"fb_id"]]] placeholderImage:nil options:SDWebImageLowPriority];
 		[self addSubview:avatarImageView];
 		
@@ -60,8 +60,10 @@
 		rankLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		rankLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		rankLabel.backgroundColor = [UIColor clearColor];
-		rankLabel.text = [NSString stringWithFormat:@"ranked #%d", (arc4random() % 100)];
+		rankLabel.text = [NSString stringWithFormat:@"ranked #%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"player_rank"] intValue]];
 		[self addSubview:rankLabel];
+		
+		[self hideChevron];
 	}
 	
 	return (self);

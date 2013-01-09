@@ -780,12 +780,6 @@ NSString *const FacebookAppID = @"529054720443694";
 		[tabBarController presentViewController:navigationController animated:NO completion:nil];
 		
 		return (NO);
-	
-//	} else if (viewController == [[tabBarController viewControllers] objectAtIndex:4]) {
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-//		[tabBarController presentViewController:navigationController animated:YES completion:nil];
-//		
-//		return (NO);
 		
 	} else
 		return (YES);

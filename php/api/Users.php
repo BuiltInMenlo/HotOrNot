@@ -151,24 +151,11 @@
 				$user_id = mysql_insert_id();
 				
 				$query = 'UPDATE `tblUsers` SET `username` = "PicChallenge'. $user_id .'" WHERE `id` = '. $user_id .';';
-				$result = mysql_query($query);																
+				$result = mysql_query($query);				
 			}
 			
-			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$row = mysql_fetch_object(mysql_query($query));
 			
-	   		$user_arr = array(
-				'id' => $row->id, 
-				'name' => $row->username, 
-				'token' => $row->device_token, 
-				'fb_id' => $row->fb_id, 
-				'paid' => $row->paid, 
-				'points' => $row->points, 
-				'votes' => 0,
-				'pokes' => 0, 
-				'notifications' => $row->notifications
-			);
-			
+			$user_arr = $this->userObject($user_id);
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);	
 		}
