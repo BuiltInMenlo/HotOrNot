@@ -179,7 +179,7 @@
 	}
 	
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
 }
 

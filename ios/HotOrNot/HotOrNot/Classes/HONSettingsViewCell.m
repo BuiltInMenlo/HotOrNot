@@ -42,24 +42,24 @@
 		[self addSubview:avatarImageView];
 		
 		int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-		CGSize size = [[NSString stringWithFormat:@"%d ", score] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:UILineBreakModeClip];
+		CGSize size = [[NSString stringWithFormat:@"%d", score] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:UILineBreakModeClip];
 		
 		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 15.0, size.width, size.height)];
 		_scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		_scoreLabel.textColor = [UIColor blackColor];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.text = [NSString stringWithFormat:@"%d ", score];
+		_scoreLabel.text = [NSString stringWithFormat:@"%d", score];
 		[self addSubview:_scoreLabel];
 		
-		_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0 + size.width, 22.0, 50.0, 12.0)];
-		_ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:8];
+		_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(81.0 + size.width, 22.0, 50.0, 12.0)];
+		_ptsLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:10];
 		_ptsLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		_ptsLabel.backgroundColor = [UIColor clearColor];
 		_ptsLabel.text = (score == 1) ? @"PT" : @"PTS";
 		[self addSubview:_ptsLabel];
 		
-		UILabel *rankLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 36.0, 140.0, 16.0)];
-		rankLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		UILabel *rankLabel = [[UILabel alloc] initWithFrame:CGRectMake(79.0, 36.0, 140.0, 16.0)];
+		rankLabel.font = [[HONAppDelegate honHelveticaNeueFontBoldItalic] fontWithSize:11];
 		rankLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		rankLabel.backgroundColor = [UIColor clearColor];
 		rankLabel.text = [NSString stringWithFormat:@"ranked #%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"player_rank"] intValue]];

@@ -71,6 +71,7 @@ extern NSString *const FacebookAppID;
 + (void)toggleViewPushed:(BOOL)isPushed;
 
 + (UIFont *)honHelveticaNeueFontBold;
++ (UIFont *)honHelveticaNeueFontBoldItalic;
 + (UIFont *)honHelveticaNeueFontMedium;
 
 + (UIFont *)freightSansBlack;

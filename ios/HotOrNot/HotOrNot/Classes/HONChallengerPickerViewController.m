@@ -721,9 +721,10 @@
 		textField.text = @"";
 		
 		_bgTextImageView.hidden = NO;
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
+		int offset = ([HONAppDelegate isRetina5]) ? 94.0 : 182.0;
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void) {
 			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, _bgTextImageView.frame.origin.y - 235.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
-			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, _usernameTextField.frame.origin.y - 182.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
+			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, _usernameTextField.frame.origin.y - offset, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
 		} completion:nil];
 	}
 }
@@ -747,6 +748,14 @@
 			_subjectName = textField.text;
 	
 	} else if (textField.tag == 1) {
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
+			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 55.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, 14.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
+			
+		} completion:^(BOOL finished) {
+			_bgTextImageView.hidden = YES;
+		}];
+		
 		if ([textField.text length] == 0)
 			textField.text = @"ENTER A USERNAME HERE";
 		
@@ -754,14 +763,6 @@
 			_fbName = textField.text;
 			[self _goUsernameSubmit];
 		}
-		
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
-			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 55.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
-			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, 14.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
-		
-		} completion:^(BOOL finished) {
-			_bgTextImageView.hidden = YES;
-		}];
 	}
 }
 

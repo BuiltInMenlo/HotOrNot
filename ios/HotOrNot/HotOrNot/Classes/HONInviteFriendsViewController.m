@@ -36,6 +36,8 @@
 - (id)init {
 	if ((self = [super init])) {
 		_friends = [NSMutableArray array];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	}
 	
 	return (self);
@@ -51,17 +53,23 @@
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
-	//[self.view addSubview:bgImgView];
+	[self.view addSubview:bgImgView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"SELECT FRIENDS"];
-	//[self.view addSubview:headerView];
+	[self.view addSubview:headerView];
 	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:cancelButton];
+	UIButton *customCancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	customCancelButton.frame = CGRectMake(5.0, 5.0, 64.0, 34.0);
+	[headerView addSubview:customCancelButton];
+	
+	// Done Button
+	UIButton *customDoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 69.0, 5.0, 64.0, 34.0);
+	[headerView addSubview:customDoneButton];
 }
 
 - (void)viewDidLoad {
@@ -70,7 +78,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	self.friendPickerController = [[FBFriendPickerViewController alloc] init];
 	self.friendPickerController.title = @"Pick Friends";
@@ -225,12 +232,10 @@
 		[self.searchBar resignFirstResponder];
 	
 	//self.searchBar = nil;
-	[self dismissViewControllerAnimated:YES completion:^(void){
+	//[self dismissViewControllerAnimated:YES completion:^(void){
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-	}];
-	//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	//}];
 }
 
 #pragma mark - UISearchBarDelegate Methods

@@ -126,21 +126,41 @@ $headers_arr[] = "X-Mailer: PHP/". phpversion();
 echo (mail($to, $subject, $msg, implode("\r\n", $headers_arr)) ."\n");
 */
 
-echo ("<html><head /><body><ul>\n");
+$title = "LOREM IPSUM";
+$msg = "SIR DOLAR AMAT";
 
+$ind = $GET_['ind'];
 $fb_arr = array();
 $query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `fb_id` != "";';
 $result = mysql_query($query);
 while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {	
 	array_push($fb_arr, $row['fb_id']);
-	//echo ("<li><a href='https://www.facebook.com/profile.php?id={$row['fb_id']}' target='_blank'>{$row['username']}</a></li>\n");
-	echo ("<li><a href='https://www.facebook.com/messages/{$row['fb_id']}' target='_blank'>{$row['username']} ({$row['fb_id']})</a></li>\n");
-}			
-echo ("</ul></body></html>");
-			
-if ($db_conn) {
-	mysql_close($db_conn);
-	$db_conn = null;
 }
 
+$fb_id = $fb_arr[$ind];
 ?>
+
+<html><head /><body>
+<script src="http://connect.facebook.net/en_US/all.js"></script>
+<div id="fb-root"></div>
+	<script>
+		FB.init({
+			appId:'529054720443694', 
+			xfbml:true, 
+			cookie:true
+		});
+		
+		FB.ui({
+			method:'send',
+			to:'<?php echo ($fb_arr[0]); ?>',
+			name:'<?php echo ($title); ?>',
+			description:'<?php echo ($msg); ?>',
+		});
+
+	</script>
+</body></html>
+
+<?php if ($db_conn) {
+	mysql_close($db_conn);
+	$db_conn = null;
+} ?>

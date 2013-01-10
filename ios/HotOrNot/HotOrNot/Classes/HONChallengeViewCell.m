@@ -110,7 +110,7 @@
 		
 		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 		
-		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(66.0, 10.0, 50.0, 50.0)];
+		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(64.0, 10.0, 50.0, 50.0)];
 		challengerImgHolderView.clipsToBounds = YES;
 		[self addSubview:challengerImgHolderView];
 		
