@@ -12,7 +12,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, statusID, status, subjectName, itunesPreview, hasViewed, addedDate, startedDate;
+@synthesize challengeID, statusID, status, subjectName, hasViewed, addedDate, startedDate;
 @synthesize creatorID, creatorFB, creatorName, creatorImgPrefix, creatorScore;
 @synthesize challengerID, challengerFB, challengerName, challengerImgPrefix, challengerScore;
 
@@ -27,7 +27,6 @@
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
 	vo.subjectName = [dictionary objectForKey:@"subject"];
-	vo.itunesPreview = [dictionary objectForKey:@"preview_url"];	
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -86,7 +85,6 @@
 	self.creatorImgPrefix = nil;
 	self.challengerImgPrefix = nil;
 	self.subjectName = nil;
-	self.itunesPreview = nil;
 	self.creatorName = nil;
 	self.creatorFB = nil;
 	self.challengerFB = nil;

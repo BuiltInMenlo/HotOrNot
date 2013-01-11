@@ -18,7 +18,5 @@
 @property (nonatomic) int score;
 @property (nonatomic) int actives;
 @property (nonatomic, retain) NSString *subjectName;
-@property (nonatomic, retain) NSString *itunesPreview;
-@property (nonatomic, retain) NSString *imageURL;
 
 @end

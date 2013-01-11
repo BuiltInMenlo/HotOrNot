@@ -118,7 +118,7 @@
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
-		_iTunesPreview = vo.itunesPreview;
+		_iTunesPreview = @"";//vo.itunesPreview;
 		_submitAction = 4;
 		_needsChallenger = NO;
 		_isFirstAppearance = YES;

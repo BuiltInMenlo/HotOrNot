@@ -220,7 +220,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONVotersViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	NSLog(@"HONVotersViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	
 	@autoreleasepool {

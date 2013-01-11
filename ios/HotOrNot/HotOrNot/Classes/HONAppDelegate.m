@@ -428,6 +428,18 @@ NSString *const FacebookAppID = @"529054720443694";
 //		[fontNames addObjectsFromArray:names];
 //	}
 	
+	
+//	ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://api.parse.com/1/functions/hello"]];
+//	[request addRequestHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
+//	[request addRequestHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
+//	[request addRequestHeader:@"Content-Type" value:@"application/json"];
+//	//[request setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
+//	//[request setPostValue:[HONAppDelegate deviceToken] forKey:@"token"];
+//	[request setDelegate:self];
+//	[request setTag:1];
+//	[request startAsynchronous];
+	
+	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"shown_settings"];
 	
@@ -767,6 +779,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {
 		ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 		[userRequest setDelegate:self];
+		[userRequest setTag:0];
 		[userRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
 		[userRequest setPostValue:[HONAppDelegate deviceToken] forKey:@"token"];
 		[userRequest startAsynchronous];
@@ -844,17 +857,22 @@ NSString *const FacebookAppID = @"529054720443694";
 -(void)requestFinished:(ASIHTTPRequest *)request {
 	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
-	@autoreleasepool {
-		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-		
-		if (error != nil)
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-		
-		else {
-			if ([userResult objectForKey:@"id"] != [NSNull null])
-				[HONAppDelegate writeUserInfo:userResult];
+	if (request.tag == 0) {
+		@autoreleasepool {
+			NSError *error = nil;
+			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+			
+			if (error != nil)
+				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+			else {
+				if ([userResult objectForKey:@"id"] != [NSNull null])
+					[HONAppDelegate writeUserInfo:userResult];
+			}
 		}
+	
+	} else {
+		
 	}
 }
 

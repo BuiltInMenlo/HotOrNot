@@ -38,7 +38,9 @@
 - (id)initAsTopCell {
 	if ((self = [self initAsGreyCell:NO])) {
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
-		[avatarImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", [[HONAppDelegate infoForUser] objectForKey:@"fb_id"]]] placeholderImage:nil options:SDWebImageLowPriority];
+		
+		NSString *imgURL = ([[HONAppDelegate infoForUser] objectForKey:@"fb_id"] == nil || [[[HONAppDelegate infoForUser] objectForKey:@"fb_id"] isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.png" : [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", [[HONAppDelegate infoForUser] objectForKey:@"fb_id"]];
+		[avatarImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil options:SDWebImageLowPriority];
 		[self addSubview:avatarImageView];
 		
 		int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);

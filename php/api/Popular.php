@@ -74,22 +74,33 @@
 		}
 	    
 		
-		function getPopularByUsers($user_id) {
+		/**
+		 * Gets the top 250 users by challenges created
+		 * @return An associative array containing user info (array)
+		**/
+		function getPopularByUsers() {
 			$user_arr = array();
 			
+			// get the user rows
 			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC LIMIT 250;';
 			$user_result = mysql_query($query);
 			
+			// loop thru user rows
 			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {				
+				
+				// get total for this user
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_row['id'] .';';
 				$votes = mysql_num_rows(mysql_query($query));
 				
+				// get total pokes for this
 				$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_row['id'] .';';
 				$pokes = mysql_num_rows(mysql_query($query));
-			
+				
+				// push user info into array
 				array_push($user_arr, array(
 					'id' => $user_row['id'], 
-					'username' => $user_row['username'], 					
+					'username' => $user_row['username'], 
+					'fb_id' => $user_row['fb_id'], 					
 					'img_url' => "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square",   
 					'points' => $user_row['points'],
 					'votes' => $votes,
@@ -97,58 +108,61 @@
 				));	
 			}
 			
+			// return
 			$this->sendResponse(200, json_encode($user_arr));
-			return (true);	
+			return (true);
+			
+			/* 
+			example response:
+			[{"id":"236","username":"Courtney","img_url":"https:\/\/graph.facebook.com\/100000466174725\/picture?type=square","points":"337","votes":39,"pokes":0}]
+			*/
 		}
 		
-		//https://itunes.apple.com/us/album/call-me-maybe/id557372575?i=557373187&uo=4&v0=WWW-NAUS-ITSTOP100-SONGS
-		function getPopularBySubject($user_id) {
+		/**
+		 * Gets the top 250 subjects by challenges created
+		 * @return An associative array containing user info (array)
+		**/
+		function getPopularBySubject() {
 			$subject_arr = array();
 			
+			// get the subject rows
 			$query = 'SELECT * FROM `tblChallengeSubjects` LIMIT 250;';
 			$subject_result = mysql_query($query);
 			
+			// loop thru subject rows
 			while ($subject_row = mysql_fetch_array($subject_result, MYSQL_BOTH)) {
 				$query = 'SELECT `id`, `status_id` FROM `tblChallenges` WHERE `subject_id` = '. $subject_row['id'] .';';
 				$result = mysql_query($query);
 				$row = mysql_fetch_object($result);
 				
-				$preview_url = "";
-				if ($subject_row['itunes_id'] != "") {
-					$ch = curl_init();
-					curl_setopt($ch, CURLOPT_URL, "http://itunes.apple.com/lookup?country=us&id=". $subject_row['itunes_id']);
-					curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-					$response = curl_exec($ch);
-				    curl_close ($ch);    
-					$json_arr = json_decode($response, true);
-				
-					if (count($json_arr['results']) > 0) {
-						$json_results = $json_arr['results'][0];
-						$preview_url = $json_results['previewUrl'];
-					}
-				}
-				
+				// calculate the active challenges
 				$active = 0;
-				if ($row->status_id == 4)
+				if ($row->status_id == "4")
 					$active++;
-					
+				
+				// push into array
 				array_push($subject_arr, array(
 					'id' => $subject_row['id'], 
 					'name' => $subject_row['title'], 					
 					'img_url' => "", 
-					'preview_url' => $preview_url,   
 					'score' => mysql_num_rows($result), 
 					'active' => $active
 				));	
 			}
 				
-			
+			// return
 			$this->sendResponse(200, json_encode($subject_arr));
-			return (true);	
+			return (true);
+			
+			/*
+			example response:
+			[{"id":"161","name":"#derp","img_url":"","score":2,"active":0},{"id":"162","name":"workItFace","img_url":"","score":1,"active":0}]
+			*/
 		}
 		
-		
+		/**
+		 * Debugging function
+		**/
 		function test() {
 			$this->sendResponse(200, json_encode(array(
 				'result' => true
@@ -161,20 +175,22 @@
 	////$popular->test();
 	
 	
+	// action was specified
 	if (isset($_POST['action'])) {
+		
+		// depending on action, call function
 		switch ($_POST['action']) {
-			
 			case "0":
 				break;
-				
+			
+			// get list of top users
 			case "1":
-				if (isset($_POST['userID']))
-					$popular->getPopularByUsers($_POST['userID']);
+				$popular->getPopularByUsers();
 				break;
-				
+			
+			// get list of top subjects
 			case "2":
-				if (isset($_POST['userID']))
-					$popular->getPopularBySubject($_POST['userID']);
+				$popular->getPopularBySubject();
 				break;			
     	}
 	}

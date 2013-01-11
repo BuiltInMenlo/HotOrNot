@@ -27,6 +27,9 @@
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	
+	if (vo.fbID == nil || [vo.fbID isEqualToString:@""])
+		vo.imageURL = @"https://s3.amazonaws.com/picchallenge/default_user.png";
+	
 	return (vo);
 }
 
