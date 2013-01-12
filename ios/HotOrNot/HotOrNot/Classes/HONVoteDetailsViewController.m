@@ -110,7 +110,7 @@
 	subjectLabel.text = _challengeVO.subjectName;
 	[self.view addSubview:subjectLabel];
 	
-	NSLog(@"_isInSession:[%d] _isOwner:[%d] _isCreator:[%d]", _isInSession, _isOwner, _isCreator);
+	NSLog(@"_isInSession:[%d] _isOwner:[%d] _isCreator:[%d] statusID:[%d]", _isInSession, _isOwner, _isCreator, _challengeVO.statusID);
 	//NSLog(@"BOOL:[%d] _isOwner:[%d] vo.creatorID:[%d] vo.challengerID:[%d]", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID), _isOwner, _challengeVO.creatorID, _challengeVO.challengerID);
 	
 	NSString *imgURL;
@@ -136,10 +136,11 @@
 	
 	UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	challengeButton.frame = CGRectMake(87.0, 300.0, 147.0, 62.0);
-	[challengeButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_nonActive"] forState:UIControlStateNormal];
-	[challengeButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_Active"] forState:UIControlStateHighlighted];
+	[challengeButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_nonActive"] forState:UIControlStateNormal];
+	[challengeButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_Active"] forState:UIControlStateHighlighted];
 	[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
-	challengeButton.hidden = (_isOwner || (!_isOwner && !_isInSession));
+	//challengeButton.hidden = (_isOwner || (!_isOwner && !_isInSession));
+	challengeButton.hidden = (_isOwner || _challengeVO.statusID == 1);
 	[self.view addSubview:challengeButton];
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -169,6 +170,9 @@
 	acceptButton.hidden = (_challengeVO.statusID == 2 || _isInSession || _isOwner);
 	[self.view addSubview:acceptButton];
 	
+	if (_challengeVO.challengerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] && !_isInSession)
+		acceptButton.hidden = NO;
+	
 }
 
 - (void)viewDidLoad {
@@ -180,7 +184,7 @@
 - (void)_goChallenge {
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-		[[NSNotificationCenter defaultCenter] postNotificationName:(_isCreator) ? @"NEW_CREATOR_CHALLENGE" : @"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+		[[NSNotificationCenter defaultCenter] postNotificationName:(_isCreator || !_isInSession) ? @"NEW_CREATOR_CHALLENGE" : @"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
 	}];
 }
 

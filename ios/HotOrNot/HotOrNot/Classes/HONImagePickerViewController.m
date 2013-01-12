@@ -339,6 +339,11 @@
 				if (_iTunesPreview.length > 0) {
 					[_cameraOverlayView artistName:[subjectResult objectForKey:@"artist"] songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
 					
+					if (_mpMoviePlayerController != nil) {
+						[_mpMoviePlayerController stop];
+						_mpMoviePlayerController = nil;
+					}
+					
 					//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
 					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:_iTunesPreview]];
 					_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
@@ -351,8 +356,8 @@
 //					[_cameraOverlayView addSubview:volumeView];
 //					[volumeView sizeToFit];
 					
-					if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.67)
-						[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.67];
+					[[MPMusicPlayerController applicationMusicPlayer] setVolume:([HONAppDelegate audioMuted]) ? 0.0 : 0.5];
+					
 				}
 			}
 			
@@ -459,6 +464,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
 }
@@ -468,6 +474,17 @@
 	[self _acceptPhoto];
 }
 
+- (void)cameraOverlayViewRandomSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName {
+	_subjectName = subjectName;
+	[_cameraOverlayView setSubjectName:_subjectName];
+	
+	if (_mpMoviePlayerController != nil) {
+		[_mpMoviePlayerController stop];
+		_mpMoviePlayerController = nil;
+	}
+	
+	[self _playAudio];
+}
 
 
 - (void)cameraOverlayViewPlayTrack:(HONCameraOverlayView *)cameraOverlayView audioURL:(NSString *)url {
@@ -486,7 +503,8 @@
 	_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
 	[_mpMoviePlayerController prepareToPlay];
 	[_mpMoviePlayerController play];
-	[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.5];
+	
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:([HONAppDelegate audioMuted]) ? 0.0 : 0.5];
 }
 
 - (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView {
@@ -554,6 +572,7 @@
 		
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }

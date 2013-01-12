@@ -67,6 +67,7 @@ extern NSString *const FacebookAppID;
 + (BOOL)canPingServers;
 + (BOOL)canPingAPIServer;
 + (BOOL)canPingParseServer;
++ (BOOL)audioMuted;
 
 + (void)toggleViewPushed:(BOOL)isPushed;
 

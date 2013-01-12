@@ -268,6 +268,10 @@ NSString *const FacebookAppID = @"529054720443694";
 	return (!(parseStatus == NotReachable));
 }
 
++ (BOOL)audioMuted {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"] isEqualToString:@"YES"]);
+}
+
 + (void)toggleViewPushed:(BOOL)isPushed {
 	[[NSUserDefaults standardUserDefaults] setObject:(isPushed) ? @"YES" : @"NO" forKey:@"pushed_view"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -424,6 +428,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
 		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
 	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"audio_muted"];
 	
 	_isFromBackground = NO;
 	[HONAppDelegate toggleViewPushed:NO];
@@ -742,6 +748,12 @@ NSString *const FacebookAppID = @"529054720443694";
 - (void)_registerUser {
 	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {
 	
+//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://api.parse.com/1/functions/"]];
+//	[httpClient setDefaultHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
+//	[httpClient setDefaultHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
+//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
+//	[httpClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
+		
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",
@@ -761,46 +773,46 @@ NSString *const FacebookAppID = @"529054720443694";
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
 		}
-		
-		//NSString *text = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-		//NSLog(@"Response: %@", text);
-		
+				
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"%@", [error localizedDescription]);
 	}];
 }
 
 - (void)_testParseCloudCode {
+	// http://stackoverflow.com/questions/10795710/converting-a-curl-request-with-data-urlencode-into-afnetworking-get-request
 	/*
-	 NSDictionary *jsonDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:
-	 @"app_name", @"PicChallenge",
-	 nil];
+	NSDictionary *jsonDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:@"app_name", @"PicChallenge", nil];
 	 
-	 NSError *error = nil;
-	 NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
+	NSError *error = nil;
+	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
 	 
-	 if (!jsonData) {
-	 NSLog(@"NSJSONSerialization failed %@", error);
-	 }
+	if (!jsonData) {
+		NSLog(@"NSJSONSerialization failed %@", error);
+	}
 	 
-	 NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-	 NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:
-	 json, @"where", nil];
-	 */
+	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+	NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:json, @"where", nil];
+	*/
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
 	
 	
 	NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:
-										 @"PicChallenge", @"app_name", nil];
+										 @"PicChallenge", @"app_name",
+										 nil];
 	
-	AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://api.parse.com/"]];
+	AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://api.parse.com/1/functions/"]];
 	[client setDefaultHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
 	[client setDefaultHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
+	[client setDefaultHeader:@"Content-Type" value:@"application/json"];
 	[client registerHTTPOperationClass:[AFJSONRequestOperation class]];
 	
-	[client getPath:@"1/functions/duration"
+	[client postPath:@"duration"
 		  parameters:parameters
 			  success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				  NSLog(@"SUCCESS\n%@", responseObject);
+				  NSError *error = nil;
+				  NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+				  NSLog(@"SUCCESS\n%@", result);
 				  
 			  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 				  NSLog(@"FAILED\n%@", error);

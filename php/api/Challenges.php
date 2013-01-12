@@ -64,7 +64,7 @@
 			return ((isset($codes[$status])) ? $codes[$status] : '');
 		}
 				
-		function sendResponse($status=200, $body='', $content_type='text/html') {			
+		function sendResponse($status=200, $body='', $content_type='text/json') {			
 			$status_header = "HTTP/1.1 ". $status ." ". $this->getStatusCodeMessage($status);
 			
 			header($status_header);

@@ -26,6 +26,7 @@
 @interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
+@property (nonatomic, strong) UISwitch *audioSwitch;
 @property (nonatomic, strong) UISwitch *activatedSwitch;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSArray *captions;
@@ -39,7 +40,7 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
 		
-		_captions = [NSArray arrayWithObjects:@"", @"NOTIFICATIONS", (FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK", @"CHANGE USERNAME", @"SUPPORT", @"PRIVACY POLICY", nil];
+		_captions = [NSArray arrayWithObjects:@"", @"NOTIFICATIONS", @"PLAY AUDIO", (FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK", @"CHANGE USERNAME", @"SUPPORT", @"PRIVACY POLICY", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -48,6 +49,10 @@
 		
 		else
 			_notificationSwitch.on = YES;
+		
+		_audioSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
+		[_audioSwitch addTarget:self action:@selector(_goAudioSwitch:) forControlEvents:UIControlEventValueChanged];
+		_audioSwitch.on = ![HONAppDelegate audioMuted];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_sessionStateChanged:)
@@ -160,41 +165,27 @@
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(void)_goNotificationsSwitch:(UISwitch *)switchView {
-	NSString *msg;
-	
-	if (switchView.on)
-		msg = @"Turn on notifications?";
-	
-	else
-		msg = @"Turn off notifications?";
-	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Notifications"
+- (void)_goNotificationsSwitch:(UISwitch *)switchView {
+	NSString *msg = (switchView.on) ? @"Turn on notifications?" : @"Turn off notifications?";	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notifications"
 																	message:msg
 																  delegate:self
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"No", nil];
-	[alert show];
+	[alertView setTag:0];
+	[alertView show];
 	_activatedSwitch = switchView;
 }
 
--(void)_goFBSwitch:(UISwitch *)switchView {
-	NSString *msg;
-	
-	[HONAppDelegate setAllowsFBPosting:switchView.on];
-	
-	if (switchView.on)
-		msg = @"Turn on Facebook posting?";
-	
-	else
-		msg = @"Turn off facebook posting?";
-	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook Posting"
+-(void)_goAudioSwitch:(UISwitch *)switchView {
+	NSString *msg = (switchView.on) ? @"Turn on track audio?" : @"Turn off track audio?";	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Audio"
 																	message:msg
 																  delegate:self
 													  cancelButtonTitle:@"Yes"
 													  otherButtonTitles:@"No", nil];
-	[alert show];
+	[alertView setTag:1];
+	[alertView show];
 	_activatedSwitch = switchView;
 }
 
@@ -259,13 +250,15 @@
 	
 	[_headerView setTitle:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
 	
-	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:0]];
 	[cell updateCaption:(session.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
 }
 
 - (void)_refreshList:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	_refreshButton.hidden = YES;
+	
+	_audioSwitch.on = ![HONAppDelegate audioMuted];
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -311,7 +304,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (6);
+	return (7);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -340,8 +333,12 @@
 	if (indexPath.row == 1) {
 		[cell hideChevron];
 		cell.accessoryView = _notificationSwitch;
-	}
-	else if (indexPath.row == 2)
+	
+	} else if (indexPath.row == 2) {
+		[cell hideChevron];
+		cell.accessoryView = _audioSwitch;
+	
+	} else if (indexPath.row == 3)
 		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
 			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -360,7 +357,7 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	if (indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 5)
+	if (indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 5 || indexPath.row == 6)
 		return (indexPath);
 	
 	else
@@ -375,7 +372,7 @@
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	switch (indexPath.row) {
-		case 2:
+		case 3:
 			if (FBSession.activeSession.state == 513) {
 				[FBSession.activeSession closeAndClearTokenInformation];
 				[cell updateCaption:@"LOGIN TO FACEBOOK"];
@@ -384,14 +381,13 @@
 				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
-				//[cell updateCaption:@"Logout of Facebook"];
 			}
 			
 			[HONAppDelegate setAllowsFBPosting:(FBSession.activeSession.state == 513)];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
 			break;
 			
-		case 3:
+		case 4:
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
@@ -405,7 +401,7 @@
 			[self presentViewController:navigationController animated:NO completion:nil];
 			break;
 			
-		case 4:
+		case 6:
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSupportViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
@@ -417,60 +413,80 @@
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	switch(buttonIndex) {
-		case 0: {
-			//NSLog(@"-----loginViewShowingLoggedInUser-----");
-			[[Mixpanel sharedInstance] track:@"Notifications"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
-			
-		
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-											[NSString stringWithFormat:@"%d", 4], @"action",
-											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-											(_notificationSwitch.on) ? @"Y" : @"N", @"isNotifications",
-											nil];
-			
-			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-					
-				} else {
-					NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					//NSLog(@"HONSettingsViewController AFNetworking: %@", userResult);
-					
-					if ([userResult objectForKey:@"id"] != [NSNull null])
-						[HONAppDelegate writeUserInfo:userResult];
-					
-					HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-					[cell updateTopCell];
-					
-					[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
-				}
+	
+	if (alertView.tag == 0) {
+		switch(buttonIndex) {
+			case 0: {
+				//NSLog(@"-----loginViewShowingLoggedInUser-----");
+				[[Mixpanel sharedInstance] track:@"Settings - Notifications"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
 				
-				_refreshButton.hidden = NO;
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"%@", [error localizedDescription]);
-				
-				_refreshButton.hidden = NO;
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-			}];
-			break;}
 			
-		case 1:
-			_activatedSwitch.on = !_activatedSwitch.on;
-			break;
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+												[NSString stringWithFormat:@"%d", 4], @"action",
+												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+												(_notificationSwitch.on) ? @"Y" : @"N", @"isNotifications",
+												nil];
+				
+				[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+						NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+						//NSLog(@"HONSettingsViewController AFNetworking: %@", userResult);
+						
+						if ([userResult objectForKey:@"id"] != [NSNull null])
+							[HONAppDelegate writeUserInfo:userResult];
+						
+						HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+						[cell updateTopCell];
+						
+						[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
+					}
+					
+					_refreshButton.hidden = NO;
+					if (_progressHUD != nil) {
+						[_progressHUD hide:YES];
+						_progressHUD = nil;
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"%@", [error localizedDescription]);
+					
+					_refreshButton.hidden = NO;
+					if (_progressHUD != nil) {
+						[_progressHUD hide:YES];
+						_progressHUD = nil;
+					}
+				}];
+				break;}
+				
+			case 1:
+				_activatedSwitch.on = !_activatedSwitch.on;
+				break;
+		}
+	
+	} else if (alertView.tag == 1) {
+		switch (buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Settings - Audio"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d", _audioSwitch.on], @"switch", nil]];
+				
+				[[NSUserDefaults standardUserDefaults] setObject:(_activatedSwitch.on) ? @"NO" : @"YES" forKey:@"audio_muted"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
+				break;
+				
+			case 1:
+				_activatedSwitch.on = !_activatedSwitch.on;
+				break;
+		}
 	}
 }
 

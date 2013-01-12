@@ -26,6 +26,7 @@
 - (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewClosePreview:(HONCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewRandomSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView;

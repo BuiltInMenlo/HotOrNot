@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <MediaPlayer/MediaPlayer.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -23,6 +24,7 @@
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *editButton;
 @property (nonatomic, strong) UIButton *cameraBackButton;
+@property (nonatomic, strong) UIButton *muteButton;
 @property (nonatomic, strong) NSString *artistName;
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *itunesURL;
@@ -89,6 +91,13 @@
 		[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_Active"] forState:UIControlStateHighlighted];
 		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 		[subjectBGImageView addSubview:_editButton];
+		
+		UIButton *randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		randomSubjectButton.frame = CGRectMake(23.0, 100.0, 50.0, 45.0);
+		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+		[randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:randomSubjectButton];
 		
 		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 308.0, 306.0, 50.0)];
 		_trackBGImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
@@ -303,8 +312,35 @@
 	[buyTrackButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
 	[_trackBGImageView addSubview:buyTrackButton];
 	
+	_muteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_muteButton.frame = CGRectMake(180.0, 15.0, 34.0, 34.0);
+	[_muteButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateNormal];
+	[_muteButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateHighlighted];
+	[_muteButton addTarget:self action:@selector(_goMuteToggle) forControlEvents:UIControlEventTouchUpInside];
+	[_trackBGImageView addSubview:_muteButton];
+	
 	[UIView animateWithDuration:0.5 animations:^(void) {
 		_trackBGImageView.alpha = 1.0;
+	}];
+	
+	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 150.0, 200.0, 30.0)];
+	ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:26];
+	ptsLabel.textColor = [UIColor whiteColor];
+	ptsLabel.backgroundColor = [UIColor clearColor];
+	ptsLabel.textAlignment = NSTextAlignmentCenter;
+	ptsLabel.text = @"+5pts!";
+	ptsLabel.alpha = 0.0;
+	[self addSubview:ptsLabel];
+	[UIView animateWithDuration:0.5 animations:^(void) {
+		ptsLabel.alpha = 1.0;
+		
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.33 animations:^(void) {
+			ptsLabel.alpha = 0.0;
+			
+		} completion:^(BOOL finished) {
+			[ptsLabel removeFromSuperview];
+		}];
 	}];
 }
 
@@ -331,6 +367,23 @@
 	[_subjectTextField becomeFirstResponder];
 }
 
+- (void)_goRandomSubject {
+	[[Mixpanel sharedInstance] track:@"Camera - Random Hashtag"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		_trackBGImageView.alpha = 0.0;
+		
+	} completion:^(BOOL finished) {
+		for (UIView *view in _trackBGImageView.subviews)
+			[view removeFromSuperview];
+		
+		_subjectName = [HONAppDelegate rndDefaultSubject];
+		[self.delegate cameraOverlayViewRandomSubject:self subject:_subjectName];
+	}];
+}
+
 - (void)_goBuyTrack {
 	NSLog(@"BUY TRACK '%@' (%@)", _songName, _itunesURL);
 	
@@ -340,6 +393,19 @@
 												 [NSString stringWithFormat:@"%@ - %@:%@", _subjectName, _artistName, _songName], @"track", nil]];
 	
 	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:_itunesURL]];
+}
+
+- (void)_goMuteToggle {
+	[[Mixpanel sharedInstance] track:@"Camera - Mute Toggle"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d", [HONAppDelegate audioMuted]], @"muted", nil]];
+	
+
+	[[NSUserDefaults standardUserDefaults] setObject:([HONAppDelegate audioMuted]) ? @"NO" : @"YES" forKey:@"audio_muted"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[[MPMusicPlayerController applicationMusicPlayer] setVolume:([HONAppDelegate audioMuted]) ? 0.0 : 0.5];
 }
 
 - (void)_goSubjectCheck {
