@@ -7,15 +7,15 @@
 //
 
 #import "Mixpanel.h"
-
-#import "ASIFormDataRequest.h"
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONUsernameViewController.h"
 
-@interface HONUsernameViewController () <UITextFieldDelegate, ASIHTTPRequestDelegate>
+@interface HONUsernameViewController () <UITextFieldDelegate>
 @property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) UITextField *usernameTextField;
 @property(nonatomic, strong) UIButton *editButton;
@@ -150,12 +150,60 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-	[userRequest setDelegate:self];
-	[userRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
-	[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[userRequest setPostValue:_username forKey:@"username"];
-	[userRequest startAsynchronous];
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 7], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									_username, @"username",
+									nil];
+	
+	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Update Failed", @"Status message when update fails");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+			
+		} else {
+			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"HONUsernameViewController AFNetworking: %@", userResult);
+			
+			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+				
+				[HONAppDelegate writeUserInfo:userResult];
+				[self dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+				}];
+				
+			} else {
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"Username taken!", @"Status message when update fails");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"%@", [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Update Failed", @"Status message when update fails");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
 }
 
 #pragma mark - TextField Delegates
@@ -178,57 +226,6 @@
 	
 	else
 		_username = textField.text;
-}
-
-
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONChallengerPickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	@autoreleasepool {
-		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-		
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Update Failed", @"Status message when update fails");
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
-			_progressHUD = nil;
-		
-		} else {
-			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-				
-				[HONAppDelegate writeUserInfo:userResult];
-				[self dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
-				}];
-			
-			} else {
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"Username taken!", @"Status message when update fails");
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
-				_progressHUD = nil;
-			}
-		}
-	}
-}
-
--(void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
 }
 
 @end

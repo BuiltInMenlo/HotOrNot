@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo. All rights reserved.
 //
 
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
@@ -151,23 +153,117 @@
 	_isUsersList = NO;
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_tags"];
 	
-	ASIFormDataRequest *subjectsRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
-	[subjectsRequest setDelegate:self];
-	[subjectsRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-	[subjectsRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[subjectsRequest startAsynchronous];
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 2], @"action",
+									nil];
+	
+	[httpClient postPath:kPopularAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
+											 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+			
+			//NSLog(@"HONPopularViewController AFNetworking: %@", unsortedList);
+			_subjects = [NSMutableArray new];
+			for (NSDictionary *serverList in parsedLists) {
+				HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
+				if (vo != nil)
+					[_subjects addObject:vo];
+			}
+		}
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		[_tableView reloadData];
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"%@", [error localizedDescription]);
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+	}];
+	
+//	ASIFormDataRequest *subjectsRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
+//	[subjectsRequest setDelegate:self];
+//	[subjectsRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
+//	[subjectsRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+//	[subjectsRequest startAsynchronous];
 }
 
 
 - (void)_retrievePopularUsers {
 	_isUsersList = YES;
 	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders"];
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 1], @"action",
+									nil];
 	
-	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
-	[usersRequest setDelegate:self];
-	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
-	[usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[usersRequest startAsynchronous];
+	[httpClient postPath:kPopularAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"HONPopularViewController AFNetworking: %@", unsortedList);
+			
+			_users = [NSMutableArray new];
+			for (NSDictionary *serverList in unsortedList) {
+				HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
+				if (vo != nil)
+					[_users addObject:vo];
+			}
+			
+			NSArray * sortedUsers = [_users sortedArrayUsingDescriptors:
+											 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+			_users = [NSMutableArray arrayWithArray:sortedUsers];
+			
+			int rank = 0;
+			for (HONPopularUserVO *vo in _users) {
+				rank++;
+				if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+					[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:rank] forKey:@"player_rank"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+				}
+			}
+		}
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		[_tableView reloadData];
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"%@", [error localizedDescription]);
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+	}];
+	
+//	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
+//	[usersRequest setDelegate:self];
+//	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
+//	[usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+//	[usersRequest startAsynchronous];
 }
 
 
@@ -392,73 +488,73 @@
 }
 
 
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONPopularViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-		@autoreleasepool {
-			NSError *error = nil;
-			if (error != nil)
-				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
-			
-			else {
-				NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-				
-				if (_isUsersList) {
-					_users = [NSMutableArray new];
-					for (NSDictionary *serverList in unsortedList) {
-						HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
-						//NSLog(@"VO:[%d]", vo.userID);
-						
-						if (vo != nil)
-							[_users addObject:vo];
-					}
-					
-					NSArray * sortedUsers = [_users sortedArrayUsingDescriptors:
-													 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
-					_users = [NSMutableArray arrayWithArray:sortedUsers];
-					
-					int rank = 0;
-					for (HONPopularUserVO *vo in _users) {
-						rank++;
-						if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-							[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:rank] forKey:@"player_rank"];
-							[[NSUserDefaults standardUserDefaults] synchronize];
-						}
-					}
-					
-				} else {
-					NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
-													 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
-					
-					_subjects = [NSMutableArray new];
-					for (NSDictionary *serverList in parsedLists) {
-						HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
-						//NSLog(@"VO:[%@]", vo.subjectName);
-						
-						if (vo != nil)
-							[_subjects addObject:vo];
-					}
-				}
-				
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
-				
-				[_tableView reloadData];
-			}
-		}
-	_refreshButton.hidden = NO;
-}
-
--(void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-}
+//#pragma mark - ASI Delegates
+//-(void)requestFinished:(ASIHTTPRequest *)request {
+//	//NSLog(@"HONPopularViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+//	
+//		@autoreleasepool {
+//			NSError *error = nil;
+//			if (error != nil)
+//				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
+//			
+//			else {
+//				NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
+//				
+//				if (_isUsersList) {
+//					_users = [NSMutableArray new];
+//					for (NSDictionary *serverList in unsortedList) {
+//						HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
+//						//NSLog(@"VO:[%d]", vo.userID);
+//						
+//						if (vo != nil)
+//							[_users addObject:vo];
+//					}
+//					
+//					NSArray * sortedUsers = [_users sortedArrayUsingDescriptors:
+//													 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+//					_users = [NSMutableArray arrayWithArray:sortedUsers];
+//					
+//					int rank = 0;
+//					for (HONPopularUserVO *vo in _users) {
+//						rank++;
+//						if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+//							[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:rank] forKey:@"player_rank"];
+//							[[NSUserDefaults standardUserDefaults] synchronize];
+//						}
+//					}
+//					
+//				} else {
+//					NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
+//													 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+//					
+//					_subjects = [NSMutableArray new];
+//					for (NSDictionary *serverList in parsedLists) {
+//						HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
+//						//NSLog(@"VO:[%@]", vo.subjectName);
+//						
+//						if (vo != nil)
+//							[_subjects addObject:vo];
+//					}
+//				}
+//				
+//				if (_progressHUD != nil) {
+//					[_progressHUD hide:YES];
+//					_progressHUD = nil;
+//				}
+//				
+//				[_tableView reloadData];
+//			}
+//		}
+//	_refreshButton.hidden = NO;
+//}
+//
+//-(void)requestFailed:(ASIHTTPRequest *)request {
+//	NSLog(@"requestFailed:\n[%@]", request.error);
+//	
+//	if (_progressHUD != nil) {
+//		[_progressHUD hide:YES];
+//		_progressHUD = nil;
+//	}
+//}
 
 @end

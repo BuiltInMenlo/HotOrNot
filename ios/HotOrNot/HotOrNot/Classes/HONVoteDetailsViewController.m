@@ -6,7 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "ASIFormDataRequest.h"
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
 #import "UIImageView+WebCache.h"
@@ -14,7 +15,7 @@
 #import "HONVoteDetailsViewController.h"
 #import "HONAppDelegate.h"
 
-@interface HONVoteDetailsViewController () <ASIHTTPRequestDelegate>
+@interface HONVoteDetailsViewController ()
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic) BOOL isOwner;
 @property (nonatomic) BOOL isCreator;
@@ -61,80 +62,6 @@
 	
 	return (self);
 }
-
-
-//- (id)initAsCreatorInSession:(HONChallengeVO *)vo {
-//	if ((self = [super init])) {
-//		_isOwner = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID);
-//		_isCreator = YES;
-//		_isInSession = YES;
-//		
-//		_challengeVO = vo;
-//	}
-//	
-//	return (self);
-//}
-//
-//- (id)initAsChallengerInSession:(HONChallengeVO *)vo {
-//	if ((self = [super init])) {
-//		_isOwner = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.challengerID);
-//		_isCreator = NO;
-//		_isInSession = YES;
-//		
-//		_challengeVO = vo;
-//	}
-//	
-//	return (self);
-//}
-//
-//- (id)initAsOwnerCreated:(HONChallengeVO *)vo {
-//	if ((self = [super init])) {
-//		_isOwner = YES;
-//		_isCreator = YES;
-//		_isInSession = NO;
-//		
-//		_challengeVO = vo;
-//	}
-//	
-//	return (self);
-//}
-//
-//- (id)initAsOwnerWaiting:(HONChallengeVO *)vo {
-//	if ((self = [super init])) {
-//		_isOwner = YES;
-//		_isCreator = YES;
-//		_isInSession = NO;
-//		
-//		_challengeVO = vo;
-//	}
-//	
-//	return (self);
-//}
-//
-//- (id)initAsNotOwnerCreated:(HONChallengeVO *)vo {
-//	if ((self = [super init])) {
-//		_isOwner = NO;
-//		_isCreator = YES;
-//		_isInSession = NO;
-//		
-//		_challengeVO = vo;
-//	}
-//	
-//	return (self);
-//}
-//
-//- (id)initAsNotOwnerWaiting:(HONChallengeVO *)vo {
-//	if ((self = [super init])) {
-//		_isOwner = NO;
-//		_isCreator = YES;
-//		_isInSession = NO;
-//		
-//		_challengeVO = vo;
-//	}
-//	
-//	return (self);
-//}
-
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
@@ -239,10 +166,8 @@
 	[acceptButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_nonActive"] forState:UIControlStateNormal];
 	[acceptButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_Active"] forState:UIControlStateHighlighted];
 	[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];
+	acceptButton.hidden = (_challengeVO.statusID == 2 || _isInSession || _isOwner);
 	[self.view addSubview:acceptButton];
-	
-	//if (_challengeVO.statusID == 2 || _isInSession || _isOwner)
-		acceptButton.hidden = (_challengeVO.statusID == 2 || _isInSession || _isOwner);
 	
 }
 
@@ -265,11 +190,26 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
 	
-	ASIFormDataRequest *pokeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-	[pokeRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
-	[pokeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"pokerID"];
-	[pokeRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.creatorID] forKey:@"pokeeID"];
-	[pokeRequest startAsynchronous];
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 6], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
+									[NSString stringWithFormat:@"%d", _challengeVO.creatorID], @"pokeeID",
+									nil];
+	
+	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSLog(@"HONVoteDetailsViewController AFNetworking: %@", pokeResult);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"%@", [error localizedDescription]);
+	}];
 	
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
@@ -282,11 +222,26 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
 	
-	ASIFormDataRequest *pokeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-	[pokeRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
-	[pokeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"pokerID"];
-	[pokeRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengerID] forKey:@"pokeeID"];
-	[pokeRequest startAsynchronous];
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 6], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
+									[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"pokeeID",
+									nil];
+	
+	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSLog(@"HONVoteDetailsViewController AFNetworking: %@", pokeResult);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"%@", [error localizedDescription]);
+	}];
 	
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
@@ -312,25 +267,6 @@
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 	}
-}
-
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONChallengePreviewViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	@autoreleasepool {
-		NSError *error = nil;
-		if (error != nil)
-			NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
-		
-		else {
-			
-		}
-	}
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 
 @end

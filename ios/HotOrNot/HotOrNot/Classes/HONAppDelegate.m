@@ -11,6 +11,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "AFJSONRequestOperation.h"
 #import "UAirship.h"
 #import "UAPush.h"
 #import "HONAppDelegate.h"
@@ -417,30 +418,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
-//	NSMutableArray *fontNames = [[NSMutableArray alloc] init];
-//	NSArray *fontFamilyNames = [UIFont familyNames];
-//	
-//	for (NSString *familyName in fontFamilyNames) {
-//		NSLog(@"Font Family Name = %@", familyName);
-//		
-//		NSArray *names = [UIFont fontNamesForFamilyName:familyName];
-//		NSLog(@"Font Names = %@", fontNames);
-//		
-//		[fontNames addObjectsFromArray:names];
-//	}
-	
-	
-//	ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"https://api.parse.com/1/functions/hello"]];
-//	[request addRequestHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
-//	[request addRequestHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
-//	[request addRequestHeader:@"Content-Type" value:@"application/json"];
-//	//[request setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
-//	//[request setPostValue:[HONAppDelegate deviceToken] forKey:@"token"];
-//	[request setDelegate:self];
-//	[request setTag:1];
-//	[request startAsynchronous];
-	
-	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"shown_settings"];
 	
@@ -449,13 +426,13 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	
 	_isFromBackground = NO;
-	
 	[HONAppDelegate toggleViewPushed:NO];
 	
-	NSLog(@"hasNetwork[%d] canPingParseServer[%d]", [HONAppDelegate hasNetwork], [HONAppDelegate canPingParseServer]);
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
+	
+	//[self _testParseCloudCode];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
@@ -466,17 +443,8 @@ NSString *const FacebookAppID = @"529054720443694";
 		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
 		[PFUser enableAutomaticUser];
 		PFACL *defaultACL = [PFACL ACL];
-	
-		// If you would like all objects to be private by default, remove this line.
 		[defaultACL setPublicReadAccess:YES];
-	
 		[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
-		
-		
-	//	PFObject *testObject = [PFObject objectWithClassName:@"APIs"];
-	//	[testObject setObject:@"PicChallenge" forKey:@"title"];
-	//	[testObject setObject:@"http://discover.getassembly.com/hotornot/api" forKey:@"server_path"];
-	//	[testObject save];
 		
 		[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
 		[[Mixpanel sharedInstance] track:@"App Boot"
@@ -788,7 +756,7 @@ NSString *const FacebookAppID = @"529054720443694";
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			NSLog(@"USER: %@", userResult);
+			NSLog(@"HONAppDelegate AFNetworking: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
@@ -802,6 +770,56 @@ NSString *const FacebookAppID = @"529054720443694";
 	}];
 }
 
+- (void)_testParseCloudCode {
+	/*
+	 NSDictionary *jsonDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:
+	 @"app_name", @"PicChallenge",
+	 nil];
+	 
+	 NSError *error = nil;
+	 NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
+	 
+	 if (!jsonData) {
+	 NSLog(@"NSJSONSerialization failed %@", error);
+	 }
+	 
+	 NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+	 NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:
+	 json, @"where", nil];
+	 */
+	
+	
+	NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:
+										 @"PicChallenge", @"app_name", nil];
+	
+	AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://api.parse.com/"]];
+	[client setDefaultHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
+	[client setDefaultHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
+	[client registerHTTPOperationClass:[AFJSONRequestOperation class]];
+	
+	[client getPath:@"1/functions/duration"
+		  parameters:parameters
+			  success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				  NSLog(@"SUCCESS\n%@", responseObject);
+				  
+			  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				  NSLog(@"FAILED\n%@", error);
+			  }
+	 ];
+}
+
+- (void)_showFonts {
+	NSMutableArray *fontNames = [[NSMutableArray alloc] init];
+	
+	for (NSString *familyName in [UIFont familyNames]) {
+		NSLog(@"Font Family Name = %@", familyName);
+		
+		NSArray *names = [UIFont fontNamesForFamilyName:familyName];
+		NSLog(@"Font Names = %@", fontNames);
+		
+		[fontNames addObjectsFromArray:names];
+	}
+}
 
 #pragma mark - TabBarController Delegates
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {

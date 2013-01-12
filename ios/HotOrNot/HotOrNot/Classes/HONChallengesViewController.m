@@ -7,7 +7,6 @@
 //
 #import <KiipSDK/KiipSDK.h>
 
-#import "ASIFormDataRequest.h"
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "UIImageView+WebCache.h"
@@ -29,7 +28,7 @@
 #import "HONChallengeTableHeaderView.h"
 
 
-@interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, ASIHTTPRequestDelegate, TapForTapAdViewDelegate>
+@interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, TapForTapAdViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -207,8 +206,7 @@
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
-			
-			NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
@@ -265,7 +263,7 @@
 				
 			} else {
 				NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				NSLog(@"HONChallengesViewController AFNetworking: %@", userResult);
+				//NSLog(@"HONChallengesViewController AFNetworking: %@", userResult);
 				
 				if ([userResult objectForKey:@"id"] != [NSNull null])
 					[HONAppDelegate writeUserInfo:userResult];
@@ -288,13 +286,6 @@
 				_progressHUD = nil;
 			}
 		}];
-		
-//		ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-//		[userRequest setDelegate:self];
-//		[userRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-//		[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-//		[userRequest setTag:0];
-//		[userRequest startAsynchronous];
 	}
 }
 
@@ -431,7 +422,7 @@
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
-			NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
 			
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
@@ -462,14 +453,6 @@
 			_progressHUD = nil;
 		}
 	}];
-	
-//	ASIFormDataRequest *nextChallengesRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-//	[nextChallengesRequest setDelegate:self];
-//	[nextChallengesRequest setPostValue:[NSString stringWithFormat:@"%d", 12] forKey:@"action"];
-//	[nextChallengesRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-//	[nextChallengesRequest setPostValue:[dateFormat stringFromDate:_lastDate] forKey:@"datetime"];
-//	[nextChallengesRequest setTag:2];
-//	[nextChallengesRequest startAsynchronous];
 }
 
 - (void)_refreshList:(NSNotification *)notification {
@@ -604,7 +587,6 @@
 
 #pragma mark - AlerView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	ASIFormDataRequest *challengeRequest;
 	HONChallengeVO *vo;
 	
 	NSLog(@"BUTTON INDEX:[%d]", buttonIndex);
@@ -620,12 +602,25 @@
 		
 		[_challenges removeObjectAtIndex:_idxPath.row];
 		[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
+
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+										[NSString stringWithFormat:@"%d", 10], @"action",
+										[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
+										nil];
 		
-		challengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", 10] forKey:@"action"];
-		[challengeRequest setPostValue:[NSString stringWithFormat:@"%d", vo.challengeID] forKey:@"challengeID"];
-		[challengeRequest startAsynchronous];
-		
+		[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			if (error != nil) {
+				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				
+			} else {
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			NSLog(@"%@", [error localizedDescription]);
+		}];
+				
 		switch(buttonIndex) {
 			case 0:
 				[[Mixpanel sharedInstance] track:@"Challenge Wall - Flag"
@@ -633,11 +628,24 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 				
-				ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
-				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-				[voteRequest startAsynchronous];
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+												[NSString stringWithFormat:@"%d", 11], @"action",
+												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
+												nil];
+				
+				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"%@", [error localizedDescription]);
+				}];
 				break;
 		}
 	
@@ -650,100 +658,7 @@
 }
 
 
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONChallengesViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	// load more
-	if (request.tag == 2) {
-		@autoreleasepool {
-			NSError *error = nil;
-			if (error != nil)
-				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
-			
-			else {
-				NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-				NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
-				
-				for (NSDictionary *serverList in parsedLists) {
-					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-					
-					if (vo != nil)
-						[_challenges addObject:vo];
-				}
-				
-				if ([parsedLists count] == 0)
-					_isMoreLoading = NO;
-				
-				_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
-				[_tableView reloadData];
-			}
-		}
-	
-		// user
-	} else if (request.tag == 0) {
-		@autoreleasepool {
-			NSError *error = nil;
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			
-			if (error != nil)
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-			else {
-				if ([userResult objectForKey:@"id"] != [NSNull null])
-					[HONAppDelegate writeUserInfo:userResult];
-			}
-		}
-		
-		[_tableView reloadData];
-		
-		// 1st challenges
-	} else if (request.tag == 1) {
-		@autoreleasepool {
-			NSError *error = nil;
-			if (error != nil)
-				NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
-			
-			else {
-				NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-				NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
-				
-				_challenges = [NSMutableArray array];
-				for (NSDictionary *serverList in parsedLists) {
-					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-					
-					if (vo != nil)
-						[_challenges addObject:vo];
-				}
-				
-				if ([parsedLists count] % 10 != 0)
-					_isMoreLoading = NO;
-				
-				_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
-				_emptySetImgView.hidden = ([_challenges count] > 0);
-				[_tableView reloadData];
-			}
-		}
-	}
-	
-	_refreshButton.hidden = NO;
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-}
-
--(void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-}
-
-
-#pragma mark - TapForTapAdViewDelegates
+#pragma mark - AdView Delegates
 - (UIViewController *)rootViewController {
 	return (self);
 }

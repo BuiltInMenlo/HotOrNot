@@ -6,6 +6,10 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
+#import "Mixpanel.h"
+
 #import "HONVotersViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
@@ -14,10 +18,8 @@
 #import "HONVoterVO.h"
 #import "HONImagePickerViewController.h"
 
-#import "ASIFormDataRequest.h"
-#import "Mixpanel.h"
 
-@interface HONVotersViewController () <ASIHTTPRequestDelegate>
+@interface HONVotersViewController()
 - (void)_retrieveUsers;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -48,12 +50,37 @@
 }
 
 - (void)_retrieveUsers {
-	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
-	[usersRequest setDelegate:self];
-	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-	//[usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[usersRequest startAsynchronous];
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 5], @"action",
+									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+									nil];
+	
+	[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *parsedLists = [unsortedList sortedArrayUsingDescriptors:
+											[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+			
+			//NSLog(@"HONVotersViewControler AFNetworking: %@", unsortedList);
+			_voters = [NSMutableArray new];
+			for (NSDictionary *serverList in parsedLists) {
+				HONVoterVO *vo = [HONVoterVO voterWithDictionary:serverList];
+				
+				if (vo != nil)
+					[_voters addObject:vo];
+			}
+			
+			[_tableView reloadData];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"%@", [error localizedDescription]);
+	}];
 }
 
 
@@ -67,13 +94,6 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"VOTES"];
 	[self.view addSubview:_headerView];
-	
-//	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
-//	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-//	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-//	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-//	[_headerView addSubview:backButton];
 
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
@@ -216,39 +236,5 @@
 	[alertView show];
 }
 
-
-
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONVotersViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	
-	@autoreleasepool {
-		NSError *error = nil;
-		if (error != nil)
-			NSLog(@"Failed to parse user JSON: %@", [error localizedDescription]);
-		
-		else {
-			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			NSArray *parsedLists = [unsortedList sortedArrayUsingDescriptors:
-											 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
-			
-				_voters = [NSMutableArray new];
-				for (NSDictionary *serverList in parsedLists) {
-					HONVoterVO *vo = [HONVoterVO voterWithDictionary:serverList];
-					//NSLog(@"VO:[%d]", vo.userID);
-					
-					if (vo != nil)
-						[_voters addObject:vo];
-				}
-			
-			[_tableView reloadData];
-		}
-	}
-}
-
--(void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
-}
 
 @end

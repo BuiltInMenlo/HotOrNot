@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "ASIFormDataRequest.h"
 #import "Mixpanel.h"
 #import "UIImageView+WebCache.h"
@@ -102,7 +104,7 @@
 			 [[FBRequest requestForMe] startWithCompletionHandler:
 			  ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
 				if (!error) {
-					NSLog(@"user [%@]", user);
+					//NSLog(@"user [%@]", user);
 					  
 					[HONAppDelegate writeFBProfile:user];
 					[HONAppDelegate setAllowsFBPosting:YES];
@@ -110,15 +112,32 @@
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					//if ([[HONAppDelegate infoForUser] objectForKey:@"id"] != @"1") {
-						ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-						[userRequest setDelegate:self];
-						[userRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-						[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-						[userRequest setPostValue:[user objectForKey:@"username"] forKey:@"username"];
-						[userRequest setPostValue:[user objectForKey:@"id"] forKey:@"fbID"];
-						[userRequest setPostValue:[[[user objectForKey:@"gender"] uppercaseString] substringToIndex:1] forKey:@"gender"];
-						[userRequest startAsynchronous];
-					//}
+					
+					AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+					NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+													[NSString stringWithFormat:@"%d", 2], @"action",
+													[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+													[user objectForKey:@"username"], @"username",
+													[user objectForKey:@"id"], @"fbID",
+													[[[user objectForKey:@"gender"] uppercaseString] substringToIndex:1], @"gender",
+													nil];
+					
+					[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+						NSError *error = nil;
+						if (error != nil) {
+							NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+							
+						} else {
+							NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+							//NSLog(@"HONLoginViewController AFNetworking: %@", userResult);
+							
+							if ([userResult objectForKey:@"id"] != [NSNull null])
+								[HONAppDelegate writeUserInfo:userResult];
+						}
+						
+					} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+						NSLog(@"%@", [error localizedDescription]);
+					}];
 				}
 			}];
 		 }
@@ -155,28 +174,6 @@
 			 [alertView show];
 		 }
 	 }];
-}
-
-
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	//NSLog(@"HONLoginViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	@autoreleasepool {
-		NSError *error = nil;
-		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-		
-		if (error != nil)
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-		
-		else {
-			[HONAppDelegate writeUserInfo:userResult];
-		}
-	}
-}
-
--(void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 
 

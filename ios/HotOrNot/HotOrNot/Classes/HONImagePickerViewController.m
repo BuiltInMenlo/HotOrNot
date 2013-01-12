@@ -11,7 +11,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 
-#import "ASIFormDataRequest.h"
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "UIImage+fixOrientation.h"
 #import "Mixpanel.h"
@@ -23,7 +24,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONImagePickerViewController () <ASIHTTPRequestDelegate, HONCameraOverlayViewDelegate>
+@interface HONImagePickerViewController () <HONCameraOverlayViewDelegate>
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *iTunesPreview;
 @property(nonatomic, strong) NSString *iTunesPreviewURL;
@@ -318,12 +319,46 @@
 
 - (void)_playAudio {
 	if (_subjectName.length > 0) {
-		ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-		[subjectRequest setDelegate:self];
-		[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-		[subjectRequest setPostValue:_subjectName forKey:@"subjectName"];
-		[subjectRequest setTag:1];
-		[subjectRequest startAsynchronous];
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+										[NSString stringWithFormat:@"%d", 5], @"action",
+										_subjectName, @"subjectName",
+										nil];
+		
+		[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			if (error != nil) {
+				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				
+			} else {
+				NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+				
+				_iTunesPreview = [subjectResult objectForKey:@"preview_url"];
+				_iTunesPreviewURL = [subjectResult objectForKey:@"itunes_id"];
+				
+				if (_iTunesPreview.length > 0) {
+					[_cameraOverlayView artistName:[subjectResult objectForKey:@"artist"] songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
+					
+					//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
+					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:_iTunesPreview]];
+					_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
+					_mpMoviePlayerController.view.hidden = YES;
+					[self.view addSubview:_mpMoviePlayerController.view];
+					[_mpMoviePlayerController prepareToPlay];
+					[_mpMoviePlayerController play];
+					
+//					MPVolumeView *volumeView = [[MPVolumeView alloc] initWithFrame:CGRectMake(0.0, 100.0, 200.0, 60.0)];
+//					[_cameraOverlayView addSubview:volumeView];
+//					[volumeView sizeToFit];
+					
+					if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.67)
+						[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.67];
+				}
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			NSLog(@"%@", [error localizedDescription]);
+		}];
 	}
 }
 
@@ -572,46 +607,69 @@
 			por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
 			[s3 putObject:por1];
 			
-//			S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t2.jpg", filename] inBucket:@"hotornot-challenges"];
-//			por2.contentType = @"image/jpeg";
-//			por2.data = UIImageJPEGRepresentation(t2Image, kJPEGCompress);
-//			[s3 putObject:por2];
+			S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", filename] inBucket:@"hotornot-challenges"];
+			por2.contentType = @"image/jpeg";
+			por2.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
+			[s3 putObject:por2];
 			
-			S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", filename] inBucket:@"hotornot-challenges"];
+			S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", filename] inBucket:@"hotornot-challenges"];
 			por3.contentType = @"image/jpeg";
-			por3.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
+			por3.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
 			[s3 putObject:por3];
 			
-			S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", filename] inBucket:@"hotornot-challenges"];
-			por4.contentType = @"image/jpeg";
-			por4.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
-			[s3 putObject:por4];
-			
-			
-			
-			ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-			[submitChallengeRequest setDelegate:self];
-			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
-			[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-			[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", filename] forKey:@"imgURL"];
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			NSMutableDictionary *params = [NSMutableDictionary dictionary];
+			[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+			[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+			[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", filename] forKey:@"imgURL"];
 			
 			if (_submitAction == 1)
-				[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
+				[params setObject:_subjectName forKey:@"subject"];
 			
-			else if (_submitAction == 4) {
-				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+			else if (_submitAction == 4)
+				[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
 			
-			} else if (_submitAction == 8) {
-				[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
-				[submitChallengeRequest setPostValue:_fbID forKey:@"fbID"];
+			else if (_submitAction == 8) {
+				[params setObject:_subjectName forKey:@"subject"];
+				[params setObject:_fbID forKey:@"fbID"];
 			
 			} else if (_submitAction == 9) {
-				[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
-				[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
+				[params setObject:_subjectName forKey:@"subject"];
+				[params setObject:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
 			}
 			
-			[submitChallengeRequest setTag:0];
-			[submitChallengeRequest startAsynchronous];
+			[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+					
+				} else {
+					NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+					
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+					
+					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+					
+					[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
+					[HONFacebookCaller postToFriendTimeline:_fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
+					
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+					}];
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				NSLog(@"%@", [error localizedDescription]);
+			}];
 			
 		} @catch (AmazonClientException *exception) {
 			//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -645,89 +703,5 @@
 		_hasPlayedAudio = NO;
 	}
 }
-
-
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	if (request.tag == 0) {
-		@autoreleasepool {
-			_progressHUD.taskInProgress = NO;
-			
-			NSError *error = nil;
-			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			
-			if (error != nil) {
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
-				_progressHUD = nil;
-			}
-			
-			else {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
-				[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
-				[HONFacebookCaller postToFriendTimeline:_fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
-				
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-				}];
-				//[self.navigationController dismissViewControllerAnimated:YES completion:nil];
-			}
-		}
-	
-	} else if (request.tag == 1) {
-		@autoreleasepool {
-			NSError *error = nil;
-			NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			
-			if (error != nil) {
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			}
-			
-			else {
-				_iTunesPreview = [subjectResult objectForKey:@"preview_url"];
-				_iTunesPreviewURL = [subjectResult objectForKey:@"itunes_id"];
-				
-				if (_iTunesPreview.length > 0) {
-					[_cameraOverlayView artistName:[subjectResult objectForKey:@"artist"] songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
-					
-					//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
-					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:_iTunesPreview]];
-					_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
-					_mpMoviePlayerController.view.hidden = YES;
-					[self.view addSubview:_mpMoviePlayerController.view];
-					[_mpMoviePlayerController prepareToPlay];
-					[_mpMoviePlayerController play];
-					
-//					MPVolumeView *volumeView = [[MPVolumeView alloc] initWithFrame:CGRectMake(0.0, 100.0, 200.0, 60.0)];
-//					[_cameraOverlayView addSubview:volumeView];
-//					[volumeView sizeToFit];
-					
-					if ([MPMusicPlayerController applicationMusicPlayer].volume != 0.67)
-						[[MPMusicPlayerController applicationMusicPlayer] setVolume:0.67];
-				}
-			}
-		}
-	}
-}
-
--(void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-}
-
 
 @end

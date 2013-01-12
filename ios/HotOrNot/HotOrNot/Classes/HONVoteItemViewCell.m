@@ -8,7 +8,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "ASIFormDataRequest.h"
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "Mixpanel.h"
 #import "UIImageView+WebCache.h"
 
@@ -136,14 +137,14 @@
 		UIImageView *vsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(138.0, 97.0, 44.0, 44.0)];
 		vsImageView.image = [UIImage imageNamed:@"orIcon"];
 		[self addSubview:vsImageView];
-				
+		
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_votesButton.frame = CGRectMake(12.0, 204.0, 84.0, 34.0);
 		[_votesButton setBackgroundImage:[UIImage imageNamed:@"voteButton_nonActive"] forState:UIControlStateNormal];
 		[_votesButton setBackgroundImage:[UIImage imageNamed:@"voteButton_Active"] forState:UIControlStateHighlighted];
 		_votesButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:14];
 		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-		[_votesButton setTitle:[NSString stringWithFormat:@"%d VOTES", (_challengeVO.creatorScore + _challengeVO.challengerScore)] forState:UIControlStateNormal];
+		[_votesButton setTitle:[NSString stringWithFormat:((_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", (_challengeVO.creatorScore + _challengeVO.challengerScore)] forState:UIControlStateNormal];
 		[_votesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_votesButton];
 	
@@ -382,14 +383,29 @@
 			[self addSubview:_resultsImageView];
 			
 			[HONAppDelegate setVote:_challengeVO.challengeID];
-			[_votesButton setTitle:[NSString stringWithFormat:@"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)] forState:UIControlStateNormal];
+			[_votesButton setTitle:[NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)] forState:UIControlStateNormal];
 			
-			ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
-			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
-			[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-			[voteRequest setPostValue:@"Y" forKey:@"creator"];
-			[voteRequest startAsynchronous];
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+											[NSString stringWithFormat:@"%d", 6], @"action",
+											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+											@"Y", @"creator",
+											nil];
+			
+			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					
+				} else {
+					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				NSLog(@"%@", [error localizedDescription]);
+			}];
 		}
 	}
 }
@@ -423,14 +439,29 @@
 			[self addSubview:_resultsImageView];
 			
 			[HONAppDelegate setVote:_challengeVO.challengeID];
-			[_votesButton setTitle:[NSString stringWithFormat:@"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)] forState:UIControlStateNormal];
+			[_votesButton setTitle:[NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)] forState:UIControlStateNormal];
 			
-			ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kVotesAPI]]];
-			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
-			[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-			[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-			[voteRequest setPostValue:@"N" forKey:@"creator"];
-			[voteRequest startAsynchronous];
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+											[NSString stringWithFormat:@"%d", 6], @"action",
+											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+											@"N", @"creator",
+											nil];
+			
+			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					
+				} else {
+					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				NSLog(@"%@", [error localizedDescription]);
+			}];
 		}
 	}
 }
@@ -510,8 +541,6 @@
 
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	ASIFormDataRequest *voteRequest;
-
 	if (actionSheet.tag == 0) {
 //		switch (buttonIndex) {
 //			case 0:
@@ -528,18 +557,18 @@
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 //				break;
 //				
-//			case 3:
+//			case 3: {
 //				[[Mixpanel sharedInstance] track:@"Poke Creator"
 //											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 //															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 //															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 //				
-//				voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
+//				ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 //				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 //				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"pokerID"];
 //				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.creatorID] forKey:@"pokeeID"];
 //				[voteRequest startAsynchronous];
-//				break;
+//				break;}
 //		}
 		
 	} else if (actionSheet.tag == 1) {
@@ -558,34 +587,51 @@
 //				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
 //				break;
 //				
-//			case 3:
+//			case 3: {
 //				[[Mixpanel sharedInstance] track:@"Vote Wall - Poke Challenger"
 //											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 //															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 //															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 //				
-//				voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
+//				ASIFormDataRequest *voteRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
 //				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 6] forKey:@"action"];
 //				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"pokerID"];
 //				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengerID] forKey:@"pokeeID"];
 //				[voteRequest startAsynchronous];
-//				break;
+//				break;}
 //		}
 	
 	// more button
 	} else if (actionSheet.tag == 2) {
 		switch (buttonIndex) {
-			case 0:
+			case 0: {
 				[[Mixpanel sharedInstance] track:@"Vote Wall - Flag"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
 				
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", 11] forKey:@"action"];
-				[voteRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-				[voteRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-				[voteRequest startAsynchronous];
-				break;
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+												[NSString stringWithFormat:@"%d", 11], @"action",
+												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+												[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+												nil];
+				
+				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+						//NSLog(@"HONVoteItemViewCell AFNetworking: %@", flagResult);
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"%@", [error localizedDescription]);
+				}];
+				
+			break;}
 				
 			case 1:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
