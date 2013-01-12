@@ -50,9 +50,11 @@
 #pragma mark - Touch controls
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];
+	
 	if ([touch view] == _imageView || [touch view] == _bgView) {
-		[self dismissViewControllerAnimated:NO completion:nil];//[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSE_PREVIEW" object:nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+		}];
 	}
 }
 
@@ -73,13 +75,10 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	__weak id weakSelf = self;
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 64.0, kLargeW * 0.5, kLargeW * 0.5)];
 	[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil options:SDWebImageLowPriority success:^(UIImage *image, BOOL cached) {
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
+		[weakSelf _hideHUD];
 	} failure:nil];
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
@@ -187,9 +186,17 @@
 	[pokeRequest setPostValue:[NSString stringWithFormat:@"%d", _challengeVO.challengerID] forKey:@"pokeeID"];
 	[pokeRequest startAsynchronous];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSE_PREVIEW" object:nil];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	}];
 }
 
+- (void)_hideHUD {
+	if (_progressHUD != nil) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+}
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {

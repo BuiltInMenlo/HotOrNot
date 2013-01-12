@@ -12,7 +12,6 @@
 #import "Mixpanel.h"
 
 #import "HONAppDelegate.h"
-#import "HONResultsViewController.h"
 
 @interface HONTabBarController ()
 @property (nonatomic) int challengeHits;
@@ -27,7 +26,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showResults:) name:@"SHOW_RESULTS" object:nil];
 		self.challengeHits = 0;
 		self.hasVisitedSettings = [[[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"] isEqualToString:@"YES"];
 	}
@@ -279,12 +277,6 @@
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 	// Dispose of any resources that can be recreated.
-}
-
-- (void)_showResults:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONResultsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 @end

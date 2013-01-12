@@ -281,14 +281,14 @@
 	[albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil options:SDWebImageLowPriority];
 	[_trackBGImageView addSubview:albumImageView];
 	
-	UILabel *songLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 11.0, 200.0, 14.0)];
+	UILabel *songLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 11.0, 170.0, 14.0)];
 	songLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	songLabel.textColor = [UIColor whiteColor];
 	songLabel.backgroundColor = [UIColor clearColor];
 	songLabel.text = _songName;
 	[_trackBGImageView addSubview:songLabel];
 	
-	UILabel *artistLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 26.0, 200.0, 14.0)];
+	UILabel *artistLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 26.0, 170.0, 14.0)];
 	artistLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	artistLabel.textColor = [UIColor whiteColor];
 	artistLabel.backgroundColor = [UIColor clearColor];

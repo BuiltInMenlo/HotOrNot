@@ -397,10 +397,6 @@
 			// get the subject id for subject name
 			$subject_id = $this->submitSubject($user_id, $subject);
 			
-			// get the itunes id from the subject
-			$query = 'SELECT `itunes_id` FROM `tblSubjects` WHERE `id` = '. $subject_id .';';
-			$itunes_id = mysql_fetch_object(mysql_query($query))->itunes_id;
-			
 			// prime the list of available challenges
 			$rndChallenge_arr = array();
 			
@@ -408,7 +404,7 @@
 			$query = 'SELECT `id`, `creator_id` FROM `tblChallenges` WHERE `status_id` = 1 AND `subject_id` = '. $subject_id .' AND `creator_id` != '. $user_id .';';
 			$challenge_result = mysql_query($query);
 			
-			// found some challenges
+			// found some waiting challenges
 			if (mysql_num_rows($challenge_result) > 0) {			
 				
 				// push into available challenge array
@@ -419,13 +415,13 @@
 				$rnd_ind = mt_rand(0, count($rndChallenge_arr));
 				$challenge_row = $rndChallenge_arr[$rnd_ind];
 				
-				// get user's info as the challenger
-				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-				$challenger_obj = mysql_fetch_object(mysql_query($query));
-				
 				// get the challenge creator's info
 				$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
 				$creator_obj = mysql_fetch_object(mysql_query($query));							
+				
+				// get user's info as the challenger
+				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+				$challenger_obj = mysql_fetch_object(mysql_query($query));
 				
 				// update the challenge to say it's nowe in session
 				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
@@ -433,7 +429,7 @@
 				
 				// send push if creator allows it
 				if ($creator_obj->notifications == "Y")
-					$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $challenger_obj->username .' has accepted your '. $subject .' challenge!", "sound": "push_01.caf"}}');
+					$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_obj->username .' has accepted your '. $subject .' challenge!", "sound": "push_01.caf"}}');
 				
 			    
 				// get the updated challenge info 
@@ -510,7 +506,7 @@
 			    
 				// send push to targeted user if allowed
 				if ($challenger_obj->notifications == "Y")
-					$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' challenge!", "sound": "push_01.caf"}}');
+					$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' challenge!", "sound": "push_01.caf"}}');
 		 			
 			    
 				// get the newly created challenge
@@ -593,7 +589,7 @@
 			
 			// send push to targeted user if allowed
 			if ($challenger_obj->notifications == "Y")
-				$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' challenge!", "sound": "push_01.caf"}}');
+				$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' challenge!", "sound": "push_01.caf"}}');
 			
 			// get the newly created challenge
 			$challenge_arr = $this->getChallengeObj($challenge_id);
@@ -652,7 +648,7 @@
 				
 				// send push if allowed
 				if ($challenger_obj->notifications == "Y")
-					$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' challenge!", "sound": "push_01.caf"}}');
+					$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' challenge!", "sound": "push_01.caf"}}');
 			    
 				// get the newly created challenge
 				$challenge_arr = $this->getChallengeObj($challenge_id);
@@ -793,7 +789,7 @@
 			
 			// send push if allowed
 			if ($isPush)
-				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $challenger_name .' has accepted your '. $subject_name .' challenge!", "sound": "push_01.caf"}}'); 			
+				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_name .' has accepted your '. $subject_name .' challenge!", "sound": "push_01.caf"}}'); 			
 
 			// update the challenge to started
 			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `started` = NOW() WHERE `id` = '. $challenge_id .';';

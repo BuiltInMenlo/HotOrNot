@@ -205,7 +205,9 @@
 				_progressHUD = nil;
 				
 				[HONAppDelegate writeUserInfo:userResult];
-				[self dismissViewControllerAnimated:YES completion:nil];
+				[self dismissViewControllerAnimated:YES completion:^(void) {
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+				}];
 			
 			} else {
 				_progressHUD.minShowTime = kHUDTime;

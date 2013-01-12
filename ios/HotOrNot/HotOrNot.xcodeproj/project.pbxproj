@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4C067D121698BF3A004B99BB /* HONChallengeTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */; };
+		4C07B8E916A0E1F700E061FD /* HONVoteDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */; };
 		4C0C406B162BCCC0007F0DA3 /* cancelButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */; };
 		4C0C406C162BCCC0007F0DA3 /* cancelButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */; };
 		4C0C406D162BCCC0007F0DA3 /* cancelButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */; };
@@ -339,12 +340,10 @@
 		4CBB5CAC169D310600D44E77 /* keyboardInputField@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB5CAA169D310600D44E77 /* keyboardInputField@2x.png */; };
 		4CBE87091634C857004084DF /* genericTableFooter.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE87071634C856004084DF /* genericTableFooter.png */; };
 		4CBE870A1634C857004084DF /* genericTableFooter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE87081634C856004084DF /* genericTableFooter@2x.png */; };
-		4CBE870D1634DDEE004084DF /* HONResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE870C1634DDED004084DF /* HONResultsViewController.m */; };
 		4CBE87121634FD02004084DF /* facebookToggle_off.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE870E1634FD00004084DF /* facebookToggle_off.png */; };
 		4CBE87131634FD02004084DF /* facebookToggle_off@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE870F1634FD00004084DF /* facebookToggle_off@2x.png */; };
 		4CBE87141634FD02004084DF /* facebookToggle_on.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE87101634FD01004084DF /* facebookToggle_on.png */; };
 		4CBE87151634FD02004084DF /* facebookToggle_on@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE87111634FD01004084DF /* facebookToggle_on@2x.png */; };
-		4CBE871816350CD0004084DF /* HONResultsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE871716350CD0004084DF /* HONResultsViewCell.m */; };
 		4CBE874C16371D24004084DF /* HONSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE874B16371D22004084DF /* HONSupportViewController.m */; };
 		4CBE874F16374356004084DF /* noChallengesOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE874D16374354004084DF /* noChallengesOverlay.png */; };
 		4CBE875016374356004084DF /* noChallengesOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBE874E16374355004084DF /* noChallengesOverlay@2x.png */; };
@@ -379,6 +378,8 @@
 /* Begin PBXFileReference section */
 		4C067D101698BF3A004B99BB /* HONChallengeTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeTableHeaderView.h; sourceTree = "<group>"; };
 		4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeTableHeaderView.m; sourceTree = "<group>"; };
+		4C07B8E716A0E1F700E061FD /* HONVoteDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteDetailsViewController.h; sourceTree = "<group>"; };
+		4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteDetailsViewController.m; sourceTree = "<group>"; };
 		4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_Active.png; sourceTree = "<group>"; };
 		4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancelButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_nonActive.png; sourceTree = "<group>"; };
@@ -873,14 +874,10 @@
 		4CBB5CAA169D310600D44E77 /* keyboardInputField@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "keyboardInputField@2x.png"; sourceTree = "<group>"; };
 		4CBE87071634C856004084DF /* genericTableFooter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = genericTableFooter.png; sourceTree = "<group>"; };
 		4CBE87081634C856004084DF /* genericTableFooter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "genericTableFooter@2x.png"; sourceTree = "<group>"; };
-		4CBE870B1634DDED004084DF /* HONResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONResultsViewController.h; sourceTree = "<group>"; };
-		4CBE870C1634DDED004084DF /* HONResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONResultsViewController.m; sourceTree = "<group>"; };
 		4CBE870E1634FD00004084DF /* facebookToggle_off.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = facebookToggle_off.png; sourceTree = "<group>"; };
 		4CBE870F1634FD00004084DF /* facebookToggle_off@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "facebookToggle_off@2x.png"; sourceTree = "<group>"; };
 		4CBE87101634FD01004084DF /* facebookToggle_on.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = facebookToggle_on.png; sourceTree = "<group>"; };
 		4CBE87111634FD01004084DF /* facebookToggle_on@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "facebookToggle_on@2x.png"; sourceTree = "<group>"; };
-		4CBE871616350CCF004084DF /* HONResultsViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONResultsViewCell.h; sourceTree = "<group>"; };
-		4CBE871716350CD0004084DF /* HONResultsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONResultsViewCell.m; sourceTree = "<group>"; };
 		4CBE874A16371D1E004084DF /* HONSupportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSupportViewController.h; sourceTree = "<group>"; };
 		4CBE874B16371D22004084DF /* HONSupportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSupportViewController.m; sourceTree = "<group>"; };
 		4CBE874D16374354004084DF /* noChallengesOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = noChallengesOverlay.png; sourceTree = "<group>"; };
@@ -1000,10 +997,6 @@
 				4C32B99A15FA6F720023A0EE /* HONChallengeViewCell.m */,
 				4C62673C15F96E5600AA7FCE /* HONChallengesViewController.h */,
 				4C62673D15F96E5600AA7FCE /* HONChallengesViewController.m */,
-				4CBE870B1634DDED004084DF /* HONResultsViewController.h */,
-				4CBE870C1634DDED004084DF /* HONResultsViewController.m */,
-				4CBE871616350CCF004084DF /* HONResultsViewCell.h */,
-				4CBE871716350CD0004084DF /* HONResultsViewCell.m */,
 				4C673F7B1693AA23008B2CA4 /* HONChallengePreviewViewController.h */,
 				4C673F7C1693AA23008B2CA4 /* HONChallengePreviewViewController.m */,
 			);
@@ -1036,6 +1029,8 @@
 				4CAF9609167D676C0036E849 /* HONVoterViewCell.m */,
 				4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */,
 				4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */,
+				4C07B8E716A0E1F700E061FD /* HONVoteDetailsViewController.h */,
+				4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */,
 			);
 			name = Voting;
 			sourceTree = "<group>";
@@ -2412,8 +2407,6 @@
 				4C5117411623A20D00370D3A /* Mixpanel.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */,
-				4CBE870D1634DDEE004084DF /* HONResultsViewController.m in Sources */,
-				4CBE871816350CD0004084DF /* HONResultsViewCell.m in Sources */,
 				4CBE874C16371D24004084DF /* HONSupportViewController.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
@@ -2425,6 +2418,7 @@
 				4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */,
 				4C067D121698BF3A004B99BB /* HONChallengeTableHeaderView.m in Sources */,
 				4CA944AD169A0D2F00507A08 /* HONAlternatingRowsViewCell.m in Sources */,
+				4C07B8E916A0E1F700E061FD /* HONVoteDetailsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

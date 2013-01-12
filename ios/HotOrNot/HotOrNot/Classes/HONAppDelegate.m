@@ -719,54 +719,49 @@ NSString *const FacebookAppID = @"529054720443694";
 	[[UAPush shared] handleNotification:userInfo applicationState:appState];
 	[[UAPush shared] resetBadge]; // zero badge after push received
 	
-	//[UAPush shared].delegate = self;
+	NSLog(@"alert: [%@]", [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);
 	
-	/*
-	 int type_id = [[userInfo objectForKey:@"type"] intValue];
-	 NSLog(@"TYPE: [%d]", type_id);
+	int type_id = [[userInfo objectForKey:@"type"] intValue];
+	switch (type_id) {
+		
+		// challenge update
+		case 1: {
+			UIAlertView *alertView = [[UIAlertView alloc]
+											  initWithTitle:@"Challenge Update"
+											  message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+											  delegate:nil
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+			[alertView show];
+//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//				if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"pushed_view"] isEqualToString:@"YES"]) {
+//					[[[UIApplication sharedApplication] delegate].window.rootViewController.navigationController popToRootViewControllerAnimated:YES];
+//					[HONAppDelegate toggleViewPushed:NO];
+//				}
+//			}];
+			break; }
+			
+		// poke
+		case 2: {
+			UIAlertView *alertView = [[UIAlertView alloc]
+											  initWithTitle:@"Poke"
+											  message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+											  delegate:nil
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:nil];
+			[alertView show];
+			break;}
+	}
+	 	
+	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+	localNotification.fireDate = [[NSDate alloc] initWithTimeIntervalSinceNow:1];
+	localNotification.alertBody = [NSString stringWithFormat:@"%d", [[userInfo objectForKey:@"type"] intValue]];;
+	localNotification.soundName = UILocalNotificationDefaultSoundName;
 	 
-	 switch (type_id) {
-	 case 1:
-	 [[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_REWARDS_LIST" object:nil];
-	 break;
+//	NSDictionary *infoDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Object 1", @"Key 1", @"Object 2", @"Key 2", nil];
+//	localNotification.userInfo = infoDict;
 	 
-	 case 2:
-	 [[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_REWARDS_LIST" object:nil];
-	 break;
-	 
-	 case 3:
-	 [[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_DEVICES_LIST" object:nil];
-	 break;
-	 
-	 case 4:
-	 [[NSNotificationCenter defaultCenter] postNotificationName:@"THANK_YOU_RECIEVED" object:nil];
-	 break;
-	 
-	 }
-	 
-	 if (type_id == 2) {
-	 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Leaving diddit" message:@"Your iTunes gift card number has been copied" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:@"Visit iTunes", nil];
-	 [alert show];
-	 [alert release];
-	 
-	 NSString *redeemCode = [[DIAppDelegate md5:[NSString stringWithFormat:@"%d", arc4random()]] uppercaseString];
-	 redeemCode = [redeemCode substringToIndex:[redeemCode length] - 12];
-	 
-	 UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	 [pasteboard setValue:redeemCode forPasteboardType:@"public.utf8-plain-text"];
-	 }
-	 
-	 UILocalNotification *localNotification = [[[UILocalNotification alloc] init] autorelease];
-	 localNotification.fireDate = [[NSDate alloc] initWithTimeIntervalSinceNow:5];
-	 localNotification.alertBody = [NSString stringWithFormat:@"%d", [[userInfo objectForKey:@"type"] intValue]];;
-	 localNotification.soundName = UILocalNotificationDefaultSoundName;
-	 localNotification.applicationIconBadgeNumber = 3;
-	 
-	 NSDictionary *infoDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Object 1", @"Key 1", @"Object 2", @"Key 2", nil];
-	 localNotification.userInfo = infoDict;
-	 
-	 [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-	 */
+	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {

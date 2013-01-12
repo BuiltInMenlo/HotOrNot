@@ -53,6 +53,8 @@
 															  selector:@selector(_sessionStateChanged:)
 																	name:HONSessionStateChangedNotification
 																 object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 	}
 	
 	return (self);
@@ -228,6 +230,18 @@
 	[cell updateCaption:(session.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
 }
 
+- (void)_refreshList:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointZero animated:YES];
+	_refreshButton.hidden = YES;
+	
+	ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
+	[userRequest setDelegate:self];
+	[userRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+	[userRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[userRequest setTag:0];
+	[userRequest startAsynchronous];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -364,7 +378,7 @@
 
 #pragma mark - ASI Delegates
 -(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONSettingsViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
+	//NSLog(@"HONSettingsViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
 	
 	@autoreleasepool {
 		NSError *error = nil;
@@ -377,6 +391,8 @@
 			[HONAppDelegate writeUserInfo:userResult];
 			HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 			[cell updateTopCell];
+			
+			[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
 		}
 		
 		_refreshButton.hidden = NO;

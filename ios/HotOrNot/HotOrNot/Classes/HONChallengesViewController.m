@@ -21,7 +21,6 @@
 #import "HONImagePickerViewController.h"
 #import "HONLoginViewController.h"
 #import "HONVoteViewController.h"
-#import "HONResultsViewController.h"
 #import "HONHeaderView.h"
 #import "HONFacebookCaller.h"
 #import "HONChallengePreviewViewController.h"
@@ -57,10 +56,8 @@
 		_isFirstRun = YES;
 		_blockCounter = 0;
 		
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPreview:) name:@"SHOW_PREVIEW" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_createChallenge:) name:@"CREATE_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closePreview:) name:@"CLOSE_PREVIEW" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
 	}
@@ -313,13 +310,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_closePreview:(NSNotification *)notification {
-	if (_previewViewController != nil) {
-		[_previewViewController.view removeFromSuperview];
-		_previewViewController = nil;
-	}
 }
 
 - (void)_nextChallengeBlock:(NSNotification *)notification {

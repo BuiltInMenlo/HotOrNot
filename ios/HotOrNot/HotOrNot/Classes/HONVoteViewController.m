@@ -20,8 +20,9 @@
 #import "HONChallengeTableHeaderView.h"
 #import "HONVotersViewController.h"
 #import "HONLoginViewController.h"
+#import "HONVoteDetailsViewController.h"
 
-@interface HONVoteViewController() <UIActionSheetDelegate, ASIHTTPRequestDelegate>
+@interface HONVoteViewController() <ASIHTTPRequestDelegate>
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) UIImageView *tutorialOverlayImgView;
 @property(nonatomic, strong) UIImageView *toggleImgView;
@@ -46,14 +47,16 @@
 		self.view.backgroundColor = [UIColor whiteColor];
 		_challenges = [NSMutableArray new];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallenge:) name:@"NEW_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionCreatorDetails:) name:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionChallengerDetails:) name:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newCreatorChallenge:) name:@"NEW_CREATOR_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallengerChallenge:) name:@"NEW_CHALLENGER_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newSubjectChallenge:) name:@"NEW_SUBJECT_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	}
 	
 	return (self);
@@ -69,14 +72,16 @@
 		self.view.backgroundColor = [UIColor whiteColor];
 		_challenges = [NSMutableArray new];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallenge:) name:@"NEW_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionCreatorDetails:) name:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionChallengerDetails:) name:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newCreatorChallenge:) name:@"NEW_CREATOR_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallengerChallenge:) name:@"NEW_CHALLENGER_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newSubjectChallenge:) name:@"NEW_SUBJECT_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	}
 	
 	return (self);
@@ -92,14 +97,16 @@
 		self.view.backgroundColor = [UIColor whiteColor];
 		_challenges = [NSMutableArray new];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeMain:) name:@"CHALLENGE_MAIN" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSub:) name:@"CHALLENGE_SUB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voteMore:) name:@"VOTE_MORE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallenge:) name:@"NEW_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionCreatorDetails:) name:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionChallengerDetails:) name:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newCreatorChallenge:) name:@"NEW_CREATOR_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallengerChallenge:) name:@"NEW_CHALLENGER_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newSubjectChallenge:) name:@"NEW_SUBJECT_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	}
 	
 	return (self);
@@ -380,68 +387,6 @@
 	[_tutorialOverlayImgView addSubview:createChallengeButton];
 }
 
-
-- (void)_challengeMain:(NSNotification *)notification {
-	NSLog(@"CHALLENGE_MAIN");
-	
-	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
-	_challengeVO = vo;
-	UINavigationController *navigationController;
-	
-	if (vo.statusID == 1)
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]];
-	else
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.creatorID withSubject:vo.subjectName]];
-	
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_challengeSub:(NSNotification *)notification {
-	NSLog(@"CHALLENGE_SUB");
-	
-	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
-	_challengeVO = vo;
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.challengerID withSubject:vo.subjectName]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_voteMore:(NSNotification *)notification {
-	_challengeVO = (HONChallengeVO *)[notification object];
-	
-	NSLog(@"STATUS:[%d]", _challengeVO.statusID);
-	
-	[HONAppDelegate toggleViewPushed:YES];
-	[[Mixpanel sharedInstance] track:@"Vote - More"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
-	
-	UINavigationController *navigationController;
-	if (_challengeVO.statusID == 1)
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:_challengeVO]];
-	
-	else
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_challengeVO.creatorID withSubject:_challengeVO.subjectName]];
-	
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-	
-	
-//	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-//																				delegate:self
-//																	cancelButtonTitle:@"Cancel"
-//															 destructiveButtonTitle:@"Report Abuse"
-//																	otherButtonTitles:[NSString stringWithFormat:@"Challenge - %dpts", 5],
-//											[NSString stringWithFormat:@"Poke - %dpts", [HONAppDelegate pokePointMultiplier]], nil];
-//	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-//	
-//	[actionSheet setTag:0];
-//	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-}
-
 - (void)_shareChallenge:(NSNotification *)notification {
 	_challengeVO = (HONChallengeVO *)[notification object];
 	
@@ -461,36 +406,94 @@
 	[self _retrieveChallenges];
 }
 
-- (void)_showVoters:(NSNotification *)notification {
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Voters"
+- (void)_showNotInSessionDetails:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Details"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
+		
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteDetailsViewController alloc] initAsNotInSession:vo]];
+	[navController setNavigationBarHidden:YES];
+	[self presentViewController:navController animated:NO completion:nil];
+}
+
+- (void)_showInSessionCreatorDetails:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Creator Details"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
+	
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteDetailsViewController alloc] initAsInSessionCreator:vo]];
+	[navController setNavigationBarHidden:YES];
+	[self presentViewController:navController animated:NO completion:nil];
+}
+
+- (void)_showInSessionChallengerDetails:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Challenger Details"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
+	
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteDetailsViewController alloc] initAsInSessionChallenger:vo]];
+	[navController setNavigationBarHidden:YES];
+	[self presentViewController:navController animated:NO completion:nil];
+}
+
+- (void)_newCreatorChallenge:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Creator"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	UINavigationController *navigationController = (vo.statusID == 1) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.creatorID withSubject:vo.subjectName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_newChallengerChallenge:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Challenger"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.challengerID withSubject:vo.subjectName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_newSubjectChallenge:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Subject"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_showVoters:(NSNotification *)notification {
+	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Voters"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
-	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVotersViewController alloc] initWithChallenge:vo]];
 	[navController setNavigationBarHidden:YES];
 	[self presentViewController:navController animated:NO completion:nil];
-	
-	//[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:vo] animated:YES];
-}
-
-
-- (void)_newChallenge:(NSNotification *)notification {
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Create Challenge"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	
-	//	if (FBSession.activeSession.state == 513) {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-	
-	//	} else
-	//		[self _goLogin];
 }
 
 
@@ -515,9 +518,9 @@
 	HONVoteItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
-			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-			cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONVoteItemViewCell alloc] initAsWaitingCell] : [[HONVoteItemViewCell alloc] initAsStartedCell];
-			cell.challengeVO = vo;
+		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+		cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONVoteItemViewCell alloc] initAsWaitingCell] : [[HONVoteItemViewCell alloc] initAsStartedCell];
+		cell.challengeVO = vo;
 	}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -558,11 +561,15 @@
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
 			_challenges = [NSMutableArray new];
 			
+			int cnt = 0;
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
-				if (vo != nil)
+				if (vo != nil) {
+					//NSLog(@"%d)--> ADDING CHALLENGE[%@]", cnt, vo.dictionary);
 					[_challenges addObject:vo];
+					cnt++;
+				}
 			}
 			
 			_emptySetImgView.hidden = ([_challenges count] > 0);
