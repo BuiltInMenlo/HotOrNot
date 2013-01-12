@@ -207,6 +207,14 @@
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
 	
+	UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	challengeButton.frame = CGRectMake(87.0, 300.0, 147.0, 62.0);
+	[challengeButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_nonActive"] forState:UIControlStateNormal];
+	[challengeButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_Active"] forState:UIControlStateHighlighted];
+	[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
+	challengeButton.hidden = (_isOwner || (!_isOwner && !_isInSession));
+	[self.view addSubview:challengeButton];
+	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	pokeButton.frame = CGRectMake(24.0, 380.0, 124.0, 58.0);
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeUserButton_nonActive"] forState:UIControlStateNormal];
@@ -223,10 +231,8 @@
 	[voteButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
 	[voteButton setTitle:@"VOTE!" forState:UIControlStateNormal];
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
+	voteButton.hidden = (!_isInSession);
 	[self.view addSubview:voteButton];
-	
-	if (!_isInSession || _isOwner)
-		voteButton.hidden = YES;
 	
 	UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	acceptButton.frame = CGRectMake(160.0, 380.0, 124.0, 58.0);
@@ -235,8 +241,8 @@
 	[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:acceptButton];
 	
-	if (_challengeVO.statusID == 2 || _isInSession || _isOwner)
-		acceptButton.hidden = YES;
+	//if (_challengeVO.statusID == 2 || _isInSession || _isOwner)
+		acceptButton.hidden = (_challengeVO.statusID == 2 || _isInSession || _isOwner);
 	
 }
 
@@ -246,6 +252,13 @@
 
 
 #pragma mark - Navigation
+- (void)_goChallenge {
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+		[[NSNotificationCenter defaultCenter] postNotificationName:(_isCreator) ? @"NEW_CREATOR_CHALLENGE" : @"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+	}];
+}
+
 - (void)_goPokeCreator {
 	[[Mixpanel sharedInstance] track:@"Vote Details - Poke Creator"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:

@@ -7,7 +7,8 @@
 //
 
 
-#import "ASIFormDataRequest.h"
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "Mixpanel.h"
 #import "UIImageView+WebCache.h"
 
@@ -15,7 +16,7 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
-@interface HONCameraOverlayView() <UITextFieldDelegate, ASIHTTPRequestDelegate>
+@interface HONCameraOverlayView() <UITextFieldDelegate>
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *footerHolderView;
@@ -342,11 +343,41 @@
 }
 
 - (void)_goSubjectCheck {
-	ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-	[subjectRequest setDelegate:self];
-	[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-	[subjectRequest setPostValue:_subjectName forKey:@"subjectName"];
-	[subjectRequest startAsynchronous];
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 5], @"action",
+									_subjectName, @"subjectName",
+									nil];
+	
+	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil)
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		
+		else {
+			NSLog(@"AFNetworking HONCameraOverlayView: %@", subjectResult);
+			
+			if ([[subjectResult objectForKey:@"preview_url"] length] > 0) {
+				[self artistName:[subjectResult objectForKey:@"artist"] songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
+				[self.delegate cameraOverlayViewPlayTrack:self audioURL:[subjectResult objectForKey:@"preview_url"]];
+			}
+		}
+		
+		//NSString *text = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+		//NSLog(@"Response: %@", text);
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"%@", [error localizedDescription]);
+	}];
+	
+	
+//	ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
+//	[subjectRequest setDelegate:self];
+//	[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
+//	[subjectRequest setPostValue:_subjectName forKey:@"subjectName"];
+//	[subjectRequest startAsynchronous];
 }
 
 #pragma mark - TextField Delegates
@@ -385,27 +416,5 @@
 	_subjectTextField.text = _subjectName;
 }
 
-
-
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONImagePickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	@autoreleasepool {
-		NSError *error = nil;
-		NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-		
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-		}
-		
-		else {
-			if ([[subjectResult objectForKey:@"preview_url"] length] > 0) {
-				[self artistName:[subjectResult objectForKey:@"artist"] songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
-				[self.delegate cameraOverlayViewPlayTrack:self audioURL:[subjectResult objectForKey:@"preview_url"]];
-			}
-		}
-	}
-}
 
 @end

@@ -26,10 +26,6 @@
 @property (nonatomic, strong) UIButton *votesButton;
 @property (nonatomic, strong) UIImageView *loserOverlayImageView;
 @property (nonatomic, strong) UIImageView *resultsImageView;
-@property (nonatomic, strong) UITapGestureRecognizer *rSingleTapRecognizer;
-@property (nonatomic, strong) UITapGestureRecognizer *rDoubleTapRecognizer;
-@property (nonatomic, strong) UITapGestureRecognizer *lSingleTapRecognizer;
-@property (nonatomic, strong) UITapGestureRecognizer *lDoubleTapRecognizer;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasChallenger;
 @property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
@@ -89,7 +85,6 @@
 	moreButton.frame = CGRectMake(271.0, 6.0, 34.0, 34.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
-	//[moreButton addTarget:self action:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) ? @selector(_goMore) : @selector(_goNewChallengeAlert) forControlEvents:UIControlEventTouchUpInside];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:moreButton];
 	
@@ -141,24 +136,7 @@
 		UIImageView *vsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(138.0, 97.0, 44.0, 44.0)];
 		vsImageView.image = [UIImage imageNamed:@"orIcon"];
 		[self addSubview:vsImageView];
-		
-		_lSingleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goSingleTap:)];
-		_lDoubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goDoubleTap:)];
-		
-		[_lSingleTapRecognizer requireGestureRecognizerToFail:_lDoubleTapRecognizer];
-		[lImgView addGestureRecognizer:_lSingleTapRecognizer];
-		[_lDoubleTapRecognizer setNumberOfTapsRequired:2];
-		[lImgView addGestureRecognizer:_lDoubleTapRecognizer];
-		
-		_rSingleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goSingleTap:)];
-		_rDoubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goDoubleTap:)];
-		
-		[_rSingleTapRecognizer requireGestureRecognizerToFail:_rDoubleTapRecognizer];
-		[rImgView addGestureRecognizer:_rSingleTapRecognizer];
-		[_rDoubleTapRecognizer setNumberOfTapsRequired:2];
-		[rImgView addGestureRecognizer:_rDoubleTapRecognizer];
-		
-		
+				
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_votesButton.frame = CGRectMake(12.0, 204.0, 84.0, 34.0);
 		[_votesButton setBackgroundImage:[UIImage imageNamed:@"voteButton_nonActive"] forState:UIControlStateNormal];
@@ -184,98 +162,174 @@
 		overlayWaitingImageView.userInteractionEnabled = YES;
 		[lImgView addSubview:overlayWaitingImageView];
 		
-		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(92.0, 253.0, 144.0, 16.0)];
-		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		challengerNameLabel.backgroundColor = [UIColor clearColor];
-		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		challengerNameLabel.shadowColor = [UIColor blackColor];
-		challengerNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-		challengerNameLabel.text = [NSString stringWithFormat:@"%@ is…", _challengeVO.creatorName];
-		[lImgView addSubview:challengerNameLabel];
+		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(92.0, 253.0, 144.0, 16.0)];
+		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		creatorNameLabel.backgroundColor = [UIColor clearColor];
+		creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		creatorNameLabel.shadowColor = [UIColor blackColor];
+		creatorNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
+		creatorNameLabel.text = [NSString stringWithFormat:@"%@ is…", _challengeVO.creatorName];
+		[lImgView addSubview:creatorNameLabel];
+	}
+}
+
+
+#pragma mark - Touch Interactions
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+	UITouch *touch = [touches anyObject];
+	
+	// this will cancel the single tap action
+	if (touch.tapCount == 2) {
+		[NSObject cancelPreviousPerformRequestsWithTarget:self];
+	}
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+	UITouch *touch = [touches anyObject];
+	
+	// this is the single tap action
+	if (touch.tapCount == 1) {
+		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
+			[self performSelector:@selector(_goSingleTapLeft) withObject:nil afterDelay:0.2];
 		
-		_lSingleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goSingleTap:)];
-		_lDoubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goDoubleTap:)];
+		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
+			[self performSelector:@selector(_goSingleTapRight) withObject:nil afterDelay:0.2];
+			
+		} else {
+		}
 		
-		[_lSingleTapRecognizer requireGestureRecognizerToFail:_lDoubleTapRecognizer];
-		[lImgView addGestureRecognizer:_lSingleTapRecognizer];
-		[_lDoubleTapRecognizer setNumberOfTapsRequired:2];
-		[lImgView addGestureRecognizer:_lDoubleTapRecognizer];
+	// this is the double tap action
+	} else if (touch.tapCount == 2) {
+		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
+			[self _goDoubleTapLeft];
+		
+		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
+			[self _goDoubleTapRight];
+			
+		} else {
+		}
 	}
 }
 
 
 #pragma mark - Navigation
-- (void)_goDoubleTap:(UITapGestureRecognizer *)recogizer {
-	_tappedOverlayView = [[UIView alloc] initWithFrame:recogizer.view.frame];
-	_tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:0.33];
-	[recogizer.view addSubview:_tappedOverlayView];
-	[self performSelector:@selector(_removeTapOverlay) withObject:self afterDelay:0.25];
+- (void)_goSingleTapLeft {
+	[self _showTapOverlayOnView:_lHolderView];
 	
 	if (_hasChallenger) {
-			if ([recogizer isEqual:_lDoubleTapRecognizer]) {
-				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-				
-				else
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
-			
-			} else {
-				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.challengerID)
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
-				
-				else
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
-			}
-	
-	} else {
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-		
-		} else
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];//[self _goNewChallengeAlert];
-	}
-}
-
-- (void)_goSingleTap:(UITapGestureRecognizer *)recogizer {
-	_tappedOverlayView = [[UIView alloc] initWithFrame:recogizer.view.frame];
-	_tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	[recogizer.view addSubview:_tappedOverlayView];
-	[self performSelector:@selector(_removeTapOverlay) withObject:self afterDelay:0.25];
-	
-	if (_hasChallenger) {
-		//[self _playVoteSFX];
-		
-		if ([recogizer isEqual:_lSingleTapRecognizer]) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:_challengeVO];
-						
-//			if ([HONAppDelegate hasVoted:_challengeVO.challengeID])
-//				[self _goUpvoteOverlay];
-//			
-//			else {
-//				[self _upvoteLeft];
-//			}
-		
-		} else {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:_challengeVO];
-			
-//			if ([HONAppDelegate hasVoted:_challengeVO.challengeID])
-//				[self _goUpvoteOverlay];
-//
-//			else {
-//				[self _upvoteRight];
-//			}
-		}
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:_challengeVO];
 	
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_NOT_IN_SESSION_DETAILS" object:_challengeVO];
-		
-//		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
-//			[self _goMore];
-//		
-//		else
-//			[self _goNewChallengeAlert];
 	}
 }
+
+- (void)_goSingleTapRight {
+	[self _showTapOverlayOnView:_rHolderView];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:_challengeVO];
+}
+
+- (void)_goDoubleTapLeft {
+	[self _showTapOverlayOnView:_lHolderView];
+	
+	if (_hasChallenger) {
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+		
+		else
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+		
+	} else {
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+			
+		} else
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+	}
+}
+
+- (void)_goDoubleTapRight {
+	[self _showTapOverlayOnView:_rHolderView];
+	
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.challengerID)
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+	
+	else
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+}
+
+
+//- (void)_goDoubleTap:(UITapGestureRecognizer *)recogizer {
+//	_tappedOverlayView = [[UIView alloc] initWithFrame:recogizer.view.frame];
+//	_tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:0.33];
+//	[recogizer.view addSubview:_tappedOverlayView];
+//	[self performSelector:@selector(_removeTapOverlay) withObject:self afterDelay:0.25];
+//
+//	if (_hasChallenger) {
+//			if ([recogizer isEqual:_lDoubleTapRecognizer]) {
+//				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+//				
+//				else
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+//			
+//			} else {
+//				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.challengerID)
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+//				
+//				else
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+//			}
+//	
+//	} else {
+//		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+//		
+//		} else
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];//[self _goNewChallengeAlert];
+//	}
+//}
+
+//- (void)_goSingleTap:(UITapGestureRecognizer *)recogizer {
+//	_tappedOverlayView = [[UIView alloc] initWithFrame:recogizer.view.frame];
+//	_tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+//	[recogizer.view addSubview:_tappedOverlayView];
+//	[self performSelector:@selector(_removeTapOverlay) withObject:self afterDelay:0.25];
+//	
+//	if (_hasChallenger) {
+//		//[self _playVoteSFX];
+//		
+//		if ([recogizer isEqual:_lSingleTapRecognizer]) {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:_challengeVO];
+//						
+//			//if ([HONAppDelegate hasVoted:_challengeVO.challengeID])
+//			//	[self _goUpvoteOverlay];
+//			//
+//			//else {
+//			//	[self _upvoteLeft];
+//			//}
+//		
+//		} else {
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:_challengeVO];
+//			
+//			//if ([HONAppDelegate hasVoted:_challengeVO.challengeID])
+//			//	[self _goUpvoteOverlay];
+//			//
+//			//else {
+//			//	[self _upvoteRight];
+//			//}
+//		}
+//	
+//	} else {
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_NOT_IN_SESSION_DETAILS" object:_challengeVO];
+//		
+//		//if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
+//		//	[self _goMore];
+//		//
+//		//else
+//		//	[self _goNewChallengeAlert];
+//	}
+//}
 
 - (void)_goScore {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
@@ -324,6 +378,7 @@
 			
 			_resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
 			_resultsImageView.frame = CGRectOffset(_resultsImageView.frame, ((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? 56.0 : 130.0, 88.0);
+			_resultsImageView.hidden = ((_challengeVO.creatorScore + 1) == _challengeVO.challengerScore);
 			[self addSubview:_resultsImageView];
 			
 			[HONAppDelegate setVote:_challengeVO.challengeID];
@@ -364,6 +419,7 @@
 			
 			_resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
 			_resultsImageView.frame = CGRectOffset(_resultsImageView.frame, ((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? 56.0 : 130.0, 88.0);
+			_resultsImageView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
 			[self addSubview:_resultsImageView];
 			
 			[HONAppDelegate setVote:_challengeVO.challengeID];
@@ -433,7 +489,17 @@
 	
 	_resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_challengeVO.creatorScore > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
 	_resultsImageView.frame = CGRectOffset(_resultsImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 56.0 : 130.0, 88.0);
+	_resultsImageView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
 	[self addSubview:_resultsImageView];
+}
+
+
+- (void)_showTapOverlayOnView:(UIView *)view {
+	_tappedOverlayView = [[UIView alloc] initWithFrame:view.frame];
+	_tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:0.33];
+	[self addSubview:_tappedOverlayView];
+	
+	[self performSelector:@selector(_removeTapOverlay) withObject:self afterDelay:0.25];
 }
 
 - (void)_removeTapOverlay {

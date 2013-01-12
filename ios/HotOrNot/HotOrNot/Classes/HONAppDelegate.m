@@ -9,9 +9,10 @@
 #import <KiipSDK/KiipSDK.h>
 #import <Parse/Parse.h>
 
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "UAirship.h"
 #import "UAPush.h"
-#import "ASIFormDataRequest.h"
 #import "HONAppDelegate.h"
 #import "Parse/Parse.h"
 #import "Mixpanel.h"
@@ -36,7 +37,7 @@
 NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
 NSString *const FacebookAppID = @"529054720443694";
 
-@interface HONAppDelegate() <UIAlertViewDelegate, ASIHTTPRequestDelegate, KiipDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate, KiipDelegate>
 @property (nonatomic, strong) UIAlertView *networkAlertView;
 @property (nonatomic, strong) UIAlertView *loginAlertView;
 @property (nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
@@ -772,13 +773,33 @@ NSString *const FacebookAppID = @"529054720443694";
 
 - (void)_registerUser {
 	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {
-		ASIFormDataRequest *userRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kUsersAPI]]];
-		[userRequest setDelegate:self];
-		[userRequest setTag:0];
-		[userRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
-		[userRequest setPostValue:[HONAppDelegate deviceToken] forKey:@"token"];
-		[userRequest startAsynchronous];
-	//}
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 1], @"action",
+									[HONAppDelegate deviceToken], @"token",
+									nil];
+	
+	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil)
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		
+		else {
+			NSLog(@"USER: %@", userResult);
+			
+			if ([userResult objectForKey:@"id"] != [NSNull null])
+				[HONAppDelegate writeUserInfo:userResult];
+		}
+		
+		//NSString *text = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+		//NSLog(@"Response: %@", text);
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"%@", [error localizedDescription]);
+	}];
 }
 
 
@@ -845,34 +866,6 @@ NSString *const FacebookAppID = @"529054720443694";
 				break;
 		}
 	}
-}
-
-
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONAppDelegate [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	if (request.tag == 0) {
-		@autoreleasepool {
-			NSError *error = nil;
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-			
-			if (error != nil)
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-			else {
-				if ([userResult objectForKey:@"id"] != [NSNull null])
-					[HONAppDelegate writeUserInfo:userResult];
-			}
-		}
-	
-	} else {
-		
-	}
-}
-
--(void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
 }
 
 @end

@@ -8,11 +8,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
-//#import <FacebookSDK/FacebookSDK.h>
+
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "Facebook.h"
 #import "TapForTap.h"
-
-#import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
 
@@ -369,15 +369,83 @@
 		if ([_subjectName length] == 0)
 			_subjectName = [HONAppDelegate rndDefaultSubject];
 		
-		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-		[submitChallengeRequest setDelegate:self];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 8] forKey:@"action"];
-		[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
-		[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
-		[submitChallengeRequest setPostValue:_fbID forKey:@"fbID"];
-		[submitChallengeRequest setPostValue:_fbName forKey:@"fbName"];
-		[submitChallengeRequest startAsynchronous];
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+										[NSString stringWithFormat:@"%d", 8], @"action",
+										[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+										[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+										_subjectName, @"subject",
+										_fbID, @"fbID",
+										_fbName, @"fbName", 
+										nil];
+		
+		[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			
+			if (error != nil) {
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+			
+			} else {
+				NSLog(@"HONChallengerPickerViewController AFNetworking: %@", challengeResult);
+				
+				if (![[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+					
+					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
+					[HONFacebookCaller postToTimeline:vo];
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+					
+					if (vo.statusID == 7)
+						[HONFacebookCaller sendAppRequestToUser:_fbID];
+					
+					
+					if (vo.statusID == 4) {
+						_progressHUD.minShowTime = kHUDTime;
+						_progressHUD.mode = MBProgressHUDModeCustomView;
+						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon"]];
+						_progressHUD.labelText = @"Challenge Matched!";
+						[_progressHUD show:NO];
+						[_progressHUD hide:YES afterDelay:1.5];
+						_progressHUD = nil;
+					}
+					
+					if ([_fbID length] > 0) {
+						if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"invite"] isEqualToString:@"Y"])
+							[HONFacebookCaller sendAppRequestToUser:_fbID challenge:vo];
+						
+						if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"friend_wall"] isEqualToString:@"Y"])
+							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
+					}
+					
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+						
+						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
+					}];
+				}
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			NSLog(@"%@", [error localizedDescription]);
+			
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+		}];
 		
 	} @catch (AmazonClientException *exception) {
 		if (_progressHUD != nil) {
@@ -442,14 +510,85 @@
 		if ([_subjectName length] == 0)
 			_subjectName = [HONAppDelegate rndDefaultSubject];
 		
-		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-		[submitChallengeRequest setDelegate:self];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
-		[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
-		[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
-		[submitChallengeRequest setPostValue:_fbName forKey:@"username"];
-		[submitChallengeRequest startAsynchronous];
+		
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+										[NSString stringWithFormat:@"%d", 7], @"action",
+										[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+										[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+										_subjectName, @"subject",
+										_fbName, @"username",
+										nil];
+		
+		[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			
+			if (error != nil) {
+				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+			
+			} else {
+				NSLog(@"HONChallengerPickerViewController AFNetworking: %@", challengeResult);
+				
+				if (![[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+					
+					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
+					[HONFacebookCaller postToTimeline:vo];
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+					
+					if (vo.statusID == 7)
+						[HONFacebookCaller sendAppRequestToUser:_fbID];
+					
+					
+					if (vo.statusID == 4) {
+						_progressHUD.minShowTime = kHUDTime;
+						_progressHUD.mode = MBProgressHUDModeCustomView;
+						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon"]];
+						_progressHUD.labelText = @"Challenge Matched!";
+						[_progressHUD show:NO];
+						[_progressHUD hide:YES afterDelay:1.5];
+						_progressHUD = nil;
+					}
+					
+					if ([_fbID length] > 0) {
+						if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"invite"] isEqualToString:@"Y"])
+							[HONFacebookCaller sendAppRequestToUser:_fbID challenge:vo];
+						
+						if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"friend_wall"] isEqualToString:@"Y"])
+							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
+					}
+					
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+						
+						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
+					}];
+				}
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			NSLog(@"%@", [error localizedDescription]);
+			
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+		}];
 		
 	} @catch (AmazonClientException *exception) {
 		if (_progressHUD != nil) {
@@ -521,14 +660,84 @@
 		por4.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
 		[s3 putObject:por4];
 		
-		ASIFormDataRequest *submitChallengeRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-		[submitChallengeRequest setDelegate:self];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
-		[submitChallengeRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-		[submitChallengeRequest setPostValue:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
-		[submitChallengeRequest setPostValue:_subjectName forKey:@"subject"];
-		[submitChallengeRequest startAsynchronous];
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+										[NSString stringWithFormat:@"%d", 1], @"action",
+										[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+										[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+										_subjectName, @"subject",
+										nil];
 		
+		[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			
+			if (error != nil) {
+				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+			
+			} else {
+				NSLog(@"HONChallengerPickerViewController AFNetworking: %@", challengeResult);
+				
+				if (![[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+					
+					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
+					[HONFacebookCaller postToTimeline:vo];
+					
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+					
+					if (vo.statusID == 7)
+						[HONFacebookCaller sendAppRequestToUser:_fbID];
+					
+					
+					if (vo.statusID == 4) {
+						_progressHUD.minShowTime = kHUDTime;
+						_progressHUD.mode = MBProgressHUDModeCustomView;
+						_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon"]];
+						_progressHUD.labelText = @"Challenge Matched!";
+						[_progressHUD show:NO];
+						[_progressHUD hide:YES afterDelay:1.5];
+						_progressHUD = nil;
+					}
+					
+					if ([_fbID length] > 0) {
+						if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"invite"] isEqualToString:@"Y"])
+							[HONFacebookCaller sendAppRequestToUser:_fbID challenge:vo];
+						
+						if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"friend_wall"] isEqualToString:@"Y"])
+							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
+					}
+					
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+						
+						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
+					}];
+				}
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			NSLog(@"%@", [error localizedDescription]);
+			
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+		}];
+				
 	} @catch (AmazonClientException *exception) {
 		[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 	}
@@ -766,89 +975,7 @@
 	}
 }
 
-
-#pragma mark - ASI Delegates
--(void)requestFinished:(ASIHTTPRequest *)request {
-	NSLog(@"HONChallengerPickerViewController [_asiFormRequest responseString]=\n%@\n\n", [request responseString]);
-	
-	@autoreleasepool {
-		_progressHUD.taskInProgress = NO;
-		
-		NSError *error = nil;
-		NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:[request responseData] options:0 error:&error];
-		
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
-			_progressHUD = nil;
-		
-		} else {
-			if (![[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-				
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
-				[HONFacebookCaller postToTimeline:vo];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
-				
-				if (vo.statusID == 7)
-					[HONFacebookCaller sendAppRequestToUser:_fbID];
-				
-				
-				if (vo.statusID == 4) {
-					_progressHUD.minShowTime = kHUDTime;
-					_progressHUD.mode = MBProgressHUDModeCustomView;
-					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon"]];
-					_progressHUD.labelText = @"Challenge Matched!";
-					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:1.5];
-					_progressHUD = nil;
-				}
-				
-				if ([_fbID length] > 0) {
-					if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"invite"] isEqualToString:@"Y"])
-						[HONFacebookCaller sendAppRequestToUser:_fbID challenge:vo];
-					
-					if ([[[HONAppDelegate facebookFriendPosting] objectForKey:@"friend_wall"] isEqualToString:@"Y"])
-						[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
-				}
-				
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-					
-					if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
-				}];
-			
-			} else {
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"Username not found!", @"Status message when username isn't in the system");
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
-				_progressHUD = nil;
-			}
-		}
-	}
-}
-
--(void)requestFailed:(ASIHTTPRequest *)request {
-	NSLog(@"requestFailed:\n[%@]", request.error);
-	
-	if (_progressHUD != nil) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-}
-
-
+#pragma mark - AdView Delegates
 - (UIViewController *)rootViewController {
 	return (self);
 }
