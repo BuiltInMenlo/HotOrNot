@@ -2090,7 +2090,7 @@
 		4C62651C15F96C7100AA7FCE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Built in Menlo, LLC";
 			};
 			buildConfigurationList = 4C62651F15F96C7100AA7FCE /* Build configuration list for PBXProject "HotOrNot" */;

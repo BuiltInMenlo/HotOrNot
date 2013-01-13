@@ -108,7 +108,7 @@
 			 [[FBRequest requestForMe] startWithCompletionHandler:
 			  ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
 				if (!error) {
-					NSLog(@"user [%@]", user);
+					//NSLog(@"user [%@]", user);
 					  
 					[HONAppDelegate writeFBProfile:user];
 					[HONAppDelegate setAllowsFBPosting:YES];
