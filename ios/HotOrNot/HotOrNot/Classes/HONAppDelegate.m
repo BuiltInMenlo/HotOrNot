@@ -39,8 +39,6 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 NSString *const FacebookAppID = @"529054720443694";
 
 @interface HONAppDelegate() <UIAlertViewDelegate, KiipDelegate>
-@property (nonatomic, strong) UIAlertView *networkAlertView;
-@property (nonatomic, strong) UIAlertView *loginAlertView;
 @property (nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
@@ -51,8 +49,6 @@ NSString *const FacebookAppID = @"529054720443694";
 
 @synthesize window = _window;
 @synthesize tabBarController = _tabBarController;
-@synthesize networkAlertView = _networkAlertView;
-
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize client = _client;
@@ -230,7 +226,7 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 + (NSArray *)fbPermissions {
-	return ([NSArray arrayWithObjects:@"publish_actions", @"status_update", @"publish_stream", nil]);
+	return ([NSArray arrayWithObjects:@"publish_actions", @"publish_stream", nil]); //@"status_update",
 }
 
 + (BOOL)isRetina5 {
@@ -321,21 +317,20 @@ NSString *const FacebookAppID = @"529054720443694";
 
 - (BOOL)openSession {
 	NSLog(@"openSession");
-	//	[FBSession openActiveSessionWithPublishPermissions:<#(NSArray *)#> defaultAudience:<#(FBSessionDefaultAudience)#> allowLoginUI:<#(BOOL)#> completionHandler:<#^(FBSession *session, FBSessionState status, NSError *error)handler#>]
+	return ([FBSession openActiveSessionWithPublishPermissions:[HONAppDelegate fbPermissions]
+															 defaultAudience:FBSessionDefaultAudienceEveryone
+																 allowLoginUI:NO
+														  completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+															  NSLog(@"STATE:%d", state);
+															  [self sessionStateChanged:session state:state error:error];
+														  }]);
 	
-//	return ([FBSession openActiveSessionWithReadPermissions:[HONAppDelegate fbPermissions]
-//															 allowLoginUI:NO
-//													  completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
-//														  NSLog(@"STATE:%d", state);
-//														  [self sessionStateChanged:session state:state error:error];
-//													  }]);
-	
-	return ([FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions]
-														allowLoginUI:NO
-												 completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
-													 NSLog(@"STATE:%d", state);
-													 [self sessionStateChanged:session state:state error:error];
-	 }]);
+//	return ([FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions]
+//														allowLoginUI:NO
+//												 completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+//													 NSLog(@"STATE:%d", state);
+//													 [self sessionStateChanged:session state:state error:error];
+//	 }]);
 }
 
 - (void)sessionStateChanged:(FBSession *)session state:(FBSessionState)state error:(NSError *)error {
@@ -472,14 +467,14 @@ NSString *const FacebookAppID = @"529054720443694";
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 		
 		if (boot_total == 5) {
-			UIAlertView *alert = [[UIAlertView alloc]
+			UIAlertView *alertView = [[UIAlertView alloc]
 										 initWithTitle:@"Rate PicChallenge"
 										 message:@"Why not rate PicChallenge in the app store!"
 										 delegate:self
 										 cancelButtonTitle:nil
 										 otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
-			
-			[alert show];
+			[alertView setTag:2];
+			[alertView show];
 		}
 		
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
@@ -581,16 +576,16 @@ NSString *const FacebookAppID = @"529054720443694";
 			
 			//[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 			
-//			if (![self openSession]) {
-//				self.loginViewController = [[HONLoginViewController alloc] init];
-//				
-//				_loginAlertView = [[UIAlertView alloc] initWithTitle:@"Username"
+			if (![self openSession]) {
+				self.loginViewController = [[HONLoginViewController alloc] init];				
+//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Username"
 //																			message:@"Login to Facebook to see your friends or change your username."
 //																		  delegate:self
 //															  cancelButtonTitle:nil
 //															  otherButtonTitles:@"Login", @"Change Username", nil];
-//				[_loginAlertView show];
-//			}
+//				[alertView setTag:1];
+//				[alertView show];
+			}
 			
 			_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
 			[self.window addSubview:_facebookSwitchView];
@@ -606,12 +601,13 @@ NSString *const FacebookAppID = @"529054720443694";
 		}
 	
 	} else {
-		_networkAlertView = [[UIAlertView alloc] initWithTitle:@"No Network Connection"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Network Connection"
 																		message:@"This app requires a network connection to work."
 																	  delegate:self
 														  cancelButtonTitle:nil
 														  otherButtonTitles:@"OK", nil];
-		[_networkAlertView show];
+		[alertView setTag:0];
+		[alertView show];
 
 	}
 	
@@ -861,10 +857,10 @@ NSString *const FacebookAppID = @"529054720443694";
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	NSLog(@"BUTTON:[%d]", buttonIndex);
 	
-	if (alertView == _networkAlertView)
+	if (alertView.tag == 0)
 		NSLog(@"EXIT APP");//exit(0);
 	
-	else if (alertView == _loginAlertView) {
+	else if (alertView.tag == 1) {
 		UINavigationController *navigationController;
 		
 		switch (buttonIndex) {
@@ -881,7 +877,7 @@ NSString *const FacebookAppID = @"529054720443694";
 		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 	}
 	
-	else {
+	else if (alertView.tag == 2) {
 		switch(buttonIndex) {
 			case 0:
 				break;

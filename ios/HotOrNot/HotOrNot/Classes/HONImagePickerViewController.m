@@ -404,6 +404,7 @@
 		_mpMoviePlayerController = nil;
 	}
 	
+	[HONAppDelegate toggleViewPushed:NO];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 		if (_imagePicker != nil)
@@ -461,6 +462,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[HONAppDelegate toggleViewPushed:NO];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -681,8 +683,9 @@
 					[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
 					[HONFacebookCaller postToFriendTimeline:_fbID challenge:[HONChallengeVO challengeWithDictionary:challengeResult]];
 					
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+					[HONAppDelegate toggleViewPushed:NO];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 					}];
 				}
 				

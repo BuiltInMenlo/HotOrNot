@@ -328,6 +328,8 @@
 	ptsLabel.textColor = [UIColor whiteColor];
 	ptsLabel.backgroundColor = [UIColor clearColor];
 	ptsLabel.textAlignment = NSTextAlignmentCenter;
+	ptsLabel.shadowColor = [UIColor blackColor];
+	ptsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	ptsLabel.text = @"+5pts!";
 	ptsLabel.alpha = 0.0;
 	[self addSubview:ptsLabel];

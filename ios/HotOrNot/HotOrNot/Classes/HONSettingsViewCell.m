@@ -43,17 +43,20 @@
 		[avatarImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil options:SDWebImageLowPriority];
 		[self addSubview:avatarImageView];
 		
+		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 		int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-		CGSize size = [[NSString stringWithFormat:@"%d", score] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:UILineBreakModeClip];
+		NSString *formattedScore = [numberFormatter stringFromNumber:[NSNumber numberWithInt:score]];
 		
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 15.0, size.width, size.height)];
-		_scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		CGSize size = [formattedScore sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 13.0, size.width, size.height)];
+		_scoreLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:18];
 		_scoreLabel.textColor = [UIColor blackColor];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.text = [NSString stringWithFormat:@"%d", score];
+		_scoreLabel.text = formattedScore;
 		[self addSubview:_scoreLabel];
 		
-		_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(81.0 + size.width, 22.0, 50.0, 12.0)];
+		_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(76.0 + size.width, 22.0, 50.0, 12.0)];
 		_ptsLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:10];
 		_ptsLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		_ptsLabel.backgroundColor = [UIColor clearColor];
@@ -89,13 +92,16 @@
 }
 
 - (void)updateTopCell {
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-	CGSize size = [[NSString stringWithFormat:@"%d ", score] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:UILineBreakModeClip];
+	NSString *formattedScore = [numberFormatter stringFromNumber:[NSNumber numberWithInt:score]];
 	
-	_scoreLabel.frame = CGRectMake(78.0, 15.0, size.width, size.height);
-	_scoreLabel.text = [NSString stringWithFormat:@"%d ", score];
+	CGSize size = [formattedScore sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	_scoreLabel.frame = CGRectMake(78.0, 13.0, size.width, size.height);
+	_scoreLabel.text = formattedScore;
 	
-	_ptsLabel.frame = CGRectMake(78.0 + size.width, 22.0, 50.0, 12.0);
+	_ptsLabel.frame = CGRectMake(76.0 + size.width, 22.0, 50.0, 12.0);
 	_ptsLabel.text = (score == 1) ? @"PT" : @"PTS";
 }
 

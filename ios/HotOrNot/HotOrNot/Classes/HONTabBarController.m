@@ -260,6 +260,7 @@
 		UINavigationController *navController = (UINavigationController *)[self selectedViewController];
 		[navController popToRootViewControllerAnimated:NO];
 		
+		[HONAppDelegate toggleViewPushed:YES];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	} else {

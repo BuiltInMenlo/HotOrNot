@@ -96,15 +96,19 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions] allowLoginUI:YES completionHandler:
-	 ^(FBSession *session, FBSessionState state, NSError *error) {
+	[FBSession openActiveSessionWithPublishPermissions:[HONAppDelegate fbPermissions]
+												  defaultAudience:FBSessionDefaultAudienceEveryone
+													  allowLoginUI:YES
+												completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+//	[FBSession openActiveSessionWithPermissions:[HONAppDelegate fbPermissions] allowLoginUI:YES completionHandler:
+//	 ^(FBSession *session, FBSessionState state, NSError *error) {
 		 NSLog(@"///////////// OPEN SESSION /////////////");
 		 
 		 if (FBSession.activeSession.isOpen) {
 			 [[FBRequest requestForMe] startWithCompletionHandler:
 			  ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
 				if (!error) {
-					//NSLog(@"user [%@]", user);
+					NSLog(@"user [%@]", user);
 					  
 					[HONAppDelegate writeFBProfile:user];
 					[HONAppDelegate setAllowsFBPosting:YES];

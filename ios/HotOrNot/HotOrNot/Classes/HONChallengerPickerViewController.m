@@ -120,6 +120,8 @@
 	//NSLog(@"loadView");
 	[super loadView];
 	
+	
+	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
 	[self.view addSubview:bgImgView];
@@ -254,8 +256,9 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[HONAppDelegate toggleViewPushed:NO];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	}];
 }
 
@@ -426,9 +429,9 @@
 							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
 					}
 					
+					[HONAppDelegate toggleViewPushed:NO];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-						
 						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
 					}];
@@ -569,9 +572,9 @@
 							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
 					}
 					
+					[HONAppDelegate toggleViewPushed:NO];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-						
 						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
 					}];
@@ -717,9 +720,9 @@
 							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
 					}
 					
+					[HONAppDelegate toggleViewPushed:NO];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-						
 						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
 					}];
@@ -762,7 +765,7 @@
 	CGFloat headerBarHeight = 45.0;
 	fbHeaderHeight = headerBarHeight;
 	
-	self.friendPickerHeaderView = [[HONHeaderView alloc] initWithTitle:@"Select Friends"];
+	self.friendPickerHeaderView = [[HONHeaderView alloc] initWithTitle:[@"Select Friend" uppercaseString]];
 	self.friendPickerHeaderView.autoresizingMask = self.friendPickerHeaderView.autoresizingMask | UIViewAutoresizingFlexibleWidth;
 	
 	// Cancel Button

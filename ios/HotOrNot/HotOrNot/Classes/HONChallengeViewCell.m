@@ -74,7 +74,7 @@
 	
 	
 	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 18.0, 200.0, 16.0)];
-	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	challengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	challengeLabel.backgroundColor = [UIColor clearColor];
 	[self addSubview:challengeLabel];

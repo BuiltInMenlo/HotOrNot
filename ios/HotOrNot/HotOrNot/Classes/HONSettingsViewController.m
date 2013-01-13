@@ -248,7 +248,7 @@
 - (void)_sessionStateChanged:(NSNotification *)notification {
 	FBSession *session = (FBSession *)[notification object];
 	
-	[_headerView setTitle:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+	[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
 	
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:0]];
 	[cell updateCaption:(session.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];

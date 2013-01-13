@@ -292,7 +292,6 @@
 
 #pragma mark - Navigation
 - (void)_goDailyChallenge {
-	//	if (FBSession.activeSession.state == 513) {
 	[[Mixpanel sharedInstance] track:@"Daily Challenge - Challenge Wall"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -300,9 +299,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsDailyChallenge:[HONAppDelegate dailySubjectName]]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-	
-	//	} else
-	//		[self _goLogin];
 }
 
 - (void)_goCreateChallenge {
@@ -310,14 +306,9 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	
-//	if (FBSession.activeSession.state == 513) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
-	
-//	} else
-//		[self _goLogin];
 }
 
 - (void)_goInviteFriends {
