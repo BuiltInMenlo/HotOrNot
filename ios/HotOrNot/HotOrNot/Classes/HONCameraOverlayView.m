@@ -29,7 +29,7 @@
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *itunesURL;
 @property (nonatomic, strong) UIButton *captureButton;
-@property (nonatomic, strong) UIImageView *trackBGImageView;
+@property (nonatomic, strong) UIView *trackBGView;
 @property (nonatomic) CGSize gutterSize;
 @end
 
@@ -99,11 +99,15 @@
 		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 		[subjectBGImageView addSubview:_editButton];
 		
-		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 308.0, 306.0, 50.0)];
-		_trackBGImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
-		_trackBGImageView.userInteractionEnabled = YES;
-		_trackBGImageView.alpha = 0.0;
-		[self addSubview:_trackBGImageView];
+		_trackBGView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 278.0, 306.0, 80.0)];
+		_trackBGView.userInteractionEnabled = YES;
+		_trackBGView.alpha = 0.0;
+		[self addSubview:_trackBGView];
+		
+		UIImageView *bgTrackImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 30.0, 306.0, 50.0)];
+		bgTrackImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
+		bgTrackImageView.userInteractionEnabled = YES;
+		[_trackBGView addSubview:bgTrackImageView];
 		
 		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, _gutterSize.height, 250.0, 250.0)];
 		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding"];
@@ -130,7 +134,7 @@
 //		}
 		
 		// Add the bottom bar
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 374.0, 640.0, 105.0)];
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 367.0, 640.0, 105.0)];
 		[self addSubview:_footerHolderView];
 		
 		// Add the gallery button
@@ -158,7 +162,7 @@
 		
 		// Add the back button
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(335.0, 10.0, 147.0, 62.0);
+		backButton.frame = CGRectMake(335.0, 19.0, 147.0, 62.0);
 		[backButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_nonActive"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
@@ -166,7 +170,7 @@
 		
 		// Add the next button
 		UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		nextButton.frame = CGRectMake(475.0, 10.0, 147.0, 62.0);
+		nextButton.frame = CGRectMake(475.0, 19.0, 147.0, 62.0);
 		[nextButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_nonActive"] forState:UIControlStateNormal];
 		[nextButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_Active"] forState:UIControlStateHighlighted];
 		[nextButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
@@ -287,40 +291,45 @@
 	_artistName = artist;
 	_songName = songName;
 	
-	UIImageView *albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 5.0, 40.0, 40.0)];
+	UIImageView *albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 35.0, 40.0, 40.0)];
 	[albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil options:SDWebImageLowPriority];
-	[_trackBGImageView addSubview:albumImageView];
+	[_trackBGView addSubview:albumImageView];
 	
-	UILabel *songLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 11.0, 170.0, 14.0)];
+	UIButton *buyButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	buyButton.frame = albumImageView.frame;
+	[buyButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
+	[_trackBGView addSubview:buyButton];
+	
+	UILabel *songLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 41.0, 170.0, 14.0)];
 	songLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	songLabel.textColor = [UIColor whiteColor];
 	songLabel.backgroundColor = [UIColor clearColor];
 	songLabel.text = _songName;
-	[_trackBGImageView addSubview:songLabel];
+	[_trackBGView addSubview:songLabel];
 	
-	UILabel *artistLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 26.0, 170.0, 14.0)];
+	UILabel *artistLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 56.0, 170.0, 14.0)];
 	artistLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	artistLabel.textColor = [UIColor whiteColor];
 	artistLabel.backgroundColor = [UIColor clearColor];
 	artistLabel.text = _artistName;
-	[_trackBGImageView addSubview:artistLabel];
+	[_trackBGView addSubview:artistLabel];
 	
 	UIButton *buyTrackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	buyTrackButton.frame = CGRectMake(0.0, -30.0, 64.0, 34.0);
+	buyTrackButton.frame = CGRectMake(0.0, 0.0, 64.0, 34.0);
 	[buyTrackButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateNormal];
 	[buyTrackButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateHighlighted];
 	[buyTrackButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
-	[_trackBGImageView addSubview:buyTrackButton];
+	[_trackBGView addSubview:buyTrackButton];
 	
 	_muteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_muteButton.frame = CGRectMake(260.0, 3.0, 44.0, 44.0);
+	_muteButton.frame = CGRectMake(260.0, 33.0, 44.0, 44.0);
 	[_muteButton setBackgroundImage:[UIImage imageNamed:@"audio_nonActive"] forState:UIControlStateNormal];
 	[_muteButton setBackgroundImage:[UIImage imageNamed:@"audio_Active"] forState:UIControlStateHighlighted];
 	[_muteButton addTarget:self action:@selector(_goMuteToggle) forControlEvents:UIControlEventTouchUpInside];
-	[_trackBGImageView addSubview:_muteButton];
+	[_trackBGView addSubview:_muteButton];
 	
 	[UIView animateWithDuration:0.5 animations:^(void) {
-		_trackBGImageView.alpha = 1.0;
+		_trackBGView.alpha = 1.0;
 	}];
 	
 	UIImageView *ptsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(88.0, 150.0, 144.0, 54.0)];
@@ -329,11 +338,11 @@
 	[self addSubview:ptsImageView];
 	
 	[UIView animateWithDuration:0.5 animations:^(void) {
-		ptsImageView.frame = CGRectOffset(ptsImageView.frame, 0.0, -10.0);
+		ptsImageView.frame = CGRectOffset(ptsImageView.frame, 0.0, -25.0);
 		ptsImageView.alpha = 1.0;
 		
 	} completion:^(BOOL finished) {
-		[UIView animateWithDuration:0.33 animations:^(void) {
+		[UIView animateWithDuration:0.67 animations:^(void) {
 			ptsImageView.alpha = 0.0;
 			
 		} completion:^(BOOL finished) {
@@ -371,10 +380,10 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.33 animations:^(void) {
-		_trackBGImageView.alpha = 0.0;
+		_trackBGView.alpha = 0.0;
 		
 	} completion:^(BOOL finished) {
-		for (UIView *view in _trackBGImageView.subviews)
+		for (UIView *view in _trackBGView.subviews)
 			[view removeFromSuperview];
 		
 		_subjectName = [HONAppDelegate rndDefaultSubject];

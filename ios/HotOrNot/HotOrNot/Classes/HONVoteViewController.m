@@ -91,6 +91,7 @@
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		_isPushView = YES;
+		[HONAppDelegate toggleViewPushed:YES];
 		
 		_subjectID = 0;
 		_challengeVO = vo;
@@ -247,7 +248,7 @@
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONVoteViewController AFNetworking: %@", parsedLists);
+			NSLog(@"HONVoteViewController AFNetworking: %@", parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;

@@ -676,7 +676,7 @@
 			$challenge_arr = array();			
 			
 			// get latest 10 challenges for user
-			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` != 3 AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `added` DESC LIMIT 10;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `added` DESC LIMIT 10;';
 			$challenge_result = mysql_query($query);
 			
 			// loop thru the rows
@@ -723,7 +723,7 @@
 			$challenge_arr = array();			
 			
 			// get challenges
-			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` != 3 AND `added` < "'. $date .'" AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `added` DESC LIMIT 10;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 8) AND `added` < "'. $date .'" AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `added` DESC LIMIT 10;';
 			$challenge_result = mysql_query($query);
 			
 			// loop thru challenge rows

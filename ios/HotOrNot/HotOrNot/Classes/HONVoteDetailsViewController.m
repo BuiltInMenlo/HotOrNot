@@ -143,9 +143,9 @@
 	[self.view addSubview:shareButton];
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(10.0, 378.0, 147.0, 62.0);
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
+	pokeButton.frame = CGRectMake((!_isOwner && !_isInSession) ? 37.0 : 10.0, 378.0, (!_isOwner && !_isInSession) ? 247 : 147.0, 62.0);
+	[pokeButton setBackgroundImage:[UIImage imageNamed:(!_isOwner && !_isInSession) ? @"pokeUser_nonActive" : @"pokeButton_nonActive"] forState:UIControlStateNormal];
+	[pokeButton setBackgroundImage:[UIImage imageNamed:(!_isOwner && !_isInSession) ? @"pokeUser_Active" : @"pokeButton_Active"] forState:UIControlStateHighlighted];
 	[pokeButton addTarget:self action:(_isCreator) ? @selector(_goPokeCreator) : @selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
 	pokeButton.hidden = (_isOwner);
 	[self.view addSubview:pokeButton];
