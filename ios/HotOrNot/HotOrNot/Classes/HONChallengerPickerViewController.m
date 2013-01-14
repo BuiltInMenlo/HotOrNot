@@ -221,14 +221,20 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-
-	//UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(60.0, 75.0, 200.0, 266.0)];
-	//imgView.image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
 	
-	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 55.0, 90.0, 90.0)];
-	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
-	[self.view addSubview:imgView];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(20.0, 63.0, 90.0, 90.0)];
+	holderView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	holderView.clipsToBounds = YES;
+	[self.view addSubview:holderView];
+	
+	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 90.0, 90.0 * kPhotoRatio)];
+	imgView.image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
+	[holderView addSubview:imgView];
+	
+//	UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(20.0, 63.0, 90.0, 90.0)];
+//	imgView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+//	imgView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW * 0.5, kLargeW * 0.5)];
+//	[self.view addSubview:imgView];
 	
 	if (_isFlipped)
 		imgView.image = [UIImage imageWithCGImage:imgView.image.CGImage scale:1.0 orientation:UIImageOrientationUpMirrored];
@@ -578,6 +584,17 @@
 						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
 					}];
+				
+				} else {
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = @"Username Not Found!";
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+					
+					_usernameTextField.text = @"ENTER A USERNAME HERE";
 				}
 			}
 			
@@ -931,6 +948,7 @@
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		textField.text = @"";
+		_usernameTextField.frame = CGRectOffset(_usernameTextField.frame, -15.0, 0.0);
 		
 		_bgTextImageView.hidden = NO;
 		int offset = ([HONAppDelegate isRetina5]) ? 94.0 : 182.0;
@@ -960,6 +978,7 @@
 			_subjectName = textField.text;
 	
 	} else if (textField.tag == 1) {
+		_usernameTextField.frame = CGRectOffset(_usernameTextField.frame, 15.0, 0.0);
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
 			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 55.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, 14.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);

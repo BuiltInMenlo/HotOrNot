@@ -456,7 +456,10 @@
 		_focusTimer = nil;
 	}
 	
-	[_mpMoviePlayerController stop];
+	if (_mpMoviePlayerController != nil) {
+		[_mpMoviePlayerController stop];
+		_mpMoviePlayerController = nil;
+	}
 	
 	[[Mixpanel sharedInstance] track:@"Canceled Create Challenge"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -584,7 +587,10 @@
 - (void)_acceptPhoto {
 	UIImage *image = _challangeImage;
 	
-	[_mpMoviePlayerController stop];
+	if (_mpMoviePlayerController != nil) {
+		[_mpMoviePlayerController stop];
+		_mpMoviePlayerController = nil;
+	}
 	
 	if (!_needsChallenger) {
 		[[Mixpanel sharedInstance] track:@"Submit Challenge"
