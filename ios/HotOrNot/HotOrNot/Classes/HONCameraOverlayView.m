@@ -104,11 +104,6 @@
 		_trackBGView.alpha = 0.0;
 		[self addSubview:_trackBGView];
 		
-		UIImageView *bgTrackImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 30.0, 306.0, 50.0)];
-		bgTrackImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
-		bgTrackImageView.userInteractionEnabled = YES;
-		[_trackBGView addSubview:bgTrackImageView];
-		
 		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, _gutterSize.height, 250.0, 250.0)];
 		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding"];
 		overlayImgView.userInteractionEnabled = YES;
@@ -290,6 +285,11 @@
 	_itunesURL = [itunesURL stringByReplacingOccurrencesOfString:@"https://" withString:@"itms://"];
 	_artistName = artist;
 	_songName = songName;
+	
+	UIImageView *bgTrackImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 30.0, 306.0, 50.0)];
+	bgTrackImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
+	bgTrackImageView.userInteractionEnabled = YES;
+	[_trackBGView addSubview:bgTrackImageView];
 	
 	UIImageView *albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 35.0, 40.0, 40.0)];
 	[albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil options:SDWebImageLowPriority];
