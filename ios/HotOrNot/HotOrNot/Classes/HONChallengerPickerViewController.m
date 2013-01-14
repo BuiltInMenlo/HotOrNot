@@ -790,7 +790,7 @@
 	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[customCancelButton addTarget:self action:@selector(facebookViewControllerCancelWasPressed:) forControlEvents:UIControlEventTouchUpInside];
-	customCancelButton.frame = CGRectMake(0.0, 5.0, 74.0, 34.0);
+	customCancelButton.frame = CGRectMake(5.0, 5.0, 64.0, 34.0);
 	[self.friendPickerHeaderView addSubview:customCancelButton];
 	
 	// Done Button
@@ -812,7 +812,7 @@
 		CGFloat searchBarHeight = 44.0;
 		self.searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 45.0, self.view.bounds.size.width, searchBarHeight)];
 		self.searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
-		self.searchBar.tintColor = [UIColor colorWithRed:0.2863 green:0.2706 blue:0.7098 alpha:1.0];
+		self.searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
 		self.searchBar.delegate = self;
 		self.searchBar.showsCancelButton = NO;
 		

@@ -139,7 +139,7 @@
 		
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(0.0, 0.0, 74.0, 44.0);
+		backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
@@ -353,7 +353,11 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	[self _retrieveChallenges];
+	if (_isPushView)
+		[self _retrieveSingleChallenge:_challengeVO];
+	
+	else
+		[self _retrieveChallenges];
 }
 
 - (void)_goDailyChallenge {
@@ -487,7 +491,12 @@
 
 - (void)_refreshList:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	[self _retrieveChallenges];
+	
+	if (_isPushView)
+		[self _retrieveSingleChallenge:_challengeVO];
+	
+	else
+		[self _retrieveChallenges];
 }
 
 - (void)_showNotInSessionDetails:(NSNotification *)notification {
