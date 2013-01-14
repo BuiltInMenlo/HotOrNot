@@ -245,13 +245,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	return !(networkStatus == NotReachable);
 }
 
-+ (BOOL)canPingServers {
-	NetworkStatus apiStatus = [[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus];
-	NetworkStatus parseStatus = [[Reachability reachabilityWithHostName:@"api.parse.com"] currentReachabilityStatus];
-	
-	return (!(apiStatus == NotReachable) && !(parseStatus == NotReachable));
-}
-
 + (BOOL)canPingAPIServer {
 	NetworkStatus apiStatus = [[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus];
 	

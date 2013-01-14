@@ -54,6 +54,13 @@
 		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE PHOTO"];
 		[self addSubview:_headerView];
 		
+		UIButton *randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		randomSubjectButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
+		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+		[randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:randomSubjectButton];
+		
 		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
 		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
@@ -91,13 +98,6 @@
 		[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_Active"] forState:UIControlStateHighlighted];
 		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 		[subjectBGImageView addSubview:_editButton];
-		
-		UIButton *randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		randomSubjectButton.frame = CGRectMake(23.0, 100.0, 50.0, 45.0);
-		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-		[randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:randomSubjectButton];
 		
 		_trackBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 308.0, 306.0, 50.0)];
 		_trackBGImageView.image = [UIImage imageNamed:@"artistInfoOverlay"];
@@ -306,16 +306,16 @@
 	[_trackBGImageView addSubview:artistLabel];
 	
 	UIButton *buyTrackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	buyTrackButton.frame = CGRectMake(230.0, 9.0, 64.0, 34.0);
+	buyTrackButton.frame = CGRectMake(0.0, -30.0, 64.0, 34.0);
 	[buyTrackButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateNormal];
 	[buyTrackButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateHighlighted];
 	[buyTrackButton addTarget:self action:@selector(_goBuyTrack) forControlEvents:UIControlEventTouchUpInside];
 	[_trackBGImageView addSubview:buyTrackButton];
 	
 	_muteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_muteButton.frame = CGRectMake(180.0, 15.0, 34.0, 34.0);
-	[_muteButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateNormal];
-	[_muteButton setBackgroundImage:[UIImage imageNamed:@"downloadOniTunes"] forState:UIControlStateHighlighted];
+	_muteButton.frame = CGRectMake(260.0, 3.0, 44.0, 44.0);
+	[_muteButton setBackgroundImage:[UIImage imageNamed:@"audio_nonActive"] forState:UIControlStateNormal];
+	[_muteButton setBackgroundImage:[UIImage imageNamed:@"audio_Active"] forState:UIControlStateHighlighted];
 	[_muteButton addTarget:self action:@selector(_goMuteToggle) forControlEvents:UIControlEventTouchUpInside];
 	[_trackBGImageView addSubview:_muteButton];
 	

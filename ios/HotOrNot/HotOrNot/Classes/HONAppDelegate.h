@@ -64,7 +64,6 @@ extern NSString *const FacebookAppID;
 
 + (BOOL)isRetina5;
 + (BOOL)hasNetwork;
-+ (BOOL)canPingServers;
 + (BOOL)canPingAPIServer;
 + (BOOL)canPingParseServer;
 + (BOOL)audioMuted;

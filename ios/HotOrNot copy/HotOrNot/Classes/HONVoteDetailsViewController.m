@@ -134,45 +134,29 @@
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
 	
-	UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	challengeButton.frame = CGRectMake(87.0, 300.0, 147.0, 62.0);
-	[challengeButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_nonActive"] forState:UIControlStateNormal];
-	[challengeButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_Active"] forState:UIControlStateHighlighted];
-	[challengeButton addTarget:self action:@selector(_goChallenge) forControlEvents:UIControlEventTouchUpInside];
-	//challengeButton.hidden = (_isOwner || (!_isOwner && !_isInSession));
-	challengeButton.hidden = (_isOwner || _challengeVO.statusID == 1);
-	[self.view addSubview:challengeButton];
+	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shareButton.frame = CGRectMake((_isOwner && !_isInSession) ? 37.0 : 10.0, 378.0, (_isOwner && !_isInSession) ? 247.0 : 147.0, 62.0);
+	[shareButton setBackgroundImage:[UIImage imageNamed:(_isOwner && !_isInSession) ? @"shareLarge_nonActive" : @"shareButton_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:(_isOwner && !_isInSession) ? @"shareLarge_Active" : @"shareButton_Active"] forState:UIControlStateHighlighted];
+	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	shareButton.hidden = (!_isOwner);
+	[self.view addSubview:shareButton];
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(24.0, 380.0, 124.0, 58.0);
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeUserButton_nonActive"] forState:UIControlStateNormal];
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeUserButton_Active"] forState:UIControlStateHighlighted];
+	pokeButton.frame = CGRectMake(10.0, 378.0, 147.0, 62.0);
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
 	[pokeButton addTarget:self action:(_isCreator) ? @selector(_goPokeCreator) : @selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
 	pokeButton.hidden = (_isOwner);
 	[self.view addSubview:pokeButton];
 	
 	UIButton *voteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	voteButton.frame = CGRectMake(160.0, 378.0, 147.0, 62.0);
-	[voteButton setBackgroundImage:[UIImage imageNamed:@"voteButton_nonActive"] forState:UIControlStateNormal];
-	[voteButton setBackgroundImage:[UIImage imageNamed:@"voteButton_Active"] forState:UIControlStateHighlighted];
-	voteButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:14];
-	[voteButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-	[voteButton setTitle:@"VOTE!" forState:UIControlStateNormal];
+	[voteButton setBackgroundImage:[UIImage imageNamed:@"vote_nonActive"] forState:UIControlStateNormal];
+	[voteButton setBackgroundImage:[UIImage imageNamed:@"vote_Active"] forState:UIControlStateHighlighted];
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 	voteButton.hidden = (!_isInSession);
 	[self.view addSubview:voteButton];
-	
-	UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	acceptButton.frame = CGRectMake(160.0, 380.0, 124.0, 58.0);
-	[acceptButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_nonActive"] forState:UIControlStateNormal];
-	[acceptButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_Active"] forState:UIControlStateHighlighted];
-	[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];
-	acceptButton.hidden = (_challengeVO.statusID == 2 || _isInSession || _isOwner);
-	[self.view addSubview:acceptButton];
-	
-	if (_challengeVO.challengerID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] && !_isInSession)
-		acceptButton.hidden = NO;
-	
 }
 
 - (void)viewDidLoad {
@@ -181,11 +165,28 @@
 
 
 #pragma mark - Navigation
-- (void)_goChallenge {
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-		[[NSNotificationCenter defaultCenter] postNotificationName:(_isCreator || !_isInSession) ? @"NEW_CREATOR_CHALLENGE" : @"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
-	}];
+- (void)_goShare {
+	
+	if ([HONAppDelegate allowsFBPosting]) {
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Challenge"
+																				 message:[NSString stringWithFormat:@"%@ challenge posted to your wall!", _challengeVO.subjectName]
+																				delegate:nil
+																	cancelButtonTitle:@"OK"
+																	otherButtonTitles:nil];
+			[alertView show];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_CHALLENGE" object:_challengeVO];
+		}];
+	
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Challenge"
+																			 message:@"You need to enable Facebook posting first!"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+	}
 }
 
 - (void)_goPokeCreator {
@@ -252,13 +253,6 @@
 	}];
 }
 
-- (void)_goAccept {
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-	}];
-}
-
 - (void)_goUpvote {
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
@@ -266,6 +260,8 @@
 	}];
 }
 
+
+#pragma mark - Behaviors
 - (void)_hideHUD {
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];

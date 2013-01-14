@@ -703,6 +703,7 @@ NSString *const FacebookAppID = @"529054720443694";
 											  delegate:nil
 											  cancelButtonTitle:@"OK"
 											  otherButtonTitles:nil];
+			[alertView setTag:5];
 			[alertView show];
 //			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 //				if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"pushed_view"] isEqualToString:@"YES"]) {
@@ -889,6 +890,17 @@ NSString *const FacebookAppID = @"529054720443694";
 				
 			case 2:
 				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/us/app/id%@?mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
+				break;
+		}
+	}
+	
+	else if (alertView.tag == 5) {
+		switch (buttonIndex) {
+			case 0:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+				break;
+				
+			case 1:
 				break;
 		}
 	}
