@@ -534,13 +534,17 @@ NSString *const FacebookAppID = @"529054720443694";
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		
+		PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
+		PFObject *apiActiveObject = [apiActiveQuery getObjectWithId:@"eFLGKQWRzD"];
+		
+		
 //		[TapForTap initializeWithAPIKey:@"13654ee85567a679c190698d04ee87e2"];
 //		
 //		Kiip *kiip = [[Kiip alloc] initWithAppKey:@"app_key" andSecret:@"app_secret"];
 //		kiip.delegate = self;
 //		[Kiip setSharedInstance:kiip];
 		
-		if ([HONAppDelegate canPingAPIServer]) {
+		if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
 			UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
 			challengesViewController = [[HONChallengesViewController alloc] init];
 			voteViewController = [[HONVoteViewController alloc] init];
@@ -585,8 +589,8 @@ NSString *const FacebookAppID = @"529054720443694";
 			
 					
 		} else {
-			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bad Network Connection"
-																			message:@"Could not connect to PicChallenge servers, please try again."
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Upgrade Needed"
+																			message:@"Please update to the latest version from the App Store to continue playing PicChallenge."
 																		  delegate:nil
 															  cancelButtonTitle:nil
 															  otherButtonTitles:@"OK", nil];

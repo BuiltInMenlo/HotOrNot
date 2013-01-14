@@ -8,7 +8,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "ASIFormDataRequest.h"
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
 
@@ -25,7 +24,7 @@
 #import "HONPopularSubjectVO.h"
 #import "HONPopularUserVO.h"
 
-@interface HONPopularViewController() <ASIHTTPRequestDelegate>
+@interface HONPopularViewController()
 - (void)_retrievePopularUsers;
 - (void)_retrievePopularSubjects;
 

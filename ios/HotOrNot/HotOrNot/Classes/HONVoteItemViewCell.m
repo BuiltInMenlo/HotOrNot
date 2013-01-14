@@ -184,13 +184,13 @@
 		[lImgView addSubview:creatorNameLabel];
 		
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(12.0, 358.0, 244.0, 34.0);
+		_votesButton.frame = CGRectMake(12.0, 358.0, 250.0, 34.0);
 		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"voteButton_nonActive"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateNormal];
 		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"voteButton_Active"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
 		//[_votesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		_votesButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:14];
 		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-		[_votesButton setTitle:@"USER IS WAITING FOR A CHALENGER" forState:UIControlStateNormal];
+		[_votesButton setTitle:@"USER IS WAITING FOR A CHALLENGER" forState:UIControlStateNormal];
 		[self addSubview:_votesButton];
 	}
 }

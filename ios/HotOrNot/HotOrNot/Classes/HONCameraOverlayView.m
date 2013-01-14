@@ -55,9 +55,9 @@
 		[self addSubview:_headerView];
 		
 		UIButton *randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		randomSubjectButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
-		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+		randomSubjectButton.frame = CGRectMake(0.0, 0.0, 84.0, 44.0);
+		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"random_nonActive"] forState:UIControlStateNormal];
+		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"random_Active"] forState:UIControlStateHighlighted];
 		[randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:randomSubjectButton];
 		
@@ -323,25 +323,21 @@
 		_trackBGImageView.alpha = 1.0;
 	}];
 	
-	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 150.0, 200.0, 30.0)];
-	ptsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:26];
-	ptsLabel.textColor = [UIColor whiteColor];
-	ptsLabel.backgroundColor = [UIColor clearColor];
-	ptsLabel.textAlignment = NSTextAlignmentCenter;
-	ptsLabel.shadowColor = [UIColor blackColor];
-	ptsLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-	ptsLabel.text = @"+5pts!";
-	ptsLabel.alpha = 0.0;
-	[self addSubview:ptsLabel];
+	UIImageView *ptsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(88.0, 150.0, 144.0, 54.0)];
+	ptsImageView.image = [UIImage imageNamed:@"bonusPoints"];
+	ptsImageView.alpha = 0.0;
+	[self addSubview:ptsImageView];
+	
 	[UIView animateWithDuration:0.5 animations:^(void) {
-		ptsLabel.alpha = 1.0;
+		ptsImageView.frame = CGRectOffset(ptsImageView.frame, 0.0, -10.0);
+		ptsImageView.alpha = 1.0;
 		
 	} completion:^(BOOL finished) {
 		[UIView animateWithDuration:0.33 animations:^(void) {
-			ptsLabel.alpha = 0.0;
+			ptsImageView.alpha = 0.0;
 			
 		} completion:^(BOOL finished) {
-			[ptsLabel removeFromSuperview];
+			[ptsImageView removeFromSuperview];
 		}];
 	}];
 }

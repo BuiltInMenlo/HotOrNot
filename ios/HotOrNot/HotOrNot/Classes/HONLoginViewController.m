@@ -8,7 +8,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "ASIFormDataRequest.h"
 #import "Mixpanel.h"
 #import "UIImageView+WebCache.h"
 
@@ -17,7 +16,7 @@
 #import "HONHeaderView.h"
 
 
-@interface HONLoginViewController () <ASIHTTPRequestDelegate>
+@interface HONLoginViewController ()
 @end
 
 @implementation HONLoginViewController
