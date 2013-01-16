@@ -154,8 +154,10 @@
 			}
 			
 			// user info
-			$user_arr['fb_id'] = $user_obj->fb_id;
-			$user_arr['username'] = $user_obj->username; 		   			
+			if ($user_obj != null) {
+				$user_arr['fb_id'] = $user_obj->fb_id;
+				$user_arr['username'] = $user_obj->username; 		   			
+			}
 			
 			return ($user_arr);
 		}
@@ -247,7 +249,7 @@
 			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 				
 				// bug fix, skip challenge if waiting and has no challenge
-				if ($row['statusID'] == "2" && $row['challenger_id'] == "0")
+				if ($row['status_id'] == "2" && $row['challenger_id'] == "0")
 					continue;
 				
 				// push challenge into array
@@ -383,21 +385,31 @@
 			// get subject name
 			$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
 			$sub_name = mysql_fetch_object(mysql_query($query))->title;
-			
+		
 			// assign vote
 			if ($isCreator == "Y")
 				$winningUser_id = $creator_id;
-								
+							
 			else
 				$winningUser_id = $challenger_id;
-							    
+				
+			// get any votes for this challenge by this user
+			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .' AND `user_id` = '. $user_id .';';
+			$vote_result = mysql_query($query);
 			
-			// add vote record
-			$query = 'INSERT INTO `tblChallengeVotes` (';
-			$query .= '`id`, `challenge_id`, `user_id`, `challenger_id`, `added`) VALUES (';
-			$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $winningUser_id .'", NOW());';				
-			$result = mysql_query($query);
-			$vote_id = mysql_insert_id();
+			// hasn't voted on this challenge
+			if (mysql_num_rows($vote_result) == 0) {							    
+			
+				// add vote record
+				$query = 'INSERT INTO `tblChallengeVotes` (';
+				$query .= '`id`, `challenge_id`, `user_id`, `challenger_id`, `added`) VALUES (';
+				$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $winningUser_id .'", NOW());';				
+				$result = mysql_query($query);
+				$vote_id = mysql_insert_id();
+			
+			// existing vote	
+			} else
+				$vote_id = mysql_fetch_object($vote_result)->id;
 			
 			// get all votes for this challenge
 			$query = 'SELECT `challenger_id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';

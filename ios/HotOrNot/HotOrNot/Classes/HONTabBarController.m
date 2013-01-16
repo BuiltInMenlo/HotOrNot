@@ -37,6 +37,7 @@
 	[super loadView];
 	
 	[self hideTabBar];
+	
 	[self addCustomElements];
 	[self showNewTabBar];
 }

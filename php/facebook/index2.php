@@ -94,8 +94,8 @@ require './_db_close.php';
 	</form>
 	
 	<form id="frmVote" name="frmVote" method="post" action="./vote.php">
-		<input id="hidFBID" name="hidFBID" type="hidden" value="" />
 		<input id="hidChallengeID" name="hidChallengeID" type="hidden" value="<?php echo ($challenge_id); ?>" />
+		<input id="hidFBID" name="hidFBID" type="hidden" value="" />
 		<input id="hidForCreator" name="hidForCreator" type="hidden" value="" />
 	</form>
 		

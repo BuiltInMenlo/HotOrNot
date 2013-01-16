@@ -42,6 +42,7 @@ NSString *const FacebookAppID = @"529054720443694";
 @property (nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
+@property (nonatomic, strong) UIImageView *bgImgView;
 - (void)_registerUser;
 @end
 
@@ -410,15 +411,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"shown_settings"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
-	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"])
-		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"audio_muted"];
-	
 	_isFromBackground = NO;
 	[HONAppDelegate toggleViewPushed:NO];
 	
@@ -429,6 +421,15 @@ NSString *const FacebookAppID = @"529054720443694";
 	//[self _testParseCloudCode];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
+			[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"shown_settings"];
+		
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
+		
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"])
+			[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"audio_muted"];
+		
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
 		[UAirship takeOff:takeOffOptions];
@@ -440,103 +441,97 @@ NSString *const FacebookAppID = @"529054720443694";
 		[defaultACL setPublicReadAccess:YES];
 		[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
 		
-		[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
-		[[Mixpanel sharedInstance] track:@"App Boot"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		int boot_total = 0;
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
-		
-		else {
-			boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-			boot_total++;
-		
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
-		}
-		
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
-		
-		if (boot_total == 5) {
-			UIAlertView *alertView = [[UIAlertView alloc]
-										 initWithTitle:@"Rate PicChallenge"
-										 message:@"Why not rate PicChallenge in the app store!"
-										 delegate:self
-										 cancelButtonTitle:nil
-										 otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
-			[alertView setTag:2];
-			[alertView show];
-		}
-		
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
-			[HONAppDelegate setAllowsFBPosting:NO];
-		
-		PFQuery *appDataQuery = [PFQuery queryWithClassName:@"PicChallenge"];
-		PFObject *appDataObject = [appDataQuery getObjectWithId:@"1ZUKru9Qer"];
-		
-		NSError *error = nil;
-		NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
-																				  options:NSJSONReadingMutableContainers
-																					 error:&error];
-		
-		if (error != nil)
-			NSLog(@"Failed to parse app data list JSON: %@", [error localizedFailureReason]);
-		
-		else {
-			//NSLog(@"appDict:\n%@", appDict);
-			
-			NSMutableArray *hashtags = [NSMutableArray array];
-			for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
-				[hashtags addObject:hashtag];
-						
-			[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"fb_path"] forKey:@"facebook_url"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																			  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"friend_wall"], @"friend_wall",
-																			  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-																			  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"vote"],
-																			  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"poke"],
-																			  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-																			  [NSDictionary dictionaryWithObjectsAndKeys:
-																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"title"], @"title",
-																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"url"], @"url",
-																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"], @"enabled", nil],
-																			  [NSDictionary dictionaryWithObjectsAndKeys:
-																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"title"], @"title",
-																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"url"], @"url",
-																				[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"], @"enabled", nil], nil] forKey:@"web_ctas"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"waiting"],
-																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"],
-																			  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"created"], nil] forKey:@"ctas"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																			  [[appDict objectForKey:@"add_networks"] objectForKey:@"chartboost"], @"chartboost",
-																			  [[appDict objectForKey:@"add_networks"] objectForKey:@"kiip"], @"kiip",
-																			  [[appDict objectForKey:@"add_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
-			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
-		}
-		
-		PFQuery *s3Query = [PFQuery queryWithClassName:@"S3Credentials"];
-		PFObject *s3Object = [s3Query getObjectWithId:@"zofEGq6sLT"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [s3Object objectForKey:@"key"], @"key",
-																		  [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
-		
-		PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
-		PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
-		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
-		
-		[[NSUserDefaults standardUserDefaults] synchronize];
-		
-		
 		PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
 		PFObject *apiActiveObject = [apiActiveQuery getObjectWithId:@"eFLGKQWRzD"];
+		if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
 		
+			int boot_total = 0;
+			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
+				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+			
+			else {
+				boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+				boot_total++;
+			
+				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+			}
+			
+			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
+				[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+			
+			if (boot_total == 5) {
+				UIAlertView *alertView = [[UIAlertView alloc]
+											 initWithTitle:@"Rate PicChallenge"
+											 message:@"Why not rate PicChallenge in the app store!"
+											 delegate:self
+											 cancelButtonTitle:nil
+											 otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
+				[alertView setTag:2];
+				[alertView show];
+			}
+			
+			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
+				[HONAppDelegate setAllowsFBPosting:NO];
+			
+			PFQuery *appDataQuery = [PFQuery queryWithClassName:@"PicChallenge"];
+			PFObject *appDataObject = [appDataQuery getObjectWithId:@"1ZUKru9Qer"];
+			
+			NSError *error = nil;
+			NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
+																					  options:NSJSONReadingMutableContainers
+																						 error:&error];
+			
+			if (error != nil)
+				NSLog(@"Failed to parse app data list JSON: %@", [error localizedFailureReason]);
+			
+			else {
+				//NSLog(@"appDict:\n%@", appDict);
+				
+				NSMutableArray *hashtags = [NSMutableArray array];
+				for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
+					[hashtags addObject:hashtag];
+							
+				[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+				[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+				[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"fb_path"] forKey:@"facebook_url"];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																				  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"friend_wall"], @"friend_wall",
+																				  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																				  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"vote"],
+																				  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"poke"],
+																				  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																				  [NSDictionary dictionaryWithObjectsAndKeys:
+																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"title"], @"title",
+																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"url"], @"url",
+																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"], @"enabled", nil],
+																				  [NSDictionary dictionaryWithObjectsAndKeys:
+																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"title"], @"title",
+																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"url"], @"url",
+																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"], @"enabled", nil], nil] forKey:@"web_ctas"];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																				  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"waiting"],
+																				  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"],
+																				  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"created"], nil] forKey:@"ctas"];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																				  [[appDict objectForKey:@"add_networks"] objectForKey:@"chartboost"], @"chartboost",
+																				  [[appDict objectForKey:@"add_networks"] objectForKey:@"kiip"], @"kiip",
+																				  [[appDict objectForKey:@"add_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
+				[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
+			}
+			
+			PFQuery *s3Query = [PFQuery queryWithClassName:@"S3Credentials"];
+			PFObject *s3Object = [s3Query getObjectWithId:@"zofEGq6sLT"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																			  [s3Object objectForKey:@"key"], @"key",
+																			  [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
+			
+			PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
+			PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
+			[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
+			
+			[[NSUserDefaults standardUserDefaults] synchronize];
 		
 //		[TapForTap initializeWithAPIKey:@"13654ee85567a679c190698d04ee87e2"];
 //		
@@ -544,29 +539,18 @@ NSString *const FacebookAppID = @"529054720443694";
 //		kiip.delegate = self;
 //		[Kiip setSharedInstance:kiip];
 		
-		if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
-			UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
-			challengesViewController = [[HONChallengesViewController alloc] init];
-			voteViewController = [[HONVoteViewController alloc] init];
-			popularViewController = [[HONPopularViewController alloc] init];
-			createChallengeViewController = [[HONImagePickerViewController alloc] init];
-			settingsViewController = [[HONSettingsViewController alloc] init];
+			[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
+			[[Mixpanel sharedInstance] track:@"App Boot"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
-			UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
-			UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-			UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
-			UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
-			UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
-			
-			[navController1 setNavigationBarHidden:YES];
-			[navController2 setNavigationBarHidden:YES];
-			[navController3 setNavigationBarHidden:YES];
-			[navController4 setNavigationBarHidden:YES];
-			[navController5 setNavigationBarHidden:YES];
-			
+						
 			self.tabBarController = [[HONTabBarController alloc] init];
 			self.tabBarController.delegate = self;
-			self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
+			
+			_bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
+			_bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
+			[self.tabBarController.view addSubview:_bgImgView];
 			
 			self.window.rootViewController = self.tabBarController;
 			[self.window makeKeyAndVisible];
@@ -574,19 +558,8 @@ NSString *const FacebookAppID = @"529054720443694";
 			//[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 			
 			if (![self openSession]) {
-				self.loginViewController = [[HONLoginViewController alloc] init];				
-//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Username"
-//																			message:@"Login to Facebook to see your friends or change your username."
-//																		  delegate:self
-//															  cancelButtonTitle:nil
-//															  otherButtonTitles:@"Login", @"Change Username", nil];
-//				[alertView setTag:1];
-//				[alertView show];
+				self.loginViewController = [[HONLoginViewController alloc] init];
 			}
-			
-			_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
-			[self.window addSubview:_facebookSwitchView];
-			
 					
 		} else {
 			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Upgrade Needed"
@@ -662,7 +635,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken:[%@]", deviceID);
 	
 	[HONAppDelegate writeDeviceToken:deviceID];
-	[self _registerUser];
+	//if (![[HONAppDelegate infoForUser] objectForKey:@"id"])
+		[self _registerUser];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
@@ -766,11 +740,42 @@ NSString *const FacebookAppID = @"529054720443694";
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
+			
+			[self _initTabs];
 		}
 				
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"%@", [error localizedDescription]);
 	}];
+}
+
+
+- (void)_initTabs {
+	[_bgImgView removeFromSuperview];
+	
+	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
+	challengesViewController = [[HONChallengesViewController alloc] init];
+	voteViewController = [[HONVoteViewController alloc] init];
+	popularViewController = [[HONPopularViewController alloc] init];
+	createChallengeViewController = [[HONImagePickerViewController alloc] init];
+	settingsViewController = [[HONSettingsViewController alloc] init];
+	
+	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
+	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
+	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
+	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
+	UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+	
+	[navController1 setNavigationBarHidden:YES];
+	[navController2 setNavigationBarHidden:YES];
+	[navController3 setNavigationBarHidden:YES];
+	[navController4 setNavigationBarHidden:YES];
+	[navController5 setNavigationBarHidden:YES];
+	
+	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
+	
+	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
+	[self.window addSubview:_facebookSwitchView];
 }
 
 - (void)_testParseCloudCode {
