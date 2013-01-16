@@ -36,6 +36,7 @@
 @property(nonatomic, strong) UITextField *subjectTextField;
 @property(nonatomic, strong) UIButton *editButton;
 @property(nonatomic, strong) UIButton *loginFriendsButton;
+@property(nonatomic, strong) UIButton *randomButton;
 @property(nonatomic, strong) UITextField *usernameTextField;
 @property(nonatomic, strong) UIImageView *bgTextImageView;
 @property(nonatomic) BOOL isFlipped;
@@ -172,12 +173,12 @@
 	
 	
 	
-	UIButton *randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	randomButton.frame = CGRectMake(23.0, 203.0, 274.0, 74.0);
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_nonActive"] forState:UIControlStateNormal];
-	[randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_Active"] forState:UIControlStateHighlighted];
-	[randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:randomButton];
+	_randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_randomButton.frame = CGRectMake(23.0, 203.0, 274.0, 74.0);
+	[_randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_nonActive"] forState:UIControlStateNormal];
+	[_randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_Active"] forState:UIControlStateHighlighted];
+	[_randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_randomButton];
 	
 	_loginFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_loginFriendsButton.frame = CGRectMake(23.0, 300.0, 274.0, 58.0);
@@ -188,6 +189,7 @@
 	
 	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 55.0, 320.0, 55.0)];
 	_bgTextImageView.image = [UIImage imageNamed:@"keyboardInputField"];
+	_bgTextImageView.userInteractionEnabled = YES;
 	_bgTextImageView.hidden = YES;
 	[self.view addSubview:_bgTextImageView];
 	
@@ -203,7 +205,7 @@
 	[sendButton addTarget:self action:@selector(_goUsernameSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[usernameBGImageView addSubview:sendButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 14.0, 250.0, 20.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 14.0, 230.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -216,6 +218,21 @@
 	_usernameTextField.text = @"ENTER A USERNAME HERE";
 	_usernameTextField.delegate = self;
 	[_usernameTextField setTag:1];
+	
+//	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 14.0, 230.0, 20.0)];
+//	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+//	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+//	_usernameTextField.backgroundColor = [UIColor redColor];
+//	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+//	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+//	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
+//	[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
+//	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+//	_usernameTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:14];
+//	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
+//	_usernameTextField.text = @"ENTER A USERNAME HERE";
+//	_usernameTextField.delegate = self;
+//	[_usernameTextField setTag:1];
 	[usernameBGImageView addSubview:_usernameTextField];
 }
 
@@ -947,8 +964,11 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
+		[_randomButton removeTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[_loginFriendsButton removeTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+		
 		textField.text = @"";
-		_usernameTextField.frame = CGRectOffset(_usernameTextField.frame, -15.0, 0.0);
+		_usernameTextField.frame = CGRectMake(1.0, _usernameTextField.frame.origin.y, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
 		
 		_bgTextImageView.hidden = NO;
 		int offset = ([HONAppDelegate isRetina5]) ? 94.0 : 182.0;
@@ -978,13 +998,16 @@
 			_subjectName = textField.text;
 	
 	} else if (textField.tag == 1) {
-		_usernameTextField.frame = CGRectOffset(_usernameTextField.frame, 15.0, 0.0);
+		_usernameTextField.frame = CGRectMake(16.0, _usernameTextField.frame.origin.y, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
 			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 55.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, 14.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
 			
 		} completion:^(BOOL finished) {
 			_bgTextImageView.hidden = YES;
+			
+			[_randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
+			[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 		}];
 		
 		if ([textField.text length] == 0)
