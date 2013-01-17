@@ -7,7 +7,7 @@
 //
 
 #import "HONPopularUserViewCell.h"
-#import "UIImageView+WebCache.h"
+#import "UIImageView+AFNetworking.h"
 #import "HONAppDelegate.h"
 
 @interface HONPopularUserViewCell()
@@ -27,7 +27,7 @@
 	_userVO = userVO;
 	
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
-	[imageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil options:SDWebImageLowPriority success:^(UIImage *image, BOOL cached){} failure:nil];
+	[imageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:imageView];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 18.0, 200.0, 16.0)];

@@ -380,7 +380,22 @@
 			$err_no = curl_errno($ch);
 			$err_msg = curl_error($ch);
 			$header = curl_getinfo($ch);
-			curl_close($ch);	
+			curl_close($ch);
+			
+			// curl urban airship's api
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+			curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+			//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
+		 	$res = curl_exec($ch);
+			$err_no = curl_errno($ch);
+			$err_msg = curl_error($ch);
+			$header = curl_getinfo($ch);
+			curl_close($ch);
 		}
 	    
 		

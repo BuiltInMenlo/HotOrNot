@@ -6,25 +6,28 @@
 //https://discover.getassembly.com/hotornot/facebook/
 require './_db_open.php'; 
 
-$title = "";
-$creator_img = "";
-$challenger_img = "";
-$blurb = "PicChallenge - #challenge friends and strangers with photos, memes, quotes, and more!";
-
 if (isset($_GET['cID'])) {
 	$challenge_id = $_GET['cID'];
 	
-	$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+	/*
+	$query = 'SELECT `subject_id`, `creator_img`, `challenger_img` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
 	$challenge_obj = mysql_fetch_object(mysql_query($query));
 	$creator_img = $challenge_obj->creator_img . "_l.jpg";
 	$challenger_img = $challenge_obj->challenger_img . "_l.jpg";
+	*/
+	
+	$query = 'SELECT `subject_id`, img_url FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+	$challenge_obj = mysql_fetch_object(mysql_query($query));
+	$creator_img = $challenge_obj->img_url . "_l.jpg";
 	
 	$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
 	$title = mysql_fetch_object(mysql_query($query))->title;
 	
-	$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';
-	$votes_tot = mysql_num_rows(mysql_query($query));
+	$query = 'SELECT `url` FROM `tblChallengeImages` WHERE `challenge_id` = '. $challenge_id .';';
+	$challenger_img = mysql_fetch_object(mysql_query($query))->url . "_l.jpg";	
 }
+
+$blurb = "PicChallenge - #challenge friends and strangers with photos, memes, quotes, and more!";
 
 require './_db_close.php'; 
 
@@ -39,7 +42,7 @@ require './_db_close.php';
     <meta property="og:image"  content="<?php echo ($creator_img); ?>" /> 
     <meta property="og:description" content="<?php echo ($blurb); ?>" />
 	
-	<title><?php echo ($title); ?></title>
+	<title>#<?php echo ($title); ?></title>
   </head>
 
   <body>
@@ -136,14 +139,16 @@ require './_db_close.php';
 	   }(document, /*debug*/ false));
 	</script>
     
-	<?php if (isset($_GET['cID'])) { ?>
-		<center>
-			<h2><?php echo ($title); ?></h2>
-			<hr width='90%' />
-			<img src='<?php echo($creator_img); ?>' width='612' height='612' alt='' />
-			<img src='<?php echo($challenger_img); ?>' width='612' height='612' alt='' />
-		</center>
-	<?php
+	<?php if (isset($_GET['cID'])) {
+		//echo ("<h2>#". $title ."</h2>\n");
+		//echo ("<hr />\n");
+		//echo ("<p>". $blurb ."</p>\n");
+		//echo ("<center><p><img src='". $creator_img ."' /><hr /><img src='". $challenger_img ."' /></p></center>\n");
+		echo ("<center>\n");
+		echo ("<a href='http://bit.ly/VukhMo' target='_blank'><img src='./images/header.jpg'></img></a><br /><br />");
+		echo ("<a href='http://bit.ly/VukhMo' target='_blank'><img src='./images/badge.png'></img></a>");
+		echo ("</center>\n");
+	
 	} else { ?>
 		<center>
 			<a href="http://bit.ly/VukhMo" target="_blank"><img src="./images/header.jpg"></img></a><br /><br />

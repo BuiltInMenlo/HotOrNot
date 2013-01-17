@@ -9,7 +9,6 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "Mixpanel.h"
-#import "UIImageView+WebCache.h"
 
 #import "HONLoginViewController.h"
 #import "HONAppDelegate.h"

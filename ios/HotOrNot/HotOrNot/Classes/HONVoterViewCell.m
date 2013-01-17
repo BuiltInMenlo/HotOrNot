@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "UIImageView+WebCache.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "HONVoterViewCell.h"
 #import "HONAppDelegate.h"

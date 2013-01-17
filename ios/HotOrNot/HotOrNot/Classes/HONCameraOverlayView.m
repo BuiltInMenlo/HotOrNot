@@ -11,7 +11,7 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "Mixpanel.h"
-#import "UIImageView+WebCache.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "HONCameraOverlayView.h"
 #import "HONAppDelegate.h"
@@ -292,7 +292,7 @@
 	[_trackBGView addSubview:bgTrackImageView];
 	
 	UIImageView *albumImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 35.0, 40.0, 40.0)];
-	[albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil options:SDWebImageLowPriority];
+	[albumImageView setImageWithURL:[NSURL URLWithString:artwork] placeholderImage:nil];
 	[_trackBGView addSubview:albumImageView];
 	
 	UIButton *buyButton = [UIButton buttonWithType:UIButtonTypeCustom];

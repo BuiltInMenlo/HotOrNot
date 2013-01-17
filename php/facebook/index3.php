@@ -104,7 +104,7 @@ require './_db_close.php';
 			}
 		});
 		
-		$("#frmSubmit").validate({
+		/*$("#frmSubmit").validate({
 			debug: false,
 			rules: {
 				hidFBID: "required"
@@ -118,20 +118,19 @@ require './_db_close.php';
 					$('#results').html(data);
 				});
 			}
-		});
+		});*/
 	});
 	</script>
   </head>
 
   <body>
-	<div id="results">DERP</div>
+	<div id="results"></div>
 		
 	<div id="fb-root"></div>
 	<form id="frmSubmit" name="frmSubmit" method="POST" action="">
 		<input id="hidFBID" name="hidFBID" type="text" value="" />
 		<input id="hidUsername" name="hidUsername" type="text" value="" />
 		<input id="hidGender" name="hidGender" type="text" value="" />
-		<input type="submit" />
 	</form>
 	
 	<form id="frmVote" name="frmVote" method="POST" action="">
@@ -167,22 +166,22 @@ require './_db_close.php';
 	    console.log('Welcome!  Fetching your information.... ');
 	    FB.api('/me', function(response) {
 	        console.log('Good to see you, ' + response.name + '.');
-			//alert ("YOU ARE: [" + response.id + "] '" + response.username + "' (" + response.gender + ") {" + getQueryString()["submit"] + "}");
+			alert ("YOU ARE: [" + response.id + "] '" + response.username + "' (" + response.gender + ") {" + getQueryString()["submit"] + "}");
 			
 			var frmVote = document.getElementById('frmVote');
 				frmVote.hidFBID.value = response.id;
 			
 			var frmSubmit = document.getElementById('frmSubmit');
+			//if (frmSubmit.hidFBID.value == "")//if (getQueryString()["submit"] != "1") {				
 				frmSubmit.hidFBID.value = response.id;
 				frmSubmit.hidUsername.value = response.username;
 				frmSubmit.hidGender.value = response.gender.toUpperCase().charAt(0);
 				
-			//if (frmSubmit.hidFBID.value == "") {//if (getQueryString()["submit"] != "1") {				
 				//if (getQueryString()["cID"] != undefined)
 					//frmSubmit.action = "./submit2.php?cID=<?php echo ($_GET['cID']); ?>";
 				
 				//frmSubmit.submit();
-			//}
+			}
 	    });
 	}
 	
@@ -200,15 +199,15 @@ require './_db_close.php';
 		FB.getLoginStatus(function(response) {
 		  if (response.status === 'connected') {
 			// connected
-			//alert("CONNECTED");
+			alert("CONNECTED");
 			testAPI();
 		  } else if (response.status === 'not_authorized') {
 		    // not_authorized
-			//alert ("NOT AUTHORIZED");
+			alert ("NOT AUTHORIZED");
 			login();
 		  } else {
 		    // not_logged_in
-			//alert ("NOT LOGGED IN");
+			alert ("NOT LOGGED IN");
 			login();
 		  }
 		 });

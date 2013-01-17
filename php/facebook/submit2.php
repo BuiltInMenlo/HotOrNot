@@ -1,4 +1,4 @@
-<?php session_start();
+<?php
 
 require './_db_open.php'; 
 
@@ -35,22 +35,12 @@ if (isset($_POST['hidFBID']) && isset($_POST['hidUsername']) && isset($_POST['hi
 	}
 }
 
+print ("hidFBID:[". $_POST['hidFBID'] ."]\n");
+print ("hidUsername:[". $_POST['hidUsername'] ."]\n");
+print ("hidGender:[". $_POST['hidGender'] ."]\n");
+print ("userID:[". $user_id ."]\n");
+
 
 require './_db_close.php'; 
 
 ?>
- 
-<html>  
-  <head />
-  <body>
-	<?php /*
-		echo ("hidFBID:[". $_POST['hidFBID'] ."]<br />\n");
-		echo ("hidUsername:[". $_POST['hidUsername'] ."]<br />\n");
-		echo ("hidGender:[". $_POST['hidGender'] ."]<br />\n");
-		echo ("userID:[". $user_id ."]\n");
-	*/ ?>
-	
-	<?php $url = (isset($_GET['cID'])) ? "./index2.php?submit=1&cID=". $_GET['cID'] : "./index.php?submit=1"; ?>
-	<script>location.href = "<?php echo ($url); ?>";</script>
-  </body>  
-</html>

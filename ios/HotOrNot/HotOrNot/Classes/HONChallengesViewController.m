@@ -9,7 +9,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "UIImageView+WebCache.h"
 #import "Mixpanel.h"
 #import "MBProgressHUD.h"
 #import "TapForTap.h"
