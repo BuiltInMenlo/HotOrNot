@@ -126,6 +126,7 @@ $headers_arr[] = "X-Mailer: PHP/". phpversion();
 echo (mail($to, $subject, $msg, implode("\r\n", $headers_arr)) ."\n");
 */
 
+/* //SHOW FB USERS
 echo ("<html><head><meta charset=\"utf-8\"></head><body><table>\n");
 
 $fb_arr = array();
@@ -137,6 +138,32 @@ while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 	//echo ("{$row['username']}@facebook.com,");
 }			
 echo ("</table></body></html>");
+*/
+
+$post_arr = array(
+	'From' => "+12394313268",
+	'To' => "+12393709811",
+	'Body' => "Testing Twilio API"
+);
+
+$ch = curl_init();    
+curl_setopt($ch, CURLOPT_URL, "https://api.twilio.com/2010-04-01/Accounts/ACb76dc4d9482a77306bc7170a47f2ea47/SMS/Messages.json");
+curl_setopt($ch, CURLOPT_USERPWD, "ACb76dc4d9482a77306bc7170a47f2ea47:00015969db460ffe0f0bd5b3df60972a");
+curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: multipart/form-data"));
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $post_arr);
+
+$res = curl_exec($ch);
+$err_no = curl_errno($ch);
+$err_msg = curl_error($ch);
+$header = curl_getinfo($ch);
+curl_close($ch);
+
+//curl -X POST https://api.twilio.com/2010-04-01/Accounts/ACb76dc4d9482a77306bc7170a47f2ea47/SMS/Messages.json \
+//    -u ACb76dc4d9482a77306bc7170a47f2ea47:00015969db460ffe0f0bd5b3df60972a \
+//    -d "From=+12394313268" \
+//    -d "To=+17143309754" \
+//    -d 'Body=Testing Twilio API'
 			
 if ($db_conn) {
 	mysql_close($db_conn);

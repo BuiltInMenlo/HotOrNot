@@ -1,10 +1,6 @@
 <?php session_start();
 
-//header('Location: https://itunes.apple.com/us/app/picchallenge/id573754057?ls=1&mt=8');
-//https://bit.ly/REvO8Q
-
-//https://discover.getassembly.com/hotornot/facebook/
-require './_db_open.php'; 
+require './_db_open.php';
 
 $title = "";
 $creator_img = "";
@@ -50,19 +46,21 @@ if (isset($_GET['cID'])) {
 			$votes_arr['challenger']++;
 	}
 	
-	$votes_tot = $votes_arr['creator'] + $votes_arr['challenger'];//mysql_num_rows(mysql_query($query));
-	
-	
+	$votes_tot = $votes_arr['creator'] + $votes_arr['challenger'];
 	$title = $creator_obj->username ." and ". $challenger_obj->username ." are challenging to ". $subject;
 }
 
-require './_db_close.php'; 
+require './_db_close.php';
 
 ?>
- 
-<html>
-  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# pchallenge: http://ogp.me/ns/fb/pchallenge#">
-    <meta property="fb:app_id" content="529054720443694" /> 
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns:fb="http://ogp.me/ns/fb#">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# pchallenge: http://ogp.me/ns/fb/pchallenge#">
+	<meta charset="utf-8" />
+	<meta name="description" content="goes_here" />	<!-- Set -->
+	<meta property="fb:app_id" content="529054720443694" /> 
     <meta property="og:type"   content="pchallenge:challenge" /> 
     <meta property="og:url"    content="http://<?php echo ($_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']); ?>" /> 
     <meta property="og:title"  content="<?php echo ($subject); ?>" /> 
@@ -70,6 +68,11 @@ require './_db_close.php';
     <meta property="og:description" content="<?php echo ($title); ?>" />
 	
 	<title><?php echo ($subject); ?></title>
+	
+	<link rel="stylesheet" href="_assets/css/master.css" media="screen" />
+	<!--[if IE]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 	
 	<script>
 		function goVote(isCreator) {
@@ -82,76 +85,66 @@ require './_db_close.php';
 			
 			frmVote.submit();
 		}
+		
+		function getQueryString() {
+	  		var result = {}, queryString = location.search.substring(1),
+	      	re = /([^&=]+)=([^&]*)/g, m;
+
+	  		while (m = re.exec(queryString)) {
+	    		result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+	  		}
+
+	  		return result;
+		}
 	</script>
 	
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="_assets/js/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript">
-	$(document).ready(function(){
-		$("#frmVote").validate({
-			debug: false,
-			rules: {
-				hidChallengeID: "required"
-			},
-			messages: {
-				hidChallengeID: "0",
-			},
-			submitHandler: function(form) {
-				// do other stuff for a valid form
-				$.post('vote.php', $("#frmVote").serialize(), function(data) {
-					$('#results').html(data);
-				});
-			}
+		$(document).ready(function() {
+			$("#frmVoteCreator").submit(function() { 			
+				$.post("vote.php", $("#frmVoteCreator").serialize(), function(data) {
+					$("#results").html(data);
+     			});
+				return false;
+			});
+			
+			$("#frmVoteChallenger").submit(function() {
+				$.post("vote.php", $("#frmVoteChallenger").serialize(), function(data) {
+					$("#results").html(data);
+     			});
+				return false;
+			});
+			
+			$("#frmSignIn").submit(function() {
+				alert ("SIGNIN");     			
+				$.post("signin.php", $("#frmSignIn").serialize(), function(data) {
+					$("#results").html(data);
+     			});
+				return false;
+			});
+			
+			$("#frmSMS").submit(function() {
+				alert ("SIGNIN");     			
+				$.post("sms.php", $("#frmSMS").serialize(), function(data) {
+					$("#results").html(data);
+     			});
+				return false;
+			});
 		});
-		
-		$("#frmSubmit").validate({
-			debug: false,
-			rules: {
-				hidFBID: "required"
-			},
-			messages: {
-				hidFBID: "0",
-			},
-			submitHandler: function(form) {
-				// do other stuff for a valid form
-				$.post('submit2.php', $("#frmSubmit").serialize(), function(data) {
-					$('#results').html(data);
-				});
-			}
-		});
-	});
 	</script>
-  </head>
+</head>
 
-  <body>
-	<div id="results">DERP</div>
-		
+<body>
 	<div id="fb-root"></div>
-	<form id="frmSubmit" name="frmSubmit" method="POST" action="">
-		<input id="hidFBID" name="hidFBID" type="text" value="" />
-		<input id="hidUsername" name="hidUsername" type="text" value="" />
-		<input id="hidGender" name="hidGender" type="text" value="" />
-		<input type="submit" />
-	</form>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=529054720443694";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));</script>
 	
-	<form id="frmVote" name="frmVote" method="POST" action="">
-		<input id="hidChallengeID" name="hidChallengeID" type="hidden" value="<?php echo ($challenge_id); ?>" />
-		<input id="hidFBID" name="hidFBID" type="hidden" value="" />
-		<input id="hidForCreator" name="hidForCreator" type="hidden" value="" />
-	</form>
-		
 	<script>
-	function getQueryString() {
-	  var result = {}, queryString = location.search.substring(1),
-	      re = /([^&=]+)=([^&]*)/g, m;
-
-	  while (m = re.exec(queryString)) {
-	    result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-	  }
-
-	  return result;
-	}
-
 	function login() {
 	    FB.login(function(response) {
 	        if (response.authResponse) {
@@ -169,24 +162,21 @@ require './_db_close.php';
 	        console.log('Good to see you, ' + response.name + '.');
 			//alert ("YOU ARE: [" + response.id + "] '" + response.username + "' (" + response.gender + ") {" + getQueryString()["submit"] + "}");
 			
-			var frmVote = document.getElementById('frmVote');
-				frmVote.hidFBID.value = response.id;
+			var frmVoteCreator = document.getElementById('frmVoteCreator');
+				frmVoteCreator.hidFBID.value = response.id;
+				
+			var frmVoteChallenger = document.getElementById('frmVoteChallenger');
+				frmVoteChallenger.hidFBID.value = response.id;
 			
-			var frmSubmit = document.getElementById('frmSubmit');
-				frmSubmit.hidFBID.value = response.id;
-				frmSubmit.hidUsername.value = response.username;
-				frmSubmit.hidGender.value = response.gender.toUpperCase().charAt(0);
-				
-			//if (frmSubmit.hidFBID.value == "") {//if (getQueryString()["submit"] != "1") {				
-				//if (getQueryString()["cID"] != undefined)
-					//frmSubmit.action = "./submit2.php?cID=<?php echo ($_GET['cID']); ?>";
-				
-				//frmSubmit.submit();
-			//}
+			var frmSignIn = document.getElementById('frmSignIn');
+				frmSignIn.hidFBID.value = response.id;
+				frmSignIn.hidUsername.value = response.username;
+				frmSignIn.hidGender.value = response.gender.toUpperCase().charAt(0);
+				//frmSignIn.submit();
 	    });
 	}
 	
-	  window.fbAsyncInit = function() {
+	window.fbAsyncInit = function() {
 	    // init the FB JS SDK
 	    FB.init({
 	      appId      : '529054720443694', // App ID from the App Dashboard
@@ -213,60 +203,103 @@ require './_db_close.php';
 		  }
 		 });
 	  };
-
-	  // Load the SDK's source Asynchronously
-	  // Note that the debug version is being actively developed and might 
-	  // contain some type checks that are overly strict. 
-	  // Please report such bugs using the bugs tool.
-	  (function(d, debug){
-	     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-	     if (d.getElementById(id)) {return;}
-	     js = d.createElement('script'); js.id = id; js.async = true;
-	     js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
-	     ref.parentNode.insertBefore(js, ref);
-	   }(document, /*debug*/ false));
 	</script>
-    
-	<?php if (isset($_GET['cID']) && $isOSX) { ?>
-		<table cellpadding='0' cellspacing='0' border='0' width='1224'>
-			<tr><td colspan='2'><h2><?php echo ($title); ?></h2><hr width='90%' /></td></tr>
-			<tr>
-				<td align='center'><a href='#' onclick='goVote(1)'><img src='<?php echo($creator_img); ?>' width='612' height='612' alt='' border='' /></a><br /><?php echo ($votes_arr['creator']); ?></td>
-				<td align='center'><a href='#' onclick='goVote(0)'><img src='<?php echo($challenger_img); ?>' width='612' height='612' alt='' border='' /></a><br /><?php echo ($votes_arr['challenger']); ?></td>
-			</tr>
-			<tr><td colspan='2'><hr width='90%' /></td></tr>
-			<tr><td colspan='2'><?php echo ($votes_tot); ?> Votes</td></tr>
-			<tr><td colspan='2' align='center'><a href='https://discover.getassembly.com/hotornot/facebook/index2.php?submit=1&cID=<?php echo ($challenge_id-1); ?>'>Prev</a> | <a href='https://discover.getassembly.com/hotornot/facebook/index2.php?submit=1&cID=<?php echo ($challenge_id+1); ?>'>Next</a></td></tr>
-		</table>
+	
+	<header>
+		<div id="header_content">
+			<h1><a href="#">picChallenge</a></h1>
+			<p class="app_store"><a href="#"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></a></p>
+		</div>
+	</header>
+	
+	<form id="frmSignIn" name="frmSignIn">
+		<input id="hidFBID" name="hidFBID" type="hidden" value="" />
+		<input id="hidUsername" name="hidUsername" type="hidden" value="" />
+		<input id="hidGender" name="hidGender" type="hidden" value="" />
+	</form>
+	
+	<div id="results"></div>
+	
+	<form id="frmSMS" name="frmSMS">
+		<input id="txtPhone1" name="txtPhone1" type="text" size="3" value="" />
+		<input id="txtPhone2" name="txtPhone2" type="text" size="3" value="" />
+		<input id="txtPhone3" name="txtPhone3" type="text" size="4" value="" />
+		<input type="submit" />
+	</form>
+
+	<!-- Begin container -->
+	<div id="container">
 		
-		<div id="fb-root"></div>
-      <script>
-        // Load the SDK Asynchronously
-        (function(d){
-           var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-           if (d.getElementById(id)) {return;}
-           js = d.createElement('script'); js.id = id; js.async = true;
-           js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-           ref.parentNode.insertBefore(js, ref);
-         }(document));
-      </script>
+		<!-- Begin content -->
+		<div class="content">
+			
+			<!-- Begin challenge_info -->
+			<div class="challenge_info clearfix">
+				<img src="https://graph.facebook.com/<?php echo ($creator_obj->fb_id); ?>/picture?type=square" width="50" height="50" alt="" />
+				<div class="description">
+					<p><strong><?php echo ($creator_obj->username); ?></strong> has challenged <strong><?php echo ($challenger_obj->username); ?></strong> to a <em><?php echo ($subject); ?></em></p>
+					<h2><?php echo ($subject); ?></h2>
+				</div>
+				
+				<p class="report"><a href="#">Report Abuse</a></p>
+			</div>
+			<!-- End challenge_info -->
+		
+			<!-- Begin photo_container -->
+			<div id="photo_container" class="clearfix">
+			
+				<div class="photo photo_a">
+					<img src="<?php echo($creator_img); ?>" width="356" height="356" alt="" />
+					<form id="frmVoteCreator" name="frmVoteCreator">
+						<input id="hidChallengeID" name="hidChallengeID" type="hidden" value="<?php echo ($challenge_id); ?>" />
+						<input id="hidFBID" name="hidFBID" type="hidden" value="" />
+						<input id="hidForCreator" name="hidForCreator" type="hidden" value="Y" />
+						<input type="submit" />
+					</form>
+					<p class="vote"><a href="#" onclick="goVote(1)">Vote on this pic</a></p>
+					<p class="vote_count"><?php echo ($votes_arr['creator']); ?></p>
+					<p class="winning">Winning</p>
+				</div>
+			
+				<div class="photo photo_b">
+					<img src="<?php echo($challenger_img); ?>" width="356" height="356" alt="" />
+					<form id="frmVoteChallenger" name="frmVoteChallenger">
+						<input id="hidChallengeID" name="hidChallengeID" type="hidden" value="<?php echo ($challenge_id); ?>" />
+						<input id="hidFBID" name="hidFBID" type="hidden" value="" />
+						<input id="hidForCreator" name="hidForCreator" type="hidden" value="N" />
+						<input type="submit" />
+					</form>
+					<p class="vote"><a href="#" onclick="goVote(0)">Vote on this pic</a></p>
+					<p class="vote_count"><?php echo ($votes_arr['challenger']); ?></p>
+				</div>
+			
+				<div class="lightning"></div>
+			</div>
+			<!-- End photo_container -->
+			
+			<h2 class="photo_challenge">Photo Challenge</h2>
+			
+			<fb:like send="true" width="450" show_faces="true"></fb:like>
+			
+			<!-- Begin photo_nav -->
+			<ul id="photo_nav">
+				<li class="prev"><a href="./index2.php?submit=1&cID=<?php echo ($challenge_id-1); ?>">Prev</a></li>
+				<li class="next"><a href="./index2.php?submit=1&cID=<?php echo ($challenge_id+1); ?>">Next</a></li>
+			</ul>
+			<!-- End photo_nav -->
+		</div>
+		<!-- End content -->
+		
+		<fb:comments href="https://discover.getassembly.com/hotornot/facebook/index2.php?cID=<?php echo ($challenge_id);?>" width="753" num_posts="2"></fb:comments>
+		
+	</div>
+	<!-- End container -->
 
-      <div class="fb-like"></div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="_assets/js/jquery-1.8.1.min.js"><\/script>')</script>
+	<script src="_assets/js/plugins.js"></script>
+	<script src="_assets/js/main.js"></script>
 
-	<script>(function(d, s, id) {
-	  var js, fjs = d.getElementsByTagName(s)[0];
-	  if (d.getElementById(id)) return;
-	  js = d.createElement(s); js.id = id;
-	  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=529054720443694";
-	  fjs.parentNode.insertBefore(js, fjs);
-	}(document, 'script', 'facebook-jssdk'));</script>
-	<div class="fb-comments" data-href="https://discover.getassembly.com/hotornot/facebook/index2.php?cID=<?php echo ($challenge_id);?>" data-width="1224" data-num-posts="10"></div>
-	<?php
-	} else { ?>
-		<center>
-			<a href="http://bit.ly/VukhMo" target="_blank"><img src="./images/header.jpg"></img></a><br /><br />
-			<a href="http://bit.ly/VukhMo" target="_blank"><img src="./images/badge.png"></img></a>
-		</center>
-	<?php } ?>
-  </body>  
+</body>
+
 </html>

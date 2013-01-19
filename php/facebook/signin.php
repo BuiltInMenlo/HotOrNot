@@ -56,6 +56,6 @@ require './_db_close.php';
 	*/ ?>
 	
 	<?php $url = (isset($_GET['cID'])) ? "./index2.php?submit=1&cID=". $_GET['cID'] : "./index.php?submit=1"; ?>
-	<script>location.href = "<?php echo ($url); ?>";</script>
+	<script>//location.href = "<?php echo ($url); ?>";</script>
   </body>  
 </html>
