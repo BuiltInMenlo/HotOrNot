@@ -35,19 +35,5 @@ if (isset($_POST['hidChallengeID']) && isset($_POST['hidFBID']) && isset($_POST[
 
 require './_db_close.php'; 
 
+echo ("vote_id:[". $vote_id ."]\n"); 
 ?>
- 
-<html>  
-  <head />
-  <body>
-	<?php
-		echo ("hidChallengeID:[". $_POST['hidChallengeID'] ."]<br />\n");
-		echo ("hidFBID:[". $_POST['hidFBID'] ."]<br />\n");
-		echo ("hidForCreator:[". $_POST['hidForCreator'] ."]<br />\n");
-		echo ("vote_id:[". $vote_id ."]<br />\n");
-	?>
-	
-	<?php $url = "./index2.php?submit=1&cID=". $challenge_id; ?>
-	<script>//location.href = "<?php echo ($url); ?>";</script>
-  </body>  
-</html>

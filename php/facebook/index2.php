@@ -21,6 +21,9 @@ if (isset($_GET['cID'])) {
 	$creator_img = $challenge_obj->creator_img . "_l.jpg";
 	$challenger_img = $challenge_obj->challenger_img . "_l.jpg";
 	
+	if ($challenger_img == "_l.jpg")
+		$challenger_img = "_assets/img/delete_me_photo_1.jpg";
+	
 	// subject
 	$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
 	$subject = mysql_fetch_object(mysql_query($query))->title;
@@ -32,6 +35,9 @@ if (isset($_GET['cID'])) {
 	// challenger
 	$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
 	$challenger_obj = mysql_fetch_object(mysql_query($query));
+	
+	if ($challenger_obj->username == "")
+		$challenger_obj->username = "someone";
 	
 	// votes
 	$votes_arr = array('creator' => 0, 'challenger' => 0);
@@ -116,7 +122,7 @@ require './_db_close.php';
 			});
 			
 			$("#frmSignIn").submit(function() {
-				alert ("SIGNIN");     			
+				//alert ("SIGNIN");     			
 				$.post("signin.php", $("#frmSignIn").serialize(), function(data) {
 					$("#results").html(data);
      			});
@@ -124,8 +130,16 @@ require './_db_close.php';
 			});
 			
 			$("#frmSMS").submit(function() {
-				alert ("SIGNIN");     			
+				//alert ("SMS");     			
 				$.post("sms.php", $("#frmSMS").serialize(), function(data) {
+					$("#results").html(data);
+     			});
+				return false;
+			});
+			
+			$("#frmReport").submit(function() {
+				//alert ("REPORT");     			
+				$.post("report.php", $("#frmReport").serialize(), function(data) {
 					$("#results").html(data);
      			});
 				return false;
@@ -208,7 +222,7 @@ require './_db_close.php';
 	<header>
 		<div id="header_content">
 			<h1><a href="#">picChallenge</a></h1>
-			<p class="app_store"><a href="#"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></a></p>
+			<p class="app_store"><a href="http://itunes.apple.com/us/app/id573754057?mt=8" target="_blank"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></a></p>
 		</div>
 	</header>
 	
@@ -240,7 +254,9 @@ require './_db_close.php';
 					<p><strong><?php echo ($creator_obj->username); ?></strong> has challenged <strong><?php echo ($challenger_obj->username); ?></strong> to a <em><?php echo ($subject); ?></em></p>
 					<h2><?php echo ($subject); ?></h2>
 				</div>
-				
+				<form>
+					<input type="hidden" />
+				</form>
 				<p class="report"><a href="#">Report Abuse</a></p>
 			</div>
 			<!-- End challenge_info -->
