@@ -10,12 +10,12 @@
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
-#import "UIImageView+WebCache.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "HONChallengePreviewViewController.h"
 #import "HONAppDelegate.h"
 
-@interface HONChallengePreviewViewController ()
+@interface HONChallengePreviewViewController () <UIAlertViewDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic) BOOL isCreator;
 @property (nonatomic, strong) UIView *bgView;
@@ -78,9 +78,13 @@
 	
 	__weak id weakSelf = self;
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 64.0, kLargeW * 0.5, kLargeW * 0.5)];
-	[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil options:SDWebImageLowPriority success:^(UIImage *image, BOOL cached) {
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix]]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+		_imageView.image = image;
 		[weakSelf _hideHUD];
-	} failure:nil];
+	
+	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+		[weakSelf _hideHUD];
+	}];
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
 	
@@ -174,75 +178,102 @@
 }
 
 - (void)_goPokeCreator {
-	[[Mixpanel sharedInstance] track:@"Challenge Wall - Poke Creator"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
-	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 6], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
-									[NSString stringWithFormat:@"%d", _challengeVO.creatorID], @"pokeeID",
-									nil];
-	
-	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil)
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-		
-		else {
-			NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
-	}];
-		
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-	}];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Poke Player"
+																		 message:[NSString stringWithFormat:@"Want to poke %@?", _challengeVO.creatorName]
+																		delegate:self
+															cancelButtonTitle:@"Yes"
+															otherButtonTitles:@"No", nil];
+	[alertView setTag:0];
+	[alertView show];
 }
 
 - (void)_goPokeChallenger {
-	[[Mixpanel sharedInstance] track:@"Challenge Wall - Poke Challenger"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
-	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 6], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
-									[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"pokeeID",
-									nil];
-	
-	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil)
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-		
-		else {
-			NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
-	}];
-	
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-	}];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Poke Player"
+																		 message:[NSString stringWithFormat:@"Want to poke %@?", _challengeVO.challengerName]
+																		delegate:self
+															cancelButtonTitle:@"Yes"
+															otherButtonTitles:@"No", nil];
+	[alertView setTag:1];
+	[alertView show];
 }
 
 - (void)_hideHUD {
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if (buttonIndex == 0) {
+			[[Mixpanel sharedInstance] track:@"Challenge Wall - Poke Creator"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+			
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+											[NSString stringWithFormat:@"%d", 6], @"action",
+											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
+											[NSString stringWithFormat:@"%d", _challengeVO.creatorID], @"pokeeID",
+											nil];
+			
+			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+				
+				if (error != nil)
+					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				
+				else {
+					NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				NSLog(@"%@", [error localizedDescription]);
+			}];
+			
+			[self dismissViewControllerAnimated:NO completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+			}];
+		}
+	
+	} else if (alertView.tag == 1) {
+		if (buttonIndex == 0) {
+			[[Mixpanel sharedInstance] track:@"Challenge Wall - Poke Challenger"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
+			
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+											[NSString stringWithFormat:@"%d", 6], @"action",
+											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
+											[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"pokeeID",
+											nil];
+			
+			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+				
+				if (error != nil)
+					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				
+				else {
+					NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				NSLog(@"%@", [error localizedDescription]);
+			}];
+			
+			[self dismissViewControllerAnimated:NO completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+			}];
+		}
 	}
 }
 

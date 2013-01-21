@@ -8,7 +8,7 @@ if (isset($_POST['txtPhone1']) && isset($_POST['txtPhone2']) && isset($_POST['tx
 	$post_arr = array(
 		'From' => "+12394313268",
 		'To' => $to_phone,
-		'Body' => "Testing Twilio API"
+		'Body' => "Sweet yo! you requested to download PicChallenge, get it here: http://bit.ly/REvO8Q"
 	);
 
 	$ch = curl_init();    
@@ -24,7 +24,9 @@ if (isset($_POST['txtPhone1']) && isset($_POST['txtPhone2']) && isset($_POST['tx
 	$err_msg = curl_error($ch);
 	$header = curl_getinfo($ch);
 	curl_close($ch);
-}
+
+} else
+	//echo ("PHONE NUMBER NOT VALID");
 
 
 require './_db_close.php';

@@ -133,81 +133,73 @@
 }
 
 + (void)sendAppRequestToUser:(NSString *)fbID {
-	if ([HONAppDelegate allowsFBPosting]) {
-		NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-												 @"I'm inviting you to a PicChallenge!",  @"message",
-												 fbID, @"to", 
-												 nil];
-		
-		Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
-		facebook.accessToken = FBSession.activeSession.accessToken;
-		facebook.expirationDate = FBSession.activeSession.expirationDate;
-		
-		[facebook enableFrictionlessRequests];
-		[facebook dialog:@"apprequests"
-						andParams:params
-					 andDelegate:nil];
-	}
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 @"I'm inviting you to a PicChallenge!",  @"message",
+											 fbID, @"to", 
+											 nil];
+	
+	Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
+	facebook.accessToken = FBSession.activeSession.accessToken;
+	facebook.expirationDate = FBSession.activeSession.expirationDate;
+	
+	[facebook enableFrictionlessRequests];
+	[facebook dialog:@"apprequests"
+			 andParams:params
+		  andDelegate:nil];
 }
 
 + (void)sendAppRequestToUser:(NSString *)fbID challenge:(HONChallengeVO *)vo {
-	if ([HONAppDelegate allowsFBPosting]) {
-		NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"It's your turn at a %@ PicChallenge!", vo.subjectName],  @"message",
-												 fbID, @"to",
-												 nil];
-		
-		Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
-		facebook.accessToken = FBSession.activeSession.accessToken;
-		facebook.expirationDate = FBSession.activeSession.expirationDate;
-		
-		[facebook enableFrictionlessRequests];
-		[facebook dialog:@"apprequests"
-				 andParams:params
-			  andDelegate:nil];
-	}
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 [NSString stringWithFormat:@"It's your turn at a %@ PicChallenge!", vo.subjectName],  @"message",
+											 fbID, @"to",
+											 nil];
+	
+	Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
+	facebook.accessToken = FBSession.activeSession.accessToken;
+	facebook.expirationDate = FBSession.activeSession.expirationDate;
+	
+	[facebook enableFrictionlessRequests];
+	[facebook dialog:@"apprequests"
+			 andParams:params
+		  andDelegate:nil];
 }
 
 + (void)sendAppRequestBroadcast {
-	if ([HONAppDelegate allowsFBPosting]) {
-		NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-												 @"I'm inviting you to a PicChallenge!",  @"message",
-												 nil];
-		
-		Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
-		facebook.accessToken = FBSession.activeSession.accessToken;
-		facebook.expirationDate = FBSession.activeSession.expirationDate;
-		
-		[facebook enableFrictionlessRequests];
-		[facebook dialog:@"apprequests"
-				 andParams:params
-			  andDelegate:nil];
-	}
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 @"I'm inviting you to a PicChallenge!",  @"message",
+											 nil];
+	
+	Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
+	facebook.accessToken = FBSession.activeSession.accessToken;
+	facebook.expirationDate = FBSession.activeSession.expirationDate;
+	
+	[facebook enableFrictionlessRequests];
+	[facebook dialog:@"apprequests"
+			 andParams:params
+		  andDelegate:nil];
 }
 
 + (void)sendAppRequestBroadcastWithIDs:(NSArray *)ids {
-	if ([HONAppDelegate allowsFBPosting]) {
-		NSString *list = @"";
-		
-		for (NSString *fbID in ids) {
-			list = [list stringByAppendingFormat:@"%@,", fbID];
-		}
-		
-		list = [list substringToIndex:[list length] - 1];
-		NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-												 @"I'm inviting you to a PicChallenge!",  @"message",
-												 list, @"to",
-												 nil];
-		
-		Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
-		facebook.accessToken = FBSession.activeSession.accessToken;
-		facebook.expirationDate = FBSession.activeSession.expirationDate;
-		
-		[facebook enableFrictionlessRequests];
-		[facebook dialog:@"apprequests"
-				 andParams:params
-			  andDelegate:nil];
+	NSString *list = @"";
+	
+	for (NSString *fbID in ids) {
+		list = [list stringByAppendingFormat:@"%@,", fbID];
 	}
+	
+	list = [list substringToIndex:[list length] - 1];
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 @"I'm inviting you to a PicChallenge!",  @"message",
+											 list, @"to",
+											 nil];
+	
+	Facebook *facebook = [[Facebook alloc] initWithAppId:FacebookAppID andDelegate:nil];
+	facebook.accessToken = FBSession.activeSession.accessToken;
+	facebook.expirationDate = FBSession.activeSession.expirationDate;
+	
+	[facebook enableFrictionlessRequests];
+	[facebook dialog:@"apprequests"
+			 andParams:params
+		  andDelegate:nil];
 }
 
 @end

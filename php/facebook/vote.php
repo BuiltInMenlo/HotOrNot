@@ -31,9 +31,30 @@ if (isset($_POST['hidChallengeID']) && isset($_POST['hidFBID']) && isset($_POST[
 	} else {
 		$vote_id = mysql_fetch_object(mysql_query($query))->id;
 	}
+	
+	// votes
+	$votes_arr = array('creator' => 0, 'challenger' => 0);
+	$query = 'SELECT `challenger_id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';
+	$votes_result = mysql_query($query);
+
+	while ($vote_row = mysql_fetch_array($votes_result, MYSQL_BOTH)) {										
+		if ($vote_row['challenger_id'] == $challenge_obj->creator_id)
+			$votes_arr['creator']++;
+		
+		else
+			$votes_arr['challenger']++;
+	}
+
+	if ($votes_arr['creator'] > $votes_arr['challenger'])
+		echo ("-1"); 
+
+	else if ($votes_arr['creator'] < $votes_arr['challenger'])
+		echo ("1"); 
+	
+	else 
+		echo ("0");
 }
 
 require './_db_close.php'; 
 
-echo ("vote_id:[". $vote_id ."]\n"); 
 ?>

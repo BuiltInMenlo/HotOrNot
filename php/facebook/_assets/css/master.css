@@ -105,34 +105,77 @@ header {
 				margin-top: 5px;
 			}
 			
-			/* --- | Report Abuse | --- */
+			/* --- | Send to Mobile | --- */
 			
-			.report {
+			.send_to_mobile_container {
 				position: absolute;
 				right: 0;
-				top: 7px;
+				top: 0;
+				width: 200px;
 			}
+
+				/* --- | Button | --- */
+			
+				.send_to_mobile {
+					position: absolute;
+					right: 0;
+					top: 7px;
+				}
 				
-				.report a {
-					font-weight: bold;
-					font-size: 15px;
-					line-height: 38px;
-					text-decoration: none;
-					color: #929292;
-					padding: 0 13px;
-					display: inline-block;					
-					background-color: #efefef;
-					background-image: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#d8d8d8));
-					background-image: -webkit-linear-gradient(top, #efefef, #d8d8d8);
-					background-image:    -moz-linear-gradient(top, #efefef, #d8d8d8);
-					background-image:      -o-linear-gradient(top, #efefef, #d8d8d8);
-					background-image:         linear-gradient(to bottom, #efefef, #d8d8d8);
-					border: 1px solid #cbcbcb;
+					.send_to_mobile a {
+						font-weight: bold;
+						font-size: 15px;
+						line-height: 38px;
+						text-decoration: none;
+						color: #929292;
+						padding: 0 13px;
+						display: inline-block;					
+						background-color: #efefef;
+						background-image: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#d8d8d8));
+						background-image: -webkit-linear-gradient(top, #efefef, #d8d8d8);
+						background-image:    -moz-linear-gradient(top, #efefef, #d8d8d8);
+						background-image:      -o-linear-gradient(top, #efefef, #d8d8d8);
+						background-image:         linear-gradient(to bottom, #efefef, #d8d8d8);
+						border: 1px solid #cbcbcb;
+						-webkit-border-radius: 9px;
+						border-radius: 9px;
+						-moz-box-shadow: inset 0 2px 0 0 #fff;
+						-webkit-box-shadow: inset 0 2px 0 0 #fff;
+					}
+				
+				/* --- | Dialog | --- */
+				
+				.send_dialog {
+					position: absolute;
+					right: -10px;
+					top: 45px;
+					z-index: 2;
+					padding: 20px;
+					background: #000;
 					-webkit-border-radius: 9px;
 					border-radius: 9px;
-					-moz-box-shadow: inset 0 2px 0 0 #fff;
-					-webkit-box-shadow: inset 0 2px 0 0 #fff;
 				}
+				
+					.send_dialog input[type="submit"] {
+						font-weight: bold;
+						font-size: 15px;
+						line-height: 38px;
+						text-decoration: none;
+						color: #929292;
+						padding: 0 13px;
+						display: inline-block;					
+						background-color: #efefef;
+						background-image: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#d8d8d8));
+						background-image: -webkit-linear-gradient(top, #efefef, #d8d8d8);
+						background-image:    -moz-linear-gradient(top, #efefef, #d8d8d8);
+						background-image:      -o-linear-gradient(top, #efefef, #d8d8d8);
+						background-image:         linear-gradient(to bottom, #efefef, #d8d8d8);
+						border: 1px solid #cbcbcb;
+						-webkit-border-radius: 9px;
+						border-radius: 9px;
+						-moz-box-shadow: inset 0 2px 0 0 #fff;
+						-webkit-box-shadow: inset 0 2px 0 0 #fff;
+					}
 		
 		/* --- | Photo Container | --- */
 		
@@ -218,7 +261,7 @@ header {
 				body.voted #photo_container .lightning { display: none; }
 				
 				body.voted #photo_container .vote_count,
-				body.voted #photo_container .winning { display: block; }
+				body.voted #photo_container .winner .winning { display: block; }
 				
 				body.voted .photo.loser { opacity: 0.4; }
 				
