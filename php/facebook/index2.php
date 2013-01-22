@@ -12,9 +12,19 @@ $isIpod = stripos($_SERVER['HTTP_USER_AGENT'], "iPod");
 $isIphone = stripos($_SERVER['HTTP_USER_AGENT'], "iPhone");
 $isOSX = stripos($_SERVER['HTTP_USER_AGENT'], "Macintosh");
 
+$id_arr = array();
+$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 ORDER BY `added`;';
+$result = mysql_query($query);
+
+while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+	array_push($id_arr, $row['id']);
+}
+
+$_SESSION['challengeIDs'] = $id_arr;
+$id_arr = $_SESSION['challengeIDs'];
 
 $query = 'SELECT `id` FROM `tblChallenges` ORDER BY `added` DESC LIMIT 1;';
-$lastChallenge_id = mysql_fetch_object(mysql_query($query))->id;
+$lastChallenge_id = end(array_values($id_arr));
 	
 if (!isset($_GET['cID'])) {
 	$challenge_id = $lastChallenge_id;
@@ -22,6 +32,17 @@ if (!isset($_GET['cID'])) {
 } else {
 	$challenge_id = $_GET['cID'];
 }
+
+$ind = 0;
+foreach ($id_arr as $key => $val) {
+	if ($val >= $challenge_id) {
+		$ind = $key;
+		break;
+	}
+}
+
+if ($isIpod || $isIphone)
+	header('Location: https://discover.getassembly.com/hotornot/facebook/mobile/index.php?cID='. $challenge_id);
 
 // challenge info
 $query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
@@ -33,7 +54,7 @@ if ($challenger_img == "_l.jpg")
 	$challenger_img = "_assets/img/delete_me_photo_1.jpg";
 
 $isInactive = false;
-if ($challenge_obj->status_id == "1" || $challenge_obj->status_id == "2" || $challenge_obj->status_id == "3" || $challenge_obj->status_id == "8")
+if ($challenge_obj->status_id == "1" || $challenge_obj->status_id == "2" || $challenge_obj->status_id == "3" || $challenge_obj->status_id == "6"|| $challenge_obj->status_id == "8")
 	$isInactive = true;
 
 // subject
@@ -321,7 +342,7 @@ require './_db_close.php';
 					<p class="winning">Winning</p>
 				</div>
 				
-				<div class="photo photo_b"><?php if ($isInactive) { ?><div style="position:absolute; left:36px;">
+				<div class="photo photo_b"><?php if ($isInactive) { ?>
 					Waiting to be challenged
 				<?php } else { ?>
 					<img src="<?php echo($challenger_img); ?>" width="356" height="356" alt="" />
@@ -336,7 +357,7 @@ require './_db_close.php';
 				<?php } ?>
 				</div>
 			
-				<div class="lightning"></div>
+				<?php if (!$isInactive) { ?><div class="lightning"></div><?php } ?>
 			</div>
 			<!-- End photo_container -->
 			
@@ -346,8 +367,8 @@ require './_db_close.php';
 			
 			<!-- Begin photo_nav -->
 			<ul id="photo_nav">
-				<li class="prev"><a href="./index.php?cID=<?php echo ($challenge_id-1); ?>">Prev</a></li>
-				<?php if ($challenge_id != $lastChallenge_id) {?><li class="next"><a href="./index.php?cID=<?php echo ($challenge_id+1); ?>">Next</a></li><?php }?>
+				<li class="prev"><a href="./index.php?cID=<?php echo ($id_arr[$ind-1]); ?>">Prev</a></li>
+				<?php if ($challenge_id != $lastChallenge_id) {?><li class="next"><a href="./index.php?cID=<?php echo ($id_arr[$ind+1]); ?>">Next</a></li><?php }?>
 			</ul>
 			<!-- End photo_nav -->
 		</div>

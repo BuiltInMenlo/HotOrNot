@@ -112,6 +112,10 @@ header {
 				color: #2195d6;
 			}
 			
+			.challenge_info a {
+				color: #666;
+			}
+			
 			.challenge_info h2 {
 				font-size: 17px;
 				font-weight: bold;
@@ -126,6 +130,22 @@ header {
 			position: relative;
 			margin: 0 -10px;
 		}
+			
+			#photo_container table {
+				width: 100%;
+			}
+				
+				#photo_container table td {
+					text-align: center;
+					vertical-align: middle;
+					width: 50%;
+				}
+			
+			/* --- | Waiting | --- */
+			
+			#photo_container .waiting {
+				
+			}
 			
 			/* --- | Photo | --- */
 			

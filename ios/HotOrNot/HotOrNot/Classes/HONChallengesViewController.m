@@ -565,10 +565,10 @@
 		_idxPath = indexPath;
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete Challenge"
-																		message:@"Do you want to report abuse?"
+																		message:@"Do you want to remove this challenge?"
 																	  delegate:self
-														  cancelButtonTitle:@"Yes"
-														  otherButtonTitles:@"No", nil];
+														  cancelButtonTitle:@"Report Abuse"
+														  otherButtonTitles:@"Yes", @"No", nil];
 		[alertView setTag:0];
 		[alertView show];
 	}
@@ -577,51 +577,54 @@
 
 #pragma mark - AlerView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	HONChallengeVO *vo;
+	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:_idxPath.row];
 	
 	NSLog(@"BUTTON INDEX:[%d]", buttonIndex);
 	
 	// delete
 	if (alertView.tag == 0) {
-		[[Mixpanel sharedInstance] track:@"Challenge Wall - Delete"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-		
-		vo = (HONChallengeVO *)[_challenges objectAtIndex:_idxPath.row];
-		
-		[_challenges removeObjectAtIndex:_idxPath.row];
-		[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
-
-		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-										[NSString stringWithFormat:@"%d", 10], @"action",
-										[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
-										nil];
-		
-		[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			NSError *error = nil;
-			if (error != nil) {
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-				
-			} else {
-			}
-			
-		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"%@", [error localizedDescription]);
-		}];
-				
 		switch(buttonIndex) {
-			case 0:
+			case 0: {
 				[[Mixpanel sharedInstance] track:@"Challenge Wall - Flag"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+															 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+				
+				[_challenges removeObjectAtIndex:_idxPath.row];
+				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 11], @"action",
 												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
+												nil];
+				
+				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"%@", [error localizedDescription]);
+				}];
+				break;}
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Challenge Wall - Delete"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+				
+				[_challenges removeObjectAtIndex:_idxPath.row];
+				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
+				
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+												[NSString stringWithFormat:@"%d", 10], @"action",
 												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
 												nil];
 				

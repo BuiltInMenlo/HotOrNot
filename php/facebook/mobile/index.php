@@ -12,14 +12,33 @@ $isIpod = stripos($_SERVER['HTTP_USER_AGENT'], "iPod");
 $isIphone = stripos($_SERVER['HTTP_USER_AGENT'], "iPhone");
 $isOSX = stripos($_SERVER['HTTP_USER_AGENT'], "Macintosh");
 
+$id_arr = array();
+$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 ORDER BY `added`;';
+$result = mysql_query($query);
+
+while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+	array_push($id_arr, $row['id']);
+}
+
+$_SESSION['challengeIDs'] = $id_arr;
+$id_arr = $_SESSION['challengeIDs'];
+
 $query = 'SELECT `id` FROM `tblChallenges` ORDER BY `added` DESC LIMIT 1;';
-$lastChallenge_id = mysql_fetch_object(mysql_query($query))->id;
+$lastChallenge_id = end(array_values($id_arr));
 	
 if (!isset($_GET['cID'])) {
 	$challenge_id = $lastChallenge_id;
 	
 } else {
 	$challenge_id = $_GET['cID'];
+}
+
+$ind = 0;
+foreach ($id_arr as $key => $val) {
+	if ($val >= $challenge_id) {
+		$ind = $key;
+		break;
+	}
 }
 	
 // challenge info
@@ -42,6 +61,10 @@ $subject = mysql_fetch_object(mysql_query($query))->title;
 // creator
 $query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';
 $creator_obj = mysql_fetch_object(mysql_query($query));
+
+$creatorImg_url = "https://graph.facebook.com/". $creator_obj->fb_id ."/picture?type=square";
+if ($creator_obj->fb_id == "")
+	$creatorImg_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
 
 // challenger
 $query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
@@ -104,9 +127,58 @@ require './_db_close.php';
 	</script>
 	
 	<script type="text/javascript" src="_assets/js/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#frmVoteCreator").submit(function() { 			
+				$.post("vote.php", $("#frmVoteCreator").serialize(), function(data) {
+					//$("#results").html(data);
+					$('body').addClass('voted');
+					
+					// Creator > Challenger
+					if (data == "-1") {
+						$('.photo_a').addClass('winner');
+						$('.photo_b').addClass('loser');
+					}
+					// Creator < Challenger
+					else if (data == "1") {
+						$('.photo_a').addClass('loser');
+						$('.photo_b').addClass('winner');
+					}
+					// Creator == Challenger
+					else {
+						
+					}
+     			});
+				return false;
+			});
+			
+			$("#frmVoteChallenger").submit(function() {
+				$.post("vote.php", $("#frmVoteChallenger").serialize(), function(data) {
+					//$("#results").html(data);
+					$('body').addClass('voted');
+					
+					// Creator > Challenger
+					if (data == "-1") {
+						$('.photo_a').addClass('winner');
+						$('.photo_b').addClass('loser');
+					}
+					// Creator < Challenger
+					else if (data == "1") {
+						$('.photo_a').addClass('loser');
+						$('.photo_b').addClass('winner');
+					}
+					// Creator == Challenger
+					else {
+						
+					}
+     			});
+				return false;
+			});
+		});
+	</script>
 </head>
 
-<body class="voted">
+<body>
 	<div id="fb-root"></div>
 	<script>(function(d, s, id) {
 	  var js, fjs = d.getElementsByTagName(s)[0];
@@ -119,11 +191,11 @@ require './_db_close.php';
 	<header>
 		<div id="header_content">
 			<h1><a href="#">picChallenge</a></h1>
-			<p class="app_store"><a href="http://itunes.apple.com/us/app/id573754057?mt=8"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></a></p>
+			<p class="app_store"><a href="http://bit.ly/REvO8Q"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></a></p>
 		</div>
 	</header>
 	
-	<p class="download_app"><a href="http://itunes.apple.com/us/app/id573754057?mt=8">Download the Application Now!</a></p>
+	<p class="download_app"><a href="http://bit.ly/REvO8Q">Download the Application Now!</a></p>
 	
 	<!-- Begin container -->
 	<div id="container">
@@ -132,10 +204,11 @@ require './_db_close.php';
 		<div class="content clearfix">
 			
 			<!-- Begin challenge_info -->
-			<div class="challenge_info clearfix">
-				<img src="https://graph.facebook.com/<?php echo ($creator_obj->fb_id); ?>/picture?type=square" alt="" />
+			<div class="challenge_info clearfix"><?php if ($creator_obj->fb_id != "" ) {?>
+				<a href="https://www.facebook.com/profile.php?id=<?php echo ($creator_obj->fb_id); ?>" target="_blank"><img src="<?php echo ($creatorImg_url); ?>" alt="" border="0" /></a>
+				<?php }?>
 				<div class="description">
-					<p><strong><?php echo ($creator_obj->username); ?></strong> has challenged <strong><?php echo ($challenger_obj->username); ?></strong> to a <em><?php echo ($subject); ?></em></p>
+					<p><strong><?php if ($creator_obj->fb_id != "" ) {?><a href="https://www.facebook.com/profile.php?id=<?php echo ($creator_obj->fb_id); ?>" target="_blank"><?php }?><?php echo ($creator_obj->username); ?></a></strong> has challenged <strong><?php if ($challenger_obj->fb_id != "" ) {?><a href="https://www.facebook.com/profile.php?id=<?php echo ($challenger_obj->fb_id); ?>" target="_blank"><?php }?><?php echo ($challenger_obj->username); ?></a></strong> to a <em><?php echo ($subject); ?></em></p>
 					<h2><?php echo ($subject); ?></h2>
 				</div>
 			</div>
@@ -161,8 +234,8 @@ require './_db_close.php';
 			
 			<!-- Begin photo_nav -->
 			<ul id="photo_nav">
-				<li class="prev"><a href="./index.php?cID=<?php echo ($challenge_id-1); ?>">Prev</a></li>
-				<?php if ($challenge_id != $lastChallenge_id) {?><li class="next"><a href="./index.php?cID=<?php echo ($challenge_id+1); ?>">Next</a></li><?php } ?>
+				<?php if ($ind < count($id_arr) - 1) {?><li class="prev"><a href="./index.php?cID=<?php echo ($id_arr[$ind+1]); ?>">Prev</a></li><?php } ?>
+				<?php if ($ind > 0) {?><li class="next"><a href="./index.php?cID=<?php echo ($id_arr[$ind-1]); ?>">Next</a></li><?php } ?>
 			</ul>
 			<!-- End photo_nav -->
 		</div>
