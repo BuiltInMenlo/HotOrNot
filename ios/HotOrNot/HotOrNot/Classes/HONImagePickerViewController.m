@@ -378,7 +378,7 @@
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"%@", [error localizedDescription]);
+			NSLog(@"ImagePickerViewController AFNetworking %@", [error localizedDescription]);
 		}];
 	}
 }
@@ -712,7 +712,7 @@
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"%@", [error localizedDescription]);
+				NSLog(@"ImagePickerViewController AFNetworking %@", [error localizedDescription]);
 			}];
 			
 		} @catch (AmazonClientException *exception) {

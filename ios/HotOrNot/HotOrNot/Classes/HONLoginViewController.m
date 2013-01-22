@@ -138,7 +138,7 @@
 						}
 						
 					} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-						NSLog(@"%@", [error localizedDescription]);
+						NSLog(@"LoginViewController AFNetworking %@", [error localizedDescription]);
 					}];
 				}
 			}];

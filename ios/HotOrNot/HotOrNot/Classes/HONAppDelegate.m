@@ -17,6 +17,7 @@
 #import "HONAppDelegate.h"
 #import "Parse/Parse.h"
 #import "Mixpanel.h"
+#import "MBProgressHUD.h"
 #import "Reachability.h"
 #import "TapForTap.h"
 #import "Chartboost.h"
@@ -43,6 +44,7 @@ NSString *const FacebookAppID = @"529054720443694";
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic, strong) UIImageView *bgImgView;
+@property(nonatomic, strong) MBProgressHUD *progressHUD;
 - (void)_registerUser;
 @end
 
@@ -745,7 +747,15 @@ NSString *const FacebookAppID = @"529054720443694";
 		}
 				
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"AppDelegate AFNetworking %@", [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when submit fails");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		
 	}];
 }
 

@@ -462,7 +462,7 @@
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"%@", [error localizedDescription]);
+			NSLog(@"ChallengerPickerViewController AFNetworking %@", [error localizedDescription]);
 			
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -616,7 +616,7 @@
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"%@", [error localizedDescription]);
+			NSLog(@"ChallengerPickerViewController AFNetworking %@", [error localizedDescription]);
 			
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -764,7 +764,7 @@
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"%@", [error localizedDescription]);
+			NSLog(@"ChallengerPickerViewController AFNetworking %@", [error localizedDescription]);
 			
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;

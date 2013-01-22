@@ -374,7 +374,7 @@
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"%@", [error localizedDescription]);
+				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
 			}];
 		}
 	}
@@ -445,7 +445,7 @@
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"%@", [error localizedDescription]);
+				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
 			}];
 		}
 	}
@@ -511,7 +511,7 @@
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"%@", [error localizedDescription]);
+					NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
 				}];
 				
 			break;}

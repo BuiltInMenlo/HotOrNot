@@ -194,7 +194,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"UsernameViewController AFNetworking %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;

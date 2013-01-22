@@ -98,14 +98,14 @@
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 	inviteButton.hidden = (FBSession.activeSession.state != 513);
-	//[_headerView addSubview:inviteButton];
+	[_headerView addSubview:inviteButton];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_refreshButton];
+	//[_headerView addSubview:_refreshButton];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
@@ -125,6 +125,8 @@
 	
 	[self _retrieveChallenges];
 	[self _retrieveUser];
+	
+	[self _populateFriends];
 	
 //	[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 }
@@ -230,12 +232,16 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when submit fails");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
 		}
 	}];
 }
@@ -277,7 +283,7 @@
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"%@", [error localizedDescription]);
+			NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 			
 			_refreshButton.hidden = NO;
 			if (_progressHUD != nil) {
@@ -316,15 +322,17 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
-	
-//	_friends = [NSMutableArray array];
-//	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-//		//NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
-//		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"])
-//			[_friends addObject: [friend objectForKey:@"id"]];
-//		
-//		NSLog(@"RETRIEVED (%d) FRIENDS", [_friends count]);
-//	}];
+}
+
+- (void)_populateFriends {
+	_friends = [NSMutableArray array];
+	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+		//NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
+		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"])
+			[_friends addObject: [friend objectForKey:@"id"]];
+		
+		NSLog(@"RETRIEVED (%d) FRIENDS", [_friends count]);
+	}];
 }
 
 - (void)_goInvite {
@@ -435,7 +443,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		if (_progressHUD != nil) {
@@ -609,7 +617,7 @@
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"%@", [error localizedDescription]);
+					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 				}];
 				break;}
 				
@@ -637,7 +645,7 @@
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"%@", [error localizedDescription]);
+					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 				}];
 				break;
 		}

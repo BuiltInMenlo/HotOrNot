@@ -442,7 +442,7 @@
 		//NSLog(@"Response: %@", text);
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"CameraOverlayView AFNetworking %@", [error localizedDescription]);
 	}];
 	
 	

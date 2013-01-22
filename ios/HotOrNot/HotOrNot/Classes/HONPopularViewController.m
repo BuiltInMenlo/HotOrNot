@@ -185,7 +185,7 @@
 		[_tableView reloadData];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"PopularViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		if (_progressHUD != nil) {
@@ -249,7 +249,7 @@
 		[_tableView reloadData];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"PopularViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		if (_progressHUD != nil) {

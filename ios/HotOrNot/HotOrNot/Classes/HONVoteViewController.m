@@ -273,7 +273,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		if (_progressHUD != nil) {
@@ -323,7 +323,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		if (_progressHUD != nil) {

@@ -79,7 +79,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		NSLog(@"VotersViewController AFNetworking %@", [error localizedDescription]);
 	}];
 }
 

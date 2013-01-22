@@ -241,7 +241,7 @@ require './_db_close.php';
 		</div>
 		<!-- End content -->
 		
-		<fb:comments href="https://discover.getassembly.com/hotornot/facebook/index.php?cID=<?php echo ($challenge_id);?>" width="320" num_posts="2"></fb:comments>
+		<fb:comments href="https://apps.facebook.com/pchallenge/?cID=<?php echo ($challenge_id);?>" width="320" num_posts="2"></fb:comments>
 		
 	</div>
 	<!-- End container -->

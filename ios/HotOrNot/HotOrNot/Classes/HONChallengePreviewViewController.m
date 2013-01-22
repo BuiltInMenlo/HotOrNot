@@ -152,7 +152,7 @@
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"%@", [error localizedDescription]);
+			NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
 		}];
 	}
 }
@@ -233,7 +233,7 @@
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"%@", [error localizedDescription]);
+				NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
 			}];
 			
 			[self dismissViewControllerAnimated:NO completion:^(void) {
@@ -267,7 +267,7 @@
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"%@", [error localizedDescription]);
+				NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
 			}];
 			
 			[self dismissViewControllerAnimated:NO completion:^(void) {
