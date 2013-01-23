@@ -37,7 +37,7 @@
 	if ((self = [super init])) {
 		_friends = [NSMutableArray array];
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+		//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	}
 	
 	return (self);
@@ -205,6 +205,7 @@
 
 - (void)facebookViewControllerDoneWasPressed:(id)sender
 {
+	NSLog(@"Friend selection done.");
 	if (self.friendPickerController.selection.count == 0) {
 		[[[UIAlertView alloc] initWithTitle:@"No Friend Selected"
 											 message:@"You need to pick a friend."

@@ -41,8 +41,8 @@ foreach ($id_arr as $key => $val) {
 	}
 }
 
-//if ($isIpod || $isIphone)
-//	header('Location: https://discover.getassembly.com/hotornot/facebook/mobile/index.php?cID='. $challenge_id);
+if ($isIpod || $isIphone)
+	header('Location: http://bit.ly/REvO8Q');
 
 // challenge info
 $query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
@@ -135,15 +135,19 @@ require './_db_close.php';
 			$("#frmVoteCreator").submit(function() { 			
 				$.post("vote.php", $("#frmVoteCreator").serialize(), function(data) {
 					//$("#results").html(data);
+					var score_arr = data.split("|");
+															
+					$("#creator_score").html(score_arr[0]);
+					$("#challenger_score").html(score_arr[1]);
 					$('body').addClass('voted');
 					
 					// Creator > Challenger
-					if (data == "-1") {
+					if (score_arr[0] > score_arr[1]) {
 						$('.photo_a').addClass('winner');
 						$('.photo_b').addClass('loser');
 					}
 					// Creator < Challenger
-					else if (data == "1") {
+					else if (score_arr[0] < score_arr[1]) {
 						$('.photo_a').addClass('loser');
 						$('.photo_b').addClass('winner');
 					}
@@ -158,15 +162,19 @@ require './_db_close.php';
 			$("#frmVoteChallenger").submit(function() {
 				$.post("vote.php", $("#frmVoteChallenger").serialize(), function(data) {
 					//$("#results").html(data);
+					var score_arr = data.split("|");
+					
+					$("#creator_score").html(score_arr[0]);
+					$("#challenger_score").html(score_arr[1]);
 					$('body').addClass('voted');
 					
 					// Creator > Challenger
-					if (data == "-1") {
+					if (score_arr[0] > score_arr[1]) {
 						$('.photo_a').addClass('winner');
 						$('.photo_b').addClass('loser');
 					}
 					// Creator < Challenger
-					else if (data == "1") {
+					else if (score_arr[0] < score_arr[1]) {
 						$('.photo_a').addClass('loser');
 						$('.photo_b').addClass('winner');
 					}
@@ -341,7 +349,7 @@ require './_db_close.php';
 						<input id="hidForCreator" name="hidForCreator" type="hidden" value="Y" />
 						<?php if (!$isInactive) { ?><input type="submit" value="Vote on this pic" class="vote" /><?php } ?>
 					</form>
-					<p class="vote_count"><?php echo ($votes_arr['creator']); ?></p>
+					<p id="creator_score" class="vote_count"><?php echo ($votes_arr['creator']); ?></p>
 					<p class="winning">Winning</p>
 				</div>
 				
@@ -355,7 +363,7 @@ require './_db_close.php';
 						<input id="hidForCreator" name="hidForCreator" type="hidden" value="N" />
 						<input type="submit" value="Vote on this pic" class="vote" />
 					</form>
-					<p class="vote_count"><?php echo ($votes_arr['challenger']); ?></p>
+					<p id="challenger_score" class="vote_count"><?php echo ($votes_arr['challenger']); ?></p>
 					<p class="winning">Winning</p>
 				<?php } ?>
 				</div>

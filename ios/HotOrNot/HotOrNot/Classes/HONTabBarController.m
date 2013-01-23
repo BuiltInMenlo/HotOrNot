@@ -234,12 +234,12 @@
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"shown_settings"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-				UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook Posting"
-																				message:@" Facebook Posts are OFF by default! Turn them on for your friends to see your game challenges."
-																			  delegate:self
-																  cancelButtonTitle:@"OK"
-																  otherButtonTitles:nil];
-				[alert show];
+//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Facebook Posting"
+//																				message:@" Facebook Posts are OFF by default! Turn them on for your friends to see your game challenges."
+//																			  delegate:nil
+//																  cancelButtonTitle:@"OK"
+//																  otherButtonTitles:nil];
+//				[alertView show];
 			}
 			
 			[btn1 setSelected:false];

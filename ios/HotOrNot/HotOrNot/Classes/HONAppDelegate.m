@@ -395,8 +395,13 @@ NSString *const FacebookAppID = @"529054720443694";
 		[navigationController setNavigationBarHidden:YES];
 		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 	}
+	
+	[self performSelector:@selector(_hideFBSwitchDelayed) withObject:nil afterDelay:0.33];
 }
 
+- (void)_hideFBSwitchDelayed {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+}
 
 - (void)_webCTA:(NSNotification *)notification {
 	NSString *url = [[notification object] objectForKey:@"url"];
@@ -420,7 +425,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
 	
-	//[self _testParseCloudCode];
+	[self _testParseCloudCode];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
@@ -754,8 +759,7 @@ NSString *const FacebookAppID = @"529054720443694";
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when submit fails");
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		
+		[_progressHUD hide:YES afterDelay:1.5];		
 	}];
 }
 
@@ -805,19 +809,24 @@ NSString *const FacebookAppID = @"529054720443694";
 	*/
 	// ////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
 	
-	
 	NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:
-										 @"PicChallenge", @"app_name",
+										 //@"PicChallenge", @"app_name",
+										 @"2", @"user_id",
 										 nil];
 	
 	AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://api.parse.com/1/functions/"]];
-	[client setDefaultHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
-	[client setDefaultHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
+//	[client setDefaultHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
+//	[client setDefaultHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
+	[client setDefaultHeader:@"X-Parse-Application-Id" value:@"avNXwB6BSTKdSeD5lDRVM71Bglq3mY78ORBQvV2i"];
+	[client setDefaultHeader:@"X-Parse-REST-API-Key" value:@"yNUthh5WRYuAoKMv2Gyv6vwmg7D0YnvJ83RZWmXr"];
 	[client setDefaultHeader:@"Content-Type" value:@"application/json"];
 	[client registerHTTPOperationClass:[AFJSONRequestOperation class]];
 	
-	[client postPath:@"duration"
-		  parameters:parameters
+	NSLog(@"%@", parameters);
+	
+	//[client postPath:@"duration"
+	[client postPath:@"getUser"
+			parameters:[NSDictionary dictionary]
 			  success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				  NSError *error = nil;
 				  NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];

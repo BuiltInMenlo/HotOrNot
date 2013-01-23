@@ -41,8 +41,8 @@ foreach ($id_arr as $key => $val) {
 	}
 }
 
-if ($isIpod || $isIphone)
-	header('Location: https://discover.getassembly.com/hotornot/facebook/mobile/index.php?cID='. $challenge_id);
+//if ($isIpod || $isIphone)
+//	header('Location: https://discover.getassembly.com/hotornot/facebook/mobile/index.php?cID='. $challenge_id);
 
 // challenge info
 $query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
@@ -64,6 +64,10 @@ $subject = mysql_fetch_object(mysql_query($query))->title;
 // creator
 $query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';
 $creator_obj = mysql_fetch_object(mysql_query($query));
+
+$creatorImg_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+if ($creator_obj->fb_id != "")
+	$creatorImg_url = "https://graph.facebook.com/". $creator_obj->fb_id ."/picture?type=square";
 
 // challenger
 $query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
@@ -129,17 +133,21 @@ require './_db_close.php';
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#frmVoteCreator").submit(function() { 			
-				$.post("vote.php", $("#frmVoteCreator").serialize(), function(data) {
+				$.post("vote2.php", $("#frmVoteCreator").serialize(), function(data) {
 					//$("#results").html(data);
+					var score_arr = data.split("|");
+															
+					$("#creator_score").html(score_arr[0]);
+					$("#challenger_score").html(score_arr[1]);
 					$('body').addClass('voted');
 					
 					// Creator > Challenger
-					if (data == "-1") {
+					if (score_arr[0] > score_arr[1]) {
 						$('.photo_a').addClass('winner');
 						$('.photo_b').addClass('loser');
 					}
 					// Creator < Challenger
-					else if (data == "1") {
+					else if (score_arr[0] < score_arr[1]) {
 						$('.photo_a').addClass('loser');
 						$('.photo_b').addClass('winner');
 					}
@@ -152,17 +160,21 @@ require './_db_close.php';
 			});
 			
 			$("#frmVoteChallenger").submit(function() {
-				$.post("vote.php", $("#frmVoteChallenger").serialize(), function(data) {
+				$.post("vote2.php", $("#frmVoteChallenger").serialize(), function(data) {
 					//$("#results").html(data);
+					var score_arr = data.split("|");
+					
+					$("#creator_score").html(score_arr[0]);
+					$("#challenger_score").html(score_arr[1]);
 					$('body').addClass('voted');
 					
 					// Creator > Challenger
-					if (data == "-1") {
+					if (score_arr[0] > score_arr[1]) {
 						$('.photo_a').addClass('winner');
 						$('.photo_b').addClass('loser');
 					}
 					// Creator < Challenger
-					else if (data == "1") {
+					else if (score_arr[0] < score_arr[1]) {
 						$('.photo_a').addClass('loser');
 						$('.photo_b').addClass('winner');
 					}
@@ -280,7 +292,7 @@ require './_db_close.php';
 	<header>
 		<div id="header_content">
 			<h1><a href="#">picChallenge</a></h1>
-			<p class="app_store"><a href="http://itunes.apple.com/us/app/id573754057?mt=8" target="_blank"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></a></p>
+			<p class="app_store"><a href="http://bit.ly/REvO8Q" target="_blank"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></a></p>
 		</div>
 	</header>
 	
@@ -299,10 +311,11 @@ require './_db_close.php';
 		<div class="content">
 			
 			<!-- Begin challenge_info -->
-			<div class="challenge_info clearfix">
-				<img src="https://graph.facebook.com/<?php echo ($creator_obj->fb_id); ?>/picture?type=square" width="50" height="50" alt="" />
+			<div class="challenge_info clearfix"><?php if ($creator_obj->fb_id != "" ) {?>
+				<a href="https://www.facebook.com/profile.php?id=<?php echo ($creator_obj->fb_id); ?>" target="_blank"><img src="<?php echo ($creatorImg_url); ?>" width="50" height="50" alt="" border="0" /></a>
+				<?php }?>
 				<div class="description">
-					<p><strong><?php echo ($creator_obj->username); ?></strong> has challenged <strong><?php echo ($challenger_obj->username); ?></strong> to a <em><?php echo ($subject); ?></em></p>
+					<p><strong><?php if ($creator_obj->fb_id != "" ) {?><a href="https://www.facebook.com/profile.php?id=<?php echo ($creator_obj->fb_id); ?>" target="_blank"><?php }?><?php echo ($creator_obj->username); ?></a></strong> has challenged <strong><?php if ($challenger_obj->fb_id != "" ) {?><a href="https://www.facebook.com/profile.php?id=<?php echo ($challenger_obj->fb_id); ?>" target="_blank"><?php }?><?php echo ($challenger_obj->username); ?></a></strong> to a <em><?php echo ($subject); ?></em></p>
 					<h2><?php echo ($subject); ?></h2>
 				</div>				
 				<div class="send_to_mobile_container">
@@ -316,8 +329,6 @@ require './_db_close.php';
 								<input id="txtPhone2" name="txtPhone2" type="text" maxlength="3" />
 								<input id="txtPhone3" name="txtPhone3" type="text" maxlength="4" />
 							</fieldset>
-						
-							<p class="terms"><a href="#">Terms &amp; Conditions</a></p>
 							<input type="submit" value="Submit" />
 						</form>
 						
@@ -338,7 +349,7 @@ require './_db_close.php';
 						<input id="hidForCreator" name="hidForCreator" type="hidden" value="Y" />
 						<?php if (!$isInactive) { ?><input type="submit" value="Vote on this pic" class="vote" /><?php } ?>
 					</form>
-					<p class="vote_count"><?php echo ($votes_arr['creator']); ?></p>
+					<p id="creator_score" class="vote_count"><?php echo ($votes_arr['creator']); ?></p>
 					<p class="winning">Winning</p>
 				</div>
 				
@@ -352,7 +363,7 @@ require './_db_close.php';
 						<input id="hidForCreator" name="hidForCreator" type="hidden" value="N" />
 						<input type="submit" value="Vote on this pic" class="vote" />
 					</form>
-					<p class="vote_count"><?php echo ($votes_arr['challenger']); ?></p>
+					<p id="challenger_score" class="vote_count"><?php echo ($votes_arr['challenger']); ?></p>
 					<p class="winning">Winning</p>
 				<?php } ?>
 				</div>
@@ -367,14 +378,14 @@ require './_db_close.php';
 			
 			<!-- Begin photo_nav -->
 			<ul id="photo_nav">
-				<li class="prev"><a href="./index.php?cID=<?php echo ($id_arr[$ind-1]); ?>">Prev</a></li>
-				<?php if ($challenge_id != $lastChallenge_id) {?><li class="next"><a href="./index.php?cID=<?php echo ($id_arr[$ind+1]); ?>">Next</a></li><?php }?>
+				<?php if ($ind < count($id_arr) - 1) {?><li class="prev"><a href="./index.php?cID=<?php echo ($id_arr[$ind+1]); ?>">Prev</a></li><?php }?>
+				<?php if ($ind > 0) {?><li class="next"><a href="./index.php?cID=<?php echo ($id_arr[$ind-1]); ?>">Next</a></li><?php }?>
 			</ul>
 			<!-- End photo_nav -->
 		</div>
 		<!-- End content -->
 		
-		<fb:comments href="https://discover.getassembly.com/hotornot/facebook/index.php?cID=<?php echo ($challenge_id);?>" width="753" num_posts="2"></fb:comments>
+		<fb:comments href="https://apps.facebook.com/pchallenge/?cID=<?php echo ($challenge_id);?>" width="753" num_posts="2"></fb:comments>
 		
 	</div>
 	<!-- End container -->

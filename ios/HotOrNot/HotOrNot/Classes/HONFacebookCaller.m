@@ -81,55 +81,51 @@
 }
 
 + (void)postToFriendTimeline:(NSString *)fbID challenge:(HONChallengeVO *)vo {
-	if ([HONAppDelegate allowsFBPosting]) {
-		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-													  [NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID], @"link",
-													  [NSString stringWithFormat:@"%@_l.jpg", vo.creatorImgPrefix], @"picture",
-													  @"PicChallengeMe", @"name",
-													  vo.subjectName, @"caption",
-													  [NSString stringWithFormat:@"%@ just challenged you to a %@ photo\n, tap here to\n challenge back!", vo.creatorName, vo.subjectName], @"description", nil];
-		
-		NSLog(@"fbID:[%@]", fbID);
-		
-		[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"%@/feed", fbID] parameters:postParams HTTPMethod:@"POST" completionHandler:
-		 ^(FBRequestConnection *connection, id result, NSError *error) {
-			 NSString *alertText;
-			 
-			 if (error)
-				 alertText = [NSString stringWithFormat:@"error: description = %@, code = %d", error.description, error.code];
-			 
-			 else
-				 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
-			 
-			 
-			 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
-		 }];
-	}
+	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@?cID=%d", [HONAppDelegate facebookCanvasURL], vo.challengeID], @"link",
+												  [NSString stringWithFormat:@"%@_l.jpg", vo.creatorImgPrefix], @"picture",
+												  @"PicChallengeMe", @"name",
+												  vo.subjectName, @"caption",
+												  [NSString stringWithFormat:@"%@ just challenged you to a %@ photo\n, tap here to\n challenge back!", vo.creatorName, vo.subjectName], @"description", nil];
+	
+	NSLog(@"fbID:[%@]", fbID);
+	
+	[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"%@/feed", fbID] parameters:postParams HTTPMethod:@"POST" completionHandler:
+	 ^(FBRequestConnection *connection, id result, NSError *error) {
+		 NSString *alertText;
+		 
+		 if (error)
+			 alertText = [NSString stringWithFormat:@"error: description = %@, code = %d", error.description, error.code];
+		 
+		 else
+			 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
+		 
+		 
+		 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
+	 }];
 }
 
 + (void)postMessageToFriendTimeline:(NSString *)fbID message:(NSString *)msg {
-	if ([HONAppDelegate allowsFBPosting]) {
-		NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-													  msg, @"message",
-													  [NSString stringWithFormat:@"%@", [HONAppDelegate facebookCanvasURL]], @"link",
-													  @"name here", @"name",
-													  @"caption", @"caption",
-													  @"info", @"description", nil];
-		
-		[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"%@/feed", fbID] parameters:postParams HTTPMethod:@"POST" completionHandler:
-		 ^(FBRequestConnection *connection, id result, NSError *error) {
-			 NSString *alertText;
-			 
-			 if (error)
-				 alertText = [NSString stringWithFormat:@"error: description = %@, code = %d", error.description, error.code];
-			 
-			 else
-				 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
-			 
-			 
-			 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
-		 }];
-	}
+	NSMutableDictionary *postParams = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+												  msg, @"message",
+												  [NSString stringWithFormat:@"%@", [HONAppDelegate facebookCanvasURL]], @"link",
+												  @"name here", @"name",
+												  @"caption", @"caption",
+												  @"info", @"description", nil];
+	
+	[FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"%@/feed", fbID] parameters:postParams HTTPMethod:@"POST" completionHandler:
+	 ^(FBRequestConnection *connection, id result, NSError *error) {
+		 NSString *alertText;
+		 
+		 if (error)
+			 alertText = [NSString stringWithFormat:@"error: description = %@, code = %d", error.description, error.code];
+		 
+		 else
+			 alertText = [NSString stringWithFormat: @"Posted action, id: %@", [result objectForKey:@"id"]];
+		 
+		 
+		 //[[[UIAlertView alloc] initWithTitle:@"Result" message:alertText delegate:self cancelButtonTitle:@"OK!" otherButtonTitles:nil] show];
+	 }];
 }
 
 + (void)sendAppRequestToUser:(NSString *)fbID {
