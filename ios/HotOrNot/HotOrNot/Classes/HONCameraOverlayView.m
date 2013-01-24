@@ -30,6 +30,7 @@
 @property (nonatomic, strong) NSString *itunesURL;
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) UIView *trackBGView;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic) CGSize gutterSize;
 @end
 
@@ -328,8 +329,16 @@
 	[_muteButton addTarget:self action:@selector(_goMuteToggle) forControlEvents:UIControlEventTouchUpInside];
 	[_trackBGView addSubview:_muteButton];
 	
+	_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+	_activityIndicatorView.frame = CGRectMake(190.0, 320.0, 24.0, 24.0);
+	[_activityIndicatorView startAnimating];
+	
 	[UIView animateWithDuration:0.5 animations:^(void) {
 		_trackBGView.alpha = 1.0;
+	
+	} completion:^(BOOL finished) {
+		if (_activityIndicatorView != nil)
+		[self addSubview:_activityIndicatorView];
 	}];
 	
 	UIImageView *ptsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(88.0, 150.0, 144.0, 54.0)];
@@ -350,6 +359,14 @@
 		}];
 	}];
 }
+
+- (void)endBuffering {
+	NSLog(@"END BUFFERING");
+	_activityIndicatorView.hidden = YES;
+	[_activityIndicatorView removeFromSuperview];
+	_activityIndicatorView = nil;
+}
+
 
 #pragma mark -Navigation
 - (void)goBack:(id)sender {
@@ -385,6 +402,9 @@
 	} completion:^(BOOL finished) {
 		for (UIView *view in _trackBGView.subviews)
 			[view removeFromSuperview];
+		
+		[_activityIndicatorView removeFromSuperview];
+		_activityIndicatorView = nil;
 		
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		[self.delegate cameraOverlayViewRandomSubject:self subject:_subjectName];

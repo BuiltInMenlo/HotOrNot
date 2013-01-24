@@ -425,7 +425,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
 	
-	[self _testParseCloudCode];
+	//[self _testParseCloudCode];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
@@ -811,7 +811,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:
 										 //@"PicChallenge", @"app_name",
-										 @"2", @"user_id",
+										 [NSString stringWithFormat:@"%d", 2], @"user_id",
 										 nil];
 	
 	AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://api.parse.com/1/functions/"]];
@@ -826,7 +826,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	//[client postPath:@"duration"
 	[client postPath:@"getUser"
-			parameters:[NSDictionary dictionary]
+			parameters:parameters
 			  success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				  NSError *error = nil;
 				  NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];

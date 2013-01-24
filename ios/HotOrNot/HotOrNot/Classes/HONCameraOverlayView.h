@@ -16,6 +16,7 @@
 - (void)showPreview:(UIImage *)image;
 - (void)showPreviewFlipped:(UIImage *)image;
 - (void)artistName:(NSString *)artist songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL;
+- (void)endBuffering;
 
 @property(nonatomic, assign) id <HONCameraOverlayViewDelegate> delegate;
 @property (nonatomic, weak) NSString *subjectName;

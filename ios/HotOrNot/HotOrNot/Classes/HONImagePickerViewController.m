@@ -60,9 +60,6 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nowPlayingMovieDidChangeNotification:) name:MPMoviePlayerNowPlayingMovieDidChangeNotification object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_playbackStateDidChangeNotification:) name:MPMoviePlayerPlaybackStateDidChangeNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
@@ -86,6 +83,7 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
 	return (self);
@@ -107,6 +105,7 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 		
 		_needsChallenger = NO;
 	}
@@ -132,6 +131,7 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
 	return (self);
@@ -153,6 +153,7 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
 	return (self);
@@ -173,7 +174,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];		
+																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
 	return (self);
@@ -228,16 +230,14 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
 }
 
-- (void)_nowPlayingMovieDidChangeNotification:(NSNotification *)notification {
-	
-}
-
-- (void)_playbackStateDidChangeNotification:(NSNotification *)notification {
-	
-}
-
 - (void)_loadStateDidChangeNotification:(NSNotification *)notification {
+	NSLog(@"----[LOAD STATE CHANGED[%d]]----", _mpMoviePlayerController.loadState);
 	
+	switch (_mpMoviePlayerController.loadState) {
+		case MPMovieLoadStatePlayable:
+			[_cameraOverlayView endBuffering];
+			break;
+	}
 }
 
 
