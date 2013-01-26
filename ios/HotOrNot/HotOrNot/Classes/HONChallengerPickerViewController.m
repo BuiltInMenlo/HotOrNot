@@ -352,22 +352,51 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
-		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
-		//canvasView.image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW * 0.5, kLargeH * 0.5)];
+		UIImage *image = _challengeImage;
+//		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+//		
+//		CGSize size = [canvasView bounds].size;
+//		UIGraphicsBeginImageContext(size);
+//		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+//		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+//		UIGraphicsEndImageContext();
+//		
+//		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+//		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		
-//		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x"];
-//		[canvasView addSubview:watermarkImgView];
+		UIImage *lImage;
+		UIImage *mImage;
+		UIImage *t1Image;
 		
-		CGSize size = [canvasView bounds].size;
-		UIGraphicsBeginImageContext(size);
-		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
-		UIGraphicsEndImageContext();
+		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		sqCanvasView.backgroundColor = [UIColor blackColor];
 		
-		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		UIImageView *rtCanvasView =[[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kMediumW * 2.0, kMediumH * 2.0)];
+		rtCanvasView.backgroundColor = [UIColor blackColor];
+		
+		CGSize size;
+		float ratio = image.size.height / image.size.width;
+		float mult = kLargeW / image.size.width;
+		
+		if (ratio == kPhotoRatio) {
+			sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+			size = [sqCanvasView bounds].size;
+			UIGraphicsBeginImageContext(size);
+			[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+			lImage = UIGraphicsGetImageFromCurrentImageContext();
+			UIGraphicsEndImageContext();
+			
+			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+			
+		} else {
+			sqCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(image.size.width * mult, image.size.height * mult)];
+			rtCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake((kMediumW * 2.0), kMediumH * 2.0)];
+			
+			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		}
 		
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -494,21 +523,52 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
-		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+		UIImage *image = _challengeImage;
 		
-//		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x"];
-//		[canvasView addSubview:watermarkImgView];
+//		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+//		
+//		CGSize size = [canvasView bounds].size;
+//		UIGraphicsBeginImageContext(size);
+//		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+//		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+//		UIGraphicsEndImageContext();
+//		
+//		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+//		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		
-		CGSize size = [canvasView bounds].size;
-		UIGraphicsBeginImageContext(size);
-		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
-		UIGraphicsEndImageContext();
+		UIImage *lImage;
+		UIImage *mImage;
+		UIImage *t1Image;
 		
-		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		sqCanvasView.backgroundColor = [UIColor blackColor];
+		
+		UIImageView *rtCanvasView =[[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kMediumW * 2.0, kMediumH * 2.0)];
+		rtCanvasView.backgroundColor = [UIColor blackColor];
+		
+		CGSize size;
+		float ratio = image.size.height / image.size.width;
+		float mult = kLargeW / image.size.width;
+		
+		if (ratio == kPhotoRatio) {
+			sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+			size = [sqCanvasView bounds].size;
+			UIGraphicsBeginImageContext(size);
+			[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+			lImage = UIGraphicsGetImageFromCurrentImageContext();
+			UIGraphicsEndImageContext();
+			
+			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+			
+		} else {
+			sqCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(image.size.width * mult, image.size.height * mult)];
+			rtCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake((kMediumW * 2.0), kMediumH * 2.0)];
+			
+			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		}
 		
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -659,21 +719,52 @@
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 	
 	@try {
-		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+		UIImage *image;
 		
-//		UIImageView *watermarkImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		watermarkImgView.image = [UIImage imageNamed:@"612x612_overlay@2x"];
-//		[canvasView addSubview:watermarkImgView];
+//		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+//		
+//		CGSize size = [canvasView bounds].size;
+//		UIGraphicsBeginImageContext(size);
+//		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+//		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+//		UIGraphicsEndImageContext();
+//		
+//		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+//		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		
-		CGSize size = [canvasView bounds].size;
-		UIGraphicsBeginImageContext(size);
-		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
-		UIGraphicsEndImageContext();
+		UIImage *lImage;
+		UIImage *mImage;
+		UIImage *t1Image;
 		
-		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		sqCanvasView.backgroundColor = [UIColor blackColor];
+		
+		UIImageView *rtCanvasView =[[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kMediumW * 2.0, kMediumH * 2.0)];
+		rtCanvasView.backgroundColor = [UIColor blackColor];
+		
+		CGSize size;
+		float ratio = image.size.height / image.size.width;
+		float mult = kLargeW / image.size.width;
+		
+		if (ratio == kPhotoRatio) {
+			sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+			size = [sqCanvasView bounds].size;
+			UIGraphicsBeginImageContext(size);
+			[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+			lImage = UIGraphicsGetImageFromCurrentImageContext();
+			UIGraphicsEndImageContext();
+			
+			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+			
+		} else {
+			sqCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(image.size.width * mult, image.size.height * mult)];
+			rtCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake((kMediumW * 2.0), kMediumH * 2.0)];
+			
+			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		}
 		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";

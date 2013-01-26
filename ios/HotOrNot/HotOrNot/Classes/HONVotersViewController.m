@@ -102,7 +102,7 @@
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:cancelButton];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
+	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
 	[self.tableView setBackgroundColor:[UIColor clearColor]];
 	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	self.tableView.rowHeight = 70.0;

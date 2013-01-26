@@ -441,7 +441,7 @@
 			}
 			
 			// send push to creator if votes equal a certain amount
-			if ($winningUser_id == $creator_id && ($score_arr['creator'] == 10 || $score_arr['creator'] == 20 || $score_arr['creator'] == 30)) {
+			if ($winningUser_id == $creator_id) {// && $score_arr['creator'] % 5 == 0) {
 				$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 				$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 				
@@ -449,7 +449,7 @@
 			}
 			
 			// send push to challenger if votes equal a certain amount
-			if ($winningUser_id == $challenger_id && ($score_arr['challenger'] == 10 || $score_arr['challenger'] == 20 || $score_arr['challenger'] == 30)) {
+			if ($winningUser_id == $challenger_id) {// && $score_arr['challenger'] % 5 == 0) {
 				$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 				$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 				

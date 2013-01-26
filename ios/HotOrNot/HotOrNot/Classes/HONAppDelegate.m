@@ -862,8 +862,12 @@ NSString *const FacebookAppID = @"529054720443694";
 		
 		return (NO);
 		
-	} else
+	} else {
+		if (tabBarController.selectedViewController == [[tabBarController viewControllers] objectAtIndex:1])
+			[tabBarController.selectedViewController.navigationController popToRootViewControllerAnimated:NO];
+		
 		return (YES);
+	}
 }
 
 
