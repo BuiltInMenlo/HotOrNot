@@ -77,7 +77,7 @@
 
 #pragma mark - Navigation
 - (void)_goCancel {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 

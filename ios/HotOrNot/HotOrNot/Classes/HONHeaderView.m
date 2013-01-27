@@ -19,7 +19,6 @@
 
 - (id)initWithTitle:(NSString *)title {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleFBPosting:) name:@"TOGGLE_FB_POSTING" object:nil];
 		_title = title;
 		
 		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:self.frame];

@@ -21,6 +21,7 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONChallengeTableHeaderView.h"
+#import "HONFacebookSwitchView.h"
 #import "HONPopularSubjectVO.h"
 #import "HONPopularUserVO.h"
 
@@ -37,6 +38,7 @@
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) HONPopularUserVO *popularUserVO;
 @property(nonatomic, strong) HONPopularSubjectVO *popularSubjectVO;
+@property(nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
@@ -99,6 +101,9 @@
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
+	
+	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
+	[self.view addSubview:_facebookSwitchView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 108.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -348,6 +353,8 @@
 	
 	else
 		[self _retrievePopularSubjects];
+	
+	[_facebookSwitchView updateSwitch];
 }
 
 

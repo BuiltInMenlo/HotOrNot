@@ -75,7 +75,7 @@
 	
 	if ([touch view] == _imageView || [touch view] == _bgView) {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+			//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 		}];
 	}
 }
@@ -85,7 +85,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	_bgView = [[UIView alloc] initWithFrame:self.view.bounds];
 	_bgView.backgroundColor = [UIColor blackColor];
@@ -181,7 +181,7 @@
 																	cancelButtonTitle:@"OK"
 																	otherButtonTitles:nil];
 			[alertView show];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+			//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_CHALLENGE" object:_challengeVO];
 		}];
 	
@@ -221,7 +221,7 @@
 
 - (void)_dismiss {
 	[self dismissViewControllerAnimated:NO completion:^(void) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+		//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:(_isCreator) ? @"UPVOTE_CREATOR" : @"UPVOTE_CHALLENGER" object:_challengeVO];
 	}];
 }
@@ -267,7 +267,7 @@
 			}];
 			
 			[self dismissViewControllerAnimated:NO completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+				//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 			}];
 		}
 	
@@ -300,7 +300,7 @@
 			}];
 			
 			[self dismissViewControllerAnimated:NO completion:^(void) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+				//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 			}];
 		}
 	}

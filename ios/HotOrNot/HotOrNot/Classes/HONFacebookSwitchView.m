@@ -18,9 +18,9 @@
 @synthesize switchButton = _switchButton;
 
 - (id)init {
-	if ((self = [super initWithFrame:CGRectMake(6.0, 26.0, 64.0, 34.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(6.0, 6.0, 64.0, 34.0)])) {
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateFBPosting:) name:@"UPDATE_FB_POSTING" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 		
 		_switchButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_switchButton.frame = CGRectMake(0.0, 0.0, 64.0, 34.0);
@@ -29,7 +29,7 @@
 		[_switchButton addTarget:self action:@selector(_goToggle) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_switchButton];
 		
-		[self _updateSwitch];
+		[self updateSwitch];
 	}
 	return (self);
 }
@@ -44,7 +44,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[HONAppDelegate setAllowsFBPosting:!canPost];
-	[self _updateSwitch];
+	[self updateSwitch];
 	
 	if (FBSession.activeSession.state != 513) {
 		UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
@@ -55,18 +55,18 @@
 
 #pragma mark - Notifications
 - (void)_updateFBPosting:(NSNotification *)notification {
-	[self _updateSwitch];
+	[self updateSwitch];
 }
 
 - (void)_fbSwitchHidden:(NSNotification *)notification {
 	if ([(NSString *)[notification object] isEqualToString:@"Y"])
 		[self removeFromSuperview];
 	
-	[self _updateSwitch];
+	[self updateSwitch];
 }
 
 
-- (void)_updateSwitch {
+- (void)updateSwitch {
 	//NSLog(@"FB POSTING:[%d]", [HONAppDelegate allowsFBPosting]);
 	[_switchButton setSelected:([HONAppDelegate allowsFBPosting] && FBSession.activeSession.state == 513)];
 	//[_switchButton setSelected:([HONAppDelegate allowsFBPosting])];

@@ -95,7 +95,7 @@
 #pragma mark - Navigation
 - (void)_goCancel {
 	//[self.navigationController popToRootViewControllerAnimated:YES];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -234,7 +234,7 @@
 	
 	//self.searchBar = nil;
 	//[self dismissViewControllerAnimated:YES completion:^(void){
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	//}];
 }

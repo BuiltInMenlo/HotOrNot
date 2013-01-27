@@ -10,4 +10,6 @@
 
 @interface HONFacebookSwitchView : UIView
 @property (nonatomic, strong) UIButton *switchButton;
+
+- (void)updateSwitch;
 @end

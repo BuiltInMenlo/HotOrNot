@@ -16,6 +16,7 @@
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 #import "HONFacebookCaller.h"
+#import "HONFacebookSwitchView.h"
 #import "HONImagePickerViewController.h"
 #import "HONHeaderView.h"
 #import "HONChallengeTableHeaderView.h"
@@ -36,6 +37,7 @@
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
+@property(nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @end
 
 @implementation HONVoteViewController
@@ -136,7 +138,11 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? _challengeVO.subjectName : @"HOME"];
 	[self.view addSubview:_headerView];
-		
+	
+	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
+	[self.view addSubview:_facebookSwitchView];
+	_facebookSwitchView.hidden = _isPushView;
+	
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
@@ -144,6 +150,9 @@
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:backButton];
+	
+	} else {
+		
 	}
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -210,8 +219,8 @@
 	
 	NSLog(@"viewDidAppear %d", _isPushView);
 	
-	if (_isPushView)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	//if (_isPushView)
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	if ([_challenges count] == 0)
 		[[[UIAlertView alloc] initWithTitle:@"Nothing Here!" message:@"No PicChallenges in session. You should start one." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -336,7 +345,7 @@
 #pragma mark - Navigation
 - (void)_goBack {
 	[HONAppDelegate toggleViewPushed:NO];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -421,7 +430,7 @@
 }
 
 - (void)_goTutorialClose {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	
 	_tutorialOverlayImgView.hidden = YES;
 	[_tutorialOverlayImgView removeFromSuperview];
@@ -430,7 +439,7 @@
 
 #pragma mark - Notifications
 - (void)_goTutorial {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	[[Mixpanel sharedInstance] track:@"Tutorial"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -497,6 +506,8 @@
 	
 	else
 		[self _retrieveChallenges];
+	
+	[_facebookSwitchView updateSwitch];
 }
 
 - (void)_showNotInSessionDetails:(NSNotification *)notification {
@@ -582,7 +593,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVotersViewController alloc] initWithChallenge:vo]];
 	[navController setNavigationBarHidden:YES];

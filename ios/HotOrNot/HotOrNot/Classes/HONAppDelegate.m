@@ -381,6 +381,7 @@ NSString *const FacebookAppID = @"529054720443694";
 - (void)_fbSwitchHidden:(NSNotification *)notification {
 	if ([(NSString *)[notification object] isEqualToString:@"N"] && [[[NSUserDefaults standardUserDefaults] objectForKey:@"pushed_view"] isEqualToString:@"NO"])
 		[[[UIApplication sharedApplication] delegate].window addSubview:_facebookSwitchView];
+	_facebookSwitchView.hidden = YES;
 }
 
 - (void)_inviteFriends:(NSNotification *)notification {
@@ -396,12 +397,12 @@ NSString *const FacebookAppID = @"529054720443694";
 		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 	}
 	
-	[self performSelector:@selector(_hideFBSwitchDelayed) withObject:nil afterDelay:0.33];
+	//[self performSelector:@selector(_hideFBSwitchDelayed) withObject:nil afterDelay:0.33];
 }
 
-- (void)_hideFBSwitchDelayed {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
-}
+//- (void)_hideFBSwitchDelayed {
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
+//}
 
 - (void)_webCTA:(NSNotification *)notification {
 	NSString *url = [[notification object] objectForKey:@"url"];
@@ -421,7 +422,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	_isFromBackground = NO;
 	[HONAppDelegate toggleViewPushed:NO];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
+	//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
 	
@@ -789,7 +790,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
 	
 	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
-	[self.window addSubview:_facebookSwitchView];
+	//[self.window addSubview:_facebookSwitchView];
+	_facebookSwitchView.hidden = YES;
 }
 
 - (void)_testParseCloudCode {
