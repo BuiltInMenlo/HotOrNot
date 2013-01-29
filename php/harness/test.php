@@ -1,7 +1,7 @@
 <?php
 
 $db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
-mysql_select_db('hotornot') or die("Could not select database.");
+mysql_select_db('hotornot-dev') or die("Could not select database.");
 
 /* //SEND PUSH
 $query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = 3;';			
@@ -140,6 +140,7 @@ while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 echo ("</table></body></html>");
 */
 
+/* // TWILIO TEST
 $post_arr = array(
 	'From' => "+12394313268",
 	'To' => "+12393709811",
@@ -164,6 +165,44 @@ curl_close($ch);
 //    -d "From=+12394313268" \
 //    -d "To=+17143309754" \
 //    -d 'Body=Testing Twilio API'
+*/
+
+
+
+/*
+// DEFAULT NAMES
+$defaultName_arr = array(
+	"snap4snap",
+	"picchampX",
+	"swagluver",
+	"coolswagger",
+	"yoloswag",
+	"tumblrSwag",
+	"instachallenger",
+	"hotbitchswaglove",
+	"lovepeaceswaghot",
+	"hotswaglover",
+	"snapforsnapper",
+	"snaphard",
+	"snaphardyo",
+	"yosnaper",
+	"yoosnapyoo"
+);
+
+$query = 'SELECT `id`, `username` FROM `tblUsers` WHERE `username` LIKE "PicChallenge%";';
+$result = mysql_query($query);
+
+while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+	$rnd_ind = mt_rand(0, count($defaultName_arr) - 1);
+	$username = $defaultName_arr[$rnd_ind] . $row['id'];
+
+	//echo ("[". $row['id'] ."] --> ". $username ."<br />\n");
+	echo ($row['id'] .", ");
+	
+	$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'" WHERE `id` = '. $row['id'] .';';
+	$upd_result = mysql_query($query);				
+}
+*/
 			
 if ($db_conn) {
 	mysql_close($db_conn);

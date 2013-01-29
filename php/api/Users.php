@@ -193,7 +193,28 @@
 				$result = mysql_query($query);				
 			
 			// not found
-			} else {	
+			} else {
+				
+				// default names
+				$defaultName_arr = array(
+					"snap4snap",
+					"picchampX",
+					"swagluver",
+					"coolswagger",
+					"yoloswag",
+					"tumblrSwag",
+					"instachallenger",
+					"hotbitchswaglove",
+					"lovepeaceswaghot",
+					"hotswaglover",
+					"snapforsnapper",
+					"snaphard",
+					"snaphardyo",
+					"yosnaper",
+					"yoosnapyoo"
+				);
+				
+				$rnd_ind = mt_rand(0, count($defaultName_arr) - 1);
 				
 				// add new user			
 				$query = 'INSERT INTO `tblUsers` (';
@@ -202,8 +223,10 @@
 				$result = mysql_query($query);
 				$user_id = mysql_insert_id();
 				
+				$username = $defaultName_arr[$rnd_ind] . $user_id;
+				
 				// create a default username 
-				$query = 'UPDATE `tblUsers` SET `username` = "PicChallenge'. $user_id .'" WHERE `id` = '. $user_id .';';
+				$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'" WHERE `id` = '. $user_id .';';
 				$result = mysql_query($query);				
 			}
 			

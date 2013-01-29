@@ -365,6 +365,7 @@
 //		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
 //		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		
+		
 		UIImage *lImage;
 		UIImage *mImage;
 		UIImage *t1Image;

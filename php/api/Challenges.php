@@ -427,7 +427,7 @@
 					array_push($rndChallenge_arr, $challenge_row);
 				
 				// pick a random challenge from list
-				$rnd_ind = mt_rand(0, count($rndChallenge_arr));
+				$rnd_ind = mt_rand(0, count($rndChallenge_arr) - 1);
 				$challenge_row = $rndChallenge_arr[$rnd_ind];
 				
 				// get the challenge creator's info

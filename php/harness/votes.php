@@ -84,7 +84,7 @@ function removeElement($arr, $element) {
 					}
 				}
 				
-				$ind_rnd = mt_rand(0, count($userID_arr));
+				$ind_rnd = mt_rand(0, count($userID_arr) - 1);
 				
 				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
 				$subject_name = mysql_fetch_object(mysql_query($query))->title;
