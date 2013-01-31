@@ -35,7 +35,6 @@
 	if ((self = [super init])) {
 		_challengeVO = vo;
 		
-		[HONAppDelegate toggleViewPushed:YES];
 		self.view.backgroundColor = [UIColor whiteColor];
 		self.voters = [NSMutableArray new];
 		

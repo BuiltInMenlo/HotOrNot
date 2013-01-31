@@ -59,6 +59,7 @@ extern NSString *const FacebookAppID;
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
 + (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor;
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
++ (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect;
 
 + (NSArray *)fbPermissions;
 
@@ -67,8 +68,6 @@ extern NSString *const FacebookAppID;
 + (BOOL)canPingAPIServer;
 + (BOOL)canPingParseServer;
 + (BOOL)audioMuted;
-
-+ (void)toggleViewPushed:(BOOL)isPushed;
 
 + (UIFont *)honHelveticaNeueFontBold;
 + (UIFont *)honHelveticaNeueFontBoldItalic;

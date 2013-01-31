@@ -24,10 +24,10 @@
 
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
-#import "HONVoteViewController.h"
+//#import "HONVoteViewController.h"
+#import "HONVoteSubjectsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONVoteViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONLoginViewController.h"
 #import "HONChallengeVO.h"
@@ -228,6 +228,51 @@ NSString *const FacebookAppID = @"529054720443694";
 	return (croppedImage);
 }
 
++ (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect {
+	CGContextRef                context;
+	CGImageRef                  imageRef;
+	CGSize                      inputSize;
+	UIImage                     *outputImage = nil;
+	CGFloat                     scaleFactor, width;
+	
+	
+	// resize, maintaining aspect ratio:
+	inputSize = image.size;
+	scaleFactor = size.height / inputSize.height;
+	width = roundf(inputSize.width * scaleFactor);
+	
+	if (width > size.width) {
+		scaleFactor = size.width / inputSize.width;
+		size.height = roundf(inputSize.height * scaleFactor);
+		
+	} else {
+		size.width = width;
+	}
+	
+	UIGraphicsBeginImageContext(size);
+	
+	context = UIGraphicsGetCurrentContext();
+	CGContextDrawImage(context, CGRectMake(0.0, 0.0, size.width, size.height), image.CGImage);
+	outputImage = UIGraphicsGetImageFromCurrentImageContext();
+	
+	UIGraphicsEndImageContext();
+	
+	inputSize = size;
+	
+	// constrain crop rect to legitimate bounds
+	if (rect.origin.x >= inputSize.width || rect.origin.y >= inputSize.height) return (outputImage);
+	if (rect.origin.x + rect.size.width >= inputSize.width) rect.size.width = inputSize.width - rect.origin.x;
+	if (rect.origin.y + rect.size.height >= inputSize.height) rect.size.height = inputSize.height - rect.origin.y;
+	
+	// crop
+	if ((imageRef = CGImageCreateWithImageInRect(outputImage.CGImage, rect))) {
+		outputImage = [[UIImage alloc] initWithCGImage: imageRef];
+		CGImageRelease(imageRef);
+	}
+	
+	return (outputImage);
+}
+
 + (NSArray *)fbPermissions {
 	return ([NSArray arrayWithObjects:@"publish_actions", @"publish_stream", nil]); //@"status_update",
 }
@@ -262,11 +307,6 @@ NSString *const FacebookAppID = @"529054720443694";
 
 + (BOOL)audioMuted {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"] isEqualToString:@"YES"]);
-}
-
-+ (void)toggleViewPushed:(BOOL)isPushed {
-	[[NSUserDefaults standardUserDefaults] setObject:(isPushed) ? @"YES" : @"NO" forKey:@"pushed_view"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 
@@ -378,12 +418,6 @@ NSString *const FacebookAppID = @"529054720443694";
 
 
 #pragma mark - Notifications
-- (void)_fbSwitchHidden:(NSNotification *)notification {
-	if ([(NSString *)[notification object] isEqualToString:@"N"] && [[[NSUserDefaults standardUserDefaults] objectForKey:@"pushed_view"] isEqualToString:@"NO"])
-		[[[UIApplication sharedApplication] delegate].window addSubview:_facebookSwitchView];
-	_facebookSwitchView.hidden = YES;
-}
-
 - (void)_inviteFriends:(NSNotification *)notification {
 	
 	if (FBSession.activeSession.state == 513) {
@@ -396,13 +430,7 @@ NSString *const FacebookAppID = @"529054720443694";
 		[navigationController setNavigationBarHidden:YES];
 		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 	}
-	
-	//[self performSelector:@selector(_hideFBSwitchDelayed) withObject:nil afterDelay:0.33];
 }
-
-//- (void)_hideFBSwitchDelayed {
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
-//}
 
 - (void)_webCTA:(NSNotification *)notification {
 	NSString *url = [[notification object] objectForKey:@"url"];
@@ -420,9 +448,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	//self.window.frame = CGRectMake(0.0, 0.0, [[UIScreen mainScreen]bounds].size.width, [[UIScreen mainScreen]bounds].size.height);
 	
 	_isFromBackground = NO;
-	[HONAppDelegate toggleViewPushed:NO];
 	
-	//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_fbSwitchHidden:) name:@"FB_SWITCH_HIDDEN" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
 	
@@ -596,6 +622,9 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+	[[Mixpanel sharedInstance] track:@"App Entering Background"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -604,6 +633,10 @@ NSString *const FacebookAppID = @"529054720443694";
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[FBSession.activeSession handleDidBecomeActive];
+	
+	[[Mixpanel sharedInstance] track:@"App Leaving Background"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
@@ -624,7 +657,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	if (_isFromBackground && [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"] isEqualToString:@"Y"])
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
@@ -684,12 +717,6 @@ NSString *const FacebookAppID = @"529054720443694";
 											  otherButtonTitles:nil];
 			[alertView setTag:5];
 			[alertView show];
-//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//				if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"pushed_view"] isEqualToString:@"YES"]) {
-//					[[[UIApplication sharedApplication] delegate].window.rootViewController.navigationController popToRootViewControllerAnimated:YES];
-//					[HONAppDelegate toggleViewPushed:NO];
-//				}
-//			}];
 			break; }
 			
 		// poke
@@ -770,7 +797,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
-	voteViewController = [[HONVoteViewController alloc] init];
+	voteViewController = [[HONVoteSubjectsViewController alloc] init];//[[HONVoteViewController alloc] init];
 	popularViewController = [[HONPopularViewController alloc] init];
 	createChallengeViewController = [[HONImagePickerViewController alloc] init];
 	settingsViewController = [[HONSettingsViewController alloc] init];
@@ -924,7 +951,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	else if (alertView.tag == 5) {
 		switch (buttonIndex) {
 			case 0:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				break;
 				
 			case 1:

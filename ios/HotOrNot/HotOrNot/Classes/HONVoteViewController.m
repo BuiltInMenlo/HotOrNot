@@ -33,7 +33,7 @@
 @property(nonatomic) BOOL isPushView;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong)  UIButton *refreshButton;
+@property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
@@ -51,7 +51,8 @@
 		_challenges = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionCreatorDetails:) name:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionChallengerDetails:) name:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:nil];
@@ -68,7 +69,6 @@
 - (id)initWithSubject:(int)subjectID {
 	if ((self = [super init])) {
 		_isPushView = YES;
-		[HONAppDelegate toggleViewPushed:YES];
 		
 		_subjectID = subjectID;
 		
@@ -76,7 +76,8 @@
 		_challenges = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionCreatorDetails:) name:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionChallengerDetails:) name:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:nil];
@@ -93,7 +94,6 @@
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		_isPushView = YES;
-		[HONAppDelegate toggleViewPushed:YES];
 		
 		_subjectID = 0;
 		_challengeVO = vo;
@@ -102,7 +102,8 @@
 		_challenges = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionCreatorDetails:) name:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionChallengerDetails:) name:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:nil];
@@ -167,7 +168,7 @@
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
 	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 115.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
@@ -218,9 +219,6 @@
 	[self _retrieveChallenges];
 	
 	NSLog(@"viewDidAppear %d", _isPushView);
-	
-	//if (_isPushView)
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	if ([_challenges count] == 0)
 		[[[UIAlertView alloc] initWithTitle:@"Nothing Here!" message:@"No PicChallenges in session. You should start one." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -344,8 +342,6 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[HONAppDelegate toggleViewPushed:NO];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -385,13 +381,9 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	//	if (FBSession.activeSession.state == 513) {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-	
-	//	} else
-	//		[self _goLogin];
 }
 
 - (void)_goInviteFriends {
@@ -430,8 +422,6 @@
 }
 
 - (void)_goTutorialClose {
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-	
 	_tutorialOverlayImgView.hidden = YES;
 	[_tutorialOverlayImgView removeFromSuperview];
 }
@@ -439,8 +429,6 @@
 
 #pragma mark - Notifications
 - (void)_goTutorial {
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
-	
 	[[Mixpanel sharedInstance] track:@"Tutorial"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -498,7 +486,7 @@
 
 }
 
-- (void)_refreshList:(NSNotification *)notification {
+- (void)_refreshVoteTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	
 	if (_isPushView)
@@ -592,8 +580,6 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
-	
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVotersViewController alloc] initWithChallenge:vo]];
 	[navController setNavigationBarHidden:YES];

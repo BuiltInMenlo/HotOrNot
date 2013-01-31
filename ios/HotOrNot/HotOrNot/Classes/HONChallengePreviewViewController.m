@@ -54,7 +54,6 @@
 	
 	if ([touch view] == _imageView || [touch view] == _bgView) {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 		}];
 	}
 }
@@ -63,8 +62,6 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	_bgView = [[UIView alloc] initWithFrame:self.view.bounds];
 	_bgView.backgroundColor = [UIColor blackColor];
@@ -165,14 +162,12 @@
 #pragma mark - Navigation
 - (void)_goAccept {
 	[self dismissViewControllerAnimated:NO completion:^(void) {
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:_challengeVO];
 	}];
 }
 
 - (void)_goRechallenge {
 	[self dismissViewControllerAnimated:NO completion:^(void) {
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATE_CHALLENGE" object:_challengeVO];
 	}];
 }
@@ -237,7 +232,6 @@
 			}];
 			
 			[self dismissViewControllerAnimated:NO completion:^(void) {
-				//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 			}];
 		}
 	
@@ -271,7 +265,6 @@
 			}];
 			
 			[self dismissViewControllerAnimated:NO completion:^(void) {
-				//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 			}];
 		}
 	}

@@ -148,7 +148,7 @@
 			$query = 'SELECT `challenger_id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';
 		   	$score_result = mysql_query($query);
 						
-			while ($score_row = mysql_fetch_array($score_result, MYSQL_BOTH)) {										
+			while ($score_row = mysql_fetch_assoc($score_result)) {										
 				if ($score_row['challenger_id'] == $user_id)
 					$user_arr['score']++;
 			}
@@ -213,7 +213,7 @@
 			$result = mysql_query($query);
 			
 			// loop thru challenges, priming array
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH))
+			while ($row = mysql_fetch_assoc($result))
 				$id_arr[$row['id']] = 0;
 			
 			// get vote rows for challenges
@@ -221,7 +221,7 @@
 			$result = mysql_query($query);
 			
 			// loop thru votes, incrementing vote total array
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH))
+			while ($row = mysql_fetch_assoc($result))
 				$id_arr[$row['id']]++;
             
 			// limit to 100, and sort
@@ -261,7 +261,7 @@
 			$result = mysql_query($query);
 			
 			// loop thru rows
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+			while ($row = mysql_fetch_assoc($result)) {
 				
 				// bug fix, skip challenge if waiting and has no challenge
 				if ($row['status_id'] == "2" && $row['challenger_id'] == "0")
@@ -295,7 +295,7 @@
 			$result = mysql_query($query);
 			
 			// loop thru challenges
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH))
+			while ($row = mysql_fetch_assoc($result))
 				array_push($challenge_arr, $this->getChallengeObj($row['id']));				
 
 			
@@ -328,6 +328,42 @@
 			*/
 		}
 		
+		function getLatestChallengesBySubject() {
+			$subject_arr = array();
+			$challengeID_arr = array();
+			$challenges_arr = array();
+			
+			$query = 'SELECT `id`, `subject_id` FROM `tblChallenges` WHERE `status_id` = 4 ORDER BY `added` DESC LIMIT 50;';
+			$result = mysql_query($query);
+			
+			while ($row = mysql_fetch_assoc($result)){
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row['subject_id'] .';';
+				$subject_name = mysql_fetch_object(mysql_query($query))->title;
+				
+				$subject_arr[$row['subject_id']] = array(
+					'id' => $row['subject_id'], 
+					'title' => $subject_name,
+					'challenges' => array()
+				);
+				
+				array_push($challengeID_arr, $row['id']);
+			}
+			
+			foreach ($challengeID_arr as $key => $val) {
+				$query = 'SELECT `id`, `subject_id` FROM `tblChallenges` WHERE `id` = '. $val .';';
+				$challenge_obj = mysql_fetch_object(mysql_query($query));
+				
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
+				$subject_name = mysql_fetch_object(mysql_query($query))->title;
+				
+				//array_push($subject_arr[$challenge_obj->subject_id]['challenges'], $this->getChallengeObj($challenge_obj->id));
+				array_push($challenges_arr, $this->getChallengeObj($val));
+			}
+			
+			$this->sendResponse(200, json_encode($challenges_arr));
+			return (true);
+		}
+		
 		/** 
 		 * Gets the voters for a particular challenge
 		 * @param $challenge_id The ID of the challenge (integer)
@@ -341,7 +377,7 @@
 			$challenge_result = mysql_query($query);
 			
 			// loop thru votes
-			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {								
+			while ($challenge_row = mysql_fetch_assoc($challenge_result)) {								
 				
 				// get user info
 				$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $challenge_row['user_id'] .';';
@@ -432,7 +468,7 @@
 			
 			// calculate the scores
 			$score_arr = array('creator' => 0, 'challenger' => 0);			
-			while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
+			while ($row = mysql_fetch_assoc($result)) {
 				if ($row['challenger_id'] == $creator_id)
 					$score_arr['creator']++;
 					
@@ -441,19 +477,19 @@
 			}
 			
 			// send push to creator if votes equal a certain amount
-			if ($winningUser_id == $creator_id) {// && $score_arr['creator'] % 5 == 0) {
+			if ($winningUser_id == $creator_id && $score_arr['creator'] % 5 == 0) {
 				$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 				$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 				
-				$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"1", "aps": {"alert": "Your '. $sub_name .' challenge has received '. $score_arr[0] .' upvotes!", "sound": "push_01.caf"}}');
+				$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"1", "aps": {"alert": "Your '. $sub_name .' challenge has received '. $score_arr['creator'] .' upvotes!", "sound": "push_01.caf"}}');
 			}
 			
 			// send push to challenger if votes equal a certain amount
-			if ($winningUser_id == $challenger_id) {// && $score_arr['challenger'] % 5 == 0) {
+			if ($winningUser_id == $challenger_id && $score_arr['challenger'] % 5 == 0) {
 				$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 				$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 				
-				$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"1", "aps": {"alert": "Your '. $sub_name .' challenge has received '. $score_arr[1] .' upvotes!", "sound": "push_01.caf"}}');
+				$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"1", "aps": {"alert": "Your '. $sub_name .' challenge has received '. $score_arr['challenger'] .' upvotes!", "sound": "push_01.caf"}}');
 			}
 			
 			// return
@@ -519,6 +555,11 @@
 			case "6":
 				if (isset($_POST['challengeID']) && isset($_POST['userID']) && isset($_POST['creator']))
 					$votes->upvoteChallenge($_POST['challengeID'], $_POST['userID'], $_POST['creator']);
+				break;
+			
+			// latest challenges by subject	
+			case "7":
+				$votes->getLatestChallengesBySubject();
 				break;
     	}
 	}

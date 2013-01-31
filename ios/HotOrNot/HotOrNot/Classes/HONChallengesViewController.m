@@ -61,7 +61,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_createChallenge:) name:@"CREATE_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	}
 	
 	return (self);
@@ -458,7 +459,7 @@
 	}];
 }
 
-- (void)_refreshList:(NSNotification *)notification {
+- (void)_refreshChallengesTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 	[self _retrieveUser];
@@ -561,7 +562,6 @@
 		[self presentViewController:navigationController animated:NO completion:nil];
 			
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithChallenge:vo] animated:YES];
 	}
 }

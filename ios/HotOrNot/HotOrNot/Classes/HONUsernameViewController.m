@@ -179,7 +179,7 @@
 				
 				[HONAppDelegate writeUserInfo:userResult];
 				[self dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SETTINGS_TAB" object:nil];
 				}];
 				
 			} else {

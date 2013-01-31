@@ -279,8 +279,6 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[HONAppDelegate toggleViewPushed:NO];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
 	}];
 }
@@ -352,52 +350,22 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
-		UIImage *image = _challengeImage;
-//		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
-//		
-//		CGSize size = [canvasView bounds].size;
+		float ratio = _challengeImage.size.height / _challengeImage.size.width;
+		UIImage *lImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeW * ratio)];
+		lImage = [HONAppDelegate cropImage:lImage toRect:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		
+		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		
+//		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//		sqCanvasView.backgroundColor = [UIColor blackColor];
+//		sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+//		size = [sqCanvasView bounds].size;
 //		UIGraphicsBeginImageContext(size);
-//		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-//		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+//		[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+//		lImage = UIGraphicsGetImageFromCurrentImageContext();
 //		UIGraphicsEndImageContext();
-//		
-//		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-//		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
 		
-		
-		UIImage *lImage;
-		UIImage *mImage;
-		UIImage *t1Image;
-		
-		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		sqCanvasView.backgroundColor = [UIColor blackColor];
-		
-		UIImageView *rtCanvasView =[[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kMediumW * 2.0, kMediumH * 2.0)];
-		rtCanvasView.backgroundColor = [UIColor blackColor];
-		
-		CGSize size;
-		float ratio = image.size.height / image.size.width;
-		float mult = kLargeW / image.size.width;
-		
-		if (ratio == kPhotoRatio) {
-			sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
-			size = [sqCanvasView bounds].size;
-			UIGraphicsBeginImageContext(size);
-			[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-			lImage = UIGraphicsGetImageFromCurrentImageContext();
-			UIGraphicsEndImageContext();
-			
-			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-			
-		} else {
-			sqCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(image.size.width * mult, image.size.height * mult)];
-			rtCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake((kMediumW * 2.0), kMediumH * 2.0)];
-			
-			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-		}
 		
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -458,7 +426,7 @@
 					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
 					[HONFacebookCaller postToTimeline:vo];
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 					
 					if (vo.statusID == 7)
 						[HONFacebookCaller sendAppRequestToUser:_fbID];
@@ -482,8 +450,6 @@
 							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
 					}
 					
-					[HONAppDelegate toggleViewPushed:NO];
-					//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
@@ -524,52 +490,21 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	@try {
-		UIImage *image = _challengeImage;
+		float ratio = _challengeImage.size.height / _challengeImage.size.width;
+		UIImage *lImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeW * ratio)];
+		lImage = [HONAppDelegate cropImage:lImage toRect:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
 		
-//		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
-//		
-//		CGSize size = [canvasView bounds].size;
+		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		
+//		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//		sqCanvasView.backgroundColor = [UIColor blackColor];
+//		sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+//		size = [sqCanvasView bounds].size;
 //		UIGraphicsBeginImageContext(size);
-//		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-//		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+//		[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+//		lImage = UIGraphicsGetImageFromCurrentImageContext();
 //		UIGraphicsEndImageContext();
-//		
-//		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-//		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-		
-		UIImage *lImage;
-		UIImage *mImage;
-		UIImage *t1Image;
-		
-		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		sqCanvasView.backgroundColor = [UIColor blackColor];
-		
-		UIImageView *rtCanvasView =[[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kMediumW * 2.0, kMediumH * 2.0)];
-		rtCanvasView.backgroundColor = [UIColor blackColor];
-		
-		CGSize size;
-		float ratio = image.size.height / image.size.width;
-		float mult = kLargeW / image.size.width;
-		
-		if (ratio == kPhotoRatio) {
-			sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
-			size = [sqCanvasView bounds].size;
-			UIGraphicsBeginImageContext(size);
-			[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-			lImage = UIGraphicsGetImageFromCurrentImageContext();
-			UIGraphicsEndImageContext();
-			
-			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-			
-		} else {
-			sqCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(image.size.width * mult, image.size.height * mult)];
-			rtCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake((kMediumW * 2.0), kMediumH * 2.0)];
-			
-			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-		}
 		
 		NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -632,7 +567,7 @@
 					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
 					[HONFacebookCaller postToTimeline:vo];
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 					
 					if (vo.statusID == 7)
 						[HONFacebookCaller sendAppRequestToUser:_fbID];
@@ -656,8 +591,6 @@
 							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
 					}
 					
-					[HONAppDelegate toggleViewPushed:NO];
-					//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
@@ -720,52 +653,22 @@
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 	
 	@try {
-		UIImage *image;
+		float ratio = _challengeImage.size.height / _challengeImage.size.width;
 		
-//		UIImageView *canvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-//		canvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
-//		
-//		CGSize size = [canvasView bounds].size;
+		UIImage *lImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeW * ratio)];
+		lImage = [HONAppDelegate cropImage:lImage toRect:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		
+		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		
+//		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+//		sqCanvasView.backgroundColor = [UIColor blackColor];
+//		sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
+//		size = [sqCanvasView bounds].size;
 //		UIGraphicsBeginImageContext(size);
-//		[[canvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-//		UIImage *lImage = UIGraphicsGetImageFromCurrentImageContext();
+//		[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
+//		lImage = UIGraphicsGetImageFromCurrentImageContext();
 //		UIGraphicsEndImageContext();
-//		
-//		UIImage *mImage = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-//		UIImage *t1Image = [HONAppDelegate scaleImage:_challengeImage toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-		
-		UIImage *lImage;
-		UIImage *mImage;
-		UIImage *t1Image;
-		
-		UIImageView *sqCanvasView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
-		sqCanvasView.backgroundColor = [UIColor blackColor];
-		
-		UIImageView *rtCanvasView =[[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kMediumW * 2.0, kMediumH * 2.0)];
-		rtCanvasView.backgroundColor = [UIColor blackColor];
-		
-		CGSize size;
-		float ratio = image.size.height / image.size.width;
-		float mult = kLargeW / image.size.width;
-		
-		if (ratio == kPhotoRatio) {
-			sqCanvasView.image = [HONAppDelegate cropImage:[HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeH)] toRect:CGRectMake(0.0, (((kLargeH - kLargeW) * 0.5) * 0.5), kLargeW, kLargeW)];
-			size = [sqCanvasView bounds].size;
-			UIGraphicsBeginImageContext(size);
-			[[sqCanvasView layer] renderInContext:UIGraphicsGetCurrentContext()];
-			lImage = UIGraphicsGetImageFromCurrentImageContext();
-			UIGraphicsEndImageContext();
-			
-			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-			
-		} else {
-			sqCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(image.size.width * mult, image.size.height * mult)];
-			rtCanvasView.image = [HONAppDelegate scaleImage:image toSize:CGSizeMake((kMediumW * 2.0), kMediumH * 2.0)];
-			
-			mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-			t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
-		}
 		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.labelText = @"Submitting Challenge…";
@@ -822,7 +725,7 @@
 					HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:challengeResult];
 					[HONFacebookCaller postToTimeline:vo];
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 					
 					if (vo.statusID == 7)
 						[HONFacebookCaller sendAppRequestToUser:_fbID];
@@ -846,8 +749,6 @@
 							[HONFacebookCaller postToFriendTimeline:_fbID challenge:vo];
 					}
 					
-					[HONAppDelegate toggleViewPushed:NO];
-					//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 						if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"] isEqualToString:@"Y"])
 							[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:1]];
@@ -1032,8 +933,6 @@
 - (void)_sessionStateChanged:(NSNotification *)notification {
 	FBSession *session = (FBSession *)[notification object];
 	NSLog(@"FBSession:[%d] (HONChallengerPickerViewController)", session.state);
-	
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	[_loginFriendsButton removeTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
 	[_loginFriendsButton removeTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];

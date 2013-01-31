@@ -61,7 +61,8 @@
 																	name:HONSessionStateChangedNotification
 																 object:nil];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshList:) name:@"REFRESH_LIST" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	}
 	
 	return (self);
@@ -149,13 +150,9 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-//	if (FBSession.activeSession.state == 513) {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
-	
-//	} else
-//		[self _goLogin];
 }
 
 - (void)_goInviteFriends {
@@ -259,7 +256,7 @@
 	[cell updateCaption:(session.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
 }
 
-- (void)_refreshList:(NSNotification *)notification {
+- (void)_refreshSettingsTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	_refreshButton.hidden = YES;
 	
@@ -390,27 +387,22 @@
 				[self presentViewController:navigationController animated:YES completion:nil];
 			}
 			
-			//[HONAppDelegate setAllowsFBPosting:(FBSession.activeSession.state == 513)];
-			//[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
 			[_facebookSwitchView updateSwitch];
 			break;
 			
 		case 4:
-			//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
 		case 5:
-			//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSupportViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
 			break;
 			
 		case 6:
-			//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];

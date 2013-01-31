@@ -1,4 +1,4 @@
-<?php
+<?php session_start();
 
 $db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
 mysql_select_db('hotornot-dev') or die("Could not select database.");
@@ -61,7 +61,7 @@ $challenge_result = mysql_query($query);
 			
 			if ($challenge_obj->status_id == 1) {
 				echo ("<tr><td><strong>". $creator_name ."</strong> has challenged <strong>someone</strong> to a <u>". $subject_name ."</u> challenge <em>(". $local_date .")</em></td></tr>\n");
-				echo ("<tr><td><img src='". $challenge_obj->creator_img ."_l.jpg' width='256' height='256' alt='' /></td></tr>\n");
+				echo ("<tr><td><img src='". $challenge_obj->creator_img ."_l.jpg' width='128' height='128' alt='' /></td></tr>\n");
 				//echo ("<tr><td><input type='button' value='Send request to next player' onclick='sendPush(". $challenge_obj->id .");' /></td></tr>\n");
 				
 			} else {
@@ -69,7 +69,7 @@ $challenge_result = mysql_query($query);
 				$challenger_name = mysql_fetch_object(mysql_query($query))->username;
 				
 				echo ("<tr><td><strong>". $creator_name ."</strong> has challenged <strong>". $challenger_name ."</strong> to a <u>". $subject_name ."</u> challenge <em>(". $local_date .")</em></td></tr>\n");
-				echo ("<tr><td><img src='". $challenge_obj->creator_img ."_l.jpg' width='256' height='256' alt='' /></td></tr>\n");
+				echo ("<tr><td><img src='". $challenge_obj->creator_img ."_l.jpg' width='128' height='128' alt='' /></td></tr>\n");
 				//echo ("<tr><td><input type='button' value='Send request to ". $challenger_name ."' onclick='sendPush(". $challenge_obj->id .");' /></td></tr>\n");
 			}
 			

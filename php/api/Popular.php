@@ -82,7 +82,7 @@
 			$user_arr = array();
 			
 			// get the user rows
-			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC LIMIT 250;';
+			$query = 'SELECT * FROM `tblUsers` ORDER BY `points` DESC LIMIT 100;';
 			$user_result = mysql_query($query);
 			
 			// loop thru user rows
@@ -126,7 +126,7 @@
 			$subject_arr = array();
 			
 			// get the subject rows
-			$query = 'SELECT * FROM `tblChallengeSubjects` LIMIT 250;';
+			$query = 'SELECT * FROM `tblChallengeSubjects` LIMIT 100;';
 			$subject_result = mysql_query($query);
 			
 			// loop thru subject rows
@@ -137,7 +137,7 @@
 				
 				// calculate the active challenges
 				$active = 0;
-				if ($row->status_id == "4")
+				if ($row && $row->status_id == "4")
 					$active++;
 				
 				// push into array

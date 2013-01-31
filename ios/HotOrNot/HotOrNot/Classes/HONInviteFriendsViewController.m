@@ -36,8 +36,6 @@
 - (id)init {
 	if ((self = [super init])) {
 		_friends = [NSMutableArray array];
-		
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	}
 	
 	return (self);
@@ -95,7 +93,6 @@
 #pragma mark - Navigation
 - (void)_goCancel {
 	//[self.navigationController popToRootViewControllerAnimated:YES];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -234,7 +231,6 @@
 	
 	//self.searchBar = nil;
 	//[self dismissViewControllerAnimated:YES completion:^(void){
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	//}];
 }

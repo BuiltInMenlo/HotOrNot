@@ -257,22 +257,29 @@
 	
 	//int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
 	
-	if (tabID == 2) { //&& FBSession.activeSession.state == 513) {
+	if (tabID == 2) {
 		UINavigationController *navController = (UINavigationController *)[self selectedViewController];
 		[navController popToRootViewControllerAnimated:NO];
-		
-		[HONAppDelegate toggleViewPushed:YES];
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"Y"];
 	
 	} else {
-		[HONAppDelegate toggleViewPushed:NO];
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"FB_SWITCH_HIDDEN" object:@"N"];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
+		if (tabID == 0)
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CHALLENGES_TAB" object:nil];
+		
+		else if (tabID == 1)
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+		
+		else if (tabID == 3)
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_POPULAR_TAB" object:nil];
+		
+		else if (tabID == 4)
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SETTINGS_TAB" object:nil];
+		
+		
+		//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 		self.selectedIndex = tabID;
 	}
 	
 	[self.delegate tabBarController:self didSelectViewController:[self.viewControllers objectAtIndex:tabID]];
-	//[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
 }
 
