@@ -985,8 +985,16 @@
 		if ([textField.text length] == 0 || [textField.text isEqualToString:@"#"])
 			textField.text = _subjectName;
 		
-		else
+		else {
+			NSArray *hashTags = [textField.text componentsSeparatedByString:@"#"];
+			
+			if ([hashTags count] > 2) {
+				NSString *hashTag = ([[hashTags objectAtIndex:1] hasSuffix:@" "]) ? [[hashTags objectAtIndex:1] substringToIndex:[[hashTags objectAtIndex:1] length] - 1] : [hashTags objectAtIndex:1];
+				textField.text = [NSString stringWithFormat:@"#%@", hashTag];
+			}
+			
 			_subjectName = textField.text;
+		}
 	
 	} else if (textField.tag == 1) {
 		_usernameTextField.frame = CGRectMake(16.0, _usernameTextField.frame.origin.y, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);

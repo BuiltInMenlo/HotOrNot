@@ -893,7 +893,7 @@
 		function getPreviewForSubject ($subject_name) {
 			
 			// get the id and itunes id for the subject
-			$query = 'SELECT `id`, `itunes_id` FROM `tblChallengeSubjects` WHERE `title` = "'. $subject_name .'";';
+			$query = 'SELECT `id`, `itunes_id`, `linkshare_url` FROM `tblChallengeSubjects` WHERE `title` = "'. $subject_name .'";';
 			$result = mysql_query($query);
 			
 			// prime the array
@@ -904,7 +904,8 @@
 				'artist' => "",
 				'song_name' => "",
 				'img_url' => "",
-				'itunes_url' => ""
+				'itunes_url' => "",
+				'linkshare_url' => ""
 			);
 			
 			// has results
@@ -919,7 +920,8 @@
 					'artist' => $this->itunesArtist($subject_obj->itunes_id), 
 					'song_name' => $this->itunesSongName($subject_obj->itunes_id),
 					'img_url' => $this->itunesArtworkURL($subject_obj->itunes_id),
-					'itunes_url' => $this->itunesURL($subject_obj->itunes_id)
+					'itunes_url' => $this->itunesURL($subject_obj->itunes_id),
+					'linkshare_url' => $subject_obj->linkshare_url
 				);
 			}  
 			

@@ -213,7 +213,7 @@
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
-			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {

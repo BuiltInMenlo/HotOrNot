@@ -507,53 +507,7 @@ NSString *const FacebookAppID = @"529054720443694";
 			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 				[HONAppDelegate setAllowsFBPosting:NO];
 			
-			PFQuery *appDataQuery = [PFQuery queryWithClassName:@"PicChallenge"];
-			PFObject *appDataObject = [appDataQuery getObjectWithId:@"1ZUKru9Qer"];
-			
-			NSError *error = nil;
-			NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
-																					  options:NSJSONReadingMutableContainers
-																						 error:&error];
-			
-			if (error != nil)
-				NSLog(@"Failed to parse app data list JSON: %@", [error localizedFailureReason]);
-			
-			else {
-				//NSLog(@"appDict:\n%@", appDict);
-				
-				NSMutableArray *hashtags = [NSMutableArray array];
-				for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
-					[hashtags addObject:hashtag];
-							
-				[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-				[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
-				[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"fb_path"] forKey:@"facebook_url"];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																				  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"friend_wall"], @"friend_wall",
-																				  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-																				  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"vote"],
-																				  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"poke"],
-																				  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-																				  [NSDictionary dictionaryWithObjectsAndKeys:
-																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"title"], @"title",
-																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"url"], @"url",
-																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"], @"enabled", nil],
-																				  [NSDictionary dictionaryWithObjectsAndKeys:
-																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"title"], @"title",
-																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"url"], @"url",
-																					[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"], @"enabled", nil], nil] forKey:@"web_ctas"];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-																				  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"waiting"],
-																				  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"],
-																				  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"created"], nil] forKey:@"ctas"];
-				[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																				  [[appDict objectForKey:@"add_networks"] objectForKey:@"chartboost"], @"chartboost",
-																				  [[appDict objectForKey:@"add_networks"] objectForKey:@"kiip"], @"kiip",
-																				  [[appDict objectForKey:@"add_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
-				[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
-			}
+			[self _retrieveParseObj];
 			
 			PFQuery *s3Query = [PFQuery queryWithClassName:@"S3Credentials"];
 			PFObject *s3Object = [s3Query getObjectWithId:@"zofEGq6sLT"];
@@ -634,11 +588,13 @@ NSString *const FacebookAppID = @"529054720443694";
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[FBSession.activeSession handleDidBecomeActive];
 	
-	[[Mixpanel sharedInstance] track:@"App Leaving Background"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
+	if (_isFromBackground && [HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
+		[[Mixpanel sharedInstance] track:@"App Leaving Background"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[self _retrieveParseObj];
+		
 		PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
 		PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
 	
@@ -747,6 +703,56 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 
+
+- (void)_retrieveParseObj {
+	PFQuery *appDataQuery = [PFQuery queryWithClassName:@"PicChallenge"];
+	PFObject *appDataObject = [appDataQuery getObjectWithId:@"1ZUKru9Qer"];
+	
+	NSError *error = nil;
+	NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
+																			  options:NSJSONReadingMutableContainers
+																				 error:&error];
+	
+	if (error != nil)
+		NSLog(@"Failed to parse app data list JSON: %@", [error localizedFailureReason]);
+	
+	else {
+		//NSLog(@"appDict:\n%@", appDict);
+		
+		NSMutableArray *hashtags = [NSMutableArray array];
+		for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
+			[hashtags addObject:hashtag];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"fb_path"] forKey:@"facebook_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"friend_wall"], @"friend_wall",
+																		  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																		  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"vote"],
+																		  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"poke"],
+																		  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																		  [NSDictionary dictionaryWithObjectsAndKeys:
+																			[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"title"], @"title",
+																			[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"url"], @"url",
+																			[[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"], @"enabled", nil],
+																		  [NSDictionary dictionaryWithObjectsAndKeys:
+																			[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"title"], @"title",
+																			[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"url"], @"url",
+																			[[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"], @"enabled", nil], nil] forKey:@"web_ctas"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																		  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"waiting"],
+																		  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"],
+																		  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"created"], nil] forKey:@"ctas"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [[appDict objectForKey:@"add_networks"] objectForKey:@"chartboost"], @"chartboost",
+																		  [[appDict objectForKey:@"add_networks"] objectForKey:@"kiip"], @"kiip",
+																		  [[appDict objectForKey:@"add_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
+		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
+	}
+}
 
 - (void)_registerUser {
 	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {

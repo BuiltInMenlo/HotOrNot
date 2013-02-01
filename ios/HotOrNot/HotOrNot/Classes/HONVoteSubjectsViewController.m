@@ -18,6 +18,7 @@
 #import "HONFacebookSwitchView.h"
 #import "HONVoteSubjectViewCell.h"
 #import "HONVoteSubjectVO.h"
+#import "HONVoteViewController.h"
 
 @interface HONVoteSubjectsViewController () <UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
@@ -27,6 +28,7 @@
 @property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) NSMutableDictionary *subjects;
+@property(nonatomic, strong) NSMutableArray *subjectNames;
 @end
 
 @implementation HONVoteSubjectsViewController
@@ -34,6 +36,10 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_challengeSubjectSelected:) name:@"CHALLENGE_SUBJECT_SELECTED" object:nil];
 	}
 	
 	return (self);
@@ -60,26 +66,17 @@
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSLog(@"HONVoteSubjectsViewController AFNetworking: %@", parsedLists);
 			_subjects = [NSMutableDictionary dictionary];
+			_subjectNames = [NSMutableArray array];
 			
-			int cnt = 0;
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:serverList];
 				if ([_subjects objectForKey:challengeVO.subjectName] == nil) {
 					[_subjects setObject:[NSMutableArray new] forKey:challengeVO.subjectName];
+					[_subjectNames addObject:challengeVO.subjectName];
 				}
 				
 				[[_subjects objectForKey:challengeVO.subjectName] addObject:challengeVO];
-				
-//				HONVoteSubjectVO *vo = [HONVoteSubjectVO subjectWithDictionary:serverList];
-//
-//				if (vo != nil) {
-//					NSLog(@"%d)--> ADDING SUBJECT[%@]", cnt, serverList);
-//					[_subjects addObject:vo];
-					cnt++;
-//				}
 			}
-			
-			NSLog(@"--> SUBJECTS[%@]", _subjects);
 			
 			_emptySetImgView.hidden = ([_subjects count] > 0);
 			[_tableView reloadData];
@@ -172,9 +169,22 @@
 	[self _retrieveSubjects];
 }
 
+#pragma mark - Notifications
+- (void)_refreshVoteTab:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointZero animated:YES];
+	
+	[self _retrieveSubjects];
+	[_facebookSwitchView updateSwitch];
+}
+
+- (void)_challengeSubjectSelected:(NSNotification *)notification {
+	[_tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:[(NSNumber *)[notification object] intValue] inSection:0] animated:YES scrollPosition:UITableViewScrollPositionNone];
+}
+
+
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_subjects count]);
+	return ([_subjectNames count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -193,20 +203,19 @@
 	HONVoteSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
-//		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-		cell = [[HONVoteSubjectViewCell alloc] init];
-//		cell.challengeVO = vo;
+		cell = [[HONVoteSubjectViewCell alloc] initWithSubject:[_subjectNames objectAtIndex:indexPath.row]];
+		[cell setChallenges:[_subjects objectForKey:[_subjectNames objectAtIndex:indexPath.row]]];
+		cell.index = indexPath.row;
 	}
 	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);
 }
 
+
+#pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	//HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-	//return ((vo.statusID == 1 || vo.statusID == 2) ? 399.0 : 244.0);//346.0 : 244.0);
-	
 	return (128.0);
 }
 
@@ -215,11 +224,13 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
+	return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
+	
+	[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithSubjectName:[_subjectNames objectAtIndex:indexPath.row]] animated:YES];
 }
 
 @end

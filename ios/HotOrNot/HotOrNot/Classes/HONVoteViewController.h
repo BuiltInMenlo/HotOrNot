@@ -11,6 +11,7 @@
 
 @interface HONVoteViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-- (id)initWithSubject:(int)subjectID;
+- (id)initWithSubjectID:(int)subjectID;
+- (id)initWithSubjectName:(NSString *)subjectName;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 @end

@@ -10,4 +10,13 @@
 
 @interface HONVoteSubjectViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
+- (id)initWithSubject:(NSString *)subject;
+
+#define kImgSize 100.0
+
+@property (nonatomic) int subjectID;
+@property (nonatomic) int index;
+@property (nonatomic, retain) NSMutableArray *challenges;
+@property (nonatomic, retain) NSString *subject;
+
 @end

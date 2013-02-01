@@ -287,8 +287,39 @@
 		 * @param $subject_id The ID of the subject (integer)
 		 * @return The list of challenges (array)
 		**/
-		function getChallengesForSubject($subject_id) {
+		function getChallengesForSubjectID($subject_id) {
 			$challenge_arr = array();
+			
+			// get challenges based on subject
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 2 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
+			$result = mysql_query($query);
+			
+			// loop thru challenges
+			while ($row = mysql_fetch_assoc($result))
+				array_push($challenge_arr, $this->getChallengeObj($row['id']));				
+
+			
+			// return
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);
+			
+			/*
+			example response:
+			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
+			*/
+		}
+		
+		/** 
+		 * Gets the list of challenges for a subject
+		 * @param $subject_name The name of the subject (string)
+		 * @return The list of challenges (array)
+		**/
+		function getChallengesForSubjectName($subject_name) {
+			$challenge_arr = array();
+			
+			// get the subject id
+			$query = 'SELECT `id` FROM `tblChallengeSubjects` WHERE `title` = "'. $subject_name .'";';
+			$subject_id = mysql_fetch_object(mysql_query($query))->id;
 			
 			// get challenges based on subject
 			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 2 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
@@ -356,7 +387,6 @@
 				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
 				$subject_name = mysql_fetch_object(mysql_query($query))->title;
 				
-				//array_push($subject_arr[$challenge_obj->subject_id]['challenges'], $this->getChallengeObj($challenge_obj->id));
 				array_push($challenges_arr, $this->getChallengeObj($val));
 			}
 			
@@ -531,35 +561,41 @@
 			// get challenges for a subject
 			case "2":
 				if (isset($_POST['subjectID']))
-					$votes->getChallengesForSubject($_POST['subjectID']);
+					$votes->getChallengesForSubjectID($_POST['subjectID']);
 				break;
-			
+				
 			// get specific challenge				
 			case "3":
 				if (isset($_POST['challengeID']))
 					$votes->getChallengeForChallengeID($_POST['challengeID']);
 				break;
-			
+				
 			// get a list of challenges by date
 			case "4":
 				$votes->getChallengesByDate();
 				break;
-			
+				
 			// get the voters for a challenge
 			case "5":
 				if (isset($_POST['challengeID']))
 					$votes->getVotersForChallenge($_POST['challengeID']);
 				break;
-			
+				
 			// upvote a challenge	
 			case "6":
 				if (isset($_POST['challengeID']) && isset($_POST['userID']) && isset($_POST['creator']))
 					$votes->upvoteChallenge($_POST['challengeID'], $_POST['userID'], $_POST['creator']);
 				break;
-			
+				
 			// latest challenges by subject	
 			case "7":
 				$votes->getLatestChallengesBySubject();
+				break;
+				
+			// challenges by a subject name
+			case "8":
+				if (isset($_POST['subjectName']))
+					$votes->getChallengesForSubjectName($_POST['subjectName']);
 				break;
     	}
 	}
