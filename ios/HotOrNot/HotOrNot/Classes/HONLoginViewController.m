@@ -108,7 +108,7 @@
 					[HONAppDelegate writeFBProfile:user];
 					[HONAppDelegate setAllowsFBPosting:YES];
 					
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
+					//[[NSNotificationCenter defaultCenter] postNotificationName:@"UPDATE_FB_POSTING" object:nil];
 					//if ([[HONAppDelegate infoForUser] objectForKey:@"id"] != @"1") {
 					
 					AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];

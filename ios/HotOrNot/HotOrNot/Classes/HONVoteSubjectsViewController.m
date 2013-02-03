@@ -15,7 +15,6 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONChallengeTableHeaderView.h"
-#import "HONFacebookSwitchView.h"
 #import "HONVoteSubjectViewCell.h"
 #import "HONVoteSubjectVO.h"
 #import "HONVoteViewController.h"
@@ -24,7 +23,6 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) NSMutableDictionary *subjects;
@@ -107,9 +105,6 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"HOME"];
 	[self.view addSubview:_headerView];
 	
-	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
-	[self.view addSubview:_facebookSwitchView];
-	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
 	[activityIndicatorView startAnimating];
@@ -174,7 +169,6 @@
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	
 	[self _retrieveSubjects];
-	[_facebookSwitchView updateSwitch];
 }
 
 - (void)_challengeSubjectSelected:(NSNotification *)notification {

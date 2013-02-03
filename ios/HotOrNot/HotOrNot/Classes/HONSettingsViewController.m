@@ -19,7 +19,6 @@
 #import "HONSupportViewController.h"
 #import "HONLoginViewController.h"
 #import "HONHeaderView.h"
-#import "HONFacebookSwitchView.h"
 #import "HONImagePickerViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONChallengeTableHeaderView.h"
@@ -32,7 +31,6 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSArray *captions;
 @property(nonatomic, strong) UIButton *refreshButton;
-@property(nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
@@ -90,9 +88,6 @@
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
-	
-	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
-	[self.view addSubview:_facebookSwitchView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 113.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -262,8 +257,6 @@
 	
 	_audioSwitch.on = ![HONAppDelegate audioMuted];
 	
-	[_facebookSwitchView updateSwitch];
-	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",
@@ -386,8 +379,6 @@
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
 			}
-			
-			[_facebookSwitchView updateSwitch];
 			break;
 			
 		case 4:

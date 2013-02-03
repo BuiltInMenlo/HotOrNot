@@ -24,14 +24,13 @@
 
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
-//#import "HONVoteViewController.h"
+#import "HONVoteViewController.h"
 #import "HONVoteSubjectsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONLoginViewController.h"
 #import "HONChallengeVO.h"
-#import "HONFacebookSwitchView.h"
 #import "HONUsernameViewController.h"
 #import "HONWebCTAViewController.h"
 #import "HONInviteFriendsViewController.h"
@@ -40,7 +39,6 @@ NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot
 NSString *const FacebookAppID = @"529054720443694";
 
 @interface HONAppDelegate() <UIAlertViewDelegate, KiipDelegate>
-@property (nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic, strong) UIImageView *bgImgView;
@@ -803,7 +801,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
-	voteViewController = [[HONVoteSubjectsViewController alloc] init];//[[HONVoteViewController alloc] init];
+	voteViewController = [[HONVoteViewController alloc] init];//[[HONVoteSubjectsViewController alloc] init];//
 	popularViewController = [[HONPopularViewController alloc] init];
 	createChallengeViewController = [[HONImagePickerViewController alloc] init];
 	settingsViewController = [[HONSettingsViewController alloc] init];
@@ -821,10 +819,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	[navController5 setNavigationBarHidden:YES];
 	
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
-	
-	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
-	//[self.window addSubview:_facebookSwitchView];
-	_facebookSwitchView.hidden = YES;
 }
 
 - (void)_testParseCloudCode {

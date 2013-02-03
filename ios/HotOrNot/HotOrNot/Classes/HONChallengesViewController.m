@@ -23,7 +23,6 @@
 #import "HONVoteViewController.h"
 #import "HONHeaderView.h"
 #import "HONFacebookCaller.h"
-#import "HONFacebookSwitchView.h"
 #import "HONChallengePreviewViewController.h"
 #import "HONChallengeTableHeaderView.h"
 
@@ -41,7 +40,6 @@
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) NSMutableArray *friends;
-@property(nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @property(nonatomic, retain) HONChallengePreviewViewController *previewViewController;
 @property(nonatomic) int blockCounter;
 
@@ -109,9 +107,6 @@
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
-	
-	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
-	[self.view addSubview:_facebookSwitchView];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
@@ -463,8 +458,6 @@
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 	[self _retrieveUser];
-	
-	[_facebookSwitchView updateSwitch];
 }
 
 

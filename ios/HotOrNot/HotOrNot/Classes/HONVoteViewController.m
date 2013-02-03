@@ -16,7 +16,6 @@
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 #import "HONFacebookCaller.h"
-#import "HONFacebookSwitchView.h"
 #import "HONImagePickerViewController.h"
 #import "HONHeaderView.h"
 #import "HONChallengeTableHeaderView.h"
@@ -38,7 +37,6 @@
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
-@property(nonatomic, strong) HONFacebookSwitchView *facebookSwitchView;
 @end
 
 @implementation HONVoteViewController
@@ -161,10 +159,6 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? _challengeVO.subjectName : @"HOME"];
 	[self.view addSubview:_headerView];
-	
-	_facebookSwitchView = [[HONFacebookSwitchView alloc] init];
-	[self.view addSubview:_facebookSwitchView];
-	_facebookSwitchView.hidden = _isPushView;
 	
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -521,8 +515,6 @@
 	
 	else
 		[self _retrieveChallenges];
-	
-	[_facebookSwitchView updateSwitch];
 }
 
 - (void)_showNotInSessionDetails:(NSNotification *)notification {

@@ -314,7 +314,7 @@
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
 	if ([vo isEqual:_challengeVO]) {
-		[self _playVoteSFX];
+		//[self _playVoteSFX];
 		[_vsImageView removeFromSuperview];
 		
 		[_votesButton setBackgroundImage:[UIImage imageNamed:@"vote_voted_nonActive"] forState:UIControlStateNormal];
@@ -384,7 +384,7 @@
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
 	if ([vo isEqual:_challengeVO]) {
-		[self _playVoteSFX];
+		//[self _playVoteSFX];
 		[_vsImageView removeFromSuperview];
 		
 		[_votesButton setBackgroundImage:[UIImage imageNamed:@"vote_voted_nonActive"] forState:UIControlStateNormal];
