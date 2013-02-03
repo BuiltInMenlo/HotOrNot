@@ -33,23 +33,32 @@ function removeElement($arr, $element) {
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<meta charset="utf-8" />
 		<title></title>
 		<style type="text/css" rel="stylesheet" media="screen">
 			html, body {font-family:Verdana, Arial, sans-serif; font-size:14px;}
+			.tdResults, #results {font-size:10; color:#ff0000;}
 		</style>
 		
+		<script type="text/javascript" src="./jquery-1.4.2.min.js"></script>
 		<script type="text/javascript">
 			function submitVote(challengeID, voterID, isCreator) {
 				var frmVote = document.getElementById('frmVote');
 					frmVote.hidChallengeID.value = challengeID;
 					frmVote.hidVoterID.value = voterID;
 					frmVote.hidForCreator.value = isCreator;
-					frmVote.submit();
+					//frmVote.submit();
+					
+					$.post('submit_vote.php', $('#frmVote').serialize(), function(data) {
+						var results_arr = data.split("|");
+						$("#divScore_" + results_arr[0] + "_" + results_arr[1]).html(results_arr[2]);
+						$("#divResults_" + results_arr[0] + "_" + results_arr[1]).html(results_arr[3]);
+     				});
 			}
 		</script>
 	</head>
 	<body>
-		<form id="frmVote" name="frmVote" method="post" action="./submit_vote.php">
+		<form id="frmVote" name="frmVote">
 			<input id="hidChallengeID" name="hidChallengeID" value="" type="hidden" />
 			<input id="hidVoterID" name="hidVoterID" value="" type="hidden" />
 			<input id="hidForCreator" name="hidForCreator" value="" type="hidden" />
@@ -97,7 +106,7 @@ function removeElement($arr, $element) {
 				
 				echo ("\t\t\t<tr><td align=\"center\" colspan=\"2\"><a name=\"". $challenge_obj->id ."\" />". $creator_name ." has challenged ". $challenger_name ." to a ". $subject_name ." challenge</td></tr>\n");
 				echo ("\t\t\t<tr><td align=\"center\" width=\"50%\"><img src=\"". $challenge_obj->creator_img ."_l.jpg\" width=\"256\" height=\"256\" alt=\"\" /></td><td align=\"center\" width=\"50%\"><img src=\"". $challenge_obj->challenger_img ."_l.jpg\" width=\"256\" height=\"256\" alt=\"\" /></td></tr>\n");
-				echo ("\t\t\t<tr><td align=\"center\" width=\"50%\"><input type=\"button\" value=\"VOTE!\" onclick=\"submitVote(". $challenge_obj->id .", ". $userID_arr[$ind_rnd] .", 1);\" />". $score_arr['creator'] ."</td><td align=\"center\" width=\"50%\"><input type=\"button\" value=\"VOTE!\" onclick=\"submitVote(". $challenge_obj->id .", ". $userID_arr[$ind_rnd] .", 0);\" />". $score_arr['challenger'] ."</td></tr>\n");
+				echo ("\t\t\t<tr><td align=\"center\" width=\"50%\"><div id='divScore_". $challenge_obj->id ."_0'>". $score_arr['creator'] ."</div><input type=\"button\" value=\"VOTE!\" onclick=\"submitVote(". $challenge_obj->id .", ". $userID_arr[$ind_rnd] .", 1);\" /><div id='divResults_". $challenge_obj->id ."_0'></div></td><td align=\"center\" width=\"50%\"><div id='divScore_". $challenge_obj->id ."_1'>". $score_arr['challenger'] ."</div><input type=\"button\" value=\"VOTE!\" onclick=\"submitVote(". $challenge_obj->id .", ". $userID_arr[$ind_rnd] .", 0);\" /><div id='divResults_". $challenge_obj->id ."_1'></td></tr>\n");
 			} ?>
 		</table>
 	</body>

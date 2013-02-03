@@ -36,29 +36,37 @@ if (isset($_POST['hidChallengeID']) && isset($_POST['hidVoterID']) && isset($_PO
 				$score_arr['challenger']++;
 		}
 		
+		$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $_POST['hidVoterID'] .';';
+		$voter_name = mysql_fetch_object(mysql_query($query))->username;
+		
+		
 		$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $winningID .';';
 		$winningUser_obj = mysql_fetch_object(mysql_query($query));
 		
-		if ($winningUser_obj->notifications == "Y") {
-			$msg = ($_POST['hidForCreator'] == 1) ? '{"device_tokens": ["'. $winningUser_obj->device_token .'"], "type":"1", "aps": {"alert": "Your '. $subject_name .' challenge has received '. $score_arr['creator'] .' total upvotes!", "sound": "push_01.caf"}}' : '{"device_tokens": ["'. $winningUser_obj->device_token .'"], "type":"1", "aps": {"alert": "Your '. $subject_name .' challenge has received '. $score_arr['challenger'] .' total upvotes!", "sound": "push_01.caf"}}';
-			
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-			//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-			curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-			curl_setopt($ch, CURLOPT_POST, TRUE);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-			$res = curl_exec($ch);
-			$err_no = curl_errno($ch);
-			$err_msg = curl_error($ch);
-			$header = curl_getinfo($ch);
-			curl_close($ch);
-		}
+		// if ($winningUser_obj->notifications == "Y") {
+		// 	$msg = ($_POST['hidForCreator'] == 1) ? '{"device_tokens": ["'. $winningUser_obj->device_token .'"], "type":"1", "aps": {"alert": "Your '. $subject_name .' challenge has received '. $score_arr['creator'] .' total upvotes!", "sound": "push_01.caf"}}' : '{"device_tokens": ["'. $winningUser_obj->device_token .'"], "type":"1", "aps": {"alert": "Your '. $subject_name .' challenge has received '. $score_arr['challenger'] .' total upvotes!", "sound": "push_01.caf"}}';
+		// 	
+		// 	$ch = curl_init();
+		// 	curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+		// 	//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+		// 	curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
+		// 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		// 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		// 	curl_setopt($ch, CURLOPT_POST, TRUE);
+		// 	curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
+		// 	$res = curl_exec($ch);
+		// 	$err_no = curl_errno($ch);
+		// 	$err_msg = curl_error($ch);
+		// 	$header = curl_getinfo($ch);
+		// 	curl_close($ch);
+		// }
 	
 	} else 
 		$vote_id = mysql_fetch_object($result)->id;
+		
+	$vote_cell = ($_POST['hidForCreator'] == 1) ? "0|" : "1|";
+	$score_cell = ($_POST['hidForCreator'] == 1) ? $score_arr['creator'] : $score_arr['challenger'];
+	echo ($_POST['hidChallengeID'] ."|". $vote_cell . $score_cell ."|casted by ". $voter_name);
 }
 
 if ($db_conn) {
@@ -67,7 +75,3 @@ if ($db_conn) {
 }
 
 ?>
-
-<html><head>
-	<script>location.href = "./votes.php#<?php echo($_POST['hidChallengeID']);?>";</script>
-</body></html>
