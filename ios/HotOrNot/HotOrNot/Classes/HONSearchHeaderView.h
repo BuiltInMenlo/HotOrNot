@@ -1,5 +1,5 @@
 //
-//  HONChallengeTableHeaderView.h
+//  HONSearchHeaderView.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 01.05.13.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONChallengeTableHeaderView : UIView
+@interface HONSearchHeaderView : UIView
 
 @property (nonatomic, retain) UIButton *inviteFriendsButton;
 @property (nonatomic, retain) UIButton *dailyChallengeButton;

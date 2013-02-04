@@ -18,7 +18,7 @@
 #import "HONFacebookCaller.h"
 #import "HONImagePickerViewController.h"
 #import "HONHeaderView.h"
-#import "HONChallengeTableHeaderView.h"
+#import "HONSearchHeaderView.h"
 #import "HONVotersViewController.h"
 #import "HONLoginViewController.h"
 #import "HONVoteDetailsViewController.h"
@@ -616,7 +616,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONChallengeTableHeaderView *headerView = [[HONChallengeTableHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
+	HONSearchHeaderView *headerView = [[HONSearchHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
 	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
 	[headerView.dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 		

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C067D121698BF3A004B99BB /* HONChallengeTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */; };
 		4C07B8E916A0E1F700E061FD /* HONVoteDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */; };
 		4C0C406B162BCCC0007F0DA3 /* cancelButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */; };
 		4C0C406C162BCCC0007F0DA3 /* cancelButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */; };
@@ -157,6 +156,7 @@
 		4C3E888616A3C050003301AF /* shareLarge_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E888216A3C050003301AF /* shareLarge_nonActive@2x.png */; };
 		4C41097015FAE42E00E34F4E /* HONPopularSubjectViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41096F15FAE42E00E34F4E /* HONPopularSubjectViewCell.m */; };
 		4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */; };
+		4C48745816BF0E36007D901B /* HONSearchHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchHeaderView.m */; };
 		4C51173D1623A20D00370D3A /* MPCJSONDataSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5117331623A20D00370D3A /* MPCJSONDataSerializer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C51173E1623A20D00370D3A /* MPCJSONSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5117351623A20D00370D3A /* MPCJSONSerializer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C51173F1623A20D00370D3A /* MPCSerializedJSONData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5117371623A20D00370D3A /* MPCSerializedJSONData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -410,8 +410,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4C067D101698BF3A004B99BB /* HONChallengeTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeTableHeaderView.h; sourceTree = "<group>"; };
-		4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeTableHeaderView.m; sourceTree = "<group>"; };
 		4C07B8E716A0E1F700E061FD /* HONVoteDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteDetailsViewController.h; sourceTree = "<group>"; };
 		4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteDetailsViewController.m; sourceTree = "<group>"; };
 		4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_Active.png; sourceTree = "<group>"; };
@@ -573,6 +571,8 @@
 		4C41096F15FAE42E00E34F4E /* HONPopularSubjectViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularSubjectViewCell.m; sourceTree = "<group>"; };
 		4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONImagePickerViewController.h; sourceTree = "<group>"; };
 		4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONImagePickerViewController.m; sourceTree = "<group>"; };
+		4C48745616BF0E36007D901B /* HONSearchHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchHeaderView.h; sourceTree = "<group>"; };
+		4C48745716BF0E36007D901B /* HONSearchHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchHeaderView.m; sourceTree = "<group>"; };
 		4C5117321623A20D00370D3A /* MPCJSONDataSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPCJSONDataSerializer.h; sourceTree = "<group>"; };
 		4C5117331623A20D00370D3A /* MPCJSONDataSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPCJSONDataSerializer.m; sourceTree = "<group>"; };
 		4C5117341623A20D00370D3A /* MPCJSONSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPCJSONSerializer.h; sourceTree = "<group>"; };
@@ -1549,14 +1549,14 @@
 				4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */,
 				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
 				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
+				4C48745616BF0E36007D901B /* HONSearchHeaderView.h */,
+				4C48745716BF0E36007D901B /* HONSearchHeaderView.m */,
 				4C516435167EC39D00EB3C09 /* HONFacebookSwitchView.h */,
 				4C516436167EC39D00EB3C09 /* HONFacebookSwitchView.m */,
 				4CB472F3168C176D007153DF /* HONWebCTAViewController.h */,
 				4CB472F4168C176D007153DF /* HONWebCTAViewController.m */,
 				4CB472F7168C26AB007153DF /* HONInviteFriendsViewController.h */,
 				4CB472F8168C26AC007153DF /* HONInviteFriendsViewController.m */,
-				4C067D101698BF3A004B99BB /* HONChallengeTableHeaderView.h */,
-				4C067D111698BF3A004B99BB /* HONChallengeTableHeaderView.m */,
 				4CA944AB169A0D2E00507A08 /* HONAlternatingRowsViewCell.h */,
 				4CA944AC169A0D2E00507A08 /* HONAlternatingRowsViewCell.m */,
 			);
@@ -2510,7 +2510,6 @@
 				4CB472F5168C176D007153DF /* HONWebCTAViewController.m in Sources */,
 				4CB472F9168C26AC007153DF /* HONInviteFriendsViewController.m in Sources */,
 				4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */,
-				4C067D121698BF3A004B99BB /* HONChallengeTableHeaderView.m in Sources */,
 				4CA944AD169A0D2F00507A08 /* HONAlternatingRowsViewCell.m in Sources */,
 				4C07B8E916A0E1F700E061FD /* HONVoteDetailsViewController.m in Sources */,
 				4CA0852916A12FD900673F3A /* AFHTTPClient.m in Sources */,
@@ -2525,6 +2524,7 @@
 				4C3DA1B016BA167A00261651 /* HONVoteSubjectsViewController.m in Sources */,
 				4C3DA1B416BA202900261651 /* HONVoteSubjectViewCell.m in Sources */,
 				4C3DA1BC16BA4D3400261651 /* HONVoteSubjectVO.m in Sources */,
+				4C48745816BF0E36007D901B /* HONSearchHeaderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
