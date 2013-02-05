@@ -52,4 +52,8 @@
 }
 
 
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_RESULTS" object:nil];
+}
+
 @end
