@@ -34,6 +34,7 @@
 #import "HONUsernameViewController.h"
 #import "HONWebCTAViewController.h"
 #import "HONInviteFriendsViewController.h"
+#import "HONSearchViewController.h"
 
 NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
 NSString *const FacebookAppID = @"529054720443694";
@@ -439,6 +440,12 @@ NSString *const FacebookAppID = @"529054720443694";
 	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_showSearchResults:(NSNotification *)notification {
+	NSLog(@"_showSearchResults");
+	
+	[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONSearchViewController alloc] init] animated:YES];
+}
+
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -449,6 +456,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchResults:) name:@"SHOW_SEARCH_RESULTS" object:nil];
 	
 	//[self _testParseCloudCode];
 	

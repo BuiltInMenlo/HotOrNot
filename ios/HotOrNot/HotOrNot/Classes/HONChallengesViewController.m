@@ -25,7 +25,6 @@
 #import "HONFacebookCaller.h"
 #import "HONChallengePreviewViewController.h"
 #import "HONSearchHeaderView.h"
-#import "HONSearchViewController.h"
 
 
 @interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, TapForTapAdViewDelegate>
@@ -62,7 +61,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchResults:) name:@"SHOW_SEARCH_RESULTS" object:nil];
 	}
 	
 	return (self);
@@ -461,11 +459,6 @@
 	[self _retrieveChallenges];
 	[self _retrieveUser];
 }
-
-- (void)_showSearchResults:(NSNotification *)notification {
-	[self.navigationController pushViewController:[[HONSearchViewController alloc] init] animated:YES];
-}
-
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
