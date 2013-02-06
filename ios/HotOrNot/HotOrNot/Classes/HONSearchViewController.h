@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface HONSearchViewController : UIViewController
-
+- (id)initWithTitle:(NSString *)title;
 @end

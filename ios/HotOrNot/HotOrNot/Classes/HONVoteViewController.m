@@ -26,6 +26,7 @@
 @interface HONVoteViewController()
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) NSString *subjectName;
+@property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) UIImageView *tutorialOverlayImgView;
 @property(nonatomic, strong) UIImageView *toggleImgView;
 @property(nonatomic, strong) UITableView *tableView;
@@ -91,8 +92,35 @@
 - (id)initWithSubjectName:(NSString *)subjectName {
 	if ((self = [super init])) {
 		_isPushView = YES;
-		
 		_subjectName = subjectName;
+		
+		self.view.backgroundColor = [UIColor whiteColor];
+		_challenges = [NSMutableArray new];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionCreatorDetails:) name:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionChallengerDetails:) name:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newCreatorChallenge:) name:@"NEW_CREATOR_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallengerChallenge:) name:@"NEW_CHALLENGER_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newSubjectChallenge:) name:@"NEW_SUBJECT_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
+	}
+	
+	return (self);
+}
+
+
+- (id)initWithUsername:(NSString *)username {
+	if ((self = [super init])) {
+		_isPushView = YES;
+		
+		_subjectID = 0;
+		_challengeVO = nil;
+		_subjectName = nil;
+		_username = username;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		_challenges = [NSMutableArray new];
@@ -118,6 +146,7 @@
 		
 		_subjectID = 0;
 		_challengeVO = vo;
+		_subjectName = _challengeVO.subjectName;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		_challenges = [NSMutableArray new];
@@ -157,7 +186,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? _challengeVO.subjectName : @"HOME"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? _subjectName : @"HOME"];
 	[self.view addSubview:_headerView];
 	
 	if (_isPushView) {
@@ -261,9 +290,14 @@
 			[params setObject:[NSString stringWithFormat:@"%d", 8] forKey:@"action"];
 			[params setObject:_subjectName forKey:@"subjectName"];
 			
-		} else
-			[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
-	
+		} else {
+			if (_username != nil) {
+				[params setObject:_username forKey:@"username"];
+				[params setObject:[NSString stringWithFormat:@"%d", 9] forKey:@"action"];
+				
+			} else
+				[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+		}
 	} else {
 		[params setObject:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
 		[params setObject:[NSString stringWithFormat:@"%d", _subjectID] forKey:@"subjectID"];
@@ -360,6 +394,7 @@
 		}
 	}];
 }
+
 
 #pragma mark - Navigation
 - (void)_goBack {

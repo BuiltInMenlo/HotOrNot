@@ -440,10 +440,20 @@ NSString *const FacebookAppID = @"529054720443694";
 	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_showSearchResults:(NSNotification *)notification {
-	NSLog(@"_showSearchResults");
+- (void)_showSubjectSearchResults:(NSNotification *)notification {
+//	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
+//	[navigationController pushViewController:[[HONVoteViewController alloc] initWithSubjectName:[notification object]] animated:YES];
 	
-	[self.tabBarController.selectedViewController.navigationController pushViewController:[[HONSearchViewController alloc] init] animated:YES];
+	HONSearchViewController *searchViewController = [[HONSearchViewController alloc] init];
+	[self.window addSubview:searchViewController.view];
+}
+
+- (void)_showUserSearchResults:(NSNotification *)notification {
+//	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
+//	[navigationController pushViewController:[[HONVoteViewController alloc] initWithUsername:[notification object]] animated:YES];
+	
+	HONSearchViewController *searchViewController = [[HONSearchViewController alloc] init];
+	[self.window addSubview:searchViewController.view];
 }
 
 
@@ -456,7 +466,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchResults:) name:@"SHOW_SEARCH_RESULTS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchResults:) name:@"SHOW_SUBJECT_SEARCH_RESULTS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchResults:) name:@"SHOW_USER_SEARCH_RESULTS" object:nil];
 	
 	//[self _testParseCloudCode];
 	

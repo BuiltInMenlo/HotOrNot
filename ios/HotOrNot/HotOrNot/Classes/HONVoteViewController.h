@@ -14,4 +14,5 @@
 - (id)initWithSubjectID:(int)subjectID;
 - (id)initWithSubjectName:(NSString *)subjectName;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
+- (id)initWithUsername:(NSString *)username;
 @end

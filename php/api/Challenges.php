@@ -728,6 +728,7 @@
 			*/
 		}
 		
+		
 		/** 
 		 * Gets the next 10 challenges for a user prior to a date
 		 * @param $user_id The user's ID to get challenges for (integer)
@@ -984,7 +985,7 @@
 					$challenges->getChallengesForUser($_POST['userID']);
 				break;
 				
-			case "3":				
+			case "3":
 				break;
 			
 			// accept a challenge
