@@ -84,9 +84,10 @@ extern NSString *const FacebookAppID;
 + (UIColor *)honGreyTxtColor;
 
 
-#define kUsersAPI @"Users.php"
 #define kChallengesAPI @"Challenges.php"
 #define kPopularAPI @"Popular.php"
+#define kSearchAPI @"Search.php"
+#define kUsersAPI @"Users.php"
 #define kVotesAPI @"Votes.php"
 
 #define kThumb1W 50.0

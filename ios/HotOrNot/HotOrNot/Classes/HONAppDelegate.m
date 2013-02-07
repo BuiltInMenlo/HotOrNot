@@ -44,6 +44,7 @@ NSString *const FacebookAppID = @"529054720443694";
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic, strong) UIImageView *bgImgView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
+@property(nonatomic, strong) HONSearchViewController *searchViewController;
 - (void)_registerUser;
 @end
 
@@ -440,20 +441,41 @@ NSString *const FacebookAppID = @"529054720443694";
 	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_showSubjectSearchResults:(NSNotification *)notification {
-//	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-//	[navigationController pushViewController:[[HONVoteViewController alloc] initWithSubjectName:[notification object]] animated:YES];
+- (void)_showSearchResults:(NSNotification *)notification {
+	_searchViewController = [[HONSearchViewController alloc] init];
+	[self.window addSubview:_searchViewController.view];
 	
-	HONSearchViewController *searchViewController = [[HONSearchViewController alloc] init];
-	[self.window addSubview:searchViewController.view];
+	_searchViewController.view.frame = CGRectMake(0.0, 120.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
 }
 
+- (void)_hideSearchResults:(NSNotification *)notification {
+	[_searchViewController.view removeFromSuperview];
+}
+
+
+- (void)_showSubjectSearchResults:(NSNotification *)notification {
+	[_searchViewController retrieveSubjects:[notification object]];
+	//[self.window addSubview:_searchViewController.view];
+}
+
+
 - (void)_showUserSearchResults:(NSNotification *)notification {
-//	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-//	[navigationController pushViewController:[[HONVoteViewController alloc] initWithUsername:[notification object]] animated:YES];
+	[_searchViewController retrieveUsers:[notification object]];
+	//[self.window addSubview:_searchViewController.view];
+}
+
+- (void)_showSubjectSearchTimeline:(NSNotification *)notification {
+	[_searchViewController.view removeFromSuperview];
 	
-	HONSearchViewController *searchViewController = [[HONSearchViewController alloc] init];
-	[self.window addSubview:searchViewController.view];
+	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
+	[navigationController pushViewController:[[HONVoteViewController alloc] initWithSubjectName:[notification object]] animated:YES];
+}
+
+- (void)_showUserSearchTimeline:(NSNotification *)notification {
+	[_searchViewController.view removeFromSuperview];
+	
+	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
+	[navigationController pushViewController:[[HONVoteViewController alloc] initWithUsername:[notification object]] animated:YES];
 }
 
 
@@ -466,8 +488,12 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchResults:) name:@"SHOW_SEARCH_RESULTS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchResults:) name:@"HIDE_SEARCH_RESULTS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchResults:) name:@"SHOW_SUBJECT_SEARCH_RESULTS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchResults:) name:@"SHOW_USER_SEARCH_RESULTS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 	
 	//[self _testParseCloudCode];
 	

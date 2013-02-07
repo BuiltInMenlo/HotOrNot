@@ -33,7 +33,7 @@
 		_inviteFriendsButton.frame = CGRectMake(0.0, 0.0, 91.0, 70.0);
 		[_inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_nonActive"] forState:UIControlStateNormal];
 		[_inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateHighlighted];
-		[self addSubview:_inviteFriendsButton];
+		//[self addSubview:_inviteFriendsButton];
 		
 		_dailyChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_dailyChallengeButton.frame = CGRectMake(91.0, 0.0, 229.0, 70.0);
@@ -43,7 +43,7 @@
 		[_dailyChallengeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 		_dailyChallengeButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
 		[_dailyChallengeButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
-		[self addSubview:_dailyChallengeButton];
+		//[self addSubview:_dailyChallengeButton];
 		
 		_userButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_userButton.frame = CGRectMake(0.0, 44.0, 160.0, 35.0);
@@ -104,6 +104,8 @@
 	
 	[_userButton setSelected:_isUser];
 	[_subjectButton setSelected:!_isUser];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_RESULTS" object:searchBar.text];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {

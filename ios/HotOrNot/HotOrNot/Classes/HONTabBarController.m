@@ -281,6 +281,7 @@
 	
 	[self.delegate tabBarController:self didSelectViewController:[self.viewControllers objectAtIndex:tabID]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_RESULTS" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

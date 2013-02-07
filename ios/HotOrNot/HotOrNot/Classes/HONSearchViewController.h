@@ -9,5 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface HONSearchViewController : UIViewController
-- (id)initWithTitle:(NSString *)title;
+- (id)initAsUserSearch:(NSString *)username;
+- (id)initAsSubjectSearch:(NSString *)subject;
+
+- (void)retrieveUsers:(NSString *)username;
+- (void)retrieveSubjects:(NSString *)subject;
 @end
