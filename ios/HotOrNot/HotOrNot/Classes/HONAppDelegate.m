@@ -123,6 +123,10 @@ NSString *const FacebookAppID = @"529054720443694";
 	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
 }
 
++ (NSArray *)searchSubjects {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"search_subjects"]);
+}
+
 + (void)writeDeviceToken:(NSString *)token {
 	[[NSUserDefaults standardUserDefaults] setObject:token forKey:@"device_token"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -442,14 +446,22 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 - (void)_showSearchResults:(NSNotification *)notification {
+	if (_searchViewController != nil) {
+		[_searchViewController.view removeFromSuperview];
+		_searchViewController = nil;
+	}
+	
 	_searchViewController = [[HONSearchViewController alloc] init];
 	[self.window addSubview:_searchViewController.view];
 	
-	_searchViewController.view.frame = CGRectMake(0.0, 120.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
+	_searchViewController.view.frame = CGRectMake(0.0, 140.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
 }
 
 - (void)_hideSearchResults:(NSNotification *)notification {
-	[_searchViewController.view removeFromSuperview];
+	if (_searchViewController != nil) {
+		[_searchViewController.view removeFromSuperview];
+		_searchViewController = nil;
+	}
 }
 
 
@@ -766,6 +778,10 @@ NSString *const FacebookAppID = @"529054720443694";
 		for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
 			[hashtags addObject:hashtag];
 		
+		NSMutableArray *subjects = [NSMutableArray array];
+		for (NSString *hashtag in [appDict objectForKey:@"search_hashtags"])
+			[subjects addObject:hashtag];
+		
 		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"fb_path"] forKey:@"facebook_url"];
@@ -794,6 +810,7 @@ NSString *const FacebookAppID = @"529054720443694";
 																		  [[appDict objectForKey:@"add_networks"] objectForKey:@"kiip"], @"kiip",
 																		  [[appDict objectForKey:@"add_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
 		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
+		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
 	}
 }
 

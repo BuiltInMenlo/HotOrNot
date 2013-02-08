@@ -34,19 +34,8 @@
 
 @implementation HONSearchViewController
 
-- (id)initAsUserSearch:(NSString *)username {
+- (id)init {
 	if ((self = [super init])) {
-		_isUser = YES;
-		_username = username;
-	}
-	
-	return (self);
-}
-
-- (id)initAsSubjectSearch:(NSString *)subject {
-	if ((self = [super init])) {
-		_isUser = NO;
-		_subject = subject;
 	}
 	
 	return (self);
@@ -60,6 +49,7 @@
 #pragma mark - Data Calls
 - (void)retrieveUsers:(NSString *)username {
 	_username = username;
+	_isUser = YES;
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Searching Users…";
@@ -122,6 +112,7 @@
 
 - (void)retrieveSubjects:(NSString *)subject {
 	_subject = subject;
+	_isUser = NO;
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Searching Hashtags…";
@@ -187,10 +178,10 @@
 - (void)loadView {
 	[super loadView];
 	
-	_results = [NSMutableArray array];
+	_isUser = NO;
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 188.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -198,6 +189,19 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	_results = [NSMutableArray array];
+	for (NSString *subject in [HONAppDelegate searchSubjects]) {
+		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+									 [NSNumber numberWithInt:0], @"id",
+									 [NSNumber numberWithInt:arc4random() % 100], @"score",
+									 [NSNumber numberWithInt:0], @"active",
+									 subject, @"name", nil];
+		[_results addObject:[HONPopularSubjectVO subjectWithDictionary:dict]];
+	}
+	
+	
+	[_tableView reloadData];
 }
 
 - (void)viewDidLoad {

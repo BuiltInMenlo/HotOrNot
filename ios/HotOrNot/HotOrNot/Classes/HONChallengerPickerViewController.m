@@ -8,6 +8,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
+#import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMessageComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -22,7 +24,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONChallengerPickerViewController () <UITextFieldDelegate, UISearchBarDelegate, FBFriendPickerDelegate, TapForTapAdViewDelegate> {
+@interface HONChallengerPickerViewController () <MFMessageComposeViewControllerDelegate, UITextFieldDelegate, UISearchBarDelegate, FBFriendPickerDelegate, TapForTapAdViewDelegate> {
 	CGFloat fbHeaderHeight;
 }
 
@@ -121,8 +123,6 @@
 	//NSLog(@"loadView");
 	[super loadView];
 	
-	
-	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
 	[self.view addSubview:bgImgView];
@@ -171,8 +171,6 @@
 	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 	[subjectBGImageView addSubview:_editButton];
 	
-	
-	
 	_randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_randomButton.frame = CGRectMake(23.0, 203.0, 274.0, 74.0);
 	[_randomButton setBackgroundImage:[UIImage imageNamed:@"submitChallengeButton2_nonActive"] forState:UIControlStateNormal];
@@ -184,7 +182,8 @@
 	_loginFriendsButton.frame = CGRectMake(23.0, 300.0, 274.0, 58.0);
 	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_nonActive"] forState:UIControlStateNormal];
 	[_loginFriendsButton setBackgroundImage:[UIImage imageNamed:@"challengeFacebookFriends_Active"] forState:UIControlStateHighlighted];
-	[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+	[_loginFriendsButton addTarget:self action:@selector(_goSMS) forControlEvents:UIControlEventTouchUpInside];
+	//[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_loginFriendsButton];
 	
 	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 55.0, 320.0, 55.0)];
@@ -343,6 +342,20 @@
 	// Use the modal wrapper method to display the picker.
 	[self presentViewController:self.friendPickerController animated:YES completion:^(void){[self addSearchBarToFriendPickerView];}];
 }
+
+-(void)_goSMS {
+	[[Mixpanel sharedInstance] track:@"Preview Challenge - SMS Composer"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+	messageComposeViewController.messageComposeDelegate = self;
+	messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
+	messageComposeViewController.body = [NSString stringWithFormat:@"%@ has challenged you to a %@ challenge!", [[HONAppDelegate infoForUser] objectForKey:@"name"], _subjectName];
+	
+	[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+}
+
 
 - (void)_goFriendChallenge {
 	//NSData *imageData = UIImageJPEGRepresentation(_image, kJPEGCompress);
@@ -915,6 +928,32 @@
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	
+	switch (result) {
+		case MessageComposeResultCancelled:
+			NSLog(@"Result: canceled");
+			break;
+			
+		case MessageComposeResultSent:
+			NSLog(@"Result: sent");
+			_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+			[self _goRandomChallenge];
+			break;
+			
+		case MessageComposeResultFailed:
+			NSLog(@"Result: failed");
+			break;
+			
+		default:
+			NSLog(@"Result: not sent");
+			break;
+	}
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - UISearchBarDelegate Methods
 - (void)searchBarSearchButtonClicked:(UISearchBar*)searchBar
 {
@@ -934,9 +973,9 @@
 	FBSession *session = (FBSession *)[notification object];
 	NSLog(@"FBSession:[%d] (HONChallengerPickerViewController)", session.state);
 	
-	[_loginFriendsButton removeTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
-	[_loginFriendsButton removeTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
-	[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+//	[_loginFriendsButton removeTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
+//	[_loginFriendsButton removeTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+//	[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - TextField Delegates
@@ -956,7 +995,7 @@
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		[_randomButton removeTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
-		[_loginFriendsButton removeTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+		[_loginFriendsButton removeTarget:self action:@selector(_goSMS) forControlEvents:UIControlEventTouchUpInside];//[_loginFriendsButton removeTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 		
 		textField.text = @"";
 		_usernameTextField.frame = CGRectMake(1.0, _usernameTextField.frame.origin.y, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
@@ -1006,7 +1045,7 @@
 			_bgTextImageView.hidden = YES;
 			
 			[_randomButton addTarget:self action:@selector(_goRandomChallenge) forControlEvents:UIControlEventTouchUpInside];
-			[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+			[_loginFriendsButton addTarget:self action:@selector(_goSMS) forControlEvents:UIControlEventTouchUpInside];//[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 		}];
 		
 		if ([textField.text length] == 0)

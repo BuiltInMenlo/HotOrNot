@@ -257,7 +257,7 @@
 			$challenge_arr = array();
 			
 			// get available challenge rows
-			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 2 OR `status_id` = 4 ORDER BY `added` DESC LIMIT 100;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 2 OR `status_id` = 4 ORDER BY `added` DESC LIMIT 250;';
 			$result = mysql_query($query);
 			
 			// loop thru rows

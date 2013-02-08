@@ -119,6 +119,8 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_searchBar.frame = CGRectMake(0.0, 35.0, 320.0, 44.0);
 	}];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_RESULTS" object:nil];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {

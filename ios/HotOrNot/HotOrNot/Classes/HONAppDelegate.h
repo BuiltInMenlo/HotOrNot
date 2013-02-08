@@ -37,6 +37,7 @@ extern NSString *const FacebookAppID;
 + (BOOL)isKiipEnabled;
 + (BOOL)isTapForTapEnabled;
 + (NSString *)rndDefaultSubject;
++ (NSArray *)searchSubjects;
 
 - (BOOL)openSession;
 + (void)writeDeviceToken:(NSString *)token;
