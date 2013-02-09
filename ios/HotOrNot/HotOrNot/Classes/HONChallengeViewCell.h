@@ -15,6 +15,7 @@
 + (NSString *)cellReuseIdentifier;
 - (id)initAsGreyChallengeCell:(BOOL)grey;
 - (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled;
+- (void)disableLoadMore;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @end

@@ -655,6 +655,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 	}
 	
 //	Chartboost *cb = [Chartboost sharedChartboost];
@@ -667,8 +669,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	if (_isFromBackground && [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"] isEqualToString:@"Y"])
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

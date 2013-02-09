@@ -12,6 +12,7 @@
 #import "HONAppDelegate.h"
 
 @interface HONChallengeViewCell()
+@property (nonatomic, strong) UIButton *loadMoreButton;
 @end
 
 @implementation HONChallengeViewCell
@@ -23,15 +24,15 @@
 
 - (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled {
 	if ((self = [self initAsGreyCell:grey])) {
-		UIButton *loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		loadMoreButton.frame = CGRectMake(107.0, 18.0, 106.0, 34.0);
-		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
-		[loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
+		_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_loadMoreButton.frame = CGRectMake(107.0, 18.0, 106.0, 34.0);
+		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
+		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 		
 		if (enabled)
-			[loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
 		
-		[self addSubview:loadMoreButton];
+		[self addSubview:_loadMoreButton];
 		[self hideChevron];
 	}
 	
@@ -108,8 +109,6 @@
 		
 		subjectLabel.frame = CGRectOffset(subjectLabel.frame, 60.0, 0.0);
 		
-		[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil];
-		
 		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(64.0, 10.0, 50.0, 50.0)];
 		challengerImgHolderView.clipsToBounds = YES;
 		[self addSubview:challengerImgHolderView];
@@ -153,6 +152,11 @@
 //		}
 //	}
 //}
+
+- (void)disableLoadMore {
+	[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+	[_loadMoreButton removeFromSuperview];
+}
 
 #pragma mark - Navigation
 - (void)_goLoadMore {

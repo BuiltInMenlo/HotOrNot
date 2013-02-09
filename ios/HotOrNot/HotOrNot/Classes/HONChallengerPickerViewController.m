@@ -656,7 +656,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	//NSData *imageData = UIImageJPEGRepresentation(_image, kJPEGCompress);
-	
+	_subjectName = _subjectTextField.text;
 	if ([_subjectName length] == 0)
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 	
@@ -986,7 +986,7 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		_editButton.hidden = YES;
+		//_editButton.hidden = YES;
 		//textField.text = @"#";
 	
 	} else if (textField.tag == 1) {
@@ -1011,6 +1011,13 @@
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
+	
+	return (YES);
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	if ([textField.text isEqualToString:@""])
+		textField.text = @"#";
 	
 	return (YES);
 }

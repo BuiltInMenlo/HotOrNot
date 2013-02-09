@@ -3,7 +3,7 @@
 $db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
 mysql_select_db('hotornot-dev') or die("Could not select database.");
 
-$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 ORDER BY `added` DESC LIMIT 200;';
+$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 ORDER BY `added` DESC LIMIT 1000;';
 $challenge_result = mysql_query($query);
 
 $user_arr = array();

@@ -158,7 +158,7 @@
 		case 0:
 			self.challengeHits++;
 			
-			[[Mixpanel sharedInstance] track:@"Tab - Challenge Wall"
+			[[Mixpanel sharedInstance] track:@"Tab - Voting"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
@@ -175,7 +175,7 @@
 			break;
 			
 		case 1:
-			[[Mixpanel sharedInstance] track:@"Tab - Voting"
+			[[Mixpanel sharedInstance] track:@"Tab - Challenge Wall"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			

@@ -24,9 +24,10 @@
 - (void)setVoterVO:(HONVoterVO *)voterVO {
 	_voterVO = voterVO;
 	
+	NSString *imgURL = ([_voterVO.fbID isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : _voterVO.imageURL;
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 10.0, 50.0, 50.0)];
 	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[userImageView setImageWithURL:[NSURL URLWithString:_voterVO.imageURL] placeholderImage:nil];
+	[userImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil];
 	[self addSubview:userImageView];
 	
 	UIImageView *creatorScoreBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 45.0, 50.0, 15.0)];

@@ -396,9 +396,12 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_nextChallengeBlock:(NSNotification *)notification {
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+- (void)_nextChallengeBlock:(NSNotification *)notification {	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Getting Challenges…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -423,6 +426,7 @@
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
 			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
 			
+			[_challenges removeLastObject];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
@@ -430,8 +434,14 @@
 					[_challenges addObject:vo];
 			}
 			
-			if ([parsedLists count] == 0)
+			if ([parsedLists count] == 0 || [parsedLists count] % 10 != 0)
 				_isMoreLoading = NO;
+			
+			if (!_isMoreLoading) {
+				HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[_challenges count] inSection:0]];
+				[cell disableLoadMore];
+				
+			}
 			
 			_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
 			[_tableView reloadData];
