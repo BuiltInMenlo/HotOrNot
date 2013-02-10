@@ -634,6 +634,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	[[Mixpanel sharedInstance] track:@"App Entering Background"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -851,9 +853,10 @@ NSString *const FacebookAppID = @"529054720443694";
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when submit fails");
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];		
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
 	}];
 }
 

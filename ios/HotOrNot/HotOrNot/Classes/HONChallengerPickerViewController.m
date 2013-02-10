@@ -71,6 +71,7 @@
 															  selector:@selector(_sessionStateChanged:)
 																	name:HONSessionStateChangedNotification
 																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_appEnteringBackground:) name:@"APP_ENTERING_BACKGROUND" object:nil];
 	}
 	
 	return (self);
@@ -92,6 +93,7 @@
 															  selector:@selector(_sessionStateChanged:)
 																	name:HONSessionStateChangedNotification
 																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_appEnteringBackground:) name:@"APP_ENTERING_BACKGROUND" object:nil];
 	}
 	
 	return (self);
@@ -113,6 +115,7 @@
 															  selector:@selector(_sessionStateChanged:)
 																	name:HONSessionStateChangedNotification
 																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_appEnteringBackground:) name:@"APP_ENTERING_BACKGROUND" object:nil];
 	}
 	
 	return (self);
@@ -476,7 +479,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+			_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
@@ -628,7 +631,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+			_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
@@ -775,14 +778,24 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Submission Failed!", @"Status message when submit fails");
+			_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
 		}];
 				
 	} @catch (AmazonClientException *exception) {
-		[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		[[[UIAlertView alloc] initWithTitle:@"Upload Error"
+											 message:@"You are not connected to a network!"
+											delegate:nil
+								cancelButtonTitle:@"OK"
+								otherButtonTitles:nil] show];
+		
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
 	}
 }
 
@@ -976,6 +989,18 @@
 //	[_loginFriendsButton removeTarget:self action:@selector(_goChallengeFriends) forControlEvents:UIControlEventTouchUpInside];
 //	[_loginFriendsButton removeTarget:self action:@selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
 //	[_loginFriendsButton addTarget:self action:(FBSession.activeSession.state == 513) ? @selector(_goChallengeFriends) : @selector(_goLogin) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)_appEnteringBackground:(NSNotification *)notification {
+	if (_progressHUD != nil) {
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Resuming Submission", @"Status message when submit fails");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}
 }
 
 #pragma mark - TextField Delegates

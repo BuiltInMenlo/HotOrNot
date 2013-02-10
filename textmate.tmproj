@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>php/harness/votes.php</string>
+	<string>php/api/Challenges.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -26,44 +26,72 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>63</integer>
+				<integer>191</integer>
 				<key>line</key>
-				<integer>922</integer>
+				<integer>693</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>896</integer>
+			<integer>680</integer>
 		</dict>
-		<key>php/api/Votes.php</key>
+		<key>php/api/Popular.php</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>3</integer>
 				<key>line</key>
-				<integer>370</integer>
+				<integer>160</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>112</integer>
+			<integer>135</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>8</integer>
+				<integer>2</integer>
 				<key>line</key>
-				<integer>373</integer>
+				<integer>80</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>3</integer>
 				<key>line</key>
-				<integer>370</integer>
+				<integer>160</integer>
 			</dict>
+		</dict>
+		<key>php/api/Search.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>56</integer>
+				<key>line</key>
+				<integer>192</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>157</integer>
+		</dict>
+		<key>php/api/Votes.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>131</integer>
+				<key>line</key>
+				<integer>259</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>236</integer>
 		</dict>
 		<key>php/facebook/submit2.php</key>
 		<dict>
@@ -109,14 +137,28 @@
 				<integer>41</integer>
 			</dict>
 		</dict>
+		<key>php/harness/stats.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>4</integer>
+				<key>line</key>
+				<integer>20</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>10</integer>
+		</dict>
 		<key>php/harness/submit_vote.php</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>66</integer>
+				<integer>6</integer>
 				<key>line</key>
-				<integer>68</integer>
+				<integer>39</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -128,27 +170,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>40</integer>
+				<integer>95</integer>
 				<key>line</key>
-				<integer>52</integer>
+				<integer>5</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>50</integer>
+			<integer>0</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>php/api/Votes.php</string>
+		<string>php/api/Search.php</string>
+		<string>php/api/Popular.php</string>
 		<string>php/api/Challenges.php</string>
 		<string>php/harness/votes.php</string>
 		<string>php/harness/submit_vote.php</string>
+		<string>php/harness/stats.php</string>
 		<string>php/harness/single_challenges.php</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{530, 88}, {1655, 1039}}</string>
+	<string>{{731, 73}, {1655, 1039}}</string>
 </dict>
 </plist>

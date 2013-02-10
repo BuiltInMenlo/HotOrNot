@@ -106,7 +106,6 @@
 	} else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"]) {
 		challengeLabel.frame = CGRectOffset(challengeLabel.frame, 60.0, 0.0);
 		challengeLabel.text = @"You are playing…";
-		
 		subjectLabel.frame = CGRectOffset(subjectLabel.frame, 60.0, 0.0);
 		
 		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(64.0, 10.0, 50.0, 50.0)];

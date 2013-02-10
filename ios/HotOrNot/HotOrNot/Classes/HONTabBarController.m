@@ -263,10 +263,10 @@
 	
 	} else {
 		if (tabID == 0)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CHALLENGES_TAB" object:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 		
 		else if (tabID == 1)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CHALLENGES_TAB" object:nil];
 		
 		else if (tabID == 3)
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_POPULAR_TAB" object:nil];

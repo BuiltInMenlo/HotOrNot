@@ -236,14 +236,15 @@
 		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
-		if (_progressHUD != nil) {
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when submit fails");
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
-		}
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
 	}];
 }
 
@@ -287,10 +288,13 @@
 			NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 			
 			_refreshButton.hidden = NO;
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
 		}];
 	}
 }
@@ -457,10 +461,13 @@
 		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
 	}];
 }
 
@@ -627,6 +634,14 @@
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+					
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
 				}];
 				break;}
 				
@@ -655,6 +670,14 @@
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+					
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
 				}];
 				break;
 		}
