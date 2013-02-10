@@ -288,8 +288,8 @@
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-				[self performSelector:@selector(_showOverlay) withObject:self afterDelay:0.33];
-				//[self _showOverlay];
+				//[self performSelector:@selector(_showOverlay) withObject:self afterDelay:0.15];
+				[self _showOverlay];
 				
 				if (!_hasPlayedAudio) {
 					_hasPlayedAudio = YES;
