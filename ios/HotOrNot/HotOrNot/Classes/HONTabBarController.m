@@ -7,7 +7,6 @@
 //
 
 #import "HONTabBarController.h"
-//#import <FacebookSDK/FacebookSDK.h>
 #import "Facebook.h"
 #import "Mixpanel.h"
 
@@ -16,6 +15,7 @@
 @interface HONTabBarController ()
 @property (nonatomic) int challengeHits;
 @property (nonatomic) BOOL hasVisitedSettings;
+@property (nonatomic, strong) UIView *tabHolderView;
 @end
 
 @implementation HONTabBarController
@@ -33,6 +33,12 @@
 	return (self);
 }
 
+- (void)didReceiveMemoryWarning {
+	[super didReceiveMemoryWarning];
+}
+
+
+#pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
 	
@@ -46,6 +52,8 @@
 	[super viewWillAppear:animated];
 }
 
+
+#pragma mark - Presentation
 - (void)hideTabBar {
 	for(UIView *view in self.view.subviews) {
 		if([view isKindOfClass:[UITabBar class]]) {
@@ -72,9 +80,14 @@
 }
 
 -(void)addCustomElements {
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];
-	bgImgView.image = [UIImage imageNamed:@"footerBackground"];
-	[self.view addSubview:bgImgView];
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 96.0)];
+	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+	[self.view addSubview:_tabHolderView];
+	
+	//_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 48.0, 320.0, 48.0)];
+	bgImageView.image = [UIImage imageNamed:@"footerBackground"];
+	[_tabHolderView addSubview:bgImageView];
 	
 	// Initialise our two images
 	UIImage *btnImage = [UIImage imageNamed:@"tabbar_001_nonActive"];
@@ -82,20 +95,19 @@
 	UIImage *btnImageSelected = [UIImage imageNamed:@"tabbar_001_active"];
 	
 	self.btn1 = [UIButton buttonWithType:UIButtonTypeCustom]; //Setup the button
-	btn1.frame = CGRectMake(0.0, self.view.frame.size.height - 48.0, 64.0, 48.0); // Set the frame (size and position) of the button)
+	btn1.frame = CGRectMake(0.0, 48.0, 64.0, 48.0); // Set the frame (size and position) of the button)
 	[btn1 setBackgroundImage:btnImage forState:UIControlStateNormal]; // Set the image for the normal state of the button
 	[btn1 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted]; // Set the image for the normal state of the button
 	[btn1 setBackgroundImage:btnImageSelected forState:(UIControlStateSelected)]; // Set the image for the selected state of the button
 	[btn1 setTag:0]; // Assign the button a "tag" so when our "click" event is called we know which button was pressed.
 	[btn1 setSelected:true]; // Set this button as selected (we will select the others to false as we only want Tab 1 to be selected initially
-	//[btn1 setEnabled:NO];
 	
 	// Now we repeat the process for the other buttons
 	btnImage = [UIImage imageNamed:@"tabbar_002_nonActive"];
 	btnImageActive = [UIImage imageNamed:@"tabbar_002_onTap"];
 	btnImageSelected = [UIImage imageNamed:@"tabbar_002_active"];
 	self.btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn2.frame = CGRectMake(64.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
+	btn2.frame = CGRectMake(64.0, 48.0, 64.0, 48.0);
 	[btn2 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn2 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
 	[btn2 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
@@ -105,7 +117,7 @@
 	btnImageActive = [UIImage imageNamed:@"tabbar_003_onTap"];
 	btnImageSelected = [UIImage imageNamed:@"tabbar_003_active"];
 	self.btn3 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn3.frame = CGRectMake(128.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
+	btn3.frame = CGRectMake(128.0, 48.0, 64.0, 48.0);
 	[btn3 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn3 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
 	[btn3 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
@@ -115,7 +127,7 @@
 	btnImageActive = [UIImage imageNamed:@"tabbar_004_onTap"];
 	btnImageSelected = [UIImage imageNamed:@"tabbar_004_active"];
 	self.btn4 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn4.frame = CGRectMake(192.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
+	btn4.frame = CGRectMake(192.0, 48.0, 64.0, 48.0);
 	[btn4 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn4 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
 	[btn4 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
@@ -125,18 +137,18 @@
 	btnImageActive = [UIImage imageNamed:@"tabbar_005_onTap"];
 	btnImageSelected = [UIImage imageNamed:@"tabbar_005_active"];
 	self.btn5 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn5.frame = CGRectMake(256.0, self.view.frame.size.height - 48.0, 64.0, 48.0);
+	btn5.frame = CGRectMake(256.0, 48.0, 64.0, 48.0);
 	[btn5 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn5 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
 	[btn5 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
 	[btn5 setTag:4];
 	
 	// Add my new buttons to the view
-	[self.view addSubview:btn1];
-	[self.view addSubview:btn2];
-	[self.view addSubview:btn3];
-	[self.view addSubview:btn4];
-	[self.view addSubview:btn5];
+	[_tabHolderView addSubview:btn1];
+	[_tabHolderView addSubview:btn2];
+	[_tabHolderView addSubview:btn3];
+	[_tabHolderView addSubview:btn4];
+	[_tabHolderView addSubview:btn5];
 	
 	// Setup event handlers so that the buttonClicked method will respond to the touch up inside event.
 	[btn1 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -144,8 +156,27 @@
 	[btn3 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	[btn4 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	[btn5 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+	
+	
+	
+	UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	toggleButton.frame = CGRectMake(130.0, 0.0, 60.0, 58.0);
+	toggleButton.backgroundColor = [UIColor redColor];
+	[toggleButton addTarget:self action:@selector(_goExpand:) forControlEvents:UIControlEventTouchUpInside];
+	//[_bgImageView addSubview:toggleButton];
+	
+	
+	UISwipeGestureRecognizer *oneFingerSwipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerSwipeUp:)];
+	[oneFingerSwipeUp setDirection:UISwipeGestureRecognizerDirectionUp];
+	[self.view addGestureRecognizer:oneFingerSwipeUp];
+	
+	UISwipeGestureRecognizer *oneFingerSwipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerSwipeDown:)];
+	[oneFingerSwipeDown setDirection:UISwipeGestureRecognizerDirectionDown];
+	[self.view addGestureRecognizer:oneFingerSwipeDown];
 }
 
+
+#pragma mark - Button Handlers
 - (void)buttonClicked:(id)sender {
 	int tagNum = [sender tag];
 	[self selectTab:tagNum];
@@ -163,7 +194,7 @@
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
 			[btn1 setSelected:true];
-			//[btn1 setEnabled:NO];
+			[btn1 setEnabled:YES];
 			[btn2 setSelected:false];
 			[btn2 setEnabled:YES];
 			[btn3 setSelected:false];
@@ -182,7 +213,7 @@
 			[btn1 setSelected:false];
 			[btn1 setEnabled:YES];
 			[btn2 setSelected:true];
-			//[btn2 setEnabled:NO];
+			[btn2 setEnabled:YES];
 			[btn3 setSelected:false];
 			[btn3 setEnabled:YES];
 			[btn4 setSelected:false];
@@ -219,7 +250,7 @@
 			[btn3 setSelected:false];
 			[btn3 setEnabled:YES];
 			[btn4 setSelected:true];
-			//[btn4 setEnabled:NO];
+			[btn4 setEnabled:YES];
 			[btn5 setSelected:false];
 			[btn5 setEnabled:YES];
 			break;
@@ -233,13 +264,6 @@
 				self.hasVisitedSettings = YES;
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"shown_settings"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
-				
-//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Facebook Posting"
-//																				message:@" Facebook Posts are OFF by default! Turn them on for your friends to see your game challenges."
-//																			  delegate:nil
-//																  cancelButtonTitle:@"OK"
-//																  otherButtonTitles:nil];
-//				[alertView show];
 			}
 			
 			[btn1 setSelected:false];
@@ -251,7 +275,7 @@
 			[btn4 setSelected:false];
 			[btn4 setEnabled:YES];
 			[btn5 setSelected:true];
-			//[btn5 setEnabled:NO];
+			[btn5 setEnabled:YES];
 			break;
 	}
 	
@@ -274,8 +298,6 @@
 		else if (tabID == 4)
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SETTINGS_TAB" object:nil];
 		
-		
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_LIST" object:nil];
 		self.selectedIndex = tabID;
 	}
 	
@@ -284,9 +306,23 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_RESULTS" object:nil];
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-	// Dispose of any resources that can be recreated.
+
+#pragma mark - GestureRecognizer Handlers
+- (void)oneFingerSwipeUp:(UISwipeGestureRecognizer *)recognizer {
+	CGPoint point = [recognizer locationInView:[self view]];
+	NSLog(@"Swipe up - start location: %f,%f", point.x, point.y);
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - 96.0, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	}];
+}
+
+- (void)oneFingerSwipeDown:(UISwipeGestureRecognizer *)recognizer {
+	CGPoint point = [recognizer locationInView:[self view]];
+	NSLog(@"Swipe down - start location: %f,%f", point.x, point.y);
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - 48.0, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	}];
 }
 
 @end

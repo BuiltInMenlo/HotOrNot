@@ -158,7 +158,6 @@
 		4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */; };
 		4C48745816BF0E36007D901B /* HONSearchHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchHeaderView.m */; };
 		4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745A16C05699007D901B /* HONSearchViewController.m */; };
-		4C48745F16C0571D007D901B /* HONSearchViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745E16C0571D007D901B /* HONSearchViewCell.m */; };
 		4C51173D1623A20D00370D3A /* MPCJSONDataSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5117331623A20D00370D3A /* MPCJSONDataSerializer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C51173E1623A20D00370D3A /* MPCJSONSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5117351623A20D00370D3A /* MPCJSONSerializer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C51173F1623A20D00370D3A /* MPCSerializedJSONData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5117371623A20D00370D3A /* MPCSerializedJSONData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -577,8 +576,6 @@
 		4C48745716BF0E36007D901B /* HONSearchHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchHeaderView.m; sourceTree = "<group>"; };
 		4C48745916C05698007D901B /* HONSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchViewController.h; sourceTree = "<group>"; };
 		4C48745A16C05699007D901B /* HONSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchViewController.m; sourceTree = "<group>"; };
-		4C48745D16C0571D007D901B /* HONSearchViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchViewCell.h; sourceTree = "<group>"; };
-		4C48745E16C0571D007D901B /* HONSearchViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchViewCell.m; sourceTree = "<group>"; };
 		4C5117321623A20D00370D3A /* MPCJSONDataSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPCJSONDataSerializer.h; sourceTree = "<group>"; };
 		4C5117331623A20D00370D3A /* MPCJSONDataSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPCJSONDataSerializer.m; sourceTree = "<group>"; };
 		4C5117341623A20D00370D3A /* MPCJSONSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPCJSONSerializer.h; sourceTree = "<group>"; };
@@ -1133,8 +1130,8 @@
 		4C48745C16C056E8007D901B /* Search */ = {
 			isa = PBXGroup;
 			children = (
-				4C48745D16C0571D007D901B /* HONSearchViewCell.h */,
-				4C48745E16C0571D007D901B /* HONSearchViewCell.m */,
+				4C48745616BF0E36007D901B /* HONSearchHeaderView.h */,
+				4C48745716BF0E36007D901B /* HONSearchHeaderView.m */,
 				4C48745916C05698007D901B /* HONSearchViewController.h */,
 				4C48745A16C05699007D901B /* HONSearchViewController.m */,
 			);
@@ -1567,8 +1564,6 @@
 				4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */,
 				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
 				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
-				4C48745616BF0E36007D901B /* HONSearchHeaderView.h */,
-				4C48745716BF0E36007D901B /* HONSearchHeaderView.m */,
 				4C516435167EC39D00EB3C09 /* HONFacebookSwitchView.h */,
 				4C516436167EC39D00EB3C09 /* HONFacebookSwitchView.m */,
 				4CB472F3168C176D007153DF /* HONWebCTAViewController.h */,
@@ -2544,7 +2539,6 @@
 				4C3DA1BC16BA4D3400261651 /* HONVoteSubjectVO.m in Sources */,
 				4C48745816BF0E36007D901B /* HONSearchHeaderView.m in Sources */,
 				4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */,
-				4C48745F16C0571D007D901B /* HONSearchViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

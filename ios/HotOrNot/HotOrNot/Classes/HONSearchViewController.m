@@ -13,7 +13,6 @@
 
 #import "HONSearchViewController.h"
 #import "HONAppDelegate.h"
-#import "HONSearchViewCell.h"
 #import "HONHeaderView.h"
 #import "HONPopularUserVO.h"
 #import "HONPopularSubjectVO.h"
