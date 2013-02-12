@@ -46,7 +46,7 @@
 		//[self addSubview:_dailyChallengeButton];
 		
 		_userButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_userButton.frame = CGRectMake(0.0, 44.0, 160.0, 35.0);
+		_userButton.frame = CGRectMake(0.0, 44.0, 160.0, 30.0);
 		[_userButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_nonActive"] forState:UIControlStateNormal];
 		[_userButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateHighlighted];
 		[_userButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateSelected];
@@ -54,14 +54,14 @@
 		[self addSubview:_userButton];
 		
 		_subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_subjectButton.frame = CGRectMake(160.0, 44.0, 160.0, 35.0);
+		_subjectButton.frame = CGRectMake(160.0, 44.0, 160.0, 30.0);
 		[_subjectButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
 		[_subjectButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
 		[_subjectButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateSelected];
 		[_subjectButton addTarget:self action:@selector(_goSubject) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_subjectButton];
 		
-		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 44.0)];
+		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
 		_searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
 		_searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
 		_searchBar.delegate = self;
@@ -117,7 +117,7 @@
 	[searchBar resignFirstResponder];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_searchBar.frame = CGRectMake(0.0, 35.0, 320.0, 44.0);
+		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
 	}];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_RESULTS" object:nil];
@@ -127,7 +127,7 @@
 	[searchBar resignFirstResponder];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_searchBar.frame = CGRectMake(0.0, 35.0, 320.0, 44.0);
+		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
 	}];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"SHOW_USER_SEARCH_RESULTS" : @"SHOW_SUBJECT_SEARCH_RESULTS" object:searchBar.text];

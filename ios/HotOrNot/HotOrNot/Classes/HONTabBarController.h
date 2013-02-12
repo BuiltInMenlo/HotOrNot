@@ -16,17 +16,19 @@
 	UIButton *btn5;
 }
 
-@property (nonatomic, retain) UIButton *btn1;
-@property (nonatomic, retain) UIButton *btn2;
-@property (nonatomic, retain) UIButton *btn3;
-@property (nonatomic, retain) UIButton *btn4;
-@property (nonatomic, retain) UIButton *btn5;
-
 - (void)hideTabBar;
 - (void)addCustomElements;
 - (void)selectTab:(int)tabID;
 
 - (void)hideNewTabBar;
 - (void)showNewTabBar;
+
+#define kTabButtonHeight 48.0
+
+@property (nonatomic, retain) UIButton *btn1;
+@property (nonatomic, retain) UIButton *btn2;
+@property (nonatomic, retain) UIButton *btn3;
+@property (nonatomic, retain) UIButton *btn4;
+@property (nonatomic, retain) UIButton *btn5;
 
 @end

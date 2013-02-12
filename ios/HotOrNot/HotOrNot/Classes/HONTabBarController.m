@@ -16,6 +16,7 @@
 @property (nonatomic) int challengeHits;
 @property (nonatomic) BOOL hasVisitedSettings;
 @property (nonatomic, strong) UIView *tabHolderView;
+@property (nonatomic) CGPoint touchPt;
 @end
 
 @implementation HONTabBarController
@@ -35,6 +36,62 @@
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
+}
+
+
+#pragma mark - Touch Handlers
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	UITouch *touch = [touches anyObject];
+	CGPoint location = [touch locationInView:self.view];
+	
+	if ([touch view] == _tabHolderView)
+		_touchPt = CGPointMake(_tabHolderView.center.x - location.x, _tabHolderView.center.y - location.y);
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	UITouch *touch = [touches anyObject];
+	
+	if ([touch view] == _tabHolderView) {
+		CGPoint touchLocation = [touch locationInView:self.view];
+		float minY = (self.view.frame.size.height - (kTabButtonHeight * 2.0)) + (_tabHolderView.frame.size.height * 0.5);
+		float maxY = (self.view.frame.size.height - kTabButtonHeight) + (_tabHolderView.frame.size.height * 0.5);
+		
+		CGPoint location = CGPointMake(_tabHolderView.center.x, MIN(MAX(_touchPt.y + touchLocation.y, minY), maxY));
+		_tabHolderView.center = location;
+		
+		return;
+	}
+}
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+	UITouch *touch = [touches anyObject];
+	CGPoint location = CGPointMake(_tabHolderView.center.x - [touch locationInView:self.view].x, _tabHolderView.center.y - [touch locationInView:self.view].y);
+	
+	if (location.y > _touchPt.y) {
+		[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void) {
+			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kTabButtonHeight * 2.0), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+		} completion:^(BOOL finished) {
+		}];
+		
+	} else {
+		[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationCurveEaseIn animations:^(void) {
+			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabButtonHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+		} completion:^(BOOL finished) {
+		}];
+	}
+	
+//	if (_tabHolderView.center.y < (self.view.frame.size.height - 24.0)) {
+//		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void) {
+//			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - 96.0, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+//		} completion:^(BOOL finished) {
+//		}];
+//	
+//	} else {
+//		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void) {
+//			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - 48.0, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+//		} completion:^(BOOL finished) {
+//		}];
+//	}
 }
 
 
@@ -80,12 +137,12 @@
 }
 
 -(void)addCustomElements {
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 96.0)];
-	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabButtonHeight, 320.0, (kTabButtonHeight * 2.0))];
+	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
 	//_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 48.0, 320.0, 48.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kTabButtonHeight, 320.0, kTabButtonHeight)];
 	bgImageView.image = [UIImage imageNamed:@"footerBackground"];
 	[_tabHolderView addSubview:bgImageView];
 	
@@ -95,7 +152,7 @@
 	UIImage *btnImageSelected = [UIImage imageNamed:@"tabbar_001_active"];
 	
 	self.btn1 = [UIButton buttonWithType:UIButtonTypeCustom]; //Setup the button
-	btn1.frame = CGRectMake(0.0, 48.0, 64.0, 48.0); // Set the frame (size and position) of the button)
+	btn1.frame = CGRectMake(0.0, kTabButtonHeight, 64.0, kTabButtonHeight); // Set the frame (size and position) of the button)
 	[btn1 setBackgroundImage:btnImage forState:UIControlStateNormal]; // Set the image for the normal state of the button
 	[btn1 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted]; // Set the image for the normal state of the button
 	[btn1 setBackgroundImage:btnImageSelected forState:(UIControlStateSelected)]; // Set the image for the selected state of the button
@@ -107,7 +164,7 @@
 	btnImageActive = [UIImage imageNamed:@"tabbar_002_onTap"];
 	btnImageSelected = [UIImage imageNamed:@"tabbar_002_active"];
 	self.btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn2.frame = CGRectMake(64.0, 48.0, 64.0, 48.0);
+	btn2.frame = CGRectMake(64.0, kTabButtonHeight, 64.0, kTabButtonHeight);
 	[btn2 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn2 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
 	[btn2 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
@@ -117,7 +174,7 @@
 	btnImageActive = [UIImage imageNamed:@"tabbar_003_onTap"];
 	btnImageSelected = [UIImage imageNamed:@"tabbar_003_active"];
 	self.btn3 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn3.frame = CGRectMake(128.0, 48.0, 64.0, 48.0);
+	btn3.frame = CGRectMake(128.0, kTabButtonHeight, 64.0, kTabButtonHeight);
 	[btn3 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn3 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
 	[btn3 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
@@ -127,7 +184,7 @@
 	btnImageActive = [UIImage imageNamed:@"tabbar_004_onTap"];
 	btnImageSelected = [UIImage imageNamed:@"tabbar_004_active"];
 	self.btn4 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn4.frame = CGRectMake(192.0, 48.0, 64.0, 48.0);
+	btn4.frame = CGRectMake(192.0, kTabButtonHeight, 64.0, kTabButtonHeight);
 	[btn4 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn4 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
 	[btn4 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
@@ -137,7 +194,7 @@
 	btnImageActive = [UIImage imageNamed:@"tabbar_005_onTap"];
 	btnImageSelected = [UIImage imageNamed:@"tabbar_005_active"];
 	self.btn5 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn5.frame = CGRectMake(256.0, 48.0, 64.0, 48.0);
+	btn5.frame = CGRectMake(256.0, kTabButtonHeight, 64.0, kTabButtonHeight);
 	[btn5 setBackgroundImage:btnImage forState:UIControlStateNormal];
 	[btn5 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
 	[btn5 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
@@ -166,13 +223,13 @@
 	//[_bgImageView addSubview:toggleButton];
 	
 	
-	UISwipeGestureRecognizer *oneFingerSwipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerSwipeUp:)];
-	[oneFingerSwipeUp setDirection:UISwipeGestureRecognizerDirectionUp];
-	[self.view addGestureRecognizer:oneFingerSwipeUp];
-	
-	UISwipeGestureRecognizer *oneFingerSwipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerSwipeDown:)];
-	[oneFingerSwipeDown setDirection:UISwipeGestureRecognizerDirectionDown];
-	[self.view addGestureRecognizer:oneFingerSwipeDown];
+//	UISwipeGestureRecognizer *oneFingerSwipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerSwipeUp:)];
+//	[oneFingerSwipeUp setDirection:UISwipeGestureRecognizerDirectionUp];
+//	[self.view addGestureRecognizer:oneFingerSwipeUp];
+//	
+//	UISwipeGestureRecognizer *oneFingerSwipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerSwipeDown:)];
+//	[oneFingerSwipeDown setDirection:UISwipeGestureRecognizerDirectionDown];
+//	[self.view addGestureRecognizer:oneFingerSwipeDown];
 }
 
 
@@ -312,16 +369,16 @@
 	CGPoint point = [recognizer locationInView:[self view]];
 	NSLog(@"Swipe up - start location: %f,%f", point.x, point.y);
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - 96.0, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kTabButtonHeight * 2.0), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 	}];
 }
 
 - (void)oneFingerSwipeDown:(UISwipeGestureRecognizer *)recognizer {
 	CGPoint point = [recognizer locationInView:[self view]];
 	NSLog(@"Swipe down - start location: %f,%f", point.x, point.y);
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - 48.0, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabButtonHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 	}];
 }
 

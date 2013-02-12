@@ -454,7 +454,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	_searchViewController = [[HONSearchViewController alloc] init];
 	[self.window addSubview:_searchViewController.view];
 	
-	_searchViewController.view.frame = CGRectMake(0.0, 140.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
+	_searchViewController.view.frame = CGRectMake(0.0, 92.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
 }
 
 - (void)_hideSearchResults:(NSNotification *)notification {
