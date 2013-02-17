@@ -68,13 +68,13 @@
 	CGPoint location = CGPointMake(_tabHolderView.center.x - [touch locationInView:self.view].x, _tabHolderView.center.y - [touch locationInView:self.view].y);
 	
 	if (location.y > _touchPt.y) {
-		[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void) {
+		[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kTabButtonHeight * 2.0), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 		} completion:^(BOOL finished) {
 		}];
 		
 	} else {
-		[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationCurveEaseIn animations:^(void) {
+		[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabButtonHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 		} completion:^(BOOL finished) {
 		}];
@@ -112,12 +112,18 @@
 
 #pragma mark - Presentation
 - (void)hideTabBar {
-	for(UIView *view in self.view.subviews) {
-		if([view isKindOfClass:[UITabBar class]]) {
-			view.hidden = YES;
-			break;
-		}
+	for (UIView *view in self.view.subviews) {
+		if([view isKindOfClass:[UITabBar class]])
+			view.hidden = YES;//[view setFrame:CGRectMake(view.frame.origin.x, self.view.frame.size.height, view.frame.size.width, view.frame.size.height)];
+		
+		else
+			[view setFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
+		
+		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
 	}
+
+//	for (UIViewController *viewController in self.viewControllers)
+//		viewController.view.frame = CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height);
 }
 
 - (void)hideNewTabBar {
@@ -240,7 +246,8 @@
 }
 
 - (void)selectTab:(int)tabID {
-	[self.delegate tabBarController:self shouldSelectViewController:[self.viewControllers objectAtIndex:tabID]];
+	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabID];
+	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 	
 	switch(tabID) {
 		case 0:
@@ -358,9 +365,15 @@
 		self.selectedIndex = tabID;
 	}
 	
-	[self.delegate tabBarController:self didSelectViewController:[self.viewControllers objectAtIndex:tabID]];
+	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+	
+	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_RESULTS" object:nil];
+	
+	for (UIView *view in self.view.subviews) {
+		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
+	}
 }
 
 

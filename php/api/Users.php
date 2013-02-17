@@ -93,6 +93,13 @@
 			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_id .';';
 			$pokes = mysql_num_rows(mysql_query($query));
 			
+			// get total pics
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE `creator_id` = '. $row->id .';';
+			$pics = mysql_num_rows(mysql_query($query));
+			
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE `challenger_id` = '. $row->id .' AND `challenger_img` != "";';
+			$pics += mysql_num_rows(mysql_query($query));
+			
 			// return
 			return(array(
 				'id' => $row->id, 
@@ -100,10 +107,13 @@
 				'token' => $row->device_token, 
 				'fb_id' => $row->fb_id, 
 				'gender' => $row->gender, 
+				'bio' => $row->bio,
+				'website' => $row->website,
 				'paid' => $row->paid,
 				'points' => $row->points, 
 				'votes' => $votes, 
 				'pokes' => $pokes, 
+				'pics' => $pics;
 				'notifications' => $row->notifications, 
 				'meta' => $meta
 			));
@@ -218,8 +228,8 @@
 				
 				// add new user			
 				$query = 'INSERT INTO `tblUsers` (';
-				$query .= '`id`, `username`, `device_token`, `fb_id`, `gender`, `paid`, `points`, `notifications`, `last_login`, `added`) ';
-				$query .= 'VALUES (NULL, "", "'. $device_token .'", "", "N", "N", "0", "Y", CURRENT_TIMESTAMP, NOW());';
+				$query .= '`id`, `username`, `device_token`, `fb_id`, `gender`, `bio`, `website`, `paid`, `points`, `notifications`, `last_login`, `added`) ';
+				$query .= 'VALUES (NULL, "", "'. $device_token .'", "", "N", "", "", "N", "0", "Y", CURRENT_TIMESTAMP, NOW());';
 				$result = mysql_query($query);
 				$user_id = mysql_insert_id();
 				

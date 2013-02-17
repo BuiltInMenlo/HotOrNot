@@ -1027,7 +1027,7 @@
 		
 		_bgTextImageView.hidden = NO;
 		int offset = ([HONAppDelegate isRetina5]) ? 94.0 : 182.0;
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void) {
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, _bgTextImageView.frame.origin.y - 235.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, _usernameTextField.frame.origin.y - offset, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
 		} completion:nil];
@@ -1069,7 +1069,7 @@
 	
 	} else if (textField.tag == 1) {
 		_usernameTextField.frame = CGRectMake(16.0, _usernameTextField.frame.origin.y, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseOut animations:^(void){
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
 			_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 55.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 			_usernameTextField.frame = CGRectMake(_usernameTextField.frame.origin.x, 14.0, _usernameTextField.frame.size.width, _usernameTextField.frame.size.height);
 			

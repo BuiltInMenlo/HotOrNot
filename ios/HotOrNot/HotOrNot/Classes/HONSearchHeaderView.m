@@ -59,6 +59,7 @@
 		[_subjectButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
 		[_subjectButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateSelected];
 		[_subjectButton addTarget:self action:@selector(_goSubject) forControlEvents:UIControlEventTouchUpInside];
+		//[_subjectButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
 		[self addSubview:_subjectButton];
 		
 		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
@@ -115,6 +116,7 @@
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	[searchBar resignFirstResponder];
+	searchBar.text = @"";
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);

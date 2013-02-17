@@ -737,7 +737,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-	return ((vo.statusID == 1 || vo.statusID == 2) ? 399.0 : 244.0);//346.0 : 244.0);
+	return ((vo.statusID == 1 || vo.statusID == 2) ? 445.0 : 290.0);//346.0 : 244.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

@@ -271,7 +271,7 @@
 		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
 						
-			if (_subjectName != @"")
+			if (![_subjectName isEqualToString: @""])
 				[_cameraOverlayView setSubjectName:_subjectName];
 			
 			_imagePicker = [[UIImagePickerController alloc] init];

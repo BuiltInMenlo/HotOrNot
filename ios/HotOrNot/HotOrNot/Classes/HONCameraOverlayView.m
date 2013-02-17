@@ -75,7 +75,7 @@
 		subjectBGImageView.alpha = 0.0;
 		[self addSubview:subjectBGImageView];
 		
-		[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationCurveLinear animations:^(void) {
+		[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveLinear animations:^(void) {
 			subjectBGImageView.alpha = 1.0;
 		} completion:nil];
 		
@@ -225,7 +225,7 @@
 	
 	[_headerView setTitle:@"PREVIEW"];
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
 	} completion:nil];
 }
@@ -258,7 +258,7 @@
 	
 	[_headerView setTitle:@"PREVIEW"];
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
 	} completion:nil];
 }
@@ -275,7 +275,7 @@
 	[_cameraBackButton removeFromSuperview];
 	_cameraBackButton = nil;
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(0.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
 	} completion:nil];
 	

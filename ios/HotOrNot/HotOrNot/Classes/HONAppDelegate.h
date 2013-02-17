@@ -69,6 +69,8 @@ extern NSString *const FacebookAppID;
 + (BOOL)canPingParseServer;
 + (BOOL)audioMuted;
 
++ (NSString *)timeSinceDate:(NSDate *)date;
+
 + (UIFont *)honHelveticaNeueFontBold;
 + (UIFont *)honHelveticaNeueFontBoldItalic;
 + (UIFont *)honHelveticaNeueFontMedium;

@@ -203,6 +203,19 @@ while ($row = mysql_fetch_array($result, MYSQL_BOTH)) {
 	$upd_result = mysql_query($query);				
 }
 */
+
+
+/* // UPDATE STARTED DATES
+$query = 'SELECT `id`, `added` FROM `tblChallenges` WHERE `started` = "0000-00-00 00:00:00" ORDER BY `id` ASC;';
+$result = mysql_query($query);
+
+while ($row = mysql_fetch_assoc($result)) {
+	echo ("[". $row['id'] ."] --> ". $row['added'] ."<br />\n");
+	
+	$query = 'UPDATE `tblChallenges` SET `started` = "'. $row['added'] .'" WHERE `id` = '. $row['id'] .';';
+	$upd_result = mysql_query($query);				
+}
+*/
 			
 if ($db_conn) {
 	mysql_close($db_conn);

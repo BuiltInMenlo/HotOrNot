@@ -313,6 +313,36 @@ NSString *const FacebookAppID = @"529054720443694";
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"] isEqualToString:@"YES"]);
 }
 
++ (NSString *)timeSinceDate:(NSDate *)date {
+	NSString *timeSince = @"";
+	
+	NSDateFormatter *utcFormatter = [[NSDateFormatter alloc] init];
+	[utcFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+	[utcFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+	
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
+	
+	int secs = [utcDate timeIntervalSinceDate:date];
+	int mins = secs / 60;
+	int hours = mins / 60;
+	int days = hours / 24;
+	
+	if (days > 0) {
+		timeSince = [NSString stringWithFormat:@"%dd", days];
+		
+	} else {
+		if (hours > 0)
+			timeSince = [NSString stringWithFormat:@"%dh", hours];
+		
+		else
+			timeSince = [NSString stringWithFormat:@"%dm", mins];
+	}
+	
+	return (timeSince);
+}
+
 
 + (UIFont *)honHelveticaNeueFontBold {
 	return ([UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0]);
