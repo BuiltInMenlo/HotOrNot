@@ -147,6 +147,7 @@
 		challengerAvatarView.userInteractionEnabled = YES;
 		[self addSubview:challengerAvatarView];
 		
+		UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(200.0, 220.0, 100.0, 20.0)];
 		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];

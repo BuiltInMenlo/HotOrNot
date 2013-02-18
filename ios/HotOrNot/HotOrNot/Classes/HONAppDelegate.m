@@ -570,9 +570,7 @@ NSString *const FacebookAppID = @"529054720443694";
 			
 			else {
 				boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-				boot_total++;
-			
-				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+				[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 			}
 			
 			if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
