@@ -77,6 +77,11 @@
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
+	UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	subjectButton.frame = subjectLabel.frame;
+	[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:subjectButton];
+	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 10.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
@@ -123,11 +128,16 @@
 		[self addSubview:creatorAvatarView];
 		
 		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 220.0, 100.0, 20.0)];
-		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		creatorNameLabel.backgroundColor = [UIColor clearColor];
 		creatorNameLabel.text = _challengeVO.creatorName;
 		[self addSubview:creatorNameLabel];
+				
+		UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		creatorNameButton.frame = creatorNameLabel.frame;
+		[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:creatorNameButton];
 		
 		
 		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 46.0, 153.0, 153.0)];
@@ -147,13 +157,17 @@
 		challengerAvatarView.userInteractionEnabled = YES;
 		[self addSubview:challengerAvatarView];
 		
-		UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(200.0, 220.0, 100.0, 20.0)];
-		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
 		challengerNameLabel.text = _challengeVO.challengerName;
 		[self addSubview:challengerNameLabel];
+		
+		UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		challengerNameButton.frame = challengerNameLabel.frame;
+		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:challengerNameButton];
 		
 //		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
 //		rScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
@@ -214,12 +228,13 @@
 		creatorAvatarView.userInteractionEnabled = YES;
 		[self addSubview:creatorAvatarView];
 		
-		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 370.0, 250.0, 16.0)];
-		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		creatorNameLabel.backgroundColor = [UIColor clearColor];
-		creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		creatorNameLabel.text = [NSString stringWithFormat:@"%@ is waiting for a match…", _challengeVO.creatorName];
-		[self addSubview:creatorNameLabel];
+		UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		creatorNameButton.frame = CGRectMake(60.0, 370.0, 250.0, 20.0);
+		[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
+		creatorNameButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		[creatorNameButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		[creatorNameButton setTitle:[NSString stringWithFormat:@"%@ is waiting for a match…", _challengeVO.creatorName] forState:UIControlStateNormal];
+		[self addSubview:creatorNameButton];
 		
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_votesButton.frame = CGRectMake(12.0, 400.0, 250.0, 34.0);
@@ -344,6 +359,18 @@
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
+- (void)_goSubjectTimeline {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:_challengeVO.subjectName];
+}
+
+- (void)_goCreatorTimeline {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_challengeVO.creatorName];
+}
+
+- (void)_goChallengerTimeline {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_challengeVO.challengerName];
 }
 
 
