@@ -633,9 +633,9 @@ NSString *const FacebookAppID = @"529054720443694";
 			
 			//[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 			
-			if (![self openSession]) {
-				self.loginViewController = [[HONLoginViewController alloc] init];
-			}
+//			if (![self openSession]) {
+//				self.loginViewController = [[HONLoginViewController alloc] init];
+//			}
 					
 		} else {
 			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Upgrade Needed"
@@ -872,7 +872,7 @@ NSString *const FacebookAppID = @"529054720443694";
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			NSLog(@"HONAppDelegate AFNetworking: %@", userResult);
+			//NSLog(@"HONAppDelegate AFNetworking: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
@@ -917,6 +917,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	[navController5 setNavigationBarHidden:YES];
 	
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CHALLENGES_TAB" object:nil];
 }
 
 - (void)_testParseCloudCode {

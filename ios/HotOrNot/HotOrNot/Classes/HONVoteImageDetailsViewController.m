@@ -1,5 +1,5 @@
 //
-//  HONVoteDetailsViewController.m
+//  HONVoteImageDetailsViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 01.11.13.
@@ -12,10 +12,10 @@
 #import "Mixpanel.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONVoteDetailsViewController.h"
+#import "HONVoteImageDetailsViewController.h"
 #import "HONAppDelegate.h"
 
-@interface HONVoteDetailsViewController () <UIAlertViewDelegate>
+@interface HONVoteImageDetailsViewController () <UIAlertViewDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic) BOOL isOwner;
 @property (nonatomic) BOOL isCreator;
@@ -25,7 +25,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
-@implementation HONVoteDetailsViewController
+@implementation HONVoteImageDetailsViewController
 
 - (id)initAsNotInSession:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
@@ -65,6 +65,14 @@
 
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
+}
+
+- (void)dealloc {
+	
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
 }
 
 
@@ -123,10 +131,10 @@
 		imgURL = [NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix];
 	}
 	
-	__weak id weakSelf = self;
+	__weak typeof(self) weakSelf = self;
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 64.0, kLargeW * 0.5, kLargeW * 0.5)];
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_imageView.image = image;
+		weakSelf.imageView.image = image;
 		[weakSelf _hideHUD];
 	
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
@@ -165,6 +173,9 @@
 	[super viewDidLoad];
 }
 
+- (void)viewDidUnload {
+	[super viewDidUnload];
+}
 
 #pragma mark - Navigation
 - (void)_goShare {

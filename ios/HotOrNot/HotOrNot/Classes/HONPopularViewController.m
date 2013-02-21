@@ -66,6 +66,133 @@
 	[super didReceiveMemoryWarning];
 }
 
+- (void)dealloc {
+	
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
+}
+
+
+#pragma mark - Data Calls
+- (void)_retrievePopularSubjects {
+	_isUsersList = NO;
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_tags"];
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 2], @"action",
+							nil];
+	
+	[httpClient postPath:kPopularAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
+									 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+			
+			//NSLog(@"HONPopularViewController AFNetworking: %@", unsortedList);
+			_subjects = [NSMutableArray new];
+			for (NSDictionary *serverList in parsedLists) {
+				HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
+				if (vo != nil)
+					[_subjects addObject:vo];
+			}
+		}
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		[_tableView reloadData];
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"PopularViewController AFNetworking %@", [error localizedDescription]);
+		
+		_refreshButton.hidden = NO;
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
+
+- (void)_retrievePopularUsers {
+	_isUsersList = YES;
+	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders"];
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 1], @"action",
+							nil];
+	
+	[httpClient postPath:kPopularAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"HONPopularViewController AFNetworking: %@", unsortedList);
+			
+			_users = [NSMutableArray new];
+			for (NSDictionary *serverList in unsortedList) {
+				HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
+				if (vo != nil)
+					[_users addObject:vo];
+			}
+			
+			NSArray * sortedUsers = [_users sortedArrayUsingDescriptors:
+									 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
+			_users = [NSMutableArray arrayWithArray:sortedUsers];
+			
+			int rank = 0;
+			for (HONPopularUserVO *vo in _users) {
+				rank++;
+				if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+					[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:rank] forKey:@"player_rank"];
+					[[NSUserDefaults standardUserDefaults] synchronize];
+				}
+			}
+		}
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		[_tableView reloadData];
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"PopularViewController AFNetworking %@", [error localizedDescription]);
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -113,8 +240,6 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
-	
-	[self _retrievePopularUsers];
 }
 
 - (void)viewDidLoad {
@@ -123,148 +248,6 @@
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-	
-	if (_isUsersList)
-		[self _retrievePopularUsers];
-	
-	else
-		[self _retrievePopularSubjects];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return (NO);//interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-
-- (void)_retrievePopularSubjects {
-	_isUsersList = NO;
-	_toggleImgView.image = [UIImage imageNamed:@"toggle_tags"];
-	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 2], @"action",
-									nil];
-	
-	[httpClient postPath:kPopularAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-		} else {
-			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray * parsedLists = [unsortedList sortedArrayUsingDescriptors:
-											 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
-			
-			//NSLog(@"HONPopularViewController AFNetworking: %@", unsortedList);
-			_subjects = [NSMutableArray new];
-			for (NSDictionary *serverList in parsedLists) {
-				HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
-				if (vo != nil)
-					[_subjects addObject:vo];
-			}
-		}
-		
-		_refreshButton.hidden = NO;
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[_tableView reloadData];
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"PopularViewController AFNetworking %@", [error localizedDescription]);
-		
-		_refreshButton.hidden = NO;
-		
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		_progressHUD = nil;
-	}];
-}
-
-
-- (void)_retrievePopularUsers {
-	_isUsersList = YES;
-	_toggleImgView.image = [UIImage imageNamed:@"toggle_leaders"];
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 1], @"action",
-									nil];
-	
-	[httpClient postPath:kPopularAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-		} else {
-			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONPopularViewController AFNetworking: %@", unsortedList);
-			
-			_users = [NSMutableArray new];
-			for (NSDictionary *serverList in unsortedList) {
-				HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
-				if (vo != nil)
-					[_users addObject:vo];
-			}
-			
-			NSArray * sortedUsers = [_users sortedArrayUsingDescriptors:
-											 [NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
-			_users = [NSMutableArray arrayWithArray:sortedUsers];
-			
-			int rank = 0;
-			for (HONPopularUserVO *vo in _users) {
-				rank++;
-				if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
-					[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:rank] forKey:@"player_rank"];
-					[[NSUserDefaults standardUserDefaults] synchronize];
-				}
-			}
-		}
-		
-		_refreshButton.hidden = NO;
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-		[_tableView reloadData];
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"PopularViewController AFNetworking %@", [error localizedDescription]);
-		
-		_refreshButton.hidden = NO;
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		_progressHUD = nil;
-	}];
 }
 
 

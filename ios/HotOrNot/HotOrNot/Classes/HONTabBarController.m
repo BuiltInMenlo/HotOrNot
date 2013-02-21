@@ -119,7 +119,7 @@
 		else
 			[view setFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
 		
-		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
+		//NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
 	}
 
 //	for (UIViewController *viewController in self.viewControllers)
@@ -220,22 +220,12 @@
 	[btn4 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	[btn5 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	
-	
-	
+		
 	UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	toggleButton.frame = CGRectMake(130.0, 0.0, 60.0, 58.0);
 	toggleButton.backgroundColor = [UIColor redColor];
 	[toggleButton addTarget:self action:@selector(_goExpand:) forControlEvents:UIControlEventTouchUpInside];
 	//[_bgImageView addSubview:toggleButton];
-	
-	
-//	UISwipeGestureRecognizer *oneFingerSwipeUp = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerSwipeUp:)];
-//	[oneFingerSwipeUp setDirection:UISwipeGestureRecognizerDirectionUp];
-//	[self.view addGestureRecognizer:oneFingerSwipeUp];
-//	
-//	UISwipeGestureRecognizer *oneFingerSwipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(oneFingerSwipeDown:)];
-//	[oneFingerSwipeDown setDirection:UISwipeGestureRecognizerDirectionDown];
-//	[self.view addGestureRecognizer:oneFingerSwipeDown];
 }
 
 
@@ -350,18 +340,27 @@
 		[navController popToRootViewControllerAnimated:NO];
 	
 	} else {
-		if (tabID == 0)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+		NSString *notificationName = @"";
 		
-		else if (tabID == 1)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_CHALLENGES_TAB" object:nil];
+		switch (tabID) {
+			case 0:
+				notificationName = @"REFRESH_VOTE_TAB";
+				break;
 		
-		else if (tabID == 3)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_POPULAR_TAB" object:nil];
+			case 1:
+				notificationName = @"REFRESH_CHALLENGES_TAB";
+				break;
 		
-		else if (tabID == 4)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_SETTINGS_TAB" object:nil];
+			case 3:
+				notificationName = @"REFRESH_POPULAR_TAB";
+				break;
 		
+			case 4:
+				notificationName = @"REFRESH_SETTINGS_TAB";
+				break;
+		}
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 		self.selectedIndex = tabID;
 	}
 	
@@ -371,27 +370,9 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_RESULTS" object:nil];
 	
-	for (UIView *view in self.view.subviews) {
-		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
-	}
-}
-
-
-#pragma mark - GestureRecognizer Handlers
-- (void)oneFingerSwipeUp:(UISwipeGestureRecognizer *)recognizer {
-	CGPoint point = [recognizer locationInView:[self view]];
-	NSLog(@"Swipe up - start location: %f,%f", point.x, point.y);
-	
-	[UIView animateWithDuration:0.125 animations:^(void) {
-		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kTabButtonHeight * 2.0), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-	}];
-}
-
-- (void)oneFingerSwipeDown:(UISwipeGestureRecognizer *)recognizer {
-	CGPoint point = [recognizer locationInView:[self view]];
-	NSLog(@"Swipe down - start location: %f,%f", point.x, point.y);
-	[UIView animateWithDuration:0.125 animations:^(void) {
+	[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabButtonHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	} completion:^(BOOL finished) {
 	}];
 }
 

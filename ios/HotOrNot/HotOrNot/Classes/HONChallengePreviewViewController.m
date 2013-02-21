@@ -47,8 +47,16 @@
 	[super didReceiveMemoryWarning];
 }
 
+- (void)dealloc {
+	
+}
 
-#pragma mark - Touch controls
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
+}
+
+
+#pragma mark - Touch Controls
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];
 	
@@ -73,10 +81,10 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	__weak id weakSelf = self;
+	__weak typeof(self) weakSelf = self;
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 64.0, kLargeW * 0.5, kLargeW * 0.5)];
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix]]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-		_imageView.image = image;
+		weakSelf.imageView.image = image;
 		[weakSelf _hideHUD];
 	
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {

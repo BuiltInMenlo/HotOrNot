@@ -22,7 +22,7 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONLoginViewController.h"
-#import "HONVoteDetailsViewController.h"
+#import "HONVoteImageDetailsViewController.h"
 #import "HONUsernameViewController.h"
 
 @interface HONVoteViewController()
@@ -144,10 +144,156 @@
 	[super didReceiveMemoryWarning];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return (NO);//interfaceOrientation == UIInterfaceOrientationPortrait);
+- (void)dealloc {
+	
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
+}
+
+
+#pragma mark - Data Calls
+- (void)_retrieveChallenges {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	
+	NSMutableDictionary *params = [NSMutableDictionary dictionary];
+	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	
+	if (_subjectID == 0) {
+		if (_subjectName != nil) {
+			[params setObject:[NSString stringWithFormat:@"%d", 8] forKey:@"action"];
+			[params setObject:_subjectName forKey:@"subjectName"];
+			
+		} else {
+			if (_username != nil) {
+				[params setObject:_username forKey:@"username"];
+				[params setObject:[NSString stringWithFormat:@"%d", 9] forKey:@"action"];
+				
+			} else
+				[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+		}
+	} else {
+		[params setObject:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
+		[params setObject:[NSString stringWithFormat:@"%d", _subjectID] forKey:@"subjectID"];
+	}
+	
+	[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"HONVoteViewController AFNetworking: %@", parsedLists);
+			_challenges = [NSMutableArray new];
+			
+			int cnt = 0;
+			for (NSDictionary *serverList in parsedLists) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+				
+				if (vo != nil) {
+					//NSLog(@"%d)--> ADDING CHALLENGE[%@]", cnt, vo.dictionary);
+					[_challenges addObject:vo];
+					cnt++;
+				}
+			}
+			
+			_emptySetImgView.hidden = ([_challenges count] > 0);
+			[_tableView reloadData];
+			
+			if ([_challenges count] == 0) {
+				[[[UIAlertView alloc] initWithTitle:@"Nothing Here!"
+											message:@"No PicChallenges in session. You should start one."
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+		}
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_retrieveSingleChallenge:(HONChallengeVO *)vo {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 3], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
+							nil];
+	
+	[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"HONVoteViewController AFNetworking: %@", parsedLists);
+			_challenges = [NSMutableArray new];
+			
+			int cnt = 0;
+			for (NSDictionary *serverList in parsedLists) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+				
+				if (vo != nil) {
+					//NSLog(@"%d)--> ADDING CHALLENGE[%@]", cnt, vo.dictionary);
+					[_challenges addObject:vo];
+					cnt++;
+				}
+			}
+			
+			_emptySetImgView.hidden = ([_challenges count] > 0);
+			[_tableView reloadData];
+			
+			if ([_challenges count] == 0) {
+				[[[UIAlertView alloc] initWithTitle:@"Nothing Here!"
+											message:@"No PicChallenges in session. You should start one."
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+			}
+		}
+		
+		_refreshButton.hidden = NO;
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
+		
+		_refreshButton.hidden = NO;
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
 
 
 #pragma mark - View lifecycle
@@ -212,10 +358,8 @@
 	if (_challengeVO == nil)
 		[self _retrieveChallenges];
 	
-	else {
+	else
 		[self _retrieveSingleChallenge:_challengeVO];
-	}
-	
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
@@ -227,155 +371,6 @@
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-	[self _retrieveChallenges];
-	
-	NSLog(@"viewDidAppear %d", _isPushView);
-	
-	if ([_challenges count] == 0)
-		[[[UIAlertView alloc] initWithTitle:@"Nothing Here!" message:@"No PicChallenges in session. You should start one." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-
-
-#pragma mark - Data Calls
-- (void)_retrieveChallenges {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	
-	NSMutableDictionary *params = [NSMutableDictionary dictionary];
-	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	
-	if (_subjectID == 0) {
-		if (_subjectName != nil) {
-			[params setObject:[NSString stringWithFormat:@"%d", 8] forKey:@"action"];
-			[params setObject:_subjectName forKey:@"subjectName"];
-			
-		} else {
-			if (_username != nil) {
-				[params setObject:_username forKey:@"username"];
-				[params setObject:[NSString stringWithFormat:@"%d", 9] forKey:@"action"];
-				
-			} else
-				[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
-		}
-	} else {
-		[params setObject:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-		[params setObject:[NSString stringWithFormat:@"%d", _subjectID] forKey:@"subjectID"];
-	}
-		
-	[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-		} else {
-			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONVoteViewController AFNetworking: %@", parsedLists);
-			_challenges = [NSMutableArray new];
-			
-			int cnt = 0;
-			for (NSDictionary *serverList in parsedLists) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				
-				if (vo != nil) {
-					//NSLog(@"%d)--> ADDING CHALLENGE[%@]", cnt, vo.dictionary);
-					[_challenges addObject:vo];
-					cnt++;
-				}
-			}
-			
-			_emptySetImgView.hidden = ([_challenges count] > 0);
-			[_tableView reloadData];
-		}
-		
-		_refreshButton.hidden = NO;
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
-		
-		_refreshButton.hidden = NO;
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_retrieveSingleChallenge:(HONChallengeVO *)vo {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 3], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
-									nil];
-	
-	[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-		} else {
-			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONVoteViewController AFNetworking: %@", parsedLists);
-			_challenges = [NSMutableArray new];
-			
-			int cnt = 0;
-			for (NSDictionary *serverList in parsedLists) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				
-				if (vo != nil) {
-					//NSLog(@"%d)--> ADDING CHALLENGE[%@]", cnt, vo.dictionary);
-					[_challenges addObject:vo];
-					cnt++;
-				}
-			}
-			
-			_emptySetImgView.hidden = ([_challenges count] > 0);
-			[_tableView reloadData];
-		}
-		
-		_refreshButton.hidden = NO;
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
-		
-		_refreshButton.hidden = NO;
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		_progressHUD = nil;
-	}];
 }
 
 
@@ -570,7 +565,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 		
-	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteDetailsViewController alloc] initAsNotInSession:vo]];
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteImageDetailsViewController alloc] initAsNotInSession:vo]];
 	[navController setNavigationBarHidden:YES];
 	[self presentViewController:navController animated:NO completion:nil];
 }
@@ -583,7 +578,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 	
-	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteDetailsViewController alloc] initAsInSessionCreator:vo]];
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteImageDetailsViewController alloc] initAsInSessionCreator:vo]];
 	[navController setNavigationBarHidden:YES];
 	[self presentViewController:navController animated:NO completion:nil];
 }
@@ -596,7 +591,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 	
-	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteDetailsViewController alloc] initAsInSessionChallenger:vo]];
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteImageDetailsViewController alloc] initAsInSessionChallenger:vo]];
 	[navController setNavigationBarHidden:YES];
 	[self presentViewController:navController animated:NO completion:nil];
 }

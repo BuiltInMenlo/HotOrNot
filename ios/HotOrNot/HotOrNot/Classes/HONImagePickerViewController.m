@@ -181,63 +181,20 @@
 	return (self);
 }
 
-
-#pragma mark - Notifications
-- (void)_didShowViewController:(NSNotification *)notification {
-	UIView *view = _imagePicker.view;
-	_plCameraIrisAnimationView = nil;
-	_cameraIrisImageView = nil;
-	
-	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
-		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
-			for (UIView *subview in view.subviews) {
-				if ([subview isKindOfClass:[UIImageView class]])
-					_cameraIrisImageView = (UIImageView *)subview;
-
-				else if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
-					for (UIView *subsubview in subview.subviews) {
-						if ([[[subsubview class] description] isEqualToString:@"PLCameraIrisAnimationView"])
-							_plCameraIrisAnimationView = subsubview;
-					}
-				}
-			}
-		}
-	}
-	_cameraIrisImageView.hidden = YES;
-	[_cameraIrisImageView removeFromSuperview];
-	[_plCameraIrisAnimationView removeFromSuperview];
-	
-	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+- (void)didReceiveMemoryWarning {
+	[super didReceiveMemoryWarning];
 }
 
-- (void)_irisAnimationEnded:(NSNotification *)notification {
-	_cameraIrisImageView.hidden = NO;
+- (void)dealloc {
 	
-	UIView *view = _imagePicker.view;
-	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
-		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
-			for (UIView *subview in view.subviews) {
-				if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
-					[subview insertSubview:_plCameraIrisAnimationView atIndex:1];
-					_plCameraIrisAnimationView = nil;
-					break;
-				}
-			}
-		}
-	}
-	
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
 }
 
-- (void)_loadStateDidChangeNotification:(NSNotification *)notification {
-	NSLog(@"----[LOAD STATE CHANGED[%d]]----", _mpMoviePlayerController.loadState);
-	
-	switch (_mpMoviePlayerController.loadState) {
-		case MPMovieLoadStatePlayable:
-			[_cameraOverlayView endBuffering];
-			break;
-	}
+- (BOOL)shouldAutorotate {
+	return (NO);
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
 }
 
 
@@ -323,14 +280,8 @@
 	_isFirstAppearance = YES;
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
 
-- (BOOL)shouldAutorotate {
-	return (NO);
-}
-
+#pragma mark - UI Presentation
 - (void)_playAudio {
 	if (_subjectName.length > 0) {
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -435,6 +386,65 @@
 		_cameraOverlayView = nil;
 		;
 	}];
+}
+
+
+#pragma mark - Notifications
+- (void)_didShowViewController:(NSNotification *)notification {
+	UIView *view = _imagePicker.view;
+	_plCameraIrisAnimationView = nil;
+	_cameraIrisImageView = nil;
+	
+	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
+		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
+			for (UIView *subview in view.subviews) {
+				if ([subview isKindOfClass:[UIImageView class]])
+					_cameraIrisImageView = (UIImageView *)subview;
+				
+				else if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
+					for (UIView *subsubview in subview.subviews) {
+						if ([[[subsubview class] description] isEqualToString:@"PLCameraIrisAnimationView"])
+							_plCameraIrisAnimationView = subsubview;
+					}
+				}
+			}
+		}
+	}
+	_cameraIrisImageView.hidden = YES;
+	[_cameraIrisImageView removeFromSuperview];
+	[_plCameraIrisAnimationView removeFromSuperview];
+	
+	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+}
+
+- (void)_irisAnimationEnded:(NSNotification *)notification {
+	_cameraIrisImageView.hidden = NO;
+	
+	UIView *view = _imagePicker.view;
+	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
+		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
+			for (UIView *subview in view.subviews) {
+				if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
+					[subview insertSubview:_plCameraIrisAnimationView atIndex:1];
+					_plCameraIrisAnimationView = nil;
+					break;
+				}
+			}
+		}
+	}
+	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+}
+
+- (void)_loadStateDidChangeNotification:(NSNotification *)notification {
+	NSLog(@"----[LOAD STATE CHANGED[%d]]----", _mpMoviePlayerController.loadState);
+	
+	switch (_mpMoviePlayerController.loadState) {
+		case MPMovieLoadStatePlayable:
+			[_cameraOverlayView endBuffering];
+			break;
+	}
 }
 
 

@@ -35,6 +35,14 @@
 	[super didReceiveMemoryWarning];
 }
 
+- (void)dealloc {
+	
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
+}
+
 
 #pragma mark - View Lifecycle
 - (void)loadView {
@@ -74,6 +82,11 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 }
+
+- (void)viewDidUnload {
+	[super viewDidUnload];
+}
+
 
 #pragma mark - Navigation
 - (void)_goCancel {

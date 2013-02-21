@@ -47,6 +47,14 @@
 	[super didReceiveMemoryWarning];
 }
 
+- (void)dealloc {
+	
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
+}
+
 
 #pragma mark - Data Calls
 - (void)_retrieveSubjects {
@@ -147,6 +155,10 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+}
+
+- (void)viewDidUnload {
+	[super viewDidUnload];
 }
 
 

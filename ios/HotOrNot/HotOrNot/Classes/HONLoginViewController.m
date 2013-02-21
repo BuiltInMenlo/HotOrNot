@@ -28,6 +28,20 @@
 	return (self);
 }
 
+- (void)didReceiveMemoryWarning {
+	[super didReceiveMemoryWarning];
+}
+
+- (void)dealloc {
+	
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
+}
+
+
+#pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
 	int ind = (arc4random() % 5) + 1;
@@ -73,15 +87,12 @@
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(_goDone)];
 }
 
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
-}
 
+#pragma mark - Navigation
 - (void)_goDone {
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - Navigation
 - (void)_goCancel {
 	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }

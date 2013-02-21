@@ -121,6 +121,23 @@
 	return (self);
 }
 
+- (void)didReceiveMemoryWarning {
+	[super didReceiveMemoryWarning];
+}
+
+- (void)dealloc {
+	
+}
+
+- (BOOL)shouldAutorotate {
+	return (NO);
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
+}
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	//NSLog(@"loadView");
@@ -797,11 +814,6 @@
 			_progressHUD = nil;
 		}
 	}
-}
-
-
-- (void)didReceiveMemoryWarning {
-	[super didReceiveMemoryWarning];
 }
 
 

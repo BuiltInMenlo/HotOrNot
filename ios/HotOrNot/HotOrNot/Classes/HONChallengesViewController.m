@@ -31,7 +31,6 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic) BOOL isFirstRun;
 @property(nonatomic) BOOL isMoreLoading;
 @property(nonatomic, strong) NSDate *lastDate;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
@@ -51,9 +50,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		//_tabBarItem.image = [UIImage imageNamed:@"tab01_nonActive"];
 		_challenges = [NSMutableArray array];
-		_isFirstRun = YES;
 		_blockCounter = 0;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
@@ -76,125 +73,19 @@
 	
 }
 
-
-#pragma mark - View lifecycle
-- (void)loadView {
-	[super loadView];
-	
-	NSLog(@"self.view.bounds:[%fx%f][%fx%f]", self.view.bounds.origin.x, self.view.bounds.origin.y, self.view.bounds.size.width, self.view.bounds.size.height);
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
-	[self.view addSubview:bgImgView];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"ACTIVITY"];
-	[self.view addSubview:_headerView];
-	
-	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
-	[activityIndicatorView startAnimating];
-	[_headerView addSubview:activityIndicatorView];
-	
-	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
-	inviteButton.hidden = (FBSession.activeSession.state != 513);
-	//[_headerView addSubview:inviteButton];
-	
-	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_refreshButton];
-	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
-	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
-	_emptySetImgView.hidden = YES;
-	[self.view addSubview:_emptySetImgView];
-	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.rowHeight = 70.0;
-	_tableView.delegate = self;
-	_tableView.dataSource = self;
-	_tableView.userInteractionEnabled = YES;
-	_tableView.scrollsToTop = NO;
-	_tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:_tableView];
-	
-	[self _retrieveChallenges];
-	[self _retrieveUser];
-	
-	//[self _populateFriends];
-	
-//	[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	
-	// banner
-//	if ([HONAppDelegate isTapForTapEnabled])
-//		[self.view addSubview:[[TapForTapAdView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0) delegate:self]];
-	
-	// ad modal
-//	[TapForTapInterstitial prepare];
-//	[TapForTapInterstitial showWithRootViewController: self]; // or possibly self.navigationController
-	
-	// app wall
-//	[TapForTapAppWall prepare];
-//	[TapForTapAppWall showWithRootViewController: self]; // or possibly self.navigationController
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-	[super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-	
-	//NSLog(@"viewDidAppear");
-	
-	[self _retrieveChallenges];
-	[self _retrieveUser];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return (NO);//interfaceOrientation == UIInterfaceOrientationPortrait);
+	return (NO);
 }
 
-- (void)_goLogin {
-	NSLog(@"_goLogin");
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
+#pragma mark - Data Calls
 - (void)_retrieveChallenges {
 	_isMoreLoading = YES;
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 2], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									nil];
+							[NSString stringWithFormat:@"%d", 2], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							nil];
 	
 	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -206,7 +97,7 @@
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
-		
+			
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
@@ -232,6 +123,8 @@
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
+			
+			[self _updateChallengeAlerts];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -255,9 +148,9 @@
 		
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-										[NSString stringWithFormat:@"%d", 5], @"action",
-										[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-										nil];
+								[NSString stringWithFormat:@"%d", 5], @"action",
+								[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+								nil];
 		
 		[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
@@ -302,7 +195,168 @@
 }
 
 
+#pragma mark - Data Housekeeping
+- (void)_updateChallengeAlerts {
+	NSMutableArray *challengeUpdates = [NSMutableArray array];
+	for (HONChallengeVO *vo in _challenges) {
+		int score = 0;
+		NSString *status = @"";
+		
+		// created
+		if (vo.statusID == 1 || vo.statusID == 2) {
+			score = 0;
+			status = @"created";
+			
+		} else {
+			score = (vo.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorScore : vo.challengerScore;
+			status = @"started";
+		}
+		
+		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+							  [NSNumber numberWithInt:vo.challengeID], @"id",
+							  status, @"status",
+							  [NSNumber numberWithInt:score], @"score",
+							  nil];
+		
+		[challengeUpdates addObject:dict];
+	}
+	
+	NSMutableDictionary *alertTotals = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+										[NSNumber numberWithInt:0], @"status",
+										[NSNumber numberWithInt:0], @"score", nil];
+	int statusChanges = 0;
+	int voteChanges = 0;
+	
+	NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
+	for (NSDictionary *lDict in localChallenges) {
+		for (NSDictionary *uDict in challengeUpdates) {
+			if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
+				if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
+					[alertTotals setValue:[NSNumber numberWithInt:++statusChanges] forKey:@"status"];
+				}
+				
+				if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
+					[alertTotals setValue:[NSNumber numberWithInt:++voteChanges] forKey:@"score"];
+				}
+			}
+		}
+	}
+	
+	if ([localChallenges count] < [challengeUpdates count]) {
+		int tot = [[alertTotals objectForKey:@"status"] intValue];
+		[alertTotals setValue:[NSNumber numberWithInt:tot + ([challengeUpdates count] - [localChallenges count])] forKey:@"status"];
+	}
+	
+	NSLog(@"CHANGES:\n%@", alertTotals);
+	
+	// update local
+	[[NSUserDefaults standardUserDefaults] setValue:challengeUpdates forKey:@"local_challenges"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+
+#pragma mark - View lifecycle
+- (void)loadView {
+	[super loadView];
+	//NSLog(@"self.view.bounds:[%fx%f][%fx%f]", self.view.bounds.origin.x, self.view.bounds.origin.y, self.view.bounds.size.width, self.view.bounds.size.height);
+	
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
+	[self.view addSubview:bgImgView];
+	
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"ACTIVITY"];
+	[self.view addSubview:_headerView];
+	
+	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
+	[activityIndicatorView startAnimating];
+	[_headerView addSubview:activityIndicatorView];
+	
+	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+	inviteButton.hidden = (FBSession.activeSession.state != 513);
+	//[_headerView addSubview:inviteButton];
+	
+	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:_refreshButton];
+	
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
+	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
+	_emptySetImgView.hidden = YES;
+	[self.view addSubview:_emptySetImgView];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.rowHeight = 70.0;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.userInteractionEnabled = YES;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[self.view addSubview:_tableView];
+	
+	//[self _populateFriends];
+	
+//	[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
+}
+
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	
+	// banner
+//	if ([HONAppDelegate isTapForTapEnabled])
+//		[self.view addSubview:[[TapForTapAdView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0) delegate:self]];
+	
+	// ad modal
+//	[TapForTapInterstitial prepare];
+//	[TapForTapInterstitial showWithRootViewController: self]; // or possibly self.navigationController
+	
+	// app wall
+//	[TapForTapAppWall prepare];
+//	[TapForTapAppWall showWithRootViewController: self]; // or possibly self.navigationController
+}
+
+- (void)viewDidUnload {
+	[super viewDidUnload];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+	[super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	
+	[self _retrieveChallenges];
+	[self _retrieveUser];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	[super viewWillDisappear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+	[super viewDidDisappear:animated];
+}
+
+
 #pragma mark - Navigation
+- (void)_goLogin {
+	NSLog(@"_goLogin");
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_goDailyChallenge {
 	[[Mixpanel sharedInstance] track:@"Daily Challenge - Challenge Wall"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:

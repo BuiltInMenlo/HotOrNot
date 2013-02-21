@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C07B8E916A0E1F700E061FD /* HONVoteDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */; };
+		4C07B8E916A0E1F700E061FD /* HONVoteImageDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C07B8E816A0E1F700E061FD /* HONVoteImageDetailsViewController.m */; };
 		4C0C406B162BCCC0007F0DA3 /* cancelButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */; };
 		4C0C406C162BCCC0007F0DA3 /* cancelButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */; };
 		4C0C406D162BCCC0007F0DA3 /* cancelButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */; };
@@ -414,8 +414,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4C07B8E716A0E1F700E061FD /* HONVoteDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteDetailsViewController.h; sourceTree = "<group>"; };
-		4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteDetailsViewController.m; sourceTree = "<group>"; };
+		4C07B8E716A0E1F700E061FD /* HONVoteImageDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteImageDetailsViewController.h; sourceTree = "<group>"; };
+		4C07B8E816A0E1F700E061FD /* HONVoteImageDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteImageDetailsViewController.m; sourceTree = "<group>"; };
 		4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_Active.png; sourceTree = "<group>"; };
 		4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancelButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_nonActive.png; sourceTree = "<group>"; };
@@ -1102,8 +1102,8 @@
 				4CAF9609167D676C0036E849 /* HONVoterViewCell.m */,
 				4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */,
 				4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */,
-				4C07B8E716A0E1F700E061FD /* HONVoteDetailsViewController.h */,
-				4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */,
+				4C07B8E716A0E1F700E061FD /* HONVoteImageDetailsViewController.h */,
+				4C07B8E816A0E1F700E061FD /* HONVoteImageDetailsViewController.m */,
 				4C75502916D5732000833C18 /* HONCommentViewCell.h */,
 				4C75502A16D5732000833C18 /* HONCommentViewCell.m */,
 				4C75502616D5718900833C18 /* HONCommentsViewController.h */,
@@ -2539,7 +2539,7 @@
 				4CB472F9168C26AC007153DF /* HONInviteFriendsViewController.m in Sources */,
 				4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */,
 				4CA944AD169A0D2F00507A08 /* HONAlternatingRowsViewCell.m in Sources */,
-				4C07B8E916A0E1F700E061FD /* HONVoteDetailsViewController.m in Sources */,
+				4C07B8E916A0E1F700E061FD /* HONVoteImageDetailsViewController.m in Sources */,
 				4CA0852916A12FD900673F3A /* AFHTTPClient.m in Sources */,
 				4CA0852A16A12FD900673F3A /* AFHTTPRequestOperation.m in Sources */,
 				4CA0852B16A12FD900673F3A /* AFImageRequestOperation.m in Sources */,
@@ -2652,7 +2652,6 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Airship\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Google Analytics\"",
-					"\"$(SRCROOT)/HotOrNot/Other Classes/StackMob-v1.0.0\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/TapForTap\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Chartboost\"",
 				);
@@ -2678,7 +2677,6 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Airship\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Google Analytics\"",
-					"\"$(SRCROOT)/HotOrNot/Other Classes/StackMob-v1.0.0\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/TapForTap\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Chartboost\"",
 				);

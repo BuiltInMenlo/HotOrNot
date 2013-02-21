@@ -50,6 +50,14 @@
 	[super didReceiveMemoryWarning];
 }
 
+- (void)dealloc {
+	
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	return (NO);
+}
+
 
 #pragma mark - Data Calls
 - (void)_retrieveComments {
@@ -119,7 +127,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			NSDictionary *commentResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSDictionary *commentResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -197,6 +205,10 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+}
+
+- (void)viewDidUnload {
+	[super viewDidUnload];
 }
 
 
