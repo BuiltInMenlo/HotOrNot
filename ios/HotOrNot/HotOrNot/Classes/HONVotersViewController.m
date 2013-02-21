@@ -101,16 +101,16 @@
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:cancelButton];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
-	[self.tableView setBackgroundColor:[UIColor clearColor]];
-	self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	self.tableView.rowHeight = 70.0;
-	self.tableView.delegate = self;
-	self.tableView.dataSource = self;
-	self.tableView.userInteractionEnabled = YES;
-	self.tableView.scrollsToTop = NO;
-	self.tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:self.tableView];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.rowHeight = 70.0;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.userInteractionEnabled = YES;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[self.view addSubview:_tableView];
 }
 
 - (void)viewDidLoad {

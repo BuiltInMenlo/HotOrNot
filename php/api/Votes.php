@@ -84,21 +84,48 @@
 			// get challenge row
 			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
 			$challenge_obj = mysql_fetch_object(mysql_query($query));
-			
+						
 			// get subject title for this challenge
 			$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
 			$subject_obj = mysql_fetch_object(mysql_query($query));
+			
+			// get total number of comments
+			$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_id .';';
+			$comments = mysql_num_rows(mysql_query($query));
+			
+			// get rechallenges
+			$rechallenge_arr = array();
+			$query = 'SELECT `id`, `creator_id`, `added` FROM `tblChallenges` WHERE `subject_id` = '. $challenge_obj->subject_id .' AND `added` > "'. $challenge_obj->added .'" ORDER BY `added` ASC LIMIT 10;';
+			$rechallenge_result = mysql_query($query);
+			
+			// loop thru the rows
+			while ($rechallenge_row = mysql_fetch_assoc($rechallenge_result)) {
+				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
+				$user_obj = mysql_fetch_object(mysql_query($query));
+				
+				array_push($rechallenge_arr, array(
+					'id' => $rechallenge_row['id'],
+					'user_id' => $rechallenge_row['creator_id'],
+					'fb_id' => $user_obj->fb_id,
+					'img_url' => "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square",
+					'username' => $user_obj->username,
+					'added' => $rechallenge_row['added']
+				));
+			}
+			
 			
 			// compose object
 			$challenge_arr = array(
 				'id' => $challenge_obj->id, 
 				'status' => $challenge_obj->status_id, 
 				'subject' => $subject_obj->title, 
+				'comments' => $comments, 
 				'has_viewed' => $challenge_obj->hasPreviewed, 
 				'started' => $challenge_obj->started, 
 				'added' => $challenge_obj->added, 
 				'creator' => $this->userForChallenge($challenge_obj->creator_id, $challenge_obj->id),
-				'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id) 
+				'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id),
+				'rechallenges' => $rechallenge_arr
 			); 
 			
 			// return
@@ -605,12 +632,13 @@
 	}
 	
 	$votes = new Votes;
-	//$votes->test();
+	////$votes->test();
 	
 	// action was specified
 	if (isset($_POST['action'])) {
 		switch ($_POST['action']) {
 			case "0":
+				$votes->test();
 				break;
 			
 			// get list of challenges by votes

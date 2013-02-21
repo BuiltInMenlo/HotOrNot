@@ -181,6 +181,7 @@
 		// depending on action, call function
 		switch ($_POST['action']) {
 			case "0":
+				$popular->test();
 				break;
 			
 			// get list of top users

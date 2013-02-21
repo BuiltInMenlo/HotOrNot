@@ -87,6 +87,7 @@ extern NSString *const FacebookAppID;
 
 
 #define kChallengesAPI @"Challenges.php"
+#define kCommentsAPI @"Comments.php"
 #define kPopularAPI @"Popular.php"
 #define kSearchAPI @"Search.php"
 #define kUsersAPI @"Users.php"

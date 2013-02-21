@@ -10,7 +10,6 @@
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
-//#import "UIImageView+WebCache.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVoteDetailsViewController.h"

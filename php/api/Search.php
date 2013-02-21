@@ -173,12 +173,13 @@
 	}
 	
 	$search = new Search;
-	//$search->test();
+	////$search->test();
 	
 	// action was specified
 	if (isset($_POST['action'])) {
 		switch ($_POST['action']) {
 			case "0":
+				$search->test();
 				break;
 			
 			// get list of challenges by votes

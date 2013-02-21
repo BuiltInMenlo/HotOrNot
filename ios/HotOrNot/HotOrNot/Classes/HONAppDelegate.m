@@ -336,8 +336,13 @@ NSString *const FacebookAppID = @"529054720443694";
 		if (hours > 0)
 			timeSince = [NSString stringWithFormat:@"%dh", hours];
 		
-		else
-			timeSince = [NSString stringWithFormat:@"%dm", mins];
+		else {
+			if (mins > 0)
+				timeSince = [NSString stringWithFormat:@"%dm", mins];
+			
+			else
+				timeSince = [NSString stringWithFormat:@"%ds", secs];
+		}
 	}
 	
 	return (timeSince);

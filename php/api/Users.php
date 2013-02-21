@@ -113,7 +113,7 @@
 				'points' => $row->points, 
 				'votes' => $votes, 
 				'pokes' => $pokes, 
-				'pics' => $pics;
+				'pics' => $pics,
 				'notifications' => $row->notifications, 
 				'meta' => $meta
 			));
@@ -470,6 +470,7 @@
 		// depending on action, call function
 		switch ($_POST['action']) {	
 			case "0":
+				$users->test();
 				break;
 			
 			// add a new user

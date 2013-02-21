@@ -12,7 +12,6 @@
 #import "HONAppDelegate.h"
 
 @interface HONVoterViewCell()
-@property (nonatomic, strong) UIImageView *bgImgView;
 @end
 
 @implementation HONVoterViewCell

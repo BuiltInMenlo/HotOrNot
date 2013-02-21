@@ -217,6 +217,9 @@
 		4C6BBCAB16157FE100145996 /* HONChallengerPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBCAA16157FE100145996 /* HONChallengerPickerViewController.m */; };
 		4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */; };
 		4C7341921616C078001F9F11 /* HONPrivacyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C7341911616C078001F9F11 /* HONPrivacyViewController.m */; };
+		4C75502516D5699300833C18 /* HONCommentVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502416D5699200833C18 /* HONCommentVO.m */; };
+		4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502716D5718A00833C18 /* HONCommentsViewController.m */; };
+		4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C75502A16D5732000833C18 /* HONCommentViewCell.m */; };
 		4C788968169A5CE5002027D5 /* challengeWall_inProgress.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C788964169A5CE5002027D5 /* challengeWall_inProgress.png */; };
 		4C788969169A5CE5002027D5 /* challengeWall_inProgress@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C788965169A5CE5002027D5 /* challengeWall_inProgress@2x.png */; };
 		4C78896A169A5CE5002027D5 /* challengeWall_notInProgress.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C788966169A5CE5002027D5 /* challengeWall_notInProgress.png */; };
@@ -739,6 +742,12 @@
 		4C6BBCB116167F2000145996 /* HONSettingsViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewCell.m; sourceTree = "<group>"; };
 		4C7341901616C078001F9F11 /* HONPrivacyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPrivacyViewController.h; sourceTree = "<group>"; };
 		4C7341911616C078001F9F11 /* HONPrivacyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPrivacyViewController.m; sourceTree = "<group>"; };
+		4C75502316D5699200833C18 /* HONCommentVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCommentVO.h; sourceTree = "<group>"; };
+		4C75502416D5699200833C18 /* HONCommentVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCommentVO.m; sourceTree = "<group>"; };
+		4C75502616D5718900833C18 /* HONCommentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCommentsViewController.h; sourceTree = "<group>"; };
+		4C75502716D5718A00833C18 /* HONCommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCommentsViewController.m; sourceTree = "<group>"; };
+		4C75502916D5732000833C18 /* HONCommentViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCommentViewCell.h; sourceTree = "<group>"; };
+		4C75502A16D5732000833C18 /* HONCommentViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCommentViewCell.m; sourceTree = "<group>"; };
 		4C788964169A5CE5002027D5 /* challengeWall_inProgress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = challengeWall_inProgress.png; sourceTree = "<group>"; };
 		4C788965169A5CE5002027D5 /* challengeWall_inProgress@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "challengeWall_inProgress@2x.png"; sourceTree = "<group>"; };
 		4C788966169A5CE5002027D5 /* challengeWall_notInProgress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = challengeWall_notInProgress.png; sourceTree = "<group>"; };
@@ -1068,6 +1077,8 @@
 			children = (
 				4C32B99D15FA75BC0023A0EE /* HONChallengeVO.h */,
 				4C32B99E15FA75BC0023A0EE /* HONChallengeVO.m */,
+				4C75502316D5699200833C18 /* HONCommentVO.h */,
+				4C75502416D5699200833C18 /* HONCommentVO.m */,
 				B3BE3EA81608E42500E7E2B7 /* HONPopularUserVO.h */,
 				B3BE3EA91608E42500E7E2B7 /* HONPopularUserVO.m */,
 				B3BE3EAC1608E43800E7E2B7 /* HONPopularSubjectVO.h */,
@@ -1093,6 +1104,10 @@
 				4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */,
 				4C07B8E716A0E1F700E061FD /* HONVoteDetailsViewController.h */,
 				4C07B8E816A0E1F700E061FD /* HONVoteDetailsViewController.m */,
+				4C75502916D5732000833C18 /* HONCommentViewCell.h */,
+				4C75502A16D5732000833C18 /* HONCommentViewCell.m */,
+				4C75502616D5718900833C18 /* HONCommentsViewController.h */,
+				4C75502716D5718A00833C18 /* HONCommentsViewController.m */,
 				4C3DA1AE16BA167A00261651 /* HONVoteSubjectsViewController.h */,
 				4C3DA1AF16BA167A00261651 /* HONVoteSubjectsViewController.m */,
 				4C3DA1B216BA202800261651 /* HONVoteSubjectViewCell.h */,
@@ -2539,6 +2554,9 @@
 				4C3DA1BC16BA4D3400261651 /* HONVoteSubjectVO.m in Sources */,
 				4C48745816BF0E36007D901B /* HONSearchHeaderView.m in Sources */,
 				4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */,
+				4C75502516D5699300833C18 /* HONCommentVO.m in Sources */,
+				4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */,
+				4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

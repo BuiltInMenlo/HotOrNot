@@ -464,18 +464,11 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"CameraOverlayView AFNetworking %@", [error localizedDescription]);
 	}];
-	
-	
-//	ASIFormDataRequest *subjectRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kChallengesAPI]]];
-//	[subjectRequest setDelegate:self];
-//	[subjectRequest setPostValue:[NSString stringWithFormat:@"%d", 5] forKey:@"action"];
-//	[subjectRequest setPostValue:_subjectName forKey:@"subjectName"];
-//	[subjectRequest startAsynchronous];
 }
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	[[Mixpanel sharedInstance] track:@"Camers - Edit Hashtag"
+	[[Mixpanel sharedInstance] track:@"Camera - Edit Hashtag"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -484,7 +477,7 @@
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
-	return YES;
+	return (YES);
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

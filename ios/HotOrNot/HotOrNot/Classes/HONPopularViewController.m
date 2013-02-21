@@ -202,12 +202,6 @@
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
-	
-//	ASIFormDataRequest *subjectsRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
-//	[subjectsRequest setDelegate:self];
-//	[subjectsRequest setPostValue:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-//	[subjectsRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-//	[subjectsRequest startAsynchronous];
 }
 
 
@@ -271,12 +265,6 @@
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
-	
-//	ASIFormDataRequest *usersRequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate apiServerPath], kPopularAPI]]];
-//	[usersRequest setDelegate:self];
-//	[usersRequest setPostValue:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
-//	[usersRequest setPostValue:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-//	[usersRequest startAsynchronous];
 }
 
 
