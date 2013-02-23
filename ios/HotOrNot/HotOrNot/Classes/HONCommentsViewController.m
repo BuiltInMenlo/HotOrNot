@@ -75,7 +75,7 @@
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
-			NSLog(@"HONCommentsViewController AFNetworking: %@", parsedLists);
+			//NSLog(@"HONCommentsViewController AFNetworking: %@", parsedLists);
 			_comments = [NSMutableArray new];
 			for (NSDictionary *serverList in parsedLists) {
 				HONCommentVO *vo = [HONCommentVO commentWithDictionary:serverList];

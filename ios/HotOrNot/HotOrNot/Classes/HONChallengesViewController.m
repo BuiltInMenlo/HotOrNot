@@ -123,8 +123,6 @@
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
-			
-			[self _updateChallengeAlerts];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -192,66 +190,6 @@
 			_progressHUD = nil;
 		}];
 	}
-}
-
-
-#pragma mark - Data Housekeeping
-- (void)_updateChallengeAlerts {
-	NSMutableArray *challengeUpdates = [NSMutableArray array];
-	for (HONChallengeVO *vo in _challenges) {
-		int score = 0;
-		NSString *status = @"";
-		
-		// created
-		if (vo.statusID == 1 || vo.statusID == 2) {
-			score = 0;
-			status = @"created";
-			
-		} else {
-			score = (vo.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorScore : vo.challengerScore;
-			status = @"started";
-		}
-		
-		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-							  [NSNumber numberWithInt:vo.challengeID], @"id",
-							  status, @"status",
-							  [NSNumber numberWithInt:score], @"score",
-							  nil];
-		
-		[challengeUpdates addObject:dict];
-	}
-	
-	NSMutableDictionary *alertTotals = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-										[NSNumber numberWithInt:0], @"status",
-										[NSNumber numberWithInt:0], @"score", nil];
-	int statusChanges = 0;
-	int voteChanges = 0;
-	
-	NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
-	for (NSDictionary *lDict in localChallenges) {
-		for (NSDictionary *uDict in challengeUpdates) {
-			if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
-				if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
-					[alertTotals setValue:[NSNumber numberWithInt:++statusChanges] forKey:@"status"];
-				}
-				
-				if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
-					[alertTotals setValue:[NSNumber numberWithInt:++voteChanges] forKey:@"score"];
-				}
-			}
-		}
-	}
-	
-	if ([localChallenges count] < [challengeUpdates count]) {
-		int tot = [[alertTotals objectForKey:@"status"] intValue];
-		[alertTotals setValue:[NSNumber numberWithInt:tot + ([challengeUpdates count] - [localChallenges count])] forKey:@"status"];
-	}
-	
-	NSLog(@"CHANGES:\n%@", alertTotals);
-	
-	// update local
-	[[NSUserDefaults standardUserDefaults] setValue:challengeUpdates forKey:@"local_challenges"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 

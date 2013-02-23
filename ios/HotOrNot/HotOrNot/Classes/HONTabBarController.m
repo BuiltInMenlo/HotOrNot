@@ -6,10 +6,13 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONTabBarController.h"
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
 #import "Facebook.h"
 #import "Mixpanel.h"
 
+
+#import "HONTabBarController.h"
 #import "HONAppDelegate.h"
 
 @interface HONTabBarController ()
@@ -103,6 +106,8 @@
 	
 	[self addCustomElements];
 	[self showNewTabBar];
+	
+	[self _updateChallengeAlerts];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -362,6 +367,7 @@
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 		self.selectedIndex = tabID;
+		[self _updateChallengeAlerts];
 	}
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
@@ -373,6 +379,105 @@
 	[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabButtonHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 	} completion:^(BOOL finished) {
+	}];
+}
+
+
+#pragma mark - Data Housekeeping
+- (void)_updateChallengeAlerts {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 2], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									nil];
+	
+	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			
+			NSMutableArray *challenges = [NSMutableArray array];
+			for (NSDictionary *serverList in unsortedChallenges) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+				
+				if (vo != nil)
+					[challenges addObject:vo];
+			}
+			
+			NSMutableArray *challengeUpdates = [NSMutableArray array];
+			for (HONChallengeVO *vo in challenges) {
+				int score = 0;
+				int comments = 0;
+				NSString *status = @"";
+				
+				// created
+				if (vo.statusID == 1 || vo.statusID == 2) {
+					score = 0;
+					status = @"created";
+					
+				} else {
+					score = (vo.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorScore : vo.challengerScore;
+					status = @"started";
+					comments = vo.commentTotal;
+				}
+				
+				NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+											 [NSNumber numberWithInt:vo.challengeID], @"id",
+											 status, @"status",
+											 [NSNumber numberWithInt:score], @"score",
+											 [NSNumber numberWithInt:comments], @"comments",
+											 nil];
+				
+				[challengeUpdates addObject:dict];
+			}
+			
+			NSMutableDictionary *alertTotals = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+															[NSNumber numberWithInt:0], @"status",
+															[NSNumber numberWithInt:0], @"score",
+															[NSNumber numberWithInt:0], @"comments", nil];
+			int statusChanges = 0;
+			int voteChanges = 0;
+			int commentChanges = 0;
+			
+			NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
+			for (NSDictionary *lDict in localChallenges) {
+				for (NSDictionary *uDict in challengeUpdates) {
+					if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
+						if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
+							[alertTotals setValue:[NSNumber numberWithInt:++statusChanges] forKey:@"status"];
+						}
+						
+						if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
+							[alertTotals setValue:[NSNumber numberWithInt:++voteChanges] forKey:@"score"];
+						}
+						
+						if ([[lDict objectForKey:@"comments"] intValue] != [[uDict objectForKey:@"comments"] intValue]) {
+							[alertTotals setValue:[NSNumber numberWithInt:++commentChanges] forKey:@"comments"];
+						}
+					}
+				}
+			}
+			
+			if ([localChallenges count] < [challengeUpdates count]) {
+				int tot = [[alertTotals objectForKey:@"status"] intValue];
+				[alertTotals setValue:[NSNumber numberWithInt:tot + ([challengeUpdates count] - [localChallenges count])] forKey:@"status"];
+			}
+			
+			NSLog(@"CHANGES:\n%@", alertTotals);
+			
+			// update local
+			[[NSUserDefaults standardUserDefaults] setValue:challengeUpdates forKey:@"local_challenges"];
+			[[NSUserDefaults standardUserDefaults] setValue:alertTotals forKey:@"alert_totals"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
 	}];
 }
 
