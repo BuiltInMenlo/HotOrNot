@@ -756,6 +756,79 @@
 		
 		
 		/** 
+		 * Gets the latest list of 10 challenges for a user
+		 * @param $user_id The ID of the user (integer)
+		 * @return The list of challenges (array)
+		**/
+		function getAllChallengesForUser($user_id) {
+			$challenge_arr = array();			
+			
+			// get latest 10 challenges for user
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `added` DESC;';
+			$challenge_result = mysql_query($query);
+			
+			// loop thru the rows
+			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
+				
+				// set challenge status to waiting if user is the challenger and it's been created
+				if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
+					$challenge_row['status_id'] = "0";
+				
+				// get the subject title
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				$sub_obj = mysql_fetch_object(mysql_query($query));
+				
+				// get total number of comments
+				$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_row['id'] .';';
+				$comments = mysql_num_rows(mysql_query($query));
+			
+				// get rechallenges
+				$rechallenge_arr = array();
+				$query = 'SELECT `id`, `creator_id`, `added` FROM `tblChallenges` WHERE `subject_id` = '. $challenge_row['subject_id'] .' AND `added` > "'. $challenge_row['added'] .'" ORDER BY `added` ASC LIMIT 10;';
+				$rechallenge_result = mysql_query($query);
+			
+				// loop thru the rows
+				while ($rechallenge_row = mysql_fetch_assoc($rechallenge_result)) {
+					$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
+					$user_obj = mysql_fetch_object(mysql_query($query));
+				
+					array_push($rechallenge_arr, array(
+						'id' => $rechallenge_row['id'],
+						'user_id' => $rechallenge_row['creator_id'],
+						'fb_id' => $user_obj->fb_id,
+						'img_url' => "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square",
+						'username' => $user_obj->username,
+						'added' => $rechallenge_row['added']
+					));
+				}
+				
+				// push challenge into list
+				array_push($challenge_arr, array(
+					'id' => $challenge_row['id'], 
+					'status' => $challenge_row['status_id'], 					
+					'subject' => $sub_obj->title, 
+					'comments' => $comments, 
+					'has_viewed' => $challenge_row['hasPreviewed'], 
+					'started' => $challenge_row['started'], 
+					'added' => $challenge_row['added'],
+					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
+					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id']),
+					'rechallenges' => $rechallenge_arr
+				));
+			}
+			
+			// return
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);
+			
+			/*
+			example response:
+			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
+			*/
+		}
+		
+		
+		/** 
 		 * Gets the next 10 challenges for a user prior to a date
 		 * @param $user_id The user's ID to get challenges for (integer)
 		 * @param $date the date/time to get challenges before (string)
@@ -1013,6 +1086,8 @@
 				break;
 				
 			case "3":
+				if (isset($_POST['userID']))
+					$challenges->getAllChallengesForUser($_POST['userID']);
 				break;
 			
 			// accept a challenge

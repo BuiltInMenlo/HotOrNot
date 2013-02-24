@@ -545,9 +545,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	//[self _testParseCloudCode];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"])
-			[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"shown_settings"];
-		
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
 		

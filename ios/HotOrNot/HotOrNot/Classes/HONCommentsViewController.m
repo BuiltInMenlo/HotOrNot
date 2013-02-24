@@ -22,13 +22,13 @@
 @interface HONCommentsViewController () <UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONCommentVO *commentVO;
-@property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) NSMutableArray *comments;
-@property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) UIImageView *bgTextImageView;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *comments;
+@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) UIImageView *bgTextImageView;
 @property (nonatomic, strong) UITextField *commentTextField;
-@property(nonatomic, strong) NSIndexPath *idxPath;
+@property (nonatomic, strong) NSIndexPath *idxPath;
 @end
 
 @implementation HONCommentsViewController

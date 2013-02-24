@@ -14,24 +14,20 @@
 
 #import "HONTabBarController.h"
 #import "HONAppDelegate.h"
+#import "HONAlertPopOverView.h"
 
 @interface HONTabBarController ()
-@property (nonatomic) int challengeHits;
-@property (nonatomic) BOOL hasVisitedSettings;
 @property (nonatomic, strong) UIView *tabHolderView;
+@property (nonatomic, strong) HONAlertPopOverView *alertPopOverView;
 @property (nonatomic) CGPoint touchPt;
 @end
 
 @implementation HONTabBarController
 
 @synthesize btn1, btn2, btn3, btn4, btn5;
-@synthesize challengeHits;
-@synthesize hasVisitedSettings;
 
 - (id)init {
 	if ((self = [super init])) {
-		self.challengeHits = 0;
-		self.hasVisitedSettings = [[[NSUserDefaults standardUserDefaults] objectForKey:@"shown_settings"] isEqualToString:@"YES"];
 	}
 	
 	return (self);
@@ -47,8 +43,17 @@
 	UITouch *touch = [touches anyObject];
 	CGPoint location = [touch locationInView:self.view];
 	
-	if ([touch view] == _tabHolderView)
+	if ([touch view] == _tabHolderView) {
 		_touchPt = CGPointMake(_tabHolderView.center.x - location.x, _tabHolderView.center.y - location.y);
+	}
+	
+	if (_alertPopOverView.alpha == 1.0) {
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			_alertPopOverView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[_alertPopOverView removeFromSuperview];
+		}];
+	}
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -106,6 +111,8 @@
 	
 	[self addCustomElements];
 	[self showNewTabBar];
+	
+	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(64.0, self.view.frame.size.height - (kTabButtonHeight * 0.67), 60.0, 22.0)];
 	
 	[self _updateChallengeAlerts];
 }
@@ -246,8 +253,6 @@
 	
 	switch(tabID) {
 		case 0:
-			self.challengeHits++;
-			
 			[[Mixpanel sharedInstance] track:@"Tab - Voting"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -319,12 +324,6 @@
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
-			if (!self.hasVisitedSettings && ![HONAppDelegate allowsFBPosting]) {
-				self.hasVisitedSettings = YES;
-				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"shown_settings"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-			}
-			
 			[btn1 setSelected:false];
 			[btn1 setEnabled:YES];
 			[btn2 setSelected:false];
@@ -385,9 +384,15 @@
 
 #pragma mark - Data Housekeeping
 - (void)_updateChallengeAlerts {
+	NSMutableDictionary *alertTotals = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+													[NSNumber numberWithInt:0], @"status",
+													[NSNumber numberWithInt:0], @"score",
+													[NSNumber numberWithInt:0], @"comments", nil];
+	
+	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 2], @"action",
+									[NSString stringWithFormat:@"%d", 3], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									nil];
 	
@@ -397,9 +402,11 @@
 			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
-			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			int statusChanges = 0;
+			int voteChanges = 0;
+			int commentChanges = 0;
 			
+			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSMutableArray *challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in unsortedChallenges) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
@@ -408,72 +415,62 @@
 					[challenges addObject:vo];
 			}
 			
-			NSMutableArray *challengeUpdates = [NSMutableArray array];
+			NSMutableArray *updateChallenges = [NSMutableArray array];
 			for (HONChallengeVO *vo in challenges) {
-				int score = 0;
-				int comments = 0;
-				NSString *status = @"";
-				
-				// created
-				if (vo.statusID == 1 || vo.statusID == 2) {
-					score = 0;
-					status = @"created";
-					
-				} else {
-					score = (vo.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorScore : vo.challengerScore;
-					status = @"started";
-					comments = vo.commentTotal;
-				}
-				
 				NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
 											 [NSNumber numberWithInt:vo.challengeID], @"id",
-											 status, @"status",
-											 [NSNumber numberWithInt:score], @"score",
-											 [NSNumber numberWithInt:comments], @"comments",
+											 (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started", @"status",
+											 [NSNumber numberWithInt:(vo.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorScore : vo.challengerScore], @"score",
+											 [NSNumber numberWithInt:vo.commentTotal], @"comments",
 											 nil];
 				
-				[challengeUpdates addObject:dict];
+				[updateChallenges addObject:dict];
 			}
-			
-			NSMutableDictionary *alertTotals = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-															[NSNumber numberWithInt:0], @"status",
-															[NSNumber numberWithInt:0], @"score",
-															[NSNumber numberWithInt:0], @"comments", nil];
-			int statusChanges = 0;
-			int voteChanges = 0;
-			int commentChanges = 0;
 			
 			NSArray *localChallenges = [[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"];
 			for (NSDictionary *lDict in localChallenges) {
-				for (NSDictionary *uDict in challengeUpdates) {
+				for (NSDictionary *uDict in updateChallenges) {
 					if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
+						NSLog(@"UPDATE:\n%@", uDict);
+						
 						if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
 							[alertTotals setValue:[NSNumber numberWithInt:++statusChanges] forKey:@"status"];
 						}
 						
 						if ([[lDict objectForKey:@"score"] intValue] != [[uDict objectForKey:@"score"] intValue]) {
-							[alertTotals setValue:[NSNumber numberWithInt:++voteChanges] forKey:@"score"];
+							voteChanges += [[uDict objectForKey:@"score"] intValue] - [[lDict objectForKey:@"score"] intValue];
+							[alertTotals setValue:[NSNumber numberWithInt:voteChanges] forKey:@"score"];
 						}
 						
 						if ([[lDict objectForKey:@"comments"] intValue] != [[uDict objectForKey:@"comments"] intValue]) {
-							[alertTotals setValue:[NSNumber numberWithInt:++commentChanges] forKey:@"comments"];
+							commentChanges += [[uDict objectForKey:@"comments"] intValue] - [[lDict objectForKey:@"comments"] intValue];
+							[alertTotals setValue:[NSNumber numberWithInt:commentChanges] forKey:@"comments"];
 						}
 					}
 				}
 			}
 			
-			if ([localChallenges count] < [challengeUpdates count]) {
-				int tot = [[alertTotals objectForKey:@"status"] intValue];
-				[alertTotals setValue:[NSNumber numberWithInt:tot + ([challengeUpdates count] - [localChallenges count])] forKey:@"status"];
+			if ([localChallenges count] < [updateChallenges count]) {
+				[alertTotals setValue:[NSNumber numberWithInt:[[alertTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])] forKey:@"status"];
 			}
 			
 			NSLog(@"CHANGES:\n%@", alertTotals);
 			
 			// update local
-			[[NSUserDefaults standardUserDefaults] setValue:challengeUpdates forKey:@"local_challenges"];
+			[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"local_challenges"];
 			[[NSUserDefaults standardUserDefaults] setValue:alertTotals forKey:@"alert_totals"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
+			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
+				[_alertPopOverView setAlerts:alertTotals];
+				_alertPopOverView.alpha = 0.0;
+				[self.view addSubview:_alertPopOverView];
+				
+				[UIView animateWithDuration:0.25 delay:0.67 options:UIViewAnimationOptionCurveLinear animations:^(void) {
+					_alertPopOverView.alpha = 1.0;
+				} completion:^(BOOL finished) {
+				}];
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

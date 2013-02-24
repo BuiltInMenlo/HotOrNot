@@ -25,23 +25,24 @@
 #import "HONHeaderView.h"
 
 @interface HONImagePickerViewController () <HONCameraOverlayViewDelegate>
-@property(nonatomic, strong) NSString *subjectName;
-@property(nonatomic, strong) NSString *iTunesPreview;
-@property(nonatomic, strong) NSString *iTunesPreviewURL;
-@property(nonatomic, strong) HONChallengeVO *challengeVO;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) NSString *fbID;
-@property(nonatomic) int submitAction;
-@property(nonatomic) int challengerID;
-@property(nonatomic) BOOL needsChallenger;
-@property(nonatomic, strong) UIImagePickerController *imagePicker;
-@property(nonatomic) BOOL isFirstAppearance;
-@property(nonatomic) BOOL hasPlayedAudio;
-@property(nonatomic, strong) NSTimer *focusTimer;
-@property(nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
-@property(nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
-@property(nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
-@property(nonatomic, strong) UIImage *challangeImage;
+@property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *subjectName;
+@property (nonatomic, strong) NSString *iTunesPreview;
+@property (nonatomic, strong) NSString *iTunesPreviewURL;
+@property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) NSString *fbID;
+@property (nonatomic) int submitAction;
+@property (nonatomic) int challengerID;
+@property (nonatomic) BOOL needsChallenger;
+@property (nonatomic, strong) UIImagePickerController *imagePicker;
+@property (nonatomic) BOOL isFirstAppearance;
+@property (nonatomic) BOOL hasPlayedAudio;
+@property (nonatomic, strong) NSTimer *focusTimer;
+@property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
+@property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
+@property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
+@property (nonatomic, strong) UIImage *challangeImage;
 @property (nonatomic, strong) MPMoviePlayerController *mpMoviePlayerController;// *sfxPlayer;
 @end
 
@@ -366,6 +367,120 @@
 	}
 }
 
+
+#pragma mark - Data Calls
+- (void)_uploadPhoto:(UIImage *)image {
+	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	
+	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
+	
+	@try {
+		float ratio = image.size.height / image.size.width;
+		
+		UIImage *lImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeW * ratio)];
+		lImage = [HONAppDelegate cropImage:lImage toRect:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		
+		UIImage *mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
+		UIImage *t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+				
+		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
+		por1.contentType = @"image/jpeg";
+		por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
+		[s3 putObject:por1];
+		
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
+		por2.contentType = @"image/jpeg";
+		por2.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
+		[s3 putObject:por2];
+		
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
+		por3.contentType = @"image/jpeg";
+		por3.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
+		[s3 putObject:por3];
+		
+	} @catch (AmazonClientException *exception) {
+		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Upload Error", @"Status message when internet connectivity is lost");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}
+}
+
+- (void)_submitChallenge {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSMutableDictionary *params = [NSMutableDictionary dictionary];
+	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+	
+	if (_submitAction == 1)
+		[params setObject:_subjectName forKey:@"subject"];
+	
+	else if (_submitAction == 4)
+		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+	
+	else if (_submitAction == 8) {
+		[params setObject:_subjectName forKey:@"subject"];
+		[params setObject:_fbID forKey:@"fbID"];
+		
+	} else if (_submitAction == 9) {
+		[params setObject:_subjectName forKey:@"subject"];
+		[params setObject:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
+	}
+	
+	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+			
+		} else {
+			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+			
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+			
+			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
+			
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			}];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"ImagePickerViewController AFNetworking %@", [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
+
 #pragma mark - Navigation
 - (void)_goBack {
 	
@@ -625,7 +740,8 @@
 	if (!_needsChallenger) {
 		[[Mixpanel sharedInstance] track:@"Submit Challenge"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"],
+													  [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		if ([_subjectName length] == 0)
 			_subjectName = [HONAppDelegate rndDefaultSubject];
