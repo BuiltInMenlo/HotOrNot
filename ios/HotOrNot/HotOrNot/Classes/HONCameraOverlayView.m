@@ -23,7 +23,10 @@
 @property (nonatomic, strong) UIView *footerHolderView;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *editButton;
+@property (nonatomic, strong) UIButton *randomSubjectButton;
+@property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *cameraBackButton;
+@property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *muteButton;
 @property (nonatomic, strong) NSString *artistName;
 @property (nonatomic, strong) NSString *songName;
@@ -55,19 +58,19 @@
 		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE PHOTO"];
 		[self addSubview:_headerView];
 		
-		UIButton *randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		randomSubjectButton.frame = CGRectMake(0.0, 0.0, 84.0, 44.0);
-		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"random_nonActive"] forState:UIControlStateNormal];
-		[randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"random_Active"] forState:UIControlStateHighlighted];
-		[randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:randomSubjectButton];
+		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_randomSubjectButton.frame = CGRectMake(0.0, 0.0, 84.0, 44.0);
+		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"random_nonActive"] forState:UIControlStateNormal];
+		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"random_Active"] forState:UIControlStateHighlighted];
+		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:_randomSubjectButton];
 		
-		UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
-		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-		[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-		[cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:cancelButton];
+		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+		[_cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:_cancelButton];
 		
 		UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 60.0, 274.0, 44.0)];
 		subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
@@ -155,22 +158,6 @@
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:changeCameraButton];
-		
-		// Add the back button
-		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(335.0, 19.0, 147.0, 62.0);
-		[backButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_nonActive"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"cancelCameraButton_Active"] forState:UIControlStateHighlighted];
-		[backButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:backButton];
-		
-		// Add the next button
-		UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		nextButton.frame = CGRectMake(475.0, 19.0, 147.0, 62.0);
-		[nextButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_nonActive"] forState:UIControlStateNormal];
-		[nextButton setBackgroundImage:[UIImage imageNamed:@"acceptCameraButton_Active"] forState:UIControlStateHighlighted];
-		[nextButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:nextButton];
 	}
 	
 	return (self);
@@ -223,6 +210,13 @@
 	[_cameraBackButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_cameraBackButton];
 	
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:_submitButton];
+	
 	[_headerView setTitle:@"PREVIEW"];
 	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
@@ -249,12 +243,22 @@
 		imgView.frame = frame;
 	}
 	
+	[_randomSubjectButton removeFromSuperview];
+	[_cancelButton removeFromSuperview];
+	
 	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_cameraBackButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
 	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
 	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
 	[_cameraBackButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_cameraBackButton];
+	
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:_submitButton];
 	
 	[_headerView setTitle:@"PREVIEW"];
 	
@@ -274,6 +278,12 @@
 	
 	[_cameraBackButton removeFromSuperview];
 	_cameraBackButton = nil;
+	
+	[_submitButton removeFromSuperview];
+	_submitButton = nil;
+	
+	[_headerView addSubview:_randomSubjectButton];
+	[_headerView addSubview:_cancelButton];
 	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(0.0, _footerHolderView.frame.origin.y, 640.0, 70.0);

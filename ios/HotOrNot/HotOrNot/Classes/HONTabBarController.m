@@ -431,8 +431,6 @@
 			for (NSDictionary *lDict in localChallenges) {
 				for (NSDictionary *uDict in updateChallenges) {
 					if ([[lDict objectForKey:@"id"] isEqual:[uDict objectForKey:@"id"]]) {
-						NSLog(@"UPDATE:\n%@", uDict);
-						
 						if ([[lDict objectForKey:@"status"] isEqualToString:@"created"] && [[uDict objectForKey:@"status"] isEqualToString:@"started"]) {
 							[alertTotals setValue:[NSNumber numberWithInt:++statusChanges] forKey:@"status"];
 						}

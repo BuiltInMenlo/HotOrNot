@@ -389,7 +389,7 @@
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
 		[s3 putObject:por1];
-		
+		 
 		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por2.contentType = @"image/jpeg";
 		por2.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
@@ -692,6 +692,8 @@
 	}
 	
 	_challangeImage = image;
+	
+	[self _uploadPhoto:_challangeImage];
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {		
 		[self dismissViewControllerAnimated:NO completion:^(void) {
