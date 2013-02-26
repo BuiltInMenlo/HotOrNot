@@ -17,11 +17,13 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
-@interface HONCameraOverlayView() <UITextFieldDelegate>
+@interface HONCameraOverlayView() <UITextFieldDelegate, UITextViewDelegate>
+@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *footerHolderView;
 @property (nonatomic, strong) UITextField *subjectTextField;
+@property (nonatomic, strong) UITextView *commentTextView;
 @property (nonatomic, strong) UIButton *editButton;
 @property (nonatomic, strong) UIButton *randomSubjectButton;
 @property (nonatomic, strong) UIButton *cancelButton;
@@ -32,6 +34,7 @@
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *itunesURL;
 @property (nonatomic, strong) UIButton *captureButton;
+@property (nonatomic, strong) NSString *comments;
 @property (nonatomic, strong) UIView *trackBGView;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic) CGSize gutterSize;
@@ -50,10 +53,10 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
 		
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
-		bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
-		bgImageView.userInteractionEnabled = YES;
-		[self addSubview:bgImageView];
+		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
+		_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
+		_bgImageView.userInteractionEnabled = YES;
+		[self addSubview:_bgImageView];
 		
 		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE PHOTO"];
 		[self addSubview:_headerView];
@@ -76,7 +79,7 @@
 		subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
 		subjectBGImageView.userInteractionEnabled = YES;
 		subjectBGImageView.alpha = 0.0;
-		[self addSubview:subjectBGImageView];
+		[_bgImageView addSubview:subjectBGImageView];
 		
 		[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveLinear animations:^(void) {
 			subjectBGImageView.alpha = 1.0;
@@ -134,8 +137,8 @@
 		
 		// Add the bottom bar
 		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 367.0, 640.0, 105.0)];
-		[self addSubview:_footerHolderView];
-		
+		[_bgImageView addSubview:_footerHolderView];
+		 
 		// Add the gallery button
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraRollButton.frame = CGRectMake(20.0, 20.0, 75.0, 75.0);
@@ -158,6 +161,21 @@
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:changeCameraButton];
+		
+		_commentTextView = [[UITextView alloc] initWithFrame:CGRectMake(340.0, 0.0, 270.0, 100.0)];
+		//[_commentTextView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		[_commentTextView setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+		[_commentTextView setAutocorrectionType:UITextAutocorrectionTypeNo];
+		_commentTextView.keyboardAppearance = UIKeyboardAppearanceDefault;
+		[_commentTextView setReturnKeyType:UIReturnKeyGo];
+		_commentTextView.backgroundColor = [UIColor whiteColor];
+		[_commentTextView setTextColor:[UIColor blackColor]];
+		//[_commentTextView addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		_commentTextView.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+		_commentTextView.keyboardType = UIKeyboardTypeDefault;
+		_commentTextView.text = @"DERP";
+		_commentTextView.delegate = self;
+		[_footerHolderView addSubview:_commentTextView];
 	}
 	
 	return (self);
@@ -257,7 +275,7 @@
 	_submitButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
+	//[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_submitButton];
 	
 	[_headerView setTitle:@"PREVIEW"];
@@ -477,7 +495,7 @@
 }
 
 #pragma mark - TextField Delegates
--(void)textFieldDidBeginEditing:(UITextField *)textField {
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
 	[[Mixpanel sharedInstance] track:@"Camera - Edit Hashtag"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -485,7 +503,7 @@
 	//_editButton.hidden = YES;
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
 	return (YES);
 }
@@ -497,8 +515,7 @@
 	return (YES);
 }
 
-
--(void)textFieldDidEndEditing:(UITextField *)textField {
+- (void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
 	_editButton.hidden = NO;
@@ -519,6 +536,39 @@
 	
 	if (_subjectName.length > 0)
 		[self _goSubjectCheck];
+}
+
+
+#pragma mark - TextView Delegates
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+	[[Mixpanel sharedInstance] track:@"Camera - Edit Comment"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+	}];
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+	[textView resignFirstResponder];
+	_comments = textView.text;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+	}];
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+	if ([text isEqualToString:@"\n"]) {
+		[textView resignFirstResponder];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+		}];
+		return (NO);
+		
+	} else
+		return (YES);
 }
 
 
