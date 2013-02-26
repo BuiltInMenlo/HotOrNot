@@ -375,6 +375,13 @@
 	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Uploading Photo…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	[_progressHUD hide:YES afterDelay:2.0];
+	
 	@try {
 		float ratio = image.size.height / image.size.width;
 		

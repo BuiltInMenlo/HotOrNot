@@ -23,7 +23,8 @@
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *footerHolderView;
 @property (nonatomic, strong) UITextField *subjectTextField;
-@property (nonatomic, strong) UITextView *commentTextView;
+@property (nonatomic, strong) UITextField *commentTextField;
+@property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) UIButton *editButton;
 @property (nonatomic, strong) UIButton *randomSubjectButton;
 @property (nonatomic, strong) UIButton *cancelButton;
@@ -162,20 +163,20 @@
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:changeCameraButton];
 		
-		_commentTextView = [[UITextView alloc] initWithFrame:CGRectMake(340.0, 0.0, 270.0, 100.0)];
-		//[_commentTextView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-		[_commentTextView setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-		[_commentTextView setAutocorrectionType:UITextAutocorrectionTypeNo];
-		_commentTextView.keyboardAppearance = UIKeyboardAppearanceDefault;
-		[_commentTextView setReturnKeyType:UIReturnKeyGo];
-		_commentTextView.backgroundColor = [UIColor whiteColor];
-		[_commentTextView setTextColor:[UIColor blackColor]];
-		//[_commentTextView addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_commentTextView.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
-		_commentTextView.keyboardType = UIKeyboardTypeDefault;
-		_commentTextView.text = @"DERP";
-		_commentTextView.delegate = self;
-		[_footerHolderView addSubview:_commentTextView];
+		_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(340.0, 0.0, 270.0, 20.0)];
+		//[_commentTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+		[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+		_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+		[_commentTextField setReturnKeyType:UIReturnKeyGo];
+		_commentTextField.backgroundColor = [UIColor whiteColor];
+		[_commentTextField setTextColor:[UIColor blackColor]];
+		//[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		_commentTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+		_commentTextField.keyboardType = UIKeyboardTypeDefault;
+		_commentTextField.text = @"DERP";
+		_commentTextField.delegate = self;
+		[_footerHolderView addSubview:_commentTextField];
 	}
 	
 	return (self);
