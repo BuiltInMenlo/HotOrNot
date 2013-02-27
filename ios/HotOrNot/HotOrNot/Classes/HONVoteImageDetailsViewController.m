@@ -260,15 +260,15 @@
 			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"HONVoteImageViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					
 				} else {
 					NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONVoteDetailsViewController AFNetworking: %@", pokeResult);
+					NSLog(@"HONVoteImageViewController AFNetworking: %@", pokeResult);
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"VoteDetailsViewController AFNetworking %@", [error localizedDescription]);
+				NSLog(@"VoteImageViewController AFNetworking %@", [error localizedDescription]);
 				
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -300,15 +300,15 @@
 			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"HONVoteImageViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					
 				} else {
 					NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONVoteDetailsViewController AFNetworking: %@", pokeResult);
+					NSLog(@"HONVoteImageViewController AFNetworking: %@", pokeResult);
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"VoteDetailsViewController AFNetworking %@", [error localizedDescription]);
+				NSLog(@"HONVoteImageViewController AFNetworking %@", [error localizedDescription]);
 				
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;

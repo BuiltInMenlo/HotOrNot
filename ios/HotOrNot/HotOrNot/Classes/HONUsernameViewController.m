@@ -152,7 +152,7 @@
 	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONUsernameViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];

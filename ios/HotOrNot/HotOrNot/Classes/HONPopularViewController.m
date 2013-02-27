@@ -88,7 +88,7 @@
 	[httpClient postPath:kPopularAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONPopularViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -141,7 +141,7 @@
 	[httpClient postPath:kPopularAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONPopularViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];

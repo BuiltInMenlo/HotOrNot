@@ -865,10 +865,20 @@ NSString *const FacebookAppID = @"529054720443694";
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
-		if (error != nil)
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		if (error != nil) {
+			NSLog(@"AppDelegate AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
-		else {
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Problem loading data!", @"Status message when no network detected");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+		
+		} else {
 			//NSLog(@"HONAppDelegate AFNetworking: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
@@ -880,6 +890,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"AppDelegate AFNetworking %@", [error localizedDescription]);
 		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];

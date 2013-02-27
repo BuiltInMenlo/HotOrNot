@@ -134,7 +134,7 @@
 					[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 						NSError *error = nil;
 						if (error != nil) {
-							NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+							NSLog(@"HONLoginViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 							
 						} else {
 							NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];

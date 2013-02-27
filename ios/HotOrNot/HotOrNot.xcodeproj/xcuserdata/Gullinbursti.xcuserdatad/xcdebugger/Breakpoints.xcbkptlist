@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "HotOrNot/Classes/HONVoteViewController.m"
-         timestampString = "383174655.514721"
+         timestampString = "383613311.03872"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "660"
-         endingLineNumber = "660"
+         startingLineNumber = "661"
+         endingLineNumber = "661"
          landmarkName = "@implementation HONVoteViewController"
          landmarkType = "3">
       </FileBreakpoint>

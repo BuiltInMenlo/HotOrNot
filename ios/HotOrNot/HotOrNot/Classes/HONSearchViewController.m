@@ -66,7 +66,7 @@
 	[httpClient postPath:kSearchAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONSearchViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -76,7 +76,7 @@
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:NO]]]];
-			NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedUsers);
+			NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
 			
 			_results = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
@@ -128,7 +128,7 @@
 	[httpClient postPath:kSearchAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONSearchViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -138,7 +138,7 @@
 		} else {
 			NSArray *unsortedSubjects = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedSubjects = [NSMutableArray arrayWithArray:[unsortedSubjects sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]]];
-			NSLog(@"SearchViewController AFNetworking: %@", unsortedSubjects);
+			NSLog(@"HONSearchViewController AFNetworking: %@", unsortedSubjects);
 			
 			_results = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedSubjects) {

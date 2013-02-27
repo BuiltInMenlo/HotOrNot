@@ -17,7 +17,7 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
-@interface HONCameraOverlayView() <UITextFieldDelegate, UITextViewDelegate>
+@interface HONCameraOverlayView() <UITextFieldDelegate>
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *previewHolderView;
@@ -98,6 +98,7 @@
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = _subjectName;
 		_subjectTextField.delegate = self;
+		[_subjectTextField setTag:0];
 		[subjectBGImageView addSubview:_subjectTextField];
 		
 		_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -163,7 +164,23 @@
 		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:changeCameraButton];
 		
-		_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(340.0, 0.0, 270.0, 20.0)];
+		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(340.0, 0.0, 270.0, 25.0)];
+		//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+		[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+		_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+		[_usernameTextField setReturnKeyType:UIReturnKeyDone];
+		_usernameTextField.backgroundColor = [UIColor whiteColor];
+		[_usernameTextField setTextColor:[UIColor blackColor]];
+		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
+		_usernameTextField.keyboardType = UIKeyboardTypeDefault;
+		_usernameTextField.text = @"Enter Username";
+		_usernameTextField.delegate = self;
+		[_usernameTextField setTag:1];
+		[_footerHolderView addSubview:_usernameTextField];
+		
+		_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(340.0, 40.0, 270.0, 25.0)];
 		//[_commentTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -172,10 +189,11 @@
 		_commentTextField.backgroundColor = [UIColor whiteColor];
 		[_commentTextField setTextColor:[UIColor blackColor]];
 		//[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_commentTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+		_commentTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
 		_commentTextField.keyboardType = UIKeyboardTypeDefault;
-		_commentTextField.text = @"DERP";
+		_commentTextField.text = @"Enter comments";
 		_commentTextField.delegate = self;
+		[_commentTextField setTag:2];
 		[_footerHolderView addSubview:_commentTextField];
 	}
 	
@@ -476,7 +494,7 @@
 		NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil)
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"AFNetworking HONCameraOverlayView - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
 			NSLog(@"AFNetworking HONCameraOverlayView: %@", subjectResult);
@@ -497,9 +515,29 @@
 
 #pragma mark - TextField Delegates
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
-	[[Mixpanel sharedInstance] track:@"Camera - Edit Hashtag"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	if (textField.tag == 0) {
+		[[Mixpanel sharedInstance] track:@"Camera - Edit Hashtag"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	} else if (textField.tag == 1) {
+		[[Mixpanel sharedInstance] track:@"Camera - Enter Username"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+		}];
+	
+	} else if (textField.tag == 2) {
+		[[Mixpanel sharedInstance] track:@"Camera - Edit Comment"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+		}];
+	}
 	
 	//_editButton.hidden = YES;
 }
@@ -510,8 +548,11 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-	if ([textField.text isEqualToString:@""])
-		textField.text = @"#";
+	
+	if (textField.tag == 0) {
+		if ([textField.text isEqualToString:@""])
+			textField.text = @"#";
+	}
 	
 	return (YES);
 }
@@ -519,57 +560,37 @@
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	_editButton.hidden = NO;
-	
-	if ([textField.text length] == 0 || [textField.text isEqualToString:@"#"])
-		textField.text = _subjectName;
-	
-	else {
-		NSArray *hashTags = [textField.text componentsSeparatedByString:@"#"];
+	if (textField.tag == 0) {
+		_editButton.hidden = NO;
+		if ([textField.text length] == 0 || [textField.text isEqualToString:@"#"])
+			textField.text = _subjectName;
 		
-		if ([hashTags count] > 2) {
-			NSString *hashTag = ([[hashTags objectAtIndex:1] hasSuffix:@" "]) ? [[hashTags objectAtIndex:1] substringToIndex:[[hashTags objectAtIndex:1] length] - 1] : [hashTags objectAtIndex:1];
-			textField.text = [NSString stringWithFormat:@"#%@", hashTag];
+		else {
+			NSArray *hashTags = [textField.text componentsSeparatedByString:@"#"];
+			
+			if ([hashTags count] > 2) {
+				NSString *hashTag = ([[hashTags objectAtIndex:1] hasSuffix:@" "]) ? [[hashTags objectAtIndex:1] substringToIndex:[[hashTags objectAtIndex:1] length] - 1] : [hashTags objectAtIndex:1];
+				textField.text = [NSString stringWithFormat:@"#%@", hashTag];
+			}
+			
+			_subjectName = textField.text;
 		}
 		
-		_subjectName = textField.text;
-	}
+		if (_subjectName.length > 0)
+			[self _goSubjectCheck];
 	
-	if (_subjectName.length > 0)
-		[self _goSubjectCheck];
-}
-
-
-#pragma mark - TextView Delegates
-- (void)textViewDidBeginEditing:(UITextView *)textView {
-	[[Mixpanel sharedInstance] track:@"Camera - Edit Comment"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
-	}];
-}
-
-- (void)textViewDidEndEditing:(UITextView *)textView {
-	[textView resignFirstResponder];
-	_comments = textView.text;
+	} else if (textField.tag == 1) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+		}];
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
-	}];
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-	if ([text isEqualToString:@"\n"]) {
-		[textView resignFirstResponder];
+	} else if (textField.tag == 2) {
+		_comments = textField.text;
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
 		}];
-		return (NO);
-		
-	} else
-		return (YES);
+	}
 }
 
 

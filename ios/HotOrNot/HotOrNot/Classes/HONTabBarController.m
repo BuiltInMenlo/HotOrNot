@@ -399,7 +399,7 @@
 	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONTabBarViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			int statusChanges = 0;
@@ -452,7 +452,7 @@
 				[alertTotals setValue:[NSNumber numberWithInt:[[alertTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])] forKey:@"status"];
 			}
 			
-			NSLog(@"CHANGES:\n%@", alertTotals);
+			//NSLog(@"CHANGES:\n%@", alertTotals);
 			
 			// update local
 			[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"local_challenges"];

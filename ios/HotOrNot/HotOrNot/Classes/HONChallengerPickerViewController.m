@@ -580,7 +580,7 @@
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
 			if (error != nil) {
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				NSLog(@"HONChallengerPickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -738,7 +738,7 @@
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
 			if (error != nil) {
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				NSLog(@"HONChallengerPickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;

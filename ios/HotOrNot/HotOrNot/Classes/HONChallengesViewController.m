@@ -90,7 +90,7 @@
 	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			_refreshButton.hidden = NO;
 			if (_progressHUD != nil) {
@@ -153,7 +153,7 @@
 		[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			if (error != nil) {
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 				_refreshButton.hidden = NO;
 				if (_progressHUD != nil) {
@@ -411,7 +411,7 @@
 	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			_refreshButton.hidden = NO;
 			if (_progressHUD != nil) {
@@ -634,7 +634,7 @@
 				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 					}
@@ -670,7 +670,7 @@
 				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 					}

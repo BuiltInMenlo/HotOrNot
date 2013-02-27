@@ -24,7 +24,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONImagePickerViewController () <HONCameraOverlayViewDelegate>
+@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONCameraOverlayViewDelegate>
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *iTunesPreview;
@@ -34,6 +34,7 @@
 @property (nonatomic, strong) NSString *fbID;
 @property (nonatomic) int submitAction;
 @property (nonatomic) int challengerID;
+@property (nonatomic) int uploadCounter;
 @property (nonatomic) BOOL needsChallenger;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic) BOOL isFirstAppearance;
@@ -294,7 +295,7 @@
 		[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			if (error != nil) {
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				NSLog(@"ImagePickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 			} else {
 				NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -371,16 +372,16 @@
 #pragma mark - Data Calls
 - (void)_uploadPhoto:(UIImage *)image {
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
+	_uploadCounter = 0;
 	
 	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
-	NSLog(@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
+	NSLog(@"FILE PREFIX: https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Uploading Photo…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
-	[_progressHUD hide:YES afterDelay:2.0];
 	
 	@try {
 		float ratio = image.size.height / image.size.width;
@@ -395,16 +396,19 @@
 		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
+		por1.delegate = self;
 		[s3 putObject:por1];
 		 
 		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por2.contentType = @"image/jpeg";
 		por2.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
+		por2.delegate = self;
 		[s3 putObject:por2];
 		
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
 		por3.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
+		por3.delegate = self;
 		[s3 putObject:por3];
 		
 	} @catch (AmazonClientException *exception) {
@@ -448,7 +452,7 @@
 	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"ImagePickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -814,7 +818,7 @@
 			[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"ImagePickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -884,6 +888,23 @@
 		
 		_hasPlayedAudio = NO;
 	}
+}
+
+
+#pragma mark - AWS Delegates
+- (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
+	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
+	
+	_uploadCounter++;
+	
+	if (_uploadCounter == 3) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+	}
+}
+
+- (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
+	NSLog(@"AWS didFailWithError:\n%@", error);
 }
 
 @end

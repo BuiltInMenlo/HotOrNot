@@ -150,7 +150,7 @@
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
 			if (error != nil)
-				NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			else {
 				NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
@@ -237,7 +237,7 @@
 				NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 				
 				if (error != nil)
-					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 				else {
 					NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
@@ -278,7 +278,7 @@
 				NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 				
 				if (error != nil)
-					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 				else {
 					NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);

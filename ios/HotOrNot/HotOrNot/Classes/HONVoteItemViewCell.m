@@ -484,7 +484,7 @@
 			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					
 				} else {
 					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -555,7 +555,7 @@
 			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					
 				} else {
 					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -621,7 +621,7 @@
 				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];

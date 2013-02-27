@@ -70,7 +70,7 @@
 	[httpClient postPath:kCommentsAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONCommentsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -117,7 +117,7 @@
 	[httpClient postPath:kCommentsAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONCommentsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -359,7 +359,7 @@
 				[httpClient postPath:kCommentsAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						NSLog(@"HONCommentsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						[self _retrieveComments];

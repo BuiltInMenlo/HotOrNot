@@ -66,7 +66,7 @@
 	[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONVoteSubjectsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -95,7 +95,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
+		NSLog(@"VoteSubjectsViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		_progressHUD.minShowTime = kHUDTime;
