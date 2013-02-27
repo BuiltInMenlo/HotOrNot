@@ -35,6 +35,7 @@
 @property (nonatomic, strong) NSString *songName;
 @property (nonatomic, strong) NSString *itunesURL;
 @property (nonatomic, strong) UIButton *captureButton;
+@property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *comments;
 @property (nonatomic, strong) UIView *trackBGView;
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
@@ -48,6 +49,9 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if (self = [super initWithFrame:frame]) {
+		_username = @"";
+		_comments = @"";
+		
 		int photoSize = 250.0;
 		_gutterSize = CGSizeMake((320.0 - photoSize) * 0.5, (self.frame.size.height - photoSize) * 0.5);
 		
@@ -175,7 +179,7 @@
 		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
 		_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-		_usernameTextField.text = @"Enter Username";
+		_usernameTextField.text = @"Add a username…";
 		_usernameTextField.delegate = self;
 		[_usernameTextField setTag:1];
 		[_footerHolderView addSubview:_usernameTextField];
@@ -185,13 +189,13 @@
 		[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-		[_commentTextField setReturnKeyType:UIReturnKeyGo];
+		[_commentTextField setReturnKeyType:UIReturnKeyDone];
 		_commentTextField.backgroundColor = [UIColor whiteColor];
 		[_commentTextField setTextColor:[UIColor blackColor]];
 		//[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_commentTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
 		_commentTextField.keyboardType = UIKeyboardTypeDefault;
-		_commentTextField.text = @"Enter comments";
+		_commentTextField.text = @"Add a comment…";
 		_commentTextField.delegate = self;
 		[_commentTextField setTag:2];
 		[_footerHolderView addSubview:_commentTextField];
@@ -294,7 +298,7 @@
 	_submitButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	//[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
+	[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_submitButton];
 	
 	[_headerView setTitle:@"PREVIEW"];
@@ -426,7 +430,8 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self.delegate cameraOverlayViewClosePreview:self];
+	//[self.delegate cameraOverlayViewClosePreview:self];
+	[self.delegate cameraOverlayViewSubmitChallenge:self username:_usernameTextField.text comments:_commentTextField.text];
 }
 
 - (void)_goEditSubject {
@@ -528,6 +533,8 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
 		}];
+		
+		textField.text = @"";
 	
 	} else if (textField.tag == 2) {
 		[[Mixpanel sharedInstance] track:@"Camera - Edit Comment"
@@ -537,6 +544,8 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
 		}];
+		
+		textField.text = @"";
 	}
 	
 	//_editButton.hidden = YES;
@@ -580,11 +589,19 @@
 			[self _goSubjectCheck];
 	
 	} else if (textField.tag == 1) {
+		if ([textField.text length] == 0)
+			textField.text = @"Add a username…";
+		
+		_comments = textField.text;
+		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
 		}];
 	
 	} else if (textField.tag == 2) {
+		if ([textField.text length] == 0)
+			textField.text = @"Add a username…";
+		
 		_comments = textField.text;
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {

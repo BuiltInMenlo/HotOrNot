@@ -427,28 +427,8 @@
 	}
 }
 
-- (void)_submitChallenge {
+- (void)_submitChallenge:(NSMutableDictionary *)params {
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSMutableDictionary *params = [NSMutableDictionary dictionary];
-	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
-	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
-	
-	if (_submitAction == 1)
-		[params setObject:_subjectName forKey:@"subject"];
-	
-	else if (_submitAction == 4)
-		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-	
-	else if (_submitAction == 8) {
-		[params setObject:_subjectName forKey:@"subject"];
-		[params setObject:_fbID forKey:@"fbID"];
-		
-	} else if (_submitAction == 9) {
-		[params setObject:_subjectName forKey:@"subject"];
-		[params setObject:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
-	}
-	
 	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
@@ -633,6 +613,42 @@
 - (void)cameraOverlayViewClosePreview:(HONCameraOverlayView *)cameraOverlayView {
 	[_cameraOverlayView hidePreview];
 	[self _acceptPhoto];
+}
+
+- (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username comments:(NSString *)comments {
+	NSLog(@"cameraOverlayViewSubmitChallenge [%@][%@]", username, comments);
+	
+	NSMutableDictionary *params = [NSMutableDictionary dictionary];
+	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+	
+//	if (_submitAction == 1)
+//		[params setObject:_subjectName forKey:@"subject"];
+//	
+//	else if (_submitAction == 4)
+//		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+//	
+//	else if (_submitAction == 8) {
+//		[params setObject:_subjectName forKey:@"subject"];
+//		[params setObject:_fbID forKey:@"fbID"];
+//		
+//	} else if (_submitAction == 9) {
+//		[params setObject:_subjectName forKey:@"subject"];
+//		[params setObject:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
+//	}
+//	
+//	if ([username isEqualToString:@"Add a username…"]) {
+//		
+//	
+//	} else {
+//		
+//	}
+	
+	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	}];
 }
 
 - (void)cameraOverlayViewRandomSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName {
