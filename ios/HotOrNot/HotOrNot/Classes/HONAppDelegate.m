@@ -24,8 +24,8 @@
 
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
-#import "HONVoteViewController.h"
-#import "HONVoteSubjectsViewController.h"
+#import "HONTimelineViewController.h"
+#import "HONTimelineSubjectsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONSettingsViewController.h"
@@ -515,14 +515,14 @@ NSString *const FacebookAppID = @"529054720443694";
 	[_searchViewController.view removeFromSuperview];
 	
 	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-	[navigationController pushViewController:[[HONVoteViewController alloc] initWithSubjectName:[notification object]] animated:YES];
+	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubjectName:[notification object]] animated:YES];
 }
 
 - (void)_showUserSearchTimeline:(NSNotification *)notification {
 	[_searchViewController.view removeFromSuperview];
 	
 	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-	[navigationController pushViewController:[[HONVoteViewController alloc] initWithUsername:[notification object]] animated:YES];
+	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[notification object]] animated:YES];
 }
 
 
@@ -908,7 +908,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
-	voteViewController = [[HONVoteViewController alloc] init];//[[HONVoteSubjectsViewController alloc] init];//
+	voteViewController = [[HONTimelineViewController alloc] init];//[[HONVoteSubjectsViewController alloc] init];//
 	popularViewController = [[HONPopularViewController alloc] init];
 	createChallengeViewController = [[HONImagePickerViewController alloc] init];
 	settingsViewController = [[HONSettingsViewController alloc] init];

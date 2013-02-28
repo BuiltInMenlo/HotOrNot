@@ -1,5 +1,5 @@
 //
-//  HONVoteViewController
+//  HONTimelineViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.06.12.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "HONChallengeVO.h"
 
-@interface HONVoteViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface HONTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 - (id)initWithSubjectID:(int)subjectID;
 - (id)initWithSubjectName:(NSString *)subjectName;

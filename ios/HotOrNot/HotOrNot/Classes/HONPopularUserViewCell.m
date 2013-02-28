@@ -37,11 +37,14 @@
 	usernameLabel.text = _userVO.username;
 	[self addSubview:usernameLabel];
 	
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
 	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 35.0, 200.0, 16.0)];
 	scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	scoreLabel.textColor = [UIColor blackColor];
 	scoreLabel.backgroundColor = [UIColor clearColor];
-	scoreLabel.text = [NSString stringWithFormat:@"%d PTS", _userVO.score];
+	scoreLabel.text = [NSString stringWithFormat:@"%@ PTS", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:scoreLabel];
 	
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID)

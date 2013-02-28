@@ -1,5 +1,5 @@
 //
-//  HONVoteItemViewCell.h
+//  HONTimelineItemViewCell.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.07.12.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "HONChallengeVO.h"
 
-@interface HONVoteItemViewCell : UITableViewCell
+@interface HONTimelineItemViewCell : UITableViewCell
 
 + (NSString *)cellReuseIdentifier;
 - (id)initAsWaitingCell;

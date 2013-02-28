@@ -1,5 +1,5 @@
 //
-//  HONVoteSubjectViewCell.h
+//  HONTimelineSubjectViewCell.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 01.30.13.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONVoteSubjectViewCell : UITableViewCell
+@interface HONTimelineSubjectViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (id)initWithSubject:(NSString *)subject;
 

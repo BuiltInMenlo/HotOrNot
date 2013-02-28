@@ -1,5 +1,5 @@
 //
-//  HONVoteSubjectViewCell.m
+//  HONTimelineSubjectViewCell.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 01.30.13.
@@ -8,14 +8,14 @@
 
 #import "UIImageView+AFNetworking.h"
 
-#import "HONVoteSubjectViewCell.h"
+#import "HONTimelineSubjectViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 
-@interface HONVoteSubjectViewCell() <UIScrollViewDelegate>
+@interface HONTimelineSubjectViewCell() <UIScrollViewDelegate>
 @end
 
-@implementation HONVoteSubjectViewCell
+@implementation HONTimelineSubjectViewCell
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));

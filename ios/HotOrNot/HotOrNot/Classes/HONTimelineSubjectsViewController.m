@@ -1,5 +1,5 @@
 //
-//  HONVoteSubjectsViewController.m
+//  HONTimelineSubjectsViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 01.30.13.
@@ -11,15 +11,15 @@
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
 
-#import "HONVoteSubjectsViewController.h"
+#import "HONTimelineSubjectsViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONSearchHeaderView.h"
-#import "HONVoteSubjectViewCell.h"
+#import "HONTimelineSubjectViewCell.h"
 #import "HONVoteSubjectVO.h"
-#import "HONVoteViewController.h"
+#import "HONTimelineViewController.h"
 
-@interface HONVoteSubjectsViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface HONTimelineSubjectsViewController () <UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
@@ -29,7 +29,7 @@
 @property(nonatomic, strong) NSMutableArray *subjectNames;
 @end
 
-@implementation HONVoteSubjectsViewController
+@implementation HONTimelineSubjectsViewController
 
 - (id)init {
 	if ((self = [super init])) {
@@ -209,10 +209,10 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONVoteSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONTimelineSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
-		cell = [[HONVoteSubjectViewCell alloc] initWithSubject:[_subjectNames objectAtIndex:indexPath.row]];
+		cell = [[HONTimelineSubjectViewCell alloc] initWithSubject:[_subjectNames objectAtIndex:indexPath.row]];
 		[cell setChallenges:[_subjects objectForKey:[_subjectNames objectAtIndex:indexPath.row]]];
 		cell.index = indexPath.row;
 	}
@@ -239,7 +239,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	
-	[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithSubjectName:[_subjectNames objectAtIndex:indexPath.row]] animated:YES];
+	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubjectName:[_subjectNames objectAtIndex:indexPath.row]] animated:YES];
 }
 
 @end

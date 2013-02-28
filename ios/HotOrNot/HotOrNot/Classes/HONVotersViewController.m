@@ -103,14 +103,14 @@
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"VOTES"];
 	[self.view addSubview:_headerView];
-
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:cancelButton];
 	
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:backButton];
+		
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -215,12 +215,14 @@
 	
 	
 	_voterVO = (HONVoterVO *)[_voters objectAtIndex:indexPath.row];
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-																		 message:[NSString stringWithFormat:@"Want to %@ challenge %@?", _challengeVO.subjectName, _voterVO.username]
-																		delegate:self
-															cancelButtonTitle:@"Yes"
-															otherButtonTitles:@"No", nil];
-	[alertView show];
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"
+//																		 message:[NSString stringWithFormat:@"Want to %@ challenge %@?", _challengeVO.subjectName, _voterVO.username]
+//																		delegate:self
+//															cancelButtonTitle:@"Yes"
+//															otherButtonTitles:@"No", nil];
+//	[alertView show];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_voterVO.username];
 }
 
 

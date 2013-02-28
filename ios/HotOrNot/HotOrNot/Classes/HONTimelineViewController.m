@@ -1,5 +1,5 @@
 //
-//  HONVoteViewController
+//  HONTimelineViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.06.12.
@@ -11,8 +11,8 @@
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
 
-#import "HONVoteViewController.h"
-#import "HONVoteItemViewCell.h"
+#import "HONTimelineViewController.h"
+#import "HONTimelineItemViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 #import "HONFacebookCaller.h"
@@ -22,10 +22,10 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONLoginViewController.h"
-#import "HONVoteImageDetailsViewController.h"
+#import "HONTimelineItemDetailsViewController.h"
 #import "HONUsernameViewController.h"
 
-@interface HONVoteViewController()
+@interface HONTimelineViewController()
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *username;
@@ -42,12 +42,13 @@
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @end
 
-@implementation HONVoteViewController
+@implementation HONTimelineViewController
 
 - (id)init {
 	if ((self = [super init])) {
 		_subjectID = 0;
 		_submitAction = 4;
+		_isPushView = NO;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		_challenges = [NSMutableArray new];
@@ -322,17 +323,26 @@
 		
 	}
 	
-	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
-	[activityIndicatorView startAnimating];
-	[_headerView addSubview:activityIndicatorView];
+	if (!_isPushView) {
+		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		activityIndicatorView.frame = CGRectMake(14.0, 10.0, 24.0, 24.0);
+		[activityIndicatorView startAnimating];
+		[_headerView addSubview:activityIndicatorView];
+		
+		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
+		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+		[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:_refreshButton];
+	}
 	
-	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_refreshButton];
+	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_onTap"] forState:UIControlStateHighlighted];
+	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:createChallengeButton];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 115.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
@@ -566,7 +576,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 		
-	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteImageDetailsViewController alloc] initAsNotInSession:vo]];
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONTimelineItemDetailsViewController alloc] initAsNotInSession:vo]];
 	[navController setNavigationBarHidden:YES];
 	[self presentViewController:navController animated:NO completion:nil];
 }
@@ -579,7 +589,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 	
-	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteImageDetailsViewController alloc] initAsInSessionCreator:vo]];
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONTimelineItemDetailsViewController alloc] initAsInSessionCreator:vo]];
 	[navController setNavigationBarHidden:YES];
 	[self presentViewController:navController animated:NO completion:nil];
 }
@@ -592,7 +602,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
 	
-	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONVoteImageDetailsViewController alloc] initAsInSessionChallenger:vo]];
+	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONTimelineItemDetailsViewController alloc] initAsInSessionChallenger:vo]];
 	[navController setNavigationBarHidden:YES];
 	[self presentViewController:navController animated:NO completion:nil];
 }
@@ -641,9 +651,11 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVotersViewController alloc] initWithChallenge:vo]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVotersViewController alloc] initWithChallenge:vo]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:NO completion:nil];
+	
+	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:vo] animated:YES];
 }
 
 - (void)_showComments:(NSNotification *)notification {
@@ -654,9 +666,11 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCommentsViewController alloc] initWithChallenge:vo]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCommentsViewController alloc] initWithChallenge:vo]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:NO completion:nil];
+	
+	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:vo] animated:YES];
 }
 
 - (void)_showSearchResults:(NSNotification *)notification {
@@ -690,11 +704,11 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONVoteItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil) {
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-		cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONVoteItemViewCell alloc] initAsWaitingCell] : [[HONVoteItemViewCell alloc] initAsStartedCell];
+		cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONTimelineItemViewCell alloc] initAsWaitingCell] : [[HONTimelineItemViewCell alloc] initAsStartedCell];
 		cell.challengeVO = vo;
 	}
 	

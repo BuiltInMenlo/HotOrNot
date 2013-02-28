@@ -162,12 +162,19 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"COMMENTS"];
 	[self.view addSubview:_headerView];
 	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:cancelButton];
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:backButton];
+	
+//	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+//	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+//	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+//	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+//	[_headerView addSubview:cancelButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -209,17 +216,16 @@
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"USER_CHALLENGE" object:nil];
 }
 
 
 #pragma mark - Navigation
 - (void)_goBack {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"USER_CHALLENGE" object:nil];
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goCancel {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"USER_CHALLENGE" object:nil];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 

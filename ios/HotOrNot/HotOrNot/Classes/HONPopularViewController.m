@@ -13,7 +13,7 @@
 
 #import "HONPopularViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONVoteViewController.h"
+#import "HONTimelineViewController.h"
 #import "HONLoginViewController.h"
 #import "HONAlternatingRowsViewCell.h"
 #import "HONPopularUserViewCell.h"
@@ -219,16 +219,23 @@
 	[_headerView addSubview:tagsButton];
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
+	activityIndicatorView.frame = CGRectMake(14.0, 10.0, 24.0, 24.0);
 	[activityIndicatorView startAnimating];
 	[_headerView addSubview:activityIndicatorView];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	_refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
+	
+	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_onTap"] forState:UIControlStateHighlighted];
+	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:createChallengeButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];

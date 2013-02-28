@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C07B8E916A0E1F700E061FD /* HONVoteImageDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C07B8E816A0E1F700E061FD /* HONVoteImageDetailsViewController.m */; };
+		4C07B8E916A0E1F700E061FD /* HONTimelineItemDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C07B8E816A0E1F700E061FD /* HONTimelineItemDetailsViewController.m */; };
 		4C0C406B162BCCC0007F0DA3 /* cancelButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */; };
 		4C0C406C162BCCC0007F0DA3 /* cancelButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */; };
 		4C0C406D162BCCC0007F0DA3 /* cancelButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */; };
@@ -97,7 +97,7 @@
 		4C32B99B15FA6F720023A0EE /* HONChallengeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B99A15FA6F720023A0EE /* HONChallengeViewCell.m */; };
 		4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B99E15FA75BC0023A0EE /* HONChallengeVO.m */; };
 		4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */; };
-		4C32B9A815FABBE80023A0EE /* HONVoteItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9A715FABBE80023A0EE /* HONVoteItemViewCell.m */; };
+		4C32B9A815FABBE80023A0EE /* HONTimelineItemViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9A715FABBE80023A0EE /* HONTimelineItemViewCell.m */; };
 		4C32B9AE15FAC1050023A0EE /* HONPopularUserViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B9AD15FAC1050023A0EE /* HONPopularUserViewCell.m */; };
 		4C3A46FC169E1760002FB3C6 /* orIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3A46FA169E1760002FB3C6 /* orIcon.png */; };
 		4C3A46FD169E1760002FB3C6 /* orIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3A46FB169E1760002FB3C6 /* orIcon@2x.png */; };
@@ -119,8 +119,8 @@
 		4C3D6202162FC66800D7F0FC /* flipCamera_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3D61FE162FC66800D7F0FC /* flipCamera_Active@2x.png */; };
 		4C3D6203162FC66800D7F0FC /* flipCamera_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3D61FF162FC66800D7F0FC /* flipCamera_nonActive.png */; };
 		4C3D6204162FC66800D7F0FC /* flipCamera_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3D6200162FC66800D7F0FC /* flipCamera_nonActive@2x.png */; };
-		4C3DA1B016BA167A00261651 /* HONVoteSubjectsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA1AF16BA167A00261651 /* HONVoteSubjectsViewController.m */; };
-		4C3DA1B416BA202900261651 /* HONVoteSubjectViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA1B316BA202800261651 /* HONVoteSubjectViewCell.m */; };
+		4C3DA1B016BA167A00261651 /* HONTimelineSubjectsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA1AF16BA167A00261651 /* HONTimelineSubjectsViewController.m */; };
+		4C3DA1B416BA202900261651 /* HONTimelineSubjectViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA1B316BA202800261651 /* HONTimelineSubjectViewCell.m */; };
 		4C3DA1BC16BA4D3400261651 /* HONVoteSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA1BB16BA4D3400261651 /* HONVoteSubjectVO.m */; };
 		4C3E884316A3B105003301AF /* audio_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E883F16A3B105003301AF /* audio_Active.png */; };
 		4C3E884416A3B105003301AF /* audio_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E884016A3B105003301AF /* audio_Active@2x.png */; };
@@ -156,6 +156,7 @@
 		4C3E888616A3C050003301AF /* shareLarge_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E888216A3C050003301AF /* shareLarge_nonActive@2x.png */; };
 		4C41097015FAE42E00E34F4E /* HONPopularSubjectViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41096F15FAE42E00E34F4E /* HONPopularSubjectViewCell.m */; };
 		4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */; };
+		4C45FF4916DECE95002F1080 /* HONUserProfileViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */; };
 		4C48745816BF0E36007D901B /* HONSearchHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchHeaderView.m */; };
 		4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745A16C05699007D901B /* HONSearchViewController.m */; };
 		4C51173D1623A20D00370D3A /* MPCJSONDataSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C5117331623A20D00370D3A /* MPCJSONDataSerializer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -184,7 +185,7 @@
 		4C62673615F96E2900AA7FCE /* AWSiOSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6266AF15F96E2900AA7FCE /* AWSiOSSDK.framework */; };
 		4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */; };
 		4C62674115F96E5600AA7FCE /* HONChallengesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673D15F96E5600AA7FCE /* HONChallengesViewController.m */; };
-		4C62674215F96E5600AA7FCE /* HONVoteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673F15F96E5600AA7FCE /* HONVoteViewController.m */; };
+		4C62674215F96E5600AA7FCE /* HONTimelineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C62673F15F96E5600AA7FCE /* HONTimelineViewController.m */; };
 		4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62674815F96FA800AA7FCE /* AudioToolbox.framework */; };
 		4C62675515F96FA800AA7FCE /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62674915F96FA800AA7FCE /* CFNetwork.framework */; };
 		4C62675615F96FA800AA7FCE /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62674A15F96FA800AA7FCE /* CoreLocation.framework */; };
@@ -415,8 +416,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4C07B8E716A0E1F700E061FD /* HONVoteImageDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteImageDetailsViewController.h; sourceTree = "<group>"; };
-		4C07B8E816A0E1F700E061FD /* HONVoteImageDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteImageDetailsViewController.m; sourceTree = "<group>"; };
+		4C07B8E716A0E1F700E061FD /* HONTimelineItemDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemDetailsViewController.h; sourceTree = "<group>"; };
+		4C07B8E816A0E1F700E061FD /* HONTimelineItemDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineItemDetailsViewController.m; sourceTree = "<group>"; };
 		4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_Active.png; sourceTree = "<group>"; };
 		4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancelButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_nonActive.png; sourceTree = "<group>"; };
@@ -510,8 +511,8 @@
 		4C32B99E15FA75BC0023A0EE /* HONChallengeVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeVO.m; sourceTree = "<group>"; };
 		4C32B9A015FAB3AE0023A0EE /* HONSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSettingsViewController.h; sourceTree = "<group>"; };
 		4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewController.m; sourceTree = "<group>"; };
-		4C32B9A615FABBE80023A0EE /* HONVoteItemViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteItemViewCell.h; sourceTree = "<group>"; };
-		4C32B9A715FABBE80023A0EE /* HONVoteItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteItemViewCell.m; sourceTree = "<group>"; };
+		4C32B9A615FABBE80023A0EE /* HONTimelineItemViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemViewCell.h; sourceTree = "<group>"; };
+		4C32B9A715FABBE80023A0EE /* HONTimelineItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineItemViewCell.m; sourceTree = "<group>"; };
 		4C32B9AC15FAC1050023A0EE /* HONPopularUserViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONPopularUserViewCell.h; sourceTree = "<group>"; };
 		4C32B9AD15FAC1050023A0EE /* HONPopularUserViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularUserViewCell.m; sourceTree = "<group>"; };
 		4C3A46FA169E1760002FB3C6 /* orIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orIcon.png; sourceTree = "<group>"; };
@@ -534,10 +535,10 @@
 		4C3D61FE162FC66800D7F0FC /* flipCamera_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flipCamera_Active@2x.png"; sourceTree = "<group>"; };
 		4C3D61FF162FC66800D7F0FC /* flipCamera_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flipCamera_nonActive.png; sourceTree = "<group>"; };
 		4C3D6200162FC66800D7F0FC /* flipCamera_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "flipCamera_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C3DA1AE16BA167A00261651 /* HONVoteSubjectsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteSubjectsViewController.h; sourceTree = "<group>"; };
-		4C3DA1AF16BA167A00261651 /* HONVoteSubjectsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteSubjectsViewController.m; sourceTree = "<group>"; };
-		4C3DA1B216BA202800261651 /* HONVoteSubjectViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteSubjectViewCell.h; sourceTree = "<group>"; };
-		4C3DA1B316BA202800261651 /* HONVoteSubjectViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteSubjectViewCell.m; sourceTree = "<group>"; };
+		4C3DA1AE16BA167A00261651 /* HONTimelineSubjectsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineSubjectsViewController.h; sourceTree = "<group>"; };
+		4C3DA1AF16BA167A00261651 /* HONTimelineSubjectsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineSubjectsViewController.m; sourceTree = "<group>"; };
+		4C3DA1B216BA202800261651 /* HONTimelineSubjectViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineSubjectViewCell.h; sourceTree = "<group>"; };
+		4C3DA1B316BA202800261651 /* HONTimelineSubjectViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineSubjectViewCell.m; sourceTree = "<group>"; };
 		4C3DA1BA16BA4D3400261651 /* HONVoteSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteSubjectVO.h; sourceTree = "<group>"; };
 		4C3DA1BB16BA4D3400261651 /* HONVoteSubjectVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteSubjectVO.m; sourceTree = "<group>"; };
 		4C3E883F16A3B105003301AF /* audio_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = audio_Active.png; sourceTree = "<group>"; };
@@ -576,6 +577,8 @@
 		4C41096F15FAE42E00E34F4E /* HONPopularSubjectViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONPopularSubjectViewCell.m; sourceTree = "<group>"; };
 		4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONImagePickerViewController.h; sourceTree = "<group>"; };
 		4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONImagePickerViewController.m; sourceTree = "<group>"; };
+		4C45FF4716DECE95002F1080 /* HONUserProfileViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileViewCell.h; sourceTree = "<group>"; };
+		4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileViewCell.m; sourceTree = "<group>"; };
 		4C48745616BF0E36007D901B /* HONSearchHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchHeaderView.h; sourceTree = "<group>"; };
 		4C48745716BF0E36007D901B /* HONSearchHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchHeaderView.m; sourceTree = "<group>"; };
 		4C48745916C05698007D901B /* HONSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchViewController.h; sourceTree = "<group>"; };
@@ -703,8 +706,8 @@
 		4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAppDelegate.m; sourceTree = "<group>"; };
 		4C62673C15F96E5600AA7FCE /* HONChallengesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengesViewController.h; sourceTree = "<group>"; };
 		4C62673D15F96E5600AA7FCE /* HONChallengesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengesViewController.m; sourceTree = "<group>"; };
-		4C62673E15F96E5600AA7FCE /* HONVoteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteViewController.h; sourceTree = "<group>"; };
-		4C62673F15F96E5600AA7FCE /* HONVoteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteViewController.m; sourceTree = "<group>"; };
+		4C62673E15F96E5600AA7FCE /* HONTimelineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineViewController.h; sourceTree = "<group>"; };
+		4C62673F15F96E5600AA7FCE /* HONTimelineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineViewController.m; sourceTree = "<group>"; };
 		4C62674815F96FA800AA7FCE /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		4C62674915F96FA800AA7FCE /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		4C62674A15F96FA800AA7FCE /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -1094,29 +1097,21 @@
 			name = VO;
 			sourceTree = "<group>";
 		};
-		4C32B9A315FAB5F00023A0EE /* Voting */ = {
+		4C32B9A315FAB5F00023A0EE /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
-				4C32B9A615FABBE80023A0EE /* HONVoteItemViewCell.h */,
-				4C32B9A715FABBE80023A0EE /* HONVoteItemViewCell.m */,
-				4C62673E15F96E5600AA7FCE /* HONVoteViewController.h */,
-				4C62673F15F96E5600AA7FCE /* HONVoteViewController.m */,
-				4CAF9608167D676C0036E849 /* HONVoterViewCell.h */,
-				4CAF9609167D676C0036E849 /* HONVoterViewCell.m */,
-				4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */,
-				4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */,
-				4C07B8E716A0E1F700E061FD /* HONVoteImageDetailsViewController.h */,
-				4C07B8E816A0E1F700E061FD /* HONVoteImageDetailsViewController.m */,
-				4C75502916D5732000833C18 /* HONCommentViewCell.h */,
-				4C75502A16D5732000833C18 /* HONCommentViewCell.m */,
-				4C75502616D5718900833C18 /* HONCommentsViewController.h */,
-				4C75502716D5718A00833C18 /* HONCommentsViewController.m */,
-				4C3DA1AE16BA167A00261651 /* HONVoteSubjectsViewController.h */,
-				4C3DA1AF16BA167A00261651 /* HONVoteSubjectsViewController.m */,
-				4C3DA1B216BA202800261651 /* HONVoteSubjectViewCell.h */,
-				4C3DA1B316BA202800261651 /* HONVoteSubjectViewCell.m */,
+				4C45FF4A16DED015002F1080 /* Comments */,
+				4C45FF4C16DED143002F1080 /* Details */,
+				4C45FF4B16DED0B6002F1080 /* Voters */,
+				4C45FF4716DECE95002F1080 /* HONUserProfileViewCell.h */,
+				4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */,
+				4C32B9A615FABBE80023A0EE /* HONTimelineItemViewCell.h */,
+				4C32B9A715FABBE80023A0EE /* HONTimelineItemViewCell.m */,
+				4C62673E15F96E5600AA7FCE /* HONTimelineViewController.h */,
+				4C62673F15F96E5600AA7FCE /* HONTimelineViewController.m */,
+				4C45FF4D16DED1D6002F1080 /* Subjects */,
 			);
-			name = Voting;
+			name = Timeline;
 			sourceTree = "<group>";
 		};
 		4C32B9A415FAB5FA0023A0EE /* Popular */ = {
@@ -1143,6 +1138,72 @@
 				4C6BBCAA16157FE100145996 /* HONChallengerPickerViewController.m */,
 			);
 			name = "Create Challenge";
+			sourceTree = "<group>";
+		};
+		4C45FF4516DECE40002F1080 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				4C687DC116D9445C001A1B22 /* HONAlertPopOverView.h */,
+				4C687DC216D9445C001A1B22 /* HONAlertPopOverView.m */,
+				4CA944AB169A0D2E00507A08 /* HONAlternatingRowsViewCell.h */,
+				4CA944AC169A0D2E00507A08 /* HONAlternatingRowsViewCell.m */,
+				4C516435167EC39D00EB3C09 /* HONFacebookSwitchView.h */,
+				4C516436167EC39D00EB3C09 /* HONFacebookSwitchView.m */,
+				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
+				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		4C45FF4616DECE63002F1080 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				4CE5226E160E4E1E005F2ADC /* HONFacebookCaller.h */,
+				4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
+		4C45FF4A16DED015002F1080 /* Comments */ = {
+			isa = PBXGroup;
+			children = (
+				4C75502916D5732000833C18 /* HONCommentViewCell.h */,
+				4C75502A16D5732000833C18 /* HONCommentViewCell.m */,
+				4C75502616D5718900833C18 /* HONCommentsViewController.h */,
+				4C75502716D5718A00833C18 /* HONCommentsViewController.m */,
+			);
+			name = Comments;
+			sourceTree = "<group>";
+		};
+		4C45FF4B16DED0B6002F1080 /* Voters */ = {
+			isa = PBXGroup;
+			children = (
+				4CAF9608167D676C0036E849 /* HONVoterViewCell.h */,
+				4CAF9609167D676C0036E849 /* HONVoterViewCell.m */,
+				4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */,
+				4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */,
+			);
+			name = Voters;
+			sourceTree = "<group>";
+		};
+		4C45FF4C16DED143002F1080 /* Details */ = {
+			isa = PBXGroup;
+			children = (
+				4C07B8E716A0E1F700E061FD /* HONTimelineItemDetailsViewController.h */,
+				4C07B8E816A0E1F700E061FD /* HONTimelineItemDetailsViewController.m */,
+			);
+			name = Details;
+			sourceTree = "<group>";
+		};
+		4C45FF4D16DED1D6002F1080 /* Subjects */ = {
+			isa = PBXGroup;
+			children = (
+				4C3DA1B216BA202800261651 /* HONTimelineSubjectViewCell.h */,
+				4C3DA1B316BA202800261651 /* HONTimelineSubjectViewCell.m */,
+				4C3DA1AE16BA167A00261651 /* HONTimelineSubjectsViewController.h */,
+				4C3DA1AF16BA167A00261651 /* HONTimelineSubjectsViewController.m */,
+			);
+			name = Subjects;
 			sourceTree = "<group>";
 		};
 		4C48745C16C056E8007D901B /* Search */ = {
@@ -1571,27 +1632,19 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
+				4C45FF4616DECE63002F1080 /* Utils */,
 				4C48745C16C056E8007D901B /* Search */,
+				4C45FF4516DECE40002F1080 /* Views */,
 				4C62673A15F96E5600AA7FCE /* HONAppDelegate.h */,
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
 				4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */,
 				4CE52263160E3510005F2ADC /* HONLoginViewController.h */,
 				4CE52264160E3510005F2ADC /* HONLoginViewController.m */,
-				4CE5226E160E4E1E005F2ADC /* HONFacebookCaller.h */,
-				4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */,
-				4C0C40D0162BD2E5007F0DA3 /* HONHeaderView.h */,
-				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
-				4C516435167EC39D00EB3C09 /* HONFacebookSwitchView.h */,
-				4C516436167EC39D00EB3C09 /* HONFacebookSwitchView.m */,
 				4CB472F3168C176D007153DF /* HONWebCTAViewController.h */,
 				4CB472F4168C176D007153DF /* HONWebCTAViewController.m */,
 				4CB472F7168C26AB007153DF /* HONInviteFriendsViewController.h */,
 				4CB472F8168C26AC007153DF /* HONInviteFriendsViewController.m */,
-				4CA944AB169A0D2E00507A08 /* HONAlternatingRowsViewCell.h */,
-				4CA944AC169A0D2E00507A08 /* HONAlternatingRowsViewCell.m */,
-				4C687DC116D9445C001A1B22 /* HONAlertPopOverView.h */,
-				4C687DC216D9445C001A1B22 /* HONAlertPopOverView.m */,
 			);
 			name = Root;
 			sourceTree = "<group>";
@@ -1795,7 +1848,7 @@
 			isa = PBXGroup;
 			children = (
 				4C32B99815FA6F4C0023A0EE /* Challenges */,
-				4C32B9A315FAB5F00023A0EE /* Voting */,
+				4C32B9A315FAB5F00023A0EE /* Timeline */,
 				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C32B9A415FAB5FA0023A0EE /* Popular */,
 				4CA8DA541613D03300B7B13C /* Settings */,
@@ -2508,12 +2561,12 @@
 				4C62673515F96E2900AA7FCE /* Reachability.m in Sources */,
 				4C62674015F96E5600AA7FCE /* HONAppDelegate.m in Sources */,
 				4C62674115F96E5600AA7FCE /* HONChallengesViewController.m in Sources */,
-				4C62674215F96E5600AA7FCE /* HONVoteViewController.m in Sources */,
+				4C62674215F96E5600AA7FCE /* HONTimelineViewController.m in Sources */,
 				4C62676D15F9786600AA7FCE /* HONPopularViewController.m in Sources */,
 				4C32B99B15FA6F720023A0EE /* HONChallengeViewCell.m in Sources */,
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
-				4C32B9A815FABBE80023A0EE /* HONVoteItemViewCell.m in Sources */,
+				4C32B9A815FABBE80023A0EE /* HONTimelineItemViewCell.m in Sources */,
 				4C32B9AE15FAC1050023A0EE /* HONPopularUserViewCell.m in Sources */,
 				4C41097015FAE42E00E34F4E /* HONPopularSubjectViewCell.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
@@ -2544,7 +2597,7 @@
 				4CB472F9168C26AC007153DF /* HONInviteFriendsViewController.m in Sources */,
 				4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */,
 				4CA944AD169A0D2F00507A08 /* HONAlternatingRowsViewCell.m in Sources */,
-				4C07B8E916A0E1F700E061FD /* HONVoteImageDetailsViewController.m in Sources */,
+				4C07B8E916A0E1F700E061FD /* HONTimelineItemDetailsViewController.m in Sources */,
 				4CA0852916A12FD900673F3A /* AFHTTPClient.m in Sources */,
 				4CA0852A16A12FD900673F3A /* AFHTTPRequestOperation.m in Sources */,
 				4CA0852B16A12FD900673F3A /* AFImageRequestOperation.m in Sources */,
@@ -2554,8 +2607,8 @@
 				4CA0852F16A12FD900673F3A /* AFURLConnectionOperation.m in Sources */,
 				4CA0853016A12FD900673F3A /* AFXMLRequestOperation.m in Sources */,
 				4CA0853116A12FD900673F3A /* UIImageView+AFNetworking.m in Sources */,
-				4C3DA1B016BA167A00261651 /* HONVoteSubjectsViewController.m in Sources */,
-				4C3DA1B416BA202900261651 /* HONVoteSubjectViewCell.m in Sources */,
+				4C3DA1B016BA167A00261651 /* HONTimelineSubjectsViewController.m in Sources */,
+				4C3DA1B416BA202900261651 /* HONTimelineSubjectViewCell.m in Sources */,
 				4C3DA1BC16BA4D3400261651 /* HONVoteSubjectVO.m in Sources */,
 				4C48745816BF0E36007D901B /* HONSearchHeaderView.m in Sources */,
 				4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */,
@@ -2563,6 +2616,7 @@
 				4C75502816D5718A00833C18 /* HONCommentsViewController.m in Sources */,
 				4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */,
 				4C687DC316D9445C001A1B22 /* HONAlertPopOverView.m in Sources */,
+				4C45FF4916DECE95002F1080 /* HONUserProfileViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

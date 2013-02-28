@@ -76,13 +76,13 @@
 	CGPoint location = CGPointMake(_tabHolderView.center.x - [touch locationInView:self.view].x, _tabHolderView.center.y - [touch locationInView:self.view].y);
 	
 	if (location.y > _touchPt.y) {
-		[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kTabButtonHeight * 2.0), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 		} completion:^(BOOL finished) {
 		}];
 		
 	} else {
-		[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabButtonHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 		} completion:^(BOOL finished) {
 		}];

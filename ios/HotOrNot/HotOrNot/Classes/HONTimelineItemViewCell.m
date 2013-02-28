@@ -1,5 +1,5 @@
 //
-//  HONVoteItemViewCell.m
+//  HONTimelineItemViewCell.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.07.12.
@@ -13,12 +13,12 @@
 #import "Mixpanel.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONVoteItemViewCell.h"
+#import "HONTimelineItemViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONVoterVO.h"
 
 
-@interface HONVoteItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate>
+@interface HONTimelineItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
@@ -34,7 +34,7 @@
 @property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
 @end
 
-@implementation HONVoteItemViewCell
+@implementation HONTimelineItemViewCell
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));

@@ -1,5 +1,5 @@
 //
-//  HONVoteImageDetailsViewController.h
+//  HONTimelineItemDetailsViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 01.11.13.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "HONChallengeVO.h"
 
-@interface HONVoteImageDetailsViewController : UIViewController
+@interface HONTimelineItemDetailsViewController : UIViewController
 
 - (id)initAsNotInSession:(HONChallengeVO *)vo;
 - (id)initAsInSessionCreator:(HONChallengeVO *)vo;

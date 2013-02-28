@@ -20,7 +20,7 @@
 #import "HONSettingsViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONLoginViewController.h"
-#import "HONVoteViewController.h"
+#import "HONTimelineViewController.h"
 #import "HONHeaderView.h"
 #import "HONFacebookCaller.h"
 #import "HONChallengePreviewViewController.h"
@@ -206,7 +206,7 @@
 	[self.view addSubview:_headerView];
 	
 	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
+	activityIndicatorView.frame = CGRectMake(14.0, 10.0, 24.0, 24.0);
 	[activityIndicatorView startAnimating];
 	[_headerView addSubview:activityIndicatorView];
 	
@@ -219,11 +219,18 @@
 	//[_headerView addSubview:inviteButton];
 	
 	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_refreshButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	_refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 45.0);
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
 	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_refreshButton];
+	
+	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_onTap"] forState:UIControlStateHighlighted];
+	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:createChallengeButton];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
@@ -578,7 +585,7 @@
 		[self presentViewController:navigationController animated:NO completion:nil];
 			
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
-		[self.navigationController pushViewController:[[HONVoteViewController alloc] initWithChallenge:vo] animated:YES];
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 	}
 }
 

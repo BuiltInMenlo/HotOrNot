@@ -1,5 +1,5 @@
 //
-//  HONVoteImageDetailsViewController.m
+//  HONTimelineItemDetailsViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 01.11.13.
@@ -12,10 +12,10 @@
 #import "Mixpanel.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONVoteImageDetailsViewController.h"
+#import "HONTimelineItemDetailsViewController.h"
 #import "HONAppDelegate.h"
 
-@interface HONVoteImageDetailsViewController () <UIAlertViewDelegate>
+@interface HONTimelineItemDetailsViewController () <UIAlertViewDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic) BOOL isOwner;
 @property (nonatomic) BOOL isCreator;
@@ -25,7 +25,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
-@implementation HONVoteImageDetailsViewController
+@implementation HONTimelineItemDetailsViewController
 
 - (id)initAsNotInSession:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
