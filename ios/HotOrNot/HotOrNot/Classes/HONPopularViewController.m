@@ -276,7 +276,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goInviteFriends {
@@ -449,6 +449,13 @@
 		[alert show];
 	}
 }
+
+
+#pragma mark - ScrollView Delegates
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+}
+
 
 #pragma mark - AlerView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

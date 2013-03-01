@@ -6,6 +6,9 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <MessageUI/MFMessageComposeViewController.h>
+#import <MessageUI/MFMailComposeViewController.h>
+
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "Facebook.h"
@@ -23,10 +26,9 @@
 #import "HONUsernameViewController.h"
 #import "HONSearchHeaderView.h"
 
-@interface HONSettingsViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface HONSettingsViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) UISwitch *notificationSwitch;
-@property (nonatomic, strong) UISwitch *audioSwitch;
 @property (nonatomic, strong) UISwitch *activatedSwitch;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSArray *captions;
@@ -40,7 +42,14 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
 		
-		_captions = [NSArray arrayWithObjects:@"", @"NOTIFICATIONS", @"PLAY AUDIO", (FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK", @"CHANGE USERNAME", @"SUPPORT", @"PRIVACY POLICY", nil];
+		_captions = [NSArray arrayWithObjects:@"",
+						 @"NOTIFICATIONS",
+						 @"INVITE FRIENDS VIA SMS",
+						 @"INVITE FRIENDS VIA EMAIL",
+						 (FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK",
+						 @"CHANGE USERNAME",
+						 @"SUPPORT",
+						 @"PRIVACY POLICY", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -49,10 +58,6 @@
 		
 		else
 			_notificationSwitch.on = YES;
-		
-		_audioSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
-		[_audioSwitch addTarget:self action:@selector(_goAudioSwitch:) forControlEvents:UIControlEventValueChanged];
-		_audioSwitch.on = ![HONAppDelegate audioMuted];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 															  selector:@selector(_sessionStateChanged:)
@@ -153,7 +158,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goInviteFriends {
@@ -264,8 +269,6 @@
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	_refreshButton.hidden = YES;
 	
-	_audioSwitch.on = ![HONAppDelegate audioMuted];
-	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",
@@ -326,7 +329,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (7);
+	return (8);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -355,12 +358,8 @@
 	if (indexPath.row == 1) {
 		[cell hideChevron];
 		cell.accessoryView = _notificationSwitch;
-	
-	} else if (indexPath.row == 2) {
-		[cell hideChevron];
-		cell.accessoryView = _audioSwitch;
-	
-	} else if (indexPath.row == 3)
+		
+	} else if (indexPath.row == 4)
 		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
 			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -379,7 +378,7 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	if (indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 5 || indexPath.row == 6)
+	if (indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 5 || indexPath.row == 6)
 		return (indexPath);
 	
 	else
@@ -394,7 +393,35 @@
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	switch (indexPath.row) {
-		case 3:
+		case 2: {
+			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+			messageComposeViewController.messageComposeDelegate = self;
+			//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
+			messageComposeViewController.body = [NSString stringWithFormat:@"%@ has invited you to PicCallenge!", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			
+			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+			break;}
+			
+		case 3: {
+			if ([MFMailComposeViewController canSendMail]) {
+				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+				mailComposeViewController.mailComposeDelegate = self;
+				//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
+				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ has invited you to PicCallenge!", [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+				
+				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+			
+			} else {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+																					 message:@"Cannot send email from this device!"
+																					delegate:nil
+																		cancelButtonTitle:@"OK"
+																		otherButtonTitles:nil];
+				[alertView show];
+			}
+			break;}
+			
+		case 4:
 			if (FBSession.activeSession.state == 513) {
 				[FBSession.activeSession closeAndClearTokenInformation];
 				[cell updateCaption:@"LOGIN TO FACEBOOK"];
@@ -406,19 +433,19 @@
 			}
 			break;
 			
-		case 4:
+		case 5:
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
-		case 5:
+		case 6:
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSupportViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
 			break;
 			
-		case 6:
+		case 7:
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
@@ -426,6 +453,64 @@
 	}
 }
 
+
+#pragma mark - ScrollView Delegates
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	
+	switch (result) {
+		case MessageComposeResultCancelled:
+			NSLog(@"SMS: canceled");
+			break;
+			
+		case MessageComposeResultSent:
+			NSLog(@"SMS: sent");
+			break;
+			
+		case MessageComposeResultFailed:
+			NSLog(@"SMS: failed");
+			break;
+			
+		default:
+			NSLog(@"SMS: not sent");
+			break;
+	}
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+	switch (result) {
+		case MFMailComposeResultCancelled:
+			NSLog(@"EMAIL: canceled");
+			break;
+			
+		case MFMailComposeResultFailed:
+			NSLog(@"EMAIL: failed");
+			break;
+			
+		case MFMailComposeResultSaved:
+			NSLog(@"EMAIL: saved");
+			break;
+			
+		case MFMailComposeResultSent:
+			NSLog(@"EMAIL: sent");
+			break;
+			
+		default:
+			NSLog(@"EMAIL: not sent");
+			break;
+	}
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -491,21 +576,6 @@
 		}
 	
 	} else if (alertView.tag == 1) {
-		switch (buttonIndex) {
-			case 0:
-				[[Mixpanel sharedInstance] track:@"Settings - Audio"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d", _audioSwitch.on], @"switch", nil]];
-				
-				[[NSUserDefaults standardUserDefaults] setObject:(_activatedSwitch.on) ? @"NO" : @"YES" forKey:@"audio_muted"];
-				[[NSUserDefaults standardUserDefaults] synchronize];
-				break;
-				
-			case 1:
-				_activatedSwitch.on = !_activatedSwitch.on;
-				break;
-		}
 	}
 }
 

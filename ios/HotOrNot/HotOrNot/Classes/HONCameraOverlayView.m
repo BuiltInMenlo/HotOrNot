@@ -585,8 +585,8 @@
 			_subjectName = textField.text;
 		}
 		
-		if (_subjectName.length > 0)
-			[self _goSubjectCheck];
+//		if (_subjectName.length > 0)
+//			[self _goSubjectCheck];
 	
 	} else if (textField.tag == 1) {
 		if ([textField.text length] == 0)

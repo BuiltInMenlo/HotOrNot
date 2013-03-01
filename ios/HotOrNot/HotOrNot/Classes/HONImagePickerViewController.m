@@ -285,7 +285,7 @@
 
 #pragma mark - UI Presentation
 - (void)_playAudio {
-	if (_subjectName.length > 0) {
+	if (_subjectName.length == 0) {
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 										[NSString stringWithFormat:@"%d", 5], @"action",

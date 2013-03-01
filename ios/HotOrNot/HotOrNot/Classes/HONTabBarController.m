@@ -11,12 +11,16 @@
 #import "Facebook.h"
 #import "Mixpanel.h"
 
-
 #import "HONTabBarController.h"
 #import "HONAppDelegate.h"
 #import "HONAlertPopOverView.h"
 
 @interface HONTabBarController ()
+@property (nonatomic, retain) UIButton *timelineButton;
+@property (nonatomic, retain) UIButton *challengesButton;
+@property (nonatomic, retain) UIButton *popularButton;
+@property (nonatomic, retain) UIButton *settingsButton;
+
 @property (nonatomic, strong) UIView *tabHolderView;
 @property (nonatomic, strong) HONAlertPopOverView *alertPopOverView;
 @property (nonatomic) CGPoint touchPt;
@@ -24,10 +28,9 @@
 
 @implementation HONTabBarController
 
-@synthesize btn1, btn2, btn3, btn4, btn5;
-
 - (id)init {
 	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideTabs:) name:@"HIDE_TABS" object:nil];
 	}
 	
 	return (self);
@@ -61,8 +64,8 @@
 	
 	if ([touch view] == _tabHolderView) {
 		CGPoint touchLocation = [touch locationInView:self.view];
-		float minY = (self.view.frame.size.height - (kTabButtonHeight * 2.0)) + (_tabHolderView.frame.size.height * 0.5);
-		float maxY = (self.view.frame.size.height - kTabButtonHeight) + (_tabHolderView.frame.size.height * 0.5);
+		float minY = (self.view.frame.size.height - (kLipHeight + kButtonHeight)) + (_tabHolderView.frame.size.height * 0.5);
+		float maxY = (self.view.frame.size.height - kLipHeight) + (_tabHolderView.frame.size.height * 0.5);
 		
 		CGPoint location = CGPointMake(_tabHolderView.center.x, MIN(MAX(_touchPt.y + touchLocation.y, minY), maxY));
 		_tabHolderView.center = location;
@@ -75,31 +78,11 @@
 	UITouch *touch = [touches anyObject];
 	CGPoint location = CGPointMake(_tabHolderView.center.x - [touch locationInView:self.view].x, _tabHolderView.center.y - [touch locationInView:self.view].y);
 	
-	if (location.y > _touchPt.y) {
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kTabButtonHeight * 2.0), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-		} completion:^(BOOL finished) {
-		}];
+	if (location.y > _touchPt.y)
+		[self _raiseTabs];
 		
-	} else {
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
-			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabButtonHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-		} completion:^(BOOL finished) {
-		}];
-	}
-	
-//	if (_tabHolderView.center.y < (self.view.frame.size.height - 24.0)) {
-//		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void) {
-//			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - 96.0, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-//		} completion:^(BOOL finished) {
-//		}];
-//	
-//	} else {
-//		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveEaseInOut animations:^(void) {
-//			_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - 48.0, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-//		} completion:^(BOOL finished) {
-//		}];
-//	}
+	else
+		[self _dropTabs];
 }
 
 
@@ -112,7 +95,7 @@
 	[self addCustomElements];
 	[self showNewTabBar];
 	
-	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(64.0, self.view.frame.size.height - (kTabButtonHeight * 0.67), 60.0, 22.0)];
+	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(64.0, self.view.frame.size.height - (kLipHeight * 0.67), 60.0, 22.0)];
 	
 	[self _updateChallengeAlerts];
 }
@@ -139,99 +122,67 @@
 }
 
 - (void)hideNewTabBar {
-	self.btn1.hidden = YES;
-	self.btn2.hidden = YES;
-	self.btn3.hidden = YES;
-	self.btn4.hidden = YES;
-	self.btn5.hidden = YES;
+	_timelineButton.hidden = YES;
+	_challengesButton.hidden = YES;
+	_popularButton.hidden = YES;
+	_settingsButton.hidden = YES;
 }
 
 - (void)showNewTabBar {
-	self.btn1.hidden = NO;
-	self.btn2.hidden = NO;
-	self.btn3.hidden = NO;
-	self.btn4.hidden = NO;
-	self.btn5.hidden = NO;
+	_timelineButton.hidden = NO;
+	_challengesButton.hidden = NO;
+	_popularButton.hidden = NO;
+	_settingsButton.hidden = NO;
 }
 
 -(void)addCustomElements {
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabButtonHeight, 320.0, (kTabButtonHeight * 2.0))];
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kLipHeight, 320.0, (kLipHeight + kButtonHeight))];
 	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
 	//_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kTabButtonHeight, 320.0, kTabButtonHeight)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight, 320.0, kButtonHeight)];
 	bgImageView.image = [UIImage imageNamed:@"footerBackground"];
 	[_tabHolderView addSubview:bgImageView];
 	
-	// Initialise our two images
-	UIImage *btnImage = [UIImage imageNamed:@"tabbar_001_nonActive"];
-	UIImage *btnImageActive = [UIImage imageNamed:@"tabbar_001_onTap"];
-	UIImage *btnImageSelected = [UIImage imageNamed:@"tabbar_001_active"];
+	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_timelineButton.frame = CGRectMake(0.0, kLipHeight, 80.0, kButtonHeight);
+	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabbar_001_nonActive"] forState:UIControlStateNormal];
+	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabbar_001_onTap"] forState:UIControlStateHighlighted];
+	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabbar_001_active"] forState:UIControlStateSelected];
+	[_timelineButton setTag:0];
+	[_timelineButton setSelected:YES];
 	
-	self.btn1 = [UIButton buttonWithType:UIButtonTypeCustom]; //Setup the button
-	btn1.frame = CGRectMake(0.0, kTabButtonHeight, 64.0, kTabButtonHeight); // Set the frame (size and position) of the button)
-	[btn1 setBackgroundImage:btnImage forState:UIControlStateNormal]; // Set the image for the normal state of the button
-	[btn1 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted]; // Set the image for the normal state of the button
-	[btn1 setBackgroundImage:btnImageSelected forState:(UIControlStateSelected)]; // Set the image for the selected state of the button
-	[btn1 setTag:0]; // Assign the button a "tag" so when our "click" event is called we know which button was pressed.
-	[btn1 setSelected:true]; // Set this button as selected (we will select the others to false as we only want Tab 1 to be selected initially
+	_challengesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_challengesButton.frame = CGRectMake(80.0, kLipHeight, 80.0, kButtonHeight);
+	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabbar_002_nonActive"] forState:UIControlStateNormal];
+	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabbar_002_onTap"] forState:UIControlStateHighlighted];
+	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabbar_002_active"] forState:UIControlStateSelected];
+	[_challengesButton setTag:1];
 	
-	// Now we repeat the process for the other buttons
-	btnImage = [UIImage imageNamed:@"tabbar_002_nonActive"];
-	btnImageActive = [UIImage imageNamed:@"tabbar_002_onTap"];
-	btnImageSelected = [UIImage imageNamed:@"tabbar_002_active"];
-	self.btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn2.frame = CGRectMake(64.0, kTabButtonHeight, 64.0, kTabButtonHeight);
-	[btn2 setBackgroundImage:btnImage forState:UIControlStateNormal];
-	[btn2 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
-	[btn2 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
-	[btn2 setTag:1];
+	_popularButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_popularButton.frame = CGRectMake(160.0, kLipHeight, 80.0, kButtonHeight);
+	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabbar_004_nonActive"] forState:UIControlStateNormal];
+	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabbar_004_onTap"] forState:UIControlStateHighlighted];
+	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabbar_004_active"] forState:UIControlStateSelected];
+	[_popularButton setTag:2];
 	
-	btnImage = [UIImage imageNamed:@"tabbar_003_nonActive"];
-	btnImageActive = [UIImage imageNamed:@"tabbar_003_onTap"];
-	btnImageSelected = [UIImage imageNamed:@"tabbar_003_active"];
-	self.btn3 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn3.frame = CGRectMake(128.0, kTabButtonHeight, 64.0, kTabButtonHeight);
-	[btn3 setBackgroundImage:btnImage forState:UIControlStateNormal];
-	[btn3 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
-	[btn3 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
-	[btn3 setTag:2];
+	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_settingsButton.frame = CGRectMake(240.0, kLipHeight, 80.0, kButtonHeight);
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabbar_005_nonActive"] forState:UIControlStateNormal];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabbar_005_onTap"] forState:UIControlStateHighlighted];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabbar_005_active"] forState:UIControlStateSelected];
+	[_settingsButton setTag:3];
 	
-	btnImage = [UIImage imageNamed:@"tabbar_004_nonActive"];
-	btnImageActive = [UIImage imageNamed:@"tabbar_004_onTap"];
-	btnImageSelected = [UIImage imageNamed:@"tabbar_004_active"];
-	self.btn4 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn4.frame = CGRectMake(192.0, kTabButtonHeight, 64.0, kTabButtonHeight);
-	[btn4 setBackgroundImage:btnImage forState:UIControlStateNormal];
-	[btn4 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
-	[btn4 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
-	[btn4 setTag:3];
+	[_tabHolderView addSubview:_timelineButton];
+	[_tabHolderView addSubview:_challengesButton];
+	[_tabHolderView addSubview:_popularButton];
+	[_tabHolderView addSubview:_settingsButton];
 	
-	btnImage = [UIImage imageNamed:@"tabbar_005_nonActive"];
-	btnImageActive = [UIImage imageNamed:@"tabbar_005_onTap"];
-	btnImageSelected = [UIImage imageNamed:@"tabbar_005_active"];
-	self.btn5 = [UIButton buttonWithType:UIButtonTypeCustom];
-	btn5.frame = CGRectMake(256.0, kTabButtonHeight, 64.0, kTabButtonHeight);
-	[btn5 setBackgroundImage:btnImage forState:UIControlStateNormal];
-	[btn5 setBackgroundImage:btnImageActive forState:UIControlStateHighlighted];
-	[btn5 setBackgroundImage:btnImageSelected forState:UIControlStateSelected];
-	[btn5 setTag:4];
-	
-	// Add my new buttons to the view
-	[_tabHolderView addSubview:btn1];
-	[_tabHolderView addSubview:btn2];
-	[_tabHolderView addSubview:btn3];
-	[_tabHolderView addSubview:btn4];
-	[_tabHolderView addSubview:btn5];
-	
-	// Setup event handlers so that the buttonClicked method will respond to the touch up inside event.
-	[btn1 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	[btn2 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	[btn3 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	[btn4 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	[btn5 addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	
+	[_timelineButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+	[_challengesButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+	[_popularButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+	[_settingsButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
 		
 	UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	toggleButton.frame = CGRectMake(130.0, 0.0, 60.0, 58.0);
@@ -240,8 +191,22 @@
 	//[_bgImageView addSubview:toggleButton];
 }
 
+- (void)_dropTabs {
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
+		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kLipHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	} completion:^(BOOL finished) {
+	}];
+}
 
-#pragma mark - Button Handlers
+- (void)_raiseTabs {
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kButtonHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	} completion:^(BOOL finished) {
+	}];
+}
+
+
+#pragma mark - Navigation
 - (void)buttonClicked:(id)sender {
 	int tagNum = [sender tag];
 	[self selectTab:tagNum];
@@ -251,123 +216,65 @@
 	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabID];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 	
+	NSString *mixPanelTrack = @"";
+	NSString *notificationName = @"";
+	
+	[_timelineButton setEnabled:YES];
+	[_challengesButton setEnabled:YES];
+	[_popularButton setEnabled:YES];
+	[_settingsButton setEnabled:YES];
+	
 	switch(tabID) {
 		case 0:
-			[[Mixpanel sharedInstance] track:@"Tab - Voting"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			[_timelineButton setSelected:YES];
+			[_challengesButton setSelected:NO];
+			[_popularButton setSelected:NO];
+			[_settingsButton setSelected:NO];
 			
-			[btn1 setSelected:true];
-			[btn1 setEnabled:YES];
-			[btn2 setSelected:false];
-			[btn2 setEnabled:YES];
-			[btn3 setSelected:false];
-			[btn3 setEnabled:YES];
-			[btn4 setSelected:false];
-			[btn4 setEnabled:YES];
-			[btn5 setSelected:false];
-			[btn5 setEnabled:YES];
+			mixPanelTrack = @"Tab - Voting";
+			notificationName = @"REFRESH_VOTE_TAB";
 			break;
 			
 		case 1:
-			[[Mixpanel sharedInstance] track:@"Tab - Challenge Wall"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			[_timelineButton setSelected:NO];
+			[_challengesButton setSelected:YES];
+			[_popularButton setSelected:NO];
+			[_settingsButton setSelected:NO];
 			
-			[btn1 setSelected:false];
-			[btn1 setEnabled:YES];
-			[btn2 setSelected:true];
-			[btn2 setEnabled:YES];
-			[btn3 setSelected:false];
-			[btn3 setEnabled:YES];
-			[btn4 setSelected:false];
-			[btn4 setEnabled:YES];
-			[btn5 setSelected:false];
-			[btn5 setEnabled:YES];
+			mixPanelTrack = @"Tab - Challenge Wall";
+			notificationName = @"REFRESH_CHALLENGES_TAB";
 			break;
 			
 		case 2:
-			[[Mixpanel sharedInstance] track:@"Tab - Create Challenge"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			[_timelineButton setSelected:NO];
+			[_challengesButton setSelected:NO];
+			[_popularButton setSelected:YES];
+			[_settingsButton setSelected:NO];
 			
-			[btn1 setSelected:(self.selectedIndex == 0)];
-			[btn1 setEnabled:!(self.selectedIndex == 0)];
-			[btn2 setSelected:(self.selectedIndex == 1)];
-			[btn2 setEnabled:!(self.selectedIndex == 1)];
-			[btn3 setSelected:false];
-			[btn4 setSelected:(self.selectedIndex == 3)];
-			[btn4 setEnabled:!(self.selectedIndex == 3)];
-			[btn5 setSelected:(self.selectedIndex == 4)];
-			[btn5 setEnabled:!(self.selectedIndex == 4)];
+			mixPanelTrack = @"Tab - Popular";
+			notificationName = @"REFRESH_POPULAR_TAB";
 			break;
 			
 		case 3:
-			[[Mixpanel sharedInstance] track:@"Tab - Popular"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			[_timelineButton setSelected:NO];
+			[_challengesButton setSelected:NO];
+			[_popularButton setSelected:NO];
+			[_settingsButton setSelected:YES];
 			
-			[btn1 setSelected:false];
-			[btn1 setEnabled:YES];
-			[btn2 setSelected:false];
-			[btn2 setEnabled:YES];
-			[btn3 setSelected:false];
-			[btn3 setEnabled:YES];
-			[btn4 setSelected:true];
-			[btn4 setEnabled:YES];
-			[btn5 setSelected:false];
-			[btn5 setEnabled:YES];
-			break;
-			
-		case 4:
-			[[Mixpanel sharedInstance] track:@"Tab - Settings"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-			
-			[btn1 setSelected:false];
-			[btn1 setEnabled:YES];
-			[btn2 setSelected:false];
-			[btn2 setEnabled:YES];
-			[btn3 setSelected:false];
-			[btn3 setEnabled:YES];
-			[btn4 setSelected:false];
-			[btn4 setEnabled:YES];
-			[btn5 setSelected:true];
-			[btn5 setEnabled:YES];
+			mixPanelTrack = @"Tab - Settings";
+			notificationName = @"REFRESH_SETTINGS_TAB";
 			break;
 	}
+	
+	[[Mixpanel sharedInstance] track:mixPanelTrack
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	//int daysSinceInstall = [[NSDate new] timeIntervalSinceDate:[[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"]] / 86400;
 	
-	if (tabID == 2) {
-		UINavigationController *navController = (UINavigationController *)[self selectedViewController];
-		[navController popToRootViewControllerAnimated:NO];
-	
-	} else {
-		NSString *notificationName = @"";
-		
-		switch (tabID) {
-			case 0:
-				notificationName = @"REFRESH_VOTE_TAB";
-				break;
-		
-			case 1:
-				notificationName = @"REFRESH_CHALLENGES_TAB";
-				break;
-		
-			case 3:
-				notificationName = @"REFRESH_POPULAR_TAB";
-				break;
-		
-			case 4:
-				notificationName = @"REFRESH_SETTINGS_TAB";
-				break;
-		}
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
-		self.selectedIndex = tabID;
-		[self _updateChallengeAlerts];
-	}
+	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+	self.selectedIndex = tabID;
+	[self _updateChallengeAlerts];
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	
@@ -375,10 +282,14 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_RESULTS" object:nil];
 	
-	[UIView animateWithDuration:0.125 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
-		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabButtonHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-	} completion:^(BOOL finished) {
-	}];
+	[self _dropTabs];
+}
+
+
+#pragma mark - Notifications
+- (void)_hideTabs:(NSNotification *)notification {
+	if (_tabHolderView.frame.origin.y == self.view.frame.size.height - (kLipHeight + kButtonHeight))
+		[self _dropTabs];
 }
 
 

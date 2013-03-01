@@ -906,26 +906,23 @@ NSString *const FacebookAppID = @"529054720443694";
 - (void)_initTabs {
 	[_bgImgView removeFromSuperview];
 	
-	UIViewController *challengesViewController, *voteViewController, *popularViewController, *createChallengeViewController, *settingsViewController;
+	UIViewController *challengesViewController, *voteViewController, *popularViewController, *settingsViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
 	voteViewController = [[HONTimelineViewController alloc] init];//[[HONVoteSubjectsViewController alloc] init];//
 	popularViewController = [[HONPopularViewController alloc] init];
-	createChallengeViewController = [[HONImagePickerViewController alloc] init];
 	settingsViewController = [[HONSettingsViewController alloc] init];
 	
 	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
 	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:createChallengeViewController];
-	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
-	UINavigationController *navController5 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
+	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
+	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
 	
 	[navController1 setNavigationBarHidden:YES];
 	[navController2 setNavigationBarHidden:YES];
 	[navController3 setNavigationBarHidden:YES];
 	[navController4 setNavigationBarHidden:YES];
-	[navController5 setNavigationBarHidden:YES];
 	
-	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, navController5, nil];
+	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, nil];
 }
 
 - (void)_testParseCloudCode {
@@ -991,19 +988,10 @@ NSString *const FacebookAppID = @"529054720443694";
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
 	//NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
-	if (viewController == [[tabBarController viewControllers] objectAtIndex:2]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[tabBarController presentViewController:navigationController animated:NO completion:nil];
+	if (tabBarController.selectedViewController == [[tabBarController viewControllers] objectAtIndex:1])
+		[tabBarController.selectedViewController.navigationController popToRootViewControllerAnimated:NO];
 		
-		return (NO);
-		
-	} else {
-		if (tabBarController.selectedViewController == [[tabBarController viewControllers] objectAtIndex:1])
-			[tabBarController.selectedViewController.navigationController popToRootViewControllerAnimated:NO];
-		
-		return (YES);
-	}
+	return (YES);
 }
 
 

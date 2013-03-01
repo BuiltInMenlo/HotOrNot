@@ -369,7 +369,7 @@
 	
 	MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 	messageComposeViewController.messageComposeDelegate = self;
-	messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
+	//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
 	messageComposeViewController.body = [NSString stringWithFormat:@"%@ has challenged you to a %@ challenge!", [[HONAppDelegate infoForUser] objectForKey:@"name"], _subjectName];
 	
 	[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
@@ -952,6 +952,7 @@
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
+
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
 	
@@ -977,6 +978,7 @@
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
+
 
 #pragma mark - UISearchBarDelegate Methods
 - (void)searchBarSearchButtonClicked:(UISearchBar*)searchBar

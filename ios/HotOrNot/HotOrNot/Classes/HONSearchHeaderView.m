@@ -66,7 +66,7 @@
 		_searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
 		_searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
 		_searchBar.delegate = self;
-		_searchBar.showsCancelButton = YES;
+		_searchBar.showsCancelButton = NO;
 		[self addSubview:_searchBar];
 	}
 	
@@ -97,6 +97,7 @@
 
 #pragma mark SearchBar Delegates
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+	_searchBar.showsCancelButton = YES;
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
 	}];
@@ -117,6 +118,7 @@
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	[searchBar resignFirstResponder];
 	searchBar.text = @"";
+	_searchBar.showsCancelButton = NO;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
@@ -127,6 +129,7 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
 	[searchBar resignFirstResponder];
+	_searchBar.showsCancelButton = NO;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);

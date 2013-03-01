@@ -1632,9 +1632,10 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
-				4C45FF4616DECE63002F1080 /* Utils */,
+				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C48745C16C056E8007D901B /* Search */,
 				4C45FF4516DECE40002F1080 /* Views */,
+				4C45FF4616DECE63002F1080 /* Utils */,
 				4C62673A15F96E5600AA7FCE /* HONAppDelegate.h */,
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
@@ -1847,9 +1848,8 @@
 		4CA8DA531613D00900B7B13C /* Tabs */ = {
 			isa = PBXGroup;
 			children = (
-				4C32B99815FA6F4C0023A0EE /* Challenges */,
 				4C32B9A315FAB5F00023A0EE /* Timeline */,
-				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
+				4C32B99815FA6F4C0023A0EE /* Challenges */,
 				4C32B9A415FAB5FA0023A0EE /* Popular */,
 				4CA8DA541613D03300B7B13C /* Settings */,
 			);

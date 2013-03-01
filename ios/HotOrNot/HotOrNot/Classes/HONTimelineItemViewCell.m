@@ -357,11 +357,13 @@
 	[self _showTapOverlayOnView:_lHolderView];
 	
 	if (_hasChallenger) {
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+//		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+//		
+//		else
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
 		
-		else
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CREATOR" object:_challengeVO];
 		
 	} else {
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
@@ -375,11 +377,13 @@
 - (void)_goDoubleTapRight {
 	[self _showTapOverlayOnView:_rHolderView];
 	
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.challengerID)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+//	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.challengerID)
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+//	
+//	else
+//		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
 	
-	else
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CHALLENGER" object:_challengeVO];
 }
 
 - (void)_goCreateChallenge {
@@ -451,7 +455,7 @@
 			_resultsImageView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
 			[self addSubview:_resultsImageView];
 			
-			_votesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d VOTE" : @"%d VOTES", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			_votesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d vote" : @"%d votes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		
 		} else {
 			[[Mixpanel sharedInstance] track:@"Upvote Creator"
@@ -471,7 +475,7 @@
 			[self addSubview:_resultsImageView];
 			
 			[HONAppDelegate setVote:_challengeVO.challengeID];
-			_votesLabel.text = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			_votesLabel.text = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d vote" : @"%d votes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
