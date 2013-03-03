@@ -401,6 +401,7 @@
 		4CE52270160E4E1F005F2ADC /* HONFacebookCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */; };
 		4CE61E241696733900F260C9 /* checkIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE61E221696733900F260C9 /* checkIcon.png */; };
 		4CE61E251696733900F260C9 /* checkIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CE61E231696733900F260C9 /* checkIcon@2x.png */; };
+		4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */; };
 		4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1C95161A238C00C54FBF /* CoreData.framework */; };
 		4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE1C9E161A311E00C54FBF /* HotOrNot.xcdatamodeld */; };
 		4CEE1CA2161A3A3E00C54FBF /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1CA1161A3A3E00C54FBF /* Parse.framework */; };
@@ -985,6 +986,8 @@
 		4CE5226F160E4E1F005F2ADC /* HONFacebookCaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFacebookCaller.m; sourceTree = "<group>"; };
 		4CE61E221696733900F260C9 /* checkIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkIcon.png; sourceTree = "<group>"; };
 		4CE61E231696733900F260C9 /* checkIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkIcon@2x.png"; sourceTree = "<group>"; };
+		4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRegisterViewController.h; sourceTree = "<group>"; };
+		4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRegisterViewController.m; sourceTree = "<group>"; };
 		4CEE1C95161A238C00C54FBF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		4CEE1C9F161A311E00C54FBF /* HotOrNotModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HotOrNotModel.xcdatamodel; sourceTree = "<group>"; };
 		4CEE1CA1161A3A3E00C54FBF /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
@@ -1632,6 +1635,7 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
+				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C48745C16C056E8007D901B /* Search */,
 				4C45FF4516DECE40002F1080 /* Views */,
@@ -2123,6 +2127,15 @@
 				4CA943F81698F76600507A08 /* facebookBackground@2x.png */,
 			);
 			name = Login;
+			sourceTree = "<group>";
+		};
+		4CE8B62E16E2EC4100D29191 /* Splash */ = {
+			isa = PBXGroup;
+			children = (
+				4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */,
+				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
+			);
+			name = Splash;
 			sourceTree = "<group>";
 		};
 		4CF07C11168672D900E0FBC1 /* SFX */ = {
@@ -2617,6 +2630,7 @@
 				4C75502B16D5732000833C18 /* HONCommentViewCell.m in Sources */,
 				4C687DC316D9445C001A1B22 /* HONAlertPopOverView.m in Sources */,
 				4C45FF4916DECE95002F1080 /* HONUserProfileViewCell.m in Sources */,
+				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

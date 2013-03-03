@@ -388,6 +388,27 @@
 		}
 		
 		/**
+		 * Gets a user by username
+		 * @param $username The name for the user (string)
+		 * @return An associative object representing a user (array)
+		**/
+		function getUserFromName($username) {
+			
+			$query = 'SELECT `id` FROM `tblUsers` WHERE `username` = "'. $username .'";';
+			$user_id = mysql_fetch_object(mysql_query($query))->id;
+			
+			// get user & return
+			$user_arr = $this->userObject($user_id);			
+			$this->sendResponse(200, json_encode($user_arr));
+			return (true);
+			
+			/*
+			example response:
+			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
+			*/
+		}
+		
+		/**
 		 * Updates a user's push notification prefs
 		 * @param $user_id The ID for the user (integer)
 		 * @param $isNotifications Y/N whether or not to allow pushes (string) 
@@ -513,6 +534,12 @@
 			case "7":
 				if (isset($_POST['userID']) && isset($_POST['username']))
 					$users->updateName($_POST['userID'], $_POST['username']);
+				break;
+				
+			// get a user's info
+			case "8":
+				if (isset($_POST['username']))
+					$users->getUserFromName($_POST['username']);
 				break;
     	}
 	}

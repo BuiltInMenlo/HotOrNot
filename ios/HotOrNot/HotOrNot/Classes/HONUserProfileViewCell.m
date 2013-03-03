@@ -25,5 +25,32 @@
 	return (self);
 }
 
+- (void)setUserVO:(HONPopularUserVO *)userVO {
+	_userVO = userVO;
+	
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
+	
+	NSString *imgURL = ([_userVO.fbID isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _userVO.fbID];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil];
+	[self addSubview:avatarImageView];
+	
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 13.0, 100.0, 18.0)];
+	nameLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:18];
+	nameLabel.textColor = [UIColor blackColor];
+	nameLabel.backgroundColor = [UIColor clearColor];
+	nameLabel.text = _userVO.username;
+	[self addSubview:nameLabel];
+	
+	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 25.0, 100.0, 18.0)];
+	scoreLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:18];
+	scoreLabel.textColor = [UIColor blackColor];
+	scoreLabel.backgroundColor = [UIColor clearColor];
+	scoreLabel.text = [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.points]];
+	[self addSubview:scoreLabel];
+}
+
 
 @end

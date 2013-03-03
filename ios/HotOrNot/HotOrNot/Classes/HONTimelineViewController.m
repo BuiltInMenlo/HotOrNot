@@ -13,8 +13,10 @@
 
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
+#import "HONUserProfileViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
+#import "HONPopularUserVO.h"
 #import "HONFacebookCaller.h"
 #import "HONImagePickerViewController.h"
 #import "HONHeaderView.h"
@@ -40,6 +42,7 @@
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
+@property(nonatomic, strong) HONPopularUserVO *userVO;
 @end
 
 @implementation HONTimelineViewController
@@ -182,11 +185,11 @@
 	[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONVoteViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONHONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONVoteViewController AFNetworking: %@", parsedLists);
+			//NSLog(@"HONHONTimelineViewController AFNetworking: %@", parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;
@@ -219,7 +222,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
+		NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		if (_progressHUD == nil)
@@ -245,11 +248,11 @@
 	[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONVoteViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"HONHONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONVoteViewController AFNetworking: %@", parsedLists);
+			//NSLog(@"HONHONTimelineViewController AFNetworking: %@", parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;
@@ -282,7 +285,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"VoteViewController AFNetworking %@", [error localizedDescription]);
+		NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
 		
 		_refreshButton.hidden = NO;
 		if (_progressHUD == nil)
@@ -297,6 +300,39 @@
 	}];
 }
 
+
+- (void)_retrieveUser {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 8], @"action",
+									_username, @"username",
+									nil];
+	
+	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			NSLog(@"HONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSLog(@"HONTimelineViewController AFNetworking: %@", userResult);
+			
+			if ([userResult objectForKey:@"id"] != [NSNull null]) {
+				_userVO = [HONPopularUserVO userWithDictionary:userResult];
+				
+				if (_challengeVO == nil)
+					[self _retrieveChallenges];
+				
+				else
+					[self _retrieveSingleChallenge:_challengeVO];
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
+	}];
+}
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -366,11 +402,16 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	if (_challengeVO == nil)
-		[self _retrieveChallenges];
+	if ([_username length] > 0) {
+		[self _retrieveUser];
 	
-	else
-		[self _retrieveSingleChallenge:_challengeVO];
+	} else {
+		if (_challengeVO == nil)
+			[self _retrieveChallenges];
+		
+		else
+			[self _retrieveSingleChallenge:_challengeVO];
+	}
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
@@ -688,7 +729,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count]);
+	return ([_challenges count] + ([_username length] > 0));
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -704,29 +745,60 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
-	if (cell == nil) {
-		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-		cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONTimelineItemViewCell alloc] initAsWaitingCell] : [[HONTimelineItemViewCell alloc] initAsStartedCell];
-		cell.challengeVO = vo;
+	if ([_username length] > 0) {
+		if (indexPath.row == 0) {
+			HONUserProfileViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			
+			if (cell == nil) {
+				cell = [[HONUserProfileViewCell alloc] init];
+				cell.userVO = _userVO;
+			}
+			
+			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+			return (cell);
+		
+		} else {
+			HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			
+			if (cell == nil) {
+				HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
+				cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONTimelineItemViewCell alloc] initAsWaitingCell] : [[HONTimelineItemViewCell alloc] initAsStartedCell];
+				cell.challengeVO = vo;
+			}
+			
+			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+			return (cell);
+		}
+	} else {
+		HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		
+		if (cell == nil) {
+			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+			cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONTimelineItemViewCell alloc] initAsWaitingCell] : [[HONTimelineItemViewCell alloc] initAsStartedCell];
+			cell.challengeVO = vo;
+		}
+		
+		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+		return (cell);
 	}
-	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-	
-	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+	if ([_username length] > 0 && indexPath.row == 0)
+		return (70.0);
 	
-	if ([vo.rechallengedUsers length] == 0)
-		return ((vo.statusID == 1 || vo.statusID == 2) ? 445.0 : 290.0);//346.0 : 244.0);
-	
-	else
-		return ((vo.statusID == 1 || vo.statusID == 2) ? 490.0 : 335.0);//346.0 : 244.0);
+	else {
+		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+		
+		if ([vo.rechallengedUsers length] == 0)
+			return ((vo.statusID == 1 || vo.statusID == 2) ? 445.0 : 290.0);//346.0 : 244.0);
+		
+		else
+			return ((vo.statusID == 1 || vo.statusID == 2) ? 490.0 : 335.0);//346.0 : 244.0);
+	}
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
