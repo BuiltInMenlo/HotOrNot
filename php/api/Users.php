@@ -252,6 +252,29 @@
 		}
 		
 		/**
+		 * Updates a user's name and avatar image
+		 * @param $user_id The user's id (integer)
+		 * @param $username The new username (string)
+		 * @param $img_url The url to the avatar (string)
+		 * @return An associative object representing a user (array)
+		**/
+		function updateUsernameAvatar($user_id, $username, $img_url) {
+			
+			$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'", `img_url` = "'. $img_url .'", `last_login` = CURRENT_TIMESTAMP WHERE `id` = '. $user_id .';';
+			$result = mysql_query($query);
+			
+			// return
+			$user_arr = $this->userObject($user_id);
+			$this->sendResponse(200, json_encode($user_arr));
+			return (true);	
+			
+			/*
+			example response:
+			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
+			*/
+		}
+		
+		/**
 		 * Updates a user's Facebook credentials
 		 * @param $user_id The ID for the user (integer)
 		 * @param $username The facebook username (string)
@@ -540,6 +563,12 @@
 			case "8":
 				if (isset($_POST['username']))
 					$users->getUserFromName($_POST['username']);
+				break;
+				
+			// updates a user's name and avatar image
+			case "9":
+				if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['img_url']))
+					$users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['img_url']);
 				break;
     	}
 	}

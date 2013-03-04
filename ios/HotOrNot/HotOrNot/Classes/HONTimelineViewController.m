@@ -18,6 +18,7 @@
 #import "HONChallengeVO.h"
 #import "HONPopularUserVO.h"
 #import "HONFacebookCaller.h"
+#import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONHeaderView.h"
 #import "HONSearchHeaderView.h"
@@ -413,7 +414,7 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
 }
 
@@ -489,77 +490,47 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	NSString *buttonImage = ([HONAppDelegate isRetina5]) ? @"tutorial-568h" : @"tutorial";
+//	NSString *buttonImage = ([HONAppDelegate isRetina5]) ? @"tutorial-568h" : @"tutorial";
+//	
+//	_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 460.0)];
+//	_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
+//	_tutorialOverlayImgView.userInteractionEnabled = YES;
+//	[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
+//	
+//	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	closeTutorialButton.frame = _tutorialOverlayImgView.frame;
+//	[closeTutorialButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
+//	[_tutorialOverlayImgView addSubview:closeTutorialButton];
+//	
+//	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 145.0, 280.0, 16.0)];
+//	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+//	usernameLabel.textColor = [UIColor whiteColor];
+//	usernameLabel.backgroundColor = [UIColor clearColor];
+//	usernameLabel.textAlignment = NSTextAlignmentCenter;
+//	usernameLabel.text = [NSString stringWithFormat:@"Your username is %@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+//	[_tutorialOverlayImgView addSubview:usernameLabel];
+//	
+//	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	submitButton.frame = CGRectMake(18.0, 150.0, 283.0, 78.0);
+//	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_nonActive"] forState:UIControlStateNormal];
+//	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_Active"] forState:UIControlStateHighlighted];
+//	[submitButton addTarget:self action:@selector(_goChangeUsername) forControlEvents:UIControlEventTouchUpInside];
+//	[_tutorialOverlayImgView addSubview:submitButton];
+//	
+//	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	createChallengeButton.frame = CGRectMake(128.0, _tutorialOverlayImgView.frame.size.height - 48.0, 64.0, 48.0);
+//	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive"] forState:UIControlStateNormal];
+//	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_active"] forState:UIControlStateHighlighted];
+//	[createChallengeButton addTarget:self action:@selector(_goTutorialChallenge) forControlEvents:UIControlEventTouchUpInside];
+//	[_tutorialOverlayImgView addSubview:createChallengeButton];
 	
-	_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 460.0)];
-	_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
-	_tutorialOverlayImgView.userInteractionEnabled = YES;
-	[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:^(void) {
+	}];
 	
-	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = _tutorialOverlayImgView.frame;
-	[closeTutorialButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialOverlayImgView addSubview:closeTutorialButton];
-	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 145.0, 280.0, 16.0)];
-	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	usernameLabel.textColor = [UIColor whiteColor];
-	usernameLabel.backgroundColor = [UIColor clearColor];
-	usernameLabel.textAlignment = NSTextAlignmentCenter;
-	usernameLabel.text = [NSString stringWithFormat:@"Your username is %@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	[_tutorialOverlayImgView addSubview:usernameLabel];
-	
-	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(18.0, 150.0, 283.0, 78.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_Active"] forState:UIControlStateHighlighted];
-	[submitButton addTarget:self action:@selector(_goChangeUsername) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialOverlayImgView addSubview:submitButton];
-	
-	
-//	UIButton *inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	inviteFriendsButton.frame = CGRectMake(0.0, 45.0, 91.0, 70.0);
-//	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_nonActive"] forState:UIControlStateNormal];
-//	[inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateHighlighted];
-//	[inviteFriendsButton addTarget:self action:@selector(_goTutorialInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-//	[_tutorialOverlayImgView addSubview:inviteFriendsButton];
-//
-//	UIButton *dailyChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	dailyChallengeButton.frame = CGRectMake(91.0, 45.0, 229.0, 70.0);
-//	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
-//	[dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
-//	dailyChallengeButton.titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:15];
-//	[dailyChallengeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-//	dailyChallengeButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
-//	[dailyChallengeButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
-//	[dailyChallengeButton addTarget:self action:@selector(_goTutorialDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-//	[_tutorialOverlayImgView addSubview:dailyChallengeButton];
-	
-	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(128.0, _tutorialOverlayImgView.frame.size.height - 48.0, 64.0, 48.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_active"] forState:UIControlStateHighlighted];
-	[createChallengeButton addTarget:self action:@selector(_goTutorialChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialOverlayImgView addSubview:createChallengeButton];
 }
 
-//- (void)_goTutorialInviteFriends {
-//	[[Mixpanel sharedInstance] track:@"Tutorial Invite Friends"
-//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	[self _goTutorialClose];
-//	[self _goInviteFriends];
-//}
-//
-//- (void)_goTutorialDailyChallenge {
-//	[[Mixpanel sharedInstance] track:@"Tutorial Daily Challenge"
-//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	[self _goTutorialClose];
-//	[self _goDailyChallenge];
-//}
 
 - (void)_goTutorialChallenge {
 	[[Mixpanel sharedInstance] track:@"Tutorial Challenge Button"
