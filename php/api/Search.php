@@ -96,12 +96,23 @@
 				$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_row['id'] .';';
 				$pokes = mysql_num_rows(mysql_query($query));
 				
+				// find the avatar image
+				if ($user_row['img_url'] == "") {
+					if ($user_row['fb_id'] == "")
+						$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+						
+					else
+						$avatar_url = "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square";
+				
+				} else
+					$avatar_url = $user_row['img_url'];
+				
 				// push user info into array
 				array_push($user_arr, array(
 					'id' => $user_row['id'], 
 					'username' => $user_row['username'], 
 					'fb_id' => $user_row['fb_id'], 					
-					'img_url' => "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square",   
+					'img_url' => $avatar_url,   
 					'points' => $user_row['points'],
 					'votes' => $votes,
 					'pokes' => $pokes

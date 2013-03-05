@@ -64,7 +64,7 @@
 		[self addSubview:_bgImageView];
 		
 		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE PHOTO"];
-		[self addSubview:_headerView];
+		[_bgImageView addSubview:_headerView];
 		
 		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_randomSubjectButton.frame = CGRectMake(0.0, 0.0, 84.0, 44.0);
@@ -534,6 +534,10 @@
 			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
 		}];
 		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_previewHolderView.frame = CGRectMake(_previewHolderView.frame.origin.x, -215.0, _previewHolderView.frame.size.width, _previewHolderView.frame.size.height);
+		}];
+		
 		textField.text = @"";
 	
 	} else if (textField.tag == 2) {
@@ -543,6 +547,10 @@
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+		}];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_previewHolderView.frame = CGRectMake(_previewHolderView.frame.origin.x, -215.0, _previewHolderView.frame.size.width, _previewHolderView.frame.size.height);
 		}];
 		
 		textField.text = @"";
@@ -597,6 +605,10 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
 		}];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_previewHolderView.frame = CGRectMake(_previewHolderView.frame.origin.x, 0.0, _previewHolderView.frame.size.width, _previewHolderView.frame.size.height);
+		}];
 	
 	} else if (textField.tag == 2) {
 		if ([textField.text length] == 0)
@@ -606,6 +618,10 @@
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+		}];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_previewHolderView.frame = CGRectMake(_previewHolderView.frame.origin.x, 0.0, _previewHolderView.frame.size.width, _previewHolderView.frame.size.height);
 		}];
 	}
 }

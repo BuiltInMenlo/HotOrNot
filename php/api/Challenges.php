@@ -134,14 +134,25 @@
 			
 			// loop thru the rows
 			while ($rechallenge_row = mysql_fetch_assoc($rechallenge_result)) {
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
+				$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
 				$user_obj = mysql_fetch_object(mysql_query($query));
+				
+				// find the avatar image
+				if ($user_obj->img_url == "") {
+					if ($user_obj->fb_id == "")
+						$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+					
+					else
+						$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
+			
+				} else
+					$avatar_url = $user_obj->img_url;
 				
 				array_push($rechallenge_arr, array(
 					'id' => $rechallenge_row['id'],
 					'user_id' => $rechallenge_row['creator_id'],
 					'fb_id' => $user_obj->fb_id,
-					'img_url' => "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square",
+					'img_url' => $avatar_url,
 					'username' => $user_obj->username,
 					'added' => $rechallenge_row['added']
 				));
@@ -343,6 +354,7 @@
 				'id' => $user_id, 
 				'fb_id' => "",
 				'username' => "",
+				'avatar' => "",
 				'img' => "",
 				'score' => 0				
 			);
@@ -353,12 +365,12 @@
 			
 			// user is the creator
 			if ($user_id == $challenge_obj->creator_id) {
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+				$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $user_id .';';
 				$user_arr['img'] = $challenge_obj->creator_img;
 							
 			// user is the challenger
 			} else {
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+				$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $user_id .';';
 				$user_arr['img'] = $challenge_obj->challenger_img;			
 				
 				// invited challenger if challenge status is 7
@@ -370,7 +382,18 @@
 			$user_obj = mysql_fetch_object(mysql_query($query));			
 			if ($user_obj) {
 				$user_arr['fb_id'] = $user_obj->fb_id;
-				$user_arr['username'] = $user_obj->username; 		   			
+				$user_arr['username'] = $user_obj->username;
+				
+				// find the avatar image
+				if ($user_obj->img_url == "") {
+					if ($user_obj->fb_id == "")
+						$user_arr['avatar'] = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+					
+					else
+						$user_arr['avatar'] = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
+			
+				} else
+					$user_arr['avatar'] = $user_obj->img_url;		
 			}
 			
 			// votes for challenger
@@ -789,14 +812,26 @@
 			
 				// loop thru the rows
 				while ($rechallenge_row = mysql_fetch_assoc($rechallenge_result)) {
-					$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
+					$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
 					$user_obj = mysql_fetch_object(mysql_query($query));
+					
+					// find the avatar image
+					if ($user_obj->img_url == "") {
+						if ($user_obj->fb_id == "")
+							$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+					
+						else
+							$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
+			
+					} else
+						$avatar_url = $user_obj->img_url;
+				
 				
 					array_push($rechallenge_arr, array(
 						'id' => $rechallenge_row['id'],
 						'user_id' => $rechallenge_row['creator_id'],
 						'fb_id' => $user_obj->fb_id,
-						'img_url' => "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square",
+						'img_url' => $avatar_url,
 						'username' => $user_obj->username,
 						'added' => $rechallenge_row['added']
 					));

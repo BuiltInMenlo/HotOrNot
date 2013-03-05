@@ -27,12 +27,14 @@
 @property (nonatomic) int creatorID;
 @property (nonatomic, retain) NSString *creatorFB;
 @property (nonatomic, retain) NSString *creatorName;
+@property (nonatomic, retain) NSString *creatorAvatar;
 @property (nonatomic, retain) NSString *creatorImgPrefix;
 @property (nonatomic) int creatorScore;
 
 @property (nonatomic) int challengerID;
 @property (nonatomic, retain) NSString *challengerFB;
 @property (nonatomic, retain) NSString *challengerName;
+@property (nonatomic, retain) NSString *challengerAvatar;
 @property (nonatomic, retain) NSString *challengerImgPrefix;
 @property (nonatomic) int challengerScore;
 

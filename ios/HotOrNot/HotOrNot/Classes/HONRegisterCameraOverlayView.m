@@ -6,13 +6,16 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "Mixpanel.h"
+
 #import "HONRegisterCameraOverlayView.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
-@interface HONRegisterCameraOverlayView()
+@interface HONRegisterCameraOverlayView() <UITextFieldDelegate>
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *footerHolderView;
+@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, strong) UIButton *cancelButton;
@@ -28,13 +31,13 @@
 #pragma mark - View Lifecycle
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
-		bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
-		bgImageView.userInteractionEnabled = YES;
-		[self addSubview:bgImageView];
+		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
+		_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
+		_bgImageView.userInteractionEnabled = YES;
+		[self addSubview:_bgImageView];
 		
 		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 367.0, 640.0, 105.0)];
-		[bgImageView addSubview:_footerHolderView];
+		[_bgImageView addSubview:_footerHolderView];
 		
 		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE PHOTO"];
 		[self addSubview:_headerView];
@@ -105,15 +108,24 @@
 		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
 	} completion:nil];
 	
-	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cameraBackButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
-	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
-	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
-	[_cameraBackButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_cameraBackButton];
+	_cancelButton.hidden = YES;
+	
+	if (_cameraBackButton == nil) {
+		_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_cameraBackButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
+		[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
+		[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
+		[_cameraBackButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:_cameraBackButton];
+	}
+	
+	_cameraBackButton.hidden = NO;
 }
 
 - (void)hideUsername {
+	_cameraBackButton.hidden = YES;
+	_cancelButton.hidden = NO;
+	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(0.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
 	} completion:nil];
@@ -125,7 +137,7 @@
 }
 
 - (void)_goSubmit {
-	
+	[self.delegate cameraOverlayViewSubmitWithUsername:self username:_username];
 }
 
 - (void)_goCapture {
@@ -144,6 +156,45 @@
 - (void)_goCameraBack {
 	_captureButton.enabled = YES;
 	[self hideUsername];
+}
+
+
+#pragma mark - TextField Delegates
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+	
+		[[Mixpanel sharedInstance] track:@"Camera - Enter Username"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+		}];
+		
+		textField.text = @"";
+	//_editButton.hidden = YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return (YES);
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	return (YES);
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];
+	
+	//_editButton.hidden = NO;
+	if ([textField.text length] == 0)
+		textField.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
+	
+	_username = textField.text;
+		
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
+	}];
 }
 
 @end

@@ -100,6 +100,19 @@
 			$query = 'SELECT `id` FROM `tblChallenges` WHERE `challenger_id` = '. $row->id .' AND `challenger_img` != "";';
 			$pics += mysql_num_rows(mysql_query($query));
 			
+			
+			// find the avatar image
+			if ($row->img_url == "") {
+				if ($row->fb_id == "")
+					$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+					
+				else
+					$avatar_url = "https://graph.facebook.com/". $row->fb_id ."/picture?type=square";
+			
+			} else
+				$avatar_url = $row->img_url;
+				
+			
 			// return
 			return(array(
 				'id' => $row->id, 
@@ -107,6 +120,7 @@
 				'token' => $row->device_token, 
 				'fb_id' => $row->fb_id, 
 				'gender' => $row->gender, 
+				'avatar_url' => $avatar_url,
 				'bio' => $row->bio,
 				'website' => $row->website,
 				'paid' => $row->paid,
@@ -567,8 +581,8 @@
 				
 			// updates a user's name and avatar image
 			case "9":
-				if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['img_url']))
-					$users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['img_url']);
+				if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['imgURL']))
+					$users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['imgURL']);
 				break;
     	}
 	}

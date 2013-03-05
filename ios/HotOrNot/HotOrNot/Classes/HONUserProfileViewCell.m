@@ -29,9 +29,7 @@
 	_userVO = userVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
-	
-	NSString *imgURL = ([_userVO.fbID isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _userVO.fbID];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];

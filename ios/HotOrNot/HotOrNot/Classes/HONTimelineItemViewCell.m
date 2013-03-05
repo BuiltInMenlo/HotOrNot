@@ -120,10 +120,9 @@
 //		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 //		[lScoreImageView addSubview:_lScoreLabel];
 		
-		NSString *imgURL = ([_challengeVO.creatorFB isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.creatorFB];
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 215.0, 35.0, 35.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil];
+		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:creatorAvatarImageView];
 		
@@ -155,10 +154,9 @@
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
-		imgURL = ([_challengeVO.challengerFB isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.challengerFB];
 		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 215.0, 35.0, 35.0)];
 		challengerAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil];
+		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
 		challengerAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:challengerAvatarImageView];
 		
@@ -254,10 +252,9 @@
 //		overlayWaitingImageView.userInteractionEnabled = YES;
 //		[lImgView addSubview:overlayWaitingImageView];
 		
-		NSString *imgURL = ([_challengeVO.creatorFB isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", _challengeVO.creatorFB];
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 360.0, 35.0, 35.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil];
+		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:creatorAvatarImageView];
 		

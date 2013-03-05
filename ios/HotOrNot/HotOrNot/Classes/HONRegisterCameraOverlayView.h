@@ -20,7 +20,7 @@
 @protocol HONRegisterCameraOverlayViewDelegate
 - (void)cameraOverlayViewTakePicture:(HONRegisterCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCancelCamera:(HONRegisterCameraOverlayView *)cameraOverlayView;
-//- (void)cameraOverlayViewClosePreview:(HONRegisterCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)cameraOverlayView username:(NSString *)username;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONRegisterCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONRegisterCameraOverlayView *)cameraOverlayView;

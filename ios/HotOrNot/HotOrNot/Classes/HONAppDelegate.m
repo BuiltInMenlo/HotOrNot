@@ -688,7 +688,8 @@ NSString *const FacebookAppID = @"529054720443694";
 		[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+		//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 	}
 	
 //	Chartboost *cb = [Chartboost sharedChartboost];

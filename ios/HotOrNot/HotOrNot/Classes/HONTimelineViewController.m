@@ -414,7 +414,7 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
 }
 
@@ -433,10 +433,6 @@
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Refresh"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
 	_refreshButton.hidden = YES;
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -444,6 +440,10 @@
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
+	
+	[[Mixpanel sharedInstance] track:@"Vote Wall - Refresh"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if (_isPushView)
 		[self _retrieveSingleChallenge:_challengeVO];
@@ -572,6 +572,14 @@
 
 - (void)_refreshVoteTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
+	
+	_refreshButton.hidden = YES;
+	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Refreshing…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
 	
 	if (_isPushView)
 		[self _retrieveSingleChallenge:_challengeVO];

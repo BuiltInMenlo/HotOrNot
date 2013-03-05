@@ -428,6 +428,14 @@
 }
 
 - (void)_submitChallenge:(NSMutableDictionary *)params {
+	
+	if (_progressHUD == nil)
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Submitting Challenge…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -702,11 +710,12 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 
-	//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		
 	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-	image = [image fixOrientation];
 	
+	NSLog(@"ORIENTATION:[%d]", image.imageOrientation);
+	if (image.imageOrientation != 0)
+		image = [image fixOrientation];
+		
 	if (image.size.width > image.size.height) {
 		float offset = image.size.height * (image.size.height / image.size.width);
 		image = [HONAppDelegate cropImage:image toRect:CGRectMake(offset * 0.5, 0.0, offset, image.size.height)];
@@ -909,7 +918,7 @@
 
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
-	NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
+	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
 	
@@ -920,7 +929,7 @@
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
-	NSLog(@"AWS didFailWithError:\n%@", error);
+	//NSLog(@"AWS didFailWithError:\n%@", error);
 }
 
 @end

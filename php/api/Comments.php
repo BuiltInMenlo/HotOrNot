@@ -89,12 +89,24 @@
 			while ($comment_row = mysql_fetch_assoc($comment_result)) {
 				
 				// user object
-				$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $comment_row['user_id'] .';';
+				$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $comment_row['user_id'] .';';
 			   	$user_obj = mysql_fetch_object(mysql_query($query));
 				
 				// votes for user
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $comment_row['user_id'] .';';
 			   	$score = mysql_num_rows(mysql_query($query));
+			
+				
+				// find the avatar image
+				if ($user_obj->img_url == "") {
+					if ($user_obj->fb_id == "")
+						$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+						
+					else
+						$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
+				
+				} else
+					$avatar_url = $user_obj->img_url;
 				
 				array_push($comment_arr, array(
 					'id' => $comment_row['id'], 
@@ -102,7 +114,7 @@
 					'user_id' => $comment_row['user_id'], 
 					'fb_id' => $user_obj->fb_id,
 					'username' => $user_obj->username,
-					'img_url' => "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square",
+					'img_url' => $avatar_url,
 					'score' => $score, 
 					'text' => $comment_row['text'], 
 					'added' => $comment_row['added']
@@ -134,12 +146,23 @@
 			$comment_obj = mysql_fetch_object(mysql_query($query));
 			
 			// user object
-			$query = 'SELECT `fb_id`, `username` FROM `tblUsers` WHERE `id` = '. $comment_obj->user_id .';';
+			$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $comment_obj->user_id .';';
 			$user_obj = mysql_fetch_object(mysql_query($query));
 			
 			// votes for user
 			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $comment_obj->user_id .';';
 			$score = mysql_num_rows(mysql_query($query));
+			
+			// find the avatar image
+			if ($user_obj->img_url == "") {
+				if ($user_obj->fb_id == "")
+					$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+					
+				else
+					$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
+			
+			} else
+				$avatar_url = $user_obj->img_url;
 			
 			$comment_arr = array(
 				'id' => $comment_obj->id, 
@@ -147,7 +170,7 @@
 				'user_id' => $comment_obj->user_id, 
 				'fb_id' => $user_obj->fb_id,
 				'username' => $user_obj->username,
-				'img_url' => "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square",
+				'img_url' => $avatar_url,
 				'score' => $score, 
 				'text' => $comment_obj->text, 
 				'added' => $comment_obj->added
