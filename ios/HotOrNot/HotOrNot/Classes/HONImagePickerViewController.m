@@ -725,7 +725,7 @@
 		float offset = image.size.height - (image.size.width * kPhotoRatio);
 		image = [HONAppDelegate cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kPhotoRatio))];
 	}
-	
+	 
 	_challangeImage = image;
 	
 	[self _uploadPhoto:_challangeImage];

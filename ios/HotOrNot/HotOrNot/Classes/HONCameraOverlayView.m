@@ -231,11 +231,9 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	NSLog(@"IMAGE:[%f][%f]", image.size.width, image.size.height);
-	
-	if (image.size.width > 480.0 && image.size.height > 640.0)
-		image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
-	
-	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp]];
+	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
+	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
 	
@@ -270,9 +268,9 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	NSLog(@"IMAGE:[%f][%f]", image.size.width, image.size.height);
+	NSLog(@"IMAGE FLIPPED:[%f][%f]", image.size.width, image.size.height);
 	
-	if (image.size.width > 480.0 && image.size.height > 640.0)
+	//if (image.size.width > 480.0 && image.size.height > 640.0)
 		image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
