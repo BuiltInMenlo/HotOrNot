@@ -116,6 +116,7 @@
 			// return
 			return(array(
 				'id' => $row->id, 
+				'username' => $row->username,
 				'name' => $row->username, 
 				'token' => $row->device_token, 
 				'fb_id' => $row->fb_id, 

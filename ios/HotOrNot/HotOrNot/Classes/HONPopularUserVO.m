@@ -12,7 +12,7 @@
 @implementation HONPopularUserVO
 
 @synthesize dictionary;
-@synthesize userID, fbID, username, points, votes, pokes, score, imageURL;
+@synthesize userID, fbID, username, points, votes, pokes, score, pics, imageURL;
 
 + (HONPopularUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONPopularUserVO *vo = [[HONPopularUserVO alloc] init];
@@ -22,10 +22,11 @@
 	vo.points = [[dictionary objectForKey:@"points"] intValue];
 	vo.votes = [[dictionary objectForKey:@"votes"] intValue];
 	vo.pokes = [[dictionary objectForKey:@"pokes"] intValue];
+	vo.pics = [[dictionary objectForKey:@"pics"] intValue];
 	vo.score = (vo.points * [HONAppDelegate createPointMultiplier]) + (vo.votes * [HONAppDelegate votePointMultiplier]) + (vo.pokes * [HONAppDelegate pokePointMultiplier]);
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
-	vo.imageURL = ([dictionary objectForKey:@"fb_id"] == [NSNull null]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [dictionary objectForKey:@"img_url"];
+	vo.imageURL = [dictionary objectForKey:@"avatar_url"];
 	
 	return (vo);
 }

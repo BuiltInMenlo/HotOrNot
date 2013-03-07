@@ -317,16 +317,19 @@
 			NSLog(@"HONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
-			NSLog(@"HONTimelineViewController AFNetworking: %@", userResult);
+			//NSLog(@"HONTimelineViewController AFNetworking: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				_userVO = [HONPopularUserVO userWithDictionary:userResult];
+				[_tableView reloadData];
 				
 				if (_challengeVO == nil)
 					[self _retrieveChallenges];
 				
 				else
 					[self _retrieveSingleChallenge:_challengeVO];
+				
+				
 			}
 		}
 		
@@ -445,11 +448,16 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if (_isPushView)
-		[self _retrieveSingleChallenge:_challengeVO];
-	
-	else
-		[self _retrieveChallenges];
+	if ([_username length] > 0) {
+		[self _retrieveUser];
+		
+	} else {
+		if (_challengeVO == nil)
+			[self _retrieveChallenges];
+		
+		else
+			[self _retrieveSingleChallenge:_challengeVO];
+	}
 }
 
 - (void)_goDailyChallenge {
@@ -581,11 +589,16 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	if (_isPushView)
-		[self _retrieveSingleChallenge:_challengeVO];
-	
-	else
-		[self _retrieveChallenges];
+	if ([_username length] > 0) {
+		[self _retrieveUser];
+		
+	} else {
+		if (_challengeVO == nil)
+			[self _retrieveChallenges];
+		
+		else
+			[self _retrieveSingleChallenge:_challengeVO];
+	}
 }
 
 - (void)_showNotInSessionDetails:(NSNotification *)notification {
@@ -708,7 +721,12 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count] + ([_username length] > 0));
+//	NSLog(@"%d %d", [_username length], [_challenges count]);
+//	if ([_username length] > 0 && [_challenges count] > 0)
+//		return ([_challenges count] + 1);
+//	
+//	else
+		return ([_challenges count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -748,7 +766,8 @@
 			
 			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 			return (cell);
-		}
+			}
+		
 	} else {
 		HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		

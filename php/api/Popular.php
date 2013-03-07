@@ -88,13 +88,20 @@
 			// loop thru user rows
 			while ($user_row = mysql_fetch_assoc($user_result)) {				
 				
-				// get total for this user
+				// get total votes for this user
 				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_row['id'] .';';
 				$votes = mysql_num_rows(mysql_query($query));
 				
 				// get total pokes for this
 				$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_row['id'] .';';
 				$pokes = mysql_num_rows(mysql_query($query));
+				
+				// get total pics
+				$query = 'SELECT `id` FROM `tblChallenges` WHERE `creator_id` = '. $row->id .';';
+				$pics = mysql_num_rows(mysql_query($query));
+			
+				$query = 'SELECT `id` FROM `tblChallenges` WHERE `challenger_id` = '. $row->id .' AND `challenger_img` != "";';
+				$pics += mysql_num_rows(mysql_query($query));
 				
 				// find the avatar image
 				if ($user_row['img_url'] == "") {
@@ -111,11 +118,13 @@
 				array_push($user_arr, array(
 					'id' => $user_row['id'], 
 					'username' => $user_row['username'], 
+					'name' => $user_row['username'], 
 					'fb_id' => $user_row['fb_id'], 					
-					'img_url' => $avatar_url,   
+					'avatar_url' => $avatar_url,   
 					'points' => $user_row['points'],
 					'votes' => $votes,
-					'pokes' => $pokes
+					'pokes' => $pokes,
+					'pics' => $pics
 				));	
 			}
 			
