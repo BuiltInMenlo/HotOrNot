@@ -513,8 +513,8 @@
 				
 				// add challenge as waiting for someone
 				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "1", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0", "", NOW(), NOW());';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
+				$query .= 'VALUES (NULL, "1", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0", "", "N", "0", NOW(), NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
 				
@@ -563,8 +563,8 @@
 				
 				// add a new challenge
 				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_obj->id .'", "", NOW(), NOW());';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
+				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_obj->id .'", "", "N", "0", NOW(), NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
 			    
@@ -598,8 +598,8 @@
 				
 				// add a new challenge
 				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "7", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", NOW(), NOW());';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
+				$query .= 'VALUES (NULL, "7", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
 			    
@@ -642,8 +642,8 @@
 			
 			// add the challenge
 			$query = 'INSERT INTO `tblChallenges` (';
-			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `started`, `added`) ';
-			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", NOW(), NOW());';
+			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
+			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW());';
 			$result = mysql_query($query);
 			$challenge_id = mysql_insert_id();
 			
@@ -701,8 +701,8 @@
 				
 				// add the new challenge
 				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", NOW(), NOW());';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
+				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
 				

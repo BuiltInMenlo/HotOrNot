@@ -469,40 +469,6 @@
 			*/
 		}
 		
-		function getLatestChallengesBySubject() {
-			$subject_arr = array();
-			$challengeID_arr = array();
-			$challenges_arr = array();
-			
-			$query = 'SELECT `id`, `subject_id` FROM `tblChallenges` WHERE `status_id` = 4 ORDER BY `started` DESC LIMIT 50;';
-			$result = mysql_query($query);
-			
-			while ($row = mysql_fetch_assoc($result)){
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row['subject_id'] .';';
-				$subject_name = mysql_fetch_object(mysql_query($query))->title;
-				
-				$subject_arr[$row['subject_id']] = array(
-					'id' => $row['subject_id'], 
-					'title' => $subject_name,
-					'challenges' => array()
-				);
-				
-				array_push($challengeID_arr, $row['id']);
-			}
-			
-			foreach ($challengeID_arr as $key => $val) {
-				$query = 'SELECT `id`, `subject_id` FROM `tblChallenges` WHERE `id` = '. $val .';';
-				$challenge_obj = mysql_fetch_object(mysql_query($query));
-				
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
-				$subject_name = mysql_fetch_object(mysql_query($query))->title;
-				
-				array_push($challenges_arr, $this->getChallengeObj($val));
-			}
-			
-			$this->sendResponse(200, json_encode($challenges_arr));
-			return (true);
-		}
 		
 		/** 
 		 * Gets the voters for a particular challenge
@@ -579,10 +545,11 @@
 		function upvoteChallenge($challenge_id, $user_id, $isCreator) {
 			
 			// get challenge info
-		    $query = 'SELECT `creator_id`, `subject_id`, `challenger_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+		    $query = 'SELECT `creator_id`, `subject_id`, `challenger_id`, `votes` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
 			$challenge_obj = mysql_fetch_object(mysql_query($query));
 			$creator_id = $challenge_obj->creator_id;
 			$challenger_id = $challenge_obj->challenger_id;
+			$vote_tot = $challenge_obj->votes;
 			
 			// get subject name
 			$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
@@ -608,6 +575,10 @@
 				$query .= 'NULL, "'. $challenge_id .'", "'. $user_id .'", "'. $winningUser_id .'", NOW());';				
 				$result = mysql_query($query);
 				$vote_id = mysql_insert_id();
+				
+				// increment vote total
+				$query = 'UPDATE `tblChallenges` SET `votes` = "'. ++$vote_tot .'" WHERE `id` = '. $challenge_id .';';
+				$result = mysql_query($query);
 			
 			// existing vote	
 			} else
@@ -709,9 +680,7 @@
 					$votes->upvoteChallenge($_POST['challengeID'], $_POST['userID'], $_POST['creator']);
 				break;
 				
-			// latest challenges by subject	
 			case "7":
-				$votes->getLatestChallengesBySubject();
 				break;
 				
 			// challenges by a subject name

@@ -216,6 +216,32 @@ while ($row = mysql_fetch_assoc($result)) {
 	$upd_result = mysql_query($query);				
 }
 */
+
+
+/* // UPDATE VOTE SCORE
+
+$vote_arr = array();
+$query = 'SELECT `challenge_id` FROM `tblChallengeVotes`;';
+$result = mysql_query($query);
+
+while ($row = mysql_fetch_assoc($result))
+	$vote_arr[$row['challenge_id']] = 0;
+	
+	
+$query = 'SELECT `challenge_id` FROM `tblChallengeVotes`;';
+$result = mysql_query($query);	
+
+while ($row = mysql_fetch_assoc($result))
+	$vote_arr[$row['challenge_id']]++;
+
+
+foreach ($vote_arr as $key => $val) {
+	echo ("CHALLENGE:[$key] = ($val)<br />\n");
+	
+	$query = 'UPDATE `tblChallenges` SET `votes` = "'. $val .'" WHERE `id` = '. $key .';';
+	$result = mysql_query($query);
+}
+*/
 			
 if ($db_conn) {
 	mysql_close($db_conn);
