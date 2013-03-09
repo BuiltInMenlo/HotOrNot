@@ -51,7 +51,7 @@
 		[_userButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateHighlighted];
 		[_userButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateSelected];
 		[_userButton addTarget:self action:@selector(_goUser) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_userButton];
+		//[self addSubview:_userButton];
 		
 		_subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_subjectButton.frame = CGRectMake(160.0, 44.0, 160.0, 30.0);
@@ -60,7 +60,7 @@
 		[_subjectButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateSelected];
 		[_subjectButton addTarget:self action:@selector(_goSubject) forControlEvents:UIControlEventTouchUpInside];
 		//[_subjectButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
-		[self addSubview:_subjectButton];
+		//[self addSubview:_subjectButton];
 		
 		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
 		_searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
