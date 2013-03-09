@@ -225,7 +225,7 @@
 			$start_date = date('Y-m-d H:i:s', strtotime($now_date .' - 7 days'));
 			
 			// get the challenge rows
-			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 AND `started` > "'. $start_date .'" ORDER BY `points` DESC LIMIT 100;';
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 AND `started` > "'. $start_date .'" ORDER BY `votes` DESC LIMIT 100;';
 			$result = mysql_query($query);
 			
 			// loop thru challenge rows

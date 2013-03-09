@@ -26,7 +26,7 @@
 #import "HONChallengesViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONTimelineSubjectsViewController.h"
-#import "HONPopularViewController.h"
+#import "HONDiscoveryViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONLoginViewController.h"
@@ -907,15 +907,15 @@ NSString *const FacebookAppID = @"529054720443694";
 - (void)_initTabs {
 	[_bgImgView removeFromSuperview];
 	
-	UIViewController *challengesViewController, *voteViewController, *popularViewController, *settingsViewController;
+	UIViewController *challengesViewController, *voteViewController, *discoveryViewController, *settingsViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
 	voteViewController = [[HONTimelineViewController alloc] init];//[[HONVoteSubjectsViewController alloc] init];//
-	popularViewController = [[HONPopularViewController alloc] init];
+	discoveryViewController = [[HONDiscoveryViewController alloc] init];
 	settingsViewController = [[HONSettingsViewController alloc] init];
 	
 	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
 	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:popularViewController];
+	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
 	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
 	
 	[navController1 setNavigationBarHidden:YES];

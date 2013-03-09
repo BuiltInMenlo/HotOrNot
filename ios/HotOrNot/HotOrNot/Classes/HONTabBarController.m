@@ -251,8 +251,8 @@
 			[_popularButton setSelected:YES];
 			[_settingsButton setSelected:NO];
 			
-			mixPanelTrack = @"Tab - Popular";
-			notificationName = @"REFRESH_POPULAR_TAB";
+			mixPanelTrack = @"Tab - Discovery";
+			notificationName = @"REFRESH_DISCOVERY_TAB";
 			break;
 			
 		case 3:

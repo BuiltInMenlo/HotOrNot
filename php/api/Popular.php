@@ -97,10 +97,10 @@
 				$pokes = mysql_num_rows(mysql_query($query));
 				
 				// get total pics
-				$query = 'SELECT `id` FROM `tblChallenges` WHERE `creator_id` = '. $row->id .';';
+				$query = 'SELECT `id` FROM `tblChallenges` WHERE `creator_id` = '. $user_row['id'] .';';
 				$pics = mysql_num_rows(mysql_query($query));
 			
-				$query = 'SELECT `id` FROM `tblChallenges` WHERE `challenger_id` = '. $row->id .' AND `challenger_img` != "";';
+				$query = 'SELECT `id` FROM `tblChallenges` WHERE `challenger_id` = '. $user_row['id'] .' AND `challenger_img` != "";';
 				$pics += mysql_num_rows(mysql_query($query));
 				
 				// find the avatar image
