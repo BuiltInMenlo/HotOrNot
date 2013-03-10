@@ -378,9 +378,9 @@
 	}
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 45.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_onTap"] forState:UIControlStateHighlighted];
+	createChallengeButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:createChallengeButton];
 	
@@ -497,40 +497,6 @@
 	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
-	
-//	NSString *buttonImage = ([HONAppDelegate isRetina5]) ? @"tutorial-568h" : @"tutorial";
-//	
-//	_tutorialOverlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 460.0)];
-//	_tutorialOverlayImgView.image = [UIImage imageNamed:buttonImage];
-//	_tutorialOverlayImgView.userInteractionEnabled = YES;
-//	[[[UIApplication sharedApplication] delegate].window addSubview:_tutorialOverlayImgView];
-//	
-//	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	closeTutorialButton.frame = _tutorialOverlayImgView.frame;
-//	[closeTutorialButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
-//	[_tutorialOverlayImgView addSubview:closeTutorialButton];
-//	
-//	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 145.0, 280.0, 16.0)];
-//	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-//	usernameLabel.textColor = [UIColor whiteColor];
-//	usernameLabel.backgroundColor = [UIColor clearColor];
-//	usernameLabel.textAlignment = NSTextAlignmentCenter;
-//	usernameLabel.text = [NSString stringWithFormat:@"Your username is %@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-//	[_tutorialOverlayImgView addSubview:usernameLabel];
-//	
-//	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	submitButton.frame = CGRectMake(18.0, 150.0, 283.0, 78.0);
-//	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_nonActive"] forState:UIControlStateNormal];
-//	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_Active"] forState:UIControlStateHighlighted];
-//	[submitButton addTarget:self action:@selector(_goChangeUsername) forControlEvents:UIControlEventTouchUpInside];
-//	[_tutorialOverlayImgView addSubview:submitButton];
-//	
-//	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	createChallengeButton.frame = CGRectMake(128.0, _tutorialOverlayImgView.frame.size.height - 48.0, 64.0, 48.0);
-//	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_nonActive"] forState:UIControlStateNormal];
-//	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"tabbar_003_active"] forState:UIControlStateHighlighted];
-//	[createChallengeButton addTarget:self action:@selector(_goTutorialChallenge) forControlEvents:UIControlEventTouchUpInside];
-//	[_tutorialOverlayImgView addSubview:createChallengeButton];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];

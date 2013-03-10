@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Kodee_Landing": {
+            "applicationId": "JrbnKzmNbPppNXEFhuUNU8BaL8VaEQySjENFd7Os", 
+            "masterKey": "78yLUfcRkIu7jb1QeOBddmFnGb6a5jWdtfckSWwm"
+        }, 
+        "_default": {
+            "link": "Kodee_Landing"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.2"
+    }
+}

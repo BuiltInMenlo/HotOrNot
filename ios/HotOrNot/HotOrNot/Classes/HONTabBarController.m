@@ -141,37 +141,36 @@
 	[self.view addSubview:_tabHolderView];
 	
 	//_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 48.0, 320.0, 48.0)];
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight, 320.0, kButtonHeight)];
-	bgImageView.image = [UIImage imageNamed:@"footerBackground"];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 5.0, 320.0, 80.0)];
+	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
 	[_tabHolderView addSubview:bgImageView];
 	
 	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_timelineButton.frame = CGRectMake(0.0, kLipHeight, 80.0, kButtonHeight);
-	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabbar_001_nonActive"] forState:UIControlStateNormal];
-	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabbar_001_onTap"] forState:UIControlStateHighlighted];
-	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabbar_001_active"] forState:UIControlStateSelected];
+	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
+	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateHighlighted];
+	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateSelected];
 	[_timelineButton setTag:0];
-	[_timelineButton setSelected:YES];
 	
 	_challengesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_challengesButton.frame = CGRectMake(80.0, kLipHeight, 80.0, kButtonHeight);
-	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabbar_002_nonActive"] forState:UIControlStateNormal];
-	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabbar_002_onTap"] forState:UIControlStateHighlighted];
-	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabbar_002_active"] forState:UIControlStateSelected];
+	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
+	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateHighlighted];
+	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateSelected];
 	[_challengesButton setTag:1];
 	
 	_popularButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_popularButton.frame = CGRectMake(160.0, kLipHeight, 80.0, kButtonHeight);
-	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabbar_004_nonActive"] forState:UIControlStateNormal];
-	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabbar_004_onTap"] forState:UIControlStateHighlighted];
-	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabbar_004_active"] forState:UIControlStateSelected];
+	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
+	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateHighlighted];
+	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateSelected];
 	[_popularButton setTag:2];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_settingsButton.frame = CGRectMake(240.0, kLipHeight, 80.0, kButtonHeight);
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabbar_005_nonActive"] forState:UIControlStateNormal];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabbar_005_onTap"] forState:UIControlStateHighlighted];
-	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabbar_005_active"] forState:UIControlStateSelected];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateNormal];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Active"] forState:UIControlStateHighlighted];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateSelected];
 	[_settingsButton setTag:3];
 	
 	[_tabHolderView addSubview:_timelineButton];
