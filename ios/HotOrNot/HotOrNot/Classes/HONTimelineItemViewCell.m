@@ -199,9 +199,9 @@
 //		[self addSubview:_vsImageView];
 		
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(12.0, 245.0, 44.0, 44.0);
-		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"vote_noVotes_nonActive" : @"vote_voted_nonActive"] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"vote_noVotes_Active" : @"vote_voted_Active"] forState:UIControlStateHighlighted];
+		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0, 34.0);
+		[_votesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon_nonActive"] forState:UIControlStateNormal];
+		[_votesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon_Active"] forState:UIControlStateHighlighted];
 		[_votesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_votesButton];
 		
@@ -213,9 +213,9 @@
 		[self addSubview:_votesLabel];
 		
 		UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		commentsButton.frame = CGRectMake(115.0, 245.0, 44.0, 44.0);
-		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"vote_noVotes_nonActive" : @"vote_voted_nonActive"] forState:UIControlStateNormal];
-		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"vote_noVotes_Active" : @"vote_voted_Active"] forState:UIControlStateHighlighted];
+		commentsButton.frame = CGRectMake(120.0, 250.0, 34.0, 34.0);
+		[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentIcon_nonActive"] forState:UIControlStateNormal];
+		[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentIcon_Active"] forState:UIControlStateHighlighted];
 		[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:commentsButton];
 		

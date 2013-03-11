@@ -1,0 +1,185 @@
+@media screen and (min-width:360px), screen and (max-device-width: 640px), screen and (-webkit-min-device-pixel-ratio: 2) {
+	
+	
+	
+	/* --- Layout
+	-------------------------------------------------------*/
+	
+	#primary_content,
+	#secondary_content,
+	.stores,
+	footer {
+		padding: 0 30px;
+	}
+	
+	
+	
+	/* --- Primary Content
+	-------------------------------------------------------*/
+	
+	#primary_content {
+		padding-bottom: 150px;
+	}
+		
+		#primary_content nav { display: none; }
+		
+		#primary_content header {
+			padding-top: 60px;
+		}
+		
+			#primary_content header h1 {
+				font-size: 55px;
+				line-height: 1em;
+			}
+		
+		/* --- | Signup Form | --- */
+		
+		#signup_form { margin-top: 30px; }
+		
+			#signup_form #signup {
+				margin-bottom: 30px;
+			}
+		
+			#signup_form .privacy {}
+	
+	
+	
+	/* --- Secondary Content
+	-------------------------------------------------------*/
+	
+	#secondary_content {}
+		
+		#secondary_content .phones {
+			margin-top: -120px;
+		}
+		
+			#secondary_content .phones img {
+				width: 100%;
+			}
+	
+	
+	
+	/* --- Stores
+	-------------------------------------------------------*/
+	
+	.stores {
+		margin: 30px 0 15px;
+	}
+		
+		.stores .ios { float: left; }
+		
+		.stores .android { float: right; }
+}
+
+@media screen and (min-width:600px) {
+	
+	
+	
+	/* --- Primary Content
+	-------------------------------------------------------*/
+	
+	#primary_content {
+		padding-bottom: 50px;
+	}
+		
+		/* --- | Nav | --- */
+		
+		#primary_content nav {
+			font-size: 17px;
+			position: absolute;
+			right: 20px;
+			top: 20px;
+			display: block;
+		}
+			
+			#primary_content nav ul {
+				list-style: none;
+			}
+			
+				#primary_content nav ul li {
+					display: inline;
+					margin-left: 35px;
+				}
+					
+					#primary_content nav ul li a {
+						text-decoration: none;
+						color: #fff;
+					}
+		
+		/* --- | Header | --- */
+		
+		#primary_content header {}
+		
+			#primary_content header h1 {
+				font-size: 90px;
+				line-height: 1em;
+			}
+			
+			#primary_content header h2 { font-size: 28px; }
+		
+		/* --- | Signup Form | --- */
+		
+		#signup_form {
+			float: right;
+			width: 325px;
+			margin-top: 165px;
+		}
+			
+			#signup_form #phone_email {
+				width: 325px;
+			}
+			
+			#signup_form #signup {
+				float: right;
+				width: auto;
+			}
+		
+			#signup_form .privacy {
+				line-height: 55px;
+				float: right;
+				margin-right: 20px;
+			}
+	
+	
+	
+	/* --- Secondary Content
+	-------------------------------------------------------*/
+	
+	#secondary_content {}
+
+		#secondary_content .phones {
+			float: left;
+			width: 40%;
+			margin-top: -350px;
+		}
+		
+		#secondary_content .about {
+			float: right;
+			width: 325px;
+			padding-top: 75px;
+		}
+	
+	
+	
+	/* --- Stores
+	-------------------------------------------------------*/
+	
+	.stores {
+		position: absolute;
+		left: 20px;
+		top: 20px;
+		margin: 0;
+		padding: 0;
+	}
+		
+		.stores .ios { margin-right: 20px; }
+	
+	
+	
+	/* --- Footer
+	-------------------------------------------------------*/
+	
+	footer {
+		clear: both;
+	}
+}

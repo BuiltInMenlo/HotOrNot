@@ -1,0 +1,174 @@
+/* ------------------------------------------------------
+	kodee
+	
+	Last updated: 2013.03.09
+-------------------------------------------------------*/
+
+@import url("reset.css");
+
+
+
+/* --- Fonts
+-------------------------------------------------------*/
+
+@font-face {
+    font-family: 'cartogothic_stdregular';
+    src: url('../fonts/cartogothicstd-book-webfont.eot');
+    src: url('../fonts/cartogothicstd-book-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/cartogothicstd-book-webfont.woff') format('woff'),
+         url('../fonts/cartogothicstd-book-webfont.ttf') format('truetype'),
+         url('../fonts/cartogothicstd-book-webfont.svg#cartogothic_stdregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'cartogothic_stdbold';
+    src: url('../fonts/cartogothicstd-bold-webfont.eot');
+    src: url('../fonts/cartogothicstd-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/cartogothicstd-bold-webfont.woff') format('woff'),
+         url('../fonts/cartogothicstd-bold-webfont.ttf') format('truetype'),
+         url('../fonts/cartogothicstd-bold-webfont.svg#cartogothic_stdbold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'titilliumtext25l800_wt';
+    src: url('../fonts/titilliumtext25l001-webfont.eot');
+    src: url('../fonts/titilliumtext25l001-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/titilliumtext25l001-webfont.woff') format('woff'),
+         url('../fonts/titilliumtext25l001-webfont.ttf') format('truetype'),
+         url('../fonts/titilliumtext25l001-webfont.svg#titilliumtext25l800_wt') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+/* --- Primary Content
+-------------------------------------------------------*/
+
+#primary_content {
+	background: #006eee;
+}
+	
+	/* --- | Header | --- */
+	
+	#primary_content header {}
+		
+		#primary_content header h1 {
+			font-family: 'titilliumtext25l800_wt';
+			text-align: center;
+			text-shadow: rgba(0,0,0,0.5) -2px 0, rgba(0,0,0,0.3) 0 -2px;
+			color: #fff;
+			margin-bottom: 45px;
+		}
+		
+		#primary_content header h2 {
+			font-family: 'cartogothic_stdregular';
+			text-align: center;
+			color: #004aba;
+		}
+	
+	/* --- | Signup Form | --- */
+	
+	#signup_form {}
+		
+		#signup_form h3 {
+			font-size: 17px;
+			color: #fff;
+			margin-bottom: 30px;
+		}
+		
+		#signup_form #phone_email {
+			font-size: 20px;
+			text-align: center;
+			color: #999;
+			display: block;
+			width: 100%;
+			margin-bottom: 30px;
+			padding: 15px 10px;
+			border: 0;
+			-webkit-border-radius: 10px;
+			border-radius: 10px;
+			-webkit-background-clip: padding-box; background-clip: padding-box;
+			-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+			-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+			box-sizing: border-box;         /* Opera/IE 8+ */
+		}
+		
+		#signup_form #signup {
+			font-size: 20px;
+			letter-spacing: 1px;
+			text-align: center;
+			text-shadow: rgba(0,0,0,0.3) -2px 0, rgba(0,0,0,0.5) 0 -2px;
+			color: #fff;
+			display: block;
+			width: 100%;
+			padding: 15px;			
+			background-color: #2fc28c;
+			background-image: -webkit-gradient(linear, left top, left bottom, from(#2fc28c), to(#11a283));
+			background-image: -webkit-linear-gradient(top, #2fc28c, #11a283);
+			background-image:    -moz-linear-gradient(top, #2fc28c, #11a283);
+			background-image:      -o-linear-gradient(top, #2fc28c, #11a283);
+			background-image:         linear-gradient(to bottom, #2fc28c, #11a283);
+			border: 1px solid #000;
+			-webkit-border-radius: 10px;
+				border-radius: 10px;
+			-webkit-background-clip: padding-box; background-clip: padding-box;
+		}
+		
+		#signup_form .privacy {
+			font-size: 12px;
+			letter-spacing: 1px;
+			text-align: center;
+		}
+		
+			#signup_form .privacy a { color: #003977; }
+
+
+
+/* --- Secondary Content
+-------------------------------------------------------*/
+
+#secondary_content {}
+	
+	#secondary_content p { margin-bottom: 1em; }
+
+
+
+/* --- Stores
+-------------------------------------------------------*/
+
+.stores {}
+	
+	.stores .android {
+		margin-top: -2px;
+	}
+
+
+/* --- Footer
+-------------------------------------------------------*/
+
+footer {}
+	
+	footer nav {
+		text-align: center;
+	}
+		
+		footer nav a {
+			font-size: 15px;
+			color: #a4a4a4;
+			margin: 0 0 1em 15px;
+		}
+		
+		footer nav a:first-child {
+			margin-left: 0;
+		}
+	
+	footer .copyright {
+		font-size: 12px;
+		text-align: center;
+		color: #bcbbbb;
+	}

@@ -158,7 +158,7 @@
 	[mainHeaderView addSubview:backButton];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+	cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -837,7 +837,7 @@
 	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[customCancelButton addTarget:self action:@selector(facebookViewControllerCancelWasPressed:) forControlEvents:UIControlEventTouchUpInside];
-	customCancelButton.frame = CGRectMake(5.0, 5.0, 64.0, 34.0);
+	customCancelButton.frame = CGRectMake(5.0, 0.0, 64.0, 44.0);
 	[self.friendPickerHeaderView addSubview:customCancelButton];
 	
 	// Done Button
@@ -845,7 +845,7 @@
 	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[customDoneButton addTarget:self action:@selector(facebookViewControllerDoneWasPressed:) forControlEvents:UIControlEventTouchUpInside];
-	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 69.0, 5.0, 64.0, 34.0);
+	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 69.0, 0.0, 64.0, 44.0);
 	[self.friendPickerHeaderView addSubview:customDoneButton];
 	
 }

@@ -29,7 +29,7 @@
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
 		[self addSubview:_bgImageView];
 		
-		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(268.0, 17.0, 34.0, 34.0)];
+		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(273.0, 22.0, 24.0, 24.0)];
 		_chevronImageView.image = [UIImage imageNamed:@"chevron"];
 		[self addSubview:_chevronImageView];
 	}

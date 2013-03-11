@@ -1,0 +1,37 @@
+/* --- Layout
+-------------------------------------------------------*/
+
+#primary_content,
+#secondary_content,
+.stores,
+footer {
+	padding: 0;
+}
+
+#primary_content .content,
+#secondary_content .content {
+	width: 788px;
+	margin: 0 auto;
+}
+
+
+
+/* --- Secondary Content
+-------------------------------------------------------*/
+
+#secondary_content {}
+
+	#secondary_content .phones {
+		float: left;
+		width: auto;
+		margin-top: -350px;
+		margin-left: -70px;
+	}
+
+		#secondary_content .phones img {
+			width: auto;
+		}
+
+#secondary_content .phones {
+	
+}

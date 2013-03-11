@@ -74,7 +74,7 @@
 		[_headerView addSubview:_randomSubjectButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+		_cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
@@ -250,9 +250,9 @@
 	[_headerView addSubview:_cameraBackButton];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	_submitButton.frame = CGRectMake(263.0, 0.0, 74.0, 44.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_submitButton];
 	
@@ -293,7 +293,7 @@
 	[_headerView addSubview:_cameraBackButton];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(253.0, 5.0, 64.0, 34.0);
+	_submitButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
