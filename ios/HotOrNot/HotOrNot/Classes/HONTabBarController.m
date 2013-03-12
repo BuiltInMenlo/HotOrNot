@@ -140,7 +140,7 @@
 	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 5.0, 320.0, 80.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 10.0, 320.0, 80.0)];
 	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
 	[_tabHolderView addSubview:bgImageView];
 	

@@ -26,10 +26,10 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
+		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 63.0)];
 		[self addSubview:_bgImageView];
 		
-		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(273.0, 22.0, 24.0, 24.0)];
+		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(273.0, 18.0, 24.0, 24.0)];
 		_chevronImageView.image = [UIImage imageNamed:@"chevron"];
 		[self addSubview:_chevronImageView];
 	}
@@ -40,7 +40,7 @@
 - (id)initAsGreyCell:(BOOL)grey {
 	if ((self = [self init])) {
 		_isGrey = grey;
-		_bgImageView.image = (_isGrey)? [UIImage imageNamed:@"rowGray_nonActive"] : [UIImage imageNamed:@"rowWhite_nonActive"];
+		_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_nonActive"];
 	}
 	
 	return (self);
@@ -52,12 +52,12 @@
 
 
 - (void)didSelect {
-	_bgImageView.image = (_isGrey) ? [UIImage imageNamed:@"rowGray_Active"] : [UIImage imageNamed:@"rowWhite_Active"];
+	_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_Active"];
 	[self performSelector:@selector(_resetBG) withObject:nil afterDelay:0.33];
 }
 
 - (void)_resetBG {
-	_bgImageView.image = (_isGrey) ? [UIImage imageNamed:@"rowGray_nonActive"] : [UIImage imageNamed:@"rowWhite_nonActive"];
+	_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_nonActive"];
 }
 
 @end

@@ -32,7 +32,6 @@
 @property (nonatomic, strong) UISwitch *activatedSwitch;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSArray *captions;
-@property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
@@ -95,19 +94,8 @@
 	[self.view addSubview:bgImgView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
+	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
-	
-	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectMake(14.0, 10.0, 24.0, 24.0);
-	[activityIndicatorView startAnimating];
-	[_headerView addSubview:activityIndicatorView];
-	
-	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_refreshButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_refreshButton];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createChallengeButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
@@ -202,8 +190,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_refreshButton.hidden = YES;
-	
+	[_headerView toggleRefresh:YES];
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Refreshing…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -234,7 +221,7 @@
 			[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
 		}
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -243,7 +230,7 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"SettingsViewController AFNetworking %@", [error localizedDescription]);
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -267,7 +254,7 @@
 
 - (void)_refreshSettingsTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	_refreshButton.hidden = YES;
+	[_headerView toggleRefresh:YES];
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -293,7 +280,7 @@
 			[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
 		}
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -302,7 +289,7 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"SettingsViewController AFNetworking %@", [error localizedDescription]);
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -369,11 +356,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (70.0);
+	return (kRowHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (71.0);
+	return (kSearchHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -550,7 +537,7 @@
 						[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
 					}
 					
-					_refreshButton.hidden = NO;
+					[_headerView toggleRefresh:NO];
 					if (_progressHUD != nil) {
 						[_progressHUD hide:YES];
 						_progressHUD = nil;
@@ -559,7 +546,7 @@
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 					NSLog(@"SettingsViewController AFNetworking %@", [error localizedDescription]);
 					
-					_refreshButton.hidden = NO;
+					[_headerView toggleRefresh:NO];
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];

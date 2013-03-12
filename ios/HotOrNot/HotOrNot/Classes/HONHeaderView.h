@@ -10,6 +10,9 @@
 
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
+- (void)toggleRefresh:(BOOL)isRefreshing;
 
 @property (nonatomic, strong) NSString *title;
+@property(nonatomic, strong) UIButton *refreshButton;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @end

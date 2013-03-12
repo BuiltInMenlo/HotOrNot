@@ -44,8 +44,8 @@
 	if ((self = [super init])) {
 		_hasChallenger = NO;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 399.0)];
-		bgImgView.image = [UIImage imageNamed:@"challengeWall_notInProgress"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 463.0)];
+		bgImgView.image = [UIImage imageNamed:@"nonAcceptedRowBackground"];
 		[self addSubview:bgImgView];
 	}
 	
@@ -59,8 +59,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteCreator:) name:@"UPVOTE_CREATOR" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteChallenger:) name:@"UPVOTE_CHALLENGER" object:nil];
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 244.0)];
-		bgImgView.image = [UIImage imageNamed:@"challengeWall_inProgress"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 309.0)];
+		bgImgView.image = [UIImage imageNamed:@"acceptedRowBackground"];
 		[self addSubview:bgImgView];
 	}
 	
@@ -81,6 +81,17 @@
 	subjectButton.frame = subjectLabel.frame;
 	[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:subjectButton];
+	
+	if ([_challengeVO.rechallengedUsers length] > 0) {
+		UIButton *rechallengedButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		rechallengedButton.frame = CGRectMake(210.0, 8.0, 90.0, 24.0);
+		[rechallengedButton setBackgroundImage:[UIImage imageNamed:@"reSnappedIcon"] forState:UIControlStateNormal];
+		[rechallengedButton setBackgroundImage:[UIImage imageNamed:@"reSnappedIcon"] forState:UIControlStateHighlighted];
+		//[rechallengedButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+		rechallengedButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:12];
+		[rechallengedButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		[self addSubview:rechallengedButton];
+	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 10.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
@@ -226,15 +237,6 @@
 		commentsLabel.text = [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d comment" : @"%d comments", _challengeVO.commentTotal];
 		[self addSubview:commentsLabel];
 		
-		if ([_challengeVO.rechallengedUsers length] > 0) {
-			UILabel *rechallengedLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 290.0, 296.0, 44.0)];
-			rechallengedLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-			rechallengedLabel.backgroundColor = [UIColor clearColor];
-			rechallengedLabel.textColor = [HONAppDelegate honGreyTxtColor];
-			rechallengedLabel.text = [NSString stringWithFormat:@"Rechallenged by: %@", _challengeVO.rechallengedUsers];
-			[self addSubview:rechallengedLabel];
-		}
-	
 	} else {
 		moreButton.frame = CGRectMake(266.0, 400.0, 44.0, 44.0);
 		
@@ -282,15 +284,6 @@
 		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
 		[_votesButton setTitle:[NSString stringWithFormat:@"Be the first to challenge %@, tap here", _challengeVO.creatorName] forState:UIControlStateNormal];
 		[self addSubview:_votesButton];
-		
-		if ([_challengeVO.rechallengedUsers length] > 0) {
-			UILabel *rechallengedLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 445.0, 296.0, 44.0)];
-			rechallengedLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-			rechallengedLabel.backgroundColor = [UIColor clearColor];
-			rechallengedLabel.textColor = [HONAppDelegate honGreyTxtColor];
-			rechallengedLabel.text = [NSString stringWithFormat:@"Rechallenged by: %@", _challengeVO.rechallengedUsers];
-			[self addSubview:rechallengedLabel];
-		}
 	}
 }
 

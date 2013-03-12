@@ -39,7 +39,6 @@
 @property(nonatomic) BOOL isPushView;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
@@ -216,7 +215,7 @@
 			}
 		}
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -225,7 +224,7 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
@@ -279,7 +278,7 @@
 			}
 		}
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -288,7 +287,8 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
+		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
@@ -349,6 +349,8 @@
 	[self.view addSubview:bgImgView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? _username : _subjectName : @"HOME"];
+	[_headerView toggleRefresh:NO];
+	[_headerView refreshButton].hidden = _isPushView;
 	[self.view addSubview:_headerView];
 	
 	if (_isPushView) {
@@ -360,21 +362,7 @@
 		[_headerView addSubview:backButton];
 	
 	} else {
-		
-	}
-	
-	if (!_isPushView) {
-		UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-		activityIndicatorView.frame = CGRectMake(14.0, 10.0, 24.0, 24.0);
-		[activityIndicatorView startAnimating];
-		[_headerView addSubview:activityIndicatorView];
-		
-		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_refreshButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-		[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:_refreshButton];
+		[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	}
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -436,7 +424,7 @@
 }
 
 - (void)_goRefresh {
-	_refreshButton.hidden = YES;
+	[_headerView toggleRefresh:YES];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Refreshing…";
@@ -547,7 +535,7 @@
 - (void)_refreshVoteTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	
-	_refreshButton.hidden = YES;
+	[_headerView toggleRefresh:YES];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Refreshing…";
@@ -752,21 +740,16 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if ([_username length] > 0 && indexPath.row == 0)
-		return (70.0);
+		return (kRowHeight);
 	
 	else {
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-		
-		if ([vo.rechallengedUsers length] == 0)
-			return ((vo.statusID == 1 || vo.statusID == 2) ? 445.0 : 290.0);//346.0 : 244.0);
-		
-		else
-			return ((vo.statusID == 1 || vo.statusID == 2) ? 490.0 : 335.0);//346.0 : 244.0);
+		return ((vo.statusID == 1 || vo.statusID == 2) ? 463.0 : 309.0);
 	}
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (71.0);
+	return (kSearchHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -23,7 +23,6 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) UIButton *refreshButton;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) NSMutableDictionary *subjects;
 @property(nonatomic, strong) NSMutableArray *subjectNames;
@@ -88,7 +87,7 @@
 			[_tableView reloadData];
 		}
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -97,7 +96,7 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"VoteSubjectsViewController AFNetworking %@", [error localizedDescription]);
 		
-		_refreshButton.hidden = NO;
+		[_headerView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -114,19 +113,8 @@
 	[super loadView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"HOME"];
+	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
-	
-	UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-	activityIndicatorView.frame = CGRectMake(284.0, 10.0, 24.0, 24.0);
-	[activityIndicatorView startAnimating];
-	[_headerView addSubview:activityIndicatorView];
-	
-	_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_refreshButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-	[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-	[_refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_refreshButton];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 115.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
@@ -168,8 +156,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_refreshButton.hidden = YES;
-	
+	[_headerView toggleRefresh:YES];
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Refreshing…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -229,7 +216,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (71.0);
+	return (kSearchHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

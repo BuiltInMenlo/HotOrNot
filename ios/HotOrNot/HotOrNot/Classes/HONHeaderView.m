@@ -34,6 +34,16 @@
 		_titleLabel.shadowOffset = CGSizeMake(1.0, -1.0);
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];
+		
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		_activityIndicatorView.frame = CGRectMake(14.0, 10.0, 24.0, 24.0);
+		[self addSubview:_activityIndicatorView];
+		
+		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_refreshButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+		[self addSubview:_refreshButton];
 	}
 	
 	return (self);
@@ -43,5 +53,11 @@
 	_title = title;
 	_titleLabel.text = _title;
 }
+
+- (void)toggleRefresh:(BOOL)isRefreshing {
+	(isRefreshing) ? [_activityIndicatorView startAnimating] : [_activityIndicatorView stopAnimating];
+	_refreshButton.hidden = isRefreshing;
+}
+
 
 @end

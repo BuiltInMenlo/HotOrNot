@@ -87,25 +87,23 @@
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	
-	if ([_challengeVO.status isEqualToString:@"Created"]) {
-		challengeLabel.text = @"You have challenged someone to…";
-		
-	} else if ([_challengeVO.status isEqualToString:@"Waiting"]) {
-		challengeLabel.text = [NSString stringWithFormat:@"You have challenged %@ to…", _challengeVO.challengerName];
-		
-//		if (_challengeVO.hasViewed)
-//			challengeLabel.text = [challengeLabel.text stringByAppendingString:@"\nOpened"];
+	if ([_challengeVO.status isEqualToString:@"Created"] || [_challengeVO.status isEqualToString:@"Waiting"]) {
+		challengeLabel.text = [NSString stringWithFormat:@"@You snapped %@", _challengeVO.challengerName];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
-		challengeLabel.text = [NSString stringWithFormat:@"%@ has challenged you…", _challengeVO.creatorName];
+		challengeLabel.text = [NSString stringWithFormat:@"@%@ snapped you", _challengeVO.creatorName];
+		
+		UIImageView *hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 18.0, 24.0, 24.0)];
+		hasSeenImageView.image = [UIImage imageNamed:@"newSnapIcon"];
+		hasSeenImageView.hidden = _challengeVO.hasViewed;
+		[self addSubview:hasSeenImageView];
 		
 //		if (_challengeVO.hasViewed)
 //			challengeLabel.text = [challengeLabel.text stringByAppendingString:@"\nOpened"];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"]) {
 		challengeLabel.frame = CGRectOffset(challengeLabel.frame, 60.0, 0.0);
-		challengeLabel.text = @"You are playing…";
+		challengeLabel.text = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? [NSString stringWithFormat:@"@You snapped %@", _challengeVO.challengerName] : [NSString stringWithFormat:@"@%@ snapped you", _challengeVO.creatorName];
 		subjectLabel.frame = CGRectOffset(subjectLabel.frame, 60.0, 0.0);
 		
 		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(64.0, 10.0, 50.0, 50.0)];

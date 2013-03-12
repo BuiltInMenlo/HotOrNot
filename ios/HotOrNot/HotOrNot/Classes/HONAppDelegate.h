@@ -108,6 +108,9 @@ extern NSString *const FacebookAppID;
 #define kHUDTime 0.5
 #define kJPEGCompress 0.33
 
+#define kSearchHeaderHeight 45.0
+#define kRowHeight 63.0
+
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;
 @property (strong, nonatomic) HONLoginViewController *loginViewController;

@@ -23,7 +23,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 71.0)];
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
 		bgImageView.image = [UIImage imageNamed:@"lockedHeaderBackground"];
 		[self addSubview:bgImageView];
 		
