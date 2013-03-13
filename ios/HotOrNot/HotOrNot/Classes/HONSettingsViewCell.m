@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "Mixpanel.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -36,37 +38,49 @@
 }
 
 - (id)initAsTopCell {
-	if ((self = [self initAsGreyCell:NO])) {
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
+	if ((self = [self init])) {
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 261.0);
+		_bgImgView.image = [UIImage imageNamed:@"profileBackground"];
+		
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(110.0, 22.0, 95.0, 95.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
+		avatarImageView.layer.cornerRadius = 10.0;
 		[self addSubview:avatarImageView];
 		
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-		int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-		NSString *formattedScore = [numberFormatter stringFromNumber:[NSNumber numberWithInt:score]];
 		
-		CGSize size = [formattedScore sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(78.0, 13.0, size.width, size.height)];
-		_scoreLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:18];
-		_scoreLabel.textColor = [UIColor blackColor];
-		_scoreLabel.backgroundColor = [UIColor clearColor];
-		_scoreLabel.text = formattedScore;
-		[self addSubview:_scoreLabel];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 145.0, 320.0, 18.0)];
+		nameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		nameLabel.textColor = [UIColor blackColor];
+		nameLabel.backgroundColor = [UIColor clearColor];
+		nameLabel.textAlignment = NSTextAlignmentCenter;
+		nameLabel.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
+		[self addSubview:nameLabel];
 		
-		_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(76.0 + size.width, 22.0, 50.0, 12.0)];
-		_ptsLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:10];
-		_ptsLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		_ptsLabel.backgroundColor = [UIColor clearColor];
-		_ptsLabel.text = (score == 1) ? @"PT" : @"PTS";
-		[self addSubview:_ptsLabel];
+		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 212.0, 100.0, 18.0)];
+		snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		snapsLabel.textColor = [UIColor blackColor];
+		snapsLabel.backgroundColor = [UIColor clearColor];
+		snapsLabel.textAlignment = NSTextAlignmentCenter;
+		snapsLabel.text = [NSString stringWithFormat:@"%@ snaps", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
+		[self addSubview:snapsLabel];
 		
-		UILabel *rankLabel = [[UILabel alloc] initWithFrame:CGRectMake(79.0, 36.0, 140.0, 16.0)];
-		rankLabel.font = [[HONAppDelegate honHelveticaNeueFontBoldItalic] fontWithSize:11];
-		rankLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		rankLabel.backgroundColor = [UIColor clearColor];
-		rankLabel.text = [NSString stringWithFormat:@"ranked #%d", [[[NSUserDefaults standardUserDefaults] objectForKey:@"player_rank"] intValue]];
-		[self addSubview:rankLabel];
+		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 212.0, 100.0, 18.0)];
+		votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		votesLabel.textColor = [UIColor blackColor];
+		votesLabel.backgroundColor = [UIColor clearColor];
+		votesLabel.textAlignment = NSTextAlignmentCenter;
+		votesLabel.text = [NSString stringWithFormat:@"%@ votes", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]]]];
+		[self addSubview:votesLabel];
+		
+		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 212.0, 100.0, 18.0)];
+		pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		pointsLabel.textColor = [UIColor blackColor];
+		pointsLabel.backgroundColor = [UIColor clearColor];
+		pointsLabel.textAlignment = NSTextAlignmentCenter;
+		pointsLabel.text = [NSString stringWithFormat:@"%@ points", [numberFormatter stringFromNumber:[NSNumber numberWithInt:([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier])]]];
+		[self addSubview:pointsLabel];
 		
 		[self hideChevron];
 	}

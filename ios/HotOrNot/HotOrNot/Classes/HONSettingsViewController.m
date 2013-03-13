@@ -356,7 +356,11 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kRowHeight);
+	if (indexPath.row == 0)
+		return (261.0);
+	
+	else
+		return (kRowHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
