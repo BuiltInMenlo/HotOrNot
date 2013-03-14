@@ -21,11 +21,10 @@
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *previewHolderView;
-@property (nonatomic, strong) UIView *footerHolderView;
+@property (nonatomic, strong) UIView *captureHolderView;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UITextField *usernameTextField;
-@property (nonatomic, strong) UIButton *editButton;
 @property (nonatomic, strong) UIButton *randomSubjectButton;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *cameraBackButton;
@@ -63,32 +62,24 @@
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
-		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE PHOTO"];
+		_captureHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
+		_captureHolderView.userInteractionEnabled = YES;
+		[_bgImageView addSubview:_captureHolderView];
+		
+		_headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo"];
 		[_bgImageView addSubview:_headerView];
-		
-		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_randomSubjectButton.frame = CGRectMake(0.0, 0.0, 84.0, 44.0);
-		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"random_nonActive"] forState:UIControlStateNormal];
-		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"random_Active"] forState:UIControlStateHighlighted];
-		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:_randomSubjectButton];
-		
+				
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+		_cancelButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:_cancelButton];
 		
-		UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 60.0, 274.0, 44.0)];
-		subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
+		UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 55.0, 314.0, 44.0)];
+		subjectBGImageView.image = [UIImage imageNamed:@"cameraInputFieldA"];
 		subjectBGImageView.userInteractionEnabled = YES;
-		subjectBGImageView.alpha = 0.0;
-		[_bgImageView addSubview:subjectBGImageView];
-		
-		[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-			subjectBGImageView.alpha = 1.0;
-		} completion:nil];
+		[_captureHolderView addSubview:subjectBGImageView];
 		
 		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -105,22 +96,28 @@
 		[_subjectTextField setTag:0];
 		[subjectBGImageView addSubview:_subjectTextField];
 		
-		_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_editButton.frame = CGRectMake(237.0, 5.0, 34.0, 34.0);
-		[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_nonActive"] forState:UIControlStateNormal];
-		[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_Active"] forState:UIControlStateHighlighted];
-		[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
-		[subjectBGImageView addSubview:_editButton];
+		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_randomSubjectButton.frame = CGRectMake(260.0, 5.0, 34.0, 34.0);
+		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"cameraInputField_RefreshIcon_nonActive"] forState:UIControlStateNormal];
+		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"cameraInputField_RefreshIcon_Active"] forState:UIControlStateHighlighted];
+		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
+		[subjectBGImageView addSubview:_randomSubjectButton];
 		
-		_trackBGView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 278.0, 306.0, 80.0)];
-		_trackBGView.userInteractionEnabled = YES;
-		_trackBGView.alpha = 0.0;
-		[self addSubview:_trackBGView];
+		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cameraRollButton.frame = CGRectMake(20.0, 310.0, 64.0, 44.0);
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
+		[cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
+		[_captureHolderView addSubview:cameraRollButton];
 		
-		UIImageView *overlayImgView = [[UIImageView alloc] initWithFrame:CGRectMake(35.0, _gutterSize.height, 250.0, 250.0)];
-		overlayImgView.image = [UIImage imageNamed:@"cameraOverlayBranding"];
-		overlayImgView.userInteractionEnabled = YES;
-		//[self addSubview:overlayImgView];
+		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
+			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			changeCameraButton.frame = CGRectMake(220.0, 310.0, 64.0, 44.0);
+			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
+			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
+			[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
+			[_captureHolderView addSubview:changeCameraButton];
+		}
 		
 //		UIImage *buttonImageNormal;
 //		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {
@@ -131,50 +128,26 @@
 //			[flashButton addTarget:self action:@selector(setFlash:) forControlEvents:UIControlEventTouchUpInside];
 //			[self addSubview:flashButton];
 //		}
-//		
-//		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
-//			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			changeCameraButton = CGRectMake(250, 30, 57.5, 57.5);
-//			buttonImageNormal = [UIImage imageNamed:@"switch_button"];
-//			[changeCameraButton setImage:buttonImageNormal forState:UIControlStateNormal];
-//			[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
-//			[self addSubview:changeCameraButton];
-//		}
-		
-		// Add the bottom bar
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 367.0, 640.0, 105.0)];
-		[_bgImageView addSubview:_footerHolderView];
-		 
-		// Add the gallery button
-		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(20.0, 20.0, 75.0, 75.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
-		[cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:cameraRollButton];
-		
+
 		// Add the capture button
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(108.0, 0.0, 105.0, 105.0);
-		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
-		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+		_captureButton.frame = CGRectMake(103.0, 371.0, 94.0, 94.0);
+		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
+		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:_captureButton];
+		[_captureHolderView addSubview:_captureButton];
 		
-		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		changeCameraButton.frame = CGRectMake(220.0, 20.0, 75.0, 75.0);
-		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_nonActive"] forState:UIControlStateNormal];
-		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"flipCamera_Active"] forState:UIControlStateHighlighted];
-		[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
-		[_footerHolderView addSubview:changeCameraButton];
+		UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(323.0, 55.0, 314.0, 44.0)];
+		usernameBGImageView.image = [UIImage imageNamed:@"cameraInputFieldA"];
+		usernameBGImageView.userInteractionEnabled = YES;
+		[_captureHolderView addSubview:usernameBGImageView];
 		
-		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(340.0, 0.0, 270.0, 25.0)];
+		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 16.0, 270.0, 25.0)];
 		//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-		_usernameTextField.backgroundColor = [UIColor whiteColor];
 		[_usernameTextField setTextColor:[UIColor blackColor]];
 		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
@@ -182,23 +155,33 @@
 		_usernameTextField.text = @"Add a username…";
 		_usernameTextField.delegate = self;
 		[_usernameTextField setTag:1];
-		[_footerHolderView addSubview:_usernameTextField];
+		[usernameBGImageView addSubview:_usernameTextField];
 		
-		_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(340.0, 40.0, 270.0, 25.0)];
+		UIImageView *commentBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(323.0, 375.0, 314.0, 64.0)];
+		commentBGImageView.image = [UIImage imageNamed:@"cameraInputFieldB"];
+		commentBGImageView.userInteractionEnabled = YES;
+		[_captureHolderView addSubview:commentBGImageView];
+		
+		_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 16.0, 270.0, 25.0)];
 		//[_commentTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_commentTextField setReturnKeyType:UIReturnKeyDone];
 		_commentTextField.backgroundColor = [UIColor whiteColor];
-		[_commentTextField setTextColor:[UIColor blackColor]];
 		//[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_commentTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
 		_commentTextField.keyboardType = UIKeyboardTypeDefault;
 		_commentTextField.text = @"Add a comment…";
 		_commentTextField.delegate = self;
 		[_commentTextField setTag:2];
-		[_footerHolderView addSubview:_commentTextField];
+		[commentBGImageView addSubview:_commentTextField];
+		
+		
+		_trackBGView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 278.0, 306.0, 80.0)];
+		_trackBGView.userInteractionEnabled = YES;
+		_trackBGView.alpha = 0.0;
+		[self addSubview:_trackBGView];
 	}
 	
 	return (self);
@@ -225,7 +208,7 @@
 	[self.delegate cameraOverlayViewCloseCamera:self];
 }
 
-- (void)showPreview:(UIImage *)image {
+- (void)showPreviewImage:(UIImage *)image {
 	[[Mixpanel sharedInstance] track:@"Image Preview"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -242,28 +225,10 @@
 		imgView.frame = frame;
 	}
 	
-	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cameraBackButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
-	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
-	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
-	[_cameraBackButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_cameraBackButton];
-	
-	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(263.0, 0.0, 74.0, 44.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_submitButton];
-	
-	[_headerView setTitle:@"PREVIEW"];
-	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
-	} completion:nil];
+	[self _showPreviewUI];
 }
 
-- (void)showPreviewFlipped:(UIImage *)image {
+- (void)showPreviewImageFlipped:(UIImage *)image {
 	[[Mixpanel sharedInstance] track:@"Image Preview"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -282,28 +247,29 @@
 		imgView.frame = frame;
 	}
 	
-	[_randomSubjectButton removeFromSuperview];
+	[self _showPreviewUI];
+}
+
+- (void)_showPreviewUI {
+	_randomSubjectButton.hidden = YES;
 	[_cancelButton removeFromSuperview];
 	
 	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cameraBackButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
-	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_nonActive"] forState:UIControlStateNormal];
-	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"cameraBackButton_Active"] forState:UIControlStateHighlighted];
+	_cameraBackButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
+	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[_cameraBackButton addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_cameraBackButton];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	_submitButton.frame = CGRectMake(243.0, 0.0, 74.0, 44.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(goNext:) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_submitButton];
 	
-	[_headerView setTitle:@"PREVIEW"];
-	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
-	} completion:nil];
+	[_headerView setTitle:_subjectName];
+	_captureHolderView.frame = CGRectMake(-320.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
 }
 
 - (void)hidePreview {
@@ -321,12 +287,9 @@
 	[_submitButton removeFromSuperview];
 	_submitButton = nil;
 	
-	[_headerView addSubview:_randomSubjectButton];
+	_randomSubjectButton.hidden = NO;
 	[_headerView addSubview:_cancelButton];
-	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-		_footerHolderView.frame = CGRectMake(0.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
-	} completion:nil];
+	_captureHolderView.frame = CGRectMake(0.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
 	
 	[self.delegate cameraOverlayViewPreviewBack:self];
 }
@@ -428,7 +391,6 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	//[self.delegate cameraOverlayViewClosePreview:self];
 	[self.delegate cameraOverlayViewSubmitChallenge:self username:_usernameTextField.text comments:_commentTextField.text];
 }
 
@@ -457,7 +419,7 @@
 		_activityIndicatorView = nil;
 		
 		_subjectName = [HONAppDelegate rndDefaultSubject];
-		[self.delegate cameraOverlayViewRandomSubject:self subject:_subjectName];
+		[self.delegate cameraOverlayViewChangeSubject:self subject:_subjectName];
 	}];
 }
 
@@ -527,15 +489,7 @@
 		[[Mixpanel sharedInstance] track:@"Camera - Enter Username"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, -215.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
-		}];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_previewHolderView.frame = CGRectMake(_previewHolderView.frame.origin.x, -215.0, _previewHolderView.frame.size.width, _previewHolderView.frame.size.height);
-		}];
-		
+				
 		textField.text = @"";
 	
 	} else if (textField.tag == 2) {
@@ -553,8 +507,6 @@
 		
 		textField.text = @"";
 	}
-	
-	//_editButton.hidden = YES;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -576,7 +528,6 @@
 	[textField resignFirstResponder];
 	
 	if (textField.tag == 0) {
-		_editButton.hidden = NO;
 		if ([textField.text length] == 0 || [textField.text isEqualToString:@"#"])
 			textField.text = _subjectName;
 		
@@ -598,19 +549,11 @@
 		if ([textField.text length] == 0)
 			textField.text = @"Add a username…";
 		
-		_comments = textField.text;
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);
-		}];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_previewHolderView.frame = CGRectMake(_previewHolderView.frame.origin.x, 0.0, _previewHolderView.frame.size.width, _previewHolderView.frame.size.height);
-		}];
-	
+		_username = textField.text;
+			
 	} else if (textField.tag == 2) {
 		if ([textField.text length] == 0)
-			textField.text = @"Add a username…";
+			textField.text = @"Add a comment…";
 		
 		_comments = textField.text;
 		

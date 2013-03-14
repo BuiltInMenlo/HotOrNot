@@ -880,7 +880,7 @@ NSString *const FacebookAppID = @"529054720443694";
 			_progressHUD = nil;
 		
 		} else {
-			//NSLog(@"HONAppDelegate AFNetworking: %@", userResult);
+			NSLog(@"HONAppDelegate AFNetworking: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];

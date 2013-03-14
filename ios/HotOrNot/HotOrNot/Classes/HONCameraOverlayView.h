@@ -13,8 +13,8 @@
 @interface HONCameraOverlayView : UIView
 
 - (void)hidePreview;
-- (void)showPreview:(UIImage *)image;
-- (void)showPreviewFlipped:(UIImage *)image;
+- (void)showPreviewImage:(UIImage *)image;
+- (void)showPreviewImageFlipped:(UIImage *)image;
 - (void)artistName:(NSString *)artist songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL;
 - (void)endBuffering;
 
@@ -26,9 +26,8 @@
 @protocol HONCameraOverlayViewDelegate
 - (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewClosePreview:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username comments:(NSString *)comments;
-- (void)cameraOverlayViewRandomSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName;
+- (void)cameraOverlayViewChangeSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView;

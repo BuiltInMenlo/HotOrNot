@@ -675,12 +675,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-//	NSLog(@"%d %d", [_username length], [_challenges count]);
-//	if ([_username length] > 0 && [_challenges count] > 0)
-//		return ([_challenges count] + 1);
-//	
-//	else
-		return ([_challenges count]);
+	return ([_challenges count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

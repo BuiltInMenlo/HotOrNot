@@ -26,9 +26,7 @@
 @property (nonatomic, strong) UILabel *rScoreLabel;
 @property (nonatomic, strong) UIButton *votesButton;
 @property (nonatomic, strong) UILabel *votesLabel;
-@property (nonatomic, strong) UIImageView *loserOverlayImageView;
-@property (nonatomic, strong) UIImageView *resultsImageView;
-@property (nonatomic, strong) UIImageView *vsImageView;
+@property (nonatomic, strong) UIView *loserOverlayView;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasChallenger;
 @property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
@@ -200,15 +198,11 @@
 //		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 //		[rScoreImageView addSubview:_rScoreLabel];
 		
-		_loserOverlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"challengeWallScore_loserOverlay"]];
-		_loserOverlayImageView.frame = CGRectMake(0.0, 46.0, 153.0, 153.0);
-		_loserOverlayImageView.hidden = YES;
-//		[self addSubview:_loserOverlayImageView];
-		
-		_vsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(138.0, 97.0, 44.0, 44.0)];
-		_vsImageView.image = [UIImage imageNamed:@"orIcon"];
-//		[self addSubview:_vsImageView];
-		
+		_loserOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 46.0, 153.0, 153.0)];
+		_loserOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
+		_loserOverlayView.hidden = YES;
+		[self addSubview:_loserOverlayView];
+				
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0, 34.0);
 		[_votesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon_nonActive"] forState:UIControlStateNormal];
@@ -274,16 +268,16 @@
 		[creatorNameButton setTitle:[NSString stringWithFormat:@"%@ is waiting for a match…", _challengeVO.creatorName] forState:UIControlStateNormal];
 		[self addSubview:creatorNameButton];
 		
-		size = [[NSString stringWithFormat:@"  Be the first to challenge %@, tap here  ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate qualcommBold] fontWithSize:12] constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(12.0, 400.0, size.width, 34.0);
-		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"voteButton_nonActive"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"voteButton_Active"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
-		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-		_votesButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:12];
-		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-		[_votesButton setTitle:[NSString stringWithFormat:@"Be the first to challenge %@, tap here", _challengeVO.creatorName] forState:UIControlStateNormal];
-		[self addSubview:_votesButton];
+//		size = [[NSString stringWithFormat:@"  Be the first to challenge %@, tap here  ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate qualcommBold] fontWithSize:12] constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+//		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_votesButton.frame = CGRectMake(12.0, 400.0, size.width, 34.0);
+//		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"voteButton_nonActive"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateNormal];
+//		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"voteButton_Active"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+//		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+//		_votesButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:12];
+//		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+//		[_votesButton setTitle:[NSString stringWithFormat:@"Be the first to challenge %@, tap here", _challengeVO.creatorName] forState:UIControlStateNormal];
+//		[self addSubview:_votesButton];
 	}
 }
 
@@ -427,23 +421,14 @@
 	
 	if ([vo isEqual:_challengeVO]) {
 		//[self _playVoteSFX];
-		[_vsImageView removeFromSuperview];
-		
-		[_votesButton setBackgroundImage:[UIImage imageNamed:@"vote_voted_nonActive"] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[UIImage imageNamed:@"vote_voted_Active"] forState:UIControlStateHighlighted];
 		
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
 			_challengeVO.creatorScore++;
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 			
 			[self _clearResults];
-			_loserOverlayImageView.frame = CGRectOffset(_loserOverlayImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 0.0);
-			_loserOverlayImageView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
-			
-			_resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_challengeVO.creatorScore > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
-			_resultsImageView.frame = CGRectOffset(_resultsImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 17.0 : 175.0, 88.0);
-			_resultsImageView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
-			[self addSubview:_resultsImageView];
+			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 0.0);
+			_loserOverlayView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
 			
 			_votesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d vote" : @"%d votes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		
@@ -456,38 +441,33 @@
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
 			
 			[self _clearResults];
-			_loserOverlayImageView.frame = CGRectOffset(_loserOverlayImageView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 160.0 : 7.0, 0.0);
-			_loserOverlayImageView.hidden = ((_challengeVO.creatorScore + 1) == _challengeVO.challengerScore);
+			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 160.0 : 7.0, 0.0);
+			_loserOverlayView.hidden = ((_challengeVO.creatorScore + 1) == _challengeVO.challengerScore);
 			
-			_resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
-			_resultsImageView.frame = CGRectOffset(_resultsImageView.frame, ((_challengeVO.creatorScore + 1) > _challengeVO.challengerScore) ? 17.0 : 130.0, 88.0);
-			_resultsImageView.hidden = ((_challengeVO.creatorScore + 1) == _challengeVO.challengerScore);
-			[self addSubview:_resultsImageView];
-			
-			[HONAppDelegate setVote:_challengeVO.challengeID];
 			_votesLabel.text = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d vote" : @"%d votes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-			
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-											[NSString stringWithFormat:@"%d", 6], @"action",
-											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-											@"Y", @"creator",
-											nil];
-			
-			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-					
-				} else {
-					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
-			}];
+//			[HONAppDelegate setVote:_challengeVO.challengeID];
+//			
+//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+//			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+//											[NSString stringWithFormat:@"%d", 6], @"action",
+//											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+//											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+//											@"Y", @"creator",
+//											nil];
+//			
+//			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//				NSError *error = nil;
+//				if (error != nil) {
+//					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+//					
+//				} else {
+//					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
+//				}
+//				
+//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
+//			}];
 		}
 	}
 }
@@ -497,10 +477,6 @@
 	
 	if ([vo isEqual:_challengeVO]) {
 		//[self _playVoteSFX];
-		[_vsImageView removeFromSuperview];
-		
-		[_votesButton setBackgroundImage:[UIImage imageNamed:@"vote_voted_nonActive"] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[UIImage imageNamed:@"vote_voted_Active"] forState:UIControlStateHighlighted];
 		
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
 			_challengeVO.challengerScore++;
@@ -508,14 +484,9 @@
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 			
 			[self _clearResults];
-			_loserOverlayImageView.frame = CGRectOffset(_loserOverlayImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 0.0);
-			_loserOverlayImageView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
+			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 0.0);
+			_loserOverlayView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
 			
-			_resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_challengeVO.creatorScore > _challengeVO.challengerScore) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
-			_resultsImageView.frame = CGRectOffset(_resultsImageView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 17.0 : 175.0, 88.0);
-			_resultsImageView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
-			[self addSubview:_resultsImageView];
-
 			_votesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d VOTE" : @"%d VOTES", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 		} else {
@@ -527,38 +498,33 @@
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.challengerScore + 1)];
 			
 			[self _clearResults];
-			_loserOverlayImageView.frame = CGRectOffset(_loserOverlayImageView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 160.0 : 7.0, 0.0);
-			_loserOverlayImageView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
+			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 160.0 : 7.0, 0.0);
+			_loserOverlayView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
 			
-			_resultsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? @"WINNING_OverlayGraphic" : @"LOSING_OverlayGraphic"]];
-			_resultsImageView.frame = CGRectOffset(_resultsImageView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 17.0 : 175.0, 88.0);
-			_resultsImageView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
-			[self addSubview:_resultsImageView];
-			
-			[HONAppDelegate setVote:_challengeVO.challengeID];
 			_votesLabel.text = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-			
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-											[NSString stringWithFormat:@"%d", 6], @"action",
-											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-											@"N", @"creator",
-											nil];
-			
-			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-					
-				} else {
-					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
-			}];
+//			[HONAppDelegate setVote:_challengeVO.challengeID];
+//			
+//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+//			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+//											[NSString stringWithFormat:@"%d", 6], @"action",
+//											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+//											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+//											@"N", @"creator",
+//											nil];
+//			
+//			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//				NSError *error = nil;
+//				if (error != nil) {
+//					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+//					
+//				} else {
+//					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
+//				}
+//				
+//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//				NSLog(@"HONVoteItemViewCell AFNetworking %@", [error localizedDescription]);
+//			}];
 		}
 	}
 }
@@ -566,13 +532,8 @@
 
 #pragma mark - Behaviors
 - (void)_clearResults {
-	_loserOverlayImageView.frame = CGRectMake(0.0, 46.0, 153.0, 153.0);
-	_loserOverlayImageView.hidden = YES;
-	
-	if (_resultsImageView != nil) {
-		[_resultsImageView removeFromSuperview];
-		_resultsImageView = nil;
-	}
+	_loserOverlayView.frame = CGRectMake(0.0, 46.0, 153.0, 153.0);
+	_loserOverlayView.hidden = YES;
 }
 
 - (void)_playVoteSFX {

@@ -460,7 +460,9 @@
 			
 			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
 			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 			}];
 		}
 		
@@ -618,57 +620,32 @@
 	}];
 }
 
-- (void)cameraOverlayViewClosePreview:(HONCameraOverlayView *)cameraOverlayView {
-	[_cameraOverlayView hidePreview];
-	[self _acceptPhoto];
-}
-
 - (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username comments:(NSString *)comments {
 	NSLog(@"cameraOverlayViewSubmitChallenge [%@][%@]", username, comments);
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
-	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[params setObject:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
 	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+	[params setObject:_subjectName forKey:@"subject"];
+	[params setObject:username forKey:@"username"];
 	
-//	if (_submitAction == 1)
-//		[params setObject:_subjectName forKey:@"subject"];
-//	
-//	else if (_submitAction == 4)
-//		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-//	
-//	else if (_submitAction == 8) {
-//		[params setObject:_subjectName forKey:@"subject"];
-//		[params setObject:_fbID forKey:@"fbID"];
-//		
-//	} else if (_submitAction == 9) {
-//		[params setObject:_subjectName forKey:@"subject"];
-//		[params setObject:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
-//	}
-//	
-//	if ([username isEqualToString:@"Add a username…"]) {
-//		
-//	
-//	} else {
-//		
-//	}
+	if (![username isEqualToString:@"Add a username…"])
+		_submitAction = 7;
 	
-	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-	}];
+	if (_challengeVO != nil)
+		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+	
+	if (_fbID != nil)
+		[params setObject:_fbID forKey:@"fbID"];
+	
+	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+	
+	[self _submitChallenge:params];
 }
 
-- (void)cameraOverlayViewRandomSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName {
+- (void)cameraOverlayViewChangeSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName {
 	_subjectName = subjectName;
-	[_cameraOverlayView setSubjectName:_subjectName];
-	
-	if (_mpMoviePlayerController != nil) {
-		[_mpMoviePlayerController stop];
-		_mpMoviePlayerController = nil;
-	}
-	
-	[self _playAudio];
 }
 
 
@@ -732,15 +709,15 @@
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {		
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[self _acceptPhoto];
+			[_cameraOverlayView showPreviewImage:image];
 		}];
 		
 	} else {
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-			[_cameraOverlayView showPreviewFlipped:image];
+			[_cameraOverlayView showPreviewImageFlipped:image];
 	
 		else
-			[_cameraOverlayView showPreview:image];
+			[_cameraOverlayView showPreviewImage:image];
 	}
 }
 
