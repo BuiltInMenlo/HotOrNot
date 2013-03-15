@@ -388,7 +388,7 @@
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 			messageComposeViewController.messageComposeDelegate = self;
 			//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-			messageComposeViewController.body = [NSString stringWithFormat:@"%@ has invited you to PicCallenge!", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			messageComposeViewController.body = [NSString stringWithFormat:@"Are you on Volley yet? Come snap at me!! username @%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
 			
 			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 			break;}
@@ -398,7 +398,7 @@
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 				mailComposeViewController.mailComposeDelegate = self;
 				//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
-				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"%@ has invited you to PicCallenge!", [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"Are you on Volley yet? Come snap at me!! username @%@ %@", [[HONAppDelegate infoForUser] objectForKey:@"name"], [NSString stringWithFormat:@"itms://itunes.apple.com/us/app/id%@?mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]] isHTML:NO];
 				
 				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			

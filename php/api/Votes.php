@@ -90,7 +90,7 @@
 			$subject_obj = mysql_fetch_object(mysql_query($query));
 			
 			// get total number of comments
-			$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_id .';';
+			$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_id .' AND `status_id` = 1;';
 			$comments = mysql_num_rows(mysql_query($query));
 			
 			// get rechallenges

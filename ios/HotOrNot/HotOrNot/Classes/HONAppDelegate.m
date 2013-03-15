@@ -324,10 +324,16 @@ NSString *const FacebookAppID = @"529054720443694";
 	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [utcDate timeIntervalSinceDate:date];
+	//utcDate = [utcDate dateByAddingTimeInterval:71];
+	
+	int secs = [[utcDate dateByAddingTimeInterval:71] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
+	
+	NSLog(@"[%d][%d][%d][%d]", days, hours, mins, secs);
+	
+	
 	
 	if (days > 0) {
 		timeSince = [NSString stringWithFormat:@"%dd", days];
@@ -924,6 +930,13 @@ NSString *const FacebookAppID = @"529054720443694";
 	[navController4 setNavigationBarHidden:YES];
 	
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, nil];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+	[self performSelector:@selector(_dropTabs) withObject:nil afterDelay:2.0];
+}
+
+- (void)_dropTabs {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 }
 
 - (void)_testParseCloudCode {

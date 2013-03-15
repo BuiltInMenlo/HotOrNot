@@ -30,6 +30,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTabs:) name:@"SHOW_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideTabs:) name:@"HIDE_TABS" object:nil];
 	}
 	
@@ -78,11 +79,13 @@
 	UITouch *touch = [touches anyObject];
 	CGPoint location = CGPointMake(_tabHolderView.center.x - [touch locationInView:self.view].x, _tabHolderView.center.y - [touch locationInView:self.view].y);
 	
-	if (location.y > _touchPt.y)
-		[self _raiseTabs];
-		
-	else
-		[self _dropTabs];
+	if ([touch locationInView:self.view].y > self.view.frame.size.height - (kLipHeight + kButtonHeight)) {
+		if (location.y > _touchPt.y)
+			[self _raiseTabs];
+			
+		else
+			[self _dropTabs];
+	}
 }
 
 
@@ -140,7 +143,7 @@
 	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 10.0, 320.0, 80.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 13.0, 320.0, 80.0)];
 	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
 	[_tabHolderView addSubview:bgImageView];
 	
@@ -285,6 +288,10 @@
 
 
 #pragma mark - Notifications
+- (void)_showTabs:(NSNotification *)notification {
+	_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kButtonHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+}
+
 - (void)_hideTabs:(NSNotification *)notification {
 	if (_tabHolderView.frame.origin.y == self.view.frame.size.height - (kLipHeight + kButtonHeight))
 		[self _dropTabs];

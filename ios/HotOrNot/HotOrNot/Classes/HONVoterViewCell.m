@@ -47,7 +47,7 @@
 	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 	usernameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
-	usernameLabel.text = _voterVO.username;
+	usernameLabel.text = [NSString stringWithFormat:@"@%@", _voterVO.username];
 	[self addSubview:usernameLabel];
 	
 	UILabel *voteLabel = [[UILabel alloc] initWithFrame:CGRectMake(73.0, 37.0, 200.0, 16.0)];

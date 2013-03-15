@@ -348,7 +348,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? _username : _subjectName : @"HOME"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? _username : _subjectName : @""];
 	[_headerView toggleRefresh:NO];
 	[_headerView refreshButton].hidden = _isPushView;
 	[self.view addSubview:_headerView];

@@ -144,7 +144,7 @@
 		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		creatorNameLabel.backgroundColor = [UIColor clearColor];
-		creatorNameLabel.text = _challengeVO.creatorName;
+		creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
 		[self addSubview:creatorNameLabel];
 				
 		UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -178,7 +178,7 @@
 		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
-		challengerNameLabel.text = _challengeVO.challengerName;
+		challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
 		[self addSubview:challengerNameLabel];
 		
 		UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -396,7 +396,7 @@
 																				delegate:self
 																	cancelButtonTitle:@"Cancel"
 															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:[NSString stringWithFormat:@"%@ Challenge", _challengeVO.subjectName], @"Share", nil];
+																	otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], @"Share", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
