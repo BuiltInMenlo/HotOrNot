@@ -7,6 +7,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -21,12 +22,11 @@
 @interface HONTimelineItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
-@property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) UILabel *lScoreLabel;
 @property (nonatomic, strong) UILabel *rScoreLabel;
-@property (nonatomic, strong) UIButton *votesButton;
-@property (nonatomic, strong) UILabel *votesLabel;
+@property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) UIView *loserOverlayView;
+@property (nonatomic, strong) UIButton *votesButton;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasChallenger;
 @property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
@@ -114,6 +114,7 @@
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
 		lImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
+		lImgView.layer.cornerRadius = 8.0;
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
 		
@@ -202,34 +203,36 @@
 		_loserOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
 		_loserOverlayView.hidden = YES;
 		[self addSubview:_loserOverlayView];
+		
+		NSString *caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d vote" : @"%d votes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 				
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0, 34.0);
-		[_votesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon_nonActive"] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon_Active"] forState:UIControlStateHighlighted];
+		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0 + size.width, 34.0);
+		[_votesButton setImage:[UIImage imageNamed:@"heartIcon_nonActive"] forState:UIControlStateNormal];
+		[_votesButton setImage:[UIImage imageNamed:@"heartIcon_Active"] forState:UIControlStateHighlighted];
+		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		//_votesButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
+		//_votesButton.imageEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
+		[_votesButton setTitle:caption forState:UIControlStateNormal];
 		[_votesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_votesButton];
 		
-		_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 245.0, 140.0, 44.0)];
-		_votesLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-		_votesLabel.backgroundColor = [UIColor clearColor];
-		_votesLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		_votesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d vote" : @"%d votes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-		[self addSubview:_votesLabel];
-		
+		caption = [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d comment" : @"%d comments", _challengeVO.commentTotal];
+		size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+				
 		UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		commentsButton.frame = CGRectMake(120.0, 250.0, 34.0, 34.0);
-		[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentIcon_nonActive"] forState:UIControlStateNormal];
-		[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentIcon_Active"] forState:UIControlStateHighlighted];
+		commentsButton.frame = CGRectMake(120.0, 250.0, 34.0 + size.width, 34.0);
+		[commentsButton setImage:[UIImage imageNamed:@"commentIcon_nonActive"] forState:UIControlStateNormal];
+		[commentsButton setImage:[UIImage imageNamed:@"commentIcon_Active"] forState:UIControlStateHighlighted];
+		commentsButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+		[commentsButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		//commentsButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
+		//commentsButton.imageEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
+		[commentsButton setTitle:caption forState:UIControlStateNormal];
 		[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:commentsButton];
-		
-		UILabel *commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 245.0, 140.0, 44.0)];
-		commentsLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-		commentsLabel.backgroundColor = [UIColor clearColor];
-		commentsLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		commentsLabel.text = [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d comment" : @"%d comments", _challengeVO.commentTotal];
-		[self addSubview:commentsLabel];
 		
 	} else {
 		moreButton.frame = CGRectMake(266.0, 400.0, 44.0, 44.0);
@@ -422,15 +425,16 @@
 	if ([vo isEqual:_challengeVO]) {
 		//[self _playVoteSFX];
 		
+		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
 			_challengeVO.creatorScore++;
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 			
 			[self _clearResults];
-			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 0.0);
+			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 7.0 : 160.0, 0.0);
 			_loserOverlayView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
 			
-			_votesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d vote" : @"%d votes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d vote" : @"%d votes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		
 		} else {
 			[[Mixpanel sharedInstance] track:@"Upvote Creator"
@@ -441,10 +445,11 @@
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
 			
 			[self _clearResults];
-			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 160.0 : 7.0, 0.0);
+			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 7.0 : 160.0, 0.0);
 			_loserOverlayView.hidden = ((_challengeVO.creatorScore + 1) == _challengeVO.challengerScore);
 			
-			_votesLabel.text = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d vote" : @"%d votes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d vote" : @"%d votes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			
 //			[HONAppDelegate setVote:_challengeVO.challengeID];
 //			
 //			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -469,6 +474,10 @@
 //				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
 //			}];
 		}
+		
+		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0 + size.width, 34.0);
+		[_votesButton setTitle:caption forState:UIControlStateNormal];
 	}
 }
 
@@ -478,6 +487,7 @@
 	if ([vo isEqual:_challengeVO]) {
 		//[self _playVoteSFX];
 		
+		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
 			_challengeVO.challengerScore++;
 			
@@ -487,7 +497,7 @@
 			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 0.0);
 			_loserOverlayView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
 			
-			_votesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d VOTE" : @"%d VOTES", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d VOTE" : @"%d VOTES", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 		} else {
 			[[Mixpanel sharedInstance] track:@"Upvote Challenger"
@@ -501,7 +511,7 @@
 			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 160.0 : 7.0, 0.0);
 			_loserOverlayView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
 			
-			_votesLabel.text = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 //			[HONAppDelegate setVote:_challengeVO.challengeID];
 //			
 //			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -526,6 +536,10 @@
 //				NSLog(@"HONVoteItemViewCell AFNetworking %@", [error localizedDescription]);
 //			}];
 		}
+		
+		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0 + size.width, 34.0);
+		[_votesButton setTitle:caption forState:UIControlStateNormal];
 	}
 }
 

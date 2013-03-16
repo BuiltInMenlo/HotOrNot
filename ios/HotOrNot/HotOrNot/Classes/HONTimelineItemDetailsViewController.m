@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
@@ -133,6 +135,8 @@
 	
 	__weak typeof(self) weakSelf = self;
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 64.0, kLargeW * 0.5, kLargeW * 0.5)];
+	_imageView.clipsToBounds = YES;
+	_imageView.layer.cornerRadius = 8.0;
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		weakSelf.imageView.image = image;
 		[weakSelf _hideHUD];
@@ -140,7 +144,6 @@
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 		[weakSelf _hideHUD];
 	}];
-	
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
 	
