@@ -35,7 +35,7 @@
 			</nav>
 			
 			<header>
-				<h1><img src="_assets/img/logo_hiRes.png" width="197" height="87"></img></h1>
+				<h1><a href="http://www.letsvolley.com/"><img src="_assets/img/logo_hiRes.png" width="197" height="87"></img></a></h1>
 				<h2>an open snap for snap network</h2>
 			</header>
 
@@ -43,7 +43,7 @@
 			<div id="signup_form">
 
 				<form method="post" action="./submit.php">
-					<h3><br></br>Thanks! There are <?php echo (number_format(rand(25000, 1000000))); ?> people in front of you to get Volley. The more friends you invite the faster everyone will get access. Please share Volley the following link with friends: <a href="http://www.letsvolley.com/">www.letsvolley.com</a></h3>
+					<h3>Thanks! There are <?php echo (number_format(rand(25000, 500000))); ?> people in front of you to get Volley. The more friends you invite the faster everyone will get access. Please share Volley with friends! <a href="http://www.letsvolley.com/">www.letsvolley.com</a></h3>
 					
 				</form>
 
@@ -91,6 +91,7 @@ random_imglink()
 			</div>
 		
 			<div class="about">
+			<br></br>
 				<p>Volley is a fast and fun way to snap with friends & meet new people. No fakes allowed, just a forward facing camera and the best you.</p>
 				<p>Currently in private beta.</p>
 			</div>

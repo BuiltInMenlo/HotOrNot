@@ -178,7 +178,6 @@
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 		
 		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-			[self _showOverlay];
 		}];
 	}
 }
