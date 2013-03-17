@@ -109,12 +109,12 @@
 	if (_hasChallenger) {
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 153.0, 153.0)];
 		_lHolderView.clipsToBounds = YES;
+		_lHolderView.layer.cornerRadius = 4.0;
 		[self addSubview:_lHolderView];
 		
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
 		lImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
-		lImgView.layer.cornerRadius = 8.0;
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
 		
@@ -133,6 +133,8 @@
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 215.0, 35.0, 35.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
+		creatorAvatarImageView.clipsToBounds = YES;
+		creatorAvatarImageView.layer.cornerRadius = 4.0;
 		creatorAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:creatorAvatarImageView];
 		
@@ -156,17 +158,22 @@
 		
 		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 46.0, 153.0, 153.0)];
 		_rHolderView.clipsToBounds = YES;
+		_rHolderView.layer.cornerRadius = 4.0;
 		[self addSubview:_rHolderView];
 		
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
 		rImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
+		rImgView.clipsToBounds = YES;
+		rImgView.layer.cornerRadius = 4.0;
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
 		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 215.0, 35.0, 35.0)];
 		challengerAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
+		challengerAvatarImageView.clipsToBounds = YES;
+		challengerAvatarImageView.layer.cornerRadius = 4.0;
 		challengerAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:challengerAvatarImageView];
 		

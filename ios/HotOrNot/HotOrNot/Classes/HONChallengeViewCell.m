@@ -28,11 +28,10 @@
 		_loadMoreButton.frame = CGRectMake(107.0, 18.0, 106.0, 34.0);
 		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
 		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
-		
-		if (enabled)
-			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-		
+		[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+		_loadMoreButton.hidden = !enabled;
 		[self addSubview:_loadMoreButton];
+		
 		[self hideChevron];
 	}
 	

@@ -90,8 +90,19 @@
 			[_tableView reloadData];
 			
 			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
+				if ([_results count] == 0) {
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"No results found!", @"Status message when no network detected");
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+					
+				} else {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
 			}
 		}
 		
@@ -152,8 +163,19 @@
 			[_tableView reloadData];
 			
 			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
+				if ([_results count] == 0) {
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"No results found!", @"Status message when no network detected");
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+				
+				} else {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
 			}
 		}
 		

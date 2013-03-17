@@ -12,7 +12,9 @@ if (isset($_POST['phone_email'])) {
 		$query .= 'NULL, "'. $_POST['phone_email'] .'", NOW());';
 		$result = mysql_query($query);
 		$signup_id = mysql_insert_id();
-	}
+	
+	} else
+		$signup_id = 0;
 }
 
-header('Location: http://www.letsvolley.com/?result=1');
+header('Location: http://www.letsvolley.com/thankyou.php?result='. $signup_id);

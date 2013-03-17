@@ -31,7 +31,7 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic) BOOL isMoreLoading;
+@property(nonatomic) BOOL isMoreLoadable;
 @property(nonatomic, strong) NSDate *lastDate;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) NSIndexPath *idxPath;
@@ -78,7 +78,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	_isMoreLoading = YES;
+	_isMoreLoadable = YES;
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -110,8 +110,8 @@
 					[_challenges addObject:vo];
 			}
 			
-			if ([parsedLists count] % 10 != 0)
-				_isMoreLoading = NO;
+			if ([parsedLists count] == 0 || [parsedLists count] % 10 != 0)
+				_isMoreLoadable = NO;
 			
 			_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
 			_emptySetImgView.hidden = ([_challenges count] > 0);
@@ -428,9 +428,9 @@
 			}
 			
 			if ([parsedLists count] == 0 || [parsedLists count] % 10 != 0)
-				_isMoreLoading = NO;
+				_isMoreLoadable = NO;
 			
-			if (!_isMoreLoading) {
+			if (!_isMoreLoadable) {
 				HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[_challenges count] inSection:0]];
 				[cell disableLoadMore];
 				
@@ -481,7 +481,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count] + 1);
+	return ([_challenges count] + (int)_isMoreLoadable);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -501,7 +501,7 @@
 
 	if (cell == nil) {
 		if (indexPath.row == [_challenges count])
-			cell = [[HONChallengeViewCell alloc] initAsGreyBottomCell:(indexPath.row % 2 == 1) isEnabled:_isMoreLoading];
+			cell = [[HONChallengeViewCell alloc] initAsGreyBottomCell:(indexPath.row % 2 == 1) isEnabled:_isMoreLoadable];
 				
 		else
 			cell = [[HONChallengeViewCell alloc] initAsGreyChallengeCell:(indexPath.row % 2 == 1)];
