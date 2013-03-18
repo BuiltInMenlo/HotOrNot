@@ -53,13 +53,17 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>4693</string>
+	<string>4734</string>
 	<key>FacebookAppID</key>
 	<string>529054720443694</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
+		<string>CartoGothicStd-Bold.otf</string>
+		<string>CartoGothicStd-BoldItalic.otf</string>
+		<string>CartoGothicStd-Book.otf</string>
+		<string>CartoGothicStd-Italic.otf</string>
 		<string>ufonts.com_freightsans-black.ttf</string>
 		<string>picChallenge-Bold.otf</string>
 		<string>picChallenge-Light.otf</string>

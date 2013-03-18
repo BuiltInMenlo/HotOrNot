@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVoterViewCell.h"
@@ -27,6 +29,8 @@
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 10.0, 50.0, 50.0)];
 	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[userImageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil];
+	userImageView.layer.cornerRadius = 4.0;
+	userImageView.clipsToBounds = YES;
 	[self addSubview:userImageView];
 	
 	UIImageView *creatorScoreBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 45.0, 50.0, 15.0)];

@@ -8,14 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONAlternatingRowsViewCell.h"
+#import "HONGenericRowViewCell.h"
 #import "HONChallengeVO.h"
 
-@interface HONChallengeViewCell : HONAlternatingRowsViewCell
+@interface HONChallengeViewCell : HONGenericRowViewCell
 + (NSString *)cellReuseIdentifier;
-- (id)initAsGreyChallengeCell:(BOOL)grey;
-- (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled;
+//- (id)initAsGreyChallengeCell:(BOOL)grey;
+//- (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled;
 - (void)disableLoadMore;
+
+- (id)initAsBottomCell:(BOOL)isBottom;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @end

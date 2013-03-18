@@ -39,7 +39,7 @@
 		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 367.0, 640.0, 105.0)];
 		[_bgImageView addSubview:_footerHolderView];
 		
-		_headerView = [[HONHeaderView alloc] initWithTitle:@"TAKE PHOTO"];
+		_headerView = [[HONHeaderView alloc] initWithTitle:@"Registration"];
 		[self addSubview:_headerView];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];

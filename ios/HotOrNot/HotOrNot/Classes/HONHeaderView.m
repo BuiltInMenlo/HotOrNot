@@ -25,9 +25,9 @@
 		[headerImgView setImage:[UIImage imageNamed:@"header"]];
 		[self addSubview:headerImgView];
 		
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 11.0, 320.0, 25.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 12.0, 320.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+		_titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.shadowColor = [UIColor colorWithWhite:0.33 alpha:1.0];

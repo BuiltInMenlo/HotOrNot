@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONPopularUserVO.h"
+#import "HONUserVO.h"
 
 @interface HONUserProfileViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
-@property (nonatomic, retain) HONPopularUserVO *userVO;
+@property (nonatomic, retain) HONUserVO *userVO;
 @end

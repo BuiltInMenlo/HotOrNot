@@ -81,17 +81,20 @@
 	[self addSubview:subjectButton];
 	
 	if ([_challengeVO.rechallengedUsers length] > 0) {
-		UIButton *rechallengedButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		rechallengedButton.frame = CGRectMake(210.0, 8.0, 90.0, 24.0);
-		[rechallengedButton setBackgroundImage:[UIImage imageNamed:@"reSnappedIcon"] forState:UIControlStateNormal];
-		[rechallengedButton setBackgroundImage:[UIImage imageNamed:@"reSnappedIcon"] forState:UIControlStateHighlighted];
-		//[rechallengedButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-		rechallengedButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:12];
-		[rechallengedButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-		[self addSubview:rechallengedButton];
+		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(200.0, 8.0, 24.0, 24.0)];
+		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
+		[self addSubview:rechallengeImageView];
+		
+		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(220.0, 8.0, 60.0, 24.0)];
+		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
+		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		rechallengeLabel.backgroundColor = [UIColor clearColor];
+		rechallengeLabel.textAlignment = NSTextAlignmentRight;
+		rechallengeLabel.text = @"Resnapped";
+		[self addSubview:rechallengeLabel];
 	}
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 10.0, 60.0, 16.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 12.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
@@ -251,6 +254,8 @@
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW * 0.5, kLargeW * 0.5)]; //x408
 		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
 		lImgView.userInteractionEnabled = YES;
+		lImgView.layer.cornerRadius = 4.0;
+		lImgView.clipsToBounds = YES;
 		[_lHolderView addSubview:lImgView];
 		
 //		UIImageView *overlayWaitingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 236.0, 306.0, 70.0)];
@@ -262,6 +267,8 @@
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
+		creatorAvatarImageView.layer.cornerRadius = 4.0;
+		creatorAvatarImageView.clipsToBounds = YES;
 		[self addSubview:creatorAvatarImageView];
 		
 		UIButton *creatorAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];

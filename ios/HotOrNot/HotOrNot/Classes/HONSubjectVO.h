@@ -1,16 +1,16 @@
 //
-//  HONPopularSubjectVO.h
+//  HONSubjectVO.h
 //  HotOrNot
 //
-//  Created by Sparkle Mountain iMac on 9/18/12.
+//  Created by Matt Holcombe on 9/18/12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-@interface HONPopularSubjectVO : NSObject
+@interface HONSubjectVO : NSObject
 
-+ (HONPopularSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary;
++ (HONSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 

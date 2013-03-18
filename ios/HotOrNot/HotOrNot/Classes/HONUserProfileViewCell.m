@@ -27,7 +27,7 @@
 	return (self);
 }
 
-- (void)setUserVO:(HONPopularUserVO *)userVO {
+- (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 261.0)];
@@ -36,7 +36,8 @@
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(110.0, 22.0, 95.0, 95.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-	avatarImageView.layer.cornerRadius = 10.0;
+	avatarImageView.layer.cornerRadius = 4.0;
+	avatarImageView.clipsToBounds = YES;
 	[self addSubview:avatarImageView];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];

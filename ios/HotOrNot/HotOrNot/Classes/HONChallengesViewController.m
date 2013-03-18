@@ -225,7 +225,7 @@
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -501,10 +501,10 @@
 
 	if (cell == nil) {
 		if (indexPath.row == [_challenges count])
-			cell = [[HONChallengeViewCell alloc] initAsGreyBottomCell:(indexPath.row % 2 == 1) isEnabled:_isMoreLoadable];
+			cell = [[HONChallengeViewCell alloc] initAsBottomCell:YES];
 				
 		else
-			cell = [[HONChallengeViewCell alloc] initAsGreyChallengeCell:(indexPath.row % 2 == 1)];
+			cell = [[HONChallengeViewCell alloc] initAsBottomCell:NO];
 	}
 	
 	if (indexPath.row < [_challenges count])

@@ -1,20 +1,20 @@
 //
-//  HONPopularSubjectVO.m
+//  HONSubjectVO.m
 //  HotOrNot
 //
-//  Created by Sparkle Mountain iMac on 9/18/12.
+//  Created by Matt Holcombe on 9/18/12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONPopularSubjectVO.h"
+#import "HONSubjectVO.h"
 
-@implementation HONPopularSubjectVO
+@implementation HONSubjectVO
 
 @synthesize dictionary;
 @synthesize subjectID, subjectName, score, actives;
 
-+ (HONPopularSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary {
-	HONPopularSubjectVO *vo = [[HONPopularSubjectVO alloc] init];
++ (HONSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary {
+	HONSubjectVO *vo = [[HONSubjectVO alloc] init];
 	vo.dictionary = dictionary;
 	
 	vo.subjectID = [[dictionary objectForKey:@"id"] intValue];

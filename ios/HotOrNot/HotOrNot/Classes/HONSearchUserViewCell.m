@@ -1,29 +1,29 @@
 //
-//  HONPopularUserViewCell.m
+//  HONSearchUserViewCell.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 09.07.12.
-//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
+//  Created by Matt Holcombe on 3/17/13.
+//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONPopularUserViewCell.h"
 #import "UIImageView+AFNetworking.h"
+
+#import "HONSearchUserViewCell.h"
 #import "HONAppDelegate.h"
 
-@interface HONPopularUserViewCell()
+@interface HONSearchUserViewCell()
 @property (nonatomic, strong) UILabel *usernameLabel;
 @property (nonatomic, strong) UILabel *scoreLabel;
 @end
 
-@implementation HONPopularUserViewCell
-
+@implementation HONSearchUserViewCell
 @synthesize userVO = _userVO;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }
 
-- (void)setUserVO:(HONPopularUserVO *)userVO {
+- (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	NSString *imgURL = ([_userVO.fbID isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : _userVO.imageURL;
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
@@ -49,10 +49,6 @@
 	
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID)
 		[self hideChevron];
-}
-
-- (void)_goChallenge {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"POPULAR_USER_CHALLENGE" object:_userVO];
 }
 
 @end

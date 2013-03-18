@@ -16,8 +16,11 @@
 
 #import "HONTimelineItemDetailsViewController.h"
 #import "HONAppDelegate.h"
+#import "HONFacebookCaller.h"
+#import "HONImagePickerViewController.h"
+#import "HONLoginViewController.h"
 
-@interface HONTimelineItemDetailsViewController () <UIAlertViewDelegate>
+@interface HONTimelineItemDetailsViewController () <UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic) BOOL isOwner;
 @property (nonatomic) BOOL isCreator;
@@ -103,19 +106,34 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 13.0, 280.0, 16.0)];
-	titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	titleLabel.textColor = [HONAppDelegate honGreyTxtColor];
-	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.text = [HONAppDelegate ctaForChallenge:_challengeVO];
-	[self.view addSubview:titleLabel];
-	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 33.0, 200.0, 24.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 13.0, 200.0, 24.0)];
 	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:19];
 	subjectLabel.textColor = [UIColor whiteColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[self.view addSubview:subjectLabel];
+	
+	if ([_challengeVO.rechallengedUsers length] > 0) {
+		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(200.0, 8.0, 24.0, 24.0)];
+		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
+		[self.view addSubview:rechallengeImageView];
+		
+		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(220.0, 8.0, 60.0, 24.0)];
+		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
+		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		rechallengeLabel.backgroundColor = [UIColor clearColor];
+		rechallengeLabel.textAlignment = NSTextAlignmentRight;
+		rechallengeLabel.text = @"Resnapped";
+		[self.view addSubview:rechallengeLabel];
+	}
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 12.0, 60.0, 16.0)];
+	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];
+	[self.view addSubview:timeLabel];
 	
 	NSLog(@"_isInSession:[%d] _isOwner:[%d] _isCreator:[%d] statusID:[%d]", _isInSession, _isOwner, _isCreator, _challengeVO.statusID);
 	//NSLog(@"BOOL:[%d] _isOwner:[%d] vo.creatorID:[%d] vo.challengerID:[%d]", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID), _isOwner, _challengeVO.creatorID, _challengeVO.challengerID);
@@ -170,6 +188,13 @@
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 	voteButton.hidden = (!_isInSession);
 	[self.view addSubview:voteButton];
+	
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(266.0, 385.0, 44.0, 44.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:moreButton];
 }
 
 - (void)viewDidLoad {
@@ -181,6 +206,22 @@
 }
 
 #pragma mark - Navigation
+- (void)_goMore {
+	[[Mixpanel sharedInstance] track:@"Vote Image Details - More"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:@"Report Abuse"
+													otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], @"Share", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:0];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
 - (void)_goShare {
 	
 	if ([HONAppDelegate allowsFBPosting]) {
@@ -248,7 +289,7 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Vote Details - Poke Creator"
+			[[Mixpanel sharedInstance] track:@"Vote Image Details - Poke Creator"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
@@ -263,15 +304,15 @@
 			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					NSLog(@"HONVoteImageViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					
 				} else {
 					NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONVoteImageViewController AFNetworking: %@", pokeResult);
+					NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", pokeResult);
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"VoteImageViewController AFNetworking %@", [error localizedDescription]);
+				NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
 				
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -288,7 +329,7 @@
 	
 	} else if (alertView.tag == 1) {
 		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Vote Details - Poke Challenger"
+			[[Mixpanel sharedInstance] track:@"Vote Image Details - Poke Challenger"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
@@ -303,15 +344,15 @@
 			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					NSLog(@"HONVoteImageViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					
 				} else {
 					NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONVoteImageViewController AFNetworking: %@", pokeResult);
+					NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", pokeResult);
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"HONVoteImageViewController AFNetworking %@", [error localizedDescription]);
+				NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
 				
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -324,6 +365,63 @@
 			
 			[self dismissViewControllerAnimated:NO completion:^(void) {
 			}];
+		}
+	}
+}
+
+#pragma mark - ActionSheet Delegates
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		switch (buttonIndex) {
+			case 0: {
+				[[Mixpanel sharedInstance] track:@"Vote Image Details - Flag"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+				
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+										[NSString stringWithFormat:@"%d", 11], @"action",
+										[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+										[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+										nil];
+				
+				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+						//NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", flagResult);
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
+				}];
+				
+				break;}
+				
+			case 1: {
+				[[Mixpanel sharedInstance] track:@"Vote Image Details - Challenge Subject"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:_challengeVO.subjectName]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:YES completion:nil];
+				break;}
+				
+			case 2: {
+				if (FBSession.activeSession.state == 513)
+					[HONFacebookCaller postToTimeline:_challengeVO];
+				
+				else {
+					UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+					[navController setNavigationBarHidden:YES];
+					[self presentViewController:navController animated:YES completion:nil];
+				}
+				break;}
 		}
 	}
 }

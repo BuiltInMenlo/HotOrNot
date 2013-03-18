@@ -387,6 +387,22 @@ NSString *const FacebookAppID = @"529054720443694";
 	return ([UIFont fontWithName:@"Qualcomm-Semibold" size:18.0]);
 }
 
++ (UIFont *)cartoGothicBold {
+	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:18.0]);
+}
+
++ (UIFont *)cartoGothicBoldItalic {
+	return ([UIFont fontWithName:@"CartoGothicStd-BoldItalic" size:18.0]);
+}
+
++ (UIFont *)cartoGothicBook {
+	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:18.0]);
+}
+
++ (UIFont *)cartoGothicItalic {
+	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:18.0]);
+}
+
 + (UIColor *)honBlueTxtColor {
 	return ([UIColor colorWithRed:0.17647058823529 green:0.33333333333333 blue:0.6078431372549 alpha:1.0]);
 }
@@ -549,6 +565,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 	
 	//[self _testParseCloudCode];
+	//[self _showFonts];
 	
 	if ([HONAppDelegate hasNetwork] && [HONAppDelegate canPingParseServer]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])

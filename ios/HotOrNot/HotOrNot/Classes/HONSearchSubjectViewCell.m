@@ -1,18 +1,15 @@
 //
-//  HONPopularSubjectViewCell.m
+//  HONSearchSubjectViewCell.m
 //  HotOrNot
 //
-//  Created by Matthew Holcombe on 09.07.12.
-//  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
+//  Created by Matt Holcombe on 3/17/13.
+//  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONPopularSubjectViewCell.h"
+#import "HONSearchSubjectViewCell.h"
 #import "HONAppDelegate.h"
 
-@interface HONPopularSubjectViewCell()
-@end
-
-@implementation HONPopularSubjectViewCell
+@implementation HONSearchSubjectViewCell
 
 @synthesize subjectVO = _subjectVO;
 
@@ -20,7 +17,7 @@
 	return (NSStringFromClass(self));
 }
 
-- (void)setSubjectVO:(HONPopularSubjectVO *)subjectVO {
+- (void)setSubjectVO:(HONSubjectVO *)subjectVO {
 	_subjectVO = subjectVO;
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(27.0, 18.0, 200.0, 16.0)];
@@ -36,10 +33,6 @@
 	scoreLabel.backgroundColor = [UIColor clearColor];
 	scoreLabel.text = (_subjectVO.score == 1) ? @"1 challenge" : [NSString stringWithFormat:@"%d challenges", _subjectVO.score];
 	[self addSubview:scoreLabel];
-}
-
-- (void)_goChallenge {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"POPULAR_SUBJECT_CHALLENGE" object:_subjectVO];
 }
 
 @end

@@ -82,6 +82,11 @@ extern NSString *const FacebookAppID;
 + (UIFont *)qualcommRegular;
 + (UIFont *)qualcommSemibold;
 
++ (UIFont *)cartoGothicBold;
++ (UIFont *)cartoGothicBoldItalic;
++ (UIFont *)cartoGothicBook;
++ (UIFont *)cartoGothicItalic;
+
 + (UIColor *)honBlueTxtColor;
 + (UIColor *)honGreyTxtColor;
 
@@ -108,6 +113,7 @@ extern NSString *const FacebookAppID;
 #define kHUDTime 0.5
 #define kJPEGCompress 0.33
 
+#define kNavHeaderHeight 45.0
 #define kSearchHeaderHeight 45.0
 #define kRowHeight 63.0
 

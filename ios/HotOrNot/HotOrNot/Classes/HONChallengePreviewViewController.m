@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
@@ -91,6 +93,8 @@
 		[weakSelf _hideHUD];
 	}];
 	_imageView.userInteractionEnabled = YES;
+	_imageView.layer.cornerRadius = 4.0;
+	_imageView.clipsToBounds = YES;
 	[self.view addSubview:_imageView];
 	
 	NSString *creatorCaption = (_isCreator) ? [NSString stringWithFormat:@"You challenged %@ to…", _challengeVO.challengerName] : [NSString stringWithFormat:@"%@ challenged you…", _challengeVO.creatorName];

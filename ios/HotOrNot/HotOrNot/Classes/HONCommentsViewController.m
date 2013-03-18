@@ -14,7 +14,7 @@
 #import "HONCommentsViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
-#import "HONAlternatingRowsViewCell.h"
+#import "HONGenericRowViewCell.h"
 #import "HONCommentViewCell.h"
 #import "HONCommentVO.h"
 #import "HONImagePickerViewController.h"
@@ -159,7 +159,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"COMMENTS"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Comments"];
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -169,7 +169,7 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:backButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -256,7 +256,7 @@
 	HONCommentViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONCommentViewCell alloc] initAsGreyCell:indexPath.row % 2 == 1];
+		cell = [[HONCommentViewCell alloc] init];
 	
 	cell.commentVO = [_comments objectAtIndex:indexPath.row];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];

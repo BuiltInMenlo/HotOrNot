@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONAlternatingRowsViewCell.h"
+#import "HONGenericRowViewCell.h"
 #import "HONVoterVO.h"
 
-@interface HONVoterViewCell : HONAlternatingRowsViewCell
+@interface HONVoterViewCell : HONGenericRowViewCell
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, strong) HONVoterVO *voterVO;

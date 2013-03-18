@@ -22,28 +22,45 @@
 	return (NSStringFromClass(self));
 }
 
-- (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled {
-	if ((self = [self initAsGreyCell:grey])) {
-		_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_loadMoreButton.frame = CGRectMake(107.0, 18.0, 106.0, 34.0);
-		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
-		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
-		[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-		_loadMoreButton.hidden = !enabled;
-		[self addSubview:_loadMoreButton];
-		
-		[self hideChevron];
+- (id)initAsBottomCell:(BOOL)isBottom {
+	if ((self = [super init])) {
+		if (isBottom) {
+			_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			_loadMoreButton.frame = CGRectMake(107.0, 16.0, 106.0, 34.0);
+			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
+			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
+			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+			[self addSubview:_loadMoreButton];
+			
+			[self hideChevron];
+		}
 	}
 	
 	return (self);
 }
 
-- (id)initAsGreyChallengeCell:(BOOL)grey {
-	if ((self = [self initAsGreyCell:grey])) {
-	}
-	
-	return (self);
-}
+//- (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled {
+//	if ((self = [self initAsGreyCell:grey])) {
+//		_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_loadMoreButton.frame = CGRectMake(107.0, 16.0, 106.0, 34.0);
+//		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
+//		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
+//		[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+//		_loadMoreButton.hidden = !enabled;
+//		[self addSubview:_loadMoreButton];
+//		
+//		[self hideChevron];
+//	}
+//	
+//	return (self);
+//}
+//
+//- (id)initAsGreyChallengeCell:(BOOL)grey {
+//	if ((self = [self initAsGreyCell:grey])) {
+//	}
+//	
+//	return (self);
+//}
 
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {

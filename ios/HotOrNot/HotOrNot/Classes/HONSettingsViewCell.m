@@ -44,7 +44,8 @@
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(110.0, 22.0, 95.0, 95.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
-		avatarImageView.layer.cornerRadius = 10.0;
+		avatarImageView.layer.cornerRadius = 4.0;
+		avatarImageView.clipsToBounds = YES;
 		[self addSubview:avatarImageView];
 		
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -88,8 +89,8 @@
 	return (self);
 }
 
-- (id)initAsMidCell:(NSString *)caption isGrey:(BOOL)grey {
-	if ((self = [self initAsGreyCell:grey])) {
+- (id)initAsMidCell:(NSString *)caption {
+	if ((self = [self init])) {
 		_caption = caption;
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 29.0, 250.0, 16.0)];

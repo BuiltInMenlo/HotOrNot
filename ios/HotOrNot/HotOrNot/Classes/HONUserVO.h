@@ -1,16 +1,16 @@
 //
-//  HONPopularUserVO.h
+//  HONUserVO.h
 //  HotOrNot
 //
-//  Created by Sparkle Mountain iMac on 9/18/12.
+//  Created by Matt Holcombe on 9/18/12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-@interface HONPopularUserVO : NSObject
+@interface HONUserVO : NSObject
 
-+ (HONPopularUserVO *)userWithDictionary:(NSDictionary *)dictionary;
++ (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 

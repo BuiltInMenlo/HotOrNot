@@ -1,21 +1,21 @@
 //
-//  HONPopularUserVO.m
+//  HONUserVO.m
 //  HotOrNot
 //
-//  Created by Sparkle Mountain iMac on 9/18/12.
+//  Created by Matt Holcombe on 9/18/12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONPopularUserVO.h"
+#import "HONUserVO.h"
 #import "HONAppDelegate.h"
 
-@implementation HONPopularUserVO
+@implementation HONUserVO
 
 @synthesize dictionary;
 @synthesize userID, fbID, username, points, votes, pokes, score, pics, imageURL;
 
-+ (HONPopularUserVO *)userWithDictionary:(NSDictionary *)dictionary {
-	HONPopularUserVO *vo = [[HONPopularUserVO alloc] init];
++ (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary {
+	HONUserVO *vo = [[HONUserVO alloc] init];
 	vo.dictionary = dictionary;
 	
 	vo.userID = [[dictionary objectForKey:@"id"] intValue];

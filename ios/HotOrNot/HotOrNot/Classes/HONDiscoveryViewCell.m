@@ -26,7 +26,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
+		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
 		[self addSubview:_bgImageView];
 	}
 	
@@ -36,19 +36,19 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
-	NSString *lImgURL = [NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorImgPrefix];
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
-	lImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[lImageView setImageWithURL:[NSURL URLWithString:lImgURL] placeholderImage:nil];
-	[self addSubview:lImageView];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 140.0, 74.0)];
+	bgImageView.image = [UIImage imageNamed:@"discoveryBackground"];
+	[self addSubview:bgImageView];
 	
-	NSString *rImgURL = [NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix];
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(70.0, 9.0, 50.0, 50.0)];
-	rImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[rImageView setImageWithURL:[NSURL URLWithString:rImgURL] placeholderImage:nil];
-	[self addSubview:rImageView];
+	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 7.0, 62.0, 60.0)];
+	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorImgPrefix]] placeholderImage:nil];
+	[bgImageView addSubview:lImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 55.0, 140.0, 14.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(72.0, 7.0, 62.0, 60.0)];
+	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix]] placeholderImage:nil];
+	[bgImageView addSubview:rImageView];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 80.0, 140.0, 14.0)];
 	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:12];
 	subjectLabel.textColor = [UIColor blackColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -56,7 +56,7 @@
 	[self addSubview:subjectLabel];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(14.0, 9.0, 120.0, 70.0);
+	selectButton.frame = bgImageView.frame;
 	[selectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
 }
@@ -64,19 +64,19 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	NSString *lImgURL = [NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorImgPrefix];
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(180.0, 9.0, 50.0, 50.0)];
-	lImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[lImageView setImageWithURL:[NSURL URLWithString:lImgURL] placeholderImage:nil];
-	[self addSubview:lImageView];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(170.0, 10.0, 140.0, 74.0)];
+	bgImageView.image = [UIImage imageNamed:@"discoveryBackground"];
+	[self addSubview:bgImageView];
 	
-	NSString *rImgURL = [NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix];
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(230.0, 9.0, 50.0, 50.0)];
-	rImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[rImageView setImageWithURL:[NSURL URLWithString:rImgURL] placeholderImage:nil];
-	[self addSubview:rImageView];
+	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 7.0, 62.0, 60.0)];
+	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorImgPrefix]] placeholderImage:nil];
+	[bgImageView addSubview:lImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(180.0, 55.0, 140.0, 14.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(72.0, 7.0, 62.0, 60.0)];
+	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix]] placeholderImage:nil];
+	[bgImageView addSubview:rImageView];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(180.0, 80.0, 140.0, 14.0)];
 	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:12];
 	subjectLabel.textColor = [UIColor blackColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -84,7 +84,7 @@
 	[self addSubview:subjectLabel];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(180.0, 9.0, 120.0, 70.0);
+	selectButton.frame = bgImageView.frame;
 	[selectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
 }

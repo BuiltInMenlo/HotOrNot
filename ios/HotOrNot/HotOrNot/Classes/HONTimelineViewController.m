@@ -16,7 +16,7 @@
 #import "HONUserProfileViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
-#import "HONPopularUserVO.h"
+#import "HONUserVO.h"
 #import "HONFacebookCaller.h"
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
@@ -42,7 +42,7 @@
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
-@property(nonatomic, strong) HONPopularUserVO *userVO;
+@property(nonatomic, strong) HONUserVO *userVO;
 @end
 
 @implementation HONTimelineViewController
@@ -320,7 +320,7 @@
 			//NSLog(@"HONTimelineViewController AFNetworking: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
-				_userVO = [HONPopularUserVO userWithDictionary:userResult];
+				_userVO = [HONUserVO userWithDictionary:userResult];
 				[_tableView reloadData];
 				
 				if (_challengeVO == nil)
@@ -377,7 +377,7 @@
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -405,7 +405,7 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
 }
 
@@ -490,7 +490,6 @@
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:^(void) {
 	}];
-	
 }
 
 
@@ -529,7 +528,6 @@
 		[navController setNavigationBarHidden:YES];
 		[self presentViewController:navController animated:YES completion:nil];
 	}
-
 }
 
 - (void)_refreshVoteTab:(NSNotification *)notification {

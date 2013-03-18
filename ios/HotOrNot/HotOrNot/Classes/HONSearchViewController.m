@@ -14,10 +14,10 @@
 #import "HONSearchViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
-#import "HONPopularUserVO.h"
-#import "HONPopularSubjectVO.h"
-#import "HONPopularSubjectViewCell.h"
-#import "HONPopularUserViewCell.h"
+#import "HONUserVO.h"
+#import "HONSubjectVO.h"
+#import "HONSearchSubjectViewCell.h"
+#import "HONSearchUserViewCell.h"
 
 @interface HONSearchViewController () <UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
@@ -80,7 +80,7 @@
 			
 			_results = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
-				HONPopularUserVO *vo = [HONPopularUserVO userWithDictionary:serverList];
+				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
 					[_results addObject:vo];
@@ -153,7 +153,7 @@
 			
 			_results = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedSubjects) {
-				HONPopularSubjectVO *vo = [HONPopularSubjectVO subjectWithDictionary:serverList];
+				HONSubjectVO *vo = [HONSubjectVO subjectWithDictionary:serverList];
 				
 				if (vo != nil)
 					[_results addObject:vo];
@@ -216,7 +216,7 @@
 									 [NSNumber numberWithInt:arc4random() % 100], @"score",
 									 [NSNumber numberWithInt:0], @"active",
 									 subject, @"name", nil];
-		[_results addObject:[HONPopularSubjectVO subjectWithDictionary:dict]];
+		[_results addObject:[HONSubjectVO subjectWithDictionary:dict]];
 	}
 	
 	
@@ -246,10 +246,10 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (_isUser) {
-		HONPopularUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONSearchUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONPopularUserViewCell alloc] initAsGreyCell:(indexPath.row % 2 == 1)];
+			cell = [[HONSearchUserViewCell alloc] init];
 		
 		cell.userVO = [_results objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -257,10 +257,10 @@
 		return (cell);
 		
 	} else {
-		HONPopularSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONSearchSubjectViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONPopularSubjectViewCell alloc] initAsGreyCell:(indexPath.row % 2 == 1)];
+			cell = [[HONSearchSubjectViewCell alloc] init];
 			cell.subjectVO = [_results objectAtIndex:indexPath.row];
 		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -282,11 +282,11 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	
 	if (_isUser) {
-		HONPopularUserVO *vo = (HONPopularUserVO *)[_results objectAtIndex:indexPath.row];
+		HONUserVO *vo = (HONUserVO *)[_results objectAtIndex:indexPath.row];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:vo.username];
 		
 	} else {
-		HONPopularSubjectVO *vo = (HONPopularSubjectVO *)[_results objectAtIndex:indexPath.row];
+		HONSubjectVO *vo = (HONSubjectVO *)[_results objectAtIndex:indexPath.row];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:vo.subjectName];
 	}
 	
