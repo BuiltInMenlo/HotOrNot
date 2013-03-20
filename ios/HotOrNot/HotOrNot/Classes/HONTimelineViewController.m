@@ -21,7 +21,7 @@
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONHeaderView.h"
-#import "HONSearchHeaderView.h"
+#import "HONSearchBarHeaderView.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONLoginViewController.h"
@@ -405,7 +405,7 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
 }
 
@@ -448,16 +448,6 @@
 	}
 }
 
-- (void)_goDailyChallenge {
-	[[Mixpanel sharedInstance] track:@"Daily Challenge - Vote Wall"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:[HONAppDelegate dailySubjectName]]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Vote Wall"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -467,14 +457,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)_goInviteFriends {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Vote Wall"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
 }
 
 - (void)_goTutorial {
@@ -681,10 +663,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONSearchHeaderView *headerView = [[HONSearchHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
-	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView.dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-		
+	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
 	return (headerView);
 }
 

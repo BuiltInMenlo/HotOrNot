@@ -59,5 +59,10 @@
 	_refreshButton.hidden = isRefreshing;
 }
 
+- (void)hideRefreshing {
+	[_activityIndicatorView removeFromSuperview];
+	[_refreshButton removeFromSuperview];
+}
+
 
 @end

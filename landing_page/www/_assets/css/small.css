@@ -7,9 +7,14 @@
 	
 	#primary_content,
 	#secondary_content,
+	#features,
 	.stores,
 	footer {
 		padding: 0 30px;
+	}
+	
+	footer {
+		padding: 15px 30px;
 	}
 	
 	
@@ -56,6 +61,19 @@
 			#secondary_content .phones img {
 				width: 100%;
 			}
+	
+	
+	
+	/* --- Features
+	-------------------------------------------------------*/
+	
+	#features h2 {
+		font-size: 24px;
+	}
+	
+		#features h3 {
+			font-size: 20px;
+		}
 	
 	
 	
@@ -125,11 +143,13 @@
 			margin-top: 165px;
 		}
 			
-			#signup_form #phone_email {
+			#signup_form #phone_email,
+			#signup_form_2 #phone_email_2 {
 				width: 325px;
 			}
 			
-			#signup_form #signup {
+			#signup_form #signup,
+			#signup_form_2 #signup_2 {
 				float: right;
 				width: auto;
 			}
@@ -156,9 +176,26 @@
 		#secondary_content .about {
 			float: right;
 			width: 325px;
-			padding-top: 75px;
+			padding-top: 0px;
+			text-align:justify;
+	
 		}
 	
+	
+	
+	/* --- About
+	-------------------------------------------------------*/
+	
+	.about {}
+		
+		.about .stores {
+			position: relative;
+			left: 0;
+		}
+			
+			.about .stores .android {
+				float: left;
+			}
 	
 	
 	/* --- Stores
@@ -173,6 +210,30 @@
 	}
 		
 		.stores .ios { margin-right: 20px; }
+	
+	
+	
+	/* --- Features
+	-------------------------------------------------------*/
+	
+	#features {}
+		
+		#signup_form_2 #phone_email_2 {
+			float: left;
+			width: 325px;
+			margin-right: 15px;
+		}
+		
+		#signup_form_2 #signup_2 {
+			float: left;
+			width: auto;
+		}
+	
+		#signup_form_2 .privacy {
+			text-align: left;
+			clear: both;
+			margin-left: 240px;
+		}
 	
 	
 	

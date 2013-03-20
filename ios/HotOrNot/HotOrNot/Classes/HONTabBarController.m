@@ -100,7 +100,7 @@
 	
 	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(64.0, self.view.frame.size.height - (kLipHeight * 0.67), 60.0, 22.0)];
 	
-	[self _updateChallengeAlerts];
+	//[self _updateChallengeAlerts];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -275,7 +275,7 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
-	[self _updateChallengeAlerts];
+	//[self _updateChallengeAlerts];
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	

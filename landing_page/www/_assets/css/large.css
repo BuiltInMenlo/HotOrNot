@@ -3,13 +3,19 @@
 
 #primary_content,
 #secondary_content,
+#features,
 .stores,
 footer {
 	padding: 0;
 }
 
+footer {
+	padding: 15px 0;
+}
+
 #primary_content .content,
-#secondary_content .content {
+#secondary_content .content,
+#features .content {
 	width: 788px;
 	margin: 0 auto;
 }
@@ -32,6 +38,23 @@ footer {
 			width: auto;
 		}
 
-#secondary_content .phones {
+
+
+/* --- Features
+-------------------------------------------------------*/
+
+#features {}
 	
-}
+	#features .primary {
+		float: left;
+		margin-left: -86px;
+	}
+	
+	#features .secondary {
+		float: right;
+		margin-bottom: -30px;
+	}
+	
+	#features .hand {
+		display: block;
+	}

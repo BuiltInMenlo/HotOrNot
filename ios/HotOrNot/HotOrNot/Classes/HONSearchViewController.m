@@ -18,6 +18,7 @@
 #import "HONSubjectVO.h"
 #import "HONSearchSubjectViewCell.h"
 #import "HONSearchUserViewCell.h"
+#import "HONSearchToggleHeaderView.h"
 
 @interface HONSearchViewController () <UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
@@ -35,6 +36,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_retrieveSearchResults:) name:@"RETRIEVE_SEARCH_RESULTS" object:nil];
 	}
 	
 	return (self);
@@ -233,7 +235,22 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)_goSubjects {
+	_isUser = NO;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_SUBJECT_SEARCH" object:nil];
+}
 
+- (void)_goUsers {
+	_isUser = YES;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_USER_SEARCH" object:nil];
+}
+
+#pragma mark - Notifications
+- (void)_retrieveSearchReults:(NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"SHOW_USER_SEARCH_RESULTS" : @"SHOW_SUBJECT_SEARCH_RESULTS" object:[notification object]];
+}
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -242,6 +259,14 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return (1);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	HONSearchToggleHeaderView *headerView = [[HONSearchToggleHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
+	[headerView.subjectButton addTarget:self action:@selector(_goSubjects) forControlEvents:UIControlEventTouchUpInside];
+	[headerView.userButton addTarget:self action:@selector(_goUsers) forControlEvents:UIControlEventTouchUpInside];
+	
+	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -272,6 +297,10 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (kRowHeight);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (kSearchHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

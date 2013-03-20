@@ -1,49 +1,33 @@
 //
-//  HONSearchHeaderView.m
+//  HONSearchBarHeaderView.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 01.05.13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONSearchHeaderView.h"
+#import "HONSearchBarHeaderView.h"
 #import "HONAppDelegate.h"
 
-@interface HONSearchHeaderView() <UISearchBarDelegate>
+@interface HONSearchBarHeaderView() <UISearchBarDelegate>
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIButton *userButton;
 @property (nonatomic, strong) UIButton *subjectButton;
 @property (nonatomic) BOOL isUser;
 @end
 
-@implementation HONSearchHeaderView
-
-@synthesize inviteFriendsButton = _inviteFriendsButton;
-@synthesize dailyChallengeButton = _dailyChallengeButton;
+@implementation HONSearchBarHeaderView
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 45.0)];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleUserSearch:) name:@"TOGGLE_USER_SEARCH" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_toggleSubjectSearch:) name:@"TOGGLE_SUBJECT_SEARCH" object:nil];
+		
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
 		bgImageView.image = [UIImage imageNamed:@"lockedHeaderBackground"];
 		[self addSubview:bgImageView];
 		
 		_isUser = NO;
-		
-		_inviteFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_inviteFriendsButton.frame = CGRectMake(0.0, 0.0, 91.0, 70.0);
-		[_inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_nonActive"] forState:UIControlStateNormal];
-		[_inviteFriendsButton setBackgroundImage:[UIImage imageNamed:@"inviteFriends_Active"] forState:UIControlStateHighlighted];
-		//[self addSubview:_inviteFriendsButton];
-		
-		_dailyChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_dailyChallengeButton.frame = CGRectMake(91.0, 0.0, 229.0, 70.0);
-		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_nonActive"] forState:UIControlStateNormal];
-		[_dailyChallengeButton setBackgroundImage:[UIImage imageNamed:@"startDailyChallenge_Active"] forState:UIControlStateHighlighted];
-		_dailyChallengeButton.titleLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:15];
-		[_dailyChallengeButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-		_dailyChallengeButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
-		[_dailyChallengeButton setTitle:[HONAppDelegate dailySubjectName] forState:UIControlStateNormal];
-		//[self addSubview:_dailyChallengeButton];
 		
 		_userButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_userButton.frame = CGRectMake(0.0, 44.0, 160.0, 30.0);
@@ -73,6 +57,14 @@
 	return (self);
 }
 
+- (void)toggleSubjectSearch {
+	
+}
+
+- (void)toggleUserSearch {
+	
+}
+
 
 #pragma mark - Navigation
 - (void)_goUser {
@@ -95,7 +87,24 @@
 	[_searchBar becomeFirstResponder];
 }
 
-#pragma mark SearchBar Delegates
+
+#pragma mark - Notifications
+- (void)_toggleUserSearch:(NSNotification *)notification {
+	_isUser = YES;
+	
+	_searchBar.text = @"";
+	//[_searchBar becomeFirstResponder];
+}
+
+- (void)_toggleSubjectSearch:(NSNotification *)notification {
+	_isUser = NO;
+	
+	_searchBar.text = @"#";
+	//[_searchBar becomeFirstResponder];
+}
+
+
+#pragma mark - SearchBar Delegates
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
 	_searchBar.showsCancelButton = YES;
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -135,7 +144,8 @@
 		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
 	}];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"SHOW_USER_SEARCH_RESULTS" : @"SHOW_SUBJECT_SEARCH_RESULTS" object:searchBar.text];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"SHOW_USER_SEARCH_RESULTS" : @"SHOW_SUBJECT_SEARCH_RESULTS" object:searchBar.text];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"RETRIEVE_SEARCH_RESULTS" object:searchBar.text];
 }
 
 @end

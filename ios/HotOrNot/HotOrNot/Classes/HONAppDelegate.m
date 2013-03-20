@@ -511,7 +511,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	_searchViewController = [[HONSearchViewController alloc] init];
 	[self.window addSubview:_searchViewController.view];
 	
-	_searchViewController.view.frame = CGRectMake(0.0, 92.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
+	_searchViewController.view.frame = CGRectMake(0.0, 15.0 + kSearchHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
 }
 
 - (void)_hideSearchResults:(NSNotification *)notification {
@@ -603,8 +603,8 @@ NSString *const FacebookAppID = @"529054720443694";
 			
 			if (boot_total == 5) {
 				UIAlertView *alertView = [[UIAlertView alloc]
-											 initWithTitle:@"Rate PicChallenge"
-											 message:@"Why not rate PicChallenge in the app store!"
+											 initWithTitle:@"Rate Volley"
+											 message:@"Why not rate Volley in the app store!"
 											 delegate:self
 											 cancelButtonTitle:nil
 											 otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];

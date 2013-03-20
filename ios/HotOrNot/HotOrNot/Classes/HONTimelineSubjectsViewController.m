@@ -14,7 +14,7 @@
 #import "HONTimelineSubjectsViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
-#import "HONSearchHeaderView.h"
+#import "HONSearchBarHeaderView.h"
 #import "HONTimelineSubjectViewCell.h"
 #import "HONVoteSubjectVO.h"
 #import "HONTimelineViewController.h"
@@ -188,9 +188,9 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONSearchHeaderView *headerView = [[HONSearchHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
-	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView.dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
+	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
+//	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
+//	[headerView.dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
 	return (headerView);
 }

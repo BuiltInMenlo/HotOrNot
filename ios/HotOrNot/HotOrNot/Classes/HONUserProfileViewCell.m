@@ -56,7 +56,7 @@
 	snapsLabel.textColor = [UIColor blackColor];
 	snapsLabel.backgroundColor = [UIColor clearColor];
 	snapsLabel.textAlignment = NSTextAlignmentCenter;
-	snapsLabel.text = [NSString stringWithFormat:@"%@ snaps", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
+	snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? @"%@ snap" : @"%@ snaps", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:snapsLabel];
 	
 	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 212.0, 100.0, 18.0)];
@@ -64,7 +64,7 @@
 	votesLabel.textColor = [UIColor blackColor];
 	votesLabel.backgroundColor = [UIColor clearColor];
 	votesLabel.textAlignment = NSTextAlignmentCenter;
-	votesLabel.text = [NSString stringWithFormat:@"%@ votes", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
+	votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? @"%@ vote" : @"%@ votes", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:votesLabel];
 	
 	UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 212.0, 100.0, 18.0)];
@@ -72,7 +72,7 @@
 	pointsLabel.textColor = [UIColor blackColor];
 	pointsLabel.backgroundColor = [UIColor clearColor];
 	pointsLabel.textAlignment = NSTextAlignmentCenter;
-	pointsLabel.text = [NSString stringWithFormat:@"%@ points", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
+	pointsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? @"%@ point" : @"%@ points", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:pointsLabel];
 }
 

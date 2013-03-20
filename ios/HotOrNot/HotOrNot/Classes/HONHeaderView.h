@@ -11,6 +11,7 @@
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
 - (void)toggleRefresh:(BOOL)isRefreshing;
+- (void)hideRefreshing;
 
 @property (nonatomic, strong) NSString *title;
 @property(nonatomic, strong) UIButton *refreshButton;

@@ -24,7 +24,7 @@
 #import "HONHeaderView.h"
 #import "HONFacebookCaller.h"
 #import "HONChallengePreviewViewController.h"
-#import "HONSearchHeaderView.h"
+#import "HONSearchBarHeaderView.h"
 
 
 @interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, TapForTapAdViewDelegate>
@@ -201,7 +201,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"ACTIVITY"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Activity"];
 	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
 	
@@ -290,16 +290,6 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_goDailyChallenge {
-	[[Mixpanel sharedInstance] track:@"Daily Challenge - Challenge Wall"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initAsDailyChallenge:[HONAppDelegate dailySubjectName]]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Challenge Wall"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -308,14 +298,6 @@
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)_goInviteFriends {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Challenge Wall"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_FRIENDS" object:nil];
 }
 
 - (void)_populateFriends {
@@ -489,10 +471,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONSearchHeaderView *headerView = [[HONSearchHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
-	[headerView.inviteFriendsButton addTarget:self action:@selector(_goInviteFriends) forControlEvents:UIControlEventTouchUpInside];
-	[headerView.dailyChallengeButton addTarget:self action:@selector(_goDailyChallenge) forControlEvents:UIControlEventTouchUpInside];
-	
+	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
 	return (headerView);
 }
 
