@@ -356,7 +356,7 @@
 		function updateName($user_id, $username) {
 			
 			// check for an already taken name			
-			$query = 'SELECT `id`FROM `tblUsers` WHERE `username` = "'. $username .'" AND `id` != '. $user_id .';';
+			$query = 'SELECT `id` FROM `tblUsers` WHERE `username` = "'. $username .'" AND `id` != '. $user_id .';';
 			$user_result = mysql_query($query);
 			
 			// not found

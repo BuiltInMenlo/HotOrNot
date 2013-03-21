@@ -771,6 +771,9 @@ NSString *const FacebookAppID = @"529054720443694";
 	
 	NSLog(@"alert: [%@]", [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);
 	
+	// sms sound
+	AudioServicesPlaySystemSound(1007);
+	
 	int type_id = [[userInfo objectForKey:@"type"] intValue];
 	switch (type_id) {
 		
@@ -919,7 +922,7 @@ NSString *const FacebookAppID = @"529054720443694";
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;

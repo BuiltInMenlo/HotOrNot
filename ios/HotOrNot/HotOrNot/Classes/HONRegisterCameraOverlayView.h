@@ -13,8 +13,9 @@
 @property(nonatomic, assign) id <HONRegisterCameraOverlayViewDelegate> delegate;
 @property (nonatomic, strong) NSString *username;
 
-- (void)showUsername;
-- (void)hideUsername;
+- (void)showPreviewNormal:(UIImage *)image;
+- (void)showPreviewFlipped:(UIImage *)image;
+- (void)hidePreview;
 @end
 
 @protocol HONRegisterCameraOverlayViewDelegate

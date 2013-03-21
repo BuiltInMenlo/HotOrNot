@@ -17,14 +17,17 @@
 #import "HONRegisterViewController.h"
 #import "HONAppDelegate.h"
 #import "HONRegisterCameraOverlayView.h"
+#import "HONHeaderView.h"
 
-@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, HONRegisterCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
+@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, HONRegisterCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic, strong) HONRegisterCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
+@property(nonatomic, strong) UITextField *usernameTextField;
 @end
 
 @implementation HONRegisterViewController
@@ -35,6 +38,8 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
+		
+		_username = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 	}
 	
 	return (self);
@@ -46,6 +51,78 @@
 
 
 #pragma mark - Data Calls
+- (void)_submitUsername {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 7], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									_username, @"username",
+									nil];
+	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Checking Username…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
+	
+	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"HONRegisterViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"Username Failed", @"Status message when update fails");
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:1.5];
+			_progressHUD = nil;
+			
+		} else {
+			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSLog(@"HONRegisterViewController AFNetworking: %@", userResult);
+			
+			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+				
+				[HONAppDelegate writeUserInfo:userResult];
+				[self _presentCamera];
+				
+			} else {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"Username taken!", @"Status message when update fails");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+				
+				[_usernameTextField becomeFirstResponder];
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"HONRegisterViewController AFNetworking %@", [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
 - (void)_uploadPhoto:(UIImage *)image {
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
@@ -87,25 +164,34 @@
 	}
 }
 
-- (void)_submitUser:(NSString *)username {
+- (void)_finalizeUser {
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 9], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									_username, @"username",
 									[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
-									username, @"username",
 									nil];
+	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = @"Submitting…";
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	
 	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
-		
 		if (error != nil) {
 			NSLog(@"HONRegisterViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Download Failed", @"Status message when downloading fails");
+			_progressHUD.labelText = NSLocalizedString(@"Username Failed", @"Status message when update fails");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
@@ -114,12 +200,26 @@
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSLog(@"HONRegisterViewController AFNetworking: %@", userResult);
 			
-			if ([userResult objectForKey:@"id"] != [NSNull null])
+			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+				
 				[HONAppDelegate writeUserInfo:userResult];
-			
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-			}];
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				}];
+				
+			} else {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"Failed Submission", @"Status message when update fails");
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -130,16 +230,54 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
 }
 
+
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
+	
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
+	[self.view addSubview:bgImgView];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Username"];
+	[headerView hideRefreshing];
+	[self.view addSubview:headerView];
+	
+	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	submitButton.frame = CGRectMake(246.0, 0.0, 74.0, 44.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+	[submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:submitButton];
+	
+	
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 200.0, 274.0, 44.0)];
+	subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
+	subjectBGImageView.userInteractionEnabled = YES;
+	[self.view addSubview:subjectBGImageView];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
+	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
+	[_usernameTextField setTextColor:[UIColor blackColor]];
+	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_usernameTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_usernameTextField.text = _username;
+	_usernameTextField.delegate = self;
+	[subjectBGImageView addSubview:_usernameTextField];
+	[_usernameTextField becomeFirstResponder];
+	
 }
 
 - (void)viewDidLoad {
@@ -148,7 +286,11 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
+}
+
+
+#pragma mark - UI Presentation
+- (void)_presentCamera {
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
@@ -166,7 +308,7 @@
 		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
 			[self _showOverlay];
 		}];
-	
+		
 	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -182,8 +324,6 @@
 	}
 }
 
-
-#pragma mark - UI Presentation
 - (void)_showOverlay {
 	_cameraOverlayView = [[HONRegisterCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_cameraOverlayView.delegate = self;
@@ -194,7 +334,10 @@
 }
 
 #pragma mark - Navigation
-
+- (void)_goNext {
+	[_usernameTextField resignFirstResponder];
+	[self _submitUsername];
+}
 
 #pragma mark - Notifications
 - (void)_didShowViewController:(NSNotification *)notification {
@@ -246,15 +389,29 @@
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
+	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[_cameraOverlayView showUsername];
+			[_cameraOverlayView showPreviewNormal:image];
 		}];
+		
+	} else {
+		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
+			[_cameraOverlayView showPreviewFlipped:image];
+		
+		else
+			[_cameraOverlayView showPreviewNormal:image];
+	}
+//	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+//		[self dismissViewControllerAnimated:NO completion:^(void) {
+//			[_cameraOverlayView showPreview];
+//		}];
+//	
+//	} else
+//	 	[_cameraOverlayView showPreview];
 	
-	} else
-		[_cameraOverlayView showUsername];
-	
-	[self _uploadPhoto:[[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation]];
+	[self _uploadPhoto:image];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -274,6 +431,28 @@
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
+}
+
+
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return YES;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];
+	
+	if ([textField.text length] == 0)
+		textField.text = _username;
+	
+	else
+		_username = textField.text;
+	
+	[textField resignFirstResponder];
 }
 
 
@@ -314,7 +493,7 @@
 }
 
 - (void)cameraOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)cameraOverlayView username:(NSString *)username {
-	[self _submitUser:username];
+	[self _finalizeUser];
 }
 
 #pragma mark - AWS Delegates

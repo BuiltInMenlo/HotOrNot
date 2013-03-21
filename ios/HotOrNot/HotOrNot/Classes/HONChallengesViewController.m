@@ -133,7 +133,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -183,7 +183,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+			_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
@@ -435,7 +435,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -625,7 +625,7 @@
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+					_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;
@@ -661,7 +661,7 @@
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"Connection Error!", @"Status message when no network detected");
+					_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;
