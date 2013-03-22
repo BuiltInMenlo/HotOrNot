@@ -49,6 +49,7 @@
 	
 	if ([touch view] == _tabHolderView) {
 		_touchPt = CGPointMake(_tabHolderView.center.x - location.x, _tabHolderView.center.y - location.y);
+		[self _toggleTabsEnabled:NO];
 	}
 	
 	if (_alertPopOverView.alpha == 1.0) {
@@ -86,6 +87,8 @@
 		else
 			[self _dropTabs];
 	}
+	
+	[self _toggleTabsEnabled:YES];
 }
 
 
@@ -152,6 +155,7 @@
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateHighlighted];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateSelected];
+	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateDisabled];
 	[_timelineButton setTag:0];
 	
 	_challengesButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -159,6 +163,7 @@
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateHighlighted];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateSelected];
+	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateDisabled];
 	[_challengesButton setTag:1];
 	
 	_discoveryButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -166,6 +171,7 @@
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateHighlighted];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateSelected];
+	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateDisabled];
 	[_discoveryButton setTag:2];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -173,6 +179,7 @@
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateNormal];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Active"] forState:UIControlStateHighlighted];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateSelected];
+	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateDisabled];
 	[_settingsButton setTag:3];
 	
 	[_tabHolderView addSubview:_timelineButton];
@@ -206,7 +213,7 @@
 	}];
 }
 
-- (void)toggleTabsEnabled:(BOOL)isEnabled {
+- (void)_toggleTabsEnabled:(BOOL)isEnabled {
 	[_timelineButton setEnabled:isEnabled];
 	[_challengesButton setEnabled:isEnabled];
 	[_discoveryButton setEnabled:isEnabled];
@@ -226,11 +233,6 @@
 	
 	NSString *mixPanelTrack = @"";
 	NSString *notificationName = @"";
-	
-	[_timelineButton setEnabled:YES];
-	[_challengesButton setEnabled:YES];
-	[_discoveryButton setEnabled:YES];
-	[_settingsButton setEnabled:YES];
 	
 	switch(tabID) {
 		case 0:
