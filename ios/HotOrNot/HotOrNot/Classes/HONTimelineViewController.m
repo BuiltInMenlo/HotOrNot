@@ -28,7 +28,7 @@
 #import "HONTimelineItemDetailsViewController.h"
 #import "HONUsernameViewController.h"
 
-@interface HONTimelineViewController()
+@interface HONTimelineViewController() <UIActionSheetDelegate>
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *username;
@@ -140,8 +140,9 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showComments:) name:@"SHOW_COMMENTS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchResults:) name:@"SHOW_SEARCH_RESULTS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchResults:) name:@"HIDE_SEARCH_RESULTS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShare:) name:@"SHOW_SHARE" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -342,8 +343,6 @@
 - (void)loadView {
 	[super loadView];
 	
-	//NSLog(@"SUBJECT:[%d][%d]", _subjectID, _isPushView);
-	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
 	[self.view addSubview:bgImgView];
@@ -405,7 +404,7 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
 }
 
@@ -640,16 +639,30 @@
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:vo] animated:YES];
 }
 
-- (void)_showSearchResults:(NSNotification *)notification {
+- (void)_showSearchTable:(NSNotification *)notification {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		self.view.frame = CGRectMake(self.view.frame.origin.x, -44.0, self.view.frame.size.width, self.view.frame.size.height);
 	}];
 }
 
-- (void)_hideSearchResults:(NSNotification *)notification {
+- (void)_hideSearchTable:(NSNotification *)notification {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
 	}];
+}
+
+- (void)_showShare:(NSNotification *)notification {
+	NSLog(@"_showShare");
+	
+	if ([HONAppDelegate appTabBarController].view != nil) {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																 delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:@"Report User"
+														otherButtonTitles:[NSString stringWithFormat:@"Snap %@", @"User"], nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	}
 }
 
 
@@ -736,6 +749,40 @@
 #pragma mark - ScrollView Delegates
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+}
+
+
+#pragma mark - ActionSheet Delegates
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	switch (buttonIndex) {
+		case 0: {
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 10], @"action",
+									[NSString stringWithFormat:@"%d", _userVO.userID], @"userID",
+									nil];
+			
+			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					NSLog(@"HONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					
+				} else {
+					NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+					NSLog(@"HONTimelineViewController AFNetworking: %@", flagResult);
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
+			}];
+			break;}
+			
+		case 1: {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO.userID]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			break;}
+	}
 }
 
 @end

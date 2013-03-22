@@ -18,7 +18,7 @@
 @interface HONTabBarController ()
 @property (nonatomic, retain) UIButton *timelineButton;
 @property (nonatomic, retain) UIButton *challengesButton;
-@property (nonatomic, retain) UIButton *popularButton;
+@property (nonatomic, retain) UIButton *discoveryButton;
 @property (nonatomic, retain) UIButton *settingsButton;
 
 @property (nonatomic, strong) UIView *tabHolderView;
@@ -127,14 +127,14 @@
 - (void)hideNewTabBar {
 	_timelineButton.hidden = YES;
 	_challengesButton.hidden = YES;
-	_popularButton.hidden = YES;
+	_discoveryButton.hidden = YES;
 	_settingsButton.hidden = YES;
 }
 
 - (void)showNewTabBar {
 	_timelineButton.hidden = NO;
 	_challengesButton.hidden = NO;
-	_popularButton.hidden = NO;
+	_discoveryButton.hidden = NO;
 	_settingsButton.hidden = NO;
 }
 
@@ -161,12 +161,12 @@
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateSelected];
 	[_challengesButton setTag:1];
 	
-	_popularButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_popularButton.frame = CGRectMake(160.0, kLipHeight, 80.0, kButtonHeight);
-	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
-	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateHighlighted];
-	[_popularButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateSelected];
-	[_popularButton setTag:2];
+	_discoveryButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_discoveryButton.frame = CGRectMake(160.0, kLipHeight, 80.0, kButtonHeight);
+	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
+	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateHighlighted];
+	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateSelected];
+	[_discoveryButton setTag:2];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_settingsButton.frame = CGRectMake(240.0, kLipHeight, 80.0, kButtonHeight);
@@ -177,12 +177,12 @@
 	
 	[_tabHolderView addSubview:_timelineButton];
 	[_tabHolderView addSubview:_challengesButton];
-	[_tabHolderView addSubview:_popularButton];
+	[_tabHolderView addSubview:_discoveryButton];
 	[_tabHolderView addSubview:_settingsButton];
 	
 	[_timelineButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	[_challengesButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	[_popularButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+	[_discoveryButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
 	[_settingsButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
 		
 	UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -206,6 +206,13 @@
 	}];
 }
 
+- (void)toggleTabsEnabled:(BOOL)isEnabled {
+	[_timelineButton setEnabled:isEnabled];
+	[_challengesButton setEnabled:isEnabled];
+	[_discoveryButton setEnabled:isEnabled];
+	[_settingsButton setEnabled:isEnabled];
+}
+
 
 #pragma mark - Navigation
 - (void)buttonClicked:(id)sender {
@@ -222,14 +229,14 @@
 	
 	[_timelineButton setEnabled:YES];
 	[_challengesButton setEnabled:YES];
-	[_popularButton setEnabled:YES];
+	[_discoveryButton setEnabled:YES];
 	[_settingsButton setEnabled:YES];
 	
 	switch(tabID) {
 		case 0:
 			[_timelineButton setSelected:YES];
 			[_challengesButton setSelected:NO];
-			[_popularButton setSelected:NO];
+			[_discoveryButton setSelected:NO];
 			[_settingsButton setSelected:NO];
 			
 			mixPanelTrack = @"Tab - Voting";
@@ -239,7 +246,7 @@
 		case 1:
 			[_timelineButton setSelected:NO];
 			[_challengesButton setSelected:YES];
-			[_popularButton setSelected:NO];
+			[_discoveryButton setSelected:NO];
 			[_settingsButton setSelected:NO];
 			
 			mixPanelTrack = @"Tab - Challenge Wall";
@@ -249,7 +256,7 @@
 		case 2:
 			[_timelineButton setSelected:NO];
 			[_challengesButton setSelected:NO];
-			[_popularButton setSelected:YES];
+			[_discoveryButton setSelected:YES];
 			[_settingsButton setSelected:NO];
 			
 			mixPanelTrack = @"Tab - Discovery";
@@ -259,7 +266,7 @@
 		case 3:
 			[_timelineButton setSelected:NO];
 			[_challengesButton setSelected:NO];
-			[_popularButton setSelected:NO];
+			[_discoveryButton setSelected:NO];
 			[_settingsButton setSelected:YES];
 			
 			mixPanelTrack = @"Tab - Settings";
@@ -275,13 +282,13 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
-	//[self _updateChallengeAlerts];
+	[self _updateChallengeAlerts];
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_RESULTS" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	
 	[self _dropTabs];
 }

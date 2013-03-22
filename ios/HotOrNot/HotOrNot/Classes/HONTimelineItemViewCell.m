@@ -112,7 +112,7 @@
 	if (_hasChallenger) {
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 153.0, 153.0)];
 		_lHolderView.clipsToBounds = YES;
-//		_lHolderView.layer.cornerRadius = 4.0;
+		_lHolderView.layer.cornerRadius = 4.0 * (int)[HONAppDelegate isRetina5];
 		[self addSubview:_lHolderView];
 		
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
@@ -161,7 +161,7 @@
 		
 		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 46.0, 153.0, 153.0)];
 		_rHolderView.clipsToBounds = YES;
-//		_rHolderView.layer.cornerRadius = 4.0;
+		_rHolderView.layer.cornerRadius = 4.0 * (int)[HONAppDelegate isRetina5];
 		[self addSubview:_rHolderView];
 		
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
@@ -246,7 +246,7 @@
 		moreButton.frame = CGRectMake(266.0, 400.0, 44.0, 44.0);
 		
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 306.0, 306.0)];
-//		_lHolderView.layer.cornerRadius = 4.0;
+		_lHolderView.layer.cornerRadius = 4.0  * (int)[HONAppDelegate isRetina5];
 		_lHolderView.clipsToBounds = YES;
 		[self addSubview:_lHolderView];
 		
@@ -254,11 +254,6 @@
 		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
-		
-//		UIImageView *overlayWaitingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 236.0, 306.0, 70.0)];
-//		overlayWaitingImageView.image = [UIImage imageNamed:@"waitingImageOverlay"];
-//		overlayWaitingImageView.userInteractionEnabled = YES;
-//		[lImgView addSubview:overlayWaitingImageView];
 		
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 360.0, 35.0, 35.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];

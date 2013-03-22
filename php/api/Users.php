@@ -509,6 +509,47 @@
 			*/
 		}
 		
+		/** 
+		 * Flags the challenge for abuse / inappropriate content
+		 * @param $user_id The user's ID who is claiming abuse (integer)
+		 * @param $challenge The ID of the challenge to flag (integer)
+		 * @return An associative object (array)
+		**/
+		function flagUser ($user_id) {
+			// get this user's name
+			$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$user_obj = mysql_fetch_object(mysql_query($query));
+						
+			// send email
+			$to = "bim.picchallenge@gmail.com";
+			$subject = "Flagged User";
+			$body = "User ID: #". $user_id ."\nUsername: #". $user_obj->username;
+			$from = "picchallenge@builtinmenlo.com";
+			
+			$headers_arr = array();
+			$headers_arr[] = "MIME-Version: 1.0";
+			$headers_arr[] = "Content-type: text/plain; charset=iso-8859-1";
+			$headers_arr[] = "Content-Transfer-Encoding: 8bit";
+			$headers_arr[] = "From: {$from}";
+			$headers_arr[] = "Reply-To: {$from}";
+			$headers_arr[] = "Subject: {$subject}";
+			$headers_arr[] = "X-Mailer: PHP/". phpversion();
+
+			if (mail($to, $subject, $body, implode("\r\n", $headers_arr))) 
+			   $mail_res = true;
+
+			else
+			   $mail_res = false;  
+			
+			// return
+			$this->sendResponse(200, json_encode(array(
+				'id' => $user_id,
+				'mail' => $mail_res
+			)));
+			return (true);
+		}
+		
+		
 		/**
 		 * Debugging function
 		**/
@@ -584,6 +625,12 @@
 			case "9":
 				if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['imgURL']))
 					$users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['imgURL']);
+				break;
+				
+			// flag a user
+			case "10":
+				if (isset($_POST['userID']))
+					$users->flagUser($_POST['userID']);
 				break;
     	}
 	}

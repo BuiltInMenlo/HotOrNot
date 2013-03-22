@@ -73,6 +73,43 @@
 			echo ($body);
 		}
 		
+		/** 
+		 * Helper function to send an Urban Airship push
+		 * @param $msg The message body of the push (string)
+		 * @return null
+		**/
+		function sendPush($msg) {
+			// curl urban airship's api
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+			//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+			curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
+		 	$res = curl_exec($ch);
+			$err_no = curl_errno($ch);
+			$err_msg = curl_error($ch);
+			$header = curl_getinfo($ch);
+			curl_close($ch);
+			
+			// curl urban airship's api
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
+			curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
+			//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
+		 	$res = curl_exec($ch);
+			$err_no = curl_errno($ch);
+			$err_msg = curl_error($ch);
+			$header = curl_getinfo($ch);
+			curl_close($ch);
+		}
+		
 		
 		/**
 		 * Gets comments for a particular challenge
@@ -141,13 +178,38 @@
 			$result = mysql_query($query);
 			$comment_id = mysql_insert_id();
 			
+			// submitting user object
+			$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$user_obj = mysql_fetch_object(mysql_query($query));
+			
+			// get the challenge object
+			$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+			$challenge_obj = mysql_fetch_object(mysql_query($query));
+			
+			// get subject title for this challenge
+			$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
+			$subject = mysql_fetch_object(mysql_query($query))->title;
+			
+			// get the challenge creator
+			$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';
+			$creator_obj = mysql_fetch_object(mysql_query($query));
+			
+			// send push if creator allows it
+			if ($creator_obj->notifications == "Y")
+				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' challenge!", "sound": "push_01.caf"}}');
+			
+			// get the challenge challenger
+			$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
+			$challenger_obj = mysql_fetch_object(mysql_query($query));
+			
+			// send push if challenger allows it
+			if ($challenger_obj->notifications == "Y")
+				$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' challenge!", "sound": "push_01.caf"}}');
+			
+			
 			// get the submitted comment
 			$query = 'SELECT * FROM `tblComments` WHERE `id` = '. $comment_id .';';
 			$comment_obj = mysql_fetch_object(mysql_query($query));
-			
-			// user object
-			$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $comment_obj->user_id .';';
-			$user_obj = mysql_fetch_object(mysql_query($query));
 			
 			// votes for user
 			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $comment_obj->user_id .';';

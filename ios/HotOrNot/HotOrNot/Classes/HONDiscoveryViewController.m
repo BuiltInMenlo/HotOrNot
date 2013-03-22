@@ -195,13 +195,13 @@
 	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 }
 
-- (void)_showSearchResults:(NSNotification *)notification {
+- (void)_showSearchTable:(NSNotification *)notification {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		self.view.frame = CGRectMake(self.view.frame.origin.x, -44.0, self.view.frame.size.width, self.view.frame.size.height);
 	}];
 }
 
-- (void)_hideSearchResults:(NSNotification *)notification {
+- (void)_hideSearchTable:(NSNotification *)notification {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
 	}];

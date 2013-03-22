@@ -37,6 +37,7 @@ extern NSString *const FacebookAppID;
 + (BOOL)isTapForTapEnabled;
 + (NSString *)rndDefaultSubject;
 + (NSArray *)searchSubjects;
++ (NSArray *)searchUsers;
 
 - (BOOL)openSession;
 + (void)writeDeviceToken:(NSString *)token;
@@ -66,7 +67,7 @@ extern NSString *const FacebookAppID;
 + (BOOL)isRetina5;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;
-+ (BOOL)canPingParseServer;
+//+ (BOOL)canPingParseServer;
 + (BOOL)audioMuted;
 
 + (NSString *)timeSinceDate:(NSDate *)date;

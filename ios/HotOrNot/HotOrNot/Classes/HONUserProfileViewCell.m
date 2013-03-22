@@ -34,6 +34,13 @@
 	bgImageView.image = [UIImage imageNamed:@"profileBackground"];
 	[self addSubview:bgImageView];
 	
+	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shareButton.frame = CGRectMake(275.0, 5.0, 44.0, 44.0);
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:shareButton];
+	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(110.0, 22.0, 95.0, 95.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	avatarImageView.layer.cornerRadius = 4.0;
@@ -74,6 +81,12 @@
 	pointsLabel.textAlignment = NSTextAlignmentCenter;
 	pointsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? @"%@ point" : @"%@ points", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:pointsLabel];
+}
+
+
+#pragma mark - Navigation
+- (void)_goShare {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE" object:nil];
 }
 
 

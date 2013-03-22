@@ -25,9 +25,8 @@
 
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
-	NSString *imgURL = ([_userVO.fbID isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : _userVO.imageURL;
 	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
-	[imageView setImageWithURL:[NSURL URLWithString:imgURL] placeholderImage:nil];
+	[imageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:imageView];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 18.0, 200.0, 16.0)];

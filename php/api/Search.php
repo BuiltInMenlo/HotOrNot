@@ -112,7 +112,7 @@
 					'id' => $user_row['id'], 
 					'username' => $user_row['username'], 
 					'fb_id' => $user_row['fb_id'], 					
-					'img_url' => $avatar_url,   
+					'avatar_url' => $avatar_url,   
 					'points' => $user_row['points'],
 					'votes' => $votes,
 					'pokes' => $pokes
@@ -155,7 +155,7 @@
 				array_push($subject_arr, array(
 					'id' => $subject_row['id'], 
 					'name' => $subject_row['title'], 					
-					'img_url' => "", 
+					'avatar_url' => "", 
 					'score' => mysql_num_rows($result), 
 					'active' => $active
 				));	

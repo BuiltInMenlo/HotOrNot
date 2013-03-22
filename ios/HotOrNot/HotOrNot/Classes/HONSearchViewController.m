@@ -36,7 +36,10 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_retrieveSearchResults:) name:@"RETRIEVE_SEARCH_RESULTS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_retrieveUserSearchResults:) name:@"RETRIEVE_USER_SEARCH_RESULTS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_retrieveSubjectSearchResults:) name:@"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:nil];
+		
+		_isUser = YES;
 	}
 	
 	return (self);
@@ -199,7 +202,6 @@
 - (void)loadView {
 	[super loadView];
 	
-	_isUser = NO;
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 188.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -209,24 +211,35 @@
 	_tableView.userInteractionEnabled = YES;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
+	_tableView.alpha = 0.0;
 	[self.view addSubview:_tableView];
 	
 	_results = [NSMutableArray array];
-	for (NSString *subject in [HONAppDelegate searchSubjects]) {
+	for (NSString *username in [HONAppDelegate searchUsers]) {
 		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-									 [NSNumber numberWithInt:0], @"id",
-									 [NSNumber numberWithInt:arc4random() % 100], @"score",
-									 [NSNumber numberWithInt:0], @"active",
-									 subject, @"name", nil];
-		[_results addObject:[HONSubjectVO subjectWithDictionary:dict]];
+							  [NSNumber numberWithInt:0], @"id",
+							  username, @"username",
+							  @"", @"avatar_url",
+							  [NSNumber numberWithInt:arc4random() % 100], @"points",
+							  [NSNumber numberWithInt:arc4random() % 100], @"pokes",
+							  [NSNumber numberWithInt:arc4random() % 100], @"votes",
+							  @"", @"fb_id", nil];
+		[_results addObject:[HONUserVO userWithDictionary:dict]];
 	}
 	
 	
 	[_tableView reloadData];
+	[self performSelector:@selector(_showTable) withObject:nil afterDelay:0.25];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+}
+
+- (void)_showTable {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_tableView.alpha = 1.0;
+	}];
 }
 
 
@@ -235,22 +248,16 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)_goSubjects {
-	_isUser = NO;
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_SUBJECT_SEARCH" object:nil];
-}
-
-- (void)_goUsers {
-	_isUser = YES;
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_USER_SEARCH" object:nil];
-}
 
 #pragma mark - Notifications
-- (void)_retrieveSearchReults:(NSNotification *)notification {
-	[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"SHOW_USER_SEARCH_RESULTS" : @"SHOW_SUBJECT_SEARCH_RESULTS" object:[notification object]];
+- (void)_retrieveSubjectSearchResults:(NSNotification *)notification {
+	[self retrieveSubjects:[notification object]];
 }
+
+- (void)_retrieveUserSearchResults:(NSNotification *)notification {
+	[self retrieveUsers:[notification object]];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -259,14 +266,6 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return (1);
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONSearchToggleHeaderView *headerView = [[HONSearchToggleHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
-	[headerView.subjectButton addTarget:self action:@selector(_goSubjects) forControlEvents:UIControlEventTouchUpInside];
-	[headerView.userButton addTarget:self action:@selector(_goUsers) forControlEvents:UIControlEventTouchUpInside];
-	
-	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -299,10 +298,6 @@
 	return (kRowHeight);
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kSearchHeaderHeight);
-}
-
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (indexPath);
 }
@@ -318,9 +313,6 @@
 		HONSubjectVO *vo = (HONSubjectVO *)[_results objectAtIndex:indexPath.row];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:vo.subjectName];
 	}
-	
-	
-
 }
 
 
