@@ -456,29 +456,29 @@
 			
 			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d vote" : @"%d votes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
-//			[HONAppDelegate setVote:_challengeVO.challengeID];
-//			
-//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-//			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-//											[NSString stringWithFormat:@"%d", 6], @"action",
-//											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-//											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-//											@"Y", @"creator",
-//											nil];
-//			
-//			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//				NSError *error = nil;
-//				if (error != nil) {
-//					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-//					
-//				} else {
-//					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
-//				}
-//				
-//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
-//			}];
+			[HONAppDelegate setVote:_challengeVO.challengeID];
+			
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+											[NSString stringWithFormat:@"%d", 6], @"action",
+											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+											@"Y", @"creator",
+											nil];
+			
+			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					
+				} else {
+					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
+			}];
 		}
 		
 		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
@@ -518,29 +518,29 @@
 			_loserOverlayView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
 			
 			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-//			[HONAppDelegate setVote:_challengeVO.challengeID];
-//			
-//			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-//			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-//											[NSString stringWithFormat:@"%d", 6], @"action",
-//											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-//											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-//											@"N", @"creator",
-//											nil];
-//			
-//			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-//				NSError *error = nil;
-//				if (error != nil) {
-//					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-//					
-//				} else {
-//					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-//					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
-//				}
-//				
-//			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//				NSLog(@"HONVoteItemViewCell AFNetworking %@", [error localizedDescription]);
-//			}];
+			[HONAppDelegate setVote:_challengeVO.challengeID];
+			
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+											[NSString stringWithFormat:@"%d", 6], @"action",
+											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+											@"N", @"creator",
+											nil];
+			
+			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					
+				} else {
+					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+					NSLog(@"HONVoteItemViewCell AFNetworking: %@", voteResult);
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				NSLog(@"HONVoteItemViewCell AFNetworking %@", [error localizedDescription]);
+			}];
 		}
 		
 		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
