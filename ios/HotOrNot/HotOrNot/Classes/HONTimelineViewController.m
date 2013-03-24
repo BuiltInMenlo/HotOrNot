@@ -41,6 +41,7 @@
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
+@property(nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) HONUserVO *userVO;
 @end
@@ -143,6 +144,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShare:) name:@"SHOW_SHARE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -344,7 +346,7 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? _username : _subjectName : @""];
@@ -405,7 +407,7 @@
 	}
 	
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
-		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:1.0];
+		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:0.5];
 }
 
 - (void)viewDidLoad {
@@ -665,6 +667,11 @@
 	}
 }
 
+- (void)_resignSearchBarFocus:(NSNotification *)notification {
+	if (_searchHeaderView != nil)
+		[_searchHeaderView toggleFocus:NO];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -676,8 +683,14 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
-	return (headerView);
+	
+	if (_isPushView)
+		return (nil);
+	
+	else {
+		_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
+		return (_searchHeaderView);
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -725,7 +738,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if ([_username length] > 0 && indexPath.row == 0)
-		return (261.0);
+		return (226.0);
 	
 	else {
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
@@ -734,7 +747,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kSearchHeaderHeight);
+	return (kSearchHeaderHeight * (int)!_isPushView);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

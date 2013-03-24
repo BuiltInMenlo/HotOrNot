@@ -44,15 +44,13 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	int ind = (arc4random() % 5) + 1;
 	
 	[[Mixpanel sharedInstance] track:@"FB Login"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"FB_00%d", ind], @"Image", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? @"facebookBackground-568h" : @"facebookBackground";
+	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? @"facebookBackground-568h@2x" : @"facebookBackground";
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
 	bgImgView.image = [UIImage imageNamed:bgAsset];
@@ -68,13 +66,8 @@
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:cancelButton];
 	
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 55.0, 300.0, 264.0)];
-	imageView.backgroundColor = [UIColor blackColor];
-	imageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"FB_00%d", ind]];
-	[self.view addSubview:imageView];
-	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	facebookButton.frame = CGRectMake(19.0, 365.0, 283.0, 74.0);
+	facebookButton.frame = CGRectMake(19.0, 365.0, 264.0, 64.0);
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_nonActive"] forState:UIControlStateNormal];
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_Active"] forState:UIControlStateHighlighted];
 	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];

@@ -39,7 +39,7 @@
 
 - (id)initAsTopCell {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 261.0);
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 226.0);
 		_bgImgView.image = [UIImage imageNamed:@"profileBackground"];
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(110.0, 22.0, 95.0, 95.0)];

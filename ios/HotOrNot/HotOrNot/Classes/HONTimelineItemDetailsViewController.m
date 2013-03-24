@@ -165,34 +165,34 @@
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
 	
-	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake((_isOwner && !_isInSession) ? 37.0 : 10.0, 378.0, (_isOwner && !_isInSession) ? 247.0 : 147.0, 62.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:(_isOwner && !_isInSession) ? @"shareLarge_nonActive" : @"shareButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:(_isOwner && !_isInSession) ? @"shareLarge_Active" : @"shareButton_Active"] forState:UIControlStateHighlighted];
-	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	shareButton.hidden = (!_isOwner);
-	[self.view addSubview:shareButton];
+//	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	shareButton.frame = CGRectMake((_isOwner && !_isInSession) ? 37.0 : 10.0, 378.0, (_isOwner && !_isInSession) ? 247.0 : 147.0, 62.0);
+//	[shareButton setBackgroundImage:[UIImage imageNamed:(_isOwner && !_isInSession) ? @"shareLarge_nonActive" : @"shareButton_nonActive"] forState:UIControlStateNormal];
+//	[shareButton setBackgroundImage:[UIImage imageNamed:(_isOwner && !_isInSession) ? @"shareLarge_Active" : @"shareButton_Active"] forState:UIControlStateHighlighted];
+//	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+//	shareButton.hidden = (!_isOwner);
+//	[self.view addSubview:shareButton];
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake((!_isOwner && !_isInSession) ? 37.0 : 10.0, 378.0, (!_isOwner && !_isInSession) ? 247 : 147.0, 62.0);
-	[pokeButton setBackgroundImage:[UIImage imageNamed:(!_isOwner && !_isInSession) ? @"pokeUser_nonActive" : @"pokeButton_nonActive"] forState:UIControlStateNormal];
-	[pokeButton setBackgroundImage:[UIImage imageNamed:(!_isOwner && !_isInSession) ? @"pokeUser_Active" : @"pokeButton_Active"] forState:UIControlStateHighlighted];
+	pokeButton.frame = CGRectMake(0.0, 378.0, 64.0, 64.0);
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
 	[pokeButton addTarget:self action:(_isCreator || _challengeVO.statusID == 1 || _challengeVO.statusID == 2) ? @selector(_goPokeCreator) : @selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
 	pokeButton.hidden = (_isOwner);
 	[self.view addSubview:pokeButton];
 	
 	UIButton *voteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	voteButton.frame = CGRectMake(160.0, 378.0, 147.0, 62.0);
-	[voteButton setBackgroundImage:[UIImage imageNamed:@"vote_nonActive"] forState:UIControlStateNormal];
-	[voteButton setBackgroundImage:[UIImage imageNamed:@"vote_Active"] forState:UIControlStateHighlighted];
+	voteButton.frame = CGRectMake(160.0, 378.0, 84.0, 84.0);
+	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_nonActive"] forState:UIControlStateNormal];
+	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_Active"] forState:UIControlStateHighlighted];
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 	voteButton.hidden = (!_isInSession);
 	[self.view addSubview:voteButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(266.0, 385.0, 44.0, 44.0);
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
+	moreButton.frame = CGRectMake(266.0, 385.0, 64.0, 64.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:moreButton];
 }
@@ -222,28 +222,28 @@
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
-- (void)_goShare {
-	
-	if ([HONAppDelegate allowsFBPosting]) {
-		[self dismissViewControllerAnimated:NO completion:^(void) {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Challenge"
-																				 message:[NSString stringWithFormat:@"%@ challenge posted to your wall!", _challengeVO.subjectName]
-																				delegate:nil
-																	cancelButtonTitle:@"OK"
-																	otherButtonTitles:nil];
-			[alertView show];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_CHALLENGE" object:_challengeVO];
-		}];
-	
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Challenge"
-																			 message:@"You need to enable Facebook posting first!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
-	}
-}
+//- (void)_goShare {
+//	
+//	if ([HONAppDelegate allowsFBPosting]) {
+//		[self dismissViewControllerAnimated:NO completion:^(void) {
+//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Challenge"
+//																				 message:[NSString stringWithFormat:@"%@ challenge posted to your wall!", _challengeVO.subjectName]
+//																				delegate:nil
+//																	cancelButtonTitle:@"OK"
+//																	otherButtonTitles:nil];
+//			[alertView show];
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_CHALLENGE" object:_challengeVO];
+//		}];
+//	
+//	} else {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Challenge"
+//																			 message:@"You need to enable Facebook posting first!"
+//																			delegate:nil
+//																cancelButtonTitle:@"OK"
+//																otherButtonTitles:nil];
+//		[alertView show];
+//	}
+//}
 
 - (void)_goPokeCreator {
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Poke Player"

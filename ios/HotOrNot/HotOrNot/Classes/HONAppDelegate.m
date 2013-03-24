@@ -25,7 +25,6 @@
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
 #import "HONTimelineViewController.h"
-#import "HONTimelineSubjectsViewController.h"
 #import "HONDiscoveryViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONSettingsViewController.h"
@@ -328,7 +327,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [[utcDate dateByAddingTimeInterval:78] timeIntervalSinceDate:date];
+	int secs = [[utcDate dateByAddingTimeInterval:80] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
@@ -503,9 +502,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	}
 	
 	_searchViewController = [[HONSearchViewController alloc] init];
-	[self.window addSubview:_searchViewController.view];
-	
 	_searchViewController.view.frame = CGRectMake(0.0, 20.0 + kSearchHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
+	[self.window addSubview:_searchViewController.view];
 }
 
 - (void)_hideSearchTable:(NSNotification *)notification {
@@ -632,7 +630,7 @@ NSString *const FacebookAppID = @"529054720443694";
 				self.tabBarController.delegate = self;
 				
 				_bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
-				_bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h" : @"mainBG"];
+				_bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 				[self.tabBarController.view addSubview:_bgImgView];
 				
 				self.window.rootViewController = self.tabBarController;

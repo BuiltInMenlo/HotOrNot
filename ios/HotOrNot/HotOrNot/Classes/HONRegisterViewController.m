@@ -243,7 +243,7 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Username"];
@@ -257,9 +257,14 @@
 	[submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:submitButton];
 	
+	UIImageView *logoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 120.0, 64.0, 64.0)];
+	logoImageView.image = [UIImage imageNamed:@"firstRun_AvatarIcon"];
+	logoImageView.userInteractionEnabled = YES;
+	[self.view addSubview:logoImageView];
 	
-	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 200.0, 274.0, 44.0)];
-	subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
+	
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 200.0, 294.0, 64.0)];
+	subjectBGImageView.image = [UIImage imageNamed:@"firstRun_InputField_nonActive"];
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	

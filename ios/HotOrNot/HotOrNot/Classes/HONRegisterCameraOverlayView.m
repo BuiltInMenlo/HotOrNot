@@ -14,6 +14,7 @@
 
 @interface HONRegisterCameraOverlayView()
 @property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIView *footerHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *captureButton;
@@ -34,6 +35,11 @@
 	if ((self = [super initWithFrame:frame])) {
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
+		
+		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 320.0)];
+		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
+		_irisImageView.alpha = 0.0;
+		[self addSubview:_irisImageView];
 		
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
 		_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
@@ -63,7 +69,7 @@
 		[_footerHolderView addSubview:_submitButton];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(20.0, 20.0, 64.0, 44.0);
+		cameraRollButton.frame = CGRectMake(20.0, 20.0, 64.0, 64.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
@@ -77,7 +83,7 @@
 		[_footerHolderView addSubview:_captureButton];
 		
 		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		changeCameraButton.frame = CGRectMake(220.0, 20.0, 64.0, 44.0);
+		changeCameraButton.frame = CGRectMake(220.0, 20.0, 64.0, 64.0);
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -162,6 +168,13 @@
 	} completion:nil];
 }
 
+- (void)_animateShutter {
+	_irisImageView.alpha = 1.0;
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		_irisImageView.alpha = 0.0;
+	} completion:^(BOOL finished){}];
+}
+
 #pragma mark - Navigation
 - (void)_goCancel {
 	[self.delegate cameraOverlayViewCancelCamera:self];
@@ -173,6 +186,7 @@
 
 - (void)_goCapture {
 	_captureButton.enabled = NO;
+	[self _animateShutter];
 	[self.delegate cameraOverlayViewTakePicture:self];
 }
 

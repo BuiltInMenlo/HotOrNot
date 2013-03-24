@@ -212,34 +212,28 @@
 		_loserOverlayView.hidden = YES;
 		[self addSubview:_loserOverlayView];
 		
-		NSString *caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d vote" : @"%d votes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-				
+		NSString *caption = (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"" : [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0 + size.width, 34.0);
-		[_votesButton setImage:[UIImage imageNamed:@"heartIcon_nonActive"] forState:UIControlStateNormal];
-		[_votesButton setImage:[UIImage imageNamed:@"heartIcon_Active"] forState:UIControlStateHighlighted];
+		_votesButton.frame = CGRectMake(12.0, 250.0, (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? 64.0 : 94, 34.0);
+		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_nonActive" : @"timelineLike_nonActive"] forState:UIControlStateNormal];
+		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_Active" : @"timelineLike_Active"] forState:UIControlStateHighlighted];
 		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-		//_votesButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
-		//_votesButton.imageEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
+		_votesButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
 		[_votesButton setTitle:caption forState:UIControlStateNormal];
 		[_votesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_votesButton];
 		
-		caption = [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d comment" : @"%d comments", _challengeVO.commentTotal];
-		size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-				
 		UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		commentsButton.frame = CGRectMake(120.0, 250.0, 34.0 + size.width, 34.0);
-		[commentsButton setImage:[UIImage imageNamed:@"commentIcon_nonActive"] forState:UIControlStateNormal];
-		[commentsButton setImage:[UIImage imageNamed:@"commentIcon_Active"] forState:UIControlStateHighlighted];
+		commentsButton.frame = CGRectMake(120.0, 250.0, (_challengeVO.commentTotal == 0) ? 94.0 : 124, 34.0);
+		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_nonActive" : @"timelineComments_nonActive"] forState:UIControlStateNormal];
+		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_Active" : @"timelineComments_Active"] forState:UIControlStateHighlighted];
 		commentsButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		[commentsButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-		//commentsButton.titleEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
-		//commentsButton.imageEdgeInsets = UIEdgeInsetsMake(10.0, -30.0, -10.0, 30.0);
-		[commentsButton setTitle:caption forState:UIControlStateNormal];
+		commentsButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
 		[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+		caption = (_challengeVO.commentTotal == 0) ? @"" : (_challengeVO.commentTotal > 99) ? @"99+ Comments" : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d Comment" : @"%d Comments", _challengeVO.commentTotal];
+		[commentsButton setTitle:caption forState:UIControlStateNormal];
 		[self addSubview:commentsButton];
 		
 	} else {
@@ -277,16 +271,16 @@
 		[creatorNameButton setTitle:[NSString stringWithFormat:@"%@ is waiting for a match…", _challengeVO.creatorName] forState:UIControlStateNormal];
 		[self addSubview:creatorNameButton];
 		
-//		size = [[NSString stringWithFormat:@"  Be the first to challenge %@, tap here  ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate qualcommBold] fontWithSize:12] constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-//		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_votesButton.frame = CGRectMake(12.0, 400.0, size.width, 34.0);
-//		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"voteButton_nonActive"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateNormal];
-//		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"voteButton_Active"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
-//		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-//		_votesButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:12];
-//		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-//		[_votesButton setTitle:[NSString stringWithFormat:@"Be the first to challenge %@, tap here", _challengeVO.creatorName] forState:UIControlStateNormal];
-//		[self addSubview:_votesButton];
+		size = [[NSString stringWithFormat:@"    Be the first to challenge %@    ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate qualcommBold] fontWithSize:12] constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_votesButton.frame = CGRectMake(12.0, 400.0, size.width, 34.0);
+		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_nonActive"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateNormal];
+		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_Active"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+		_votesButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:12];
+		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		[_votesButton setTitle:[NSString stringWithFormat:@"Be the first to challenge %@", _challengeVO.creatorName] forState:UIControlStateNormal];
+		[self addSubview:_votesButton];
 	}
 }
 

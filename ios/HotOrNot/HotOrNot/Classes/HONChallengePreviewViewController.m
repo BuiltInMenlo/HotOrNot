@@ -117,21 +117,14 @@
 	[self.view addSubview:subjectLabel];
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(24.0, 380.0, 124.0, 58.0);
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeUserButton_nonActive"] forState:UIControlStateNormal];
-	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeUserButton_Active"] forState:UIControlStateHighlighted];
+	pokeButton.frame = CGRectMake(24.0, 380.0, 64.0, 64.0);
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
+	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
 	pokeButton.hidden = (_challengeVO.challengerID == 0);
 	[self.view addSubview:pokeButton];
 	
 	if (_isCreator) {
 		[pokeButton addTarget:self action:@selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
-		
-//		UIButton *challengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		challengeButton.frame = CGRectMake(160.0, 378.0, 96.0, 60.0);
-//		[challengeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_nonActive"] forState:UIControlStateNormal];
-//		[challengeButton setBackgroundImage:[UIImage imageNamed:@"tableButtonTie_Active"] forState:UIControlStateHighlighted];
-//		[challengeButton addTarget:self action:@selector(_goRechallenge) forControlEvents:UIControlEventTouchUpInside];
-//		[self.view addSubview:challengeButton];
 	
 	} else {
 		[pokeButton addTarget:self action:@selector(_goPokeCreator) forControlEvents:UIControlEventTouchUpInside];

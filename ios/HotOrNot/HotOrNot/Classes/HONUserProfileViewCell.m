@@ -30,14 +30,14 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 261.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 226.0)];
 	bgImageView.image = [UIImage imageNamed:@"profileBackground"];
 	[self addSubview:bgImageView];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareButton.frame = CGRectMake(275.0, 5.0, 44.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"profileShareButton_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"profileShareButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:shareButton];
 	

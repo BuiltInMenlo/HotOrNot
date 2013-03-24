@@ -19,6 +19,7 @@
 
 @interface HONCameraOverlayView() <UITextFieldDelegate>
 @property (nonatomic, strong) UIImageView *bgImageView;
+@property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *captureHolderView;
@@ -56,6 +57,11 @@
 		
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
+		
+		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 320.0)];
+		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
+		_irisImageView.alpha = 0.0;
+		[self addSubview:_irisImageView];
 		
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
 		_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
@@ -97,14 +103,14 @@
 		[subjectBGImageView addSubview:_subjectTextField];
 		
 		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_randomSubjectButton.frame = CGRectMake(260.0, 5.0, 34.0, 34.0);
-		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"cameraInputField_RefreshIcon_nonActive"] forState:UIControlStateNormal];
-		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"cameraInputField_RefreshIcon_Active"] forState:UIControlStateHighlighted];
+		_randomSubjectButton.frame = CGRectMake(230.0, 5.0, 64.0, 34.0);
+		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_nonActive"] forState:UIControlStateNormal];
+		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_Active"] forState:UIControlStateHighlighted];
 		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
 		[subjectBGImageView addSubview:_randomSubjectButton];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(20.0, 310.0, 64.0, 44.0);
+		cameraRollButton.frame = CGRectMake(20.0, 310.0, 64.0, 64.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
@@ -112,7 +118,7 @@
 		
 		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(220.0, 310.0, 64.0, 44.0);
+			changeCameraButton.frame = CGRectMake(220.0, 310.0, 64.0, 64.0);
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 			[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
@@ -131,7 +137,7 @@
 
 		// Add the capture button
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(103.0, 371.0, 94.0, 94.0);
+		_captureButton.frame = CGRectMake(113.0, 384.0, 94.0, 94.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
@@ -189,6 +195,7 @@
 
 - (void)takePicture:(id)sender {
 	_captureButton.enabled = NO;
+	[self _animateShutter];
 	[self.delegate cameraOverlayViewTakePicture:self];
 }
 
@@ -379,8 +386,15 @@
 	_activityIndicatorView = nil;
 }
 
+- (void)_animateShutter {
+	_irisImageView.alpha = 1.0;
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		_irisImageView.alpha = 0.0;
+	} completion:^(BOOL finished){}];
+}
 
-#pragma mark -Navigation
+
+#pragma mark - Navigation
 - (void)goBack:(id)sender {
 	_captureButton.enabled = YES;
 	[self hidePreview];

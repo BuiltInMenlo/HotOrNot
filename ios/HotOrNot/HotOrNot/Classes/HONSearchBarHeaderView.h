@@ -9,4 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface HONSearchBarHeaderView : UIView
+- (void)toggleFocus:(BOOL)isFocused;
 @end

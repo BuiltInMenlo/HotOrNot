@@ -18,9 +18,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
-		
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight)];
 		bgImageView.image = [UIImage imageNamed:@"lockedHeaderBackground"];
 		[self addSubview:bgImageView];
 		
@@ -41,14 +39,22 @@
 }
 
 
+- (void)toggleFocus:(BOOL)isFocused {
+	if (isFocused)
+		[_searchBar becomeFirstResponder];
+	
+	else
+		[_searchBar resignFirstResponder];
+}
+
 #pragma mark - Navigation
 
 
 #pragma mark - Notifications
 - (void)_resignSearchBarFocus:(NSNotification *)notification {
 	
-	if ([_searchBar isFirstResponder])
-		[_searchBar resignFirstResponder];
+//	if ([_searchBar isFirstResponder])
+//		[_searchBar resignFirstResponder];
 }
 
 
