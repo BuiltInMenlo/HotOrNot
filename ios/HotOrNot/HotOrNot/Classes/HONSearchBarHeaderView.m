@@ -45,6 +45,8 @@
 	
 	else
 		[_searchBar resignFirstResponder];
+	
+	_searchBar.showsCancelButton = isFocused;
 }
 
 #pragma mark - Navigation

@@ -31,7 +31,8 @@ extern NSString *const FacebookAppID;
 + (int)createPointMultiplier;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
-+ (NSString *)ctaForChallenge:(HONChallengeVO *)vo;
++ (NSString *)smsInviteFormat;
++ (NSString *)emailInviteFormat;
 + (BOOL)isCharboostEnabled;
 + (BOOL)isKiipEnabled;
 + (BOOL)isTapForTapEnabled;
@@ -67,7 +68,6 @@ extern NSString *const FacebookAppID;
 + (BOOL)isRetina5;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;
-//+ (BOOL)canPingParseServer;
 + (BOOL)audioMuted;
 
 + (NSString *)timeSinceDate:(NSDate *)date;

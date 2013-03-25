@@ -20,61 +20,55 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [UIColor orangeColor];
 		
-		_statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 5.0, 20.0, 12.0)];
-		_statusLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:10];
-		_statusLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 190.0, 64.0)];
+		bgImageView.image = [UIImage imageNamed:@"notificationBackground"];
+		[self addSubview:bgImageView];
+		
+		
+		UIImageView *statusImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 15.0, 24.0, 24.0)];
+		statusImageView.image = [UIImage imageNamed:@"notificationCameraIcon"];
+		[self addSubview:statusImageView];
+		
+		_statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(32.0, 22.0, 32.0, 12.0)];
+		_statusLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		_statusLabel.textColor = [UIColor whiteColor];
 		_statusLabel.backgroundColor = [UIColor clearColor];
 		_statusLabel.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:_statusLabel];
 		
-		UILabel *statusNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 17.0, 20.0, 4.0)];
-		statusNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:4];
-		statusNameLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		statusNameLabel.backgroundColor = [UIColor clearColor];
-		statusNameLabel.textAlignment = NSTextAlignmentCenter;
-		statusNameLabel.text = @"CHALLENGES";
-		[self addSubview:statusNameLabel];
 		
-		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 5.0, 20.0, 12.0)];
-		_scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:10];
-		_scoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		UIImageView *scoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(71.0, 15.0, 24.0, 24.0)];
+		scoreImageView.image = [UIImage imageNamed:@"notificationHeartIcon"];
+		[self addSubview:scoreImageView];
+		
+		_scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(93.0, 22.0, 32.0, 12.0)];
+		_scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		_scoreLabel.textColor = [UIColor whiteColor];
 		_scoreLabel.backgroundColor = [UIColor clearColor];
 		_scoreLabel.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:_scoreLabel];
 		
-		UILabel *scoreNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 17.0, 20.0, 4.0)];
-		scoreNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:4];
-		scoreNameLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		scoreNameLabel.backgroundColor = [UIColor clearColor];
-		scoreNameLabel.textAlignment = NSTextAlignmentCenter;
-		scoreNameLabel.text = @"VOTES";
-		[self addSubview:scoreNameLabel];
 		
-		_commentLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 5.0, 20.0, 12.0)];
-		_commentLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:10];
-		_commentLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		UIImageView *commentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(132.0, 15.0, 24.0, 24.0)];
+		commentImageView.image = [UIImage imageNamed:@"notificationCommentIcon"];
+		[self addSubview:commentImageView];
+		
+		_commentLabel = [[UILabel alloc] initWithFrame:CGRectMake(154.0, 22.0, 32.0, 12.0)];
+		_commentLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		_commentLabel.textColor = [UIColor whiteColor];
 		_commentLabel.backgroundColor = [UIColor clearColor];
 		_commentLabel.textAlignment = NSTextAlignmentCenter;
 		[self addSubview:_commentLabel];
-		
-		UILabel *commentNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 17.0, 20.0, 4.0)];
-		commentNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:4];
-		commentNameLabel.textColor = [HONAppDelegate honBlueTxtColor];
-		commentNameLabel.backgroundColor = [UIColor clearColor];
-		commentNameLabel.textAlignment = NSTextAlignmentCenter;
-		commentNameLabel.text = @"COMMENTS";
-		[self addSubview:commentNameLabel];
 	}
 	
 	return (self);
 }
 
 - (void)setAlerts:(NSDictionary *)dict {
-	_statusLabel.text = [NSString stringWithFormat:@"%d", [[dict objectForKey:@"status"] intValue]];
-	_scoreLabel.text = [NSString stringWithFormat:@"%d", [[dict objectForKey:@"score"] intValue]];
-	_commentLabel.text = [NSString stringWithFormat:@"%d", [[dict objectForKey:@"comments"] intValue]];
+	_statusLabel.text = ([[dict objectForKey:@"status"] intValue] > 10) ? @"10+" : [NSString stringWithFormat:@"%d", [[dict objectForKey:@"status"] intValue]];
+	_scoreLabel.text = ([[dict objectForKey:@"score"] intValue] > 10) ? @"10+" : [NSString stringWithFormat:@"%d", [[dict objectForKey:@"score"] intValue]];
+	_commentLabel.text = ([[dict objectForKey:@"comments"] intValue] > 10) ? @"10+" : [NSString stringWithFormat:@"%d", [[dict objectForKey:@"comments"] intValue]];
 }
 
 @end

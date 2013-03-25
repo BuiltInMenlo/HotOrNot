@@ -66,7 +66,7 @@
 	
 	if ([touch view] == _tabHolderView) {
 		CGPoint touchLocation = [touch locationInView:self.view];
-		float minY = (self.view.frame.size.height - (kLipHeight + kButtonHeight)) + (_tabHolderView.frame.size.height * 0.5);
+		float minY = (self.view.frame.size.height - (kLipHeight + kTabHeight)) + (_tabHolderView.frame.size.height * 0.5);
 		float maxY = (self.view.frame.size.height - kLipHeight) + (_tabHolderView.frame.size.height * 0.5);
 		
 		CGPoint location = CGPointMake(_tabHolderView.center.x, MIN(MAX(_touchPt.y + touchLocation.y, minY), maxY));
@@ -80,7 +80,7 @@
 	UITouch *touch = [touches anyObject];
 	CGPoint location = CGPointMake(_tabHolderView.center.x - [touch locationInView:self.view].x, _tabHolderView.center.y - [touch locationInView:self.view].y);
 	
-	if ([touch locationInView:self.view].y > self.view.frame.size.height - (kLipHeight + kButtonHeight)) {
+	if ([touch locationInView:self.view].y > self.view.frame.size.height - (kLipHeight + kTabHeight)) {
 		if (location.y > _touchPt.y)
 			[self _raiseTabs];
 			
@@ -101,8 +101,11 @@
 	[self addCustomElements];
 	[self showNewTabBar];
 	
-	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(64.0, self.view.frame.size.height - (kLipHeight * 0.67), 60.0, 22.0)];
-	
+	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(20.0, self.view.frame.size.height - 64.0, 190.0, 64.0)];
+//	[self _showAlertPopOverWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
+//												  [NSNumber numberWithInt:arc4random() % 15], @"status",
+//												  [NSNumber numberWithInt:arc4random() % 15], @"score",
+//												  [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
 	//[self _updateChallengeAlerts];
 }
 
@@ -142,16 +145,16 @@
 }
 
 -(void)addCustomElements {
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kLipHeight, 320.0, (kLipHeight + kButtonHeight))];
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kLipHeight, 320.0, (kLipHeight + kTabHeight))];
 	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 13.0, 320.0, 80.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 13.0, 320.0, 59.0)];
 	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
 	[_tabHolderView addSubview:bgImageView];
 	
 	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_timelineButton.frame = CGRectMake(0.0, kLipHeight, 80.0, kButtonHeight);
+	_timelineButton.frame = CGRectMake(0.0, kLipHeight, 80.0, 64.0);
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
@@ -160,7 +163,7 @@
 	[_timelineButton setSelected:YES];
 	
 	_challengesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_challengesButton.frame = CGRectMake(80.0, kLipHeight, 80.0, kButtonHeight);
+	_challengesButton.frame = CGRectMake(80.0, kLipHeight, 80.0, 64.0);
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
@@ -168,7 +171,7 @@
 	[_challengesButton setTag:1];
 	
 	_discoveryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_discoveryButton.frame = CGRectMake(160.0, kLipHeight, 80.0, kButtonHeight);
+	_discoveryButton.frame = CGRectMake(160.0, kLipHeight, 80.0, 64.0);
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Tapped"] forState:UIControlStateHighlighted];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected];
@@ -176,7 +179,7 @@
 	[_discoveryButton setTag:2];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_settingsButton.frame = CGRectMake(240.0, kLipHeight, 80.0, kButtonHeight);
+	_settingsButton.frame = CGRectMake(240.0, kLipHeight, 80.0, 64.0);
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateNormal];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Tapped"] forState:UIControlStateHighlighted];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Active"] forState:UIControlStateSelected];
@@ -209,16 +212,35 @@
 
 - (void)_raiseTabs {
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kButtonHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kTabHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	} completion:^(BOOL finished) {
+	}];
+}
+
+- (void)_showAlertPopOverWithTotals:(NSDictionary *)dict {
+	[_alertPopOverView setAlerts:dict];
+	_alertPopOverView.alpha = 0.0;
+	[self.view addSubview:_alertPopOverView];
+	
+	[UIView animateWithDuration:0.25 delay:0.67 options:UIViewAnimationOptionCurveLinear animations:^(void) {
+		_alertPopOverView.alpha = 1.0;
 	} completion:^(BOOL finished) {
 	}];
 }
 
 - (void)_toggleTabsEnabled:(BOOL)isEnabled {
-	[_timelineButton setEnabled:isEnabled];
-	[_challengesButton setEnabled:isEnabled];
-	[_discoveryButton setEnabled:isEnabled];
-	[_settingsButton setEnabled:isEnabled];
+	if	(isEnabled) {
+		[_timelineButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+		[_challengesButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+		[_discoveryButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+		[_settingsButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+	
+	} else {
+		[_timelineButton removeTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+		[_challengesButton removeTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+		[_discoveryButton removeTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+		[_settingsButton removeTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
+	}
 }
 
 
@@ -299,11 +321,11 @@
 
 #pragma mark - Notifications
 - (void)_showTabs:(NSNotification *)notification {
-	_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kButtonHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+	_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kTabHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 }
 
 - (void)_hideTabs:(NSNotification *)notification {
-	if (_tabHolderView.frame.origin.y == self.view.frame.size.height - (kLipHeight + kButtonHeight))
+	if (_tabHolderView.frame.origin.y == self.view.frame.size.height - (kLipHeight + kTabHeight))
 		[self _dropTabs];
 }
 
@@ -386,14 +408,7 @@
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
-				[_alertPopOverView setAlerts:alertTotals];
-				_alertPopOverView.alpha = 0.0;
-				[self.view addSubview:_alertPopOverView];
-				
-				[UIView animateWithDuration:0.25 delay:0.67 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-					_alertPopOverView.alpha = 1.0;
-				} completion:^(BOOL finished) {
-				}];
+				[self _showAlertPopOverWithTotals:alertTotals];
 			}
 		}
 		

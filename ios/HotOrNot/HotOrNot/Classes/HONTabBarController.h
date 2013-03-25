@@ -19,6 +19,6 @@
 - (void)showNewTabBar;
 
 #define kLipHeight 16.0
-#define kButtonHeight 64.0
+#define kTabHeight 59.0
 
 @end

@@ -69,7 +69,7 @@
 	_challengeVO = challengeVO;
 		
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 8.0, 200.0, 24.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
@@ -86,8 +86,8 @@
 		[self addSubview:rechallengeImageView];
 		
 		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(220.0, 8.0, 60.0, 24.0)];
-		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
-		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+		rechallengeLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
 		rechallengeLabel.backgroundColor = [UIColor clearColor];
 		rechallengeLabel.textAlignment = NSTextAlignmentRight;
 		rechallengeLabel.text = @"Resnapped";
@@ -147,7 +147,7 @@
 		[self addSubview:creatorAvatarButton];
 		
 		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 220.0, 100.0, 20.0)];
-		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		creatorNameLabel.backgroundColor = [UIColor clearColor];
 		creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
@@ -184,7 +184,7 @@
 		[self addSubview:challengerAvatarButton];
 		
 		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(200.0, 220.0, 100.0, 20.0)];
-		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
 		challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
@@ -217,8 +217,8 @@
 		_votesButton.frame = CGRectMake(12.0, 250.0, (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? 64.0 : 94, 34.0);
 		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_nonActive" : @"timelineLike_nonActive"] forState:UIControlStateNormal];
 		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_Active" : @"timelineLike_Active"] forState:UIControlStateHighlighted];
-		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
 		_votesButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
 		[_votesButton setTitle:caption forState:UIControlStateNormal];
 		[_votesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
@@ -228,8 +228,8 @@
 		commentsButton.frame = CGRectMake(120.0, 250.0, (_challengeVO.commentTotal == 0) ? 94.0 : 124, 34.0);
 		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_nonActive" : @"timelineComments_nonActive"] forState:UIControlStateNormal];
 		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_Active" : @"timelineComments_Active"] forState:UIControlStateHighlighted];
-		commentsButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-		[commentsButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		commentsButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		[commentsButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
 		commentsButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
 		[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 		caption = (_challengeVO.commentTotal == 0) ? @"" : (_challengeVO.commentTotal > 99) ? @"99+ Comments" : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d Comment" : @"%d Comments", _challengeVO.commentTotal];
@@ -266,19 +266,19 @@
 		UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		creatorNameButton.frame = CGRectMake(60.0, 370.0, size.width, 20.0);
 		[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
-		creatorNameButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		creatorNameButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		[creatorNameButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
 		[creatorNameButton setTitle:[NSString stringWithFormat:@"%@ is waiting for a match…", _challengeVO.creatorName] forState:UIControlStateNormal];
 		[self addSubview:creatorNameButton];
 		
-		size = [[NSString stringWithFormat:@"    Be the first to challenge %@    ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate qualcommBold] fontWithSize:12] constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		size = [[NSString stringWithFormat:@"    Be the first to challenge %@    ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12] constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_votesButton.frame = CGRectMake(12.0, 400.0, size.width, 34.0);
 		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_nonActive"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateNormal];
 		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_Active"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
 		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-		_votesButton.titleLabel.font = [[HONAppDelegate qualcommBold] fontWithSize:12];
-		[_votesButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
+		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
 		[_votesButton setTitle:[NSString stringWithFormat:@"Be the first to challenge %@", _challengeVO.creatorName] forState:UIControlStateNormal];
 		[self addSubview:_votesButton];
 	}

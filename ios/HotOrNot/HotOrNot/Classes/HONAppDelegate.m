@@ -75,24 +75,11 @@ NSString *const FacebookAppID = @"529054720443694";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"fb_network"]);
 }
 
-+ (NSString *)ctaForChallenge:(HONChallengeVO *)vo {
-	NSString *message;
-	
-	if (vo.statusID == 1)
-		message = [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:2];
-	
-	else if (vo.statusID == 2)
-		message = [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:0];
-	
-	else
-		message = [[[NSUserDefaults standardUserDefaults] objectForKey:@"ctas"] objectAtIndex:1];
-	
-	message = [message stringByReplacingOccurrencesOfString:@"{{CREATOR}}" withString:vo.creatorName];
-	message = [message stringByReplacingOccurrencesOfString:@"{{CHALLENGER}}" withString:vo.challengerName];
-	message = [message stringByReplacingOccurrencesOfString:@"{{SUBJECT}}" withString:vo.subjectName];
-	message = [message stringByReplacingOccurrencesOfString:@"{{GENDER}}" withString:@"her"];
-	
-	return (message);
++ (NSString *)smsInviteFormat {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"]);
+}
++ (NSString *)emailInviteFormat {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_email"]);
 }
 
 + (int)createPointMultiplier {
@@ -403,11 +390,11 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 + (UIColor *)honBlueTxtColor {
-	return ([UIColor colorWithRed:0.17647058823529 green:0.33333333333333 blue:0.6078431372549 alpha:1.0]);
+	return ([UIColor colorWithRed:0.161 green:0.498 blue:1.0 alpha:1.0]);
 }
 
 + (UIColor *)honGreyTxtColor {
-	return ([UIColor colorWithWhite:0.5922 alpha:1.0]);
+	return ([UIColor colorWithWhite:0.635 alpha:1.0]);
 }
 
 
@@ -874,6 +861,8 @@ NSString *const FacebookAppID = @"529054720443694";
 														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"poke"],
 														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
+		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"invite_sms"] forKey:@"invite_sms"];
+		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"invite_email"] forKey:@"invite_email"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
 														  [NSDictionary dictionaryWithObjectsAndKeys:
 														   [[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"title"], @"title",
@@ -888,9 +877,9 @@ NSString *const FacebookAppID = @"529054720443694";
 														  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"],
 														  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"created"], nil] forKey:@"ctas"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [[appDict objectForKey:@"add_networks"] objectForKey:@"chartboost"], @"chartboost",
-														  [[appDict objectForKey:@"add_networks"] objectForKey:@"kiip"], @"kiip",
-														  [[appDict objectForKey:@"add_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
+														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"chartboost"], @"chartboost",
+														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"kiip"], @"kiip",
+														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
 		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
 		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
 		[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
@@ -1041,15 +1030,11 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 - (void)_showFonts {
-	NSMutableArray *fontNames = [[NSMutableArray alloc] init];
-	
 	for (NSString *familyName in [UIFont familyNames]) {
 		NSLog(@"Font Family Name = %@", familyName);
 		
 		NSArray *names = [UIFont fontNamesForFamilyName:familyName];
-		NSLog(@"Font Names = %@", fontNames);
-		
-		[fontNames addObjectsFromArray:names];
+		NSLog(@"Font Names = %@", names);
 	}
 }
 

@@ -30,8 +30,8 @@
 		_titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
-		_titleLabel.shadowColor = [UIColor colorWithWhite:0.33 alpha:1.0];
-		_titleLabel.shadowOffset = CGSizeMake(1.0, -1.0);
+		_titleLabel.shadowColor = [UIColor colorWithRed:0.027 green:0.180 blue:0.302 alpha:1.0];
+		_titleLabel.shadowOffset = CGSizeMake(0.0, -1.0);
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];
 		

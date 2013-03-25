@@ -39,29 +39,6 @@
 	return (self);
 }
 
-//- (id)initAsGreyBottomCell:(BOOL)grey isEnabled:(BOOL)enabled {
-//	if ((self = [self initAsGreyCell:grey])) {
-//		_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_loadMoreButton.frame = CGRectMake(107.0, 16.0, 106.0, 34.0);
-//		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
-//		[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
-//		[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-//		_loadMoreButton.hidden = !enabled;
-//		[self addSubview:_loadMoreButton];
-//		
-//		[self hideChevron];
-//	}
-//	
-//	return (self);
-//}
-//
-//- (id)initAsGreyChallengeCell:(BOOL)grey {
-//	if ((self = [self initAsGreyCell:grey])) {
-//	}
-//	
-//	return (self);
-//}
-
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
@@ -90,15 +67,15 @@
 	[creatorImgHolderView addSubview:creatorScoreLabel];
 	
 	
-	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 18.0, 200.0, 16.0)];
-	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 18.0, 180.0, 16.0)];
+	challengeLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:12];
 	challengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	challengeLabel.backgroundColor = [UIColor clearColor];
 	[self addSubview:challengeLabel];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(72.0, 36.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:13];
-	subjectLabel.textColor = [UIColor blackColor];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
+	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];

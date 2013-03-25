@@ -49,8 +49,8 @@
 	[bgImageView addSubview:rImageView];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 80.0, 140.0, 14.0)];
-	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:12];
-	subjectLabel.textColor = [UIColor blackColor];
+	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	subjectLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _lChallengeVO.subjectName;
 	[self addSubview:subjectLabel];
@@ -77,8 +77,8 @@
 	[bgImageView addSubview:rImageView];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(180.0, 80.0, 140.0, 14.0)];
-	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:12];
-	subjectLabel.textColor = [UIColor blackColor];
+	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	subjectLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _rChallengeVO.subjectName;
 	[self addSubview:subjectLabel];

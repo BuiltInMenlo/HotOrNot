@@ -50,33 +50,33 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 145.0, 320.0, 18.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 138.0, 320.0, 18.0)];
 	nameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	nameLabel.textColor = [UIColor blackColor];
+	nameLabel.textColor = [UIColor whiteColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.textAlignment = NSTextAlignmentCenter;
-	nameLabel.text = _userVO.username;
+	nameLabel.text = [NSString stringWithFormat:@"Snap@%@", _userVO.username];
 	[self addSubview:nameLabel];
 	
-	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 212.0, 100.0, 18.0)];
-	snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	snapsLabel.textColor = [UIColor blackColor];
+	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 183.0, 100.0, 18.0)];
+	snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+	snapsLabel.textColor = [UIColor whiteColor];
 	snapsLabel.backgroundColor = [UIColor clearColor];
 	snapsLabel.textAlignment = NSTextAlignmentCenter;
 	snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? @"%@ snap" : @"%@ snaps", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:snapsLabel];
 	
-	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 212.0, 100.0, 18.0)];
-	votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	votesLabel.textColor = [UIColor blackColor];
+	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 183.0, 100.0, 18.0)];
+	votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+	votesLabel.textColor = [UIColor whiteColor];
 	votesLabel.backgroundColor = [UIColor clearColor];
 	votesLabel.textAlignment = NSTextAlignmentCenter;
 	votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? @"%@ vote" : @"%@ votes", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:votesLabel];
 	
-	UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 212.0, 100.0, 18.0)];
-	pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-	pointsLabel.textColor = [UIColor blackColor];
+	UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 183.0, 100.0, 18.0)];
+	pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+	pointsLabel.textColor = [UIColor whiteColor];
 	pointsLabel.backgroundColor = [UIColor clearColor];
 	pointsLabel.textAlignment = NSTextAlignmentCenter;
 	pointsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? @"%@ point" : @"%@ points", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];

@@ -51,34 +51,34 @@
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 145.0, 320.0, 18.0)];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 138.0, 320.0, 18.0)];
 		nameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		nameLabel.textColor = [UIColor blackColor];
+		nameLabel.textColor = [UIColor whiteColor];
 		nameLabel.backgroundColor = [UIColor clearColor];
 		nameLabel.textAlignment = NSTextAlignmentCenter;
 		nameLabel.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
 		[self addSubview:nameLabel];
 		
-		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 212.0, 100.0, 18.0)];
+		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 183.0, 100.0, 18.0)];
 		snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		snapsLabel.textColor = [UIColor blackColor];
+		snapsLabel.textColor = [UIColor whiteColor];
 		snapsLabel.backgroundColor = [UIColor clearColor];
 		snapsLabel.textAlignment = NSTextAlignmentCenter;
 		snapsLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] == 1) ? @"%@ snap" : @"%@ snaps", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
 		[self addSubview:snapsLabel];
 		
-		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 212.0, 100.0, 18.0)];
+		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 183.0, 100.0, 18.0)];
 		votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		votesLabel.textColor = [UIColor blackColor];
+		votesLabel.textColor = [UIColor whiteColor];
 		votesLabel.backgroundColor = [UIColor clearColor];
 		votesLabel.textAlignment = NSTextAlignmentCenter;
 		votesLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] == 1) ? @"%@ vote" : @"%@ votes", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]]]];
 		[self addSubview:votesLabel];
 		
 		int points = ([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]) + ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 212.0, 100.0, 18.0)];
+		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 183.0, 100.0, 18.0)];
 		pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		pointsLabel.textColor = [UIColor blackColor];
+		pointsLabel.textColor = [UIColor whiteColor];
 		pointsLabel.backgroundColor = [UIColor clearColor];
 		pointsLabel.textAlignment = NSTextAlignmentCenter;
 		pointsLabel.text = [NSString stringWithFormat:(points == 1) ? @"%@ point" : @"%@ points", [numberFormatter stringFromNumber:[NSNumber numberWithInt:points]]];
@@ -95,8 +95,8 @@
 		_caption = caption;
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 29.0, 250.0, 16.0)];
-		_captionLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:14];
-		_captionLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_captionLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:14];
+		_captionLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.text = _caption;
 		[self addSubview:_captionLabel];

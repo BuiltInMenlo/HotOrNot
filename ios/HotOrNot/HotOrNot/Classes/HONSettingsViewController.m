@@ -42,13 +42,13 @@
 		self.view.backgroundColor = [UIColor whiteColor];
 		
 		_captions = [NSArray arrayWithObjects:@"",
-						 @"NOTIFICATIONS",
-						 @"INVITE FRIENDS VIA SMS",
-						 @"INVITE FRIENDS VIA EMAIL",
-						 (FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK",
-						 @"CHANGE USERNAME",
-						 @"SUPPORT",
-						 @"PRIVACY POLICY", nil];
+						 @"Notifications",
+						 @"Invite Friends via SMS",
+						 @"Invite Friends via Email",
+						 (FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook",
+						 @"Change Username",
+						 @"Support",
+						 @"Privacy Policy", nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -93,7 +93,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
+	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
 	
@@ -104,7 +104,7 @@
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:createChallengeButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + kSearchHeaderHeight)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -200,7 +200,7 @@
 			HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 			[cell updateTopCell];
 			
-			[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
+			[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 		}
 		
 		[_headerView toggleRefresh:NO];
@@ -228,7 +228,7 @@
 - (void)_sessionStateChanged:(NSNotification *)notification {
 	FBSession *session = (FBSession *)[notification object];
 	
-	[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
+	[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 	
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:0]];
 	[cell updateCaption:(session.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
@@ -259,7 +259,7 @@
 			HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 			[cell updateTopCell];
 			
-			[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
+			[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 		}
 		
 		[_headerView toggleRefresh:NO];
@@ -326,7 +326,7 @@
 		cell.accessoryView = _notificationSwitch;
 		
 	} else if (indexPath.row == 4)
-		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
+		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
 			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	return (cell);
@@ -348,7 +348,7 @@
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	
-	if (indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 5 || indexPath.row == 6)
+	if (indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 5 || indexPath.row == 6 || indexPath.row == 7)
 		return (indexPath);
 	
 	else
@@ -364,12 +364,14 @@
 	
 	switch (indexPath.row) {
 		case 2: {
-			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.messageComposeDelegate = self;
-			//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-			messageComposeViewController.body = [NSString stringWithFormat:@"Are you on Volley yet? Come snap at me!! username @%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-			
-			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+			if ([MFMessageComposeViewController canSendText]) {
+				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+				messageComposeViewController.messageComposeDelegate = self;
+				//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
+				messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+				
+				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+			}
 			break;}
 			
 		case 3: {
@@ -377,7 +379,7 @@
 				MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 				mailComposeViewController.mailComposeDelegate = self;
 				//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
-				[mailComposeViewController setMessageBody:[NSString stringWithFormat:@"Are you on Volley yet? Come snap at me!! username @%@ %@", [[HONAppDelegate infoForUser] objectForKey:@"name"], [NSString stringWithFormat:@"itms://itunes.apple.com/us/app/id%@?mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]] isHTML:NO];
+				[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
 				
 				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
@@ -412,13 +414,13 @@
 		case 6:
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSupportViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
+			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
 		case 7:
 			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPrivacyViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
+			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 	}
 }
@@ -517,7 +519,7 @@
 						HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 						[cell updateTopCell];
 						
-						[_headerView setTitle:[[[HONAppDelegate infoForUser] objectForKey:@"name"] uppercaseString]];
+						[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 					}
 					
 					[_headerView toggleRefresh:NO];

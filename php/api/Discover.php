@@ -225,7 +225,7 @@
 			$start_date = date('Y-m-d H:i:s', strtotime($now_date .' - 7 days'));
 			
 			// get the challenge rows
-			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 AND `started` > "'. $start_date .'" ORDER BY `votes` DESC LIMIT 10;';
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 AND `started` > "'. $start_date .'" ORDER BY `votes` DESC LIMIT 16;';
 			$result = mysql_query($query);
 			
 			// loop thru challenge rows
@@ -234,6 +234,9 @@
 				// push challenge into array
 				array_push($challenge_arr, $this->getChallengeObj($row['id']));
 			}
+			
+			if (count($challenge_arr) % 2 == 1)
+				array_pop($challenge_arr);
 			
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
