@@ -36,7 +36,7 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 140.0, 74.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 16.0, 140.0, 74.0)];
 	bgImageView.image = [UIImage imageNamed:@"discoveryBackground"];
 	[self addSubview:bgImageView];
 	
@@ -48,7 +48,7 @@
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:rImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 80.0, 140.0, 14.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 90.0, 140.0, 14.0)];
 	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 	subjectLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -64,7 +64,7 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(170.0, 10.0, 140.0, 74.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(162.0, 16.0, 140.0, 74.0)];
 	bgImageView.image = [UIImage imageNamed:@"discoveryBackground"];
 	[self addSubview:bgImageView];
 	
@@ -76,7 +76,7 @@
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:rImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(180.0, 80.0, 140.0, 14.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(167.0, 90.0, 140.0, 14.0)];
 	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 	subjectLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];

@@ -49,7 +49,7 @@
 	
 	if ([touch view] == _tabHolderView) {
 		_touchPt = CGPointMake(_tabHolderView.center.x - location.x, _tabHolderView.center.y - location.y);
-		//[self _toggleTabsEnabled:NO];
+		[self _toggleTabsEnabled:NO];
 	}
 	
 	if (_alertPopOverView.alpha == 1.0) {
@@ -88,7 +88,7 @@
 			[self _dropTabs];
 	}
 	
-	//[self _toggleTabsEnabled:YES];
+	[self _toggleTabsEnabled:YES];
 }
 
 
@@ -149,12 +149,12 @@
 	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 13.0, 320.0, 59.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 13.0, 320.0, 67.0)];
 	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
 	[_tabHolderView addSubview:bgImageView];
 	
 	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_timelineButton.frame = CGRectMake(0.0, kLipHeight, 80.0, 64.0);
+	_timelineButton.frame = CGRectMake(0.0, 10.0, 80.0, 64.0);
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
@@ -163,7 +163,7 @@
 	[_timelineButton setSelected:YES];
 	
 	_challengesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_challengesButton.frame = CGRectMake(80.0, kLipHeight, 80.0, 64.0);
+	_challengesButton.frame = CGRectMake(80.0, 10.0, 80.0, 64.0);
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
@@ -171,7 +171,7 @@
 	[_challengesButton setTag:1];
 	
 	_discoveryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_discoveryButton.frame = CGRectMake(160.0, kLipHeight, 80.0, 64.0);
+	_discoveryButton.frame = CGRectMake(160.0, 10.0, 80.0, 64.0);
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Tapped"] forState:UIControlStateHighlighted];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected];
@@ -179,7 +179,7 @@
 	[_discoveryButton setTag:2];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_settingsButton.frame = CGRectMake(240.0, kLipHeight, 80.0, 64.0);
+	_settingsButton.frame = CGRectMake(240.0, 10.0, 80.0, 64.0);
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateNormal];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Tapped"] forState:UIControlStateHighlighted];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Active"] forState:UIControlStateSelected];
@@ -191,11 +191,8 @@
 	[_tabHolderView addSubview:_discoveryButton];
 	[_tabHolderView addSubview:_settingsButton];
 	
-	[_timelineButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	[_challengesButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	[_discoveryButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-	[_settingsButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
-		
+	[self _toggleTabsEnabled:YES];
+	
 	UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	toggleButton.frame = CGRectMake(130.0, 0.0, 60.0, 58.0);
 	toggleButton.backgroundColor = [UIColor redColor];

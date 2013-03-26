@@ -100,8 +100,8 @@ extern NSString *const FacebookAppID;
 #define kUsersAPI @"Users.php"
 #define kVotesAPI @"Votes.php"
 
-#define kThumb1W 50.0
-#define kThumb1H 67.0
+#define kThumb1W 38.0
+#define kThumb1H 50.0
 
 #define kMediumW 153.0
 #define kMediumH 205.0

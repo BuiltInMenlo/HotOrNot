@@ -108,7 +108,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"DISCOVERY"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Discover"];
 	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
 	
@@ -127,7 +127,7 @@
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.rowHeight = 249.0;
+	_tableView.rowHeight = 260.0;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.userInteractionEnabled = YES;
@@ -243,7 +243,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (90.0);
+	return (100.0);
 }
 
 //- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

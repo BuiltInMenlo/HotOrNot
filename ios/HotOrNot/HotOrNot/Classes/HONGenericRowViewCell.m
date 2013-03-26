@@ -26,7 +26,7 @@
 		_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_nonActive"];
 		[self addSubview:_bgImageView];
 		
-		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(273.0, 18.0, 24.0, 24.0)];
+		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(290.0, 20.0, 24.0, 24.0)];
 		_chevronImageView.image = [UIImage imageNamed:@"chevron"];
 		[self addSubview:_chevronImageView];
 	}

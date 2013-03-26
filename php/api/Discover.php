@@ -222,7 +222,7 @@
 			$challenge_arr = array();
 			
 			$now_date = date('Y-m-d H:i:s', time());
-			$start_date = date('Y-m-d H:i:s', strtotime($now_date .' - 7 days'));
+			$start_date = date('Y-m-d H:i:s', strtotime($now_date .' - 30 days'));
 			
 			// get the challenge rows
 			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 4 AND `started` > "'. $start_date .'" ORDER BY `votes` DESC LIMIT 16;';
