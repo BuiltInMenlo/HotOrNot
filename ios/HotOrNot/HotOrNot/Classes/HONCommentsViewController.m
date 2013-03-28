@@ -159,7 +159,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Comments"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:_challengeVO.subjectName];
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -169,7 +169,7 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:backButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 30.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -180,18 +180,19 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 75.0, 320.0, 55.0)];
-	_bgTextImageView.image = [UIImage imageNamed:@"keyboardInputField"];
+	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 42.0, 320.0, 42.0)];
+	_bgTextImageView.backgroundColor = [UIColor redColor];
+	_bgTextImageView.image = [UIImage imageNamed:@"commentsInputField_nonActive.jpg"];
 	_bgTextImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_bgTextImageView];
 	
-	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(18.0, 21.0, 300.0, 26.0)];
+	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 13.0, 300.0, 26.0)];
 	//[_commentTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_commentTextField setReturnKeyType:UIReturnKeyDone];
-	[_commentTextField setTextColor:[UIColor blackColor]];
+	[_commentTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
 	[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_commentTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;
@@ -199,6 +200,13 @@
 	_commentTextField.delegate = self;
 	[_commentTextField setTag:0];
 	[_bgTextImageView addSubview:_commentTextField];
+	
+	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	sendButton.frame = CGRectMake(256.0, -1.0, 64.0, 44.0);
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	[sendButton addTarget:self action:@selector(_goSend) forControlEvents:UIControlEventTouchUpInside];
+	[_bgTextImageView addSubview:sendButton];
 	
 	[self _retrieveComments];
 }
@@ -230,6 +238,20 @@
 
 - (void)_goTextField {
 	[_commentTextField becomeFirstResponder];
+}
+
+- (void)_goSend {
+	[_commentTextField resignFirstResponder];
+	
+	[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
+		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+	} completion:^(BOOL finished) {
+		_commentTextField.text = @"";
+	}];
+	
+	if ([_commentTextField.text length] > 0) {
+		[self _submitComment];
+	}
 }
 
 
@@ -319,7 +341,7 @@
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, _bgTextImageView.frame.origin.y - 215.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, _bgTextImageView.frame.origin.y - 236.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 	} completion:^(BOOL finished) {
 	}];
 }
@@ -333,7 +355,7 @@
 	[textField resignFirstResponder];
 	
 	[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
-		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 75.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 	} completion:^(BOOL finished) {
 		textField.text = @"";
 	}];

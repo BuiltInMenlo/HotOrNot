@@ -8,5 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONSupportViewController : UIViewController
+#import "HONWebViewController.h"
+
+@interface HONSupportViewController : HONWebViewController
 @end

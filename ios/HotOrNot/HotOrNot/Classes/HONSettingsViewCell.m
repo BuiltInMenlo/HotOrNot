@@ -40,35 +40,25 @@
 - (id)initAsTopCell {
 	if ((self = [self init])) {
 		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 226.0);
-		_bgImgView.image = [UIImage imageNamed:@"profileBackground"];
+		_bgImgView.image = [UIImage imageNamed:@"profileBackground2"];
 		
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(110.0, 22.0, 95.0, 95.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, 34.0, 95.0, 90.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
-		avatarImageView.layer.cornerRadius = 4.0;
-		avatarImageView.clipsToBounds = YES;
 		[self addSubview:avatarImageView];
 		
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 		
-		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 138.0, 320.0, 18.0)];
-		nameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		nameLabel.textColor = [UIColor whiteColor];
-		nameLabel.backgroundColor = [UIColor clearColor];
-		nameLabel.textAlignment = NSTextAlignmentCenter;
-		nameLabel.text = [[HONAppDelegate infoForUser] objectForKey:@"username"];
-		[self addSubview:nameLabel];
-		
-		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 183.0, 100.0, 18.0)];
-		snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 172.0, 100.0, 18.0)];
+		snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 		snapsLabel.textColor = [UIColor whiteColor];
 		snapsLabel.backgroundColor = [UIColor clearColor];
 		snapsLabel.textAlignment = NSTextAlignmentCenter;
 		snapsLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] == 1) ? @"%@ snap" : @"%@ snaps", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
 		[self addSubview:snapsLabel];
 		
-		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 183.0, 100.0, 18.0)];
-		votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 172.0, 100.0, 18.0)];
+		votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 		votesLabel.textColor = [UIColor whiteColor];
 		votesLabel.backgroundColor = [UIColor clearColor];
 		votesLabel.textAlignment = NSTextAlignmentCenter;
@@ -76,8 +66,8 @@
 		[self addSubview:votesLabel];
 		
 		int points = ([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]) + ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 183.0, 100.0, 18.0)];
-		pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 172.0, 100.0, 18.0)];
+		pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 		pointsLabel.textColor = [UIColor whiteColor];
 		pointsLabel.backgroundColor = [UIColor clearColor];
 		pointsLabel.textAlignment = NSTextAlignmentCenter;
@@ -94,7 +84,7 @@
 	if ((self = [self init])) {
 		_caption = caption;
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(26.0, 29.0, 250.0, 16.0)];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 25.0, 250.0, 16.0)];
 		_captionLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:14];
 		_captionLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];

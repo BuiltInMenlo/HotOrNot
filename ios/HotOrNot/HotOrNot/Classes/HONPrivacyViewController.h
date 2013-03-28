@@ -8,5 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONPrivacyViewController : UIViewController
+#import "HONWebViewController.h"
+
+@interface HONPrivacyViewController : HONWebViewController
 @end

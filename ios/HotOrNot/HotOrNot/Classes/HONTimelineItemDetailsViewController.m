@@ -86,6 +86,7 @@
 	UITouch *touch = [touches anyObject];
 	
 	if ([touch view] == _imageView || [touch view] == _bgView) {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self dismissViewControllerAnimated:NO completion:^(void) {
 		}];
 	}
@@ -106,12 +107,18 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 13.0, 200.0, 24.0)];
-	subjectLabel.font = [[HONAppDelegate freightSansBlack] fontWithSize:19];
-	subjectLabel.textColor = [UIColor whiteColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = _challengeVO.subjectName;
-	[self.view addSubview:subjectLabel];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 20.0, 38.0, 38.0)];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
+	avatarImageView.clipsToBounds = YES;
+	avatarImageView.layer.cornerRadius = 4.0;
+	[self.view addSubview:avatarImageView];
+	
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 30.0, 200.0, 14.0)];
+	creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	creatorNameLabel.backgroundColor = [UIColor clearColor];
+	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
+	[self.view addSubview:creatorNameLabel];
 	
 	if ([_challengeVO.rechallengedUsers length] > 0) {
 		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(200.0, 8.0, 24.0, 24.0)];
@@ -270,6 +277,7 @@
 }
 
 - (void)_dismiss {
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:(_isCreator) ? @"UPVOTE_CREATOR" : @"UPVOTE_CHALLENGER" object:_challengeVO];
 	}];

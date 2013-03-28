@@ -22,4 +22,7 @@
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *imageURL;
 @property (nonatomic, retain) NSString *fbID;
+@property (nonatomic, retain) NSString *challengerName;
+@property (nonatomic, retain) NSDate *addedDate;
+
 @end

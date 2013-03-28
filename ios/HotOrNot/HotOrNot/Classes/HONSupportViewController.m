@@ -20,7 +20,7 @@
 @implementation HONSupportViewController
 
 - (id)init {
-	if ((self = [super init])) {
+	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/support.htm", [HONAppDelegate apiServerPath]] title:@"Support"])) {
 		[[Mixpanel sharedInstance] track:@"Support"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -47,80 +47,11 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Support"];
-	[self.view addSubview:headerView];
-	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:cancelButton];
-	
-	UIWebView *webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0)];
-	[webView setBackgroundColor:[UIColor clearColor]];
-	webView.delegate = self;
-	[webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/support.htm", [HONAppDelegate apiServerPath]]]]];
-	[self.view addSubview:webView];
-	
-	if (!_progressHUD) {
-		_progressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.taskInProgress = YES;
-		_progressHUD.minShowTime = kHUDTime;
-		
-		[self performSelector:@selector(_removeHUD) withObject:nil afterDelay:8.0];
-	}
-	
-}
-
-- (void)viewDidLoad {
-	[super viewDidLoad];
-}
-
-- (void)viewDidUnload {
-	[super viewDidUnload];
 }
 
 
 #pragma mark - Navigation
-- (void)_goCancel {
-	[self.navigationController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)_removeHUD {
-	if (_progressHUD != nil) {
-		_progressHUD.taskInProgress = NO;
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
-	}
-}
 
 
 #pragma mark - WebView Delegates
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-	return (YES);
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-	[self _removeHUD];
-}
-
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-	NSLog(@"didFailLoadWithError:[%@]", error);
-	
-	[self _removeHUD];
-	
-	if ([error code] == NSURLErrorCancelled)
-		return;
-}
-
 @end

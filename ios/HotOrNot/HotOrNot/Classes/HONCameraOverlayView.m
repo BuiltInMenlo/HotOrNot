@@ -72,7 +72,7 @@
 		_captureHolderView.userInteractionEnabled = YES;
 		[_bgImageView addSubview:_captureHolderView];
 		
-		_headerView = [[HONHeaderView alloc] initWithTitle:@"Take Photo"];
+		_headerView = [[HONHeaderView alloc] initWithTitle:@"Take snap"];
 		[_bgImageView addSubview:_headerView];
 				
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -82,20 +82,20 @@
 		[_cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:_cancelButton];
 		
-		UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 55.0, 314.0, 44.0)];
-		subjectBGImageView.image = [UIImage imageNamed:@"cameraInputFieldA"];
+		UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 55.0, 314.0, 64.0)];
+		subjectBGImageView.image = [UIImage imageNamed:@"cameraExperienceInputField_nonActive"];
 		subjectBGImageView.userInteractionEnabled = YES;
 		[_captureHolderView addSubview:subjectBGImageView];
 		
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
+		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 24.0, 240.0, 20.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[UIColor blackColor]];
+		[_subjectTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
 		//[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_subjectTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+		_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = _subjectName;
 		_subjectTextField.delegate = self;
@@ -103,14 +103,14 @@
 		[subjectBGImageView addSubview:_subjectTextField];
 		
 		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_randomSubjectButton.frame = CGRectMake(230.0, 5.0, 64.0, 34.0);
+		_randomSubjectButton.frame = CGRectMake(230.0, 15.0, 64.0, 34.0);
 		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_nonActive"] forState:UIControlStateNormal];
 		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_Active"] forState:UIControlStateHighlighted];
 		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
 		[subjectBGImageView addSubview:_randomSubjectButton];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(20.0, 310.0, 64.0, 64.0);
+		cameraRollButton.frame = CGRectMake(25.0, 400.0, 64.0, 64.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
@@ -118,7 +118,7 @@
 		
 		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(220.0, 310.0, 64.0, 64.0);
+			changeCameraButton.frame = CGRectMake(223.0, 400.0, 64.0, 64.0);
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 			[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
@@ -144,7 +144,7 @@
 		[_captureHolderView addSubview:_captureButton];
 		
 		UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(323.0, 55.0, 314.0, 44.0)];
-		usernameBGImageView.image = [UIImage imageNamed:@"cameraInputFieldA"];
+		usernameBGImageView.image = [UIImage imageNamed:@"cameraInputFieldB"];
 		usernameBGImageView.userInteractionEnabled = YES;
 		[_captureHolderView addSubview:usernameBGImageView];
 		
@@ -433,6 +433,7 @@
 		_activityIndicatorView = nil;
 		
 		_subjectName = [HONAppDelegate rndDefaultSubject];
+		_subjectTextField.text = _subjectName;
 		[self.delegate cameraOverlayViewChangeSubject:self subject:_subjectName];
 	}];
 }

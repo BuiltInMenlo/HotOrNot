@@ -204,7 +204,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take Challenge"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Take snap"];
 	//[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

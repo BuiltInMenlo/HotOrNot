@@ -479,7 +479,7 @@
 			$user_arr = array();
 			
 			// get user votes for the challenge
-			$query = 'SELECT `user_id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .' LIMIT 100;';
+			$query = 'SELECT `user_id`, `challenger_id`, `added` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .' LIMIT 100;';
 			$challenge_result = mysql_query($query);
 			
 			// loop thru votes
@@ -511,6 +511,11 @@
 			
 				} else
 					$avatar_url = $user_obj->img_url;
+					
+					
+				// get the person voted for
+				$query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $challenge_row['challenger_id'] .';';
+				$challenger_name = mysql_fetch_object(mysql_query($query))->username;
 				
 				// push user into array
 				array_push($user_arr, array(
@@ -521,7 +526,9 @@
 					'points' => $user_obj->points,
 					'votes' => $votes,
 					'pokes' => $pokes, 
-					'challenges' => $challenge_tot
+					'challenges' => $challenge_tot, 
+					'challenger_name' => $challenger_name,
+					'added' => $challenge_row['added']
 				));	
 			}
 			

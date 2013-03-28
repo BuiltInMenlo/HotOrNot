@@ -42,7 +42,7 @@
 	if ((self = [super init])) {
 		_hasChallenger = NO;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 463.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 410.0)];
 		bgImgView.image = [UIImage imageNamed:@"nonAcceptedRowBackground"];
 		[self addSubview:bgImgView];
 	}
@@ -57,7 +57,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteCreator:) name:@"UPVOTE_CREATOR" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteChallenger:) name:@"UPVOTE_CHALLENGER" object:nil];
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 309.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 293.0)];
 		bgImgView.image = [UIImage imageNamed:@"acceptedRowBackground"];
 		[self addSubview:bgImgView];
 	}
@@ -68,8 +68,8 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 		
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 8.0, 200.0, 24.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 17.0, 200.0, 18.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:15];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
@@ -81,12 +81,12 @@
 	[self addSubview:subjectButton];
 	
 	if ([_challengeVO.rechallengedUsers length] > 0) {
-		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(200.0, 8.0, 24.0, 24.0)];
+		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(203.0, 11.0, 24.0, 24.0)];
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
 		[self addSubview:rechallengeImageView];
 		
-		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(220.0, 8.0, 60.0, 24.0)];
-		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(215.0, 16.0, 60.0, 14.0)];
+		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
 		rechallengeLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
 		rechallengeLabel.backgroundColor = [UIColor clearColor];
 		rechallengeLabel.textAlignment = NSTextAlignmentRight;
@@ -94,23 +94,16 @@
 		[self addSubview:rechallengeLabel];
 	}
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 12.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 15.0, 60.0, 16.0)];
+	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];
 	[self addSubview:timeLabel];
 	
-	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(266.0, 245.0, 44.0, 44.0);
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
-	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:moreButton];
-	
 	if (_hasChallenger) {
-		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 153.0, 153.0)];
+		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 151.0, 153.0)];
 		_lHolderView.clipsToBounds = YES;
 		_lHolderView.layer.cornerRadius = 4.0 * (int)[HONAppDelegate isRetina5];
 		[self addSubview:_lHolderView];
@@ -133,7 +126,7 @@
 //		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 //		[lScoreImageView addSubview:_lScoreLabel];
 		
-		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 215.0, 35.0, 35.0)];
+		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 209.0, 38.0, 38.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 		creatorAvatarImageView.clipsToBounds = YES;
@@ -146,7 +139,7 @@
 		[creatorAvatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:creatorAvatarButton];
 		
-		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 220.0, 100.0, 20.0)];
+		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 218.0, 100.0, 20.0)];
 		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		creatorNameLabel.backgroundColor = [UIColor clearColor];
@@ -159,7 +152,7 @@
 		[self addSubview:creatorNameButton];
 		
 		
-		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 46.0, 153.0, 153.0)];
+		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(162.0, 46.0, 151.0, 153.0)];
 		_rHolderView.clipsToBounds = YES;
 		_rHolderView.layer.cornerRadius = 4.0 * (int)[HONAppDelegate isRetina5];
 		[self addSubview:_rHolderView];
@@ -170,7 +163,7 @@
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
-		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 215.0, 35.0, 35.0)];
+		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(162.0, 209.0, 38.0, 38.0)];
 		challengerAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
 		challengerAvatarImageView.clipsToBounds = YES;
@@ -183,7 +176,7 @@
 		[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerAvatarButton];
 		
-		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(200.0, 220.0, 100.0, 20.0)];
+		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 218.0, 100.0, 20.0)];
 		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
@@ -214,7 +207,7 @@
 		
 		NSString *caption = (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"" : [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(12.0, 250.0, (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? 64.0 : 94, 34.0);
+		_votesButton.frame = CGRectMake(6.0, 253.0, (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? 64.0 : 94, 34.0);
 		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_nonActive" : @"timelineLike_nonActive"] forState:UIControlStateNormal];
 		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_Active" : @"timelineLike_Active"] forState:UIControlStateHighlighted];
 		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
@@ -225,7 +218,7 @@
 		[self addSubview:_votesButton];
 		
 		UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		commentsButton.frame = CGRectMake(120.0, 250.0, (_challengeVO.commentTotal == 0) ? 94.0 : 124, 34.0);
+		commentsButton.frame = CGRectMake(103.0, 253.0, (_challengeVO.commentTotal == 0) ? 94.0 : 124, 34.0);
 		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_nonActive" : @"timelineComments_nonActive"] forState:UIControlStateNormal];
 		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_Active" : @"timelineComments_Active"] forState:UIControlStateHighlighted];
 		commentsButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
@@ -236,10 +229,15 @@
 		[commentsButton setTitle:caption forState:UIControlStateNormal];
 		[self addSubview:commentsButton];
 		
-	} else {
-		moreButton.frame = CGRectMake(266.0, 400.0, 44.0, 44.0);
+		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		moreButton.frame = CGRectMake(270.0, 253.0, 34.0, 34.0);
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
+		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:moreButton];
 		
-		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 306.0, 306.0)];
+	} else {
+		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 48.0, 306.0, 306.0)];
 		_lHolderView.layer.cornerRadius = 4.0  * (int)[HONAppDelegate isRetina5];
 		_lHolderView.clipsToBounds = YES;
 		[self addSubview:_lHolderView];
@@ -249,7 +247,7 @@
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
 		
-		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 360.0, 35.0, 35.0)];
+		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 362.0, 38.0, 38.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
@@ -262,24 +260,20 @@
 		[creatorAvatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:creatorAvatarButton];
 		
-		CGSize size = [[NSString stringWithFormat:@"%@ is waiting for a match…", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12] constrainedToSize:CGSizeMake(250.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-		UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		creatorNameButton.frame = CGRectMake(60.0, 370.0, size.width, 20.0);
-		[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
-		creatorNameButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
-		[creatorNameButton setTitleColor:[HONAppDelegate honGreyTxtColor] forState:UIControlStateNormal];
-		[creatorNameButton setTitle:[NSString stringWithFormat:@"%@ is waiting for a match…", _challengeVO.creatorName] forState:UIControlStateNormal];
-		[self addSubview:creatorNameButton];
+		CGSize size = [[NSString stringWithFormat:@"   @%@ is waiting for a snap   ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12] constrainedToSize:CGSizeMake(210.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		NSLog(@"SIZE:[%f]", size.width);
 		
-		size = [[NSString stringWithFormat:@"    Be the first to challenge %@    ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12] constrainedToSize:CGSizeMake(280.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		if (size.width >= 198.0)
+			size.width = 220.0;
+		
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(12.0, 400.0, size.width, 34.0);
+		_votesButton.frame = CGRectMake(57.0, 364.0, size.width, 34.0);
 		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_nonActive"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateNormal];
 		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_Active"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
 		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
-		[_votesButton setTitle:[NSString stringWithFormat:@"Be the first to challenge %@", _challengeVO.creatorName] forState:UIControlStateNormal];
+		[_votesButton setTitle:[NSString stringWithFormat:@" @%@ is waiting for a snap ", _challengeVO.creatorName] forState:UIControlStateNormal];
 		[self addSubview:_votesButton];
 	}
 }
