@@ -966,7 +966,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, nil];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-	[self performSelector:@selector(_dropTabs) withObject:nil afterDelay:2.0];
+	//[self performSelector:@selector(_dropTabs) withObject:nil afterDelay:2.0];
 }
 
 - (void)_dropTabs {

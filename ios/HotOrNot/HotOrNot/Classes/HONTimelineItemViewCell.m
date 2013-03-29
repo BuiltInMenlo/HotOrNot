@@ -102,6 +102,13 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];
 	[self addSubview:timeLabel];
 	
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(270.0, 253.0, 34.0, 34.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:moreButton];
+	
 	if (_hasChallenger) {
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 151.0, 153.0)];
 		_lHolderView.clipsToBounds = YES;
@@ -229,13 +236,6 @@
 		[commentsButton setTitle:caption forState:UIControlStateNormal];
 		[self addSubview:commentsButton];
 		
-		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(270.0, 253.0, 34.0, 34.0);
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
-		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:moreButton];
-		
 	} else {
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 48.0, 306.0, 306.0)];
 		_lHolderView.layer.cornerRadius = 4.0  * (int)[HONAppDelegate isRetina5];
@@ -268,13 +268,15 @@
 		
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_votesButton.frame = CGRectMake(57.0, 364.0, size.width, 34.0);
-		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_nonActive"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_Active"] stretchableImageWithLeftCapWidth:12.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_nonActive"] stretchableImageWithLeftCapWidth:24.0 topCapHeight:0.0] forState:UIControlStateNormal];
+		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_Active"] stretchableImageWithLeftCapWidth:24.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
 		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
 		[_votesButton setTitle:[NSString stringWithFormat:@" @%@ is waiting for a snap ", _challengeVO.creatorName] forState:UIControlStateNormal];
 		[self addSubview:_votesButton];
+		
+		moreButton.frame = CGRectOffset(moreButton.frame, 0.0, 111.0);
 	}
 }
 

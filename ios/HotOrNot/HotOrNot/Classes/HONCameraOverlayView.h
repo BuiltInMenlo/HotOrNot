@@ -28,6 +28,7 @@
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username comments:(NSString *)comments;
 - (void)cameraOverlayViewChangeSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName;
+- (void)cameraOverlayViewPickFBFriends:(HONCameraOverlayView *)cameraOverlayView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView;

@@ -23,6 +23,14 @@
 		4C068AB817038C460019428A /* cameraExperienceInputField_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C068AB417038C460019428A /* cameraExperienceInputField_nonActive.png */; };
 		4C068AB917038C460019428A /* cameraExperienceInputField_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C068AB517038C460019428A /* cameraExperienceInputField_nonActive@2x.png */; };
 		4C07B8E916A0E1F700E061FD /* HONTimelineItemDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C07B8E816A0E1F700E061FD /* HONTimelineItemDetailsViewController.m */; };
+		4C0AAACA170501DA00BB32BD /* cameraKeyboardInputField_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAAC6170501DA00BB32BD /* cameraKeyboardInputField_Active.png */; };
+		4C0AAACB170501DA00BB32BD /* cameraKeyboardInputField_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAAC7170501DA00BB32BD /* cameraKeyboardInputField_Active@2x.png */; };
+		4C0AAACC170501DA00BB32BD /* cameraKeyboardInputField_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAAC8170501DA00BB32BD /* cameraKeyboardInputField_nonActive.png */; };
+		4C0AAACD170501DA00BB32BD /* cameraKeyboardInputField_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAAC9170501DA00BB32BD /* cameraKeyboardInputField_nonActive@2x.png */; };
+		4C0AAAD2170521A800BB32BD /* facebookIconButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAACE170521A800BB32BD /* facebookIconButton_Active.png */; };
+		4C0AAAD3170521A800BB32BD /* facebookIconButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAACF170521A800BB32BD /* facebookIconButton_Active@2x.png */; };
+		4C0AAAD4170521A800BB32BD /* facebookIconButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAAD0170521A800BB32BD /* facebookIconButton_nonActive.png */; };
+		4C0AAAD5170521A800BB32BD /* facebookIconButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAAD1170521A800BB32BD /* facebookIconButton_nonActive@2x.png */; };
 		4C0C406B162BCCC0007F0DA3 /* cancelButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */; };
 		4C0C406C162BCCC0007F0DA3 /* cancelButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */; };
 		4C0C406D162BCCC0007F0DA3 /* cancelButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */; };
@@ -419,6 +427,14 @@
 		4C068AB517038C460019428A /* cameraExperienceInputField_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraExperienceInputField_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C07B8E716A0E1F700E061FD /* HONTimelineItemDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemDetailsViewController.h; sourceTree = "<group>"; };
 		4C07B8E816A0E1F700E061FD /* HONTimelineItemDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineItemDetailsViewController.m; sourceTree = "<group>"; };
+		4C0AAAC6170501DA00BB32BD /* cameraKeyboardInputField_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraKeyboardInputField_Active.png; sourceTree = "<group>"; };
+		4C0AAAC7170501DA00BB32BD /* cameraKeyboardInputField_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraKeyboardInputField_Active@2x.png"; sourceTree = "<group>"; };
+		4C0AAAC8170501DA00BB32BD /* cameraKeyboardInputField_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraKeyboardInputField_nonActive.png; sourceTree = "<group>"; };
+		4C0AAAC9170501DA00BB32BD /* cameraKeyboardInputField_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraKeyboardInputField_nonActive@2x.png"; sourceTree = "<group>"; };
+		4C0AAACE170521A800BB32BD /* facebookIconButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = facebookIconButton_Active.png; sourceTree = "<group>"; };
+		4C0AAACF170521A800BB32BD /* facebookIconButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "facebookIconButton_Active@2x.png"; sourceTree = "<group>"; };
+		4C0AAAD0170521A800BB32BD /* facebookIconButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = facebookIconButton_nonActive.png; sourceTree = "<group>"; };
+		4C0AAAD1170521A800BB32BD /* facebookIconButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "facebookIconButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C0C4067162BCCC0007F0DA3 /* cancelButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_Active.png; sourceTree = "<group>"; };
 		4C0C4068162BCCC0007F0DA3 /* cancelButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancelButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C0C4069162BCCC0007F0DA3 /* cancelButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancelButton_nonActive.png; sourceTree = "<group>"; };
@@ -1973,7 +1989,15 @@
 				4CA9444C169902A300507A08 /* cameraInputField_Active@2x.png */,
 				4CA9444D169902A300507A08 /* cameraInputField_nonActive.png */,
 				4CA9444E169902A300507A08 /* cameraInputField_nonActive@2x.png */,
+				4C0AAAC6170501DA00BB32BD /* cameraKeyboardInputField_Active.png */,
+				4C0AAAC7170501DA00BB32BD /* cameraKeyboardInputField_Active@2x.png */,
+				4C0AAAC8170501DA00BB32BD /* cameraKeyboardInputField_nonActive.png */,
+				4C0AAAC9170501DA00BB32BD /* cameraKeyboardInputField_nonActive@2x.png */,
 				4CA9445B169904E200507A08 /* cameraExperience_Overlay-568h.png */,
+				4C0AAACE170521A800BB32BD /* facebookIconButton_Active.png */,
+				4C0AAACF170521A800BB32BD /* facebookIconButton_Active@2x.png */,
+				4C0AAAD0170521A800BB32BD /* facebookIconButton_nonActive.png */,
+				4C0AAAD1170521A800BB32BD /* facebookIconButton_nonActive@2x.png */,
 				4CA9445C169904E200507A08 /* cameraExperience_Overlay.png */,
 				4CA9445D169904E200507A08 /* cameraExperience_Overlay@2x.png */,
 				4C068AB217038C460019428A /* cameraExperienceInputField_Active.png */,
@@ -2528,6 +2552,14 @@
 				4C068AB717038C460019428A /* cameraExperienceInputField_Active@2x.png in Resources */,
 				4C068AB817038C460019428A /* cameraExperienceInputField_nonActive.png in Resources */,
 				4C068AB917038C460019428A /* cameraExperienceInputField_nonActive@2x.png in Resources */,
+				4C0AAACA170501DA00BB32BD /* cameraKeyboardInputField_Active.png in Resources */,
+				4C0AAACB170501DA00BB32BD /* cameraKeyboardInputField_Active@2x.png in Resources */,
+				4C0AAACC170501DA00BB32BD /* cameraKeyboardInputField_nonActive.png in Resources */,
+				4C0AAACD170501DA00BB32BD /* cameraKeyboardInputField_nonActive@2x.png in Resources */,
+				4C0AAAD2170521A800BB32BD /* facebookIconButton_Active.png in Resources */,
+				4C0AAAD3170521A800BB32BD /* facebookIconButton_Active@2x.png in Resources */,
+				4C0AAAD4170521A800BB32BD /* facebookIconButton_nonActive.png in Resources */,
+				4C0AAAD5170521A800BB32BD /* facebookIconButton_nonActive@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

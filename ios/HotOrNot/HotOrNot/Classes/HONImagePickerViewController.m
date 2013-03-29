@@ -13,9 +13,10 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "Facebook.h"
 #import "MBProgressHUD.h"
-#import "UIImage+fixOrientation.h"
 #import "Mixpanel.h"
+#import "UIImage+fixOrientation.h"
 
 #import "HONImagePickerViewController.h"
 #import "HONAppDelegate.h"
@@ -24,7 +25,10 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
-@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONCameraOverlayViewDelegate>
+@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, UISearchBarDelegate, FBFriendPickerDelegate, HONCameraOverlayViewDelegate> {
+	CGFloat fbHeaderHeight;
+}
+
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *iTunesPreview;
@@ -45,6 +49,12 @@
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UIImage *challangeImage;
 @property (nonatomic, strong) MPMoviePlayerController *mpMoviePlayerController;// *sfxPlayer;
+
+@property (retain, nonatomic) FBFriendPickerViewController *friendPickerController;
+@property (retain, nonatomic) UISearchBar *searchBar;
+@property (retain, nonatomic) NSString *searchText;
+@property (retain, nonatomic) NSMutableArray *friends;
+@property (nonatomic, retain) HONHeaderView *friendPickerHeaderView;
 @end
 
 @implementation HONImagePickerViewController
@@ -431,7 +441,7 @@
 	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Submitting Challenge…";
+	_progressHUD.labelText = @"Submitting Snap…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -630,7 +640,7 @@
 	[params setObject:_subjectName forKey:@"subject"];
 	[params setObject:username forKey:@"username"];
 	
-	if (![username isEqualToString:@"Add a username…"])
+	if (![username isEqualToString:@"@"])
 		_submitAction = 7;
 	
 	if (_challengeVO != nil)
@@ -669,9 +679,165 @@
 	[[MPMusicPlayerController applicationMusicPlayer] setVolume:([HONAppDelegate audioMuted]) ? 0.0 : 0.5];
 }
 
+- (void)cameraOverlayViewPickFBFriends:(HONCameraOverlayView *)cameraOverlayView {
+	self.friendPickerController = [[FBFriendPickerViewController alloc] init];
+	self.friendPickerController.title = @"Pick Friends";
+	self.friendPickerController.allowsMultipleSelection = NO;
+	self.friendPickerController.delegate = self;
+	self.friendPickerController.sortOrdering = FBFriendDisplayByLastName;
+	[self addCustomHeaderToFriendPickerView];
+	[self.friendPickerController loadData];
+	[self.friendPickerController clearSelection];
+	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.friendPickerController];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:^(void) {
+//		[self addSearchBarToFriendPickerView];
+//	}];
+	
+
+	[self.navigationController presentViewController:self.friendPickerController animated:YES completion:^(void){[self addSearchBarToFriendPickerView];}];
+}
+
 - (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView {
 }
 
+
+#pragma mark - Custom Facebook Select Friends Header Methods
+// Method to that adds a custom header bar to the built-in Friend Selector View.
+// We add this to the canvasView of the FBFriendPickerViewController.
+// We have to set cancelButton and doneButton to nil so that default header is removed.
+// We then add a UIView as a header.
+- (void)addCustomHeaderToFriendPickerView
+{
+	self.friendPickerController.cancelButton = nil;
+	self.friendPickerController.doneButton = nil;
+	
+	CGFloat headerBarHeight = 45.0;
+	fbHeaderHeight = headerBarHeight;
+	
+	self.friendPickerHeaderView = [[HONHeaderView alloc] initWithTitle:[@"Select Friend" uppercaseString]];
+	self.friendPickerHeaderView.autoresizingMask = self.friendPickerHeaderView.autoresizingMask | UIViewAutoresizingFlexibleWidth;
+	
+	// Cancel Button
+	UIButton *customCancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+	[customCancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+	[customCancelButton addTarget:self action:@selector(facebookViewControllerCancelWasPressed:) forControlEvents:UIControlEventTouchUpInside];
+	customCancelButton.frame = CGRectMake(5.0, 0.0, 64.0, 44.0);
+	[self.friendPickerHeaderView addSubview:customCancelButton];
+	
+	// Done Button
+	UIButton *customDoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[customDoneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[customDoneButton addTarget:self action:@selector(facebookViewControllerDoneWasPressed:) forControlEvents:UIControlEventTouchUpInside];
+	customDoneButton.frame = CGRectMake(self.view.bounds.size.width - 69.0, 0.0, 64.0, 44.0);
+	[self.friendPickerHeaderView addSubview:customDoneButton];
+	
+}
+
+#pragma mark - Custom Facebook Select Friends Search Methods
+// Method to that adds a search bar to the built-in Friend Selector View.
+// We add this search bar to the canvasView of the FBFriendPickerViewController.
+- (void)addSearchBarToFriendPickerView
+{
+	if (self.searchBar == nil) {
+		CGFloat searchBarHeight = 44.0;
+		self.searchBar = [[UISearchBar alloc] initWithFrame: CGRectMake(0, 45.0, self.view.bounds.size.width, searchBarHeight)];
+		self.searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
+		self.searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
+		self.searchBar.delegate = self;
+		self.searchBar.showsCancelButton = NO;
+		
+		[self.friendPickerController.canvasView addSubview:self.friendPickerHeaderView];
+		[self.friendPickerController.canvasView addSubview:self.searchBar];
+		CGRect updatedFrame = self.friendPickerController.view.bounds;
+		updatedFrame.size.height -= (fbHeaderHeight + searchBarHeight);
+		updatedFrame.origin.y = fbHeaderHeight + searchBarHeight;
+		self.friendPickerController.tableView.frame = updatedFrame;
+		
+		self.friendPickerController.parentViewController.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.3137 green:0.6431 blue:0.9333 alpha:1.0];
+		//setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
+	}
+	
+	UITextField *searchField = [self.searchBar valueForKey:@"_searchField"];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(searchBarSearchTextDidChange:)name:UITextFieldTextDidChangeNotification object:searchField];
+}
+
+
+// There is no delegate UISearchBarDelegate method for when text changes.
+// This is a custom method using NSNotificationCenter
+- (void)searchBarSearchTextDidChange:(NSNotification*)notification
+{
+	UITextField *searchField = notification.object;
+	self.searchText = searchField.text;
+	[self.friendPickerController updateView];
+}
+
+// Private Method that handles the search functionality
+- (void)handleSearch:(UISearchBar *)searchBar {
+	[searchBar resignFirstResponder];
+	self.searchText = searchBar.text;
+	[self.friendPickerController updateView];
+}
+
+// Method that actually does the sorting.
+// This filters the data without having to call the server.
+- (BOOL)friendPickerViewController:(FBFriendPickerViewController *)friendPicker shouldIncludeUser:(id<FBGraphUser>)user
+{
+	if (self.searchText && ![self.searchText isEqualToString:@""]) {
+		NSRange result = [user.name rangeOfString:self.searchText options:NSCaseInsensitiveSearch];
+		if (result.location != NSNotFound) {
+			return YES;
+		} else {
+			return NO;
+		}
+	} else {
+		return YES;
+	}
+	return YES;
+}
+
+#pragma mark - Facebook FBFriendPickerDelegate Methods
+- (void)facebookViewControllerCancelWasPressed:(id)sender
+{
+	NSLog(@"Friend selection cancelled.");
+	[self handlePickerDone];
+}
+
+- (void)facebookViewControllerDoneWasPressed:(id)sender
+{
+	for (id<FBGraphUser> user in self.friendPickerController.selection) {
+		NSLog(@"Friend selected: %@", user.name);
+	}
+	
+	if (self.friendPickerController.selection.count == 0) {
+		[[[UIAlertView alloc] initWithTitle:@"No Friend Selected"
+											 message:@"You need to pick a friend."
+											delegate:nil
+								cancelButtonTitle:@"OK"
+								otherButtonTitles:nil]
+		 show];
+		
+		[self handlePickerDone];
+	} else {
+		
+		_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
+		_fbID = [[self.friendPickerController.selection lastObject] objectForKey:@"id"];
+		//_fbName = [[self.friendPickerController.selection lastObject] objectForKey:@"username"];
+		NSLog(@"FRIEND:[%@]", [self.friendPickerController.selection lastObject]);
+		
+		[self handlePickerDone];
+		//[self _goFriendChallenge];
+	}
+}
+
+- (void)handlePickerDone
+{
+	self.searchBar = nil;
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
 
 
 #pragma mark - ImagePicker Delegates

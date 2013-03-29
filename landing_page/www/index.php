@@ -13,8 +13,8 @@ $field_txt = (isset($_GET['result'])) ? "Thanks, we'll send your invite soon" : 
 <!--[if (gt IE 9)|!(IE)]><!--><html lang="en" class="no-js"><!--<![endif]-->
 <head>
 	<meta charset="UTF-8">
-	<meta name="description" content="Kodee is a fast and fun way to react to friends &amp; meet people. No fakes allowed! Just a forward facing camera and your best you.">
-	<title>Volley - an open snap for snap community</title>
+	<meta name="description" content="Volley is a fast and fun way to react to friends &amp; meet people. No fakes allowed! Just a forward facing camera and your best you.">
+	<title>Volley - a global open snap for snap network</title>
 
 	<!-- Mobile Stuffs -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,15 +28,29 @@ $field_txt = (isset($_GET['result'])) ? "Thanks, we'll send your invite soon" : 
 	<!--[if IE]>
 	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
+	
+	<script type="application/x-javascript">
+	    addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+
+	    function hideURLbar(){
+	        window.scrollTo(0,1);
+	    }
+	</script>
+	
+	
 </head>
 
 <body>
 	<!-- Begin primary_content -->
 	<div id="primary_content" class="clearfix">
 		<div class="content">
+			
 			<nav>
 				<ul>
-					
+					<li><a href="http://appsbuiltinmenlo.tumblr.com/" target="_blank">Blog</a></li>
+					<li><a href="http://www.twitter.com/getvolley/" target="_blank">Twitter</a></li>
+					<li><a href="mailto:support@letsvolley.com" target="_blank">Support</a></li>
+					<li><a href="https://angel.co/built-in-menlo" target="_blank">Investors</a></li>
 				</ul>
 			</nav>
 			
@@ -66,35 +80,31 @@ $field_txt = (isset($_GET['result'])) ? "Thanks, we'll send your invite soon" : 
 		<div class="content clearfix">
 		
 			<div class="phones">
-				
-
-
+			
 			<script language="JavaScript">
-<!--
+			<!--
 
-/*
-Random Image Script- By JavaScript Kit (http://www.javascriptkit.com) 
-Over 400+ free JavaScripts here!
-Keep this notice intact please
-*/
 
-function random_imglink(){
-var myimages=new Array()
-//specify random images below. You can have as many as you wish
-myimages[1]="_assets/img/phones_001.png"
-myimages[2]="_assets/img/phones_002.png"
-myimages[3]="_assets/img/phones_003.png"
-myimages[4]="_assets/img/phones_004.png"
-myimages[5]="_assets/img/phones_005.png"
 
-var ry=Math.floor(Math.random()*myimages.length)
-if (ry==0)
-ry=1
-document.write('<img src="'+myimages[ry]+'" border=0>')
-}
-random_imglink()
-//-->
-</script>
+			function random_imglink(){
+				var myimages=new Array()
+				//specify random images below. You can have as many as you wish
+				myimages[1]="_assets/img/phones_001.png"
+				myimages[2]="_assets/img/phones_002.png"
+				myimages[3]="_assets/img/phones_003.png"
+				myimages[4]="_assets/img/phones_004.png"
+				myimages[5]="_assets/img/phones_005.png"
+
+				var ry=Math.floor(Math.random()*myimages.length)
+				if (ry==0)
+				ry=1
+				document.write('<img src="'+myimages[ry]+'" border=0>')
+			}
+			random_imglink()
+			//-->
+			</script>
+			
+				
 
 			</div>
 		
@@ -105,7 +115,7 @@ random_imglink()
 				
 				<!-- Begin stores -->
 				<div class="stores clearfix">
-					<p class="ios"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></p>
+					<p class="ios"><img src="_assets/img/app_store.png" width="122" height="36" alt="Available on the App Store" /></p>
 					<p class="android"><img src="_assets/img/google_play.png" alt="Get it on Google Play" /></p>
 				</div>
 				<!-- End stores -->
@@ -120,6 +130,7 @@ random_imglink()
 		<div class="content clearfix">
 			
 			<div class="primary">
+			
 				<h2>Just be... <strong>your selfie (:</strong></h2>
 				<ul>
 					<li>Trade pics and vote worldwide</li>
@@ -143,7 +154,24 @@ random_imglink()
 			</div>
 			
 			<div class="secondary">
-				<div class="hand"><img src="_assets/img/hand.jpg" alt="" /></div>
+				
+				<script>
+				function random_handimage(){
+					var myimages=new Array()
+					//specify random images below. You can have as many as you wish
+					myimages[1]="_assets/img/hand_01.jpg"
+					myimages[2]="_assets/img/hand_02.jpg"
+					myimages[3]="_assets/img/hand_03.jpg"
+					myimages[4]="_assets/img/hand_04.jpg"
+					myimages[5]="_assets/img/hand_05.jpg"
+
+					var ry=Math.floor(Math.random()*myimages.length)
+					if (ry==0)
+					ry=1
+					document.write('<img src="'+myimages[ry]+'" alt="" />')
+				}
+				random_handimage();
+				</script>
 			</div>
 		
 		</div>
@@ -152,13 +180,13 @@ random_imglink()
 	
 	<!-- Begin stores -->
 	<div class="stores clearfix">
-		<p class="ios"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></p>
+		<p class="ios"><img src="_assets/img/app_store.png" width="122" height="36" alt="Available on the App Store" /></p>
 		<p class="android"><img src="_assets/img/google_play.png" alt="Get it on Google Play" /></p>
 	</div>
 	<!-- End stores -->
 	
 	<footer>
-		<nav><a href="http://www.builtinmenlo.com">Blog</a> <a href="http://www.twitter.com/getkodee">Twitter</a><a href="mailto:support@kodee.me">Support</a></nav>
+		<nav><a href="http://www.builtinmenlo.com" target="_blank">Blog</a> <a href="https://twitter.com/GetVolley" target="_blank">Twitter</a> <a href="mailto:support@letsvolley.com" target="_blank">Support</a><a href="https://angel.co/built-in-menlo" target="_blank">Investors</a></nav>
 		<p class="copyright"><small>&copy;2013 Built In Menlo, Inc.</small></p>
 	</footer>
 	

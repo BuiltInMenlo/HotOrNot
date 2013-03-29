@@ -20,6 +20,7 @@
 @interface HONCameraOverlayView() <UITextFieldDelegate>
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIImageView *irisImageView;
+@property (nonatomic, strong) UIImageView *usernameBGImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *captureHolderView;
@@ -143,30 +144,37 @@
 		[_captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
 		[_captureHolderView addSubview:_captureButton];
 		
-		UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(323.0, 55.0, 314.0, 44.0)];
-		usernameBGImageView.image = [UIImage imageNamed:@"cameraInputFieldB"];
-		usernameBGImageView.userInteractionEnabled = YES;
-		[_captureHolderView addSubview:usernameBGImageView];
+		_usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 370.0, 320.0, 42.0)];
+		_usernameBGImageView.image = [UIImage imageNamed:@"cameraKeyboardInputField_nonActive"];
+		_usernameBGImageView.userInteractionEnabled = YES;
+		[_captureHolderView addSubview:_usernameBGImageView];
 		
-		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 16.0, 270.0, 25.0)];
+		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 11.0, 270.0, 25.0)];
 		//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-		[_usernameTextField setTextColor:[UIColor blackColor]];
+		[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
 		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
 		_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-		_usernameTextField.text = @"Add a username…";
+		_usernameTextField.text = @"@user";
 		_usernameTextField.delegate = self;
 		[_usernameTextField setTag:1];
-		[usernameBGImageView addSubview:_usernameTextField];
+		[_usernameBGImageView addSubview:_usernameTextField];
+		
+		UIButton *fbButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		fbButton.frame = CGRectMake(276.0, -1.0, 44.0, 44.0);
+		[fbButton setBackgroundImage:[UIImage imageNamed:@"facebookIconButton_nonActive"] forState:UIControlStateNormal];
+		[fbButton setBackgroundImage:[UIImage imageNamed:@"facebookIconButton_Active"] forState:UIControlStateHighlighted];
+		[fbButton addTarget:self action:@selector(_goFB:) forControlEvents:UIControlEventTouchUpInside];
+		[_usernameBGImageView addSubview:fbButton];
 		
 		UIImageView *commentBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(323.0, 375.0, 314.0, 64.0)];
 		commentBGImageView.image = [UIImage imageNamed:@"cameraInputFieldB"];
 		commentBGImageView.userInteractionEnabled = YES;
-		[_captureHolderView addSubview:commentBGImageView];
+		//[_captureHolderView addSubview:commentBGImageView];
 		
 		_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 16.0, 270.0, 25.0)];
 		//[_commentTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -181,7 +189,7 @@
 		_commentTextField.text = @"Add a comment…";
 		_commentTextField.delegate = self;
 		[_commentTextField setTag:2];
-		[commentBGImageView addSubview:_commentTextField];
+		//[commentBGImageView addSubview:_commentTextField];
 		
 		
 		_trackBGView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 278.0, 306.0, 80.0)];
@@ -408,6 +416,10 @@
 	[self.delegate cameraOverlayViewSubmitChallenge:self username:_usernameTextField.text comments:_commentTextField.text];
 }
 
+- (void)_goFB:(id)sender {
+	[self.delegate cameraOverlayViewPickFBFriends:self];
+}
+
 - (void)_goEditSubject {
 	[[Mixpanel sharedInstance] track:@"Camera - Edit Hashtag"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -505,7 +517,11 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-		textField.text = @"";
+		textField.text = @"@";
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_usernameBGImageView.frame = CGRectMake(_usernameBGImageView.frame.origin.x, _usernameBGImageView.frame.origin.y - 148.0, _usernameBGImageView.frame.size.width, _usernameBGImageView.frame.size.height);
+		}];
 	
 	} else if (textField.tag == 2) {
 		[[Mixpanel sharedInstance] track:@"Camera - Edit Comment"
@@ -534,6 +550,10 @@
 	if (textField.tag == 0) {
 		if ([textField.text isEqualToString:@""])
 			textField.text = @"#";
+	
+	} else if (textField.tag == 1) {
+		if ([textField.text isEqualToString:@""])
+			textField.text = @"@";
 	}
 	
 	return (YES);
@@ -561,10 +581,16 @@
 //			[self _goSubjectCheck];
 	
 	} else if (textField.tag == 1) {
-		if ([textField.text length] == 0)
-			textField.text = @"Add a username…";
+		if ([textField.text length] == 0 || [textField.text isEqualToString:@"@"])
+			textField.text = @"@user";
 		
-		_username = textField.text;
+		else
+			_username = textField.text;
+		
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_usernameBGImageView.frame = CGRectMake(_usernameBGImageView.frame.origin.x, _usernameBGImageView.frame.origin.y + 148.0, _usernameBGImageView.frame.size.width, _usernameBGImageView.frame.size.height);
+		}];
 			
 	} else if (textField.tag == 2) {
 		if ([textField.text length] == 0)

@@ -231,7 +231,7 @@
 	[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 	
 	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:3 inSection:0]];
-	[cell updateCaption:(session.state == 513) ? @"LOGOUT OF FACEBOOK" : @"LOGIN TO FACEBOOK"];
+	[cell updateCaption:(session.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
 }
 
 - (void)_refreshSettingsTab:(NSNotification *)notification {
@@ -396,7 +396,7 @@
 		case 4:
 			if (FBSession.activeSession.state == 513) {
 				[FBSession.activeSession closeAndClearTokenInformation];
-				[cell updateCaption:@"LOGIN TO FACEBOOK"];
+				[cell updateCaption:@"Login to Facebook"];
 			
 			} else {
 				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];

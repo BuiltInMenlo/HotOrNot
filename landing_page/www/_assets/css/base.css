@@ -50,8 +50,33 @@
 -------------------------------------------------------*/
 
 #primary_content {
-	background: url(../img/primary_content_bg.jpg) repeat;
+	background: #1eb087;
 }
+	
+	/* --- | Nav | --- */
+	
+	#primary_content nav {
+		font-size: 17px;
+		position: absolute;
+		right: 20px;
+		top: 20px;
+		display: block;
+	}
+		
+		#primary_content nav ul {
+			list-style: none;
+			margin: 0;
+		}
+		
+			#primary_content nav ul li {
+				display: inline;
+				margin-left: 35px;
+			}
+				
+				#primary_content nav ul li a {
+					text-decoration: none;
+					color: #fff;
+				}
 	
 	/* --- | Header | --- */
 	
@@ -62,23 +87,43 @@
 			text-align: center;
 			text-shadow: rgba(0,0,0,0.5) -2px 0, rgba(0,0,0,0.3) 0 -2px;
 			color: #fff;
-			margin-bottom: 45px;
+			margin-bottom: 20px;
 		}
 		
 		#primary_content header h2 {
 			font-family: 'cartogothic_stdregular';
 			text-align: center;
 			color: #09724e;
+			margin-bottom: 20px;
 		}
 	
 	/* --- | Signup Form | --- */
 	
-	#signup_form {}
+	#signup_form {
+		color: #fff;
+	}
 		
 		#signup_form h3 {
 			font-size: 22px;
 			color: #fff;
 			margin-bottom: 30px;
+		}
+		
+		#signup_form input[type="text"] {
+			font-size: 18px;
+			text-align: center;
+			color: #999;
+			display: block;
+			width: 100%;
+			margin-bottom: 30px;
+			padding: 15px 10px;
+			border: 0;
+			-webkit-border-radius: 10px;
+			border-radius: 10px;
+			-webkit-background-clip: padding-box; background-clip: padding-box;
+			-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+			-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+			box-sizing: border-box;         /* Opera/IE 8+ */
 		}
 		
 		#signup_form #phone_email {
@@ -106,8 +151,9 @@
 			color: #fff;
 			display: block;
 			width: 100%;
-			padding: 15px;			
-		background-color: #3793ed;
+			padding: 15px;	
+			
+			background-color: #3793ed;
 			background-image: -webkit-gradient(linear, left top, left bottom, from(#3793ed), to(#0f87d8));
 			background-image: -webkit-linear-gradient(top, #3793ed, #0f87d8);
 			background-image:    -moz-linear-gradient(top, #3793ed, #0f87d8);
@@ -122,9 +168,11 @@
 		}
 		
 		#signup_form .privacy {
-			font-size: 12px;
+			font-size: 14px;
 			letter-spacing: 1px;
 			text-align: center;
+			margin-bottom:40px;	
+		
 		}
 		
 			#signup_form .privacy a { color: #229970; }
@@ -146,7 +194,10 @@
 	
 	#secondary_content p { 
 		
-		margin-bottom: 1em; 
+		margin-bottom: 1em;
+		text-align:justify;
+	
+			color: #5a5a5a;
 		
 		}
 
@@ -159,6 +210,12 @@
 	
 	.stores .android {
 		margin-top: -2px;
+
+	}
+	
+	.stores .ios{
+	
+	
 	}
 
 
@@ -179,13 +236,14 @@
 		#features ul {
 			color: #1387da;
 			list-style: none;
-			margin: 1em 0;
+			margin: 10px 0;
 		}
 			
 			#features ul li {
 				margin: 0 0 0 1em;
 				padding-left: 2em;
 				background: url(../img/bullet.png) no-repeat 0 7px;
+				font-size: 16px;
 			}
 	
 	/* --- | Hand | --- */
@@ -212,7 +270,7 @@
 			color: #999;
 			display: block;
 			width: 100%;
-			margin-bottom: 15px;
+			margin-bottom: 30px;
 			padding: 17px 10px;
 			background: #e6e6e6;
 			border: 0;
@@ -253,6 +311,7 @@
 			font-size: 12px;
 			letter-spacing: 1px;
 			text-align: center;
+			margin-top:20px;
 		}
 		
 			#signup_form_2 .privacy a { color: #76deba; }

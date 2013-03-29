@@ -406,7 +406,7 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:0.5];
 }
 
@@ -546,6 +546,7 @@
 		
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONTimelineItemDetailsViewController alloc] initAsNotInSession:vo]];
 	[navController setNavigationBarHidden:YES];
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	[self presentViewController:navController animated:NO completion:nil];
 }
 
@@ -573,6 +574,7 @@
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONTimelineItemDetailsViewController alloc] initAsInSessionChallenger:vo]];
 	[navController setNavigationBarHidden:YES];
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	[self presentViewController:navController animated:NO completion:nil];
 }
 

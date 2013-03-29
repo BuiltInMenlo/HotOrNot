@@ -312,7 +312,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	
-	[self _dropTabs];
+	//[self _dropTabs];
 }
 
 

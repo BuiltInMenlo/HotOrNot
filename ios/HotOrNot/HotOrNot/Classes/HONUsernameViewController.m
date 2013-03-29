@@ -55,33 +55,46 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience3rdStepBackground-568h" : @"cameraExperience3rdStepBackground"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"CHANGE USERNAME"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Username"];
+	[headerView hideRefreshing];
 	[self.view addSubview:headerView];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+	cancelButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:cancelButton];
 	
-	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 70.0, 274.0, 44.0)];
-	subjectBGImageView.image = [UIImage imageNamed:@"cameraInputField_nonActive"];
+	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	submitButton.frame = CGRectMake(246.0, 0.0, 74.0, 44.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:submitButton];
+	
+	UIImageView *logoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 87.0, 64.0, 64.0)];
+	logoImageView.image = [UIImage imageNamed:@"firstRun_AvatarIcon"];
+	logoImageView.userInteractionEnabled = YES;
+	[self.view addSubview:logoImageView];
+	
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 177.0, 294.0, 64.0)];
+	subjectBGImageView.image = [UIImage imageNamed:@"firstRun_InputField_nonActive"];
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(21.0, 20.0, 240.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[UIColor blackColor]];
+	[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 	_usernameTextField.delegate = self;
@@ -92,14 +105,7 @@
 	[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_nonActive"] forState:UIControlStateNormal];
 	[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_Active"] forState:UIControlStateHighlighted];
 	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
-	[subjectBGImageView addSubview:_editButton];
-	
-	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(18.0, 187.0, 283.0, 78.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitUserNameButton_Active"] forState:UIControlStateHighlighted];
-	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:submitButton];
+	//[subjectBGImageView addSubview:_editButton];
 }
 
 - (void)viewDidLoad {

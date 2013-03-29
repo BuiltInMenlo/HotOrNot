@@ -257,26 +257,25 @@
 	[submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:submitButton];
 	
-	UIImageView *logoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 120.0, 64.0, 64.0)];
+	UIImageView *logoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 87.0, 64.0, 64.0)];
 	logoImageView.image = [UIImage imageNamed:@"firstRun_AvatarIcon"];
 	logoImageView.userInteractionEnabled = YES;
 	[self.view addSubview:logoImageView];
 	
-	
-	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(23.0, 200.0, 294.0, 64.0)];
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 177.0, 294.0, 64.0)];
 	subjectBGImageView.image = [UIImage imageNamed:@"firstRun_InputField_nonActive"];
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(16.0, 13.0, 240.0, 20.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(21.0, 20.0, 240.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
-	[_usernameTextField setTextColor:[UIColor blackColor]];
+	[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate freightSansBlack] fontWithSize:16];
+	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.text = _username;
 	_usernameTextField.delegate = self;

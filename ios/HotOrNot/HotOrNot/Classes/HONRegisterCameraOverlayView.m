@@ -46,7 +46,7 @@
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 367.0, 640.0, 105.0)];
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 384.0, 640.0, 105.0)];
 		[_bgImageView addSubview:_footerHolderView];
 		
 		_headerView = [[HONHeaderView alloc] initWithTitle:@"Take Pic"];
@@ -61,7 +61,7 @@
 		[_headerView addSubview:_cancelButton];
 		
 		_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_submitButton.frame = CGRectMake(435.0, 0.0, 74.0, 44.0);
+		_submitButton.frame = CGRectMake(443.0, 0.0, 74.0, 44.0);
 		[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
 		[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 		[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -76,7 +76,7 @@
 		//[_footerHolderView addSubview:cameraRollButton];
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(114.0, 0.0, 94.0, 94.0);
+		_captureButton.frame = CGRectMake(113.0, 0.0, 94.0, 94.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];

@@ -24,27 +24,39 @@
 	<![endif]-->
 </head>
 
-<body>
+<body class="thankyou">
 	<!-- Begin primary_content -->
 	<div id="primary_content" class="clearfix">
 		<div class="content">
 			<nav>
 				<ul>
-					
+					<li><a href="#">Blog</a></li>
+					<li><a href="#">Twitter</a></li>
+					<li><a href="#">Support</a></li>
+					<li><a href="#">Investors</a></li>
 				</ul>
 			</nav>
 			
 			<header>
 				<h1><a href="http://www.letsvolley.com/"><img src="_assets/img/logo_hiRes.png" width="197" height="87"></img></a></h1>
-				<h2>an open snap for snap network</h2>
+				<h2>a global snap for snap network</h2>
 			</header>
 
 			<!-- Begin signup_form -->
 			<div id="signup_form">
 
-				<form method="post" action="./submit.php">
-					<h3>Thanks! There are <?php echo (number_format(rand(25000, 500000))); ?> people in front of you to get Volley. The more friends you invite the faster everyone will get access. Please share Volley with friends! <a href="http://www.letsvolley.com/">www.letsvolley.com</a></h3>
+				<form method="post" action="./submit.php?a=2">
+					<h2>Thank you for signing up!</h2>
+					<h3>There are <?php echo (number_format(time() - 1364500000)); ?> people in front of you to get Volley. Want faster access?</h3>
+					<p>Invite 3 friends to move up in line...</p>
 					
+					<input type="text" class="clear_field" name="txtFriend1" value="email address" />
+					<input type="text" class="clear_field" name="txtFriend2" value="email address" />
+					<input type="text" class="clear_field" name="txtFriend3" value="email address" />
+					<input type="hidden" name="hidFriends" value="1" />
+					
+					<input type="submit" name="signup" id="signup" value="Submit" />
+					<p class="privacy"><a href="privacyVolley.html" target="_blank">privacy policy</a></p>
 				</form>
 
 			</div>
@@ -55,7 +67,7 @@
 	
 	<!-- Begin secondary_content -->
 	<div id="secondary_content">
-		<div class="content">
+		<div class="content clearfix">
 		
 			<div class="phones">
 				
@@ -91,25 +103,80 @@ random_imglink()
 			</div>
 		
 			<div class="about">
-			<br></br>
-				<p>Volley is a fast and fun way to snap with friends & meet new people. No fakes allowed, just a forward facing camera and the best you.</p>
-				<p>Currently in private beta.</p>
+				<!-- Begin stores -->
+				<div class="stores clearfix">
+					<p class="ios"><img src="_assets/img/app_store.png" width="122" height="36" alt="Available on the App Store" /></p>
+					<p class="android"><img src="_assets/img/google_play.png" alt="Get it on Google Play" /></p>
+				</div>
+				<!-- End stores -->
 			</div>
 			
 		</div>
 	</div>
 	<!-- End secondary_content -->
 	
-	<!-- Begin stores -->
+	<!-- Begin features -->
+	<div id="features">
+		<div class="content clearfix">
+			
+			<div class="primary">
+			
+				<h2>Just be... <strong>your selfie (:</strong></h2>
+				<ul>
+					<li>Trade pics and vote worldwide</li>
+					<li>Snap@anyone including celebrities</li>
+					<li>Camera to Camera fun!</li>
+					<li>Express yourself with stickers</li>
+				</ul>
+		
+				<!-- Begin signup_form
+				<div id="signup_form_2" class="early_access">
+
+					<form method="post" action="./submit.php">
+						<h3>Want early access?</h3>
+						<input type="text" name="phone_email" id="phone_email_2" class="clear_field" value="<?php echo ($field_txt); ?>" />
+						<input type="submit" name="signup_2" id="signup_2" value="Submit" />
+						<p class="privacy"><a href="privacyVolley.html" target="_blank">privacy policy</a></p>
+					</form>
+
+				</div>
+				End signup_form -->
+			</div>
+			
+			<div class="secondary">
+				
+					<script>
+					function random_handimage(){
+						var myimages=new Array()
+						//specify random images below. You can have as many as you wish
+						myimages[1]="_assets/img/hand_01.jpg"
+						myimages[2]="_assets/img/hand_02.jpg"
+						myimages[3]="_assets/img/hand_03.jpg"
+						myimages[4]="_assets/img/hand_04.jpg"
+						myimages[5]="_assets/img/hand_05.jpg"
+
+						var ry=Math.floor(Math.random()*myimages.length)
+						if (ry==0)
+						ry=1
+						document.write('<img src="'+myimages[ry]+'" alt="" />')
+					}
+					random_handimage();
+					</script>
+			</div>
+		
+		</div>
+	</div>
+	<!-- End features -->
 	
+	<!-- Begin stores -->
 	<div class="stores clearfix">
-		<p class="ios"><img src="_assets/img/app_store.png" alt="Available on the App Store" /></p>
+		<p class="ios"><img src="_assets/img/app_store.png" width="122" height="36" alt="Available on the App Store" /></p>
 		<p class="android"><img src="_assets/img/google_play.png" alt="Get it on Google Play" /></p>
 	</div>
 	<!-- End stores -->
 	
 	<footer>
-		<nav><a href="http://www.builtinmenlo.com">Blog</a> <a href="http://www.twitter.com/getkodee">Twitter</a><a href="mailto:support@kodee.me">Support</a></nav>
+		<nav><a href="http://www.builtinmenlo.com" target="_blank">Blog</a> <a href="https://twitter.com/GetVolley" target="_blank">Twitter</a> <a href="#" target="_blank">Facebook</a><a href="mailto:support@letsvolley.com">Support</a><a href="#" target="_blank">Investors</a></nav>
 		<p class="copyright"><small>&copy;2013 Built In Menlo, Inc.</small></p>
 	</footer>
 	

@@ -52,11 +52,12 @@
 	
 	NSString *bgAsset = ([HONAppDelegate isRetina5]) ? @"facebookBackground-568h@2x" : @"facebookBackground";
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 523.0 : 425.0)];
 	bgImgView.image = [UIImage imageNamed:bgAsset];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"FACEBOOK"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Facebook"];
+	[headerView hideRefreshing];
 	[self.view addSubview:headerView];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -67,7 +68,7 @@
 	[headerView addSubview:cancelButton];
 	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	facebookButton.frame = CGRectMake(19.0, 365.0, 264.0, 64.0);
+	facebookButton.frame = CGRectMake(27.0, ([HONAppDelegate isRetina5]) ? 471.0 : 382.0, 264.0, 64.0);
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_nonActive"] forState:UIControlStateNormal];
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_Active"] forState:UIControlStateHighlighted];
 	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];

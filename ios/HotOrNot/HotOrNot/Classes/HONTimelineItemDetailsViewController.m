@@ -107,26 +107,26 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 20.0, 38.0, 38.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(9.0, 10.0, 38.0, 38.0)];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:(_isCreator || !_isInSession) ? _challengeVO.creatorAvatar : _challengeVO.challengerAvatar] placeholderImage:nil];
 	avatarImageView.clipsToBounds = YES;
 	avatarImageView.layer.cornerRadius = 4.0;
 	[self.view addSubview:avatarImageView];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 30.0, 200.0, 14.0)];
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 24.0, 200.0, 14.0)];
 	creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
 	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
-	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
+	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", (_isCreator || !_isInSession) ? _challengeVO.creatorName : _challengeVO.challengerName];
 	[self.view addSubview:creatorNameLabel];
 	
 	if ([_challengeVO.rechallengedUsers length] > 0) {
-		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(200.0, 8.0, 24.0, 24.0)];
+		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(217.0, 17.0, 24.0, 24.0)];
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
 		[self.view addSubview:rechallengeImageView];
 		
-		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(220.0, 8.0, 60.0, 24.0)];
-		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
+		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(228.0, 23.0, 60.0, 12.0)];
+		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
 		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		rechallengeLabel.backgroundColor = [UIColor clearColor];
 		rechallengeLabel.textAlignment = NSTextAlignmentRight;
@@ -134,8 +134,8 @@
 		[self.view addSubview:rechallengeLabel];
 	}
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 12.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 24.0, 60.0, 12.0)];
+	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -159,9 +159,9 @@
 	}
 	
 	__weak typeof(self) weakSelf = self;
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 64.0, kLargeW * 0.5, kLargeW * 0.5)];
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 60.0, kLargeW * 0.5, kLargeW * 0.5)];
 	_imageView.clipsToBounds = YES;
-	_imageView.layer.cornerRadius = 8.0;
+	_imageView.layer.cornerRadius = 4.0;
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		weakSelf.imageView.image = image;
 		[weakSelf _hideHUD];
@@ -181,7 +181,7 @@
 //	[self.view addSubview:shareButton];
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(0.0, 378.0, 64.0, 64.0);
+	pokeButton.frame = CGRectMake(23.0, 389.0, 64.0, 64.0);
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
 	[pokeButton addTarget:self action:(_isCreator || _challengeVO.statusID == 1 || _challengeVO.statusID == 2) ? @selector(_goPokeCreator) : @selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
@@ -189,7 +189,7 @@
 	[self.view addSubview:pokeButton];
 	
 	UIButton *voteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	voteButton.frame = CGRectMake(160.0, 378.0, 84.0, 84.0);
+	voteButton.frame = CGRectMake(118.0, 378.0, 84.0, 84.0);
 	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_nonActive"] forState:UIControlStateNormal];
 	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_Active"] forState:UIControlStateHighlighted];
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
@@ -197,7 +197,7 @@
 	[self.view addSubview:voteButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(266.0, 385.0, 64.0, 64.0);
+	moreButton.frame = CGRectMake(239.0, 385.0, 64.0, 64.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
