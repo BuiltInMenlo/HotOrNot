@@ -5,6 +5,9 @@
 //  Created by Matthew Holcombe on 09.06.12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
+
+#import <MessageUI/MFMessageComposeViewController.h>
+#import <MessageUI/MFMailComposeViewController.h>
 #import <KiipSDK/KiipSDK.h>
 
 #import "AFHTTPClient.h"
@@ -27,7 +30,7 @@
 #import "HONSearchBarHeaderView.h"
 
 
-@interface HONChallengesViewController() <UIAlertViewDelegate, UIGestureRecognizerDelegate, TapForTapAdViewDelegate>
+@interface HONChallengesViewController() <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, TapForTapAdViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -220,10 +223,26 @@
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:createChallengeButton];
 	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 120.0, 320.0, 285.0)];
-	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 285.0)];
+	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
 	_emptySetImgView.hidden = YES;
+	_emptySetImgView.userInteractionEnabled = YES;
 	[self.view addSubview:_emptySetImgView];
+	
+	UIButton *inviteSMSButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteSMSButton.frame = CGRectMake(73.0, 190.0, 174.0, 34.0);
+	[inviteSMSButton setBackgroundImage:[UIImage imageNamed:@"inviteSMS_nonActive"] forState:UIControlStateNormal];
+	[inviteSMSButton setBackgroundImage:[UIImage imageNamed:@"inviteSMS_Active"] forState:UIControlStateHighlighted];
+	[inviteSMSButton addTarget:self action:@selector(_goInviteSMS) forControlEvents:UIControlEventTouchUpInside];
+	[_emptySetImgView addSubview:inviteSMSButton];
+	
+	UIButton *inviteEmailButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteEmailButton.frame = CGRectMake(73.0, 250.0, 174.0, 34.0);
+	[inviteEmailButton setBackgroundImage:[UIImage imageNamed:@"inviteEMAIL_nonActive"] forState:UIControlStateNormal];
+	[inviteEmailButton setBackgroundImage:[UIImage imageNamed:@"inviteEMAIL_Active"] forState:UIControlStateHighlighted];
+	[inviteEmailButton addTarget:self action:@selector(_goInviteEmail) forControlEvents:UIControlEventTouchUpInside];
+	[_emptySetImgView addSubview:inviteEmailButton];
+	
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 30.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -341,6 +360,44 @@
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
+}
+
+- (void)_goInviteEmail {
+	if ([MFMailComposeViewController canSendMail]) {
+		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+		mailComposeViewController.mailComposeDelegate = self;
+		//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
+		[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+		
+		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+																			 message:@"Cannot send email from this device!"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+	}
+}
+
+- (void)_goInviteSMS {
+	if ([MFMessageComposeViewController canSendText]) {
+		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+		messageComposeViewController.messageComposeDelegate = self;
+		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
+		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		
+		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+	
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+																			 message:@"Cannot send SMS from this device!"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+	}
 }
 
 
@@ -583,6 +640,59 @@
 #pragma mark - ScrollView Delegates
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	
+	switch (result) {
+		case MessageComposeResultCancelled:
+			NSLog(@"SMS: canceled");
+			break;
+			
+		case MessageComposeResultSent:
+			NSLog(@"SMS: sent");
+			break;
+			
+		case MessageComposeResultFailed:
+			NSLog(@"SMS: failed");
+			break;
+			
+		default:
+			NSLog(@"SMS: not sent");
+			break;
+	}
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
+	switch (result) {
+		case MFMailComposeResultCancelled:
+			NSLog(@"EMAIL: canceled");
+			break;
+			
+		case MFMailComposeResultFailed:
+			NSLog(@"EMAIL: failed");
+			break;
+			
+		case MFMailComposeResultSaved:
+			NSLog(@"EMAIL: saved");
+			break;
+			
+		case MFMailComposeResultSent:
+			NSLog(@"EMAIL: sent");
+			break;
+			
+		default:
+			NSLog(@"EMAIL: not sent");
+			break;
+	}
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 

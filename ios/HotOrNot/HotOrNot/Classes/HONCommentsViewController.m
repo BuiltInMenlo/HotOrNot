@@ -192,9 +192,9 @@
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_commentTextField setReturnKeyType:UIReturnKeyDone];
-	[_commentTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
+	[_commentTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_commentTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
+	_commentTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:14];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;
 	_commentTextField.text = @"";
 	_commentTextField.delegate = self;
@@ -243,15 +243,15 @@
 - (void)_goSend {
 	[_commentTextField resignFirstResponder];
 	
-	[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
-		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
-	} completion:^(BOOL finished) {
-		_commentTextField.text = @"";
-	}];
-	
-	if ([_commentTextField.text length] > 0) {
-		[self _submitComment];
-	}
+//	[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
+//		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+//	} completion:^(BOOL finished) {
+//		_commentTextField.text = @"";
+//	}];
+//	
+//	if ([_commentTextField.text length] > 0) {
+//		[self _submitComment];
+//	}
 }
 
 

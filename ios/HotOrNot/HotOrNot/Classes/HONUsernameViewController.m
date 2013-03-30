@@ -86,15 +86,15 @@
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(21.0, 20.0, 240.0, 20.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(21.0, 21.0, 240.0, 20.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
+	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
+	_usernameTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 	_usernameTextField.delegate = self;

@@ -149,15 +149,15 @@
 		_usernameBGImageView.userInteractionEnabled = YES;
 		[_captureHolderView addSubview:_usernameBGImageView];
 		
-		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 11.0, 270.0, 25.0)];
+		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 12.0, 270.0, 25.0)];
 		//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-		[_usernameTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
+		[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:16];
+		_usernameTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 		_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 		_usernameTextField.text = @"@user";
 		_usernameTextField.delegate = self;
@@ -285,6 +285,7 @@
 	
 	[_headerView setTitle:_subjectName];
 	_captureHolderView.frame = CGRectMake(-320.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
+	[_usernameTextField becomeFirstResponder];
 }
 
 - (void)hidePreview {

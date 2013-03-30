@@ -158,20 +158,21 @@ NSString *const FacebookAppID = @"529054720443694";
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"] isEqualToString:@"YES"]);
 }
 
-+ (BOOL)hasVoted:(int)challengeID {
++ (int)hasVoted:(int)challengeID {
 	NSArray *voteArray = [[NSUserDefaults standardUserDefaults] objectForKey:@"votes"];
 	
 	for (NSNumber *cID in voteArray) {
-		if ([cID intValue] == challengeID)
-			return (YES);
+		if ([cID intValue] == challengeID || -[cID intValue] == challengeID) {
+			return ([cID intValue]);
+		}
 	}
 	
-	return (NO);
+	return (0);
 }
 
-+ (void)setVote:(int)challengeID {
++ (void)setVote:(int)challengeID forCreator:(BOOL)isCreator {
 	NSMutableArray *voteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
-	[voteArray addObject:[NSNumber numberWithInt:challengeID]];
+	[voteArray addObject:[NSNumber numberWithInt:(isCreator) ? challengeID : -challengeID]];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:voteArray forKey:@"votes"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -314,7 +315,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [[utcDate dateByAddingTimeInterval:80] timeIntervalSinceDate:date];
+	int secs = [[utcDate dateByAddingTimeInterval:85] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
@@ -395,6 +396,10 @@ NSString *const FacebookAppID = @"529054720443694";
 
 + (UIColor *)honGreyTxtColor {
 	return ([UIColor colorWithWhite:0.635 alpha:1.0]);
+}
+
++ (UIColor *)honGreyInputColor {
+	return ([UIColor colorWithWhite:0.518 alpha:1.0]);
 }
 
 

@@ -119,8 +119,8 @@
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:createChallengeButton];
 	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 115.0, 320.0, 285.0)];
-	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 285.0)];
+	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	

@@ -373,8 +373,8 @@
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:createChallengeButton];
 	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 115.0, 320.0, 285.0)];
-	_emptySetImgView.image = [UIImage imageNamed:@"noChallengesOverlay"];
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 285.0)];
+	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
@@ -406,7 +406,7 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:0.5];
 }
 

@@ -121,17 +121,18 @@
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
 		
-//		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
-//		lScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
-//		[_lHolderView addSubview:lScoreImageView];
-//		
-//		_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 7.0, 144.0, 18.0)];
-//		_lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-//		_lScoreLabel.backgroundColor = [UIColor clearColor];
-//		_lScoreLabel.textColor = [UIColor whiteColor];
-//		_lScoreLabel.textAlignment = NSTextAlignmentRight;
-//		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
-//		[lScoreImageView addSubview:_lScoreLabel];
+		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
+		lScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
+		lScoreImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
+		[_lHolderView addSubview:lScoreImageView];
+		
+		_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 7.0, 144.0, 18.0)];
+		_lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		_lScoreLabel.backgroundColor = [UIColor clearColor];
+		_lScoreLabel.textColor = [UIColor whiteColor];
+		_lScoreLabel.textAlignment = NSTextAlignmentRight;
+		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+		[lScoreImageView addSubview:_lScoreLabel];
 		
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 209.0, 38.0, 38.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
@@ -195,28 +196,36 @@
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerNameButton];
 		
-//		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
-//		rScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
-//		[_rHolderView addSubview:rScoreImageView];
-//		
-//		_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 7.0, 140.0, 18.0)];
-//		_rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-//		_rScoreLabel.backgroundColor = [UIColor clearColor];
-//		_rScoreLabel.textColor = [UIColor whiteColor];
-//		_rScoreLabel.textAlignment = NSTextAlignmentRight;
-//		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
-//		[rScoreImageView addSubview:_rScoreLabel];
+		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
+		rScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
+		rScoreImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
+		[_rHolderView addSubview:rScoreImageView];
+		
+		_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 7.0, 140.0, 18.0)];
+		_rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+		_rScoreLabel.backgroundColor = [UIColor clearColor];
+		_rScoreLabel.textColor = [UIColor whiteColor];
+		_rScoreLabel.textAlignment = NSTextAlignmentRight;
+		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+		[rScoreImageView addSubview:_rScoreLabel];
 		
 		_loserOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 46.0, 153.0, 153.0)];
 		_loserOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
 		_loserOverlayView.hidden = YES;
 		[self addSubview:_loserOverlayView];
 		
+		float width = 64.0;
+		if (_challengeVO.creatorScore + _challengeVO.challengerScore == 1)
+			width = 64.0;
+		
+		else if (_challengeVO.creatorScore + _challengeVO.challengerScore > 1)
+			width = 94.0;
+		
 		NSString *caption = (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"" : [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(6.0, 253.0, (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? 64.0 : 94, 34.0);
-		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_nonActive" : @"timelineLike_nonActive"] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_Active" : @"timelineLike_Active"] forState:UIControlStateHighlighted];
+		_votesButton.frame = CGRectMake(6.0, 253.0, width, 34.0);
+		[_votesButton setBackgroundImage:[[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_nonActive" : @"timelineLike_nonActive"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateNormal];
+		[_votesButton setBackgroundImage:[[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_Active" : @"timelineLike_Active"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
 		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
 		_votesButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
@@ -225,7 +234,7 @@
 		[self addSubview:_votesButton];
 		
 		UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		commentsButton.frame = CGRectMake(103.0, 253.0, (_challengeVO.commentTotal == 0) ? 94.0 : 124, 34.0);
+		commentsButton.frame = CGRectMake(_votesButton.frame.origin.x + _votesButton.frame.size.width + 2.0, 253.0, (_challengeVO.commentTotal == 0) ? 94.0 : 124, 34.0);
 		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_nonActive" : @"timelineComments_nonActive"] forState:UIControlStateNormal];
 		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_Active" : @"timelineComments_Active"] forState:UIControlStateHighlighted];
 		commentsButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
@@ -260,21 +269,60 @@
 		[creatorAvatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:creatorAvatarButton];
 		
-		CGSize size = [[NSString stringWithFormat:@"   @%@ is waiting for a snap   ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12] constrainedToSize:CGSizeMake(210.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-		NSLog(@"SIZE:[%f]", size.width);
+		CGSize size = [[NSString stringWithFormat:@"@%@", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12] constrainedToSize:CGSizeMake(210.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 371.0, size.width, 20.0)];
+		creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		creatorNameLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		creatorNameLabel.backgroundColor = [UIColor clearColor];
+		creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
+		[self addSubview:creatorNameLabel];
 		
-		if (size.width >= 198.0)
-			size.width = 220.0;
+		UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		creatorNameButton.frame = creatorNameLabel.frame;
+		[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:creatorNameButton];
 		
-		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(57.0, 364.0, size.width, 34.0);
-		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_nonActive"] stretchableImageWithLeftCapWidth:24.0 topCapHeight:0.0] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_Active"] stretchableImageWithLeftCapWidth:24.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
-		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
-		[_votesButton setTitle:[NSString stringWithFormat:@" @%@ is waiting for a snap ", _challengeVO.creatorName] forState:UIControlStateNormal];
-		[self addSubview:_votesButton];
+		size = [@"is waiting for a snap…" sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12] constrainedToSize:CGSizeMake(210.0 - creatorNameLabel.frame.size.width, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+		UILabel *waitingLabel = [[UILabel alloc] initWithFrame:CGRectMake(creatorNameLabel.frame.origin.x + creatorNameLabel.frame.size.width + 6.0, 371.0, size.width, 20.0)];
+		waitingLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		waitingLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		waitingLabel.backgroundColor = [UIColor clearColor];
+		waitingLabel.text = @"is waiting for a snap…";
+		[self addSubview:waitingLabel];
+		
+		if ([_challengeVO.challengerName length] > 0) {
+			creatorNameLabel.frame = CGRectOffset(creatorNameLabel.frame, 0.0, -5.0);
+			creatorNameButton.frame = creatorNameLabel.frame;
+			waitingLabel.frame = CGRectOffset(waitingLabel.frame, 0.0, -5.0);
+			
+			UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 378.0, 250.0, 20.0)];
+			challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+			challengerNameLabel.textColor = [HONAppDelegate honBlueTxtColor];
+			challengerNameLabel.backgroundColor = [UIColor clearColor];
+			challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
+			[self addSubview:challengerNameLabel];
+			
+			UIButton *challenngerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			challenngerNameButton.frame = challengerNameLabel.frame;
+			[challenngerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
+			[self addSubview:challenngerNameButton];
+		}
+		
+//		CGSize size = [[NSString stringWithFormat:@"   @%@ is waiting for a snap   ", _challengeVO.creatorName] sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12] constrainedToSize:CGSizeMake(210.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+//		NSLog(@"SIZE:[%f]", size.width);
+//		
+//		if (size.width >= 198.0)
+//			size.width = 220.0;
+//		
+//		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_votesButton.frame = CGRectMake(57.0, 364.0, size.width, 34.0);
+//		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_nonActive"] stretchableImageWithLeftCapWidth:24.0 topCapHeight:0.0] forState:UIControlStateNormal];
+//		[_votesButton setBackgroundImage:[[UIImage imageNamed:@"timelineNoMatch_Active"] stretchableImageWithLeftCapWidth:24.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+//		[_votesButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+//		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+//		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
+//		[_votesButton setTitle:[NSString stringWithFormat:@" @%@ is waiting for a snap ", _challengeVO.creatorName] forState:UIControlStateNormal];
+//		[self addSubview:_votesButton];
 		
 		moreButton.frame = CGRectOffset(moreButton.frame, 0.0, 111.0);
 	}
@@ -422,7 +470,7 @@
 		//[self _playVoteSFX];
 		
 		NSString *caption;
-		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
+		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
 			_challengeVO.creatorScore++;
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 			
@@ -446,7 +494,7 @@
 			
 			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d vote" : @"%d votes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
-			[HONAppDelegate setVote:_challengeVO.challengeID];
+			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
 			
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -484,7 +532,7 @@
 		//[self _playVoteSFX];
 		
 		NSString *caption;
-		if ([HONAppDelegate hasVoted:_challengeVO.challengeID]) {
+		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
 			_challengeVO.challengerScore++;
 			
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
@@ -508,7 +556,7 @@
 			_loserOverlayView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
 			
 			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-			[HONAppDelegate setVote:_challengeVO.challengeID];
+			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
 			
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:

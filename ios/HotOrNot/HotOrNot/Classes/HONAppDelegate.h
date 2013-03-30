@@ -53,8 +53,8 @@ extern NSString *const FacebookAppID;
 + (void)setAllowsFBPosting:(BOOL)canPost;
 + (BOOL)allowsFBPosting;
 
-+ (BOOL)hasVoted:(int)challengeID;
-+ (void)setVote:(int)challengeID;
++ (int)hasVoted:(int)challengeID;
++ (void)setVote:(int)challengeID forCreator:(BOOL)isCreator;
 
 + (UIViewController *)appTabBarController;
 
@@ -90,6 +90,7 @@ extern NSString *const FacebookAppID;
 
 + (UIColor *)honBlueTxtColor;
 + (UIColor *)honGreyTxtColor;
++ (UIColor *)honGreyInputColor;
 
 
 #define kChallengesAPI @"Challenges.php"

@@ -371,6 +371,14 @@
 				messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
 				
 				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+			
+			} else {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+																					 message:@"Cannot send SMS from this device!"
+																					delegate:nil
+																		cancelButtonTitle:@"OK"
+																		otherButtonTitles:nil];
+				[alertView show];
 			}
 			break;}
 			
@@ -483,6 +491,7 @@
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
+
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
