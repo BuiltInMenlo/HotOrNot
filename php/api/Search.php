@@ -73,6 +73,50 @@
 			echo ($body);
 		}
 		
+		/**
+		 * Helper function to get user info for a search result
+		 * @param $user_id The user's ID (integer)
+		 * @return An associative object for a user (array)
+		**/
+		function userForSearchResult($user_id) {
+			
+			// get the user row
+			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $user_id .';';
+			$user_row = mysql_fetch_assoc(mysql_query($query));
+			
+			// get total for this user
+			$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_row['id'] .';';
+			$votes = mysql_num_rows(mysql_query($query));
+			
+			// get total pokes for this
+			$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_row['id'] .';';
+			$pokes = mysql_num_rows(mysql_query($query));
+			
+			// find the avatar image
+			if ($user_row['img_url'] == "") {
+				if ($user_row['fb_id'] == "")
+					$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+					
+				else
+					$avatar_url = "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square";
+			
+			} else
+				$avatar_url = $user_row['img_url'];
+			
+			// return array
+			return(array(
+				'id' => $user_row['id'], 
+				'username' => $user_row['username'], 
+				'fb_id' => $user_row['fb_id'], 					
+				'avatar_url' => $avatar_url,   
+				'points' => $user_row['points'],
+				'votes' => $votes,
+				'pokes' => $pokes
+			));
+		}
+		
+		
+		
 		/** 
 		 * Gets the list of challenges sorted by total votes
 		 * @param $user_id The ID of the user (integer)
@@ -82,42 +126,13 @@
 			$user_arr = array();
 			
 			// get the user rows
-			$query = 'SELECT * FROM `tblUsers` WHERE `username` LIKE "%'. $username .'%";';
+			$query = 'SELECT `id` FROM `tblUsers` WHERE `username` LIKE "%'. $username .'%";';
 			$user_result = mysql_query($query);
 			
 			// loop thru user rows
-			while ($user_row = mysql_fetch_array($user_result, MYSQL_BOTH)) {				
+			while ($user_row = mysql_fetch_assoc($user_result))
+				array_push($user_arr, $this->userForSearchResult($user_row['id']));
 				
-				// get total for this user
-				$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenger_id` = '. $user_row['id'] .';';
-				$votes = mysql_num_rows(mysql_query($query));
-				
-				// get total pokes for this
-				$query = 'SELECT `id` FROM `tblUserPokes` WHERE `user_id` = '. $user_row['id'] .';';
-				$pokes = mysql_num_rows(mysql_query($query));
-				
-				// find the avatar image
-				if ($user_row['img_url'] == "") {
-					if ($user_row['fb_id'] == "")
-						$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
-						
-					else
-						$avatar_url = "https://graph.facebook.com/". $user_row['fb_id'] ."/picture?type=square";
-				
-				} else
-					$avatar_url = $user_row['img_url'];
-				
-				// push user info into array
-				array_push($user_arr, array(
-					'id' => $user_row['id'], 
-					'username' => $user_row['username'], 
-					'fb_id' => $user_row['fb_id'], 					
-					'avatar_url' => $avatar_url,   
-					'points' => $user_row['points'],
-					'votes' => $votes,
-					'pokes' => $pokes
-				));	
-			}
 			
 			// return
 			$this->sendResponse(200, json_encode($user_arr));
@@ -141,7 +156,7 @@
 			$subject_result = mysql_query($query);
 			
 			// loop thru subject rows
-			while ($subject_row = mysql_fetch_array($subject_result, MYSQL_BOTH)) {
+			while ($subject_row = mysql_fetch_assoc($subject_result)) {
 				$query = 'SELECT `id`, `status_id` FROM `tblChallenges` WHERE `subject_id` = '. $subject_row['id'] .';';
 				$result = mysql_query($query);
 				$row = mysql_fetch_object($result);
@@ -171,6 +186,33 @@
 			*/
 		}
 		
+		/** 
+		 * Gets the list of users
+		 * @param $usernames The names of the users (string)
+		 * @return The list of users (array)
+		**/
+		function getDefaultUsers($usernames) {
+			$user_arr = array();
+			$username_arr = explode('|', $usernames);
+			
+			// loop thru usernames
+			foreach ($username_arr as $key => $val) {			
+				// get the user row
+				$query = 'SELECT `id` FROM `tblUsers` WHERE `username` = "'. $val .'";';
+				$user_id = mysql_fetch_object(mysql_query($query))->id;				
+				array_push($user_arr, $this->userForSearchResult($user_id));
+			}
+			
+			// return
+			$this->sendResponse(200, json_encode($user_arr));
+			return (true);
+			
+			/* 
+			example response:
+			[{"id":"236","username":"Courtney","img_url":"https:\/\/graph.facebook.com\/100000466174725\/picture?type=square","points":"337","votes":39,"pokes":0}]
+			*/
+		}
+		
 		
 		/**
 		 * Debugging function
@@ -193,17 +235,24 @@
 				$search->test();
 				break;
 			
-			// get list of challenges by votes
+			// get list of usernames containing a string
 			case "1":				
 				if (isset($_POST['username']))
 					$search->getUsersLikeUsername($_POST['username']);
 				break;
 			
-			// get challenges for a subject
+			// get list of subjects containing a string
 			case "2":
 				if (isset($_POST['subjectName']))
 					$search->getSubjectsLikeSubject($_POST['subjectName']);
 				break;
+			
+			// get list of users from defaults
+			case "3":
+				if (isset($_POST['usernames']))
+					$search->getDefaultUsers($_POST['usernames']);
+				break;
+			
     	}
 	}
 ?>

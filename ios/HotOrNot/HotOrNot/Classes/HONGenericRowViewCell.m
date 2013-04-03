@@ -24,7 +24,12 @@
 	if ((self = [super init])) {
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 63.0)];
 		_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_nonActive"];
-		[self addSubview:_bgImageView];
+		
+		UIImageView *selectedImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 63.0)];
+		selectedImageView.image = [UIImage imageNamed:@"genericRowBackground_Active"];
+		
+		self.backgroundView = _bgImageView;
+		//self.selectedBackgroundView = selectedImageView;
 		
 		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(290.0, 20.0, 24.0, 24.0)];
 		_chevronImageView.image = [UIImage imageNamed:@"chevron"];

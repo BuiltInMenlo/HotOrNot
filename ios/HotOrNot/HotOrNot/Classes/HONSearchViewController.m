@@ -51,6 +51,77 @@
 
 
 #pragma mark - Data Calls
+- (void)retrieveDefaultUsers {
+	NSString *usernames = @"";
+	
+	for (NSString *username in [HONAppDelegate searchUsers])
+		usernames = [NSString stringWithFormat:@"%@|%@", usernames, username];
+	
+	usernames = [usernames substringFromIndex:1];
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 3], @"action",
+									usernames, @"usernames",
+									nil];
+	
+	[httpClient postPath:kSearchAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"HONSearchViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+		} else {
+			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:NO]]]];
+			//NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
+			
+			_results = [NSMutableArray array];
+			for (NSDictionary *serverList in parsedUsers) {
+				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
+				
+				if (vo != nil)
+					[_results addObject:vo];
+			}
+			
+			_emptySetImgView.hidden = ([_results count] > 0);
+			[_tableView reloadData];
+			
+			if (_progressHUD != nil) {
+				if ([_results count] == 0) {
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"No results found!", @"Status message when no network detected");
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+					
+				} else {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"SearchViewController AFNetworking %@", [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+	
+}
+
 - (void)retrieveUsers:(NSString *)username {
 	_username = username;
 	_isUser = YES;
@@ -213,6 +284,8 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	_tableView.alpha = 0.0;
 	[self.view addSubview:_tableView];
+	
+	[self retrieveDefaultUsers];
 	
 	_results = [NSMutableArray array];
 	for (NSString *username in [HONAppDelegate searchUsers]) {

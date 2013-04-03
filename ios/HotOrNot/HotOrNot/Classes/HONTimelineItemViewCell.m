@@ -19,7 +19,7 @@
 #import "HONVoterVO.h"
 
 
-@interface HONTimelineItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate>
+@interface HONTimelineItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UILabel *lScoreLabel;
@@ -388,16 +388,10 @@
 - (void)_goDoubleTapLeft {
 	[self _showTapOverlayOnView:_lHolderView];
 	
-	if (_hasChallenger) {
-//		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID)
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-//		
-//		else
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
-		
+	if (_hasChallenger)
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CREATOR" object:_challengeVO];
 		
-	} else {
+	else {
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 			
@@ -407,14 +401,7 @@
 }
 
 - (void)_goDoubleTapRight {
-	[self _showTapOverlayOnView:_rHolderView];
-	
-//	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.challengerID)
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
-//	
-//	else
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
-	
+	[self _showTapOverlayOnView:_rHolderView];	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CHALLENGER" object:_challengeVO];
 }
 
@@ -427,7 +414,18 @@
 }
 
 - (void)_goScore {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
+	
+	if (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Like Snap"
+																			 message:@"Do you want to be the first user to like this?"
+																			delegate:self
+																cancelButtonTitle:@"Cancel"
+																otherButtonTitles:@"OK", nil];
+		[alertView setTag:0];
+		[alertView show];
+	
+	} else
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
 }
 
 - (void)_goComments {
@@ -659,6 +657,20 @@
 	}
 }
 
+
+#pragma mark - AlertView Delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		switch(buttonIndex) {
+			case 0:
+				break;
+				
+			case 1:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
+				break;
+		}
+	}
+}
 
 @end
 

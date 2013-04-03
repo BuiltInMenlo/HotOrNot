@@ -236,7 +236,7 @@
 	if ((indexPath.row * 2) + 1 < [_challenges count])
 		cell.rChallengeVO = [_challenges objectAtIndex:(indexPath.row * 2) + 1];
 	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);
 }
 
