@@ -347,6 +347,8 @@
 }
 
 - (void)_goRefresh {
+	_isMoreLoadable = NO;
+	
 	[[Mixpanel sharedInstance] track:@"Challenge Wall - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -472,7 +474,6 @@
 			if (!_isMoreLoadable) {
 				HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[_challenges count] inSection:0]];
 				[cell disableLoadMore];
-				
 			}
 			
 			_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;

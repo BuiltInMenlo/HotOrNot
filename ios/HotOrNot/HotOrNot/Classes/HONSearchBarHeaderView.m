@@ -24,15 +24,30 @@
 		
 		_isUser = YES;
 				
-		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
+		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight)];
 		_searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
 		_searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
 		_searchBar.delegate = self;
 		_searchBar.showsCancelButton = NO;
+		_searchBar.backgroundImage = [UIImage imageNamed:@"searchBar_nonActive"];;
 		_searchBar.keyboardType = UIKeyboardTypeDefault;
 		[_searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_searchBar setAutocorrectionType:UITextAutocorrectionTypeNo];
 		[self addSubview:_searchBar];
+		
+//		UIImageView *backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBar_nonActive"]];
+//		backgroundImageView.frame = CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight);
+//		[_searchBar addSubview:backgroundImageView];
+//		[_searchBar sendSubviewToBack:backgroundImageView];
+//		
+//		for (UIView *view in [_searchBar subviews]) {
+//			NSLog(@"SEARCH VIEW:[%@]", view);
+//			if ([NSStringFromClass([view class]) isEqualToString:@"UISearchBarBackground"])
+//				[view removeFromSuperview];//[_searchBar sendSubviewToBack:view];
+//			
+//			if ([NSStringFromClass([view class]) isEqualToString:@"UIImageView"] && view != backgroundImageView)
+//				[view removeFromSuperview];//[_searchBar sendSubviewToBack:view];
+//		}
 	}
 	
 	return (self);

@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSearchUserViewCell.h"
@@ -25,26 +27,20 @@
 
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 9.0, 50.0, 50.0)];
-	[imageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-	[self addSubview:imageView];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 18.0, 200.0, 16.0)];
-	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-	usernameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 12.0, 38.0, 38.0)];
+	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	[userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+	userImageView.layer.cornerRadius = 4.0;
+	userImageView.clipsToBounds = YES;
+	[self addSubview:userImageView];
+	
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(62.0, 22.0, 200.0, 18.0)];
+	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
+	usernameLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
-	usernameLabel.text = _userVO.username;
+	usernameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
 	[self addSubview:usernameLabel];
-	
-	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
-	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
-	
-	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 35.0, 200.0, 16.0)];
-	scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-	scoreLabel.textColor = [UIColor blackColor];
-	scoreLabel.backgroundColor = [UIColor clearColor];
-	scoreLabel.text = [NSString stringWithFormat:@"%@ PTS", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
-	[self addSubview:scoreLabel];
 	
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID)
 		[self hideChevron];

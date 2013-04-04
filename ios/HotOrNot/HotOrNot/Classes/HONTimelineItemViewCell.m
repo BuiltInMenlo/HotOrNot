@@ -26,6 +26,7 @@
 @property (nonatomic, strong) UILabel *rScoreLabel;
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) UIView *loserOverlayView;
+@property (nonatomic, strong) UIImageView *tapOverlayImageView;
 @property (nonatomic, strong) UIButton *votesButton;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasChallenger;
@@ -67,7 +68,11 @@
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-		
+	
+	_tapOverlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"blackOverlay_50"]];
+	_tapOverlayImageView.layer.cornerRadius = 4.0 * (int)[HONAppDelegate isRetina5];
+	_tapOverlayImageView.clipsToBounds = YES;
+	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 17.0, 200.0, 18.0)];
 	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:15];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
@@ -77,6 +82,7 @@
 	
 	UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	subjectButton.frame = subjectLabel.frame;
+	[subjectButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 	[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:subjectButton];
 	
@@ -105,7 +111,7 @@
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	moreButton.frame = CGRectMake(270.0, 253.0, 34.0, 34.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:moreButton];
 	
@@ -144,6 +150,7 @@
 		
 		UIButton *creatorAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		creatorAvatarButton.frame = creatorAvatarImageView.frame;
+		[creatorAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 		[creatorAvatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:creatorAvatarButton];
 		
@@ -156,6 +163,7 @@
 				
 		UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		creatorNameButton.frame = creatorNameLabel.frame;
+		[creatorNameButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 		[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:creatorNameButton];
 		
@@ -181,6 +189,7 @@
 		
 		UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		challengerAvatarButton.frame = challengerAvatarImageView.frame;
+		[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 		[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerAvatarButton];
 		
@@ -193,6 +202,7 @@
 		
 		UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		challengerNameButton.frame = challengerNameLabel.frame;
+		[challengerNameButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerNameButton];
 		
@@ -267,6 +277,7 @@
 		
 		UIButton *creatorAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		creatorAvatarButton.frame = creatorAvatarImageView.frame;
+		[creatorAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 		[creatorAvatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:creatorAvatarButton];
 		
@@ -280,6 +291,7 @@
 		
 		UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		creatorNameButton.frame = creatorNameLabel.frame;
+		[creatorNameButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 		[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:creatorNameButton];
 		
@@ -331,17 +343,37 @@
 
 
 #pragma mark - Touch Interactions
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];
 	
-	// this will cancel the single tap action
-	if (touch.tapCount == 2) {
+	if (touch.tapCount == 1) {
+		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
+			_tapOverlayImageView.frame = _lHolderView.frame;
+			
+		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
+			_tapOverlayImageView.frame = _rHolderView.frame;
+		}
+		
+		[self addSubview:_tapOverlayImageView];
+			
+	} else if (touch.tapCount == 2) {
 		[NSObject cancelPreviousPerformRequestsWithTarget:self];
 	}
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+	//UITouch *touch = [touches anyObject];
+	[_tapOverlayImageView removeFromSuperview];
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+	//UITouch *touch = [touches anyObject];
+	[_tapOverlayImageView removeFromSuperview];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];
+	[_tapOverlayImageView removeFromSuperview];
 	
 	// this is the single tap action
 	if (touch.tapCount == 1) {
@@ -415,16 +447,16 @@
 
 - (void)_goScore {
 	
-	if (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Like Snap"
-																			 message:@"Do you want to be the first user to like this?"
-																			delegate:self
-																cancelButtonTitle:@"Cancel"
-																otherButtonTitles:@"OK", nil];
-		[alertView setTag:0];
-		[alertView show];
-	
-	} else
+//	if (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Like Snap"
+//																			 message:@"Do you want to be the first user to like this?"
+//																			delegate:self
+//																cancelButtonTitle:@"Cancel"
+//																otherButtonTitles:@"OK", nil];
+//		[alertView setTag:0];
+//		[alertView show];
+//	
+//	} else
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
 }
 

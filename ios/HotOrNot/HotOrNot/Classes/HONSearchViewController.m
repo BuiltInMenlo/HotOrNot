@@ -273,7 +273,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 188.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 280.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -329,6 +329,8 @@
 
 - (void)_retrieveUserSearchResults:(NSNotification *)notification {
 	[self retrieveUsers:[notification object]];
+	
+	_tableView.frame = CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 123.0);
 }
 
 
@@ -339,6 +341,13 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return (1);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
+	headerView.image = [UIImage imageNamed:@"searchTopRowPopularHeader"];
+	
+	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -369,6 +378,10 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (kRowHeight);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (31.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

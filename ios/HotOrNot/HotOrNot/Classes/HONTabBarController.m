@@ -102,11 +102,9 @@
 	[self showNewTabBar];
 	
 	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(20.0, self.view.frame.size.height - 64.0, 190.0, 64.0)];
-//	[self _showAlertPopOverWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
-//												  [NSNumber numberWithInt:arc4random() % 15], @"status",
-//												  [NSNumber numberWithInt:arc4random() % 15], @"score",
-//												  [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
-	//[self _updateChallengeAlerts];
+	
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
+		[self _updateChallengeAlerts];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -356,7 +354,7 @@
 			for (NSDictionary *serverList in unsortedChallenges) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
-				if (vo != nil)
+				if (vo != nil && (vo.statusID == 1 && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]))
 					[challenges addObject:vo];
 			}
 			
