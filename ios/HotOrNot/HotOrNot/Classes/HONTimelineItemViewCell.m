@@ -24,6 +24,9 @@
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UILabel *lScoreLabel;
 @property (nonatomic, strong) UILabel *rScoreLabel;
+@property (nonatomic, strong) UIImageView *heartImageView;
+@property (nonatomic, strong) UILabel *likesLabel;
+@property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) UIView *loserOverlayView;
 @property (nonatomic, strong) UIImageView *tapOverlayImageView;
@@ -58,7 +61,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteCreator:) name:@"UPVOTE_CREATOR" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteChallenger:) name:@"UPVOTE_CHALLENGER" object:nil];
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 293.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 307.0)];
 		bgImgView.image = [UIImage imageNamed:@"acceptedRowBackground"];
 		[self addSubview:bgImgView];
 	}
@@ -132,11 +135,10 @@
 		lScoreImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
 		[_lHolderView addSubview:lScoreImageView];
 		
-		_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 7.0, 144.0, 18.0)];
+		_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 7.0, 144.0, 18.0)];
 		_lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		_lScoreLabel.backgroundColor = [UIColor clearColor];
 		_lScoreLabel.textColor = [UIColor whiteColor];
-		_lScoreLabel.textAlignment = NSTextAlignmentRight;
 		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 		[lScoreImageView addSubview:_lScoreLabel];
 		
@@ -211,49 +213,76 @@
 		rScoreImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
 		[_rHolderView addSubview:rScoreImageView];
 		
-		_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 7.0, 140.0, 18.0)];
+		_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 7.0, 140.0, 18.0)];
 		_rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		_rScoreLabel.backgroundColor = [UIColor clearColor];
 		_rScoreLabel.textColor = [UIColor whiteColor];
-		_rScoreLabel.textAlignment = NSTextAlignmentRight;
 		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 		[rScoreImageView addSubview:_rScoreLabel];
 		
 		_loserOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 46.0, 153.0, 153.0)];
 		_loserOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
 		_loserOverlayView.hidden = YES;
-		[self addSubview:_loserOverlayView];
+		//[self addSubview:_loserOverlayView];
 		
-		float width = 64.0;
-		if (_challengeVO.creatorScore + _challengeVO.challengerScore == 1)
-			width = 64.0;
 		
-		else if (_challengeVO.creatorScore + _challengeVO.challengerScore > 1)
-			width = 94.0;
+		UIImageView *likeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 256.0, 24.0, 24.0)];
+		likeImageView.image = [UIImage imageNamed:@"heartIcon_nonActive"];
+		[self addSubview:likeImageView];
 		
-		NSString *caption = (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"" : [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_votesButton.frame = CGRectMake(6.0, 253.0, width, 34.0);
-		[_votesButton setBackgroundImage:[[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_nonActive" : @"timelineLike_nonActive"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateNormal];
-		[_votesButton setBackgroundImage:[[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_Active" : @"timelineLike_Active"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
-		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
-		_votesButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
-		[_votesButton setTitle:caption forState:UIControlStateNormal];
-		[_votesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_votesButton];
+		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 256.0, 150.0, 24.0)];
+		_likesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		_likesLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		_likesLabel.backgroundColor = [UIColor clearColor];
+		_likesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+		[self addSubview:_likesLabel];
+		
+		UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		likesButton.frame = CGRectMake(13.0, 256.0, 190.0, 24.0);
+		[likesButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+		[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:likesButton];
+		
+		UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 277.0, 24.0, 24.0)];
+		commentsImageView.image = [UIImage imageNamed:@"commentIcon_nonActive"];
+		[self addSubview:commentsImageView];
+		
+		_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 277.0, 150.0, 24.0)];
+		_commentsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		_commentsLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		_commentsLabel.backgroundColor = [UIColor clearColor];
+		_commentsLabel.text = (_challengeVO.commentTotal > 99) ? @"99+ Comments" : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d Comment" : @"%d Comments", _challengeVO.commentTotal];;
+		[self addSubview:_commentsLabel];
 		
 		UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		commentsButton.frame = CGRectMake(_votesButton.frame.origin.x + _votesButton.frame.size.width + 2.0, 253.0, (_challengeVO.commentTotal == 0) ? 94.0 : 124, 34.0);
-		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_nonActive" : @"timelineComments_nonActive"] forState:UIControlStateNormal];
-		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_Active" : @"timelineComments_Active"] forState:UIControlStateHighlighted];
-		commentsButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-		[commentsButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
-		commentsButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
+		commentsButton.frame = CGRectMake(13.0, 277.0, 190.0, 24.0);
+		[commentsButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 		[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
-		caption = (_challengeVO.commentTotal == 0) ? @"" : (_challengeVO.commentTotal > 99) ? @"99+ Comments" : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d Comment" : @"%d Comments", _challengeVO.commentTotal];
-		[commentsButton setTitle:caption forState:UIControlStateNormal];
 		[self addSubview:commentsButton];
+		
+//		NSString *caption = (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"" : [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+//		_votesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_votesButton.frame = CGRectMake(6.0, 253.0, width, 34.0);
+//		[_votesButton setBackgroundImage:[[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_nonActive" : @"timelineLike_nonActive"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateNormal];
+//		[_votesButton setBackgroundImage:[[UIImage imageNamed:(_challengeVO.creatorScore + _challengeVO.challengerScore == 0) ? @"timelineNoLike_Active" : @"timelineLike_Active"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+//		_votesButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+//		[_votesButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
+//		_votesButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
+//		[_votesButton setTitle:caption forState:UIControlStateNormal];
+//		[_votesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:_votesButton];
+//		
+//		UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		commentsButton.frame = CGRectMake(_votesButton.frame.origin.x + _votesButton.frame.size.width + 2.0, 253.0, (_challengeVO.commentTotal == 0) ? 94.0 : 124, 34.0);
+//		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_nonActive" : @"timelineComments_nonActive"] forState:UIControlStateNormal];
+//		[commentsButton setBackgroundImage:[UIImage imageNamed:(_challengeVO.commentTotal == 0) ? @"timelineNoComments_Active" : @"timelineComments_Active"] forState:UIControlStateHighlighted];
+//		commentsButton.titleLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+//		[commentsButton setTitleColor:[UIColor colorWithWhite:0.455 alpha:1.0] forState:UIControlStateNormal];
+//		commentsButton.titleEdgeInsets = UIEdgeInsetsMake(0.0, 5.0, 0.0, -5.0);
+//		[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+//		caption = (_challengeVO.commentTotal == 0) ? @"" : (_challengeVO.commentTotal > 99) ? @"99+ Comments" : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? @"%d Comment" : @"%d Comments", _challengeVO.commentTotal];
+//		[commentsButton setTitle:caption forState:UIControlStateNormal];
+//		[self addSubview:commentsButton];
 		
 	} else {
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 48.0, 306.0, 306.0)];
@@ -500,6 +529,17 @@
 	if ([vo isEqual:_challengeVO]) {
 		//[self _playVoteSFX];
 		
+		_heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, 33.0, 84.0, 84.0)];
+		_heartImageView.image = [UIImage imageNamed:@"largeHeart_nonActive"];
+		[_lHolderView addSubview:_heartImageView];
+		
+		[UIView animateWithDuration:0.33 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
+			_heartImageView.alpha = 0.0;
+		} completion:^(BOOL finished){
+			[_heartImageView removeFromSuperview];
+			_heartImageView = nil;
+		}];
+		
 		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
 			_challengeVO.creatorScore++;
@@ -509,7 +549,7 @@
 			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 7.0 : 160.0, 0.0);
 			_loserOverlayView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
 			
-			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d vote" : @"%d votes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		
 		} else {
 			[[Mixpanel sharedInstance] track:@"Upvote Creator"
@@ -523,7 +563,7 @@
 			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 7.0 : 160.0, 0.0);
 			_loserOverlayView.hidden = ((_challengeVO.creatorScore + 1) == _challengeVO.challengerScore);
 			
-			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d vote" : @"%d votes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d Like" : @"%d Likes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
 			
@@ -550,9 +590,11 @@
 			}];
 		}
 		
-		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0 + size.width, 34.0);
-		[_votesButton setTitle:caption forState:UIControlStateNormal];
+//		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+//		_votesButton.frame = CGRectMake(6.0, 253.0, 34.0 + size.width, 34.0);
+//		[_votesButton setTitle:caption forState:UIControlStateNormal];
+		
+		_likesLabel.text = caption;
 	}
 }
 
@@ -561,6 +603,17 @@
 	
 	if ([vo isEqual:_challengeVO]) {
 		//[self _playVoteSFX];
+		
+		_heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, 33.0, 84.0, 84.0)];
+		_heartImageView.image = [UIImage imageNamed:@"largeHeart_nonActive"];
+		[_rHolderView addSubview:_heartImageView];
+		
+		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
+			_heartImageView.alpha = 0.0;
+		} completion:^(BOOL finished){
+			[_heartImageView removeFromSuperview];
+			_heartImageView = nil;
+		}];
 		
 		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
@@ -572,7 +625,7 @@
 			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 0.0);
 			_loserOverlayView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
 			
-			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d VOTE" : @"%d VOTES", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 		} else {
 			[[Mixpanel sharedInstance] track:@"Upvote Challenger"
@@ -586,7 +639,7 @@
 			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 160.0 : 7.0, 0.0);
 			_loserOverlayView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
 			
-			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d VOTE" : @"%d VOTES", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d Like" : @"%d Likes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
 			
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -612,9 +665,11 @@
 			}];
 		}
 		
-		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-		_votesButton.frame = CGRectMake(12.0, 250.0, 34.0 + size.width, 34.0);
-		[_votesButton setTitle:caption forState:UIControlStateNormal];
+//		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+//		_votesButton.frame = CGRectMake(6.0, 253.0, 34.0 + size.width, 34.0);
+//		[_votesButton setTitle:caption forState:UIControlStateNormal];
+		
+		_likesLabel.text = _likesLabel.text = caption;
 	}
 }
 

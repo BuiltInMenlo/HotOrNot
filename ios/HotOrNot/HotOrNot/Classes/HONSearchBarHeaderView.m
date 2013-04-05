@@ -26,11 +26,12 @@
 				
 		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight)];
 		_searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
-		_searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
+		//[_searchBar setImage:nil forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
 		_searchBar.delegate = self;
 		_searchBar.showsCancelButton = NO;
 		_searchBar.backgroundImage = [UIImage imageNamed:@"searchBar_nonActive"];;
 		_searchBar.keyboardType = UIKeyboardTypeDefault;
+		_searchBar.text = @"search for users to snap with…";
 		[_searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_searchBar setAutocorrectionType:UITextAutocorrectionTypeNo];
 		[self addSubview:_searchBar];
@@ -82,18 +83,18 @@
 		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
 	}];
 	
-	searchBar.text = (_isUser) ? @"" : @"#";	
+	searchBar.text = (_isUser) ? @"@" : @"#";	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_TABLE" object:searchBar.text];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-	if ([searchText isEqualToString:@""] && !_isUser)
-		searchBar.text = @"#";
+	if ([searchText isEqualToString:@""])
+		searchBar.text = (_isUser) ? @"@" : @"#";
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	[searchBar resignFirstResponder];
-	searchBar.text = @"";
+	searchBar.text = @"search for users to snap with…";
 	_searchBar.showsCancelButton = NO;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {

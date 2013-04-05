@@ -26,7 +26,7 @@
 		_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_nonActive"];
 		
 		UIImageView *selectedImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 63.0)];
-		selectedImageView.image = [UIImage imageNamed:@"genericRowBackground_Active"];
+		selectedImageView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 		
 		self.backgroundView = _bgImageView;
 		//self.selectedBackgroundView = selectedImageView;

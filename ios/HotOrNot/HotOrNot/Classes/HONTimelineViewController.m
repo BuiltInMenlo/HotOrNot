@@ -745,7 +745,7 @@
 	
 	else {
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-		return ((vo.statusID == 1 || vo.statusID == 2) ? 410.0 : 293.0);
+		return ((vo.statusID == 1 || vo.statusID == 2) ? 410.0 : 307.0);
 	}
 }
 
