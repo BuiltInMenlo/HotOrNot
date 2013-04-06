@@ -10,4 +10,5 @@
 
 @interface HONSearchBarHeaderView : UIView
 - (void)toggleFocus:(BOOL)isFocused;
+- (void)backgroundingReset;
 @end

@@ -514,8 +514,8 @@
 }
 
 - (void)_refreshVoteTab:(NSNotification *)notification {
+	[_searchHeaderView backgroundingReset];
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	
 	[_headerView toggleRefresh:YES];
 	
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

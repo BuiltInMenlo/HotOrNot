@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>php/api/Discover.php</string>
+	<string>php/api/Search.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -26,21 +26,37 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>3</integer>
+				<integer>54</integer>
 				<key>line</key>
-				<integer>684</integer>
+				<integer>349</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>677</integer>
+			<integer>330</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>343</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>54</integer>
+				<key>line</key>
+				<integer>349</integer>
+			</dict>
 		</dict>
 		<key>php/api/Comments.php</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>37</integer>
+				<integer>2</integer>
 				<key>line</key>
 				<integer>164</integer>
 			</dict>
@@ -60,7 +76,7 @@
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>37</integer>
+				<integer>2</integer>
 				<key>line</key>
 				<integer>164</integer>
 			</dict>
@@ -98,14 +114,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>29</integer>
+				<integer>3</integer>
 				<key>line</key>
-				<integer>114</integer>
+				<integer>135</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>83</integer>
+			<integer>115</integer>
 		</dict>
 		<key>php/api/Users.php</key>
 		<dict>
@@ -126,14 +142,58 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>23</integer>
+				<integer>38</integer>
 				<key>line</key>
-				<integer>83</integer>
+				<integer>573</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>77</integer>
+			<integer>563</integer>
+		</dict>
+		<key>php/api/privacy.htm</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>9</integer>
+				<key>line</key>
+				<integer>8</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>1</integer>
+				<key>line</key>
+				<integer>6</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>9</integer>
+				<key>line</key>
+				<integer>8</integer>
+			</dict>
+		</dict>
+		<key>php/api/support.htm</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>55</integer>
+				<key>line</key>
+				<integer>6</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
 		</dict>
 		<key>php/facebook/submit2.php</key>
 		<dict>
@@ -197,6 +257,8 @@
 	<key>openDocuments</key>
 	<array>
 		<string>php/api/Votes.php</string>
+		<string>php/api/privacy.htm</string>
+		<string>php/api/support.htm</string>
 		<string>php/api/Discover.php</string>
 		<string>php/harness/week_winners.php</string>
 		<string>php/api/Users.php</string>
@@ -209,6 +271,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{683, 38}, {1500, 1039}}</string>
+	<string>{{729, 31}, {1500, 1039}}</string>
 </dict>
 </plist>
