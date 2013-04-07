@@ -152,7 +152,7 @@
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:NO]]]];
-			NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
+			//NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
 			
 			_results = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
@@ -330,7 +330,7 @@
 - (void)_retrieveUserSearchResults:(NSNotification *)notification {
 	[self retrieveUsers:[notification object]];
 	
-	_tableView.frame = CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 123.0);
+	_tableView.frame = CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight);
 }
 
 

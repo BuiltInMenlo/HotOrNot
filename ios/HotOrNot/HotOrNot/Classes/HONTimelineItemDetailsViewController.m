@@ -107,10 +107,14 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	CALayer *avatarMask = [CALayer layer];
+	avatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask.png"] CGImage];
+	avatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
+	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(9.0, 10.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:(_isCreator || !_isInSession) ? _challengeVO.creatorAvatar : _challengeVO.challengerAvatar] placeholderImage:nil];
-	avatarImageView.clipsToBounds = YES;
-	avatarImageView.layer.cornerRadius = 4.0;
+	avatarImageView.layer.mask = avatarMask;
+	avatarImageView.layer.masksToBounds = YES;
 	[self.view addSubview:avatarImageView];
 	
 	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 24.0, 200.0, 14.0)];
@@ -161,7 +165,7 @@
 	__weak typeof(self) weakSelf = self;
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 60.0, kLargeW * 0.5, kLargeW * 0.5)];
 	_imageView.clipsToBounds = YES;
-	_imageView.layer.cornerRadius = 4.0;
+	_imageView.layer.cornerRadius = 2.0;
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		weakSelf.imageView.image = image;
 		[weakSelf _hideHUD];
@@ -211,6 +215,7 @@
 - (void)viewDidUnload {
 	[super viewDidUnload];
 }
+
 
 #pragma mark - Navigation
 - (void)_goMore {
@@ -376,6 +381,7 @@
 		}
 	}
 }
+
 
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {

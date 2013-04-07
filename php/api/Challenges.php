@@ -140,7 +140,7 @@
 				// find the avatar image
 				if ($user_obj->img_url == "") {
 					if ($user_obj->fb_id == "")
-						$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+						$avatar_url = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
 					
 					else
 						$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
@@ -387,7 +387,7 @@
 				// find the avatar image
 				if ($user_obj->img_url == "") {
 					if ($user_obj->fb_id == "")
-						$user_arr['avatar'] = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+						$user_arr['avatar'] = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
 					
 					else
 						$user_arr['avatar'] = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
@@ -818,7 +818,7 @@
 					// find the avatar image
 					if ($user_obj->img_url == "") {
 						if ($user_obj->fb_id == "")
-							$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+							$avatar_url = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
 					
 						else
 							$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";

@@ -22,6 +22,7 @@
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *cameraBackButton;
 @property (nonatomic, strong) UIView *previewHolderView;
+@property (nonatomic, strong) UILabel *captionLabel;
 @end
 
 @implementation HONRegisterCameraOverlayView
@@ -46,7 +47,7 @@
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 384.0, 640.0, 105.0)];
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 474.0 : 384.0, 640.0, 105.0)];
 		[_bgImageView addSubview:_footerHolderView];
 		
 		_headerView = [[HONHeaderView alloc] initWithTitle:@"Take Pic"];
@@ -61,12 +62,12 @@
 		[_headerView addSubview:_cancelButton];
 		
 		_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_submitButton.frame = CGRectMake(443.0, 0.0, 74.0, 44.0);
+		_submitButton.frame = CGRectMake(246.0, 0.0, 74.0, 44.0);
 		[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
 		[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 		[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-		[_submitButton setEnabled:NO];
-		[_footerHolderView addSubview:_submitButton];
+		_submitButton.hidden = YES;
+		[_headerView addSubview:_submitButton];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraRollButton.frame = CGRectMake(20.0, 20.0, 64.0, 64.0);
@@ -88,6 +89,15 @@
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
 		//[_footerHolderView addSubview:changeCameraButton];
+		
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 394.0 : 334.0, 320.0, 40.0)];
+		_captionLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+		_captionLabel.textColor = [UIColor whiteColor];
+		_captionLabel.backgroundColor = [UIColor clearColor];
+		_captionLabel.textAlignment = NSTextAlignmentCenter;
+		_captionLabel.numberOfLines = 2;
+		_captionLabel.text = @"Take your personal profile picture\n(no fakes allowed)";
+		[self addSubview:_captionLabel];
 	}
 	
 	return (self);
@@ -99,9 +109,9 @@
 	_cancelButton.hidden = YES;
 	[_submitButton setEnabled:YES];
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
-	} completion:nil];
+	//} completion:nil];
 	
 	if (_cameraBackButton == nil) {
 		_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -112,7 +122,9 @@
 		[_headerView addSubview:_cameraBackButton];
 	}
 	
+	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
+	_captionLabel.text = @"Look good? Alright, cool\nSubmit and lets get snapping…";
 	
 	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
@@ -130,9 +142,9 @@
 	_cancelButton.hidden = YES;
 	[_submitButton setEnabled:YES];
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
-	} completion:nil];
+	//} completion:nil];
 	
 	if (_cameraBackButton == nil) {
 		_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -143,10 +155,11 @@
 		[_headerView addSubview:_cameraBackButton];
 	}
 	
+	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
+	_captionLabel.text = @"Look good? Alright, cool\nSubmit and lets get snapping…";
 	
 	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
-	
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
@@ -158,14 +171,16 @@
 }
 
 - (void)hidePreview {
-	[_submitButton setEnabled:NO];
+	_submitButton.hidden = YES;
 	_previewHolderView.hidden = YES;
 	_cameraBackButton.hidden = YES;
 	_cancelButton.hidden = NO;
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+	_captionLabel.text = @"Take your personal profile picture\n(no fakes allowed)";
+	
+	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(0.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
-	} completion:nil];
+	//} completion:nil];
 }
 
 - (void)_animateShutter {

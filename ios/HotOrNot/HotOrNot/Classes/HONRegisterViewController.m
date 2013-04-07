@@ -127,7 +127,7 @@
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
 	_filename = [NSString stringWithFormat:@"%@.jpg", [HONAppDelegate deviceToken]];
-	NSLog(@"FILENAME: https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
+	NSLog(@"FILENAME: https://hotornot-avatars.s3.amazonaws.com/%@", _filename);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = @"Uploading Photo…";
@@ -141,8 +141,8 @@
 		UIImage *lImage = (ratio.height >= 1.0) ? [HONAppDelegate scaleImage:image toSize:CGSizeMake(100.0, 100.0 * ratio.height)] : [HONAppDelegate scaleImage:image toSize:CGSizeMake(100.0 * ratio.width, 100.0)];
 		lImage =	[HONAppDelegate cropImage:lImage toRect:CGRectMake(0.0, 0.0, 100.0, 100.0)];
 		
-		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:_filename inBucket:@"hotornot-challenges"];
+		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
+		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:_filename inBucket:@"hotornot-avatars"];
 		por.contentType = @"image/jpeg";
 		por.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
 		por.delegate = self;
@@ -171,7 +171,7 @@
 									[NSString stringWithFormat:@"%d", 9], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									_username, @"username",
-									[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+									[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename], @"imgURL",
 									nil];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

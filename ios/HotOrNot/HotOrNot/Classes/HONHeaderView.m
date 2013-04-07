@@ -36,7 +36,7 @@
 		[self addSubview:_titleLabel];
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-		_activityIndicatorView.frame = CGRectMake(14.0, 10.0, 24.0, 24.0);
+		_activityIndicatorView.frame = CGRectMake(11.0, 11.0, 24.0, 24.0);
 		[self addSubview:_activityIndicatorView];
 		
 		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];

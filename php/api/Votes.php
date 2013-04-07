@@ -106,7 +106,7 @@
 				// find the avatar image
 				if ($user_obj->img_url == "") {
 					if ($user_obj->fb_id == "")
-						$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+						$avatar_url = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
 					
 					else
 						$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
@@ -200,7 +200,7 @@
 				// find the avatar image
 				if ($user_obj->img_url == "") {
 					if ($user_obj->fb_id == "")
-						$user_arr['avatar'] = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+						$user_arr['avatar'] = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
 					
 					else
 						$user_arr['avatar'] = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
@@ -411,7 +411,7 @@
 				$user_id = mysql_fetch_object($user_result)->id;
 				
 				// get latest 10 challenges for user
-				$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `started` DESC LIMIT 10;';
+				$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `started` DESC LIMIT 50;';
 				$challenge_result = mysql_query($query);
 			
 				// loop thru the rows
@@ -504,7 +504,7 @@
 				// find the avatar image
 				if ($user_obj->img_url == "") {
 					if ($user_obj->fb_id == "")
-						$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+						$avatar_url = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
 					
 					else
 						$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";

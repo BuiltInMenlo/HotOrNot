@@ -28,11 +28,15 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
+	CALayer *avatarMask = [CALayer layer];
+	avatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask.png"] CGImage];
+	avatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
+	
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 12.0, 38.0, 38.0)];
 	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-	userImageView.layer.cornerRadius = 4.0;
-	userImageView.clipsToBounds = YES;
+	userImageView.layer.mask = avatarMask;
+	userImageView.layer.masksToBounds = YES;
 	[self addSubview:userImageView];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(62.0, 22.0, 200.0, 18.0)];

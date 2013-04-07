@@ -44,7 +44,7 @@
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:lImageView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(72.0, 7.0, 62.0, 60.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(71.0, 7.0, 64.0, 60.0)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:rImageView];
 	
@@ -73,7 +73,7 @@
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:lImageView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(72.0, 7.0, 62.0, 60.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(71.0, 7.0, 64.0, 60.0)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:rImageView];
 	

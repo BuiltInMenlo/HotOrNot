@@ -104,7 +104,7 @@
 			// find the avatar image
 			if ($row->img_url == "") {
 				if ($row->fb_id == "")
-					$avatar_url = "https://s3.amazonaws.com/picchallenge/default_user.jpg";
+					$avatar_url = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
 					
 				else
 					$avatar_url = "https://graph.facebook.com/". $row->fb_id ."/picture?type=square";

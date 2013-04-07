@@ -84,7 +84,7 @@
 		_searchBar.text = @"search for users to snap with…";
 	}
 	
-	_searchBar.showsCancelButton = isFocused;
+	//_searchBar.showsCancelButton = isFocused;
 }
 
 - (void)backgroundingReset {
@@ -140,7 +140,7 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
 	[searchBar resignFirstResponder];
-	_searchBar.showsCancelButton = NO;
+	//_searchBar.showsCancelButton = NO;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);

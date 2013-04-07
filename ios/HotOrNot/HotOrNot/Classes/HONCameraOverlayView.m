@@ -104,14 +104,16 @@
 		[subjectBGImageView addSubview:_subjectTextField];
 		
 		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_randomSubjectButton.frame = CGRectMake(230.0, 15.0, 64.0, 34.0);
+		_randomSubjectButton.frame = CGRectMake(233.0, 15.0, 64.0, 34.0);
 		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_nonActive"] forState:UIControlStateNormal];
 		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_Active"] forState:UIControlStateHighlighted];
 		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
 		[subjectBGImageView addSubview:_randomSubjectButton];
 		
+		int offset = (int)[HONAppDelegate isRetina5] * 88;
+		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(25.0, 400.0, 64.0, 64.0);
+		cameraRollButton.frame = CGRectMake(25.0, 400.0 + offset, 64.0, 64.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(showCameraRoll:) forControlEvents:UIControlEventTouchUpInside];
@@ -119,7 +121,7 @@
 		
 		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(223.0, 400.0, 64.0, 64.0);
+			changeCameraButton.frame = CGRectMake(223.0, 400.0 + offset, 64.0, 64.0);
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 			[changeCameraButton addTarget:self action:@selector(changeCamera:) forControlEvents:UIControlEventTouchUpInside];
@@ -138,18 +140,18 @@
 
 		// Add the capture button
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(113.0, 384.0, 94.0, 94.0);
+		_captureButton.frame = CGRectMake(113.0, 384.0 + offset, 94.0, 94.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(takePicture:) forControlEvents:UIControlEventTouchUpInside];
 		[_captureHolderView addSubview:_captureButton];
 		
-		_usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 370.0, 320.0, 42.0)];
+		_usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 437.0 + offset, 320.0, 42.0)];
 		_usernameBGImageView.image = [UIImage imageNamed:@"cameraKeyboardInputField_nonActive"];
 		_usernameBGImageView.userInteractionEnabled = YES;
 		[_captureHolderView addSubview:_usernameBGImageView];
 		
-		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 12.0, 270.0, 25.0)];
+		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 13.0, 240.0, 20.0)];
 		//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -157,7 +159,7 @@
 		[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 		[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_usernameTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 		_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 		_usernameTextField.text = @"@user";
 		_usernameTextField.delegate = self;
@@ -406,6 +408,7 @@
 #pragma mark - Navigation
 - (void)goBack:(id)sender {
 	_captureButton.enabled = YES;
+	[_usernameTextField resignFirstResponder];
 	[self hidePreview];
 }
 
@@ -521,7 +524,7 @@
 		textField.text = @"@";
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
-			_usernameBGImageView.frame = CGRectMake(_usernameBGImageView.frame.origin.x, _usernameBGImageView.frame.origin.y - 148.0, _usernameBGImageView.frame.size.width, _usernameBGImageView.frame.size.height);
+			_usernameBGImageView.frame = CGRectMake(_usernameBGImageView.frame.origin.x, _usernameBGImageView.frame.origin.y - 215.0, _usernameBGImageView.frame.size.width, _usernameBGImageView.frame.size.height);
 		}];
 	
 	} else if (textField.tag == 2) {
@@ -590,7 +593,7 @@
 		
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
-			_usernameBGImageView.frame = CGRectMake(_usernameBGImageView.frame.origin.x, _usernameBGImageView.frame.origin.y + 148.0, _usernameBGImageView.frame.size.width, _usernameBGImageView.frame.size.height);
+			_usernameBGImageView.frame = CGRectMake(_usernameBGImageView.frame.origin.x, _usernameBGImageView.frame.origin.y + 215.0, _usernameBGImageView.frame.size.width, _usernameBGImageView.frame.size.height);
 		}];
 			
 	} else if (textField.tag == 2) {

@@ -73,7 +73,7 @@
 	_challengeVO = challengeVO;
 	
 	_tapOverlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"blackOverlay_50"]];
-	_tapOverlayImageView.layer.cornerRadius = 4.0 * (int)[HONAppDelegate isRetina5];
+	_tapOverlayImageView.layer.cornerRadius = 2.0;
 	_tapOverlayImageView.clipsToBounds = YES;
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 17.0, 200.0, 18.0)];
@@ -90,6 +90,20 @@
 	[self addSubview:subjectButton];
 	
 	if ([_challengeVO.rechallengedUsers length] > 0) {
+//		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(203.0, 11.0, 24.0, 24.0)];
+//		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
+//		[self addSubview:rechallengeImageView];
+//		
+//		NSCharacterSet *charSet = [NSCharacterSet characterSetWithCharactersInString:@","];
+//		NSRange range = [_challengeVO.rechallengedUsers rangeOfCharacterFromSet:charSet];
+//		
+//		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(225.0, 16.0, 120.0, 14.0)];
+//		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
+//		rechallengeLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
+//		rechallengeLabel.backgroundColor = [UIColor clearColor];
+//		rechallengeLabel.text = [NSString stringWithFormat:@"Resnapped by %@", [_challengeVO.rechallengedUsers substringToIndex:range.location]];
+//		[self addSubview:rechallengeLabel];
+		
 		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(203.0, 11.0, 24.0, 24.0)];
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
 		[self addSubview:rechallengeImageView];
@@ -119,9 +133,13 @@
 	[self addSubview:moreButton];
 	
 	if (_hasChallenger) {
+		CALayer *lHolderMask = [CALayer layer];
+		lHolderMask.contents = (id)[[UIImage imageNamed:@"imageLargeThumbMask"] CGImage];
+		lHolderMask.frame = CGRectMake(0.0, 0.0, 151.0, 153.0);
+		
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 151.0, 153.0)];
-		_lHolderView.clipsToBounds = YES;
-		_lHolderView.layer.cornerRadius = 4.0 * (int)[HONAppDelegate isRetina5];
+		_lHolderView.layer.mask = lHolderMask;
+		_lHolderView.layer.masksToBounds = YES;
 		[self addSubview:_lHolderView];
 		
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
@@ -142,14 +160,19 @@
 		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 		[lScoreImageView addSubview:_lScoreLabel];
 		
+		CALayer *creatorAvatarMask = [CALayer layer];
+		creatorAvatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask"] CGImage];
+		creatorAvatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
+		
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 209.0, 38.0, 38.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
-		creatorAvatarImageView.clipsToBounds = YES;
-		creatorAvatarImageView.layer.cornerRadius = 4.0;
 		creatorAvatarImageView.userInteractionEnabled = YES;
+		creatorAvatarImageView.layer.mask = creatorAvatarMask;
+		creatorAvatarImageView.layer.masksToBounds = YES;
 		[self addSubview:creatorAvatarImageView];
 		
+				
 		UIButton *creatorAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		creatorAvatarButton.frame = creatorAvatarImageView.frame;
 		[creatorAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
@@ -170,9 +193,13 @@
 		[self addSubview:creatorNameButton];
 		
 		
+		CALayer *rHolderMask = [CALayer layer];
+		rHolderMask.contents = (id)[[UIImage imageNamed:@"imageLargeThumbMask"] CGImage];
+		rHolderMask.frame = CGRectMake(0.0, 0.0, 151.0, 153.0);
+		
 		_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(162.0, 46.0, 151.0, 153.0)];
-		_rHolderView.clipsToBounds = YES;
-		_rHolderView.layer.cornerRadius = 4.0 * (int)[HONAppDelegate isRetina5];
+		_rHolderView.layer.mask = rHolderMask;
+		_rHolderView.layer.masksToBounds = YES;
 		[self addSubview:_rHolderView];
 		
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
@@ -181,12 +208,16 @@
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
+		CALayer *challengerAvatarMask = [CALayer layer];
+		challengerAvatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask"] CGImage];
+		challengerAvatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
+		
 		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(162.0, 209.0, 38.0, 38.0)];
 		challengerAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
-		challengerAvatarImageView.clipsToBounds = YES;
-		challengerAvatarImageView.layer.cornerRadius = 4.0;
 		challengerAvatarImageView.userInteractionEnabled = YES;
+		challengerAvatarImageView.layer.mask = challengerAvatarMask;
+		challengerAvatarImageView.layer.masksToBounds = YES;
 		[self addSubview:challengerAvatarImageView];
 		
 		UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -285,9 +316,13 @@
 //		[self addSubview:commentsButton];
 		
 	} else {
+		CALayer *lHolderMask = [CALayer layer];
+		lHolderMask.contents = (id)[[UIImage imageNamed:@"imageLargeMask"] CGImage];
+		lHolderMask.frame = CGRectMake(0.0, 0.0, 306.0, 306.0);
+		
 		_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 48.0, 306.0, 306.0)];
-		_lHolderView.layer.cornerRadius = 4.0  * (int)[HONAppDelegate isRetina5];
-		_lHolderView.clipsToBounds = YES;
+		_lHolderView.layer.mask = lHolderMask;
+		_lHolderView.layer.masksToBounds = YES;
 		[self addSubview:_lHolderView];
 		
 		UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kLargeW * 0.5, kLargeW * 0.5)]; //x408
@@ -296,12 +331,16 @@
 		lImgView.userInteractionEnabled = YES;
 		[_lHolderView addSubview:lImgView];
 		
+		CALayer *creatorAvatarMask = [CALayer layer];
+		creatorAvatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask.png"] CGImage];
+		creatorAvatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
+		
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 362.0, 38.0, 38.0)];
 		creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
-		creatorAvatarImageView.layer.cornerRadius = 4.0;
-		creatorAvatarImageView.clipsToBounds = YES;
+		creatorAvatarImageView.layer.mask = creatorAvatarMask;
+		creatorAvatarImageView.layer.masksToBounds = YES;
 		[self addSubview:creatorAvatarImageView];
 		
 		UIButton *creatorAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -333,11 +372,11 @@
 		[self addSubview:waitingLabel];
 		
 		if ([_challengeVO.challengerName length] > 0) {
-			creatorNameLabel.frame = CGRectOffset(creatorNameLabel.frame, 0.0, -5.0);
+			creatorNameLabel.frame = CGRectOffset(creatorNameLabel.frame, 0.0, -7.0);
 			creatorNameButton.frame = creatorNameLabel.frame;
 			waitingLabel.frame = CGRectOffset(waitingLabel.frame, 0.0, -5.0);
 			
-			UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 378.0, 250.0, 20.0)];
+			UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 379.0, 250.0, 20.0)];
 			challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 			challengerNameLabel.textColor = [HONAppDelegate honBlueTxtColor];
 			challengerNameLabel.backgroundColor = [UIColor clearColor];

@@ -46,7 +46,7 @@
 	_challengeVO = challengeVO;
 	
 	UIView *creatorImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(29.0, 13.0, 38.0, 38.0)];
-	creatorImgHolderView.layer.cornerRadius = 4.0;
+	creatorImgHolderView.layer.cornerRadius = (int)[HONAppDelegate isRetina5] * 2.0;
 	creatorImgHolderView.clipsToBounds = YES;
 	[self addSubview:creatorImgHolderView];
 	
@@ -112,7 +112,7 @@
 		
 		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(69.0, 13.0, 38.0, 38.0)];
 		challengerImgHolderView.clipsToBounds = YES;
-		challengerImgHolderView.layer.cornerRadius = 4.0;
+		challengerImgHolderView.layer.cornerRadius = (int)[HONAppDelegate isRetina5] * 2.0;
 		[self addSubview:challengerImgHolderView];
 		
 		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -8.0, kThumb1W, kThumb1H)];

@@ -244,7 +244,7 @@
 	[_emptySetImgView addSubview:inviteEmailButton];
 	
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 30.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 78.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -357,11 +357,11 @@
 	[self _retrieveChallenges];
 	[self _retrieveUser];
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Refreshing…";
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = @"Refreshing…";
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 }
 
 - (void)_goInviteEmail {
@@ -599,6 +599,7 @@
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
 		[navigationController setNavigationBarHidden:YES];
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 		[self presentViewController:navigationController animated:NO completion:nil];
 		
 	} else if ([vo.status isEqualToString:@"Accept"]) {
@@ -607,6 +608,7 @@
 		
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
 		[navigationController setNavigationBarHidden:YES];
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 		[self presentViewController:navigationController animated:NO completion:nil];
 			
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
