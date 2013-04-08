@@ -97,6 +97,7 @@
 		_captionLabel.textAlignment = NSTextAlignmentCenter;
 		_captionLabel.numberOfLines = 2;
 		_captionLabel.text = @"Take your personal profile picture\n(no fakes allowed)";
+		_captionLabel.hidden = ![HONAppDelegate isRetina5];
 		[self addSubview:_captionLabel];
 	}
 	

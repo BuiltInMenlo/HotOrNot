@@ -145,6 +145,8 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShare:) name:@"SHOW_SHARE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -673,6 +675,14 @@
 - (void)_resignSearchBarFocus:(NSNotification *)notification {
 	if (_searchHeaderView != nil)
 		[_searchHeaderView toggleFocus:NO];
+}
+
+- (void)_tabsDropped:(NSNotification *)notification {
+	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 30.0));
+}
+
+- (void)_tabsRaised:(NSNotification *)notification {
+	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 78.0));
 }
 
 

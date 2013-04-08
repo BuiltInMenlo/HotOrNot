@@ -88,13 +88,13 @@
 		subjectBGImageView.userInteractionEnabled = YES;
 		[_captureHolderView addSubview:subjectBGImageView];
 		
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 24.0, 240.0, 20.0)];
+		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(23.0, 23.0, 240.0, 20.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
+		[_subjectTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 		//[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
@@ -171,7 +171,7 @@
 		[fbButton setBackgroundImage:[UIImage imageNamed:@"facebookIconButton_nonActive"] forState:UIControlStateNormal];
 		[fbButton setBackgroundImage:[UIImage imageNamed:@"facebookIconButton_Active"] forState:UIControlStateHighlighted];
 		[fbButton addTarget:self action:@selector(_goFB:) forControlEvents:UIControlEventTouchUpInside];
-		[_usernameBGImageView addSubview:fbButton];
+		//[_usernameBGImageView addSubview:fbButton];
 		
 		UIImageView *commentBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(323.0, 375.0, 314.0, 64.0)];
 		commentBGImageView.image = [UIImage imageNamed:@"cameraInputFieldB"];
@@ -297,7 +297,7 @@
 		[subview removeFromSuperview];
 	}
 	
-	[_headerView setTitle:@"TAKE CHALLENGE"];
+	[_headerView setTitle:@"Take Snap"];
 	
 	[_cameraBackButton removeFromSuperview];
 	_cameraBackButton = nil;
@@ -416,6 +416,9 @@
 	[[Mixpanel sharedInstance] track:@"Image Preview - Accept"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	if ([_usernameTextField.text isEqualToString:@"@user"])
+		_usernameTextField.text = @"@";
 	
 	[self.delegate cameraOverlayViewSubmitChallenge:self username:_usernameTextField.text comments:_commentTextField.text];
 }

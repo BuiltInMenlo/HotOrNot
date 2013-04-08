@@ -103,8 +103,8 @@
 	
 	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(20.0, self.view.frame.size.height - 64.0, 190.0, 64.0)];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
-		[self _updateChallengeAlerts];
+	//if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
+	//	[self _updateChallengeAlerts];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -202,6 +202,7 @@
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kLipHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 	} completion:^(BOOL finished) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"TABS_DROPPED" object:nil];
 	}];
 }
 
@@ -209,6 +210,7 @@
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kTabHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 	} completion:^(BOOL finished) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"TABS_RAISED" object:nil];
 	}];
 }
 

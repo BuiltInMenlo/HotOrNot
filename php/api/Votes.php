@@ -392,7 +392,7 @@
 		
 		
 		/** 
-		 * Gets the latest list of 10 challenges for a user
+		 * Gets the latest list of 50 challenges for a user
 		 * @param $username The username of the user (string)
 		 * @return The list of challenges (array)
 		**/
@@ -411,7 +411,7 @@
 				$user_id = mysql_fetch_object($user_result)->id;
 				
 				// get latest 10 challenges for user
-				$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `started` DESC LIMIT 50;';
+				$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `started` DESC LIMIT 50;';
 				$challenge_result = mysql_query($query);
 			
 				// loop thru the rows

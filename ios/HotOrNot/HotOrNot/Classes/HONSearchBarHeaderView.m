@@ -23,11 +23,11 @@
 		[self addSubview:bgImageView];
 		
 		_isUser = YES;
-				
+			
 		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight-2)];
 		_searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
 		[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconBookmark state:UIControlStateNormal];
-		[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
+		//[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
 		[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconResultsList state:UIControlStateNormal];
 		//[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
 		_searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
@@ -47,15 +47,14 @@
 		//[_searchBar sendSubviewToBack:backgroundImageView];
 		
 		
-		UITextField *txtField;
-		for (UIView *view in [_searchBar subviews]) {
-			NSLog(@"SEARCH VIEW:[%@]", view);
-			if ([NSStringFromClass([view class]) isEqualToString:@"UISearchBarTextField"]) {
-				for (UIView *view2 in [txtField subviews]) {
-					NSLog(@"TXT VIEW:[%@]", view2);
-				}
-			}
-		}
+//		for (UIView *view in [_searchBar subviews]) {
+//			NSLog(@"SEARCH VIEW:[%@]", view);
+//			if ([NSStringFromClass([view class]) isEqualToString:@"UISearchBarTextField"]) {
+//				for (UIView *view2 in [view subviews]) {
+//					NSLog(@"TXT VIEW:[%@]", view2);
+//				}
+//			}
+//		}
 		
 		
 //		for (UIView *view in [_searchBar subviews]) {

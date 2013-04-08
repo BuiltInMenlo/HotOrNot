@@ -461,19 +461,33 @@
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSLog(@"ImagePickerViewController AFNetworking %@", challengeResult);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 			
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+			if ([[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
+				if (_progressHUD == nil)
+					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = @"Username not found!";
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
 			
-			[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
-			
-			[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+			} else {
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-			}];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+				
+				[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
+				
+				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+				}];
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -638,10 +652,11 @@
 	[params setObject:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
 	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
 	[params setObject:_subjectName forKey:@"subject"];
-	[params setObject:username forKey:@"username"];
 	
 	if (![username isEqualToString:@"@"])
 		_submitAction = 7;
+	
+	[params setObject:[username substringFromIndex:1] forKey:@"username"];
 	
 	if (_challengeVO != nil)
 		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
@@ -650,7 +665,6 @@
 		[params setObject:_fbID forKey:@"fbID"];
 	
 	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
-	
 	[self _submitChallenge:params];
 }
 
