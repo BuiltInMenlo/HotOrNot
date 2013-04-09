@@ -76,7 +76,7 @@
 
 #pragma mark - Navigation
 - (void)_goShare {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SHARE" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SHARE" object:nil];
 }
 
 

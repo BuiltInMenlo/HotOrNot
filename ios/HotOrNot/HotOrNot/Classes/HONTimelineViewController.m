@@ -143,7 +143,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showComments:) name:@"SHOW_COMMENTS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showShare:) name:@"SHOW_SHARE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserShare:) name:@"SHOW_USER_SHARE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
@@ -423,6 +423,10 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
+	[[Mixpanel sharedInstance] track:@"Timeline Profile - Go Back"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -435,7 +439,7 @@
 //	_progressHUD.minShowTime = kHUDTime;
 //	_progressHUD.taskInProgress = YES;
 	
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Refresh"
+	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -452,7 +456,7 @@
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Vote Wall"
+	[[Mixpanel sharedInstance] track:@"Timeline - Create Snap"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -463,7 +467,7 @@
 }
 
 - (void)_goTutorial {
-	[[Mixpanel sharedInstance] track:@"Tutorial"
+	[[Mixpanel sharedInstance] track:@"Register User"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -475,16 +479,6 @@
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:^(void) {
 	}];
-}
-
-
-- (void)_goTutorialChallenge {
-	[[Mixpanel sharedInstance] track:@"Tutorial Challenge Button"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[self _goTutorialClose];
-	[self _goCreateChallenge];
 }
 
 - (void)_goTutorialClose {
@@ -541,10 +535,10 @@
 - (void)_showNotInSessionDetails:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Details"
+	[[Mixpanel sharedInstance] track:@"Timeline - Single Snap Details"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 		
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONTimelineItemDetailsViewController alloc] initAsNotInSession:vo]];
 	[navController setNavigationBarHidden:YES];
@@ -555,10 +549,10 @@
 - (void)_showInSessionCreatorDetails:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Creator Details"
+	[[Mixpanel sharedInstance] track:@"Timeline - Creator Snap Details"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONTimelineItemDetailsViewController alloc] initAsInSessionCreator:vo]];
 	[navController setNavigationBarHidden:YES];
@@ -569,10 +563,10 @@
 - (void)_showInSessionChallengerDetails:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Challenger Details"
+	[[Mixpanel sharedInstance] track:@"Timeline - Challenger Snap Details"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"user", nil]];
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
 	UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONTimelineItemDetailsViewController alloc] initAsInSessionChallenger:vo]];
 	[navController setNavigationBarHidden:YES];
@@ -583,9 +577,10 @@
 - (void)_newCreatorChallenge:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Creator"
+	[[Mixpanel sharedInstance] track:@"Timeline - New Snap at Creator"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
 	UINavigationController *navigationController = (vo.statusID == 1 || ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.challengerID && vo.statusID == 2)) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.creatorID withSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
@@ -595,9 +590,10 @@
 - (void)_newChallengerChallenge:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Challenger"
+	[[Mixpanel sharedInstance] track:@"Timeline - New Snap at Challenger"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.challengerID withSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
@@ -607,9 +603,10 @@
 - (void)_newSubjectChallenge:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Challenge Subject"
+	[[Mixpanel sharedInstance] track:@"Timeline - New Snap with Hashtag"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 vo.subjectName, @"subject", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
@@ -619,7 +616,7 @@
 - (void)_showVoters:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Voters"
+	[[Mixpanel sharedInstance] track:@"Timeline - Show Voters"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
@@ -658,8 +655,8 @@
 	}];
 }
 
-- (void)_showShare:(NSNotification *)notification {
-	NSLog(@"_showShare");
+- (void)_showUserShare:(NSNotification *)notification {
+	NSLog(@"_showUserShare");
 	
 	if ([HONAppDelegate appTabBarController].view != nil) {
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
@@ -782,6 +779,12 @@
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	switch (buttonIndex) {
 		case 0: {
+			[[Mixpanel sharedInstance] track:@"Timeline Profile - Flag"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+			
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 10], @"action",
@@ -804,6 +807,12 @@
 			break;}
 			
 		case 1: {
+			[[Mixpanel sharedInstance] track:@"Timeline - New Snap"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO.userID]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];

@@ -199,6 +199,10 @@
 }
 
 - (void)_dropTabs {
+	[[Mixpanel sharedInstance] track:@"Tab Bar - Lower Tabs"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kLipHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 	} completion:^(BOOL finished) {
@@ -207,6 +211,10 @@
 }
 
 - (void)_raiseTabs {
+	[[Mixpanel sharedInstance] track:@"Tab Bar - Raise Tabs"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kTabHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 	} completion:^(BOOL finished) {
@@ -261,7 +269,7 @@
 			[_discoveryButton setSelected:NO];
 			[_settingsButton setSelected:NO];
 			
-			mixPanelTrack = @"Tab - Voting";
+			mixPanelTrack = @"Tab Bar - Timeline";
 			notificationName = @"REFRESH_VOTE_TAB";
 			break;
 			
@@ -271,7 +279,7 @@
 			[_discoveryButton setSelected:NO];
 			[_settingsButton setSelected:NO];
 			
-			mixPanelTrack = @"Tab - Challenge Wall";
+			mixPanelTrack = @"Tab Bar - Activity";
 			notificationName = @"REFRESH_CHALLENGES_TAB";
 			break;
 			
@@ -281,7 +289,7 @@
 			[_discoveryButton setSelected:YES];
 			[_settingsButton setSelected:NO];
 			
-			mixPanelTrack = @"Tab - Discovery";
+			mixPanelTrack = @"Tab Bar - Discover";
 			notificationName = @"REFRESH_DISCOVERY_TAB";
 			break;
 			
@@ -291,7 +299,7 @@
 			[_discoveryButton setSelected:NO];
 			[_settingsButton setSelected:YES];
 			
-			mixPanelTrack = @"Tab - Settings";
+			mixPanelTrack = @"Tab Bar - Settings";
 			notificationName = @"REFRESH_SETTINGS_TAB";
 			break;
 	}

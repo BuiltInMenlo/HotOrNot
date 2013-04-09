@@ -225,7 +225,7 @@
 	[self.delegate cameraOverlayViewCloseCamera:self];
 }
 
-- (void)showPreviewImage:(UIImage *)image {
+- (void)showPreviewImage:(UIImage *)image withUsername:(NSString *)username {
 	[[Mixpanel sharedInstance] track:@"Image Preview"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -237,6 +237,9 @@
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
 	
+	_username = username;
+	_usernameTextField.text = [NSString stringWithFormat:@"@%@", _username];
+	
 	if ([HONAppDelegate isRetina5]) {
 		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
 		imgView.frame = frame;
@@ -245,7 +248,7 @@
 	[self _showPreviewUI];
 }
 
-- (void)showPreviewImageFlipped:(UIImage *)image {
+- (void)showPreviewImageFlipped:(UIImage *)image withUsername:(NSString *)username {
 	[[Mixpanel sharedInstance] track:@"Image Preview"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -258,6 +261,9 @@
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
+	
+	_username = username;
+	_usernameTextField.text = [NSString stringWithFormat:@"@%@", _username];
 	
 	if ([HONAppDelegate isRetina5]) {
 		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
@@ -524,7 +530,7 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-		textField.text = @"@";
+		textField.text = ([_username isEqualToString:@""]) ? @"@" : [NSString stringWithFormat:@"%@", _username];
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_usernameBGImageView.frame = CGRectMake(_usernameBGImageView.frame.origin.x, _usernameBGImageView.frame.origin.y - 215.0, _usernameBGImageView.frame.size.width, _usernameBGImageView.frame.size.height);

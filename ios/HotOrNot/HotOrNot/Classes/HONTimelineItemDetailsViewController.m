@@ -219,10 +219,10 @@
 
 #pragma mark - Navigation
 - (void)_goMore {
-	[[Mixpanel sharedInstance] track:@"Vote Image Details - More"
+	[[Mixpanel sharedInstance] track:@"Timeline Details - More Shelf"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 															 delegate:self
@@ -302,7 +302,7 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Vote Image Details - Poke Creator"
+			[[Mixpanel sharedInstance] track:@"Timeline Details - Poke Creator"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
@@ -342,7 +342,7 @@
 	
 	} else if (alertView.tag == 1) {
 		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Vote Image Details - Poke Challenger"
+			[[Mixpanel sharedInstance] track:@"Timeline Details - Poke Challenger"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
@@ -388,10 +388,10 @@
 	if (actionSheet.tag == 0) {
 		switch (buttonIndex) {
 			case 0: {
-				[[Mixpanel sharedInstance] track:@"Vote Image Details - Flag"
+				[[Mixpanel sharedInstance] track:@"Timeline Details - Flag"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 				
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -417,9 +417,10 @@
 				break;}
 				
 			case 1: {
-				[[Mixpanel sharedInstance] track:@"Vote Image Details - Challenge Subject"
+				[[Mixpanel sharedInstance] track:@"Timeline Details - New Snap with Hashtag"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+													  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													  _challengeVO.subjectName, @"subject", nil]];
 				
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:_challengeVO.subjectName]];
 				[navigationController setNavigationBarHidden:YES];
@@ -427,6 +428,11 @@
 				break;}
 				
 			case 2: {
+				[[Mixpanel sharedInstance] track:@"Timeline Details - Share"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+															 
 				if (FBSession.activeSession.state == 513)
 					[HONFacebookCaller postToTimeline:_challengeVO];
 				

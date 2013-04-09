@@ -374,7 +374,7 @@
 		if ([_challengeVO.challengerName length] > 0) {
 			creatorNameLabel.frame = CGRectOffset(creatorNameLabel.frame, 0.0, -7.0);
 			creatorNameButton.frame = creatorNameLabel.frame;
-			waitingLabel.frame = CGRectOffset(waitingLabel.frame, 0.0, -5.0);
+			waitingLabel.frame = CGRectOffset(waitingLabel.frame, 0.0, -7.0);
 			
 			UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 379.0, 250.0, 20.0)];
 			challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
@@ -472,6 +472,11 @@
 - (void)_goSingleTapLeft {
 	[self _showTapOverlayOnView:_lHolderView];
 	
+	[[Mixpanel sharedInstance] track:@"Timeline - Single Tap Creator"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
 	if (_hasChallenger) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:_challengeVO];
 	
@@ -482,11 +487,22 @@
 
 - (void)_goSingleTapRight {
 	[self _showTapOverlayOnView:_rHolderView];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline - Single Tap Challenger"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:_challengeVO];
 }
 
 - (void)_goDoubleTapLeft {
 	[self _showTapOverlayOnView:_lHolderView];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline - Double Tap Creator"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	if (_hasChallenger)
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CREATOR" object:_challengeVO];
@@ -501,7 +517,13 @@
 }
 
 - (void)_goDoubleTapRight {
-	[self _showTapOverlayOnView:_rHolderView];	
+	[self _showTapOverlayOnView:_rHolderView];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline - Double Tap Challenger"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CHALLENGER" object:_challengeVO];
 }
 
@@ -533,10 +555,10 @@
 }
 
 - (void)_goMore {
-	[[Mixpanel sharedInstance] track:@"Vote - More"
+	[[Mixpanel sharedInstance] track:@"Timeline - More Shelf"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																				delegate:self
@@ -591,7 +613,7 @@
 			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		
 		} else {
-			[[Mixpanel sharedInstance] track:@"Upvote Creator"
+			[[Mixpanel sharedInstance] track:@"Timeline - Upvote Creator"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
@@ -667,7 +689,7 @@
 			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 		} else {
-			[[Mixpanel sharedInstance] track:@"Upvote Challenger"
+			[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenger"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
@@ -744,10 +766,10 @@
 	if (actionSheet.tag == 0) {
 		switch (buttonIndex) {
 			case 0: {
-				[[Mixpanel sharedInstance] track:@"Vote Wall - Flag"
+				[[Mixpanel sharedInstance] track:@"Timeline - Flag"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 				
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:

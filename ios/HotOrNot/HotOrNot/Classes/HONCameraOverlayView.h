@@ -13,8 +13,8 @@
 @interface HONCameraOverlayView : UIView
 
 - (void)hidePreview;
-- (void)showPreviewImage:(UIImage *)image;
-- (void)showPreviewImageFlipped:(UIImage *)image;
+- (void)showPreviewImage:(UIImage *)image withUsername:(NSString *)username;
+- (void)showPreviewImageFlipped:(UIImage *)image withUsername:(NSString *)username;
 - (void)artistName:(NSString *)artist songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL;
 - (void)endBuffering;
 
