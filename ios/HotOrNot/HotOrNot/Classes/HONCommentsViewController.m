@@ -346,6 +346,16 @@
 	}];
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	if ([textField.text length] > 35 && ![string isEqualToString:@""]) {
+		textField.text = [textField.text substringToIndex:35];
+		
+		return (NO);
+	}
+	
+	return (YES);
+}
+
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
 	return (YES);

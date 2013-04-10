@@ -259,7 +259,7 @@
 			$id_arr = array();
 			
 			// get waiting or started challenges
-			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 2 OR `status_id` = 4;';
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 4;';
 			$result = mysql_query($query);
 			
 			// loop thru challenges, priming array
@@ -267,7 +267,7 @@
 				$id_arr[$row['id']] = 0;
 			
 			// get vote rows for challenges
-			$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 2 OR `tblChallenges`.`status_id` = 4;';
+			$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 1 OR `tblChallenges`.`status_id` = 4;';
 			$result = mysql_query($query);
 			
 			// loop thru votes, incrementing vote total array
@@ -307,15 +307,11 @@
 			$challenge_arr = array();
 			
 			// get available challenge rows
-			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 2 OR `status_id` = 4 ORDER BY `started` DESC LIMIT 250;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 4 ORDER BY `started` DESC LIMIT 250;';
 			$result = mysql_query($query);
 			
 			// loop thru rows
 			while ($row = mysql_fetch_assoc($result)) {
-				
-				// bug fix, skip challenge if waiting and has no challenge
-				if ($row['status_id'] == "2" && $row['challenger_id'] == "0")
-					continue;
 				
 				// push challenge into array
 				array_push($challenge_arr, $this->getChallengeObj($row['id']));
@@ -341,7 +337,7 @@
 			$challenge_arr = array();
 			
 			// get challenges based on subject
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 2 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
 			$result = mysql_query($query);
 			
 			// loop thru challenges
@@ -372,7 +368,7 @@
 			$subject_id = mysql_fetch_object(mysql_query($query))->id;
 			
 			// get challenges based on subject
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 2 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
 			$result = mysql_query($query);
 			
 			// loop thru challenges
@@ -411,7 +407,7 @@
 				$user_id = mysql_fetch_object($user_result)->id;
 				
 				// get latest 10 challenges for user
-				$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `started` DESC LIMIT 50;';
+				$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 2 AND `status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `started` DESC LIMIT 50;';
 				$challenge_result = mysql_query($query);
 			
 				// loop thru the rows

@@ -67,7 +67,7 @@
 	contentLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
 	contentLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	contentLabel.backgroundColor = [UIColor clearColor];
-	contentLabel.numberOfLines = 0;
+	//contentLabel.numberOfLines = 0;
 	contentLabel.text = _commentVO.content;
 	[self addSubview:contentLabel];
 	
