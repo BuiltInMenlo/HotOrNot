@@ -208,16 +208,14 @@
 
 #pragma mark - Navigation
 - (void)_goAccept {
+	[[Mixpanel sharedInstance] track:@"Activity Details - Accept Snap"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ACCEPT_CHALLENGE" object:_challengeVO];
-	}];
-}
-
-- (void)_goRechallenge {
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"CREATE_CHALLENGE" object:_challengeVO];
 	}];
 }
 
@@ -250,10 +248,10 @@
 
 #pragma mark - Navigation
 - (void)_goMore {
-	[[Mixpanel sharedInstance] track:@"Vote Image Details - More"
+	[[Mixpanel sharedInstance] track:@"Activity Details - More Shelf"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																				delegate:self
@@ -270,7 +268,7 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Challenge Wall - Poke Creator"
+			[[Mixpanel sharedInstance] track:@"Activity Details - Poke Creator"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
@@ -312,7 +310,7 @@
 	
 	} else if (alertView.tag == 1) {
 		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Challenge Wall - Poke Challenger"
+			[[Mixpanel sharedInstance] track:@"Activity Details - Poke Challenger"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
@@ -360,7 +358,7 @@
 	if (actionSheet.tag == 0) {
 		switch (buttonIndex) {
 			case 0: {
-				[[Mixpanel sharedInstance] track:@"Vote Image Details - Flag"
+				[[Mixpanel sharedInstance] track:@"Activity Details - Flag"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];

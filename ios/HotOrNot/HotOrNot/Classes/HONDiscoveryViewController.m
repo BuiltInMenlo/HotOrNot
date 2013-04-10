@@ -155,7 +155,7 @@
 
 #pragma mark - Navigation
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Refresh - Discovery"
+	[[Mixpanel sharedInstance] track:@"Discover - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -170,7 +170,7 @@
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Create Challenge Button - Discovery"
+	[[Mixpanel sharedInstance] track:@"Discover - Create Snap"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -189,11 +189,22 @@
 
 - (void)_selectLeftDiscoveryChallenge:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	[[Mixpanel sharedInstance] track:@"Discover - Select"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+	
+	
 	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubjectName:vo.subjectName] animated:YES];
 }
 
 - (void)_selectRightDiscoveryChallenge:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
+	[[Mixpanel sharedInstance] track:@"Discover - Select"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+	
 	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubjectName:vo.subjectName] animated:YES];
 }
 

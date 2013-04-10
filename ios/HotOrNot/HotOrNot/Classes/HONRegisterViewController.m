@@ -444,7 +444,7 @@
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
 	[textField resignFirstResponder];
-	return YES;
+	return (YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
@@ -456,12 +456,20 @@
 	else
 		_username = textField.text;
 	
+	[[Mixpanel sharedInstance] track:@"Register - Change Username"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[textField resignFirstResponder];
 }
 
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCancelCamera:(HONRegisterCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Register - Skip Photo"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
@@ -469,11 +477,15 @@
 }
 
 - (void)cameraOverlayViewTakePicture:(HONRegisterCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Register - Take Photo"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[_imagePicker takePicture];
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONRegisterCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"First Run - Switch Camera"
+	[[Mixpanel sharedInstance] track:@"Register - Switch Camera"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -488,7 +500,7 @@
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONRegisterCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"First Run - Camera Roll Button"
+	[[Mixpanel sharedInstance] track:@"Register - Camera Roll"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -497,6 +509,10 @@
 }
 
 - (void)cameraOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)cameraOverlayView username:(NSString *)username {
+	[[Mixpanel sharedInstance] track:@"Register - Submit"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[self _finalizeUser];
 }
 

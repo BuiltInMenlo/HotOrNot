@@ -45,7 +45,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	[[Mixpanel sharedInstance] track:@"FB Login"
+	[[Mixpanel sharedInstance] track:@"FB Login - Show"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -92,7 +92,7 @@
 }
 
 - (void)_goFacebook {
-	[[Mixpanel sharedInstance] track:@"Login Facebook Button"
+	[[Mixpanel sharedInstance] track:@"FB Login - Button"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	

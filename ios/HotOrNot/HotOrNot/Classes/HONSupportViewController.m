@@ -6,25 +6,16 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "Mixpanel.h"
-#import "MBProgressHUD.h"
-
 #import "HONSupportViewController.h"
 #import "HONAppDelegate.h"
-#import "HONHeaderView.h"
 
 @interface HONSupportViewController () <UIWebViewDelegate>
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONSupportViewController
 
 - (id)init {
 	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/support.htm", [HONAppDelegate apiServerPath]] title:@"Support"])) {
-		[[Mixpanel sharedInstance] track:@"Support"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	}
 	
