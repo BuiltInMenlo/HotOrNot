@@ -152,7 +152,7 @@
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:NO]]]];
-			//NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
+			NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
 			
 			_results = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
@@ -343,12 +343,12 @@
 	return (1);
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
-	headerView.image = [UIImage imageNamed:@"searchTopRowPopularHeader"];
-	
-	return (headerView);
-}
+//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+//	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
+//	headerView.image = [UIImage imageNamed:@"searchTopRowPopularHeader"];
+//	
+//	return (headerView);
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (_isUser) {
@@ -380,9 +380,9 @@
 	return (kRowHeight);
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (31.0);
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+//	return (31.0);
+//}
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (indexPath);

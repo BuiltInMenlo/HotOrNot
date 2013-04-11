@@ -75,9 +75,9 @@
 		
 		_headerView = [[HONHeaderView alloc] initWithTitle:@"Take snap"];
 		[_bgImageView addSubview:_headerView];
-				
+		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+		_cancelButton.frame = CGRectMake(1.0, 0.0, 64.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(closeCamera:) forControlEvents:UIControlEventTouchUpInside];
@@ -231,7 +231,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	NSLog(@"IMAGE:[%f][%f]", image.size.width, image.size.height);
-	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 480 * (image.size.height / image.size.width))];
 	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
 	[_previewHolderView addSubview:imgView];

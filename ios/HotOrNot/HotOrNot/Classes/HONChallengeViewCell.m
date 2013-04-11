@@ -91,7 +91,10 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
 	[self addSubview:timeLabel];
 	
-	if ([_challengeVO.status isEqualToString:@"Created"] || [_challengeVO.status isEqualToString:@"Waiting"]) {
+	if ([_challengeVO.status isEqualToString:@"Created"]) {
+		challengeLabel.text = @"@You are waiting…";
+		
+	} else if ([_challengeVO.status isEqualToString:@"Waiting"]) {
 		challengeLabel.text = [NSString stringWithFormat:@"@You snapped %@", _challengeVO.challengerName];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {

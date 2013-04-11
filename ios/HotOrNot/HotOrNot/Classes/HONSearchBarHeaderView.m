@@ -9,8 +9,10 @@
 #import "HONSearchBarHeaderView.h"
 #import "HONAppDelegate.h"
 
-@interface HONSearchBarHeaderView() <UISearchBarDelegate>
-@property (nonatomic, strong) UISearchBar *searchBar;
+@interface HONSearchBarHeaderView() <UITextFieldDelegate>
+@property (nonatomic, strong) UIImageView *bgImageView;
+@property (nonatomic, strong) UITextField *searchTextField;
+@property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic) BOOL isUser;
 @end
 
@@ -18,56 +20,34 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight)];
-		bgImageView.image = [UIImage imageNamed:@"lockedHeaderBackground"];
-		[self addSubview:bgImageView];
+		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight)];
+		_bgImageView.image = [UIImage imageNamed:@"searchBar_nonActive"];
+		_bgImageView.userInteractionEnabled = YES;
+		[self addSubview:_bgImageView];
 		
 		_isUser = YES;
-			
-		_searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight-2)];
-		_searchBar.autoresizingMask = self.searchBar.autoresizingMask | UIViewAutoresizingFlexibleWidth;
-		[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconBookmark state:UIControlStateNormal];
-		//[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
-		[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconResultsList state:UIControlStateNormal];
-		//[_searchBar setImage:[UIImage imageNamed:@"whiteOverlay"] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
-		_searchBar.tintColor = [UIColor colorWithWhite:0.75 alpha:1.0];
-		_searchBar.delegate = self;
-		_searchBar.showsCancelButton = NO;
-		//_searchBar.backgroundImage = [UIImage imageNamed:@"searchBar_nonActive"];
-		_searchBar.keyboardType = UIKeyboardTypeDefault;
-		_searchBar.text = @"search for users to snap with…";
-		//[_searchBar setSearchFieldBackgroundImage:[UIImage imageNamed:@"whiteOverlay"] forState:UIControlStateNormal];
-		[_searchBar setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-		[_searchBar setAutocorrectionType:UITextAutocorrectionTypeNo];
-		[self addSubview:_searchBar];
 		
-		UIImageView *backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBar_nonActive"]];
-		backgroundImageView.frame = CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight);
-		//[_searchBar addSubview:backgroundImageView];
-		//[_searchBar sendSubviewToBack:backgroundImageView];
+		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(33.0, 12.0, 220.0, 20.0)];
+		//[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		[_searchTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+		_searchTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
+		[_searchTextField setTextColor:[HONAppDelegate honGreyInputColor]];
+		[_searchTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		_searchTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
+		_searchTextField.text = @"search for users to snap with…";;
+		_searchTextField.delegate = self;
+		[_bgImageView addSubview:_searchTextField];
 		
-		
-//		for (UIView *view in [_searchBar subviews]) {
-//			NSLog(@"SEARCH VIEW:[%@]", view);
-//			if ([NSStringFromClass([view class]) isEqualToString:@"UISearchBarTextField"]) {
-//				for (UIView *view2 in [view subviews]) {
-//					NSLog(@"TXT VIEW:[%@]", view2);
-//				}
-//			}
-//		}
-		
-		
-//		for (UIView *view in [_searchBar subviews]) {
-//			NSLog(@"SEARCH VIEW:[%@]", view);
-//			if ([NSStringFromClass([view class]) isEqualToString:@"UISearchBarBackground"])
-//				[_searchBar sendSubviewToBack:view];
-//			
-//			if ([NSStringFromClass([view class]) isEqualToString:@"UISearchBarTextField"])
-//				[_searchBar bringSubviewToFront:view];
-//			
-//			if ([NSStringFromClass([view class]) isEqualToString:@"UIImageView"] && view != backgroundImageView)
-//				[view removeFromSuperview];//[_searchBar sendSubviewToBack:view];
-//		}
+		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_cancelButton.frame = CGRectMake(256.0, -1.0, 64.0, 44.0);
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+		[_cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+		_cancelButton.hidden = YES;
+		[_bgImageView addSubview:_cancelButton];
 	}
 	
 	return (self);
@@ -76,22 +56,22 @@
 
 - (void)toggleFocus:(BOOL)isFocused {
 	if (isFocused)
-		[_searchBar becomeFirstResponder];
+		[_searchTextField becomeFirstResponder];
 	
 	else {
-		[_searchBar resignFirstResponder];
-		_searchBar.text = @"search for users to snap with…";
+		[_searchTextField resignFirstResponder];
+		_searchTextField.text = @"search for users to snap with…";
 	}
 	
 	//_searchBar.showsCancelButton = isFocused;
 }
 
 - (void)backgroundingReset {
-	[_searchBar resignFirstResponder];
-	_searchBar.text = @"search for users to snap with…";
+	[_searchTextField resignFirstResponder];
+	_searchTextField.text = @"search for users to snap with…";
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
+		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
 	}];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
@@ -99,6 +79,28 @@
 
 
 #pragma mark - Navigation
+- (void)_goCancel {
+	[_searchTextField resignFirstResponder];
+	_searchTextField.text = @"search for users to snap with…";
+	_cancelButton.hidden = YES;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
+	}];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+}
+
+- (void)_onTxtDoneEditing:(id)sender {
+	[_searchTextField resignFirstResponder];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
+	}];
+	
+	if (![_searchTextField.text isEqualToString:@"@"] && ![_searchTextField.text isEqualToString:@"search for users to snap with…"])
+		[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"RETRIEVE_USER_SEARCH_RESULTS" : @"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:[_searchTextField.text substringFromIndex:1]];
+}
 
 
 #pragma mark - Notifications
@@ -109,43 +111,29 @@
 }
 
 
-#pragma mark - SearchBar Delegates
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-	_searchBar.showsCancelButton = YES;
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
-	}];
-	
-	searchBar.text = (_isUser) ? @"@" : @"#";	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_TABLE" object:searchBar.text];
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-	if ([searchText isEqualToString:@""])
-		searchBar.text = (_isUser) ? @"@" : @"#";
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-	[searchBar resignFirstResponder];
-	searchBar.text = @"search for users to snap with…";
-	_searchBar.showsCancelButton = NO;
+#pragma mark - TextField Delegates
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
+	_cancelButton.alpha = 0.0;
+	_cancelButton.hidden = NO;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
+		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
+		_cancelButton.alpha = 1.0;
 	}];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+	textField.text = (_isUser) ? @"@" : @"#";
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_TABLE" object:textField.text];
 }
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-	[searchBar resignFirstResponder];
-	//_searchBar.showsCancelButton = NO;
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {	
+	if ([textField.text isEqualToString:@""])
+		textField.text = (_isUser) ? @"@" : @"#";
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_searchBar.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
-	}];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"RETRIEVE_USER_SEARCH_RESULTS" : @"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:[searchBar.text substringFromIndex:1]];
+	return (YES);
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];	
 }
 
 @end

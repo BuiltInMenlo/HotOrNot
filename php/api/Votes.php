@@ -368,7 +368,7 @@
 			$subject_id = mysql_fetch_object(mysql_query($query))->id;
 			
 			// get challenges based on subject
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
 			$result = mysql_query($query);
 			
 			// loop thru challenges

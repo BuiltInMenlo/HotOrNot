@@ -78,10 +78,9 @@
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];
-	CGPoint location = CGPointMake(_tabHolderView.center.x - [touch locationInView:self.view].x, _tabHolderView.center.y - [touch locationInView:self.view].y);
 	
 	if ([touch locationInView:self.view].y > self.view.frame.size.height - (kLipHeight + kTabHeight)) {
-		if (location.y > _touchPt.y)
+		if ( _tabHolderView.center.y < self.view.frame.size.height - 10.0)
 			[self _raiseTabs];
 			
 		else

@@ -41,6 +41,8 @@
 		self.comments = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_userChallenge:) name:@"USER_CHALLENGE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 	}
 	
 	return (self);
@@ -266,6 +268,14 @@
 															cancelButtonTitle:@"Yes"
 															otherButtonTitles:@"No", nil];
 	[alertView show];
+}
+
+- (void)_tabsDropped:(NSNotification *)notification {
+	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 29.0));
+}
+
+- (void)_tabsRaised:(NSNotification *)notification {
+	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 78.0));
 }
 
 

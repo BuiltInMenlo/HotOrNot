@@ -113,7 +113,7 @@ extern NSString *const FacebookAppID;
 #define kPhotoRatio 1.333333333
 
 #define kHUDTime 0.5
-#define kJPEGCompress 0.33
+#define kJPEGCompress 0.5
 
 #define kNavHeaderHeight 45.0
 #define kSearchHeaderHeight 45.0
