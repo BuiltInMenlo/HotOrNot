@@ -25,6 +25,7 @@
 #import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 
+
 @interface HONImagePickerViewController () <AmazonServiceRequestDelegate, UISearchBarDelegate, FBFriendPickerDelegate, HONCameraOverlayViewDelegate> {
 	CGFloat fbHeaderHeight;
 }
@@ -37,7 +38,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *fbID;
 @property (nonatomic) int submitAction;
-@property (nonatomic) int challengerID;
+@property (nonatomic) HONUserVO *userVO;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic) BOOL needsChallenger;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
@@ -78,7 +79,7 @@
 	return (self);
 }
 
-- (id)initWithUser:(int)userID {
+- (id)initWithUser:(HONUserVO *)userVO {
 	if ((self = [super init])) {
 		[[Mixpanel sharedInstance] track:@"Create Challenge - With User"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -86,7 +87,7 @@
 		
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_iTunesPreview = @"";
-		_challengerID = userID;
+		_userVO = userVO;
 		_needsChallenger = NO;
 		_submitAction = 9;
 		_isFirstAppearance = YES;

@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 
 #import "HONChallengeVO.h"
+#import "HONUserVO.h"
 
 @interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
-- (id)initWithUser:(int)userID;
-- (id)initWithUser:(int)userID withSubject:(NSString *)subject;
+- (id)initWithUser:(HONUserVO *)userVO;
+- (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject;
 - (id)initWithSubject:(NSString *)subject;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
 - (id)initAsDailyChallenge:(NSString *)subject;

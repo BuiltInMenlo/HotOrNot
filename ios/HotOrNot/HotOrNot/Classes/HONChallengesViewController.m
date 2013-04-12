@@ -729,6 +729,7 @@
 						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
+						[self _goRefresh];
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
