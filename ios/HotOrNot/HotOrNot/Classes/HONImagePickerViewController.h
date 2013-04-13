@@ -17,6 +17,5 @@
 - (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject;
 - (id)initWithSubject:(NSString *)subject;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
-- (id)initAsDailyChallenge:(NSString *)subject;
 
 @end

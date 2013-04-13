@@ -45,16 +45,14 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UIView *creatorImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(29.0, 13.0, 38.0, 38.0)];
-	creatorImgHolderView.layer.cornerRadius = (int)[HONAppDelegate isRetina5] * 2.0;
-	creatorImgHolderView.clipsToBounds = YES;
-	[self addSubview:creatorImgHolderView];
+	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID;
 	
-	UIImageView *creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -8.0, kThumb1W, kThumb1H)];
-	creatorImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
-	[creatorImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", _challengeVO.creatorImgPrefix]] placeholderImage:nil];
-	[creatorImgHolderView addSubview:creatorImageView];
-		
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(29.0, 13.0, 38.0, 38.0)];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:(isCreator) ? _challengeVO.challengerAvatar : _challengeVO.creatorAvatar] placeholderImage:nil];
+	avatarImageView.layer.cornerRadius = (int)[HONAppDelegate isRetina5] * 2.0;
+	avatarImageView.clipsToBounds = YES;
+	[self addSubview:avatarImageView];
+	
 	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(76.0, 16.0, 180.0, 16.0)];
 	challengeLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:11];
 	challengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
@@ -76,11 +74,16 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
 	[self addSubview:timeLabel];
 	
+	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 30.0, 24.0, 24.0)];
+	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
+	[self addSubview:arrowImageView];
+	
 	if ([_challengeVO.status isEqualToString:@"Created"]) {
-		challengeLabel.text = @"@You are waiting…";
+		[avatarImageView setImageWithURL:[NSURL URLWithString:@"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png"] placeholderImage:nil];
+		challengeLabel.text = @"You are waiting…";
 		
 	} else if ([_challengeVO.status isEqualToString:@"Waiting"]) {
-		challengeLabel.text = [NSString stringWithFormat:@"@You snapped %@", _challengeVO.challengerName];
+		challengeLabel.text = [NSString stringWithFormat:@"You snapped @%@", _challengeVO.challengerName];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
 		challengeLabel.text = [NSString stringWithFormat:@"@%@ snapped you", _challengeVO.creatorName];
@@ -90,20 +93,16 @@
 		hasSeenImageView.hidden = _challengeVO.hasViewed;
 		[self addSubview:hasSeenImageView];
 		
+	} else if ([_challengeVO.status isEqualToString:@"Flagged"]) {
+		challengeLabel.text = (_challengeVO.challengerID == 0) ? @"You are waiting… (FLAGGED)" : (isCreator) ? [NSString stringWithFormat:@"You snapped @%@ (FLAGGED)", _challengeVO.challengerName] : [NSString stringWithFormat:@"@%@ snapped you (FLAGGED)", _challengeVO.creatorName];
+		
+		if (_challengeVO.challengerID == 0)
+			[avatarImageView setImageWithURL:[NSURL URLWithString:@"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png"] placeholderImage:nil];
+		
 	} else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"]) {
-		challengeLabel.frame = CGRectOffset(challengeLabel.frame, 40.0, 0.0);
-		challengeLabel.text = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? [NSString stringWithFormat:@"@You snapped %@", _challengeVO.challengerName] : [NSString stringWithFormat:@"@%@ snapped you", _challengeVO.creatorName];
-		subjectLabel.frame = CGRectOffset(subjectLabel.frame, 40.0, 0.0);
-		
-		UIView *challengerImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(69.0, 13.0, 38.0, 38.0)];
-		challengerImgHolderView.clipsToBounds = YES;
-		challengerImgHolderView.layer.cornerRadius = (int)[HONAppDelegate isRetina5] * 2.0;
-		[self addSubview:challengerImgHolderView];
-		
-		UIImageView *challengerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -8.0, kThumb1W, kThumb1H)];
-		challengerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-		[challengerImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", _challengeVO.challengerImgPrefix]] placeholderImage:nil];
-		[challengerImgHolderView addSubview:challengerImageView];
+		//challengeLabel.frame = CGRectOffset(challengeLabel.frame, 40.0, 0.0);
+		challengeLabel.text = (isCreator) ? [NSString stringWithFormat:@"You snapped @%@", _challengeVO.challengerName] : [NSString stringWithFormat:@"@%@ snapped you", _challengeVO.creatorName];
+		//subjectLabel.frame = CGRectOffset(subjectLabel.frame, 40.0, 0.0);
 	}
 }
 

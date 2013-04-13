@@ -62,6 +62,10 @@
 		case 5:
 			vo.status = @"Completed";
 			break;
+			
+		case 6:
+			vo.status = @"Flagged";
+			break;
 		
 		case 7:
 			vo.status = @"Waiting";

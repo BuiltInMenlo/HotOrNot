@@ -293,7 +293,9 @@
 	
 	[_headerView setTitle:_subjectName];
 	_captureHolderView.frame = CGRectMake(-320.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
-	[_usernameTextField becomeFirstResponder];
+	
+	if ([_username length] == 0)
+		[_usernameTextField becomeFirstResponder];
 }
 
 - (void)hidePreview {
@@ -530,7 +532,7 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-		textField.text = ([_username isEqualToString:@""]) ? @"@" : [NSString stringWithFormat:@"%@", _username];
+		textField.text = ([_username isEqualToString:@""]) ? @"@" : [NSString stringWithFormat:@"@%@", _username];
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_usernameBGImageView.frame = CGRectMake(_usernameBGImageView.frame.origin.x, _usernameBGImageView.frame.origin.y - 215.0, _usernameBGImageView.frame.size.width, _usernameBGImageView.frame.size.height);

@@ -81,10 +81,6 @@
 
 - (id)initWithUser:(HONUserVO *)userVO {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge - With User"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_iTunesPreview = @"";
 		_userVO = userVO;
@@ -102,15 +98,12 @@
 	return (self);
 }
 
-- (id)initWithUser:(int)userID withSubject:(NSString *)subject {
+- (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge - With User & Hashtag"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		_needsChallenger = NO;
 		_subjectName = subject;
 		_iTunesPreview = @"";
-		_challengerID = userID;
+		_userVO = userVO;
 		_submitAction = 9;
 		_isFirstAppearance = YES;
 		
@@ -128,10 +121,6 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Accept Challenge"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
@@ -152,32 +141,6 @@
 
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge - With Hashtag"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		_subjectName = subject;
-		_iTunesPreview = @"";
-		_submitAction = 1;
-		_needsChallenger = YES;
-		_isFirstAppearance = YES;
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_didShowViewController:)
-																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
-	}
-	
-	return (self);
-}
-
-- (id)initAsDailyChallenge:(NSString *)subject {
-	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Create Challenge - Daily Challenge"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
 		_subjectName = subject;
 		_iTunesPreview = @"";
 		_submitAction = 1;
@@ -650,7 +613,7 @@
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[params setObject:[NSString stringWithFormat:@"%d", _challengerID] forKey:@"challengerID"];
+	[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
 	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
 	[params setObject:_subjectName forKey:@"subject"];
 	
@@ -888,17 +851,24 @@
 	
 	[self _uploadPhoto:_challangeImage];
 	
+	NSString *challengerName = @"";
+	if (_challengeVO != nil)
+		challengerName = _challengeVO.creatorName;
+	
+	if (_userVO != nil)
+		challengerName = _userVO.username;
+	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {		
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[_cameraOverlayView showPreviewImage:image withUsername:(_challengeVO != nil) ? _challengeVO.creatorName : @""];
+			[_cameraOverlayView showPreviewImage:image withUsername:challengerName];
 		}];
 		
 	} else {
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-			[_cameraOverlayView showPreviewImageFlipped:image withUsername:(_challengeVO != nil) ? _challengeVO.creatorName : @""];
+			[_cameraOverlayView showPreviewImageFlipped:image withUsername:challengerName];
 	
 		else
-			[_cameraOverlayView showPreviewImage:image withUsername:(_challengeVO != nil) ? _challengeVO.creatorName : @""];
+			[_cameraOverlayView showPreviewImage:image withUsername:challengerName];
 	}
 }
 

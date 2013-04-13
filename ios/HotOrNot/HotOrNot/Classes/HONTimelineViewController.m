@@ -582,7 +582,17 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
-	UINavigationController *navigationController = (vo.statusID == 1 || ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.challengerID && vo.statusID == 2)) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.creatorID withSubject:vo.subjectName]];
+	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[NSString stringWithFormat:@"%d", vo.creatorID], @"id",
+																		[NSString stringWithFormat:@"%d", 0], @"points",
+																		[NSString stringWithFormat:@"%d", 0], @"votes",
+																		[NSString stringWithFormat:@"%d", 0], @"pokes",
+																		[NSString stringWithFormat:@"%d", 0], @"pics",
+																		vo.creatorName, @"username",
+																		vo.creatorFB, @"fb_id",
+																		vo.creatorAvatar, @"avatar_url", nil]];
+	
+	UINavigationController *navigationController = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -595,7 +605,17 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo.challengerID withSubject:vo.subjectName]];
+	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[NSString stringWithFormat:@"%d", vo.challengerID], @"id",
+																		[NSString stringWithFormat:@"%d", 0], @"points",
+																		[NSString stringWithFormat:@"%d", 0], @"votes",
+																		[NSString stringWithFormat:@"%d", 0], @"pokes",
+																		[NSString stringWithFormat:@"%d", 0], @"pics",
+																		vo.challengerName, @"username",
+																		vo.challengerFB, @"fb_id",
+																		vo.challengerAvatar, @"avatar_url", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -656,14 +676,14 @@
 }
 
 - (void)_showUserShare:(NSNotification *)notification {
-	NSLog(@"_showUserShare");
+	NSLog(@"_showUserShare:[%@]", _userVO);
 	
-	if ([HONAppDelegate appTabBarController].view != nil) {
+	if ([HONAppDelegate appTabBarController].view != nil && _userVO != nil) {
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:@"Report User"
-														otherButtonTitles:[NSString stringWithFormat:@"Snap %@", @"User"], nil];
+														otherButtonTitles:[NSString stringWithFormat:@"Snap @%@", _userVO.username], nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 	}
@@ -807,13 +827,13 @@
 			break;}
 			
 		case 1: {
-			[[Mixpanel sharedInstance] track:@"Timeline - New Snap"
+			[[Mixpanel sharedInstance] track:@"Timeline - New Snap at User"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO.userID]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;}

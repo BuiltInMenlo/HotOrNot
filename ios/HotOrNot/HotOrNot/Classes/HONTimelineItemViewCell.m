@@ -564,7 +564,7 @@
 																				delegate:self
 																	cancelButtonTitle:@"Cancel"
 															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], @"Share", nil];
+																	otherButtonTitles:(_hasChallenger) ? [NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName] : @"Snap@Me", @"Share", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -795,7 +795,7 @@
 			break;}
 				
 			case 1:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+				[[NSNotificationCenter defaultCenter] postNotificationName:(_hasChallenger) ? @"NEW_SUBJECT_CHALLENGE" : @"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 				break;
 				
 			case 2:

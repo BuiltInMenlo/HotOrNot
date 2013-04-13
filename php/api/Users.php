@@ -252,7 +252,28 @@
 				
 				// create a default username 
 				$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'" WHERE `id` = '. $user_id .';';
-				$result = mysql_query($query);				
+				$result = mysql_query($query);
+				
+				/*
+				// starting images
+				$img_arr = array(
+					"https://hotornot-challenges.s3.amazonaws.com/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1364671292",
+					"https://hotornot-challenges.s3.amazonaws.com/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1365354554",
+					"https://hotornot-challenges.s3.amazonaws.com/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1365309332",
+				);
+				
+				// create three starting challenges
+				for ($i=0; $i<3; $i++) {
+					$subject_id = mt_rand(1, 100);
+					
+					// add initial challenges
+					$query = 'INSERT INTO `tblChallenges` (';
+					$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
+					$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "2360", "'. $img_arr[$i] .'", "'. $user_id .'", "", "N", "0", NOW(), NOW());';
+					$result = mysql_query($query);
+					$challenge_id = mysql_insert_id();
+				}
+				*/		
 			}
 			
 			// return

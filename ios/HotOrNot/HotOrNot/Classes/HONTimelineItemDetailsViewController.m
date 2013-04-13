@@ -19,6 +19,7 @@
 #import "HONFacebookCaller.h"
 #import "HONImagePickerViewController.h"
 #import "HONLoginViewController.h"
+#import "HONUserVO.h"
 
 @interface HONTimelineItemDetailsViewController () <UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -417,12 +418,22 @@
 				break;}
 				
 			case 1: {
-				[[Mixpanel sharedInstance] track:@"Timeline Details - New Snap with Hashtag"
+				[[Mixpanel sharedInstance] track:@"Timeline Details - New Snap at User"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 													  _challengeVO.subjectName, @"subject", nil]];
 				
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:_challengeVO.subjectName]];
+				HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																					[NSString stringWithFormat:@"%d", (_isCreator) ? _challengeVO.creatorID : _challengeVO.challengerID], @"id",
+																					[NSString stringWithFormat:@"%d", 0], @"points",
+																					[NSString stringWithFormat:@"%d", 0], @"votes",
+																					[NSString stringWithFormat:@"%d", 0], @"pokes",
+																					[NSString stringWithFormat:@"%d", 0], @"pics",
+																					(_isCreator) ? _challengeVO.creatorName : _challengeVO.challengerName, @"username",
+																					(_isCreator) ? _challengeVO.creatorFB : _challengeVO.challengerFB, @"fb_id",
+																					(_isCreator) ? _challengeVO.creatorAvatar: _challengeVO.challengerAvatar, @"avatar_url", nil]];
+				
+				UINavigationController *navigationController = (_isOwner) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:_challengeVO.subjectName]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:_challengeVO.subjectName]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
 				break;}

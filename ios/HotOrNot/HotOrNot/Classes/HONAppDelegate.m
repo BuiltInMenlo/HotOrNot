@@ -315,7 +315,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [[utcDate dateByAddingTimeInterval:85] timeIntervalSinceDate:date];
+	int secs = [[utcDate dateByAddingTimeInterval:90] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
@@ -337,6 +337,9 @@ NSString *const FacebookAppID = @"529054720443694";
 				timeSince = [NSString stringWithFormat:@"%ds", secs];
 		}
 	}
+	
+	if ([[timeSince substringToIndex:[timeSince length] - 1] intValue] < 0)
+		timeSince = @"0s";
 	
 	return (timeSince);
 }

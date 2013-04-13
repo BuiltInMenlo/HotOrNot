@@ -16,6 +16,7 @@
 #import "HONGenericRowViewCell.h"
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
+#import "HONUserVO.h"
 #import "HONImagePickerViewController.h"
 
 
@@ -176,15 +177,25 @@
 	UINavigationController *navigationController;
 	
 	switch(buttonIndex) {
-		case 0:
+		case 0: {
 			[[Mixpanel sharedInstance] track:@"Challenge Voters - Create Challenge"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_voterVO.userID withSubject:_challengeVO.subjectName]];
+			HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [NSString stringWithFormat:@"%d", _voterVO.userID], @"id",
+																		  [NSString stringWithFormat:@"%d", _voterVO.points], @"points",
+																		  [NSString stringWithFormat:@"%d", _voterVO.votes], @"votes",
+																		  [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
+																		  [NSString stringWithFormat:@"%d", 0], @"pics",
+																		  _voterVO.username, @"username",
+																		  _voterVO.fbID, @"fb_id",
+																		  _voterVO.imageURL, @"avatar_url", nil]];
+			
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo withSubject:_challengeVO.subjectName]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
-			break;
+			break;}
 			
 		case 1:
 			break;

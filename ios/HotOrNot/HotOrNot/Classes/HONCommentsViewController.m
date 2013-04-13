@@ -435,15 +435,25 @@
 	
 	} else if (alertView.tag == 1) {
 		switch(buttonIndex) {
-			case 0:
+			case 0: {
 				[[Mixpanel sharedInstance] track:@"Challenge Comments - Create Challenge"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_commentVO.userID withSubject:_challengeVO.subjectName]];
+				HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																					[NSString stringWithFormat:@"%d", _commentVO.userID], @"id",
+																					[NSString stringWithFormat:@"%d", 0], @"points",
+																					[NSString stringWithFormat:@"%d", 0], @"votes",
+																					[NSString stringWithFormat:@"%d", 0], @"pokes",
+																					[NSString stringWithFormat:@"%d", 0], @"pics",
+																					_commentVO.username, @"username",
+																					_commentVO.fbID, @"fb_id",
+																					_commentVO.avatarURL, @"avatar_url", nil]];
+				
+				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:_challengeVO.subjectName]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
-				break;
+				break;}
 				
 			case 1:
 				break;
