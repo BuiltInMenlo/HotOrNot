@@ -191,20 +191,20 @@
 			$subject = mysql_fetch_object(mysql_query($query))->title;
 			
 			// get the challenge creator
-			$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';
+			$query = 'SELECT `id`, `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';
 			$creator_obj = mysql_fetch_object(mysql_query($query));
 			
 			// send push if creator allows it
-			if ($creator_obj->notifications == "Y")
-				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' challenge!", "sound": "push_01.caf"}}');
+			if ($creator_obj->notifications == "Y" && $creator_obj->id != $user_id)
+				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' snap!", "sound": "push_01.caf"}}');
 			
 			// get the challenge challenger
-			$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
+			$query = 'SELECT `id`, `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
 			$challenger_obj = mysql_fetch_object(mysql_query($query));
 			
 			// send push if challenger allows it
-			if ($challenger_obj->notifications == "Y")
-				$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' challenge!", "sound": "push_01.caf"}}');
+			if ($challenger_obj->notifications == "Y" && $challenger_obj->id != $user_id)
+				$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' snap!", "sound": "push_01.caf"}}');
 			
 			
 			// get the submitted comment

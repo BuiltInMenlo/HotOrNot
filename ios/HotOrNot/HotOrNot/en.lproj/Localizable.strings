@@ -1,0 +1,11 @@
+/* 
+  Localizable.strings
+  HotOrNot
+
+  Created by Matthew Holcombe on 04.13.13.
+  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+*/
+
+"header_restricted" = "Restricted Access";
+"header_register" = "Username";
+"header_home" = "Home";

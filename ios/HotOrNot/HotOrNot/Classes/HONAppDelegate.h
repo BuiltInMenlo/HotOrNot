@@ -28,6 +28,7 @@ extern NSString *const FacebookAppID;
 + (NSDictionary *)s3Credentials;
 + (NSString *)facebookCanvasURL;
 + (NSDictionary *)facebookFriendPosting;
++ (BOOL)isInviteCodeValid:(NSString *)code;
 + (int)createPointMultiplier;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
@@ -37,6 +38,7 @@ extern NSString *const FacebookAppID;
 + (BOOL)isKiipEnabled;
 + (BOOL)isTapForTapEnabled;
 + (NSString *)rndDefaultSubject;
++ (BOOL)isLocaleEnabled;
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
 
@@ -69,6 +71,7 @@ extern NSString *const FacebookAppID;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;
 + (BOOL)audioMuted;
++ (NSString *)deviceLocale;
 
 + (NSString *)timeSinceDate:(NSDate *)date;
 

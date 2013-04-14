@@ -43,9 +43,10 @@
 		
 		_captions = [NSArray arrayWithObjects:@"",
 						 @"Notifications",
+						 @"My Snaps", 
 						 @"Invite Friends via SMS",
 						 @"Invite Friends via Email",
-						 (FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook",
+						 //(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook",
 						 @"Change Username",
 						 @"Support",
 						 @"Privacy Policy", nil];
@@ -58,10 +59,10 @@
 		else
 			_notificationSwitch.on = YES;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_sessionStateChanged:)
-																	name:HONSessionStateChangedNotification
-																 object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self
+//															  selector:@selector(_sessionStateChanged:)
+//																	name:HONSessionStateChangedNotification
+//																 object:nil];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
@@ -157,30 +158,13 @@
 	_activatedSwitch = switchView;
 }
 
--(void)_goAudioSwitch:(UISwitch *)switchView {
-	NSString *msg = (switchView.on) ? @"Turn on track audio?" : @"Turn off track audio?";	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Audio"
-																	message:msg
-																  delegate:self
-													  cancelButtonTitle:@"Yes"
-													  otherButtonTitles:@"No", nil];
-	[alertView setTag:1];
-	[alertView show];
-	_activatedSwitch = switchView;
-}
-
 - (void)_goRefresh {
 	[[Mixpanel sharedInstance] track:@"Profile - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[_headerView toggleRefresh:YES];
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = @"Refreshing…";
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
+
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",
@@ -215,6 +199,9 @@
 		NSLog(@"SettingsViewController AFNetworking %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -227,14 +214,14 @@
 
 
 #pragma mark - Notifications
-- (void)_sessionStateChanged:(NSNotification *)notification {
-	FBSession *session = (FBSession *)[notification object];
-	
-	[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
-	
-	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:0]];
-	[cell updateCaption:(session.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
-}
+//- (void)_sessionStateChanged:(NSNotification *)notification {
+//	FBSession *session = (FBSession *)[notification object];
+//	
+//	[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
+//	
+//	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:0]];
+//	[cell updateCaption:(session.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
+//}
 
 - (void)_refreshSettingsTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
@@ -335,8 +322,8 @@
 		[cell hideChevron];
 		cell.accessoryView = _notificationSwitch;
 		
-	} else if (indexPath.row == 4)
-		[cell updateCaption:(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
+	}// else if (indexPath.row == 4)
+	 //	[cell updateCaption:(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
 			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	return (cell);
@@ -374,6 +361,15 @@
 	
 	switch (indexPath.row) {
 		case 2: {
+			[[Mixpanel sharedInstance] track:@"Profile - My Snaps"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			
+			break;
+			
+		case 3: {
 			[[Mixpanel sharedInstance] track:@"Profile - Invite via SMS"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -385,7 +381,7 @@
 				messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
 				
 				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-			
+				
 			} else {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
 																					 message:@"Cannot send SMS from this device!"
@@ -396,7 +392,7 @@
 			}
 			break;}
 			
-		case 3: {
+		case 4:
 			[[Mixpanel sharedInstance] track:@"Profile - Invite via Email"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -408,7 +404,7 @@
 				[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
 				
 				[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-			
+				
 			} else {
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
 																					 message:@"Cannot send email from this device!"
@@ -418,23 +414,21 @@
 				[alertView show];
 			}
 			break;}
-			
-		case 4:
-			[[Mixpanel sharedInstance] track:@"Profile - FB Login / Logout"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d", (FBSession.activeSession.state == 513)], @"switch", nil]];
-			
-			if (FBSession.activeSession.state == 513) {
-				[FBSession.activeSession closeAndClearTokenInformation];
-				[cell updateCaption:@"Login to Facebook"];
-			
-			} else {
-				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:YES completion:nil];
-			}
-			break;
+//			[[Mixpanel sharedInstance] track:@"Profile - FB Login / Logout"
+//										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+//														 [NSString stringWithFormat:@"%d", (FBSession.activeSession.state == 513)], @"switch", nil]];
+//			
+//			if (FBSession.activeSession.state == 513) {
+//				[FBSession.activeSession closeAndClearTokenInformation];
+//				[cell updateCaption:@"Login to Facebook"];
+//			
+//			} else {
+//				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
+//				[navigationController setNavigationBarHidden:YES];
+//				[self presentViewController:navigationController animated:YES completion:nil];
+//			}
+//			break;
 			
 		case 5:
 			[[Mixpanel sharedInstance] track:@"Profile - Change Username"

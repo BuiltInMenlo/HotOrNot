@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIWebView *webView;
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) NSString *headerTitle;
+@property (nonatomic, strong) UIButton *doneButton;
 @end
 
 @implementation HONWebViewController
@@ -55,12 +56,12 @@
 	[headerView hideRefreshing];
 	[self.view addSubview:headerView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:doneButton];
+	_doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_doneButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+	[_doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[_doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[_doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[headerView addSubview:_doneButton];
 	
 	_webView = [[UIWebView alloc] initWithFrame:CGRectMake(0.0, 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 45.0)];
 	[_webView setBackgroundColor:[UIColor clearColor]];
@@ -85,6 +86,13 @@
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
+}
+
+
+#pragma mark - Accessors
+- (void)hideDoneButton {
+	[_doneButton removeTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[_doneButton removeFromSuperview];
 }
 
 

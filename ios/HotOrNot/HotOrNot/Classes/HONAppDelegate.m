@@ -75,6 +75,16 @@ NSString *const FacebookAppID = @"529054720443694";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"fb_network"]);
 }
 
++ (BOOL)isInviteCodeValid:(NSString *)code {
+	
+	for (NSString *validCode in [[NSUserDefaults standardUserDefaults] objectForKey:@"invite_codes"]) {
+		if ([code isEqualToString:validCode])
+			return (YES);
+	}
+	
+	return (NO);
+}
+
 + (NSString *)smsInviteFormat {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"]);
 }
@@ -107,6 +117,21 @@ NSString *const FacebookAppID = @"529054720443694";
 + (NSString *)rndDefaultSubject {
 	NSArray *subjects = [[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"];
 	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
+}
+
++ (BOOL)isLocaleEnabled {
+	return (NO);
+	
+	if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"enabled_locales"] objectAtIndex:0] isEqualToString:@""])
+		return (YES);
+	
+	for (NSString *locale in [[NSUserDefaults standardUserDefaults] objectForKey:@"enabled_locales"]) {
+		if ([[[NSLocale preferredLanguages] objectAtIndex:0] isEqualToString:locale]) {
+			return (YES);
+		}
+	}
+	
+	return (NO);
 }
 
 + (NSArray *)searchSubjects {
@@ -302,6 +327,10 @@ NSString *const FacebookAppID = @"529054720443694";
 
 + (BOOL)audioMuted {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"] isEqualToString:@"YES"]);
+}
+
++ (NSString *)deviceLocale {
+	return ([[NSLocale preferredLanguages] objectAtIndex:0]);
 }
 
 + (NSString *)timeSinceDate:(NSDate *)date {
@@ -526,6 +555,8 @@ NSString *const FacebookAppID = @"529054720443694";
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	
+	NSLog(@"LANGUAGE:[%@]", [[NSLocale preferredLanguages] objectAtIndex:0]);
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
@@ -844,6 +875,14 @@ NSString *const FacebookAppID = @"529054720443694";
 	else {
 		//NSLog(@"appDict:\n%@", appDict);
 		
+		NSMutableArray *locales = [NSMutableArray array];
+		for (NSString *locale in [appDict objectForKey:@"enabled_locales"])
+			[locales addObject:locale];
+		
+		NSMutableArray *inviteCodes = [NSMutableArray array];
+		for (NSString *code in [appDict objectForKey:@"invite_codes"])
+			[inviteCodes addObject:code];
+		
 		NSMutableArray *hashtags = [NSMutableArray array];
 		for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
 			[hashtags addObject:hashtag];
@@ -888,6 +927,8 @@ NSString *const FacebookAppID = @"529054720443694";
 														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"chartboost"], @"chartboost",
 														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"kiip"], @"kiip",
 														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
+		[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
+		[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
 		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
 		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
 		[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];

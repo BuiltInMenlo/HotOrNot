@@ -10,4 +10,5 @@
 
 @interface HONWebViewController : UIViewController
 - (id)initWithURL:(NSString *)url title:(NSString *)title;
+- (void)hideDoneButton;
 @end

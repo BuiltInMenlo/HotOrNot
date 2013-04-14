@@ -26,7 +26,8 @@
 #import "HONCommentsViewController.h"
 #import "HONLoginViewController.h"
 #import "HONTimelineItemDetailsViewController.h"
-#import "HONUsernameViewController.h"
+#import "HONRestrictedLocaleViewController.h"
+
 
 @interface HONTimelineViewController() <UIActionSheetDelegate>
 @property(nonatomic) int subjectID;
@@ -351,7 +352,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName : @"Home"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName : NSLocalizedString(@"header_home", nil)];
 	[_headerView toggleRefresh:NO];
 	[_headerView refreshButton].hidden = _isPushView;
 	[self.view addSubview:_headerView];
@@ -408,8 +409,13 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
-		[self performSelector:@selector(_goTutorial) withObject:self afterDelay:0.5];
+	if ([HONAppDelegate isLocaleEnabled]) {
+		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+			[self performSelector:@selector(_goTutorial) withObject:self afterDelay:0.5];
+		
+	} else {
+		[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
+	}
 }
 
 - (void)viewDidLoad {
@@ -466,6 +472,20 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
+- (void)_goLocaleRestriction {
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline - Locale Restricted"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRestrictedLocaleViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:^(void) {
+	}];
+}
+
 - (void)_goTutorial {
 	[[Mixpanel sharedInstance] track:@"Register User"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -484,14 +504,6 @@
 - (void)_goTutorialClose {
 	_tutorialOverlayImgView.hidden = YES;
 	[_tutorialOverlayImgView removeFromSuperview];
-}
-
-- (void)_goChangeUsername {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:^(void) {
-		[self _goTutorialClose];
-	}];
 }
 
 

@@ -516,7 +516,7 @@
 			
 			// send push if allowed
 			if ($pokee_obj->notifications == "Y")
-				$this->sendPush('{"device_tokens": ["'. $pokee_obj->device_token .'"], "type":"2", "aps": {"alert": "'. $poker_name .' has poked you!", "sound": "push_01.caf"}}');
+				$this->sendPush('{"device_tokens": ["'. $pokee_obj->device_token .'"], "type":"2", "aps": {"alert": "@'. $poker_name .' has poked you!", "sound": "push_01.caf"}}');
 			
 			// return
 			$this->sendResponse(200, json_encode(array(
