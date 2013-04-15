@@ -33,20 +33,6 @@
 	userImageView.layer.masksToBounds = YES;
 	[self addSubview:userImageView];
 	
-//	UIImageView *creatorScoreBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 45.0, 50.0, 15.0)];
-//	creatorScoreBGImageView.image = [UIImage imageNamed:@"smallRowScore_Overlay"];
-//	[self addSubview:creatorScoreBGImageView];
-//	
-//	UILabel *scoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 45.0, 50.0, 15.0)];
-//	scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
-//	scoreLabel.textColor = [UIColor whiteColor];
-//	scoreLabel.backgroundColor = [UIColor clearColor];
-//	scoreLabel.textAlignment = NSTextAlignmentCenter;
-//	scoreLabel.shadowColor = [UIColor blackColor];
-//	scoreLabel.shadowOffset = CGSizeMake(1.0, 1.0);
-//	scoreLabel.text = [NSString stringWithFormat:@"%d", _commentVO.userScore];
-//	[self addSubview:scoreLabel];
-	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 24.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];

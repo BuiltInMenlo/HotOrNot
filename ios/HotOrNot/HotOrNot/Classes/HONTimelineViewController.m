@@ -236,7 +236,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -300,7 +300,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -393,7 +393,7 @@
 	[self.view addSubview:_tableView];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Getting Challenges…";
+	_progressHUD.labelText = NSLocalizedString(@"hud_getSnaps", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -440,7 +440,7 @@
 	[_headerView toggleRefresh:YES];
 	
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = @"Refreshing…";
+//	_progressHUD.labelText = NSLocalizedString(@"hud_refresh", nil);
 //	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 //	_progressHUD.minShowTime = kHUDTime;
 //	_progressHUD.taskInProgress = YES;
@@ -527,7 +527,7 @@
 	[_headerView toggleRefresh:YES];
 	
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = @"Refreshing…";
+//	_progressHUD.labelText = NSLocalizedString(@"hud_refresh", nil);
 //	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 //	_progressHUD.minShowTime = kHUDTime;
 //	_progressHUD.taskInProgress = YES;
@@ -783,8 +783,9 @@
 		return (226.0);
 	
 	else {
-		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
-		return ((vo.statusID == 1 || vo.statusID == 2) ? 410.0 : 307.0);
+		return (307.0);
+//		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
+//		return ((vo.statusID == 1 || vo.statusID == 2) ? 410.0 : 307.0);
 	}
 }
 

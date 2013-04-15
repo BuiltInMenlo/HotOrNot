@@ -46,6 +46,26 @@
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
 		[self addSubview:avatarImageView];
 		
+		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cameraButton.frame = CGRectMake(210.0, 60.0, 44.0, 44.0);
+		[cameraButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
+		[cameraButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
+		[cameraButton addTarget:self action:@selector(_goInviteSMS) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:cameraButton];
+		
+		UILabel *inviteLabel = [[UILabel alloc] initWithFrame:CGRectMake(250.0, 60.0, 100.0, 44.0)];
+		inviteLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+		inviteLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		inviteLabel.backgroundColor = [UIColor clearColor];
+		inviteLabel.text = NSLocalizedString(@"profile_inviteSMS_button", nil);
+		[self addSubview:inviteLabel];
+		
+		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		inviteButton.frame = inviteLabel.frame;
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+		[inviteButton addTarget:self action:@selector(_goInviteSMS) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:inviteButton];
+		
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 		
@@ -54,7 +74,7 @@
 		snapsLabel.textColor = [UIColor whiteColor];
 		snapsLabel.backgroundColor = [UIColor clearColor];
 		snapsLabel.textAlignment = NSTextAlignmentCenter;
-		snapsLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] == 1) ? @"%@ snap" : @"%@ snaps", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
+		snapsLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
 		[self addSubview:snapsLabel];
 		
 		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 172.0, 100.0, 18.0)];
@@ -62,7 +82,7 @@
 		votesLabel.textColor = [UIColor whiteColor];
 		votesLabel.backgroundColor = [UIColor clearColor];
 		votesLabel.textAlignment = NSTextAlignmentCenter;
-		votesLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] == 1) ? @"%@ vote" : @"%@ votes", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]]]];
+		votesLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]]]];
 		[self addSubview:votesLabel];
 		
 		int points = ([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]) + ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
@@ -71,7 +91,7 @@
 		pointsLabel.textColor = [UIColor whiteColor];
 		pointsLabel.backgroundColor = [UIColor clearColor];
 		pointsLabel.textAlignment = NSTextAlignmentCenter;
-		pointsLabel.text = [NSString stringWithFormat:(points == 1) ? @"%@ point" : @"%@ points", [numberFormatter stringFromNumber:[NSNumber numberWithInt:points]]];
+		pointsLabel.text = [NSString stringWithFormat:(points == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:points]]];
 		[self addSubview:pointsLabel];
 		
 		[self hideChevron];
@@ -118,6 +138,15 @@
 #pragma mark - Navigation
 - (void)_goSupport {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUPPORT" object:nil];
+}
+
+- (void)_goInviteSMS {
+	[[Mixpanel sharedInstance] track:@"Profile - Invite via SMS Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_SMS" object:nil];
 }
 
 @end

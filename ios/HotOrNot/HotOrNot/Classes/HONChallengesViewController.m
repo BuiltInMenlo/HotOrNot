@@ -137,7 +137,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -187,7 +187,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+			_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
@@ -205,7 +205,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Activity"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_activity", nil)];
 	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
 	
@@ -359,7 +359,7 @@
 	[self _retrieveUser];
 	
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = @"Refreshing…";
+//	_progressHUD.labelText = NSLocalizedString(@"hud_refresh", nil);
 //	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 //	_progressHUD.minShowTime = kHUDTime;
 //	_progressHUD.taskInProgress = YES;
@@ -415,7 +415,7 @@
 
 - (void)_nextChallengeBlock:(NSNotification *)notification {	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Getting Challenges…";
+	_progressHUD.labelText = NSLocalizedString(@"hud_getSnaps", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -476,7 +476,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -738,7 +738,7 @@
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;
@@ -774,7 +774,7 @@
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;

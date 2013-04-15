@@ -83,7 +83,7 @@
 	[self.view addSubview:_bgView];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Loading Image…";
+	_progressHUD.labelText = NSLocalizedString(@"hud_loadSnap", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -115,7 +115,7 @@
 		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		rechallengeLabel.backgroundColor = [UIColor clearColor];
 		rechallengeLabel.textAlignment = NSTextAlignmentRight;
-		rechallengeLabel.text = @"Resnapped";
+		rechallengeLabel.text = NSLocalizedString(@"resnapped", nil);
 		[self.view addSubview:rechallengeLabel];
 	}
 	
@@ -186,7 +186,7 @@
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+			_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
@@ -297,7 +297,7 @@
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+				_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:1.5];
 				_progressHUD = nil;
@@ -339,7 +339,7 @@
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+				_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:1.5];
 				_progressHUD = nil;

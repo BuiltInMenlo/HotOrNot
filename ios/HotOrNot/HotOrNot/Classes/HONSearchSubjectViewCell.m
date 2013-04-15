@@ -31,7 +31,7 @@
 	scoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
 	scoreLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	scoreLabel.backgroundColor = [UIColor clearColor];
-	scoreLabel.text = (_subjectVO.score == 1) ? @"1 challenge" : [NSString stringWithFormat:@"%d challenges", _subjectVO.score];
+	scoreLabel.text = (_subjectVO.score == 1) ? NSLocalizedString(@"search_snap", nil) : [NSString stringWithFormat:NSLocalizedString(@"search_snaps", nil), _subjectVO.score];
 	[self addSubview:scoreLabel];
 }
 

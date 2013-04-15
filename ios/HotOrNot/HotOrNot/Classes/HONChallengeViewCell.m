@@ -80,13 +80,13 @@
 	
 	if ([_challengeVO.status isEqualToString:@"Created"]) {
 		[avatarImageView setImageWithURL:[NSURL URLWithString:@"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png"] placeholderImage:nil];
-		challengeLabel.text = @"You are waiting…";
+		challengeLabel.text = NSLocalizedString(@"activity_waiting", nil);
 		
 	} else if ([_challengeVO.status isEqualToString:@"Waiting"]) {
-		challengeLabel.text = [NSString stringWithFormat:@"You snapped @%@", _challengeVO.challengerName];
+		challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_outbound", nil), _challengeVO.challengerName];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
-		challengeLabel.text = [NSString stringWithFormat:@"@%@ snapped you", _challengeVO.creatorName];
+		challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
 		
 		UIImageView *hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 20.0, 24.0, 24.0)];
 		hasSeenImageView.image = [UIImage imageNamed:@"newSnapIcon"];
@@ -94,14 +94,14 @@
 		[self addSubview:hasSeenImageView];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Flagged"]) {
-		challengeLabel.text = (_challengeVO.challengerID == 0) ? @"You are waiting… (FLAGGED)" : (isCreator) ? [NSString stringWithFormat:@"You snapped @%@ (FLAGGED)", _challengeVO.challengerName] : [NSString stringWithFormat:@"@%@ snapped you (FLAGGED)", _challengeVO.creatorName];
+		challengeLabel.text = (_challengeVO.challengerID == 0) ? NSLocalizedString(@"activity_waiting_f", nil) : (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound_f", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound_f", nil), _challengeVO.creatorName];
 		
 		if (_challengeVO.challengerID == 0)
 			[avatarImageView setImageWithURL:[NSURL URLWithString:@"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png"] placeholderImage:nil];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"]) {
 		//challengeLabel.frame = CGRectOffset(challengeLabel.frame, 40.0, 0.0);
-		challengeLabel.text = (isCreator) ? [NSString stringWithFormat:@"You snapped @%@", _challengeVO.challengerName] : [NSString stringWithFormat:@"@%@ snapped you", _challengeVO.creatorName];
+		challengeLabel.text = (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
 		//subjectLabel.frame = CGRectOffset(subjectLabel.frame, 40.0, 0.0);
 	}
 }

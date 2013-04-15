@@ -120,7 +120,7 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 + (BOOL)isLocaleEnabled {
-	return (NO);
+	//return (NO);
 	
 	if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"enabled_locales"] objectAtIndex:0] isEqualToString:@""])
 		return (YES);
@@ -963,7 +963,7 @@ NSString *const FacebookAppID = @"529054720443694";
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"Problem loading data!", @"Status message when no network detected");
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
@@ -985,7 +985,7 @@ NSString *const FacebookAppID = @"529054720443694";
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;

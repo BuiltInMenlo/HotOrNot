@@ -6,6 +6,74 @@
   Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 */
 
+
+"hud_connectionError" = "接続エラー";
+"hud_loadError" = "問題を読み込んでデータ！";
+"hud_dlFailed" = "ダウンロードに失敗しました";
+"hud_submitFailed" = "失敗した提出";
+"hud_refresh" = "さわやかな...";
+"hud_loadSnap" = "スナップインを読み込んでいます...";
+"hud_getSnaps" = "スナップ入門...";
+"hud_submitComment" = "コメントを送信しています...";
+"hud_uploadPhoto" = "アップロード写真...";
+"hud_uploadFail" = "アップロードエラー";
+"hud_submitSnap" = "Snapを送信しています...";
+"hud_usernameNotFound" = "ユーザー名が見つかりません！";
+"hud_checkUsername" = "ユーザー名をチェックしています...";
+"hud_updateFail" = "更新に失敗しました";
+"hud_usernameTaken" = "ユーザー名は取ら！";
+"hud_submit" = "提出…";
+"hud_noResults" = "該当する結果が見つかりませんでした！";
+"hud_searchUsers" = "ユーザーを検索しています...";
+"hud_searchHashtags" = "ハッシュタグを検索しています...";
+
 "header_restricted" = "アクセス制限";
 "header_register" = "ユーザー名";
-"header_home" = "ホーム";
+"header_home" = "";
+"header_activity" = "";
+"header_discover" = "";
+"header_settings" = "";
+"header_username" = "ユーザ名";
+
+"search_placeHolder" = "ユーザーがスナップするための検索";
+"search_snap" = "スナップ";
+"search_snaps" = "%d スナップ";
+
+"restricted_caption" = "";
+"restricted_inviteCode" = "コードを入力して招待";
+
+"register_caption1" = "（ない偽物は使用できません\nあなたの個人的なプロフィールの写真を撮る";
+"register_caption2" = "似合う？さてさて\nSubmitを冷やすとスナップ得ることができます...";
+
+"timeline_like" = "%d 好む";
+"timeline_likes" = "%d 好む";
+"timeline_comment" = "%d コメント";
+"timeline_comments" = "%d 注釈";
+"timeline_99comments" = "99+コメント";
+
+"voters_caption" = "@%@ スキ！ @%@ スナップ";
+
+"activity_waiting" = "あなたが待っている...";
+"activity_outbound" = "あなたは、スナップ @%@";
+"activity_inbound" = "@%@ あなたを撮った";
+"activity_waiting_f" = "あなたが待っている... (F)";
+"activity_outbound_f" = "あなたは、スナップ @%@ (F)";
+"activity_inbound_f" = "@%@ あなたを撮った (F)";
+
+"profile_inviteSMS_button" = "SMS経由で友達を招待する";
+"profile_notifications" = "通知";
+"profile_mySnaps" = "私のスナップ";
+"profile_inviteSMS" = "SMS経由で友達を招待";
+"profile_inviteEmail" = "電子メールを介して友達を招待";
+"profile_changeUsername" = "ユーザー名を変更";
+"profile_support" = "支援";
+"profile_privacy" = "個人情報保護方針";
+"profile_snap" = "%@ スナップ";
+"profile_snaps" = "%@ スナップ";
+"profile_vote" = "%@ 投票する";
+"profile_votes" = "%@ 票";
+"profile_point" = "%@ 点数";
+"profile_points" = "%@ 点数";
+
+"userPlaceholder" = "@ユーザー";
+"resnapped" = "Resnapped";

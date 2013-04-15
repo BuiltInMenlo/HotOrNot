@@ -37,7 +37,7 @@
 		[_searchTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_searchTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
-		_searchTextField.text = @"search for users to snap with…";;
+		_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 		_searchTextField.delegate = self;
 		[_bgImageView addSubview:_searchTextField];
 		
@@ -60,7 +60,7 @@
 	
 	else {
 		[_searchTextField resignFirstResponder];
-		_searchTextField.text = @"search for users to snap with…";
+		_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	}
 	
 	//_searchBar.showsCancelButton = isFocused;
@@ -68,7 +68,7 @@
 
 - (void)backgroundingReset {
 	[_searchTextField resignFirstResponder];
-	_searchTextField.text = @"search for users to snap with…";
+	_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
@@ -81,7 +81,7 @@
 #pragma mark - Navigation
 - (void)_goCancel {
 	[_searchTextField resignFirstResponder];
-	_searchTextField.text = @"search for users to snap with…";
+	_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	_cancelButton.hidden = YES;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {

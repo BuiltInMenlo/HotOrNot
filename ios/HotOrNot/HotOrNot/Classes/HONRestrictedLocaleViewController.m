@@ -48,6 +48,15 @@
 	_bgImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_bgImageView];
 	
+	UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 180.0, 280.0, 30.0)];
+	captionLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	captionLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	captionLabel.backgroundColor = [UIColor clearColor];
+	captionLabel.textAlignment = NSTextAlignmentCenter;
+	captionLabel.numberOfLines = 0;
+	captionLabel.text = NSLocalizedString(@"restricted_caption", nil);
+	[self.view addSubview:captionLabel];
+	
 	_textField = [[UITextField alloc] initWithFrame:CGRectMake(20.0, 300.0, 280.0, 20.0)];
 	//[_textField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -58,7 +67,7 @@
 	[_textField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_textField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 	_textField.keyboardType = UIKeyboardTypeDefault;
-	_textField.text = @"Enter invite code";
+	_textField.text = NSLocalizedString(@"restricted_inviteCode", nil);
 	_textField.delegate = self;
 	[_textField setTag:0];
 	[_bgImageView addSubview:_textField];
@@ -89,7 +98,7 @@
 	
 	[_textField resignFirstResponder];
 	if ([_textField.text isEqualToString:@""])
-		_textField.text = @"Enter invite code";
+		_textField.text = NSLocalizedString(@"restricted_inviteCode", nil);
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_bgImageView.frame = CGRectMake(_bgImageView.frame.origin.x, 0.0, _bgImageView.frame.size.width, _bgImageView.frame.size.height);

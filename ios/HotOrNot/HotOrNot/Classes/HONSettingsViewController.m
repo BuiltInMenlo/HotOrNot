@@ -42,14 +42,14 @@
 		self.view.backgroundColor = [UIColor whiteColor];
 		
 		_captions = [NSArray arrayWithObjects:@"",
-						 @"Notifications",
-						 @"My Snaps", 
-						 @"Invite Friends via SMS",
-						 @"Invite Friends via Email",
+						 NSLocalizedString(@"profile_notifications", nil),
+						 NSLocalizedString(@"profile_mySnaps", nil),
+						 NSLocalizedString(@"profile_inviteSMS", nil),
+						 NSLocalizedString(@"profile_inviteEmail", nil),
 						 //(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook",
-						 @"Change Username",
-						 @"Support",
-						 @"Privacy Policy", nil];
+						 NSLocalizedString(@"profile_changeUsername", nil),
+						 NSLocalizedString(@"profile_support", nil),
+						 NSLocalizedString(@"profile_privacy", nil), nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -66,6 +66,7 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
@@ -205,7 +206,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -265,11 +266,30 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
+}
+
+- (void)_inviteSMS:(NSNotification *)notification {
+	if ([MFMessageComposeViewController canSendText]) {
+		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+		messageComposeViewController.messageComposeDelegate = self;
+		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
+		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		
+		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
+																			 message:@"Cannot send SMS from this device!"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+	}
 }
 
 - (void)_showSearchTable:(NSNotification *)notification {
@@ -357,7 +377,7 @@
 	//[(HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	UINavigationController *navigationController;
-	HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+	//HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	switch (indexPath.row) {
 		case 2: {
@@ -383,7 +403,7 @@
 				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
 																					 message:@"Cannot send SMS from this device!"
 																					delegate:nil
 																		cancelButtonTitle:@"OK"
@@ -573,7 +593,7 @@
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"Connection Error", @"Status message when no network detected");
+					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;

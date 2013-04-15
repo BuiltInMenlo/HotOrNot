@@ -96,7 +96,7 @@
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.textAlignment = NSTextAlignmentCenter;
 		_captionLabel.numberOfLines = 2;
-		_captionLabel.text = @"Take your personal profile picture\n(no fakes allowed)";
+		_captionLabel.text = NSLocalizedString(@"register_caption1", nil);
 		_captionLabel.hidden = ![HONAppDelegate isRetina5];
 		[self addSubview:_captionLabel];
 	}
@@ -125,7 +125,7 @@
 	
 	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
-	_captionLabel.text = @"Look good? Alright, cool\nSubmit and lets get snapping…";
+	_captionLabel.text = NSLocalizedString(@"register_caption2", nil);
 	
 	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
@@ -158,7 +158,7 @@
 	
 	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
-	_captionLabel.text = @"Look good? Alright, cool\nSubmit and lets get snapping…";
+	_captionLabel.text = NSLocalizedString(@"register_caption2", nil);
 	
 	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
@@ -177,7 +177,7 @@
 	_cameraBackButton.hidden = YES;
 	_cancelButton.hidden = NO;
 	
-	_captionLabel.text = @"Take your personal profile picture\n(no fakes allowed)";
+	_captionLabel.text = NSLocalizedString(@"register_caption1", nil);
 	
 	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(0.0, _footerHolderView.frame.origin.y, 640.0, 70.0);

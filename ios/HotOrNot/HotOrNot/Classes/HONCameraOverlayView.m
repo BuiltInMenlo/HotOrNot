@@ -161,7 +161,7 @@
 		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 		_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-		_usernameTextField.text = @"@user";
+		_usernameTextField.text = NSLocalizedString(@"userPlaceholder", nil);
 		_usernameTextField.delegate = self;
 		[_usernameTextField setTag:1];
 		[_usernameBGImageView addSubview:_usernameTextField];
@@ -597,7 +597,7 @@
 	
 	} else if (textField.tag == 1) {
 		if ([textField.text length] == 0 || [textField.text isEqualToString:@"@"])
-			textField.text = @"@user";
+			textField.text = NSLocalizedString(@"userPlaceholder", nil);
 		
 		else
 			_username = textField.text;
