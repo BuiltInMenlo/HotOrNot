@@ -31,8 +31,6 @@
 
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic, strong) NSString *iTunesPreview;
-@property (nonatomic, strong) NSString *iTunesPreviewURL;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *fbID;
@@ -42,13 +40,11 @@
 @property (nonatomic) BOOL needsChallenger;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic) BOOL isFirstAppearance;
-@property (nonatomic) BOOL hasPlayedAudio;
 @property (nonatomic, strong) NSTimer *focusTimer;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UIImage *challangeImage;
-@property (nonatomic, strong) MPMoviePlayerController *mpMoviePlayerController;// *sfxPlayer;
 
 @property (retain, nonatomic) FBFriendPickerViewController *friendPickerController;
 @property (retain, nonatomic) UISearchBar *searchBar;
@@ -63,7 +59,6 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor blackColor];
 		_subjectName = [HONAppDelegate rndDefaultSubject];
-		_iTunesPreview = @"";
 		_submitAction = 1;
 		_needsChallenger = YES;
 		_isFirstAppearance = YES;
@@ -72,7 +67,6 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
 	return (self);
@@ -81,7 +75,6 @@
 - (id)initWithUser:(HONUserVO *)userVO {
 	if ((self = [super init])) {
 		_subjectName = [HONAppDelegate rndDefaultSubject];
-		_iTunesPreview = @"";
 		_userVO = userVO;
 		_needsChallenger = NO;
 		_submitAction = 9;
@@ -91,7 +84,6 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
 	return (self);
@@ -101,7 +93,6 @@
 	if ((self = [super init])) {
 		_needsChallenger = NO;
 		_subjectName = subject;
-		_iTunesPreview = @"";
 		_userVO = userVO;
 		_submitAction = 9;
 		_isFirstAppearance = YES;
@@ -110,7 +101,6 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 		
 		_needsChallenger = NO;
 	}
@@ -123,7 +113,6 @@
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
-		_iTunesPreview = @"";//vo.itunesPreview;
 		_submitAction = 4;
 		_needsChallenger = NO;
 		_isFirstAppearance = YES;
@@ -132,7 +121,6 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
 	return (self);
@@ -141,7 +129,6 @@
 - (id)initWithSubject:(NSString *)subject {
 	if ((self = [super init])) {
 		_subjectName = subject;
-		_iTunesPreview = @"";
 		_submitAction = 1;
 		_needsChallenger = YES;
 		_isFirstAppearance = YES;
@@ -150,7 +137,6 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_loadStateDidChangeNotification:) name:MPMoviePlayerLoadStateDidChangeNotification object:nil];
 	}
 	
 	return (self);
@@ -186,8 +172,6 @@
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:backButton];
-	
-	_hasPlayedAudio = NO;
 }
 
 - (void)viewDidLoad {
@@ -222,11 +206,6 @@
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
 				//[self performSelector:@selector(_showOverlay) withObject:self afterDelay:0.15];
 				[self _showOverlay];
-				
-				if (!_hasPlayedAudio) {
-					_hasPlayedAudio = YES;
-					[self performSelector:@selector(_playAudio) withObject:self afterDelay:0.5];
-				}
 			}];
 		
 		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -240,10 +219,6 @@
 			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-				if (!_hasPlayedAudio) {
-					_hasPlayedAudio = YES;
-					[self performSelector:@selector(_playAudio) withObject:self afterDelay:0.5];
-				}
 			}];
 		}
 	}
@@ -257,66 +232,6 @@
 
 
 #pragma mark - UI Presentation
-- (void)_playAudio {
-	if (_subjectName.length == 0) {
-		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-										[NSString stringWithFormat:@"%d", 5], @"action",
-										_subjectName, @"subjectName",
-										nil];
-		
-		[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			NSError *error = nil;
-			if (error != nil) {
-				NSLog(@"ImagePickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-				
-			} else {
-				NSDictionary *subjectResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				
-				_iTunesPreview = [subjectResult objectForKey:@"preview_url"];
-				_iTunesPreviewURL = [subjectResult objectForKey:@"itunes_id"];
-				
-				if (_iTunesPreview.length > 0) {
-					[_cameraOverlayView artistName:[subjectResult objectForKey:@"artist"] songName:[subjectResult objectForKey:@"song_name"] artworkURL:[subjectResult objectForKey:@"img_url"] storeURL:[subjectResult objectForKey:@"itunes_url"]];
-					
-					if (_mpMoviePlayerController != nil) {
-						[_mpMoviePlayerController stop];
-						_mpMoviePlayerController = nil;
-					}
-					
-					//_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:@"http://a931.phobos.apple.com/us/r1000/071/Music/66/ac/5a/mzm.imtvrpsi.aac.p.m4a"]];
-					_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:_iTunesPreview]];
-					_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
-					_mpMoviePlayerController.view.hidden = YES;
-					[self.view addSubview:_mpMoviePlayerController.view];
-					[_mpMoviePlayerController prepareToPlay];
-					[_mpMoviePlayerController play];
-					
-//					MPVolumeView *volumeView = [[MPVolumeView alloc] initWithFrame:CGRectMake(0.0, 100.0, 200.0, 60.0)];
-//					[_cameraOverlayView addSubview:volumeView];
-//					[volumeView sizeToFit];
-					
-					[[MPMusicPlayerController applicationMusicPlayer] setVolume:([HONAppDelegate audioMuted]) ? 0.0 : 0.5];
-					
-				}
-			}
-			
-		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"ImagePickerViewController AFNetworking %@", [error localizedDescription]);
-			
-			if (_progressHUD == nil)
-				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-			_progressHUD.minShowTime = kHUDTime;
-			_progressHUD.mode = MBProgressHUDModeCustomView;
-			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
-			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
-			_progressHUD = nil;
-		}];
-	}
-}
-
 - (void)_showOverlay {
 	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_cameraOverlayView.delegate = self;
@@ -477,11 +392,6 @@
 		_focusTimer = nil;
 	}
 	
-	if (_mpMoviePlayerController != nil) {
-		[_mpMoviePlayerController stop];
-		_mpMoviePlayerController = nil;
-	}
-	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
 		if (_imagePicker != nil)
 			_imagePicker = nil;
@@ -540,19 +450,13 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
 }
 
-- (void)_loadStateDidChangeNotification:(NSNotification *)notification {
-	NSLog(@"----[LOAD STATE CHANGED[%d]]----", _mpMoviePlayerController.loadState);
-	
-	switch (_mpMoviePlayerController.loadState) {
-		case MPMovieLoadStatePlayable:
-			[_cameraOverlayView endBuffering];
-			break;
-	}
-}
-
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Take Photo"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	if (_focusTimer != nil) {
 		[_focusTimer invalidate];
 		_focusTimer = nil;
@@ -562,18 +466,18 @@
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Camera Roll Button"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Create Snap - Camera Roll"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Switch Camera"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[[Mixpanel sharedInstance] track:@"Create Snap - Switch Camera"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
@@ -586,19 +490,14 @@
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Cancel"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	if (_focusTimer != nil) {
 		[_focusTimer invalidate];
 		_focusTimer = nil;
 	}
-	
-	if (_mpMoviePlayerController != nil) {
-		[_mpMoviePlayerController stop];
-		_mpMoviePlayerController = nil;
-	}
-	
-	[[Mixpanel sharedInstance] track:@"Canceled Create Challenge"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -607,8 +506,12 @@
 	}];
 }
 
-- (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username comments:(NSString *)comments {
-	NSLog(@"cameraOverlayViewSubmitChallenge [%@][%@]", username, comments);
+- (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username {
+	NSLog(@"cameraOverlayViewSubmitChallenge [%@]", username);
+	
+	[[Mixpanel sharedInstance] track:@"Create Snap - Submit"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
@@ -632,28 +535,12 @@
 }
 
 - (void)cameraOverlayViewChangeSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Edit Hashtag"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  subjectName, @"subject", nil]];
+	
 	_subjectName = subjectName;
-}
-
-
-- (void)cameraOverlayViewPlayTrack:(HONCameraOverlayView *)cameraOverlayView audioURL:(NSString *)url {
-	_iTunesPreview = url;
-	
-	if (_mpMoviePlayerController != nil) {
-		[_mpMoviePlayerController stop];
-		[_mpMoviePlayerController setContentURL:[NSURL URLWithString:_iTunesPreview]];
-	
-	} else {
-		_mpMoviePlayerController = [[MPMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:_iTunesPreview]];
-		_mpMoviePlayerController.view.hidden = YES;
-		[self.view addSubview:_mpMoviePlayerController.view];
-	}
-	
-	_mpMoviePlayerController.movieSourceType = MPMovieSourceTypeFile;
-	[_mpMoviePlayerController prepareToPlay];
-	[_mpMoviePlayerController play];
-	
-	[[MPMusicPlayerController applicationMusicPlayer] setVolume:([HONAppDelegate audioMuted]) ? 0.0 : 0.5];
 }
 
 - (void)cameraOverlayViewPickFBFriends:(HONCameraOverlayView *)cameraOverlayView {
@@ -677,6 +564,9 @@
 }
 
 - (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Back to Camera"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
 

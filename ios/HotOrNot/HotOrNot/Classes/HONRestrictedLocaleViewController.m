@@ -107,6 +107,10 @@
 	if ([HONAppDelegate isInviteCodeValid:_textField.text]) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			//[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_invite"];
+			//[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TUTORIAL" object:nil];
 		}];
 	
 	} else {

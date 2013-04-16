@@ -15,8 +15,6 @@
 - (void)hidePreview;
 - (void)showPreviewImage:(UIImage *)image withUsername:(NSString *)username;
 - (void)showPreviewImageFlipped:(UIImage *)image withUsername:(NSString *)username;
-- (void)artistName:(NSString *)artist songName:(NSString *)songName artworkURL:(NSString *)artwork storeURL:(NSString *)itunesURL;
-- (void)endBuffering;
 
 @property(nonatomic, assign) id <HONCameraOverlayViewDelegate> delegate;
 @property (nonatomic, weak) NSString *subjectName;
@@ -26,7 +24,7 @@
 @protocol HONCameraOverlayViewDelegate
 - (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username comments:(NSString *)comments;
+- (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username;
 - (void)cameraOverlayViewChangeSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName;
 - (void)cameraOverlayViewPickFBFriends:(HONCameraOverlayView *)cameraOverlayView;
 @optional
@@ -34,5 +32,4 @@
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewPlayTrack:(HONCameraOverlayView *)cameraOverlayView audioURL:(NSString *)url;
 @end

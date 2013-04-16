@@ -52,6 +52,9 @@
 
 #pragma mark - Data Calls
 - (void)_submitUsername {
+	if ([[_username substringToIndex:1] isEqualToString:@"@"])
+		_username = [_username substringFromIndex:1];
+	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:

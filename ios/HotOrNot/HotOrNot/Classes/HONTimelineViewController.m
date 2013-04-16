@@ -148,6 +148,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -409,7 +410,7 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	if ([HONAppDelegate isLocaleEnabled]) {
+	if ([HONAppDelegate isLocaleEnabled] && [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
 		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 			[self performSelector:@selector(_goTutorial) withObject:self afterDelay:0.5];
 		
@@ -473,8 +474,8 @@
 }
 
 - (void)_goLocaleRestriction {
-	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	//[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
+	//[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[Mixpanel sharedInstance] track:@"Timeline - Locale Restricted"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -712,6 +713,10 @@
 
 - (void)_tabsRaised:(NSNotification *)notification {
 	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 78.0));
+}
+
+- (void)_showTutorial:(NSNotification *)notification {
+	[self _goTutorial];
 }
 
 
