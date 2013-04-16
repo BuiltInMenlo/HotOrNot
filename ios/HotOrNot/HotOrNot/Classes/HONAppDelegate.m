@@ -120,7 +120,7 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 + (BOOL)isLocaleEnabled {
-	return (NO);
+	//return (NO);
 	
 	if ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"enabled_locales"] objectAtIndex:0] isEqualToString:@""])
 		return (YES);

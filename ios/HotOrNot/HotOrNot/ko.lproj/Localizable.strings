@@ -7,73 +7,73 @@
 */
 
 
-"hud_connectionError" = "Connection Error";
-"hud_loadError" = "Problem loading data!";
-"hud_dlFailed" = "Download Failed";
-"hud_submitFailed" = "Failed Submission";
-"hud_refresh" = "Refreshing…";
-"hud_loadSnap" = "Loading Snap…";
-"hud_getSnaps" = "Getting Snaps…";
-"hud_submitComment" = "Submitting Comment…";
-"hud_uploadPhoto" = "Uploading Photo…";
-"hud_uploadFail" = "Upload Error";
-"hud_submitSnap" = "Submitting Snap…";
-"hud_usernameNotFound" = "Username not found!";
-"hud_checkUsername" = "Checking Username…";
-"hud_updateFail" = "Update Failed";
-"hud_usernameTaken" = "Username Taken!";
-"hud_submit" = "Submitting…";
-"hud_noResults" = "No results found!";
-"hud_searchUsers" = "Searching Users…";
-"hud_searchHashtags" = "Searching Hashtags…";
+"hud_connectionError" = "연결 오류";
+"hud_loadError" = "문제로드 데이터!";
+"hud_dlFailed" = "다운로드 실패";
+"hud_submitFailed" = "실패 제출";
+"hud_refresh" = "새로 고치는 중 …";
+"hud_loadSnap" = "스냅인을로드하는 중 …";
+"hud_getSnaps" = "잽하기 …";
+"hud_submitComment" = "코멘트를 제출 …";
+"hud_uploadPhoto" = "업로드 사진 …";
+"hud_uploadFail" = "업로드 오류";
+"hud_submitSnap" = "스냅인을 제출 …";
+"hud_usernameNotFound" = "사용자 이름을 찾을 수 없습니다!";
+"hud_checkUsername" = "사용자 이름 확인 중 …";
+"hud_updateFail" = "업데이트 실패";
+"hud_usernameTaken" = "사용자 이름 촬영!";
+"hud_submit" = "제출 중 ...";
+"hud_noResults" = "검색 결과가 없습니다!";
+"hud_searchUsers" = "사용자를 검색 …";
+"hud_searchHashtags" = "해시 태그를 검색 …";
 
-"header_restricted" = "Restricted Access";
-"header_register" = "Username";
+"header_restricted" = "제한된 액세스";
+"header_register" = "사용자 이름";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";
 "header_settings" = "";
-"header_username" = "Username";
+"header_username" = "사용자 이름";
 
-"search_placeHolder" = "search for users to snap@";
-"search_snap" = "1 snap";
-"search_snaps" = "%d snaps";
+"search_placeHolder" = "사용자가 부러 검색@";
+"search_snap" = "한 스냅";
+"search_snaps" = "%d 스냅";
 
 "restricted_caption" = "";
-"restricted_inviteCode" = "Enter invite code";
+"restricted_inviteCode" = "코드를 초대 입력";
 
-"register_caption1" = "Take your personal profile picture\n(no fakes allowed)";
-"register_caption2" = "Look good? Alright, cool\nSubmit and lets get snapping…";
+"register_caption1" = "(더 가짜 허용하지 않음)\n귀하의 개인 프로필 사진을";
+"register_caption2" = "좋아 보여? 좋아, 제출 시원하고 욕 얻을 수 있습니다 …";
 
-"timeline_like" = "%d Like";
-"timeline_likes" = "%d Likes";
-"timeline_comment" = "%d Comment";
-"timeline_comments" = "%d Comments";
-"timeline_99comments" = "99+ Comments";
+"timeline_like" = "%d 좋다";
+"timeline_likes" = "%d 좋아";
+"timeline_comment" = "%d 논평";
+"timeline_comments" = "%d 코멘트";
+"timeline_99comments" = "99 + 코멘트";
 
-"voters_caption" = "@%@ liked @%@ snap";
+"voters_caption" = "@%@ 좋아 @%@ 스냅";
 
-"activity_waiting" = "You are waiting…";
-"activity_outbound" = "You snapped @%@";
-"activity_inbound" = "@%@ snapped you";
-"activity_waiting_f" = "You are waiting… (F)";
-"activity_outbound_f" = "You snapped @%@ (F)";
-"activity_inbound_f" = "@%@ snapped you (F)";
+"activity_waiting" = "당신은 기다리고 있습니다 …";
+"activity_outbound" = "당신은 부러 @%@";
+"activity_inbound" = "@%@ 당신을 부러";
+"activity_waiting_f" = "당신은 기다리고 있습니다… (F)";
+"activity_outbound_f" = "당신은 부러 @%@ (F)";
+"activity_inbound_f" = "@%@ 당신을 부러 (F)";
 
-"profile_inviteSMS_button" = "Invite friends via SMS";
-"profile_notifications" = "Notifications";
-"profile_mySnaps" = "My Snaps";
-"profile_inviteSMS" = "Invite Friends via SMS";
-"profile_inviteEmail" = "Invite Friends via Email";
-"profile_changeUsername" = "Change Username";
-"profile_support" = "Support";
-"profile_privacy" = "Privacy Policy";
-"profile_snap" = "%@ snap";
-"profile_snaps" = "%@ snaps";
-"profile_vote" = "%@ vote";
-"profile_votes" = "%@ votes";
-"profile_point" = "%@ point";
-"profile_points" = "%@ points";
+"profile_inviteSMS_button" = "SMS를 통해 친구 초대";
+"profile_notifications" = "알림";
+"profile_mySnaps" = "내 잽";
+"profile_inviteSMS" = "SMS를 통해 친구 초대";
+"profile_inviteEmail" = "이메일을 통해 친구 초대";
+"profile_changeUsername" = "사용자 이름을 변경";
+"profile_support" = "지원";
+"profile_privacy" = "개인 정보 보호 정책";
+"profile_snap" = "%@ 스냅";
+"profile_snaps" = "%@ 스냅";
+"profile_vote" = "%@ 투표";
+"profile_votes" = "%@ 투표";
+"profile_point" = "%@ 포인트";
+"profile_points" = "%@ 포인트";
 
-"userPlaceholder" = "@user";
+"userPlaceholder" = "@사용자";
 "resnapped" = "Resnapped";
