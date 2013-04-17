@@ -39,8 +39,8 @@
 
 - (id)initAsTopCell {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 226.0);
-		_bgImgView.image = [UIImage imageNamed:@"profileBackground2"];
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 158.0);
+		_bgImgView.image = [UIImage imageNamed:@"profileBackground"];
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, 34.0, 95.0, 90.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];

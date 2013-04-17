@@ -53,14 +53,15 @@
 	avatarImageView.clipsToBounds = YES;
 	[self addSubview:avatarImageView];
 	
-	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(76.0, 16.0, 180.0, 16.0)];
-	challengeLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:11];
+	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0, 16.0, 180.0, 16.0)];
+	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
 	challengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	challengeLabel.backgroundColor = [UIColor clearColor];
+	challengeLabel.text = ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
 	[self addSubview:challengeLabel];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(76.0, 36.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
+	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
@@ -74,19 +75,19 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
 	[self addSubview:timeLabel];
 	
-	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 30.0, 24.0, 24.0)];
+	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(76.0, 17.0, 5.0, 9.0)];
 	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
 	[self addSubview:arrowImageView];
 	
 	if ([_challengeVO.status isEqualToString:@"Created"]) {
 		[avatarImageView setImageWithURL:[NSURL URLWithString:@"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png"] placeholderImage:nil];
-		challengeLabel.text = NSLocalizedString(@"activity_waiting", nil);
+		//challengeLabel.text = NSLocalizedString(@"activity_waiting", nil);
 		
 	} else if ([_challengeVO.status isEqualToString:@"Waiting"]) {
-		challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_outbound", nil), _challengeVO.challengerName];
+		//challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_outbound", nil), _challengeVO.challengerName];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
-		challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
+		//challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
 		
 		UIImageView *hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 20.0, 24.0, 24.0)];
 		hasSeenImageView.image = [UIImage imageNamed:@"newSnapIcon"];
@@ -94,15 +95,13 @@
 		[self addSubview:hasSeenImageView];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Flagged"]) {
-		challengeLabel.text = (_challengeVO.challengerID == 0) ? NSLocalizedString(@"activity_waiting_f", nil) : (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound_f", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound_f", nil), _challengeVO.creatorName];
+		//challengeLabel.text = (_challengeVO.challengerID == 0) ? NSLocalizedString(@"activity_waiting_f", nil) : (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound_f", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound_f", nil), _challengeVO.creatorName];
 		
 		if (_challengeVO.challengerID == 0)
 			[avatarImageView setImageWithURL:[NSURL URLWithString:@"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png"] placeholderImage:nil];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"]) {
-		//challengeLabel.frame = CGRectOffset(challengeLabel.frame, 40.0, 0.0);
-		challengeLabel.text = (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
-		//subjectLabel.frame = CGRectOffset(subjectLabel.frame, 40.0, 0.0);
+		//challengeLabel.text = (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
 	}
 }
 

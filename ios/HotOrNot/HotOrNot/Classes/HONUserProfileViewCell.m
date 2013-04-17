@@ -30,20 +30,20 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 226.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 158.0)];
 	bgImageView.image = [UIImage imageNamed:@"profileBackground"];
 	[self addSubview:bgImageView];
 	
-	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(272.0, 3.0, 44.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"profileShareButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"profileShareButton_Active"] forState:UIControlStateHighlighted];
-	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:shareButton];
-	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, 34.0, 95.0, 90.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 34.0, 95.0, 90.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:avatarImageView];
+	
+	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	snapButton.frame = CGRectMake(200.0, 80.0, 34.0, 34.0);
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"snapButton_nonActive"] forState:UIControlStateNormal];
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"snapButton_Active"] forState:UIControlStateHighlighted];
+	[snapButton addTarget:self action:@selector(_goSnap) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:snapButton];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -75,8 +75,8 @@
 
 
 #pragma mark - Navigation
-- (void)_goShare {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SHARE" object:nil];
+- (void)_goSnap {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:nil];
 }
 
 

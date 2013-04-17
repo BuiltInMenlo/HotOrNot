@@ -29,7 +29,7 @@
 #import "HONRestrictedLocaleViewController.h"
 
 
-@interface HONTimelineViewController() <UIActionSheetDelegate>
+@interface HONTimelineViewController() //<UIActionSheetDelegate>
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *username;
@@ -139,7 +139,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newCreatorChallenge:) name:@"NEW_CREATOR_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallengerChallenge:) name:@"NEW_CHALLENGER_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newSubjectChallenge:) name:@"NEW_SUBJECT_CHALLENGE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareChallenge:) name:@"SHARE_CHALLENGE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newUserChallenge:) name:@"NEW_USER_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showComments:) name:@"SHOW_COMMENTS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
@@ -633,6 +633,18 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_newUserChallenge:(NSNotification *)notification {
+	[[Mixpanel sharedInstance] track:@"Timeline - New Snap at User"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_newSubjectChallenge:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
@@ -688,6 +700,7 @@
 	}];
 }
 
+/*
 - (void)_showUserShare:(NSNotification *)notification {
 	NSLog(@"_showUserShare:[%@]", _userVO);
 	
@@ -701,6 +714,7 @@
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 	}
 }
+*/
 
 - (void)_resignSearchBarFocus:(NSNotification *)notification {
 	if (_searchHeaderView != nil)
@@ -785,10 +799,10 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if ([_username length] > 0 && indexPath.row == 0)
-		return (226.0);
+		return (158.0);
 	
 	else {
-		return (307.0);
+		return (314.0);
 //		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
 //		return ((vo.statusID == 1 || vo.statusID == 2) ? 410.0 : 307.0);
 	}
@@ -813,6 +827,7 @@
 }
 
 
+/*
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	switch (buttonIndex) {
@@ -857,5 +872,6 @@
 			break;}
 	}
 }
+ */
 
 @end

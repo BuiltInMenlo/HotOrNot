@@ -52,7 +52,7 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
 		
-		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 320.0)];
+		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, kNavHeaderHeight + 8.0, 306.0, 306.0)];
 		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
 		_irisImageView.alpha = 0.0;
 		[self addSubview:_irisImageView];
@@ -106,7 +106,7 @@
 		int offset = (int)[HONAppDelegate isRetina5] * 88;
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(25.0, 400.0 + offset, 64.0, 64.0);
+		cameraRollButton.frame = CGRectMake(35.0, 410.0 + offset, 44.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
@@ -114,7 +114,7 @@
 		
 		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(223.0, 400.0 + offset, 64.0, 64.0);
+			changeCameraButton.frame = CGRectMake(233.0, 410.0 + offset, 44.0, 44.0);
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -133,13 +133,13 @@
 
 		// Add the capture button
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(113.0, 384.0 + offset, 94.0, 94.0);
+		_captureButton.frame = CGRectMake(128.0, 399.0 + offset, 64.0, 64.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[_captureHolderView addSubview:_captureButton];
 		
-		_usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 437.0 + offset, 320.0, 42.0)];
+		_usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 437.0 + offset, 320.0, 43.0)];
 		_usernameBGImageView.image = [UIImage imageNamed:@"cameraKeyboardInputField_nonActive"];
 		_usernameBGImageView.userInteractionEnabled = YES;
 		[_captureHolderView addSubview:_usernameBGImageView];

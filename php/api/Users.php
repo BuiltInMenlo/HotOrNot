@@ -254,7 +254,6 @@
 				$query = 'UPDATE `tblUsers` SET `username` = "'. $username .'" WHERE `id` = '. $user_id .';';
 				$result = mysql_query($query);
 				
-				/*
 				// starting images
 				$img_arr = array(
 					"https://hotornot-challenges.s3.amazonaws.com/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1364671292",
@@ -272,8 +271,7 @@
 					$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "2360", "'. $img_arr[$i] .'", "'. $user_id .'", "", "N", "0", NOW(), NOW());';
 					$result = mysql_query($query);
 					$challenge_id = mysql_insert_id();
-				}
-				*/		
+				}		
 			}
 			
 			// return

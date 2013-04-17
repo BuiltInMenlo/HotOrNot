@@ -46,8 +46,8 @@
 	if ((self = [super init])) {
 		_hasChallenger = NO;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 307.0)];
-		bgImgView.image = [UIImage imageNamed:@"acceptedRowBackground"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 314.0)];
+		bgImgView.image = [UIImage imageNamed:@"timelineBackground"];
 		[self addSubview:bgImgView];
 	}
 	
@@ -61,8 +61,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteCreator:) name:@"UPVOTE_CREATOR" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteChallenger:) name:@"UPVOTE_CHALLENGER" object:nil];
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 307.0)];
-		bgImgView.image = [UIImage imageNamed:@"acceptedRowBackground"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 314.0)];
+		bgImgView.image = [UIImage imageNamed:@"timelineBackground"];
 		[self addSubview:bgImgView];
 	}
 	
@@ -90,31 +90,17 @@
 	[self addSubview:subjectButton];
 	
 	if ([_challengeVO.rechallengedUsers length] > 0) {
-//		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(203.0, 11.0, 24.0, 24.0)];
-//		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
-//		[self addSubview:rechallengeImageView];
-//		
-//		NSCharacterSet *charSet = [NSCharacterSet characterSetWithCharactersInString:@","];
-//		NSRange range = [_challengeVO.rechallengedUsers rangeOfCharacterFromSet:charSet];
-//		
-//		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(225.0, 16.0, 120.0, 14.0)];
-//		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
-//		rechallengeLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
-//		rechallengeLabel.backgroundColor = [UIColor clearColor];
-//		rechallengeLabel.text = [NSString stringWithFormat:@"Resnapped by %@", [_challengeVO.rechallengedUsers substringToIndex:range.location]];
-//		[self addSubview:rechallengeLabel];
-		
 		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(203.0, 11.0, 24.0, 24.0)];
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
 		[self addSubview:rechallengeImageView];
 		
-		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(215.0, 16.0, 60.0, 14.0)];
-		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
-		rechallengeLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
-		rechallengeLabel.backgroundColor = [UIColor clearColor];
-		rechallengeLabel.textAlignment = NSTextAlignmentRight;
-		rechallengeLabel.text = NSLocalizedString(@"resnapped", nil);
-		[self addSubview:rechallengeLabel];
+//		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(215.0, 16.0, 60.0, 14.0)];
+//		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
+//		rechallengeLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
+//		rechallengeLabel.backgroundColor = [UIColor clearColor];
+//		rechallengeLabel.textAlignment = NSTextAlignmentRight;
+//		rechallengeLabel.text = NSLocalizedString(@"resnapped", nil);
+//		[self addSubview:rechallengeLabel];
 	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 15.0, 60.0, 16.0)];
@@ -124,13 +110,6 @@
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];
 	[self addSubview:timeLabel];
-	
-	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(270.0, 253.0, 34.0, 34.0);
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
-	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:moreButton];
 	
 	CALayer *lHolderMask = [CALayer layer];
 	lHolderMask.contents = (id)[[UIImage imageNamed:@"imageLargeThumbMask"] CGImage];
@@ -292,6 +271,13 @@
 				
 	} else {
 	}
+	
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(270.0, 253.0, 34.0, 34.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:moreButton];
 }
 
 

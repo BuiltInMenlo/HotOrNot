@@ -130,13 +130,13 @@
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
 		[self.view addSubview:rechallengeImageView];
 		
-		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(228.0, 23.0, 60.0, 12.0)];
-		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
-		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		rechallengeLabel.backgroundColor = [UIColor clearColor];
-		rechallengeLabel.textAlignment = NSTextAlignmentRight;
-		rechallengeLabel.text = NSLocalizedString(@"resnapped", nil);
-		[self.view addSubview:rechallengeLabel];
+//		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(228.0, 23.0, 60.0, 12.0)];
+//		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
+//		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+//		rechallengeLabel.backgroundColor = [UIColor clearColor];
+//		rechallengeLabel.textAlignment = NSTextAlignmentRight;
+//		rechallengeLabel.text = NSLocalizedString(@"resnapped", nil);
+//		[self.view addSubview:rechallengeLabel];
 	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 24.0, 60.0, 12.0)];
@@ -186,7 +186,7 @@
 //	[self.view addSubview:shareButton];
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(23.0, 389.0, 64.0, 64.0);
+	pokeButton.frame = CGRectMake(33.0, 399.0, 44.0, 44.0);
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
 	[pokeButton addTarget:self action:(_isCreator || _challengeVO.statusID == 1 || _challengeVO.statusID == 2) ? @selector(_goPokeCreator) : @selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
@@ -194,7 +194,7 @@
 	[self.view addSubview:pokeButton];
 	
 	UIButton *voteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	voteButton.frame = CGRectMake(118.0, 378.0, 84.0, 84.0);
+	voteButton.frame = CGRectMake(128.0, 388.0, 44.0, 44.0);
 	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_nonActive"] forState:UIControlStateNormal];
 	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_Active"] forState:UIControlStateHighlighted];
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
@@ -202,7 +202,7 @@
 	[self.view addSubview:voteButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(239.0, 385.0, 64.0, 64.0);
+	moreButton.frame = CGRectMake(249.0, 395.0, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];

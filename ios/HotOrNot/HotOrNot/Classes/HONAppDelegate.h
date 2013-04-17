@@ -119,7 +119,7 @@ extern NSString *const FacebookAppID;
 #define kJPEGCompress 0.5
 
 #define kNavHeaderHeight 45.0
-#define kSearchHeaderHeight 45.0
+#define kSearchHeaderHeight 44.0
 #define kRowHeight 63.0
 
 @property (strong, nonatomic) UIWindow *window;
