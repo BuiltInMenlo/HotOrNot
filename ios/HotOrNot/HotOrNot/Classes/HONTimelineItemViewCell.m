@@ -22,13 +22,13 @@
 @interface HONTimelineItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
+@property (nonatomic, strong) UIImageView *scoreImageView;
 @property (nonatomic, strong) UILabel *lScoreLabel;
 @property (nonatomic, strong) UILabel *rScoreLabel;
 @property (nonatomic, strong) UIImageView *heartImageView;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UIView *tappedOverlayView;
-@property (nonatomic, strong) UIView *loserOverlayView;
 @property (nonatomic, strong) UIImageView *tapOverlayImageView;
 @property (nonatomic, strong) UIButton *votesButton;
 @property (nonatomic, strong) NSMutableArray *voters;
@@ -92,15 +92,7 @@
 	if ([_challengeVO.rechallengedUsers length] > 0) {
 		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(203.0, 11.0, 24.0, 24.0)];
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
-		[self addSubview:rechallengeImageView];
-		
-//		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(215.0, 16.0, 60.0, 14.0)];
-//		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
-//		rechallengeLabel.textColor = [UIColor colorWithWhite:0.8 alpha:1.0];
-//		rechallengeLabel.backgroundColor = [UIColor clearColor];
-//		rechallengeLabel.textAlignment = NSTextAlignmentRight;
-//		rechallengeLabel.text = NSLocalizedString(@"resnapped", nil);
-//		[self addSubview:rechallengeLabel];
+		[self addSubview:rechallengeImageView];		
 	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 15.0, 60.0, 16.0)];
@@ -111,7 +103,7 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];
 	[self addSubview:timeLabel];
 	
-	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 151.0, 153.0)];
+	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 153.0, 153.0)];
 	_lHolderView.clipsToBounds = YES;
 	[self addSubview:_lHolderView];
 	
@@ -120,18 +112,6 @@
 	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	lImgView.userInteractionEnabled = YES;
 	[_lHolderView addSubview:lImgView];
-	
-	UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
-	lScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
-	lScoreImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
-	[_lHolderView addSubview:lScoreImageView];
-	
-	_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 7.0, 144.0, 18.0)];
-	_lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-	_lScoreLabel.backgroundColor = [UIColor clearColor];
-	_lScoreLabel.textColor = [UIColor whiteColor];
-	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
-	[lScoreImageView addSubview:_lScoreLabel];
 	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 209.0, 38.0, 38.0)];
 	creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
@@ -158,7 +138,7 @@
 	[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:creatorNameButton];
 	
-	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(162.0, 46.0, 151.0, 153.0)];
+	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 46.0, 153.0, 153.0)];
 	_rHolderView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	_rHolderView.clipsToBounds = YES;
 	[self addSubview:_rHolderView];
@@ -195,26 +175,30 @@
 		[challengerNameButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerNameButton];
-		
-		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 123.0, 153.0, 30.0)];
-		rScoreImageView.image = [UIImage imageNamed:@"challengeWallScore_Overlay"];
-		rScoreImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
-		[_rHolderView addSubview:rScoreImageView];
-		
-		_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(7.0, 7.0, 140.0, 18.0)];
-		_rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
-		_rScoreLabel.backgroundColor = [UIColor clearColor];
-		_rScoreLabel.textColor = [UIColor whiteColor];
-		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
-		[rScoreImageView addSubview:_rScoreLabel];
-		
-		_loserOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 46.0, 153.0, 153.0)];
-		_loserOverlayView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.67];
-		_loserOverlayView.hidden = YES;
-		//[self addSubview:_loserOverlayView];
-				
 	} else {
 	}
+	
+	
+	_scoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(110.0, 107.0, 101.0, 37.0)];
+	_scoreImageView.image = [UIImage imageNamed:@"likeCountBackground"];
+	_scoreImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
+	[self addSubview:_scoreImageView];
+	
+	_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 50.0, 37.0)];
+	_lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+	_lScoreLabel.backgroundColor = [UIColor clearColor];
+	_lScoreLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+	_lScoreLabel.textAlignment = NSTextAlignmentCenter;
+	[_scoreImageView addSubview:_lScoreLabel];
+	
+	_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 0.0, 50.0, 37.0)];
+	_rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
+	_rScoreLabel.backgroundColor = [UIColor clearColor];
+	_rScoreLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+	_rScoreLabel.textAlignment = NSTextAlignmentCenter;
+	[_scoreImageView addSubview:_rScoreLabel];
 	
 	UIImageView *likeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 256.0, 24.0, 24.0)];
 	likeImageView.image = [UIImage imageNamed:@"heartIcon_nonActive"];
@@ -461,9 +445,9 @@
 		_heartImageView.image = [UIImage imageNamed:@"largeHeart_nonActive"];
 		[_lHolderView addSubview:_heartImageView];
 		
-		[UIView animateWithDuration:0.33 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
+		[UIView animateWithDuration:0.33 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_heartImageView.alpha = 0.0;
-		} completion:^(BOOL finished){
+		} completion:^(BOOL finished) {
 			[_heartImageView removeFromSuperview];
 			_heartImageView = nil;
 		}];
@@ -472,11 +456,6 @@
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
 			_challengeVO.creatorScore++;
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
-			
-			[self _clearResults];
-			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 7.0 : 160.0, 0.0);
-			_loserOverlayView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
-			
 			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		
 		} else {
@@ -486,11 +465,6 @@
 														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 			
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + 1)];
-			
-			[self _clearResults];
-			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 7.0 : 160.0, 0.0);
-			_loserOverlayView.hidden = ((_challengeVO.creatorScore + 1) == _challengeVO.challengerScore);
-			
 			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d Like" : @"%d Likes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
@@ -518,10 +492,7 @@
 			}];
 		}
 		
-//		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-//		_votesButton.frame = CGRectMake(6.0, 253.0, 34.0 + size.width, 34.0);
-//		[_votesButton setTitle:caption forState:UIControlStateNormal];
-		
+		[self _animateUpVote];
 		_likesLabel.text = caption;
 	}
 }
@@ -536,9 +507,9 @@
 		_heartImageView.image = [UIImage imageNamed:@"largeHeart_nonActive"];
 		[_rHolderView addSubview:_heartImageView];
 		
-		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
+		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 			_heartImageView.alpha = 0.0;
-		} completion:^(BOOL finished){
+		} completion:^(BOOL finished) {
 			[_heartImageView removeFromSuperview];
 			_heartImageView = nil;
 		}];
@@ -548,11 +519,6 @@
 			_challengeVO.challengerScore++;
 			
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
-			
-			[self _clearResults];
-			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 160.0 : 7.0, 0.0);
-			_loserOverlayView.hidden = (_challengeVO.creatorScore == _challengeVO.challengerScore);
-			
 			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 		} else {
@@ -562,11 +528,6 @@
 														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 			
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", (_challengeVO.challengerScore + 1)];
-			
-			[self _clearResults];
-			_loserOverlayView.frame = CGRectOffset(_loserOverlayView.frame, (_challengeVO.creatorScore > (_challengeVO.challengerScore + 1)) ? 160.0 : 7.0, 0.0);
-			_loserOverlayView.hidden = (_challengeVO.creatorScore == (_challengeVO.challengerScore + 1));
-			
 			caption = [NSString stringWithFormat:(1 + (_challengeVO.creatorScore + _challengeVO.challengerScore) == 1) ? @"%d Like" : @"%d Likes", 1 + (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
 			
@@ -593,21 +554,13 @@
 			}];
 		}
 		
-//		CGSize size = [caption sizeWithFont:[[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12] constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-//		_votesButton.frame = CGRectMake(6.0, 253.0, 34.0 + size.width, 34.0);
-//		[_votesButton setTitle:caption forState:UIControlStateNormal];
-		
+		[self _animateUpVote];
 		_likesLabel.text = _likesLabel.text = caption;
 	}
 }
 
 
 #pragma mark - Behaviors
-- (void)_clearResults {
-	_loserOverlayView.frame = CGRectMake(0.0, 46.0, 153.0, 153.0);
-	_loserOverlayView.hidden = YES;
-}
-
 - (void)_playVoteSFX {
 	_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
 	_sfxPlayer.delegate = self;
@@ -625,6 +578,16 @@
 - (void)_removeTapOverlay {
 	[_tappedOverlayView removeFromSuperview];
 	_tappedOverlayView = nil;
+}
+
+- (void)_animateUpVote {
+	_scoreImageView.alpha = 0.0;
+	_scoreImageView.hidden = NO;
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_scoreImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
 }
 
 

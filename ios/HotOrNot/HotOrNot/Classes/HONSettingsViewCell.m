@@ -42,18 +42,18 @@
 		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 158.0);
 		_bgImgView.image = [UIImage imageNamed:@"profileBackground"];
 		
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, 34.0, 95.0, 90.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 13.0, 95.0, 90.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
 		[self addSubview:avatarImageView];
 		
 		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraButton.frame = CGRectMake(210.0, 60.0, 44.0, 44.0);
+		cameraButton.frame = CGRectMake(115.0, 35.0, 44.0, 44.0);
 		[cameraButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 		[cameraButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 		[cameraButton addTarget:self action:@selector(_goInviteSMS) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:cameraButton];
 		
-		UILabel *inviteLabel = [[UILabel alloc] initWithFrame:CGRectMake(250.0, 60.0, 100.0, 44.0)];
+		UILabel *inviteLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 35.0, 220.0, 44.0)];
 		inviteLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 		inviteLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		inviteLabel.backgroundColor = [UIColor clearColor];
@@ -69,7 +69,7 @@
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 		
-		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 172.0, 100.0, 18.0)];
+		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 121.0, 107.0, 30.0)];
 		snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 		snapsLabel.textColor = [UIColor whiteColor];
 		snapsLabel.backgroundColor = [UIColor clearColor];
@@ -77,7 +77,7 @@
 		snapsLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
 		[self addSubview:snapsLabel];
 		
-		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 172.0, 100.0, 18.0)];
+		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(107.0, 121.0, 107.0, 30.0)];
 		votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 		votesLabel.textColor = [UIColor whiteColor];
 		votesLabel.backgroundColor = [UIColor clearColor];
@@ -86,7 +86,7 @@
 		[self addSubview:votesLabel];
 		
 		int points = ([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]) + ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 172.0, 100.0, 18.0)];
+		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 121.0, 107.0, 30.0)];
 		pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 		pointsLabel.textColor = [UIColor whiteColor];
 		pointsLabel.backgroundColor = [UIColor clearColor];

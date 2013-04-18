@@ -34,21 +34,34 @@
 	bgImageView.image = [UIImage imageNamed:@"profileBackground"];
 	[self addSubview:bgImageView];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 34.0, 95.0, 90.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 13.0, 95.0, 90.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(200.0, 80.0, 34.0, 34.0);
+	snapButton.frame = CGRectMake(120.0, 45.0, 34.0, 34.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"snapButton_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"snapButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goSnap) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:snapButton];
 	
+	UILabel *snapAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 37.0, 220.0, 44.0)];
+	snapAtLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	snapAtLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	snapAtLabel.backgroundColor = [UIColor clearColor];
+	snapAtLabel.text = [NSString stringWithFormat:NSLocalizedString(@"timeline_snapAt", nil), _userVO.username];
+	[self addSubview:snapAtLabel];
+	
+	UIButton *snapAtButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	snapAtButton.frame = snapAtLabel.frame;
+	[snapAtButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+	[snapAtButton addTarget:self action:@selector(_goSnap) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:snapAtButton];
+	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 172.0, 100.0, 18.0)];
+	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 121.0, 107.0, 30.0)];
 	snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 	snapsLabel.textColor = [UIColor whiteColor];
 	snapsLabel.backgroundColor = [UIColor clearColor];
@@ -56,7 +69,7 @@
 	snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:snapsLabel];
 	
-	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 172.0, 100.0, 18.0)];
+	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(107.0, 121.0, 107.0, 30.0)];
 	votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 	votesLabel.textColor = [UIColor whiteColor];
 	votesLabel.backgroundColor = [UIColor clearColor];
@@ -64,7 +77,7 @@
 	votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:votesLabel];
 	
-	UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(210.0, 172.0, 100.0, 18.0)];
+	UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 121.0, 107.0, 30.0)];
 	pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
 	pointsLabel.textColor = [UIColor whiteColor];
 	pointsLabel.backgroundColor = [UIColor clearColor];

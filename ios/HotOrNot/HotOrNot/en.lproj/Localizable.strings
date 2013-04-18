@@ -45,6 +45,7 @@
 "register_caption1" = "Take your personal profile picture\n(no fakes allowed)";
 "register_caption2" = "Look good? Alright, cool\nSubmit and lets get snapping…";
 
+"timeline_snapAt" = "snap @%@";
 "timeline_like" = "%d Like";
 "timeline_likes" = "%d Likes";
 "timeline_comment" = "%d Comment";

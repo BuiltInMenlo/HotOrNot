@@ -40,11 +40,11 @@
 	bgImageView.image = [UIImage imageNamed:@"discoveryBackground"];
 	[self addSubview:bgImageView];
 	
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 7.0, 62.0, 60.0)];
+	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 7.0, 60.0, 60.0)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:lImageView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(71.0, 7.0, 64.0, 60.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(71.0, 7.0, 60.0, 60.0)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:rImageView];
 	
@@ -69,11 +69,11 @@
 	bgImageView.image = [UIImage imageNamed:@"discoveryBackground"];
 	[self addSubview:bgImageView];
 	
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 7.0, 62.0, 60.0)];
+	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 7.0, 60.0, 60.0)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:lImageView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(71.0, 7.0, 64.0, 60.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(71.0, 7.0, 60.0, 60.0)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[bgImageView addSubview:rImageView];
 	

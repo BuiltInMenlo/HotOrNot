@@ -45,6 +45,7 @@
 "register_caption1" = "(더 가짜 허용하지 않음)\n귀하의 개인 프로필 사진을";
 "register_caption2" = "좋아 보여? 좋아, 제출 시원하고 욕 얻을 수 있습니다 …";
 
+"timeline_snapAt" = "스냅 @%@";
 "timeline_like" = "%d 좋다";
 "timeline_likes" = "%d 좋아";
 "timeline_comment" = "%d 논평";

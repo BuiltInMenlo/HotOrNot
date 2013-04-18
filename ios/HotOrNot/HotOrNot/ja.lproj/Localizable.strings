@@ -45,6 +45,7 @@
 "register_caption1" = "（ない偽物は使用できません\nあなたの個人的なプロフィールの写真を撮る";
 "register_caption2" = "似合う？さてさて\nSubmitを冷やすとスナップ得ることができます...";
 
+"timeline_snapAt" = "スナップ @%@";
 "timeline_like" = "%d 好む";
 "timeline_likes" = "%d 好む";
 "timeline_comment" = "%d コメント";
