@@ -53,21 +53,21 @@
 	avatarImageView.clipsToBounds = YES;
 	[self addSubview:avatarImageView];
 	
-	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(83.0, 16.0, 180.0, 16.0)];
+	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(82.0, 14.0, 180.0, 16.0)];
 	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
 	challengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	challengeLabel.backgroundColor = [UIColor clearColor];
 	challengeLabel.text = ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
 	[self addSubview:challengeLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(76.0, 36.0, 200.0, 16.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 30.0, 200.0, 16.0)];
 	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(228.0, 6.0, 60.0, 16.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(226.0, 10.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
@@ -75,7 +75,7 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
 	[self addSubview:timeLabel];
 	
-	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(76.0, 17.0, 5.0, 9.0)];
+	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(73.0, 17.0, 5.0, 9.0)];
 	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
 	[self addSubview:arrowImageView];
 	

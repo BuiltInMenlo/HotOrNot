@@ -111,13 +111,8 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];
 	[self addSubview:timeLabel];
 	
-	CALayer *lHolderMask = [CALayer layer];
-	lHolderMask.contents = (id)[[UIImage imageNamed:@"imageLargeThumbMask"] CGImage];
-	lHolderMask.frame = CGRectMake(0.0, 0.0, 151.0, 153.0);
-	
 	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 151.0, 153.0)];
-	_lHolderView.layer.mask = lHolderMask;
-	_lHolderView.layer.masksToBounds = YES;
+	_lHolderView.clipsToBounds = YES;
 	[self addSubview:_lHolderView];
 	
 	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
@@ -138,16 +133,10 @@
 	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 	[lScoreImageView addSubview:_lScoreLabel];
 	
-	CALayer *creatorAvatarMask = [CALayer layer];
-	creatorAvatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask"] CGImage];
-	creatorAvatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
-	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 209.0, 38.0, 38.0)];
 	creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 	creatorAvatarImageView.userInteractionEnabled = YES;
-	creatorAvatarImageView.layer.mask = creatorAvatarMask;
-	creatorAvatarImageView.layer.masksToBounds = YES;
 	[self addSubview:creatorAvatarImageView];
 	
 	UIButton *creatorAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -169,68 +158,23 @@
 	[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:creatorNameButton];
 	
-	CALayer *rHolderMask = [CALayer layer];
-	rHolderMask.contents = (id)[[UIImage imageNamed:@"imageLargeThumbMask"] CGImage];
-	rHolderMask.frame = CGRectMake(0.0, 0.0, 151.0, 153.0);
-	
 	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(162.0, 46.0, 151.0, 153.0)];
-	_rHolderView.layer.mask = rHolderMask;
-	_rHolderView.layer.masksToBounds = YES;
+	_rHolderView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	_rHolderView.clipsToBounds = YES;
 	[self addSubview:_rHolderView];
 	
-	
-	UIImageView *likeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 256.0, 24.0, 24.0)];
-	likeImageView.image = [UIImage imageNamed:@"heartIcon_nonActive"];
-	[self addSubview:likeImageView];
-	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 256.0, 150.0, 24.0)];
-	_likesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-	_likesLabel.textColor = [HONAppDelegate honGreyTxtColor];
-	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? NSLocalizedString(@"timeline_like", nil) : NSLocalizedString(@"timeline_likes", nil), (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-	[self addSubview:_likesLabel];
-	
-	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(13.0, 256.0, 190.0, 24.0);
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:likesButton];
-	
-	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 277.0, 24.0, 24.0)];
-	commentsImageView.image = [UIImage imageNamed:@"commentIcon_nonActive"];
-	[self addSubview:commentsImageView];
-	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 277.0, 150.0, 24.0)];
-	_commentsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-	_commentsLabel.textColor = [HONAppDelegate honGreyTxtColor];
-	_commentsLabel.backgroundColor = [UIColor clearColor];
-	_commentsLabel.text = (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];;
-	[self addSubview:_commentsLabel];
-	
-	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	commentsButton.frame = CGRectMake(13.0, 277.0, 190.0, 24.0);
-	[commentsButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:commentsButton];
-	
 	if (_hasChallenger) {
-		
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
 		rImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
-		CALayer *challengerAvatarMask = [CALayer layer];
-		challengerAvatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask"] CGImage];
-		challengerAvatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
-		
 		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(162.0, 209.0, 38.0, 38.0)];
 		challengerAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
 		challengerAvatarImageView.userInteractionEnabled = YES;
-		challengerAvatarImageView.layer.mask = challengerAvatarMask;
-		challengerAvatarImageView.layer.masksToBounds = YES;
+		challengerAvatarImageView.clipsToBounds = YES;
 		[self addSubview:challengerAvatarImageView];
 		
 		UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -271,6 +215,40 @@
 				
 	} else {
 	}
+	
+	UIImageView *likeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 256.0, 24.0, 24.0)];
+	likeImageView.image = [UIImage imageNamed:@"heartIcon_nonActive"];
+	[self addSubview:likeImageView];
+	
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 256.0, 150.0, 24.0)];
+	_likesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	_likesLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	_likesLabel.backgroundColor = [UIColor clearColor];
+	_likesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? NSLocalizedString(@"timeline_like", nil) : NSLocalizedString(@"timeline_likes", nil), (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+	[self addSubview:_likesLabel];
+	
+	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	likesButton.frame = CGRectMake(13.0, 256.0, 190.0, 24.0);
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:likesButton];
+	
+	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 277.0, 24.0, 24.0)];
+	commentsImageView.image = [UIImage imageNamed:@"commentIcon_nonActive"];
+	[self addSubview:commentsImageView];
+	
+	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 277.0, 150.0, 24.0)];
+	_commentsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+	_commentsLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	_commentsLabel.backgroundColor = [UIColor clearColor];
+	_commentsLabel.text = (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];;
+	[self addSubview:_commentsLabel];
+	
+	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	commentsButton.frame = CGRectMake(13.0, 277.0, 190.0, 24.0);
+	[commentsButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:commentsButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	moreButton.frame = CGRectMake(270.0, 253.0, 34.0, 34.0);

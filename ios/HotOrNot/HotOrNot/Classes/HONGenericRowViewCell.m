@@ -31,7 +31,7 @@
 		self.backgroundView = _bgImageView;
 		//self.selectedBackgroundView = selectedImageView;
 		
-		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(290.0, 20.0, 24.0, 24.0)];
+		_chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
 		_chevronImageView.image = [UIImage imageNamed:@"chevron"];
 		[self addSubview:_chevronImageView];
 	}

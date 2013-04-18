@@ -27,7 +27,7 @@
 		
 		_isUser = YES;
 		
-		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(33.0, 12.0, 220.0, 20.0)];
+		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 13.0, 220.0, 20.0)];
 		//[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_searchTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
