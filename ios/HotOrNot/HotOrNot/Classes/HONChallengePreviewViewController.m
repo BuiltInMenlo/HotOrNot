@@ -109,14 +109,6 @@
 		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(217.0, 17.0, 24.0, 24.0)];
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
 		[self.view addSubview:rechallengeImageView];
-		
-		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(228.0, 23.0, 60.0, 12.0)];
-		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
-		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
-		rechallengeLabel.backgroundColor = [UIColor clearColor];
-		rechallengeLabel.textAlignment = NSTextAlignmentRight;
-		rechallengeLabel.text = NSLocalizedString(@"resnapped", nil);
-		[self.view addSubview:rechallengeLabel];
 	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 24.0, 60.0, 12.0)];
@@ -137,14 +129,12 @@
 		[weakSelf _hideHUD];
 	}];
 	_imageView.userInteractionEnabled = YES;
-	_imageView.layer.cornerRadius = 4.0;
-	_imageView.clipsToBounds = YES;
 	[self.view addSubview:_imageView];
 	
 	int offset = (int)[HONAppDelegate isRetina5] * 88;
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(23.0, 398.0 + offset, 64.0, 64.0);
+	pokeButton.frame = CGRectMake(33.0, 408.0 + offset, 44.0, 44.0);
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
 	pokeButton.hidden = (_challengeVO.challengerID == 0);
@@ -194,7 +184,7 @@
 	}
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(239.0, 400.0 + offset, 64.0, 64.0);
+	moreButton.frame = CGRectMake(249.0, 410.0 + offset, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];

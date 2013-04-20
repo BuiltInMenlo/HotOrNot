@@ -55,11 +55,7 @@
 "voters_caption" = "@%@ スキ！ @%@ スナップ";
 
 "activity_waiting" = "あなたが待っている...";
-"activity_outbound" = "あなたは、スナップ @%@";
-"activity_inbound" = "@%@ あなたを撮った";
 "activity_waiting_f" = "あなたが待っている... (F)";
-"activity_outbound_f" = "あなたは、スナップ @%@ (F)";
-"activity_inbound_f" = "@%@ あなたを撮った (F)";
 
 "profile_inviteSMS_button" = "SMS経由で友達を招待する";
 "profile_notifications" = "通知";
@@ -77,4 +73,3 @@
 "profile_points" = "%@ 点数";
 
 "userPlaceholder" = "@ユーザー";
-"resnapped" = "Resnapped";

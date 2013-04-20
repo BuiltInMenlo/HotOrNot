@@ -55,11 +55,7 @@
 "voters_caption" = "@%@ liked @%@ snap";
 
 "activity_waiting" = "You are waiting…";
-"activity_outbound" = "You snapped @%@";
-"activity_inbound" = "@%@ snapped you";
 "activity_waiting_f" = "You are waiting… (F)";
-"activity_outbound_f" = "You snapped @%@ (F)";
-"activity_inbound_f" = "@%@ snapped you (F)";
 
 "profile_inviteSMS_button" = "Invite friends via SMS";
 "profile_notifications" = "Notifications";
@@ -77,4 +73,3 @@
 "profile_points" = "%@ points";
 
 "userPlaceholder" = "@user";
-"resnapped" = "Resnapped";

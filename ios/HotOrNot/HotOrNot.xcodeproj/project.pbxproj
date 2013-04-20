@@ -241,8 +241,6 @@
 		4C9872FE16F11CDB00E865C0 /* cameraLargeButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9872FA16F11CDB00E865C0 /* cameraLargeButton_Active@2x.png */; };
 		4C9872FF16F11CDB00E865C0 /* cameraLargeButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9872FB16F11CDB00E865C0 /* cameraLargeButton_nonActive.png */; };
 		4C98730016F11CDB00E865C0 /* cameraLargeButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9872FC16F11CDB00E865C0 /* cameraLargeButton_nonActive@2x.png */; };
-		4C98730316F12F6900E865C0 /* cameraInputFieldB.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C98730116F12F6900E865C0 /* cameraInputFieldB.png */; };
-		4C98730416F12F6900E865C0 /* cameraInputFieldB@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C98730216F12F6900E865C0 /* cameraInputFieldB@2x.png */; };
 		4CA0852916A12FD900673F3A /* AFHTTPClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA0851716A12FD900673F3A /* AFHTTPClient.m */; };
 		4CA0852A16A12FD900673F3A /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA0851916A12FD900673F3A /* AFHTTPRequestOperation.m */; };
 		4CA0852B16A12FD900673F3A /* AFImageRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA0851B16A12FD900673F3A /* AFImageRequestOperation.m */; };
@@ -321,10 +319,6 @@
 		4CA944201698FA3300507A08 /* rowWhite_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944181698FA3300507A08 /* rowWhite_nonActive@2x.png */; };
 		4CA944231698FBC600507A08 /* artistInfoOverlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944211698FBC600507A08 /* artistInfoOverlay.png */; };
 		4CA944241698FBC600507A08 /* artistInfoOverlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA944221698FBC600507A08 /* artistInfoOverlay@2x.png */; };
-		4CA9444F169902A300507A08 /* cameraInputField_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA9444B169902A300507A08 /* cameraInputField_Active.png */; };
-		4CA94450169902A300507A08 /* cameraInputField_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA9444C169902A300507A08 /* cameraInputField_Active@2x.png */; };
-		4CA94451169902A300507A08 /* cameraInputField_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA9444D169902A300507A08 /* cameraInputField_nonActive.png */; };
-		4CA94452169902A300507A08 /* cameraInputField_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA9444E169902A300507A08 /* cameraInputField_nonActive@2x.png */; };
 		4CA9445E169904E200507A08 /* cameraExperience_Overlay-568h.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA9445B169904E200507A08 /* cameraExperience_Overlay-568h.png */; };
 		4CA9445F169904E200507A08 /* cameraExperience_Overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA9445C169904E200507A08 /* cameraExperience_Overlay.png */; };
 		4CA94460169904E200507A08 /* cameraExperience_Overlay@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA9445D169904E200507A08 /* cameraExperience_Overlay@2x.png */; };
@@ -924,8 +918,6 @@
 		4C9872FA16F11CDB00E865C0 /* cameraLargeButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraLargeButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C9872FB16F11CDB00E865C0 /* cameraLargeButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraLargeButton_nonActive.png; sourceTree = "<group>"; };
 		4C9872FC16F11CDB00E865C0 /* cameraLargeButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraLargeButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C98730116F12F6900E865C0 /* cameraInputFieldB.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraInputFieldB.png; sourceTree = "<group>"; };
-		4C98730216F12F6900E865C0 /* cameraInputFieldB@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraInputFieldB@2x.png"; sourceTree = "<group>"; };
 		4CA0851616A12FD900673F3A /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPClient.h; sourceTree = "<group>"; };
 		4CA0851716A12FD900673F3A /* AFHTTPClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFHTTPClient.m; sourceTree = "<group>"; };
 		4CA0851816A12FD900673F3A /* AFHTTPRequestOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFHTTPRequestOperation.h; sourceTree = "<group>"; };
@@ -1018,10 +1010,6 @@
 		4CA944181698FA3300507A08 /* rowWhite_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rowWhite_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CA944211698FBC600507A08 /* artistInfoOverlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = artistInfoOverlay.png; sourceTree = "<group>"; };
 		4CA944221698FBC600507A08 /* artistInfoOverlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "artistInfoOverlay@2x.png"; sourceTree = "<group>"; };
-		4CA9444B169902A300507A08 /* cameraInputField_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraInputField_Active.png; sourceTree = "<group>"; };
-		4CA9444C169902A300507A08 /* cameraInputField_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraInputField_Active@2x.png"; sourceTree = "<group>"; };
-		4CA9444D169902A300507A08 /* cameraInputField_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraInputField_nonActive.png; sourceTree = "<group>"; };
-		4CA9444E169902A300507A08 /* cameraInputField_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraInputField_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CA9445B169904E200507A08 /* cameraExperience_Overlay-568h.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraExperience_Overlay-568h.png"; sourceTree = "<group>"; };
 		4CA9445C169904E200507A08 /* cameraExperience_Overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraExperience_Overlay.png; sourceTree = "<group>"; };
 		4CA9445D169904E200507A08 /* cameraExperience_Overlay@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cameraExperience_Overlay@2x.png"; sourceTree = "<group>"; };
@@ -2149,12 +2137,6 @@
 				4CB75CC516FEACEB001A8738 /* Audio */,
 				4CB75CC416FEACDF001A8738 /* Nav */,
 				4CB75CC316FEACD4001A8738 /* Camera Controls */,
-				4C98730116F12F6900E865C0 /* cameraInputFieldB.png */,
-				4C98730216F12F6900E865C0 /* cameraInputFieldB@2x.png */,
-				4CA9444B169902A300507A08 /* cameraInputField_Active.png */,
-				4CA9444C169902A300507A08 /* cameraInputField_Active@2x.png */,
-				4CA9444D169902A300507A08 /* cameraInputField_nonActive.png */,
-				4CA9444E169902A300507A08 /* cameraInputField_nonActive@2x.png */,
 				4C0AAAC6170501DA00BB32BD /* cameraKeyboardInputField_Active.png */,
 				4C0AAAC7170501DA00BB32BD /* cameraKeyboardInputField_Active@2x.png */,
 				4C0AAAC8170501DA00BB32BD /* cameraKeyboardInputField_nonActive.png */,
@@ -2502,10 +2484,6 @@
 				4CA944201698FA3300507A08 /* rowWhite_nonActive@2x.png in Resources */,
 				4CA944231698FBC600507A08 /* artistInfoOverlay.png in Resources */,
 				4CA944241698FBC600507A08 /* artistInfoOverlay@2x.png in Resources */,
-				4CA9444F169902A300507A08 /* cameraInputField_Active.png in Resources */,
-				4CA94450169902A300507A08 /* cameraInputField_Active@2x.png in Resources */,
-				4CA94451169902A300507A08 /* cameraInputField_nonActive.png in Resources */,
-				4CA94452169902A300507A08 /* cameraInputField_nonActive@2x.png in Resources */,
 				4CA9445E169904E200507A08 /* cameraExperience_Overlay-568h.png in Resources */,
 				4CA9445F169904E200507A08 /* cameraExperience_Overlay.png in Resources */,
 				4CA94460169904E200507A08 /* cameraExperience_Overlay@2x.png in Resources */,
@@ -2603,8 +2581,6 @@
 				4C9872FE16F11CDB00E865C0 /* cameraLargeButton_Active@2x.png in Resources */,
 				4C9872FF16F11CDB00E865C0 /* cameraLargeButton_nonActive.png in Resources */,
 				4C98730016F11CDB00E865C0 /* cameraLargeButton_nonActive@2x.png in Resources */,
-				4C98730316F12F6900E865C0 /* cameraInputFieldB.png in Resources */,
-				4C98730416F12F6900E865C0 /* cameraInputFieldB@2x.png in Resources */,
 				4CA34C4216F69D380000751E /* skipButton_Active.png in Resources */,
 				4CA34C4316F69D380000751E /* skipButton_Active@2x.png in Resources */,
 				4CA34C4416F69D380000751E /* skipButton_nonActive.png in Resources */,
@@ -3247,7 +3223,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "4CA43CA7-B66E-48AD-81B0-883633316088";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2F99D7AD-EFC2-44C2-90B3-318D9C33BAD3";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

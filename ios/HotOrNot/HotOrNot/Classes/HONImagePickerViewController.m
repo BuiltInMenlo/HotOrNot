@@ -233,7 +233,14 @@
 
 #pragma mark - UI Presentation
 - (void)_showOverlay {
-	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	NSString *challengerName = @"";
+	if (_challengeVO != nil)
+		challengerName = _challengeVO.creatorName;
+	
+	if (_userVO != nil)
+		challengerName = _userVO.username;
+	
+	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withUsername:challengerName withAvatar:_userVO.imageURL];
 	_cameraOverlayView.delegate = self;
 	[_cameraOverlayView setSubjectName:_subjectName];
 	
@@ -740,24 +747,17 @@
 	
 	[self _uploadPhoto:_challangeImage];
 	
-	NSString *challengerName = @"";
-	if (_challengeVO != nil)
-		challengerName = _challengeVO.creatorName;
-	
-	if (_userVO != nil)
-		challengerName = _userVO.username;
-	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {		
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[_cameraOverlayView showPreviewImage:image withUsername:challengerName];
+			[_cameraOverlayView showPreviewImage:image];
 		}];
 		
 	} else {
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-			[_cameraOverlayView showPreviewImageFlipped:image withUsername:challengerName];
+			[_cameraOverlayView showPreviewImageFlipped:image];
 	
 		else
-			[_cameraOverlayView showPreviewImage:image withUsername:challengerName];
+			[_cameraOverlayView showPreviewImage:image];
 	}
 }
 

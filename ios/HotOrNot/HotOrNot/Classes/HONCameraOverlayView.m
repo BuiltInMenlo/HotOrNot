@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <MediaPlayer/MediaPlayer.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -42,9 +42,9 @@
 @synthesize subjectName = _subjectName;
 @synthesize delegate = _delegate;
 
-- (id)initWithFrame:(CGRect)frame {
-	if (self = [super initWithFrame:frame]) {
-		_username = @"";
+- (id)initWithFrame:(CGRect)frame withUsername:(NSString *)username withAvatar:(NSString *)avatar {
+	if ((self = [super initWithFrame:frame])) {
+		_username = username;
 		
 		int photoSize = 250.0;
 		_gutterSize = CGSizeMake((320.0 - photoSize) * 0.5, (self.frame.size.height - photoSize) * 0.5);
@@ -66,7 +66,7 @@
 		_captureHolderView.userInteractionEnabled = YES;
 		[_bgImageView addSubview:_captureHolderView];
 		
-		_headerView = [[HONHeaderView alloc] initWithTitle:@"Take snap"];
+		_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 		[_bgImageView addSubview:_headerView];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -76,35 +76,58 @@
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:_cancelButton];
 		
-		UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 55.0, 314.0, 64.0)];
-		subjectBGImageView.image = [UIImage imageNamed:@"cameraExperienceInputField_nonActive"];
-		subjectBGImageView.userInteractionEnabled = YES;
-		[_captureHolderView addSubview:subjectBGImageView];
-		
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(23.0, 23.0, 240.0, 20.0)];
+		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(180.0, 12.0, 130.0, 24.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[HONAppDelegate honGreyInputColor]];
+		[_subjectTextField setTextColor:[UIColor whiteColor]];
 		//[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
+		_subjectTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
+		//subjectLabel.shadowColor = [UIColor colorWithRed:0.027 green:0.180 blue:0.302 alpha:1.0];
+		//subjectLabel.shadowOffset = CGSizeMake(0.0, -1.0);
 		_subjectTextField.text = _subjectName;
+		_subjectTextField.textAlignment = NSTextAlignmentRight;
 		_subjectTextField.delegate = self;
 		[_subjectTextField setTag:0];
-		[subjectBGImageView addSubview:_subjectTextField];
+		[_headerView addSubview:_subjectTextField];
+		
+		UIImageView *userBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 43.0)];
+		userBGImageView.image = [UIImage imageNamed:@"cameraKeyboardInputField_nonActive"];
+		userBGImageView.userInteractionEnabled = YES;
+		[_captureHolderView addSubview:userBGImageView];
+		
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 20.0, 20.0)];
+		[avatarImageView setImageWithURL:[NSURL URLWithString:avatar] placeholderImage:nil];
+		avatarImageView.clipsToBounds = YES;
+		avatarImageView.layer.cornerRadius = 2.0;
+		[userBGImageView addSubview:avatarImageView];
+		
+		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake((avatar != nil) ? 35.0 : 13.0, 13.0, 270.0, 20.0)];
+		//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+		[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+		[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+		_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+		[_usernameTextField setReturnKeyType:UIReturnKeyDone];
+		[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
+		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
+		_usernameTextField.keyboardType = UIKeyboardTypeDefault;
+		_usernameTextField.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : NSLocalizedString(@"userPlaceholder", nil);
+		_usernameTextField.delegate = self;
+		[_usernameTextField setTag:1];
+		[userBGImageView addSubview:_usernameTextField];
 		
 		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_randomSubjectButton.frame = CGRectMake(233.0, 15.0, 64.0, 34.0);
 		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_nonActive"] forState:UIControlStateNormal];
 		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_Active"] forState:UIControlStateHighlighted];
 		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
-		[subjectBGImageView addSubview:_randomSubjectButton];
+		//[subjectBGImageView addSubview:_randomSubjectButton];
 		
 		int offset = (int)[HONAppDelegate isRetina5] * 88;
-		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraRollButton.frame = CGRectMake(35.0, 410.0 + offset, 44.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
@@ -121,43 +144,12 @@
 			[_captureHolderView addSubview:changeCameraButton];
 		}
 		
-//		UIImage *buttonImageNormal;
-//		if ([UIImagePickerController isFlashAvailableForCameraDevice:UIImagePickerControllerCameraDeviceRear]) {
-//			UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			flashButton = CGRectMake(10, 30, 57.5, 57.5);
-//			buttonImageNormal = [UIImage imageNamed:@"flash02"];
-//			[flashButton setImage:buttonImageNormal forState:UIControlStateNormal];
-//			[flashButton addTarget:self action:@selector(_goToggleFlash) forControlEvents:UIControlEventTouchUpInside];
-//			[self addSubview:flashButton];
-//		}
-
-		// Add the capture button
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_captureButton.frame = CGRectMake(128.0, 399.0 + offset, 64.0, 64.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[_captureHolderView addSubview:_captureButton];
-		
-		_usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 437.0 + offset, 320.0, 43.0)];
-		_usernameBGImageView.image = [UIImage imageNamed:@"cameraKeyboardInputField_nonActive"];
-		_usernameBGImageView.userInteractionEnabled = YES;
-		[_captureHolderView addSubview:_usernameBGImageView];
-		
-		_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 13.0, 240.0, 20.0)];
-		//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-		[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-		[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-		_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-		[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-		[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
-		//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
-		_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-		_usernameTextField.text = NSLocalizedString(@"userPlaceholder", nil);
-		_usernameTextField.delegate = self;
-		[_usernameTextField setTag:1];
-		[_usernameBGImageView addSubview:_usernameTextField];
 		
 		UIButton *fbButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		fbButton.frame = CGRectMake(276.0, -1.0, 44.0, 44.0);
@@ -172,7 +164,7 @@
 
 
 #pragma mark - Accessors
-- (void)showPreviewImage:(UIImage *)image withUsername:(NSString *)username {
+- (void)showPreviewImage:(UIImage *)image {
 	[[Mixpanel sharedInstance] track:@"Image Preview"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -184,9 +176,6 @@
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
 	
-	_username = username;
-	_usernameTextField.text = [NSString stringWithFormat:@"@%@", _username];
-	
 	if ([HONAppDelegate isRetina5]) {
 		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
 		imgView.frame = frame;
@@ -195,7 +184,7 @@
 	[self _showPreviewUI];
 }
 
-- (void)showPreviewImageFlipped:(UIImage *)image withUsername:(NSString *)username {
+- (void)showPreviewImageFlipped:(UIImage *)image {
 	[[Mixpanel sharedInstance] track:@"Image Preview"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -208,9 +197,6 @@
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
-	
-	_username = username;
-	_usernameTextField.text = [NSString stringWithFormat:@"@%@", _username];
 	
 	if ([HONAppDelegate isRetina5]) {
 		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
@@ -245,6 +231,9 @@
 - (void)setSubjectName:(NSString *)subjectName {
 	_subjectName = subjectName;
 	_subjectTextField.text = _subjectName;
+	
+	CGSize size = [_subjectName sizeWithFont:[[HONAppDelegate cartoGothicBold] fontWithSize:18] constrainedToSize:CGSizeMake(130.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	_subjectTextField.frame = CGRectMake(180.0, 12.0, 130.0, 24.0);
 }
 
 

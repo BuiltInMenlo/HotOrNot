@@ -129,14 +129,6 @@
 		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(217.0, 17.0, 24.0, 24.0)];
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
 		[self.view addSubview:rechallengeImageView];
-		
-//		UILabel *rechallengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(228.0, 23.0, 60.0, 12.0)];
-//		rechallengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:9];
-//		rechallengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
-//		rechallengeLabel.backgroundColor = [UIColor clearColor];
-//		rechallengeLabel.textAlignment = NSTextAlignmentRight;
-//		rechallengeLabel.text = NSLocalizedString(@"resnapped", nil);
-//		[self.view addSubview:rechallengeLabel];
 	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 24.0, 60.0, 12.0)];

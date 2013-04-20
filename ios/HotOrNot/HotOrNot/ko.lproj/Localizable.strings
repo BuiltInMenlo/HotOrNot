@@ -55,11 +55,7 @@
 "voters_caption" = "@%@ 좋아 @%@ 스냅";
 
 "activity_waiting" = "당신은 기다리고 있습니다 …";
-"activity_outbound" = "당신은 부러 @%@";
-"activity_inbound" = "@%@ 당신을 부러";
 "activity_waiting_f" = "당신은 기다리고 있습니다… (F)";
-"activity_outbound_f" = "당신은 부러 @%@ (F)";
-"activity_inbound_f" = "@%@ 당신을 부러 (F)";
 
 "profile_inviteSMS_button" = "SMS를 통해 친구 초대";
 "profile_notifications" = "알림";
@@ -77,4 +73,3 @@
 "profile_points" = "%@ 포인트";
 
 "userPlaceholder" = "@사용자";
-"resnapped" = "Resnapped";
