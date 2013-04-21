@@ -51,6 +51,7 @@
 "timeline_comment" = "%d Comment";
 "timeline_comments" = "%d Comments";
 "timeline_99comments" = "99+ Comments";
+"timeline_trade" = "tap here to trade pics";
 
 "voters_caption" = "@%@ liked @%@ snap";
 

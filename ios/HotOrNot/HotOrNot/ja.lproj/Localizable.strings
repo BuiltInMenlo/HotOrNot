@@ -51,6 +51,7 @@
 "timeline_comment" = "%d コメント";
 "timeline_comments" = "%d 注釈";
 "timeline_99comments" = "99+コメント";
+"timeline_trade" = "貿易の写真にここをタップ";
 
 "voters_caption" = "@%@ スキ！ @%@ スナップ";
 

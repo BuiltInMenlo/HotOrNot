@@ -29,6 +29,7 @@
 @property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) NSString *subject;
 @property(nonatomic) BOOL isUser;
+@property(nonatomic) BOOL isDefaultSearch;
 
 @end
 
@@ -40,6 +41,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_retrieveSubjectSearchResults:) name:@"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:nil];
 		
 		_isUser = YES;
+		_isDefaultSearch = NO;
 	}
 	
 	return (self);
@@ -77,17 +79,84 @@
 			
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:NO]]]];
+			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:YES]]]];
 			//NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
 			
-			_results = [NSMutableArray array];
+			_results = [[NSMutableArray alloc] init];
+			NSMutableArray *defaultUsers = [NSMutableArray array];
+			
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
-					[_results addObject:vo];
+					[defaultUsers addObject:vo];
 			}
 			
+			[_results addObject:defaultUsers];
+			
+			if (_progressHUD != nil) {
+				if ([_results count] == 0) {
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"hud_noResults", nil);
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+					
+				} else {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"SearchViewController AFNetworking %@", [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_retrievePastUsers {
+	_isDefaultSearch = YES;
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 4], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									nil];
+	
+	[httpClient postPath:kSearchAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"HONSearchViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+		} else {
+			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES]]]];
+			NSLog(@"HONSearchViewController AFNetworking: %@", parsedUsers);
+			
+			NSMutableArray *pastUsers = [NSMutableArray array];
+			for (NSDictionary *serverList in parsedUsers) {
+				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
+				
+				if (vo != nil)
+					[pastUsers addObject:vo];
+			}
+			
+			[_results addObject:pastUsers];
 			_emptySetImgView.hidden = ([_results count] > 0);
 			[_tableView reloadData];
 			
@@ -119,12 +188,12 @@
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
-	
 }
 
 - (void)retrieveUsers:(NSString *)username {
 	_username = username;
 	_isUser = YES;
+	_isDefaultSearch = NO;
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
@@ -154,15 +223,17 @@
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:NO]]]];
 			NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
 			
-			_results = [NSMutableArray array];
+			_results = [[NSMutableArray alloc] init];
+			NSMutableArray *users = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
-					[_results addObject:vo];
+					[users addObject:vo];
 			}
 			
-			_emptySetImgView.hidden = ([_results count] > 0);
+			[_results addObject:users];
+			_emptySetImgView.hidden = ([users count] > 0);
 			[_tableView reloadData];
 			
 			if (_progressHUD != nil) {
@@ -198,6 +269,7 @@
 - (void)retrieveSubjects:(NSString *)subject {
 	_subject = subject;
 	_isUser = NO;
+	_isDefaultSearch = NO;
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_searchHashtags", nil);
@@ -227,15 +299,17 @@
 			NSArray *parsedSubjects = [NSMutableArray arrayWithArray:[unsortedSubjects sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]]];
 			NSLog(@"HONSearchViewController AFNetworking: %@", unsortedSubjects);
 			
-			_results = [NSMutableArray array];
+			_results = [[NSMutableArray alloc] init];
+			NSMutableArray *subjects = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedSubjects) {
 				HONSubjectVO *vo = [HONSubjectVO subjectWithDictionary:serverList];
 				
 				if (vo != nil)
-					[_results addObject:vo];
+					[subjects addObject:vo];
 			}
 			
-			_emptySetImgView.hidden = ([_results count] > 0);
+			[_results addObject:subjects];
+			_emptySetImgView.hidden = ([subjects count] > 0);
 			[_tableView reloadData];
 			
 			if (_progressHUD != nil) {
@@ -268,11 +342,12 @@
 	}];
 }
 
-
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
 	
+	//_results = [[NSMutableArray alloc] init];
+	_results = [NSMutableArray arrayWithObjects:[NSMutableArray array], [NSMutableArray array], nil];
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 280.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -286,22 +361,7 @@
 	[self.view addSubview:_tableView];
 	
 	[self retrieveDefaultUsers];
-	
-	_results = [NSMutableArray array];
-	for (NSString *username in [HONAppDelegate searchUsers]) {
-		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-							  [NSNumber numberWithInt:0], @"id",
-							  username, @"username",
-							  @"", @"avatar_url",
-							  [NSNumber numberWithInt:arc4random() % 100], @"points",
-							  [NSNumber numberWithInt:arc4random() % 100], @"pokes",
-							  [NSNumber numberWithInt:arc4random() % 100], @"votes",
-							  @"", @"fb_id", nil];
-		[_results addObject:[HONUserVO userWithDictionary:dict]];
-	}
-	
-	
-	[_tableView reloadData];
+	[self _retrievePastUsers];
 	[self performSelector:@selector(_showTable) withObject:nil afterDelay:0.25];
 }
 
@@ -336,19 +396,20 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_results count]);
+	NSLog(@"numberOfRowsInSection [%d]", [[_results objectAtIndex:section] count]);
+	return ((_isDefaultSearch) ? [[_results objectAtIndex:0] count] + [[_results objectAtIndex:1] count] : [[_results objectAtIndex:0] count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
+	return (1 + (int)_isDefaultSearch);
 }
 
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
-//	headerView.image = [UIImage imageNamed:@"searchTopRowPopularHeader"];
-//	
-//	return (headerView);
-//}
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
+	headerView.image = [UIImage imageNamed:@"searchTopRowPopularHeader"];
+	
+	return (headerView);
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (_isUser) {
@@ -357,7 +418,12 @@
 		if (cell == nil)
 			cell = [[HONSearchUserViewCell alloc] init];
 		
-		cell.userVO = [_results objectAtIndex:indexPath.row];
+		if (_isDefaultSearch)
+			cell.userVO = [[_results objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+		
+		else
+			cell.userVO = [[_results objectAtIndex:0] objectAtIndex:indexPath.row];
+		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
 		return (cell);

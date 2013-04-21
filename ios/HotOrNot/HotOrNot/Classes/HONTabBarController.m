@@ -52,13 +52,7 @@
 		[self _toggleTabsEnabled:NO];
 	}
 	
-	if (_alertPopOverView.alpha == 1.0) {
-		[UIView animateWithDuration:0.125 animations:^(void) {
-			_alertPopOverView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_alertPopOverView removeFromSuperview];
-		}];
-	}
+	[self _hideAlertPopOver];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -100,10 +94,16 @@
 	[self addCustomElements];
 	[self showNewTabBar];
 	
-	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(20.0, self.view.frame.size.height - 64.0, 190.0, 64.0)];
+	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(85.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
 	
 	//if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
 	//	[self _updateChallengeAlerts];
+	
+//	[self _showAlertPopOverWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
+//												  [NSNumber numberWithInt:arc4random() % 15], @"status",
+//												  [NSNumber numberWithInt:arc4random() % 15], @"score",
+//												  [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
+//	[self _updateChallengeAlerts];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -232,6 +232,16 @@
 	}];
 }
 
+- (void)_hideAlertPopOver {
+	if (_alertPopOverView.alpha == 1.0) {
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			_alertPopOverView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			[_alertPopOverView removeFromSuperview];
+		}];
+	}
+}
+
 - (void)_toggleTabsEnabled:(BOOL)isEnabled {
 	if	(isEnabled) {
 		[_timelineButton addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -250,8 +260,7 @@
 
 #pragma mark - Navigation
 - (void)buttonClicked:(id)sender {
-	int tagNum = [sender tag];
-	[self selectTab:tagNum];
+	[self selectTab:[sender tag]];
 }
 
 - (void)selectTab:(int)tabID {
@@ -273,6 +282,8 @@
 			break;
 			
 		case 1:
+			[self _hideAlertPopOver];
+			
 			[_timelineButton setSelected:NO];
 			[_challengesButton setSelected:YES];
 			[_discoveryButton setSelected:NO];

@@ -34,12 +34,12 @@
 	bgImageView.image = [UIImage imageNamed:@"profileBackground"];
 	[self addSubview:bgImageView];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 97.0, 97.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 97.0, 97.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	avatarImageView.clipsToBounds = YES;
 	avatarImageView.layer.cornerRadius = 4.0;
 	avatarImageView.layer.borderColor = [[UIColor blackColor] CGColor];
-	avatarImageView.layer.borderWidth = 2.0;
+	avatarImageView.layer.borderWidth = 1.0;
 	[self addSubview:avatarImageView];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];

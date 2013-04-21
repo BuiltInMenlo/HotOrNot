@@ -62,6 +62,11 @@
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
+		UIImageView *footerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 472.0 : 384.0, 320.0, 96.0)];
+		footerImageView.image = [UIImage imageNamed:@"cameraFooterBackground"];
+		footerImageView.userInteractionEnabled = YES;
+		[_bgImageView addSubview:footerImageView];
+		
 		_captureHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
 		_captureHolderView.userInteractionEnabled = YES;
 		[_bgImageView addSubview:_captureHolderView];
@@ -97,7 +102,7 @@
 		UIImageView *userBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 43.0)];
 		userBGImageView.image = [UIImage imageNamed:@"cameraKeyboardInputField_nonActive"];
 		userBGImageView.userInteractionEnabled = YES;
-		[_captureHolderView addSubview:userBGImageView];
+		[self addSubview:userBGImageView];
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 20.0, 20.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:avatar] placeholderImage:nil];
@@ -127,9 +132,9 @@
 		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
 		//[subjectBGImageView addSubview:_randomSubjectButton];
 		
-		int offset = (int)[HONAppDelegate isRetina5] * 88;
+		int offset = (int)[HONAppDelegate isRetina5] * 94;
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(35.0, 410.0 + offset, 44.0, 44.0);
+		cameraRollButton.frame = CGRectMake(35.0, 409.0 + offset, 44.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
@@ -137,7 +142,7 @@
 		
 		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(233.0, 410.0 + offset, 44.0, 44.0);
+			changeCameraButton.frame = CGRectMake(233.0, 409.0 + offset, 44.0, 44.0);
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -145,7 +150,7 @@
 		}
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(128.0, 399.0 + offset, 64.0, 64.0);
+		_captureButton.frame = CGRectMake(128.0, 398.0 + offset, 64.0, 64.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
@@ -213,8 +218,7 @@
 		[subview removeFromSuperview];
 	}
 	
-	[_headerView setTitle:@"Take Snap"];
-	
+	_subjectTextField.frame = CGRectMake(180.0, 12.0, 130.0, 24.0);
 	[_cameraBackButton removeFromSuperview];
 	_cameraBackButton = nil;
 	
@@ -231,9 +235,6 @@
 - (void)setSubjectName:(NSString *)subjectName {
 	_subjectName = subjectName;
 	_subjectTextField.text = _subjectName;
-	
-	CGSize size = [_subjectName sizeWithFont:[[HONAppDelegate cartoGothicBold] fontWithSize:18] constrainedToSize:CGSizeMake(130.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-	_subjectTextField.frame = CGRectMake(180.0, 12.0, 130.0, 24.0);
 }
 
 
@@ -256,11 +257,9 @@
 	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_submitButton];
 	
-	[_headerView setTitle:_subjectName];
+	CGSize size = [_subjectName sizeWithFont:[[HONAppDelegate cartoGothicBold] fontWithSize:18] constrainedToSize:CGSizeMake(130.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	_subjectTextField.frame = CGRectMake(160 - (size.width * 0.5), 12.0, size.width, 24.0);
 	_captureHolderView.frame = CGRectMake(-320.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
-	
-	if ([_username length] == 0)
-		[_usernameTextField becomeFirstResponder];
 }
 
 - (void)_animateShutter {

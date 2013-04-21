@@ -213,6 +213,72 @@
 			*/
 		}
 		
+		/**
+		 * Gets the list of users someone has snapped with
+		 * @param $user_id The id of the user (integer)
+		 * @return The list of users (array)
+		**/
+		function getSnappedUsers($user_id) {
+			
+			// return object
+			$user_arr = array();
+			
+			// list of user ids
+			$userID_arr = array();
+			
+			
+			// get the previous challengers
+			$query = 'SELECT `challenger_id` FROM `tblChallenges` WHERE `challenger_id` != 0 AND `creator_id` = '. $user_id .';';
+			$result = mysql_query($query);
+			
+			// loop thru result ids
+			while ($row = mysql_fetch_assoc($result)) {
+				$isFound = false;
+				
+				// check for an id already in array
+				foreach ($userID_arr as $key => $val) {
+					if ($val == $row['challenger_id']) {
+						$isFound = true;
+						break;
+					}
+				}
+				
+				if (!$isFound)
+					array_push($userID_arr, $row['challenger_id']);
+			}
+				
+				
+			// get the previous challenge creators
+			$query = 'SELECT `creator_id` FROM `tblChallenges` WHERE `challenger_id` = '. $user_id .';';
+			$result = mysql_query($query);
+			
+			// loop thru result ids
+			while ($row = mysql_fetch_assoc($result)) {
+				$isFound = false;
+				
+				// check for an id already in array
+				foreach ($userID_arr as $key => $val) {
+					if ($val == $row['creator_id']) {
+						$isFound = true;
+						break;
+					}
+				}
+				
+				if (!$isFound)
+					array_push($userID_arr, $row['creator_id']);
+			}
+			
+			
+			// get the user for each id
+			foreach ($userID_arr as $key => $val)
+				array_push($user_arr, $this->userForSearchResult($val));
+			
+			
+			// return
+			$this->sendResponse(200, json_encode($user_arr));
+			return (true);
+		}
+		
 		
 		/**
 		 * Debugging function
@@ -251,6 +317,12 @@
 			case "3":
 				if (isset($_POST['usernames']))
 					$search->getDefaultUsers($_POST['usernames']);
+				break;
+				
+			// get users someone has snapped with
+			case "4":
+				if (isset($_POST['userID']))
+					$search->getSnappedUsers($_POST['userID']);
 				break;
 			
     	}

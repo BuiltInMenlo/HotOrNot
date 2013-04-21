@@ -44,6 +44,10 @@
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 13.0, 95.0, 90.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
+		avatarImageView.clipsToBounds = YES;
+		avatarImageView.layer.cornerRadius = 4.0;
+		avatarImageView.layer.borderColor = [[UIColor blackColor] CGColor];
+		avatarImageView.layer.borderWidth = 1.0;
 		[self addSubview:avatarImageView];
 		
 		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];

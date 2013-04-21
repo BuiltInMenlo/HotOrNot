@@ -67,6 +67,7 @@
 	[_textField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_textField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 	_textField.keyboardType = UIKeyboardTypeDefault;
+	_textField.textAlignment = NSTextAlignmentCenter;
 	_textField.text = NSLocalizedString(@"restricted_inviteCode", nil);
 	_textField.delegate = self;
 	[_textField setTag:0];

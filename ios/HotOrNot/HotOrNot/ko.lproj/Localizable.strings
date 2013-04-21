@@ -51,6 +51,7 @@
 "timeline_comment" = "%d 논평";
 "timeline_comments" = "%d 코멘트";
 "timeline_99comments" = "99 + 코멘트";
+"timeline_trade" = "무역 사진을 여기에 살짝";
 
 "voters_caption" = "@%@ 좋아 @%@ 스냅";
 
