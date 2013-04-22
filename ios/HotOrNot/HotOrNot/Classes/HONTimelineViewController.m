@@ -371,7 +371,7 @@
 	}
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(276.0, 0.0, 44.0, 44.0);
+	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -801,12 +801,12 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if ([_username length] > 0 && indexPath.row == 0)
-		return (158.0);
+		return (163.0);
 	
 	else {
-		return (314.0);
-//		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
-//		return ((vo.statusID == 1 || vo.statusID == 2) ? 410.0 : 307.0);
+//		return (314.0);
+		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
+		return ((vo.statusID == 1 || vo.statusID == 2) ? 360.0 : 314.0);
 	}
 }
 

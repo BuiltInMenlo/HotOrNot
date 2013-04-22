@@ -94,7 +94,7 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 	_usernameTextField.delegate = self;

@@ -606,7 +606,7 @@
 				$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 				$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 				
-				$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"1", "aps": {"alert": "Your '. $sub_name .' challenge has received '. $score_arr['creator'] .' upvotes!", "sound": "push_01.caf"}}');
+				$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"1", "aps": {"alert": "Your '. $sub_name .' snap has received '. $score_arr['creator'] .' upvotes!", "sound": "push_01.caf"}}');
 			}
 			
 			// send push to challenger if votes equal a certain amount
@@ -614,7 +614,7 @@
 				$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 				$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 				
-				$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"1", "aps": {"alert": "Your '. $sub_name .' challenge has received '. $score_arr['challenger'] .' upvotes!", "sound": "push_01.caf"}}');
+				$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"1", "aps": {"alert": "Your '. $sub_name .' snap has received '. $score_arr['challenger'] .' upvotes!", "sound": "push_01.caf"}}');
 			}
 			
 			// return

@@ -28,7 +28,7 @@
 	if ((self = [super init])) {
 		if (isBottom) {
 			_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			_loadMoreButton.frame = CGRectMake(107.0, 16.0, 106.0, 34.0);
+			_loadMoreButton.frame = CGRectMake(108.0, 16.0, 103.0, 34.0);
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
@@ -89,7 +89,7 @@
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
 		//challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
 		
-		UIImageView *hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(3.0, 20.0, 24.0, 24.0)];
+		UIImageView *hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 23.0, 18.0, 18.0)];
 		hasSeenImageView.image = [UIImage imageNamed:@"newSnapIcon"];
 		hasSeenImageView.hidden = _challengeVO.hasViewed;
 		[self addSubview:hasSeenImageView];

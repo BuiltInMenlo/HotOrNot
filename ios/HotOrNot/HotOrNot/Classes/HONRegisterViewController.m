@@ -279,7 +279,7 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.text = [NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;

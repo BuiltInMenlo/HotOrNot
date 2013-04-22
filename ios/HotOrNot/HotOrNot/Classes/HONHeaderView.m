@@ -40,7 +40,7 @@
 		[self addSubview:_activityIndicatorView];
 		
 		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_refreshButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+		_refreshButton.frame = CGRectMake(0.0, 0.0, 54.0, 44.0);
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 		[self addSubview:_refreshButton];

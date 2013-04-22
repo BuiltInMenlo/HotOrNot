@@ -21,7 +21,7 @@
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight)];
-		_bgImageView.image = [UIImage imageNamed:@"searchBar_nonActive"];
+		_bgImageView.image = [UIImage imageNamed:@"searchBackground"];
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
@@ -35,7 +35,7 @@
 		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
 		[_searchTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 		[_searchTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_searchTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+		_searchTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
 		_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 		_searchTextField.delegate = self;

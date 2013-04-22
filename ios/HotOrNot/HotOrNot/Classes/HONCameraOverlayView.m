@@ -99,7 +99,7 @@
 		[_subjectTextField setTag:0];
 		[_headerView addSubview:_subjectTextField];
 		
-		UIImageView *userBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 43.0)];
+		UIImageView *userBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 32.0)];
 		userBGImageView.image = [UIImage imageNamed:@"cameraKeyboardInputField_nonActive"];
 		userBGImageView.userInteractionEnabled = YES;
 		[self addSubview:userBGImageView];
@@ -124,6 +124,13 @@
 		_usernameTextField.delegate = self;
 		[_usernameTextField setTag:1];
 		[userBGImageView addSubview:_usernameTextField];
+		
+		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		inviteButton.frame = CGRectMake(270.0, 0.0, 44.0, 32.0);
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"cameraFriendsButton_nonActive"] forState:UIControlStateNormal];
+		[inviteButton setBackgroundImage:[UIImage imageNamed:@"cameraFriendsButton_Active"] forState:UIControlStateHighlighted];
+		[inviteButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
+		[userBGImageView addSubview:inviteButton];
 		
 		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_randomSubjectButton.frame = CGRectMake(233.0, 15.0, 64.0, 34.0);

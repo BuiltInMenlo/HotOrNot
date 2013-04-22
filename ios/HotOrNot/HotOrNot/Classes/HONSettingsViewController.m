@@ -102,7 +102,7 @@
 	[self.view addSubview:_headerView];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(276.0, 0.0, 44.0, 44.0);
+	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -353,7 +353,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0)
-		return (158.0);
+		return (163.0);
 	
 	else
 		return (kRowHeight);

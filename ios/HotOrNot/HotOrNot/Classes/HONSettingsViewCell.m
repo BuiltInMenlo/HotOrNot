@@ -39,7 +39,7 @@
 
 - (id)initAsTopCell {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 158.0);
+		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 163.0);
 		_bgImgView.image = [UIImage imageNamed:@"profileBackground"];
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 13.0, 95.0, 90.0)];
@@ -51,7 +51,7 @@
 		[self addSubview:avatarImageView];
 		
 		UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraButton.frame = CGRectMake(115.0, 35.0, 44.0, 44.0);
+		cameraButton.frame = CGRectMake(115.0, 35.0, 54.0, 44.0);
 		[cameraButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 		[cameraButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 		[cameraButton addTarget:self action:@selector(_goInviteSMS) forControlEvents:UIControlEventTouchUpInside];
