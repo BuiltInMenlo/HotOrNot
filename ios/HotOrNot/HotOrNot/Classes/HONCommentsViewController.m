@@ -98,9 +98,10 @@
 }
 
 - (void)_submitComment {
-	[[Mixpanel sharedInstance] track:@"Challenge Comments - Add Comment"
+	[[Mixpanel sharedInstance] track:@"Timeline Comments - Submit"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_submitComment", nil);
@@ -230,12 +231,13 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
+	[[Mixpanel sharedInstance] track:@"Timeline Comments - Back"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
 	[_commentTextField resignFirstResponder];
 	[self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)_goCancel {
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
 - (void)_goTextField {
@@ -243,6 +245,11 @@
 }
 
 - (void)_goSend {
+	[[Mixpanel sharedInstance] track:@"Timeline Comments - Submit"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
 	[_commentTextField resignFirstResponder];
 }
 

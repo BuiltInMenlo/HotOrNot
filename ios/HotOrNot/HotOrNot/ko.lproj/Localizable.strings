@@ -28,14 +28,16 @@
 "hud_searchHashtags" = "해시 태그를 검색 …";
 
 "header_restricted" = "제한된 액세스";
-"header_register" = "사용자 이름";
+"header_register" = "이름을 입력";
+"header_register2" = "프로필 사진을";
+"header_register3" = "시사";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";
 "header_settings" = "";
 "header_username" = "사용자 이름";
 
-"search_placeHolder" = "사용자가 부러 검색@";
+"search_placeHolder" = "함께 사진을 교환하는 친구 찾기…";
 "search_snap" = "한 스냅";
 "search_snaps" = "%d 스냅";
 

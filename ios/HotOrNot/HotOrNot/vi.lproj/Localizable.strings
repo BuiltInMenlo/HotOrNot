@@ -1,0 +1,78 @@
+/* 
+  Localizable.strings
+  HotOrNot
+
+  Created by Matthew Holcombe on 04.13.13.
+  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
+*/
+
+
+"hud_connectionError" = "Connection Error";
+"hud_loadError" = "Problem loading data!";
+"hud_dlFailed" = "Download Failed";
+"hud_submitFailed" = "Failed Submission";
+"hud_refresh" = "Refreshing…";
+"hud_loadSnap" = "Loading Snap…";
+"hud_getSnaps" = "Getting Snaps…";
+"hud_submitComment" = "Submitting Comment…";
+"hud_uploadPhoto" = "Uploading Photo…";
+"hud_uploadFail" = "Upload Error";
+"hud_submitSnap" = "Submitting Snap…";
+"hud_usernameNotFound" = "Username not found!";
+"hud_checkUsername" = "Checking Username…";
+"hud_updateFail" = "Update Failed";
+"hud_usernameTaken" = "Username Taken!";
+"hud_submit" = "Submitting…";
+"hud_noResults" = "No results found!";
+"hud_searchUsers" = "Searching Users…";
+"hud_searchHashtags" = "Searching Hashtags…";
+
+"header_restricted" = "Restricted Access";
+"header_register" = "nhập tên người dùng";
+"header_register2" = "có hình ảnh hồ sơ cá nhân";
+"header_register3" = "xem trước";
+"header_home" = "";
+"header_activity" = "";
+"header_discover" = "";
+"header_settings" = "";
+"header_username" = "Username";
+
+"search_placeHolder" = "Tìm bạn để thương mại bức ảnh với…";
+"search_snap" = "1 snap";
+"search_snaps" = "%d snaps";
+
+"restricted_caption" = "";
+"restricted_inviteCode" = "Enter invite code";
+
+"register_caption1" = "Take your personal profile picture\n(no fakes allowed)";
+"register_caption2" = "Look good? Alright, cool\nSubmit and lets get snapping…";
+
+"timeline_snapAt" = "snap @%@";
+"timeline_like" = "%d Like";
+"timeline_likes" = "%d Likes";
+"timeline_comment" = "%d Comment";
+"timeline_comments" = "%d Comments";
+"timeline_99comments" = "99+ Comments";
+"timeline_trade" = "tap here to trade pics";
+
+"voters_caption" = "@%@ liked @%@ snap";
+
+"activity_waiting" = "You are waiting…";
+"activity_waiting_f" = "You are waiting… (F)";
+
+"profile_inviteSMS_button" = "Invite friends via SMS";
+"profile_notifications" = "Notifications";
+"profile_mySnaps" = "My Snaps";
+"profile_inviteSMS" = "Invite Friends via SMS";
+"profile_inviteEmail" = "Invite Friends via Email";
+"profile_changeUsername" = "Change Username";
+"profile_support" = "Support";
+"profile_privacy" = "Privacy Policy";
+"profile_snap" = "%@ snap";
+"profile_snaps" = "%@ snaps";
+"profile_vote" = "%@ vote";
+"profile_votes" = "%@ votes";
+"profile_point" = "%@ point";
+"profile_points" = "%@ points";
+
+"userPlaceholder" = "@user";

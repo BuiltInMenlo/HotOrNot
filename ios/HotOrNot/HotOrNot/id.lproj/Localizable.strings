@@ -28,14 +28,16 @@
 "hud_searchHashtags" = "Searching Hashtags…";
 
 "header_restricted" = "Restricted Access";
-"header_register" = "Username";
+"header_register" = "masukkan username";
+"header_register2" = "mengambil gambar profil";
+"header_register3" = "pratinjau";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";
 "header_settings" = "";
 "header_username" = "Username";
 
-"search_placeHolder" = "search for users to snap@";
+"search_placeHolder" = "Cari teman untuk perdagangan foto dengan…";
 "search_snap" = "1 snap";
 "search_snaps" = "%d snaps";
 

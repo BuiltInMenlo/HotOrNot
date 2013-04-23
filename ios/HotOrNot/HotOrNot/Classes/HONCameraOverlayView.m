@@ -74,14 +74,12 @@
 		_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 		[_bgImageView addSubview:_headerView];
 		
-		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(1.0, 0.0, 64.0, 44.0);
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:_cancelButton];
+		UIImageView *dotsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(150.0, 35.0, 20.0, 5.0)];
+		dotsImageView.image = [UIImage imageNamed:@"cameraExperienceDots"];
+		dotsImageView.userInteractionEnabled = YES;
+		[_headerView addSubview:dotsImageView];
 		
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(180.0, 12.0, 130.0, 24.0)];
+		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0, 12.0, 320.0, 24.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -89,17 +87,31 @@
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 		[_subjectTextField setTextColor:[UIColor whiteColor]];
 		//[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_subjectTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
+		_subjectTextField.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:16];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		//subjectLabel.shadowColor = [UIColor colorWithRed:0.027 green:0.180 blue:0.302 alpha:1.0];
 		//subjectLabel.shadowOffset = CGSizeMake(0.0, -1.0);
 		_subjectTextField.text = _subjectName;
-		_subjectTextField.textAlignment = NSTextAlignmentRight;
+		_subjectTextField.textAlignment = NSTextAlignmentCenter;
 		_subjectTextField.delegate = self;
 		[_subjectTextField setTag:0];
 		[_headerView addSubview:_subjectTextField];
 		
-		UIImageView *userBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 32.0)];
+		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_cancelButton.frame = CGRectMake(1.0, 0.0, 64.0, 44.0);
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:_cancelButton];
+		
+		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_randomSubjectButton.frame = CGRectMake(244.0, 0.0, 74.0, 44.0);
+		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randomButton_nonActive"] forState:UIControlStateNormal];
+		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randomButton_Active"] forState:UIControlStateHighlighted];
+		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:_randomSubjectButton];
+		
+		UIImageView *userBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 44.0)];
 		userBGImageView.image = [UIImage imageNamed:@"cameraKeyboardInputField_nonActive"];
 		userBGImageView.userInteractionEnabled = YES;
 		[self addSubview:userBGImageView];
@@ -126,18 +138,11 @@
 		[userBGImageView addSubview:_usernameTextField];
 		
 		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		inviteButton.frame = CGRectMake(270.0, 0.0, 44.0, 32.0);
+		inviteButton.frame = CGRectMake(270.0, 6.0, 44.0, 32.0);
 		[inviteButton setBackgroundImage:[UIImage imageNamed:@"cameraFriendsButton_nonActive"] forState:UIControlStateNormal];
 		[inviteButton setBackgroundImage:[UIImage imageNamed:@"cameraFriendsButton_Active"] forState:UIControlStateHighlighted];
-		[inviteButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
+		//[inviteButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
 		[userBGImageView addSubview:inviteButton];
-		
-		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_randomSubjectButton.frame = CGRectMake(233.0, 15.0, 64.0, 34.0);
-		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_nonActive"] forState:UIControlStateNormal];
-		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randonButton_Active"] forState:UIControlStateHighlighted];
-		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
-		//[subjectBGImageView addSubview:_randomSubjectButton];
 		
 		int offset = (int)[HONAppDelegate isRetina5] * 94;
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -225,7 +230,6 @@
 		[subview removeFromSuperview];
 	}
 	
-	_subjectTextField.frame = CGRectMake(180.0, 12.0, 130.0, 24.0);
 	[_cameraBackButton removeFromSuperview];
 	_cameraBackButton = nil;
 	
@@ -264,8 +268,6 @@
 	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_submitButton];
 	
-	CGSize size = [_subjectName sizeWithFont:[[HONAppDelegate cartoGothicBold] fontWithSize:18] constrainedToSize:CGSizeMake(130.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
-	_subjectTextField.frame = CGRectMake(160 - (size.width * 0.5), 12.0, size.width, 24.0);
 	_captureHolderView.frame = CGRectMake(-320.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
 }
 

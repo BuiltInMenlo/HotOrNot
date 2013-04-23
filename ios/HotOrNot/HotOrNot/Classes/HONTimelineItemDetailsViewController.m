@@ -18,7 +18,6 @@
 #import "HONAppDelegate.h"
 #import "HONFacebookCaller.h"
 #import "HONImagePickerViewController.h"
-#import "HONLoginViewController.h"
 #import "HONUserVO.h"
 
 @interface HONTimelineItemDetailsViewController () <UIAlertViewDelegate, UIActionSheetDelegate>
@@ -108,14 +107,12 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(9.0, 10.0, 38.0, 38.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 14.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:(_isCreator || !_isInSession) ? _challengeVO.creatorAvatar : _challengeVO.challengerAvatar] placeholderImage:nil];
-//	avatarImageView.clipsToBounds = YES;
-//	avatarImageView.layer.cornerRadius = 4.0;
 	[self.view addSubview:avatarImageView];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 24.0, 200.0, 14.0)];
-	creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 26.0, 200.0, 14.0)];
+	creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
 	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", (_isCreator || !_isInSession) ? _challengeVO.creatorName : _challengeVO.challengerName];
@@ -133,10 +130,9 @@
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];
-	[self.view addSubview:timeLabel];
+	//[self.view addSubview:timeLabel];
 	
-	NSLog(@"_isInSession:[%d] _isOwner:[%d] _isCreator:[%d] statusID:[%d]", _isInSession, _isOwner, _isCreator, _challengeVO.statusID);
-	//NSLog(@"BOOL:[%d] _isOwner:[%d] vo.creatorID:[%d] vo.challengerID:[%d]", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID), _isOwner, _challengeVO.creatorID, _challengeVO.challengerID);
+	//NSLog(@"_isInSession:[%d] _isOwner:[%d] _isCreator:[%d] statusID:[%d]", _isInSession, _isOwner, _isCreator, _challengeVO.statusID);
 	
 	NSString *imgURL;
 	if (_isInSession) {
@@ -152,9 +148,7 @@
 	}
 	
 	__weak typeof(self) weakSelf = self;
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 60.0, kLargeW * 0.5, kLargeW * 0.5)];
-//	_imageView.clipsToBounds = YES;
-//	_imageView.layer.cornerRadius = 2.0;
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 69.0, kLargeW * 0.5, kLargeW * 0.5)];
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		weakSelf.imageView.image = image;
 		[weakSelf _hideHUD];
@@ -164,25 +158,24 @@
 	}];
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
+		
+	UIImageView *footerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 472.0 : 384.0, 320.0, 96.0)];
+	footerImageView.image = [UIImage imageNamed:@"cameraFooterBackground"];
+	footerImageView.userInteractionEnabled = YES;
+	[self.view addSubview:footerImageView];
 	
-//	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	shareButton.frame = CGRectMake((_isOwner && !_isInSession) ? 37.0 : 10.0, 378.0, (_isOwner && !_isInSession) ? 247.0 : 147.0, 62.0);
-//	[shareButton setBackgroundImage:[UIImage imageNamed:(_isOwner && !_isInSession) ? @"shareLarge_nonActive" : @"shareButton_nonActive"] forState:UIControlStateNormal];
-//	[shareButton setBackgroundImage:[UIImage imageNamed:(_isOwner && !_isInSession) ? @"shareLarge_Active" : @"shareButton_Active"] forState:UIControlStateHighlighted];
-//	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-//	shareButton.hidden = (!_isOwner);
-//	[self.view addSubview:shareButton];
+	int offset = ([HONAppDelegate isRetina5]) ? 110.0 : 0.0;
 	
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(33.0, 399.0, 44.0, 44.0);
+	pokeButton.frame = CGRectMake(33.0, 399.0 + offset, 44.0, 44.0);
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
 	[pokeButton addTarget:self action:(_isCreator || _challengeVO.statusID == 1 || _challengeVO.statusID == 2) ? @selector(_goPokeCreator) : @selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
 	pokeButton.hidden = (_isOwner);
-	[self.view addSubview:pokeButton];
+//	[self.view addSubview:pokeButton];
 	
 	UIButton *voteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	voteButton.frame = CGRectMake(128.0, 388.0, 44.0, 44.0);
+	voteButton.frame = CGRectMake(32.0, 388.0 + offset, 44.0, 44.0);
 	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_nonActive"] forState:UIControlStateNormal];
 	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_Active"] forState:UIControlStateHighlighted];
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
@@ -190,7 +183,7 @@
 	[self.view addSubview:voteButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(249.0, 395.0, 44.0, 44.0);
+	moreButton.frame = CGRectMake(243.0, 388.0 + offset, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
@@ -217,53 +210,10 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:@"Report Abuse"
-													otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], @"Share", nil];
+																	otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], [NSString stringWithFormat:@"Poke @%@", (_isCreator) ? _challengeVO.creatorName : _challengeVO.challengerName], nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-}
-
-//- (void)_goShare {
-//	
-//	if ([HONAppDelegate allowsFBPosting]) {
-//		[self dismissViewControllerAnimated:NO completion:^(void) {
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Challenge"
-//																				 message:[NSString stringWithFormat:@"%@ challenge posted to your wall!", _challengeVO.subjectName]
-//																				delegate:nil
-//																	cancelButtonTitle:@"OK"
-//																	otherButtonTitles:nil];
-//			[alertView show];
-//			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_CHALLENGE" object:_challengeVO];
-//		}];
-//	
-//	} else {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Share Challenge"
-//																			 message:@"You need to enable Facebook posting first!"
-//																			delegate:nil
-//																cancelButtonTitle:@"OK"
-//																otherButtonTitles:nil];
-//		[alertView show];
-//	}
-//}
-
-- (void)_goPokeCreator {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Poke Player"
-																		 message:[NSString stringWithFormat:@"Want to poke %@?", _challengeVO.creatorName]
-																		delegate:self
-															cancelButtonTitle:@"Yes"
-															otherButtonTitles:@"No", nil];
-	[alertView setTag:0];
-	[alertView show];
-}
-
-- (void)_goPokeChallenger {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Poke Player"
-																		 message:[NSString stringWithFormat:@"Want to poke %@?", _challengeVO.challengerName]
-																		delegate:self
-															cancelButtonTitle:@"Yes"
-															otherButtonTitles:@"No", nil];
-	[alertView setTag:1];
-	[alertView show];
 }
 
 - (void)_goUpvote {
@@ -283,91 +233,6 @@
 	if (_progressHUD != nil) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
-	}
-}
-
-
-#pragma mark AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Timeline Details - Poke Creator"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
-			
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-											[NSString stringWithFormat:@"%d", 6], @"action",
-											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
-											[NSString stringWithFormat:@"%d", _challengeVO.creatorID], @"pokeeID",
-											nil];
-			
-			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-					
-				} else {
-					NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", pokeResult);
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
-				
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
-				_progressHUD = nil;
-			}];
-			
-			[self dismissViewControllerAnimated:NO completion:^(void) {
-			}];
-		}
-	
-	} else if (alertView.tag == 1) {
-		if (buttonIndex == 0) {
-			[[Mixpanel sharedInstance] track:@"Timeline Details - Poke Challenger"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
-			
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-											[NSString stringWithFormat:@"%d", 6], @"action",
-											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
-											[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"pokeeID",
-											nil];
-			
-			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-					
-				} else {
-					NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", pokeResult);
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
-				
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
-				_progressHUD = nil;
-			}];
-			
-			[self dismissViewControllerAnimated:NO completion:^(void) {
-			}];
-		}
 	}
 }
 
@@ -425,21 +290,45 @@
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
 				break;}
-				
+			
 			case 2: {
-				[[Mixpanel sharedInstance] track:@"Timeline Details - Share"
+				[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Details - Poke %@", (_isCreator) ? @"Creator" : @"Challenger"]
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 															 
-				if (FBSession.activeSession.state == 513)
-					[HONFacebookCaller postToTimeline:_challengeVO];
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+												[NSString stringWithFormat:@"%d", 6], @"action",
+												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
+												[NSString stringWithFormat:@"%d", (_isCreator) ? _challengeVO.creatorID : _challengeVO.challengerID], @"pokeeID", //(_isCreator || _challengeVO.statusID == 1 || _challengeVO.statusID == 2) ? _challengeVO.creatorID : _challengeVO.challengerID
+												nil];
 				
-				else {
-					UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-					[navController setNavigationBarHidden:YES];
-					[self presentViewController:navController animated:YES completion:nil];
-				}
+				[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+						NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+						NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", pokeResult);
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
+					
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+				}];
+				
+				[self dismissViewControllerAnimated:NO completion:^(void) {
+				}];
+				
 				break;}
 		}
 	}

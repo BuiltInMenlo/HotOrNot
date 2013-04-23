@@ -33,16 +33,12 @@
 - (void)setVoterVO:(HONVoterVO *)voterVO {
 	_voterVO = voterVO;
 	
-	CALayer *avatarMask = [CALayer layer];
-	avatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask.png"] CGImage];
-	avatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
+	NSLog(@"IMG:[%@]", _voterVO.imageURL);
 	
 	//NSString *imgURL = ([_voterVO.fbID isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : _voterVO.imageURL;
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 12.0, 38.0, 38.0)];
 	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[userImageView setImageWithURL:[NSURL URLWithString:_voterVO.imageURL] placeholderImage:nil];
-	userImageView.layer.mask = avatarMask;
-	userImageView.layer.masksToBounds = YES;
 	[self addSubview:userImageView];
 	
 	UILabel *voteLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 23.0, 220.0, 16.0)];

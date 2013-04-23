@@ -142,11 +142,12 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
+	[[Mixpanel sharedInstance] track:@"Timeline Votes - Back"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
 	[self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)_goCancel {
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {}];
 }
 
 

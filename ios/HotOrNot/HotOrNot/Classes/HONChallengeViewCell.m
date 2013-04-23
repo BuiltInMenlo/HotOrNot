@@ -28,7 +28,7 @@
 	if ((self = [super init])) {
 		if (isBottom) {
 			_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			_loadMoreButton.frame = CGRectMake(108.0, 16.0, 103.0, 34.0);
+			_loadMoreButton.frame = CGRectMake(108.0, 15.0, 103.0, 34.0);
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
@@ -67,7 +67,7 @@
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(226.0, 10.0, 60.0, 16.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(222.0, 10.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
@@ -75,7 +75,7 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
 	[self addSubview:timeLabel];
 	
-	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(73.0, 17.0, 5.0, 9.0)];
+	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(67.0, 11.0, 18.0, 18.0)];
 	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
 	[self addSubview:arrowImageView];
 	

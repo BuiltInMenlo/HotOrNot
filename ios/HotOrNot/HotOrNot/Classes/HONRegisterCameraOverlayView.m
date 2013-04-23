@@ -18,7 +18,7 @@
 @property (nonatomic, strong) UIView *footerHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIButton *captureButton;
-@property (nonatomic, strong) UIButton *cancelButton;
+@property (nonatomic, strong) UIButton *skipButton;
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *cameraBackButton;
 @property (nonatomic, strong) UIView *previewHolderView;
@@ -43,23 +43,23 @@
 		[self addSubview:_irisImageView];
 		
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
-		_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraExperience_Overlay-568h" : @"cameraExperience_Overlay"];
+		_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"FUEcameraViewBackground-568h" : @"FUEcameraViewBackground"];
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 474.0 : 384.0, 640.0, 105.0)];
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 474.0 : 397.0, 640.0, 105.0)];
 		[_bgImageView addSubview:_footerHolderView];
 		
-		_headerView = [[HONHeaderView alloc] initWithTitle:@"Take Pic"];
+		_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_register2", nil)];
 		[_headerView hideRefreshing];
 		[self addSubview:_headerView];
 		
-		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(5.0, 0.0, 64.0, 44.0);
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
-		[_cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:_cancelButton];
+		_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_skipButton.frame = CGRectMake(5.0, 0.0, 64.0, 44.0);
+		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
+		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
+		[_skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:_skipButton];
 		
 		_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_submitButton.frame = CGRectMake(246.0, 0.0, 74.0, 44.0);
@@ -107,7 +107,7 @@
 
 #pragma mark - UI Presentation
 - (void)showPreviewNormal:(UIImage *)image {
-	_cancelButton.hidden = YES;
+	_skipButton.hidden = YES;
 	[_submitButton setEnabled:YES];
 	
 	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
@@ -140,7 +140,7 @@
 }
 
 - (void)showPreviewFlipped:(UIImage *)image {
-	_cancelButton.hidden = YES;
+	_skipButton.hidden = YES;
 	[_submitButton setEnabled:YES];
 	
 	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
@@ -175,7 +175,7 @@
 	_submitButton.hidden = YES;
 	_previewHolderView.hidden = YES;
 	_cameraBackButton.hidden = YES;
-	_cancelButton.hidden = NO;
+	_skipButton.hidden = NO;
 	
 	_captionLabel.text = NSLocalizedString(@"register_caption1", nil);
 	

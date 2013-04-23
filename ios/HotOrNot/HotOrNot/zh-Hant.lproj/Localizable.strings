@@ -28,14 +28,16 @@
 "hud_searchHashtags" = "Searching Hashtags…";
 
 "header_restricted" = "Restricted Access";
-"header_register" = "Username";
+"header_register" = "輸入用戶名";
+"header_register2" = "資料圖片";
+"header_register3" = "預覽";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";
 "header_settings" = "";
 "header_username" = "Username";
 
-"search_placeHolder" = "search for users to snap@";
+"search_placeHolder" = "查找朋友貿易圖片…";
 "search_snap" = "1 snap";
 "search_snaps" = "%d snaps";
 

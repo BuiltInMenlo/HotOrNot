@@ -28,14 +28,16 @@
 "hud_searchHashtags" = "Searching Hashtags…";
 
 "header_restricted" = "Restricted Access";
-"header_register" = "Username";
+"header_register" = "enter a username";
+"header_register2" = "take profile picture";
+"header_register3" = "preview";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";
 "header_settings" = "";
 "header_username" = "Username";
 
-"search_placeHolder" = "search for users to snap@";
+"search_placeHolder" = "Find friends to trade pics with…";
 "search_snap" = "1 snap";
 "search_snaps" = "%d snaps";
 

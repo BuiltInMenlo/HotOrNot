@@ -22,15 +22,9 @@
 - (void)setCommentVO:(HONCommentVO *)commentVO {
 	_commentVO = commentVO;
 	
-	CALayer *avatarMask = [CALayer layer];
-	avatarMask.contents = (id)[[UIImage imageNamed:@"smallAvatarMask.png"] CGImage];
-	avatarMask.frame = CGRectMake(0.0, 0.0, 38.0, 38.0);
-	
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 12.0, 38.0, 38.0)];
 	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[userImageView setImageWithURL:[NSURL URLWithString:_commentVO.avatarURL] placeholderImage:nil];
-	userImageView.layer.mask = avatarMask;
-	userImageView.layer.masksToBounds = YES;
 	[self addSubview:userImageView];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 24.0, 60.0, 16.0)];
