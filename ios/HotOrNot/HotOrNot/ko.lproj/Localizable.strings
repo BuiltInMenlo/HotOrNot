@@ -77,4 +77,4 @@
 "profile_point" = "%@ 포인트";
 "profile_points" = "%@ 포인트";
 
-"userPlaceholder" = "@사용자";
+"userPlaceholder" = "Enter a username to snap @";

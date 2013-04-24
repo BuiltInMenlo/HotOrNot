@@ -6,7 +6,5 @@
 	<array>
 		<string>$(AppIdentifierPrefix)com.builtinmenlo.hotornot</string>
 	</array>
-	<key>get-task-allow</key>
-	<false/>
 </dict>
 </plist>

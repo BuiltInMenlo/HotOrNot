@@ -77,4 +77,4 @@
 "profile_point" = "%@ 点数";
 "profile_points" = "%@ 点数";
 
-"userPlaceholder" = "@ユーザー";
+"userPlaceholder" = "@Enter a username to snap @";

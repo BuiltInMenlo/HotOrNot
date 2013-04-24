@@ -301,7 +301,7 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 	_usernameTextField.text = NSLocalizedString(@"userPlaceholder", nil);
 	_usernameTextField.delegate = self;

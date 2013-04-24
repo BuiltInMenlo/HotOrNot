@@ -118,11 +118,11 @@
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", (_isCreator || !_isInSession) ? _challengeVO.creatorName : _challengeVO.challengerName];
 	[self.view addSubview:creatorNameLabel];
 	
-	if ([_challengeVO.rechallengedUsers length] > 0) {
-		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(217.0, 17.0, 24.0, 24.0)];
-		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
-		[self.view addSubview:rechallengeImageView];
-	}
+//	if ([_challengeVO.rechallengedUsers length] > 0) {
+//		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(217.0, 17.0, 24.0, 24.0)];
+//		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
+//		[self.view addSubview:rechallengeImageView];
+//	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 24.0, 60.0, 12.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
