@@ -693,6 +693,7 @@
 		4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchBarHeaderView.m; sourceTree = "<group>"; };
 		4C48745916C05698007D901B /* HONSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchViewController.h; sourceTree = "<group>"; };
 		4C48745A16C05699007D901B /* HONSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchViewController.m; sourceTree = "<group>"; };
+		4C4C9D1817285630003899F4 /* HotOrNot.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = HotOrNot.entitlements; sourceTree = "<group>"; };
 		4C5117321623A20D00370D3A /* MPCJSONDataSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPCJSONDataSerializer.h; sourceTree = "<group>"; };
 		4C5117331623A20D00370D3A /* MPCJSONDataSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPCJSONDataSerializer.m; sourceTree = "<group>"; };
 		4C5117341623A20D00370D3A /* MPCJSONSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPCJSONSerializer.h; sourceTree = "<group>"; };
@@ -1355,54 +1356,54 @@
 		4CF5FC2B1727B09900353C0F /* searchRow_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchRow_Active@2x.png"; sourceTree = "<group>"; };
 		4CF5FC2C1727B09900353C0F /* searchRow_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchRow_nonActive.png; sourceTree = "<group>"; };
 		4CF5FC2D1727B09900353C0F /* searchRow_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchRow_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC451727B42F00353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
-		4CF5FC481727B43400353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = "en.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC4B1727B43700353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC4E1727B43A00353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = "en.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC511727B43D00353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
-		4CF5FC541727B43F00353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = "en.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC571727B44200353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC5A1727B44500353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = "en.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC5C1727B44700353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file; name = ja; path = ja.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
-		4CF5FC5D1727B44800353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file; name = ko; path = ko.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
-		4CF5FC5E1727B44900353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaEmail_Active.png"; sourceTree = "<group>"; };
-		4CF5FC5F1727B44900353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = file; name = id; path = id.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
-		4CF5FC601727B44F00353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = file; name = vi; path = vi.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
-		4CF5FC611727B45200353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file; name = ja; path = "ja.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC621727B45300353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file; name = ko; path = "ko.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC631727B45300353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC641727B45400353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = file; name = id; path = "id.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC651727B45500353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = file; name = vi; path = "vi.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC661727B45900353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file; name = ja; path = ja.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC671727B45900353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file; name = ko; path = ko.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC681727B45A00353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaEmail_nonActive.png"; sourceTree = "<group>"; };
-		4CF5FC691727B45B00353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = file; name = id; path = id.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC6A1727B45C00353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = file; name = vi; path = vi.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC6B1727B45F00353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file; name = ja; path = "ja.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC6C1727B45F00353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file; name = ko; path = "ko.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC6D1727B46000353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC6E1727B46100353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = file; name = id; path = "id.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC6F1727B46200353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = file; name = vi; path = "vi.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC701727B46500353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file; name = ja; path = ja.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
-		4CF5FC711727B46600353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file; name = ko; path = ko.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
-		4CF5FC721727B46600353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaSMS_Active.png"; sourceTree = "<group>"; };
-		4CF5FC731727B46700353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = file; name = id; path = id.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
-		4CF5FC741727B46700353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = file; name = vi; path = vi.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
-		4CF5FC751727B46B00353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file; name = ja; path = "ja.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC761727B46B00353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file; name = ko; path = "ko.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC771727B46C00353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC781727B46D00353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = file; name = id; path = "id.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC791727B46E00353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = file; name = vi; path = "vi.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
-		4CF5FC7A1727B47200353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file; name = ja; path = ja.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC7B1727B47300353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file; name = ko; path = ko.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC7C1727B47300353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaSMS_nonActive.png"; sourceTree = "<group>"; };
-		4CF5FC7D1727B47400353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = file; name = id; path = id.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC7E1727B47500353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = file; name = vi; path = vi.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
-		4CF5FC7F1727B47900353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = file; name = ja; path = "ja.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC801727B47A00353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = file; name = ko; path = "ko.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC811727B47B00353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC821727B47B00353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = file; name = id; path = "id.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CF5FC831727B47C00353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = file; name = vi; path = "vi.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC451727B42F00353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
+		4CF5FC481727B43400353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC4B1727B43700353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC4E1727B43A00353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC511727B43D00353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
+		4CF5FC541727B43F00353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC571727B44200353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC5A1727B44500353C0F /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC5C1727B44700353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = ja.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
+		4CF5FC5D1727B44800353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = ko.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
+		4CF5FC5E1727B44900353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaEmail_Active.png"; sourceTree = "<group>"; };
+		4CF5FC5F1727B44900353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = id.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
+		4CF5FC601727B44F00353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = vi.lproj/inviteFriendsViaEmail_Active.png; sourceTree = "<group>"; };
+		4CF5FC611727B45200353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC621727B45300353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC631727B45300353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC641727B45400353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC651727B45500353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/inviteFriendsViaEmail_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC661727B45900353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = ja.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC671727B45900353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = ko.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC681727B45A00353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaEmail_nonActive.png"; sourceTree = "<group>"; };
+		4CF5FC691727B45B00353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = id.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC6A1727B45C00353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = vi.lproj/inviteFriendsViaEmail_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC6B1727B45F00353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC6C1727B45F00353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC6D1727B46000353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC6E1727B46100353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC6F1727B46200353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/inviteFriendsViaEmail_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC701727B46500353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = ja.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
+		4CF5FC711727B46600353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = ko.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
+		4CF5FC721727B46600353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaSMS_Active.png"; sourceTree = "<group>"; };
+		4CF5FC731727B46700353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = id.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
+		4CF5FC741727B46700353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = vi.lproj/inviteFriendsViaSMS_Active.png; sourceTree = "<group>"; };
+		4CF5FC751727B46B00353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC761727B46B00353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC771727B46C00353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC781727B46D00353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC791727B46E00353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/inviteFriendsViaSMS_Active@2x.png"; sourceTree = "<group>"; };
+		4CF5FC7A1727B47200353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = ja.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC7B1727B47300353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = ko.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC7C1727B47300353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaSMS_nonActive.png"; sourceTree = "<group>"; };
+		4CF5FC7D1727B47400353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = id.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC7E1727B47500353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = vi.lproj/inviteFriendsViaSMS_nonActive.png; sourceTree = "<group>"; };
+		4CF5FC7F1727B47900353C0F /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC801727B47A00353C0F /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC811727B47B00353C0F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC821727B47B00353C0F /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CF5FC831727B47C00353C0F /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/inviteFriendsViaSMS_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CF5FC841727C07A00353C0F /* searchBackground_B.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchBackground_B.png; sourceTree = "<group>"; };
 		4CF5FC851727C07A00353C0F /* searchBackground_B@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchBackground_B@2x.png"; sourceTree = "<group>"; };
 		4CF9B6BB165BDF7A00165083 /* libTapForTapAds.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTapForTapAds.a; sourceTree = "<group>"; };
@@ -1795,6 +1796,7 @@
 		4C62652F15F96C7100AA7FCE /* HotOrNot */ = {
 			isa = PBXGroup;
 			children = (
+				4C4C9D1817285630003899F4 /* HotOrNot.entitlements */,
 				4C0C4149162C9743007F0DA3 /* icon_512x512.png */,
 				4CAAED6E161CBCB5005AB2E1 /* Default-568h@2x.png */,
 				4CAAED69161CBC43005AB2E1 /* Default.png */,
@@ -4236,7 +4238,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "2F99D7AD-EFC2-44C2-90B3-318D9C33BAD3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "DC697AE4-98E3-4136-81B2-07AFD34E1434";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -4247,6 +4249,7 @@
 		4C62655815F96C7100AA7FCE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/HotOrNot/Other Frameworks\"",
@@ -4272,6 +4275,7 @@
 		4C62655915F96C7100AA7FCE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/HotOrNot/Other Frameworks\"",

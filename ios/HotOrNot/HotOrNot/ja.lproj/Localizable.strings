@@ -35,6 +35,7 @@
 "header_settings" = "";
 "header_username" = "ユーザ名";
 "header_create" = "";
+"header_preview" = "Preview";
 
 "search_placeHolder" = "と写真を交換する友達を見つけましょう…";
 "search_snap" = "スナップ";

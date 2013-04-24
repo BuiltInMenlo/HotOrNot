@@ -200,12 +200,14 @@
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _imagePrefix] forKey:@"imgURL"];
 	[params setObject:_subjectName forKey:@"subject"];
-	[params setObject:[NSString stringWithFormat:@"%d", (_userVO == nil && [_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)]) ? 1 : 7] forKey:@"action"];
+	[params setObject:[NSString stringWithFormat:@"%d", (_userVO == nil && ([_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] || [_username length] == 0)) ? 1 : 7] forKey:@"action"];
 	
 	if (_userVO != nil)
 		[params setObject:_userVO.username forKey:@"username"];
 	
-	if (![_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)])
+	NSLog(@"USERNAME:[%@]", _username);
+	
+	if (![_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] && [_username length] > 0)
 		[params setObject:[_username substringFromIndex:1] forKey:@"username"];
 	
 	
@@ -275,7 +277,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_activity", nil)];
+	_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
 	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
 	
@@ -425,7 +427,7 @@
 												 (_userVO != nil) ? _userVO.username :@"RANDOM", @"challenger", nil]];
 
 	
-	//[self _submitChallenge];
+	[self _submitChallenge];
 }
 
 

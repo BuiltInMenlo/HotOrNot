@@ -35,8 +35,9 @@
 "header_settings" = "";
 "header_username" = "username";
 "header_create" = "";
+"header_preview" = "Preview";
 
-"search_placeHolder" = "Find friends to trade pics with…";
+"search_placeHolder" = "Search for people or tags";
 "search_snap" = "1 snap";
 "search_snaps" = "%d snaps";
 

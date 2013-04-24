@@ -274,6 +274,7 @@
 
 - (void)_goRandomSubject {
 	_subjectName = [HONAppDelegate rndDefaultSubject];
+	[_headerView setTitle:_subjectName];
 	_subjectTextField.text = _subjectName;
 	
 	[[Mixpanel sharedInstance] track:@"Camera - Random Hashtag"

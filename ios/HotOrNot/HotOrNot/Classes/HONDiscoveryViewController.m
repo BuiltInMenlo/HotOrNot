@@ -240,10 +240,19 @@
 	return (1);
 }
 
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIImageView *searchImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBackground"]];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 10.0, 292.0, 24.0)];
+	label.textColor = [HONAppDelegate honGreyInputColor];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+	label.text = NSLocalizedString(@"search_placeHolder", nil);
+	[searchImageView addSubview:label];
+	
+	return (searchImageView);
+	
 //	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
 //	return (headerView);
-//}
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONDiscoveryViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
@@ -267,9 +276,9 @@
 	return (110.0);
 }
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//	return (kSearchHeaderHeight);
-//}
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (kSearchHeaderHeight);
+}
 
 //- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 //	return (nil);

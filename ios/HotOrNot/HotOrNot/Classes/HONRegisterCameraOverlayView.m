@@ -125,6 +125,7 @@
 	
 	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
+	[_headerView setTitle:NSLocalizedString(@"header_register3", nil)];
 	_captionLabel.text = NSLocalizedString(@"register_caption2", nil);
 	
 	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
@@ -159,6 +160,7 @@
 	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
 	_captionLabel.text = NSLocalizedString(@"register_caption2", nil);
+	[_headerView setTitle:NSLocalizedString(@"header_register3", nil)];
 	
 	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
@@ -177,6 +179,7 @@
 	_cameraBackButton.hidden = YES;
 	_skipButton.hidden = NO;
 	
+	[_headerView setTitle:NSLocalizedString(@"header_register2", nil)];
 	_captionLabel.text = NSLocalizedString(@"register_caption1", nil);
 	
 	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
