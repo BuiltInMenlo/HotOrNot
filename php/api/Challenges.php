@@ -789,6 +789,30 @@
 		}
 		
 		
+		/**
+		 * Gets the iTunes info for a specific challenge subject
+		 * @param $subject_name The subject to look up (string)
+		 * @return An associative array
+		**/
+		function getPreviewForSubject ($subject_name) {
+
+			// return
+			$this->sendResponse(200, json_encode(array(
+				'id' => 0, 
+				'title' => $subject_name, 
+				'preview_url' => "",
+				'artist' => "",
+				'song_name' => "",
+				'img_url' => "",
+				'itunes_url' => "",
+				'linkshare_url' => ""
+			)));
+			
+			return (true);
+		}
+		
+		
+		
 		/** 
 		 * Debugging function
 		**/
@@ -836,7 +860,10 @@
 					$challenges->acceptChallenge($_POST['userID'], $_POST['challengeID'], $_POST['imgURL']);
 				break;
 			
+			// legacy function for itunes subject lookup
 			case "5":
+				if (isset($_POST['subjectName']))
+					$challenges->getPreviewForSubject($_POST['subjectName']);
 				break;
 			
 			// update a challenge as being viewed
