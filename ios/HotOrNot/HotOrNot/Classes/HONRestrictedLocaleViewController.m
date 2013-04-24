@@ -49,7 +49,7 @@
 	[self.view addSubview:_bgImageView];
 	
 	UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 180.0, 280.0, 30.0)];
-	captionLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
 	captionLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	captionLabel.backgroundColor = [UIColor clearColor];
 	captionLabel.textAlignment = NSTextAlignmentCenter;
@@ -65,7 +65,7 @@
 	[_textField setReturnKeyType:UIReturnKeyDone];
 	[_textField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_textField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_textField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
+	_textField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
 	_textField.keyboardType = UIKeyboardTypeDefault;
 	_textField.textAlignment = NSTextAlignmentCenter;
 	_textField.text = NSLocalizedString(@"restricted_inviteCode", nil);

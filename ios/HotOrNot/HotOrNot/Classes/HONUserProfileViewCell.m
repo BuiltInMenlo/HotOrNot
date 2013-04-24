@@ -39,7 +39,7 @@
 	[self addSubview:avatarImageView];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(141.0, 34.0, 148.0, 48.0);
+	snapButton.frame = CGRectMake(138.0, 30.0, 155.0, 54.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"tradePicsButton_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"tradePicsButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goSnap) forControlEvents:UIControlEventTouchUpInside];
@@ -48,24 +48,24 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 123.0, 107.0, 30.0)];
-	snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 124.0, 107.0, 30.0)];
+	snapsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	snapsLabel.textColor = [UIColor whiteColor];
 	snapsLabel.backgroundColor = [UIColor clearColor];
 	snapsLabel.textAlignment = NSTextAlignmentCenter;
 	snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:snapsLabel];
 	
-	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(107.0, 123.0, 107.0, 30.0)];
-	votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(107.0, 124.0, 107.0, 30.0)];
+	votesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	votesLabel.textColor = [UIColor whiteColor];
 	votesLabel.backgroundColor = [UIColor clearColor];
 	votesLabel.textAlignment = NSTextAlignmentCenter;
 	votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:votesLabel];
 	
-	UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 123.0, 107.0, 30.0)];
-	pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+	UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 124.0, 107.0, 30.0)];
+	pointsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	pointsLabel.textColor = [UIColor whiteColor];
 	pointsLabel.backgroundColor = [UIColor clearColor];
 	pointsLabel.textAlignment = NSTextAlignmentCenter;

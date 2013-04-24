@@ -368,91 +368,6 @@
 		}
 		
 		/**
-		 * Submits a challenge targeting a user's facebbok friend
-		 * @param $user_id The user submitting the challenge (integer)
-		 * @param $subject The challenge's subject (string)
-		 * @param $img_url The URL to the challenge's image (string)
-		 * @param $fb_id The facebook ID to target the challenge (string)
-		 * @param $fb_name The facebook name to target the challenge (string)
-		 * @return An associative object for a challenge (array)
-		**/
-		function submitFriendChallenge($user_id, $subject, $img_url, $fb_id, $fb_name) {
-			$challenge_arr = array();
-			
-			// get the subject id for subject name
-			$subject_id = $this->submitSubject($user_id, $subject);
-			
-			// get the user to target
-			$query = 'SELECT `id`, `device_token`, `username`, `fb_id`, `notifications` FROM `tblUsers` WHERE `fb_id` = '. $fb_id .';';			
-			if (mysql_num_rows(mysql_query($query)) > 0) {			
-				$challenger_obj = mysql_fetch_object(mysql_query($query));
-				
-				// get the user's info as a creator
-				$query = 'SELECT `username`, `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-				$creator_obj = mysql_fetch_object(mysql_query($query));				
-				$points = $creator_obj->points;
-				
-				// increment the user's points
-				$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
-				$result = mysql_query($query);
-				
-				// add a new challenge
-				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_obj->id .'", "", "N", "0", NOW(), NOW());';
-				$result = mysql_query($query);
-				$challenge_id = mysql_insert_id();
-			    
-				// send push to targeted user if allowed
-				if ($challenger_obj->notifications == "Y")
-					$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' snap!", "sound": "push_01.caf"}}');
-		 			
-			    
-				// get the newly created challenge
-				$challenge_arr = $this->getChallengeObj($challenge_id);
-			
-			// targeted user wasn't found
-			} else {
-				
-				// check invited users to see if it exists there
-				$query = 'SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = "'. $fb_id .'";';
-				if (mysql_num_rows(mysql_query($query)) == 0) {				
-					$query = 'INSERT INTO `tblInvitedUsers` (';
-					$query .= '`id`, `fb_id`, `username`, `added`) ';
-					$query .= 'VALUES (NULL, "'. $fb_id .'", "'. $fb_name .'", NOW());';
-					$result = mysql_query($query);
-					$challenger_id = mysql_insert_id();
-				
-				// already in invited table
-				} else 
-					$challenger_id = mysql_fetch_object(mysql_query($query))->id;
-				
-				// get the targeted user's info
-				$query = 'SELECT `username`, `fb_id` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-				$creator_obj = mysql_fetch_object(mysql_query($query));
-				
-				// add a new challenge
-				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "7", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW());';
-				$result = mysql_query($query);
-				$challenge_id = mysql_insert_id();
-			    
-				// get the newly created challenge
-				$challenge_arr = $this->getChallengeObj($challenge_id);				
-			}
-			
-			// return
-			$this->sendResponse(200, json_encode($challenge_arr));
-			return (true);
-			
-			/*
-			example response:
-			{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}}
-			*/
-		}
-		
-		/**
 		 * Submits a new challenge to a specific user
 		 * @param $user_id The user submitting the challenge (integer)
 		 * @param $subject The challenge's subject (string)
@@ -921,7 +836,6 @@
 					$challenges->acceptChallenge($_POST['userID'], $_POST['challengeID'], $_POST['imgURL']);
 				break;
 			
-			// get itunes data for a subject
 			case "5":
 				break;
 			
@@ -937,10 +851,7 @@
 					$challenges->submitChallengeWithUsername($_POST['userID'], $_POST['subject'], $_POST['imgURL'], $_POST['username']);
 				break;
 			
-			// submit a challenge to a facebook user
 			case "8":
-				if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL']) && isset($_POST['fbID']))
-					$challenges->submitFriendChallenge($_POST['userID'], $_POST['subject'], $_POST['imgURL'], $_POST['fbID'], $_POST['fbName']);
 				break;
 			
 			// submit a challenge to a user

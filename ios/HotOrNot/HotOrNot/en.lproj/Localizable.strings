@@ -7,35 +7,34 @@
 */
 
 
-"hud_connectionError" = "Connection Error";
+"hud_connectionError" = "No connection found!";
 "hud_loadError" = "Problem loading data!";
-"hud_dlFailed" = "Download Failed";
-"hud_submitFailed" = "Failed Submission";
+"hud_dlFailed" = "Download failed";
+"hud_submitFailed" = "Failed submission";
 "hud_refresh" = "Refreshing…";
-"hud_loadSnap" = "Loading Snap…";
-"hud_getSnaps" = "Getting Snaps…";
-"hud_submitComment" = "Submitting Comment…";
-"hud_uploadPhoto" = "Uploading Photo…";
-"hud_uploadFail" = "Upload Error";
-"hud_submitSnap" = "Submitting Snap…";
+"hud_loading" = "Loading…";
+"hud_submitComment" = "Submitting comment…";
+"hud_uploadPhoto" = "Uploading photo…";
+"hud_uploadFail" = "Upload error";
 "hud_usernameNotFound" = "Username not found!";
-"hud_checkUsername" = "Checking Username…";
-"hud_updateFail" = "Update Failed";
-"hud_usernameTaken" = "Username Taken!";
+"hud_checkUsername" = "Checking username…";
+"hud_updateFail" = "Update failed";
+"hud_usernameTaken" = "Username taken!";
 "hud_submit" = "Submitting…";
 "hud_noResults" = "No results found!";
-"hud_searchUsers" = "Searching Users…";
-"hud_searchHashtags" = "Searching Hashtags…";
+"hud_searchUsers" = "Searching users…";
+"hud_searchHashtags" = "Searching hashtags…";
 
-"header_restricted" = "Restricted Access";
-"header_register" = "enter a username";
-"header_register2" = "take profile picture";
-"header_register3" = "preview";
-"header_home" = "";
-"header_activity" = "";
-"header_discover" = "";
+"header_restricted" = "restricted access";
+"header_register" = "Enter a username";
+"header_register2" = "Take profile picture";
+"header_register3" = "Preview";
+"header_home" = "Home";
+"header_activity" = "Activity";
+"header_discover" = "Discover";
 "header_settings" = "";
-"header_username" = "Username";
+"header_username" = "username";
+"header_create" = "";
 
 "search_placeHolder" = "Find friends to trade pics with…";
 "search_snap" = "1 snap";
@@ -44,13 +43,15 @@
 "restricted_caption" = "";
 "restricted_inviteCode" = "Enter invite code";
 
-"register_caption1" = "Take your personal profile picture\n(no fakes allowed)";
-"register_caption2" = "Look good? Alright, cool\nSubmit and lets get snapping…";
+"register_username" = "Please enter a username";
+"register_caption1" = "";
+"register_caption2" = "";
 
 "timeline_snapAt" = "snap @%@";
 "timeline_like" = "%d Like";
 "timeline_likes" = "%d Likes";
-"timeline_comment" = "%d Comment";
+"timeline_0comments" = "Comment";
+"timeline_1comment" = "%d Comment";
 "timeline_comments" = "%d Comments";
 "timeline_99comments" = "99+ Comments";
 "timeline_trade" = "tap here to trade pics";
@@ -62,7 +63,7 @@
 
 "profile_inviteSMS_button" = "Invite friends via SMS";
 "profile_notifications" = "Notifications";
-"profile_mySnaps" = "My Snaps";
+"profile_myPhotos" = "My Photos";
 "profile_inviteSMS" = "Invite Friends via SMS";
 "profile_inviteEmail" = "Invite Friends via Email";
 "profile_changeUsername" = "Change Username";
@@ -75,4 +76,4 @@
 "profile_point" = "%@ point";
 "profile_points" = "%@ points";
 
-"userPlaceholder" = "@user";
+"userPlaceholder" = "Enter @username";

@@ -43,7 +43,7 @@
 		
 		_captions = [NSArray arrayWithObjects:@"",
 						 NSLocalizedString(@"profile_notifications", nil),
-						 NSLocalizedString(@"profile_mySnaps", nil),
+						 NSLocalizedString(@"profile_myPhotos", nil),
 						 NSLocalizedString(@"profile_inviteSMS", nil),
 						 NSLocalizedString(@"profile_inviteEmail", nil),
 						 //(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook",

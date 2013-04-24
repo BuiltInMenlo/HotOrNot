@@ -102,7 +102,7 @@
 	[self.view addSubview:_bgView];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loadSnap", nil);
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -112,7 +112,7 @@
 	[self.view addSubview:avatarImageView];
 	
 	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 26.0, 200.0, 14.0)];
-	creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", (_isCreator || !_isInSession) ? _challengeVO.creatorName : _challengeVO.challengerName];
@@ -125,7 +125,7 @@
 	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 24.0, 60.0, 12.0)];
-	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;

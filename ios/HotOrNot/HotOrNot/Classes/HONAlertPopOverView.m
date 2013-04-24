@@ -26,7 +26,7 @@
 		[self addSubview:bgImageView];
 		
 		_statusLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 0.0, 39.0, 39.0)];
-		_statusLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
+		_statusLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
 		_statusLabel.textColor = [UIColor whiteColor];
 		_statusLabel.backgroundColor = [UIColor clearColor];
 		_statusLabel.textAlignment = NSTextAlignmentCenter;

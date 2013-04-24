@@ -32,7 +32,21 @@
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-			[self addSubview:_loadMoreButton];
+			//[self addSubview:_loadMoreButton];
+			
+			UIButton *inviteSMSButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			inviteSMSButton.frame = CGRectMake(68.0, 28.0, 184.0, 34.0);
+			[inviteSMSButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsViaSMS_nonActive"] forState:UIControlStateNormal];
+			[inviteSMSButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsViaSMS_nonActive"] forState:UIControlStateHighlighted];
+			[inviteSMSButton addTarget:self action:@selector(_goInviteSMS) forControlEvents:UIControlEventTouchUpInside];
+			[self addSubview:inviteSMSButton];
+			
+			UIButton *inviteEmailButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			inviteEmailButton.frame = CGRectMake(68.0, 78.0, 184.0, 34.0);
+			[inviteEmailButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsViaEmail_nonActive"] forState:UIControlStateNormal];
+			[inviteEmailButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsViaEmail_Active"] forState:UIControlStateHighlighted];
+			[inviteEmailButton addTarget:self action:@selector(_goInviteEmail) forControlEvents:UIControlEventTouchUpInside];
+			[self addSubview:inviteEmailButton];
 			
 			[self hideChevron];
 		}
@@ -53,22 +67,22 @@
 	avatarImageView.clipsToBounds = YES;
 	[self addSubview:avatarImageView];
 	
-	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(82.0, 14.0, 180.0, 16.0)];
-	challengeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(82.0, 15.0, 180.0, 16.0)];
+	challengeLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:11];
 	challengeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	challengeLabel.backgroundColor = [UIColor clearColor];
 	challengeLabel.text = ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
 	[self addSubview:challengeLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 30.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 31.0, 200.0, 20.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:16];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(222.0, 10.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(221.0, 12.0, 60.0, 16.0)];
+	timeLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -130,6 +144,14 @@
 #pragma mark - Navigation
 - (void)_goLoadMore {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
+}
+
+- (void)_goInviteSMS {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SMS_COMPOSER" object:nil];
+}
+
+- (void)_goInviteEmail {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_EMAIL_COMPOSER" object:nil];
 }
 
 @end

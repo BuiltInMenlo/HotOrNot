@@ -242,6 +242,51 @@ foreach ($vote_arr as $key => $val) {
 	$result = mysql_query($query);
 }
 */
+
+
+
+
+// INSERT STARTING CHALLENGES
+
+if (isset($_GET['userID'])) {
+	$user_id = $_GET['userID'];
+
+	// starting users & snaps
+	$snap_arr = array(
+		array(// @jason #bestFriend
+			'user_id' => "2393", 
+			'subject_id' => "9", 
+			'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc_0000000000"),
+		array(// @tyler #snapAtMe
+			'user_id' => "2394", 
+			'subject_id' => "753", 
+			'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000002"), 
+		array(// @psy #me
+			'user_id' => "2392", 
+			'subject_id' => "28", 
+			'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff_0000000001") 
+	);
+
+	// loop thru user/snap array
+	foreach ($snap_arr as $key => $val) {
+	
+		// add initial challenges
+		$query = 'INSERT INTO `tblChallenges` (';
+		$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
+		$query .= 'VALUES (NULL, "2", "'. $val['subject_id'] .'", "'. $val['user_id'] .'", "'. $val['img_prefix'] .'", "'. $user_id .'", "", "N", "0", NOW(), NOW());';
+		$result = mysql_query($query);
+		$challenge_id = mysql_insert_id();
+	
+		echo ($query ."<br /><br />");
+	}
+
+} else {
+	echo ("NO ['userID']!");
+}
+
+
+
+
 			
 if ($db_conn) {
 	mysql_close($db_conn);

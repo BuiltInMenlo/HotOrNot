@@ -7,17 +7,15 @@
 */
 
 
-"hud_connectionError" = "Connection Error";
+"hud_connectionError" = "Tidak ada koneksi ditemukan!";
 "hud_loadError" = "Problem loading data!";
 "hud_dlFailed" = "Download Failed";
 "hud_submitFailed" = "Failed Submission";
 "hud_refresh" = "Refreshing…";
-"hud_loadSnap" = "Loading Snap…";
-"hud_getSnaps" = "Getting Snaps…";
+"hud_loadSnap" = "pemuatan…";
 "hud_submitComment" = "Submitting Comment…";
 "hud_uploadPhoto" = "Uploading Photo…";
 "hud_uploadFail" = "Upload Error";
-"hud_submitSnap" = "Submitting Snap…";
 "hud_usernameNotFound" = "Username not found!";
 "hud_checkUsername" = "Checking Username…";
 "hud_updateFail" = "Update Failed";
@@ -36,6 +34,7 @@
 "header_discover" = "";
 "header_settings" = "";
 "header_username" = "Username";
+"header_create" = "";
 
 "search_placeHolder" = "Cari teman untuk perdagangan foto dengan…";
 "search_snap" = "1 snap";
@@ -44,13 +43,15 @@
 "restricted_caption" = "";
 "restricted_inviteCode" = "Enter invite code";
 
-"register_caption1" = "Take your personal profile picture\n(no fakes allowed)";
-"register_caption2" = "Look good? Alright, cool\nSubmit and lets get snapping…";
+"register_username" = "Please enter a username";
+"register_caption1" = "";
+"register_caption2" = "";
 
 "timeline_snapAt" = "snap @%@";
 "timeline_like" = "%d Like";
 "timeline_likes" = "%d Likes";
-"timeline_comment" = "%d Comment";
+"timeline_0comments" = "Comment";
+"timeline_1comment" = "%d Comment";
 "timeline_comments" = "%d Comments";
 "timeline_99comments" = "99+ Comments";
 "timeline_trade" = "tap here to trade pics";
@@ -62,7 +63,7 @@
 
 "profile_inviteSMS_button" = "Invite friends via SMS";
 "profile_notifications" = "Notifications";
-"profile_mySnaps" = "My Snaps";
+"profile_myPhotos" = "Foto Saya";
 "profile_inviteSMS" = "Invite Friends via SMS";
 "profile_inviteEmail" = "Invite Friends via Email";
 "profile_changeUsername" = "Change Username";

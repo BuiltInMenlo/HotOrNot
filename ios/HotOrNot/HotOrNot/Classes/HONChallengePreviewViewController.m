@@ -83,7 +83,7 @@
 	[self.view addSubview:_bgView];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loadSnap", nil);
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -93,7 +93,7 @@
 	[self.view addSubview:avatarImageView];
 	
 	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 26.0, 200.0, 14.0)];
-	creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", (_isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
@@ -106,7 +106,7 @@
 	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 24.0, 60.0, 12.0)];
-	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -125,10 +125,10 @@
 	_imageView.userInteractionEnabled = YES;
 	[self.view addSubview:_imageView];
 	
-	int offset = (int)[HONAppDelegate isRetina5] * 88;
+	int offset = (int)[HONAppDelegate isRetina5] * 75;
 	if (!_isCreator) {
 		UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		acceptButton.frame = CGRectMake(30.0, 400.0 + offset, 64.0, 64.0);
+		acceptButton.frame = CGRectMake(30.0, 413.0 + offset, 64.0, 64.0);
 		[acceptButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[acceptButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];
@@ -165,7 +165,7 @@
 	}
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(244.0, 410.0 + offset, 44.0, 44.0);
+	moreButton.frame = CGRectMake(244.0, 423.0 + offset, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];

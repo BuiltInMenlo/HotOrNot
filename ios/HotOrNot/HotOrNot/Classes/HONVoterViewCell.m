@@ -42,14 +42,14 @@
 	[self addSubview:userImageView];
 	
 	UILabel *voteLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 23.0, 220.0, 16.0)];
-	voteLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	voteLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
 	voteLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	voteLabel.backgroundColor = [UIColor clearColor];
 	voteLabel.text = [NSString stringWithFormat:NSLocalizedString(@"voters_caption", nil), _voterVO.username, _voterVO.challengerName];
 	[self addSubview:voteLabel];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 23.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;

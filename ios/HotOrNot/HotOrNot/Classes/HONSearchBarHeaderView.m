@@ -27,7 +27,7 @@
 		
 		_isUser = YES;
 		
-		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 13.0, 220.0, 20.0)];
+		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 13.0, 294.0, 20.0)];
 		//[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_searchTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -35,7 +35,7 @@
 		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
 		[_searchTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 		[_searchTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_searchTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:13];
+		_searchTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
 		_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 		_searchTextField.delegate = self;

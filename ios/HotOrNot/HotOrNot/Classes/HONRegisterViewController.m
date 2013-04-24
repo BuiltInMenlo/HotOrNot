@@ -271,7 +271,7 @@
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(21.0, 15.0, 240.0, 20.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 10.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -279,12 +279,14 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
+	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.text = [NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
+	_usernameTextField.textAlignment = NSTextAlignmentCenter;
+	_usernameTextField.text = NSLocalizedString(@"register_username", nil);//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
 	[subjectBGImageView addSubview:_usernameTextField];
-	[_usernameTextField becomeFirstResponder];
+	
+	//[_usernameTextField becomeFirstResponder];
 	
 }
 
@@ -444,6 +446,7 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
+	textField.text = @"@";
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -451,18 +454,26 @@
 	return (YES);
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	if (textField.tag == 0) {
+		if ([textField.text isEqualToString:@""])
+			textField.text = @"@";
+	}
+	
+	return (YES);
+}
+
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	if ([textField.text length] == 0)
-		textField.text = _username;
+	if ([textField.text isEqualToString:@"@"] || [textField.text isEqualToString:NSLocalizedString(@"register_username", nil)])
+		textField.text = [NSString stringWithFormat:@"@%@", _username];
 	
-	else
-		_username = textField.text;
-	
+	_username = textField.text;
 	[[Mixpanel sharedInstance] track:@"Register - Change Username"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 _username, @"username", nil]];
 	
 	[textField resignFirstResponder];
 }

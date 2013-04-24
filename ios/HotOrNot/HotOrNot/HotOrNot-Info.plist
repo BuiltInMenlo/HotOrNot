@@ -53,7 +53,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>6029</string>
+	<string>6204</string>
 	<key>FacebookAppID</key>
 	<string>529054720443694</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -65,11 +65,6 @@
 		<string>CartoGothicStd-BoldItalic.otf</string>
 		<string>CartoGothicStd-Book.otf</string>
 		<string>CartoGothicStd-Italic.otf</string>
-		<string>ufonts.com_freightsans-black.ttf</string>
-		<string>picChallenge-Bold.otf</string>
-		<string>picChallenge-Light.otf</string>
-		<string>picChallenge-Regular.otf</string>
-		<string>picChallenge-Semibold.otf</string>
 	</array>
 	<key>UIPrerenderedIcon</key>
 	<true/>

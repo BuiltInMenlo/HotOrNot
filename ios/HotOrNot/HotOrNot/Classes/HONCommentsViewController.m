@@ -197,7 +197,7 @@
 	[_commentTextField setReturnKeyType:UIReturnKeyDone];
 	[_commentTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_commentTextField.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	_commentTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;
 	_commentTextField.text = @"";
 	_commentTextField.delegate = self;

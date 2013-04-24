@@ -7,22 +7,20 @@
 */
 
 
-"hud_connectionError" = "연결 오류";
+"hud_connectionError" = "연결을 찾을 수 없습니다!";
 "hud_loadError" = "문제로드 데이터!";
 "hud_dlFailed" = "다운로드 실패";
 "hud_submitFailed" = "실패 제출";
 "hud_refresh" = "새로 고치는 중 …";
-"hud_loadSnap" = "스냅인을로드하는 중 …";
-"hud_getSnaps" = "잽하기 …";
+"hud_loading" = "로드…";
 "hud_submitComment" = "코멘트를 제출 …";
 "hud_uploadPhoto" = "업로드 사진 …";
 "hud_uploadFail" = "업로드 오류";
-"hud_submitSnap" = "스냅인을 제출 …";
 "hud_usernameNotFound" = "사용자 이름을 찾을 수 없습니다!";
 "hud_checkUsername" = "사용자 이름 확인 중 …";
 "hud_updateFail" = "업데이트 실패";
 "hud_usernameTaken" = "사용자 이름 촬영!";
-"hud_submit" = "제출 중 ...";
+"hud_submit" = "제출 중 …";
 "hud_noResults" = "검색 결과가 없습니다!";
 "hud_searchUsers" = "사용자를 검색 …";
 "hud_searchHashtags" = "해시 태그를 검색 …";
@@ -36,21 +34,24 @@
 "header_discover" = "";
 "header_settings" = "";
 "header_username" = "사용자 이름";
+"header_create" = "";
 
-"search_placeHolder" = "함께 사진을 교환하는 친구 찾기…";
+"search_placeHolder" = "함께 사진을 교환하는 친구 찾기 …";
 "search_snap" = "한 스냅";
 "search_snaps" = "%d 스냅";
 
 "restricted_caption" = "";
 "restricted_inviteCode" = "코드를 초대 입력";
 
-"register_caption1" = "(더 가짜 허용하지 않음)\n귀하의 개인 프로필 사진을";
-"register_caption2" = "좋아 보여? 좋아, 제출 시원하고 욕 얻을 수 있습니다 …";
+"register_username" = "Please enter a username";
+"register_caption1" = "";
+"register_caption2" = "";
 
 "timeline_snapAt" = "스냅 @%@";
 "timeline_like" = "%d 좋다";
 "timeline_likes" = "%d 좋아";
-"timeline_comment" = "%d 논평";
+"timeline_0comments" = "Comment";
+"timeline_1comment" = "%d 논평";
 "timeline_comments" = "%d 코멘트";
 "timeline_99comments" = "99 + 코멘트";
 "timeline_trade" = "무역 사진을 여기에 살짝";
@@ -58,11 +59,11 @@
 "voters_caption" = "@%@ 좋아 @%@ 스냅";
 
 "activity_waiting" = "당신은 기다리고 있습니다 …";
-"activity_waiting_f" = "당신은 기다리고 있습니다… (F)";
+"activity_waiting_f" = "당신은 기다리고 있습니다 … (F)";
 
 "profile_inviteSMS_button" = "SMS를 통해 친구 초대";
 "profile_notifications" = "알림";
-"profile_mySnaps" = "내 잽";
+"profile_myPhotos" = "내 사진";
 "profile_inviteSMS" = "SMS를 통해 친구 초대";
 "profile_inviteEmail" = "이메일을 통해 친구 초대";
 "profile_changeUsername" = "사용자 이름을 변경";

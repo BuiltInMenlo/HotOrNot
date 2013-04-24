@@ -6,6 +6,9 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <MessageUI/MFMessageComposeViewController.h>
+#import <MessageUI/MFMailComposeViewController.h>
+
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
@@ -29,7 +32,7 @@
 #import "HONRestrictedLocaleViewController.h"
 
 
-@interface HONTimelineViewController() //<UIActionSheetDelegate>
+@interface HONTimelineViewController()
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *username;
@@ -213,13 +216,13 @@
 			_emptySetImgView.hidden = ([_challenges count] > 0);
 			[_tableView reloadData];
 			
-			if ([_challenges count] == 0) {
-				[[[UIAlertView alloc] initWithTitle:@"Nothing Here!"
-											message:@"No PicChallenges in session. You should start one."
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-			}
+//			if ([_challenges count] == 0) {
+//				[[[UIAlertView alloc] initWithTitle:@"Nothing Here!"
+//											message:@"No PicChallenges in session. You should start one."
+//										   delegate:nil
+//								  cancelButtonTitle:@"OK"
+//								  otherButtonTitles:nil] show];
+//			}
 		}
 		
 		[_headerView toggleRefresh:NO];
@@ -394,7 +397,7 @@
 	[self.view addSubview:_tableView];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_getSnaps", nil);
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -509,19 +512,6 @@
 
 
 #pragma mark - Notifications
-- (void)_shareChallenge:(NSNotification *)notification {
-	_challengeVO = (HONChallengeVO *)[notification object];
-	
-	if (FBSession.activeSession.state == 513)
-		[HONFacebookCaller postToTimeline:_challengeVO];
-	
-	else {
-		UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-		[navController setNavigationBarHidden:YES];
-		[self presentViewController:navController animated:YES completion:nil];
-	}
-}
-
 - (void)_refreshVoteTab:(NSNotification *)notification {
 	[_searchHeaderView backgroundingReset];
 	[_tableView setContentOffset:CGPointZero animated:YES];
@@ -605,6 +595,7 @@
 																		vo.creatorFB, @"fb_id",
 																		vo.creatorAvatar, @"avatar_url", nil]];
 	
+	//UINavigationController *navigationController = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]] : (vo.statusID == 1) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
 	UINavigationController *navigationController = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -667,11 +658,6 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVotersViewController alloc] initWithChallenge:vo]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:NO completion:nil];
-	
 	[self.navigationController pushViewController:[[HONVotersViewController alloc] initWithChallenge:vo] animated:YES];
 }
 
@@ -682,11 +668,6 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
-	
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONCommentsViewController alloc] initWithChallenge:vo]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:NO completion:nil];
-	
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:vo] animated:YES];
 }
 
@@ -806,12 +787,12 @@
 	else {
 //		return (314.0);
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
-		return ((vo.statusID == 1 || vo.statusID == 2) ? 360.0 : 314.0);
+		return ((vo.statusID == 1 || vo.statusID == 2) ? 289.0 : 314.0);
 	}
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kSearchHeaderHeight * (int)!_isPushView);
+	return (0.0);//kSearchHeaderHeight * (int)!_isPushView);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -828,52 +809,5 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 }
 
-
-/*
-#pragma mark - ActionSheet Delegates
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	switch (buttonIndex) {
-		case 0: {
-			[[Mixpanel sharedInstance] track:@"Timeline Profile - Flag"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
-			
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 10], @"action",
-									[NSString stringWithFormat:@"%d", _userVO.userID], @"userID",
-									nil];
-			
-			[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					NSLog(@"HONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-					
-				} else {
-					NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					NSLog(@"HONTimelineViewController AFNetworking: %@", flagResult);
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
-			}];
-			break;}
-			
-		case 1: {
-			[[Mixpanel sharedInstance] track:@"Timeline - New Snap at User"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-			break;}
-	}
-}
- */
 
 @end

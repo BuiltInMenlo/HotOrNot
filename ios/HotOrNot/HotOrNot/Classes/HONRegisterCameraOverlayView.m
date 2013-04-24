@@ -55,14 +55,14 @@
 		[self addSubview:_headerView];
 		
 		_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_skipButton.frame = CGRectMake(5.0, 0.0, 64.0, 44.0);
+		_skipButton.frame = CGRectMake(2.0, 0.0, 64.0, 44.0);
 		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
 		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
 		[_skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:_skipButton];
 		
 		_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_submitButton.frame = CGRectMake(246.0, 0.0, 74.0, 44.0);
+		_submitButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
 		[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
 		[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 		[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -116,7 +116,7 @@
 	
 	if (_cameraBackButton == nil) {
 		_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cameraBackButton.frame = CGRectMake(5.0, 5.0, 74.0, 34.0);
+		_cameraBackButton.frame = CGRectMake(8.0, 5.0, 74.0, 34.0);
 		[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateHighlighted];
 		[_cameraBackButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
@@ -149,7 +149,7 @@
 	
 	if (_cameraBackButton == nil) {
 		_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cameraBackButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+		_cameraBackButton.frame = CGRectMake(2.0, 0.0, 64.0, 44.0);
 		[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 		[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateHighlighted];
 		[_cameraBackButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];

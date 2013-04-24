@@ -75,16 +75,9 @@ extern NSString *const FacebookAppID;
 
 + (NSString *)timeSinceDate:(NSDate *)date;
 
-+ (UIFont *)honHelveticaNeueFontBold;
-+ (UIFont *)honHelveticaNeueFontBoldItalic;
-+ (UIFont *)honHelveticaNeueFontMedium;
-
-+ (UIFont *)freightSansBlack;
-
-+ (UIFont *)qualcommBold;
-+ (UIFont *)qualcommLight;
-+ (UIFont *)qualcommRegular;
-+ (UIFont *)qualcommSemibold;
++ (UIFont *)helveticaNeueFontBold;
++ (UIFont *)helveticaNeueFontBoldItalic;
++ (UIFont *)helveticaNeueFontMedium;
 
 + (UIFont *)cartoGothicBold;
 + (UIFont *)cartoGothicBoldItalic;
@@ -94,6 +87,7 @@ extern NSString *const FacebookAppID;
 + (UIColor *)honBlueTxtColor;
 + (UIColor *)honGreyTxtColor;
 + (UIColor *)honGreyInputColor;
++ (UIColor *)honGreyDarkerColor;
 
 
 #define kChallengesAPI @"Challenges.php"

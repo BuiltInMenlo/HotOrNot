@@ -55,15 +55,15 @@
 	[rHolderView addSubview:rImageView];
 	
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 96.0, 140.0, 14.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 99.0, 140.0, 14.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:12];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _lChallengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(18.0, 23.0, 120.0, 60.0);
+	selectButton.frame = CGRectMake(16.0, 20.0, 129.0, 72.0);
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
@@ -92,15 +92,15 @@
 	[rHolderView addSubview:rImageView];
 	
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(176.0, 96.0, 140.0, 14.0)];
-	subjectLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(176.0, 98.0, 140.0, 16.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _rChallengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(168.0, 23.0, 120.0, 60.0);
+	selectButton.frame = CGRectMake(172.0, 20.0, 129.0, 72.0);
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];

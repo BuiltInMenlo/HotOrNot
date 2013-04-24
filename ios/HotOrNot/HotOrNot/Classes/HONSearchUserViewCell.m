@@ -34,7 +34,7 @@
 	[self addSubview:userImageView];
 	
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(62.0, 22.0, 200.0, 18.0)];
-	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
+	usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 	usernameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];

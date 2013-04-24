@@ -42,7 +42,7 @@
 		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 163.0);
 		_bgImgView.image = [UIImage imageNamed:@"profileBackground"];
 		
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 15.0, 95.0, 90.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 97.0, 97.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
 		[self addSubview:avatarImageView];
 		
@@ -56,16 +56,16 @@
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 		
-		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 123.0, 107.0, 30.0)];
-		snapsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+		UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 124.0, 107.0, 30.0)];
+		snapsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 		snapsLabel.textColor = [UIColor whiteColor];
 		snapsLabel.backgroundColor = [UIColor clearColor];
 		snapsLabel.textAlignment = NSTextAlignmentCenter;
 		snapsLabel.text = [NSString stringWithFormat:([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
 		[self addSubview:snapsLabel];
 		
-		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(107.0, 123.0, 107.0, 30.0)];
-		votesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+		UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(107.0, 124.0, 107.0, 30.0)];
+		votesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 		votesLabel.textColor = [UIColor whiteColor];
 		votesLabel.backgroundColor = [UIColor clearColor];
 		votesLabel.textAlignment = NSTextAlignmentCenter;
@@ -73,8 +73,8 @@
 		[self addSubview:votesLabel];
 		
 		int points = ([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]) + ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
-		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 123.0, 107.0, 30.0)];
-		pointsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:13];
+		UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 124.0, 107.0, 30.0)];
+		pointsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 		pointsLabel.textColor = [UIColor whiteColor];
 		pointsLabel.backgroundColor = [UIColor clearColor];
 		pointsLabel.textAlignment = NSTextAlignmentCenter;
@@ -92,8 +92,8 @@
 		_caption = caption;
 		
 		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 25.0, 250.0, 16.0)];
-		_captionLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14];
-		_captionLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		_captionLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
+		_captionLabel.textColor = [HONAppDelegate honGreyInputColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.text = _caption;
 		[self addSubview:_captionLabel];
@@ -108,7 +108,7 @@
 	int score = ([[[HONAppDelegate infoForUser] objectForKey:@"points"] intValue] * [HONAppDelegate createPointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] * [HONAppDelegate votePointMultiplier]) + ([[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue] * [HONAppDelegate pokePointMultiplier]);
 	NSString *formattedScore = [numberFormatter stringFromNumber:[NSNumber numberWithInt:score]];
 	
-	CGSize size = [formattedScore sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:18] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	CGSize size = [formattedScore sizeWithFont:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:18] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	_scoreLabel.frame = CGRectMake(78.0, 13.0, size.width, size.height);
 	_scoreLabel.text = formattedScore;
 	

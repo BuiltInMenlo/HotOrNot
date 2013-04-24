@@ -28,7 +28,7 @@
 	[self addSubview:userImageView];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 24.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:11];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -36,15 +36,15 @@
 	[self addSubview:timeLabel];
 		
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(61.0, 15.0, 200.0, 12.0)];
-	usernameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:10];
+	usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:10];
 	usernameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _commentVO.username];
 	[self addSubview:usernameLabel];
 	
-	CGSize size = [_commentVO.content sizeWithFont:[[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:14] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	CGSize size = [_commentVO.content sizeWithFont:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:14] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(61.0, 30.0, 200.0, size.height)];
-	contentLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:14];
+	contentLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 	contentLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	contentLabel.backgroundColor = [UIColor clearColor];
 	//contentLabel.numberOfLines = 0;

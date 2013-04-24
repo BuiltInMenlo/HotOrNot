@@ -374,36 +374,16 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 
-+ (UIFont *)honHelveticaNeueFontBold {
++ (UIFont *)helveticaNeueFontBold {
 	return ([UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0]);
 }
 
-+ (UIFont *)honHelveticaNeueFontBoldItalic {
++ (UIFont *)helveticaNeueFontBoldItalic {
 	return ([UIFont fontWithName:@"HelveticaNeue-BoldItalic" size:18.0]);
 }
 
-+ (UIFont *)honHelveticaNeueFontMedium {
++ (UIFont *)helveticaNeueFontMedium {
 	return ([UIFont fontWithName:@"HelveticaNeue-Medium" size:18.0]);
-}
-
-+ (UIFont *)freightSansBlack {
-	return ([UIFont fontWithName:@"FreightSansBlack" size:18.0]);
-}
-
-+ (UIFont *)qualcommBold {
-	return ([UIFont fontWithName:@"Qualcomm-Bold" size:18.0]);
-}
-
-+ (UIFont *)qualcommLight {
-	return ([UIFont fontWithName:@"Qualcomm-Light" size:18.0]);
-}
-
-+ (UIFont *)qualcommRegular {
-	return ([UIFont fontWithName:@"Qualcomm-Regular" size:18.0]);
-}
-
-+ (UIFont *)qualcommSemibold {
-	return ([UIFont fontWithName:@"Qualcomm-Semibold" size:18.0]);
 }
 
 + (UIFont *)cartoGothicBold {
@@ -432,6 +412,10 @@ NSString *const FacebookAppID = @"529054720443694";
 
 + (UIColor *)honGreyInputColor {
 	return ([UIColor colorWithWhite:0.518 alpha:1.0]);
+}
+
++ (UIColor *)honGreyDarkerColor {
+	return ([UIColor colorWithWhite:0.455 alpha:1.0]);
 }
 
 

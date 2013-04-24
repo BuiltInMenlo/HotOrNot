@@ -61,6 +61,9 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showEmailComposer:) name:@"SHOW_EMAIL_COMPOSER" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSMSComposer:) name:@"SHOW_SMS_COMPOSER" object:nil];
+		
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	}
@@ -230,21 +233,6 @@
 	_emptySetImgView.userInteractionEnabled = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	UIButton *inviteSMSButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteSMSButton.frame = CGRectMake(73.0, 190.0, 174.0, 34.0);
-	[inviteSMSButton setBackgroundImage:[UIImage imageNamed:@"inviteSMS_nonActive"] forState:UIControlStateNormal];
-	[inviteSMSButton setBackgroundImage:[UIImage imageNamed:@"inviteSMS_Active"] forState:UIControlStateHighlighted];
-	[inviteSMSButton addTarget:self action:@selector(_goInviteSMS) forControlEvents:UIControlEventTouchUpInside];
-	[_emptySetImgView addSubview:inviteSMSButton];
-	
-	UIButton *inviteEmailButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteEmailButton.frame = CGRectMake(73.0, 250.0, 174.0, 34.0);
-	[inviteEmailButton setBackgroundImage:[UIImage imageNamed:@"inviteEMAIL_nonActive"] forState:UIControlStateNormal];
-	[inviteEmailButton setBackgroundImage:[UIImage imageNamed:@"inviteEMAIL_Active"] forState:UIControlStateHighlighted];
-	[inviteEmailButton addTarget:self action:@selector(_goInviteEmail) forControlEvents:UIControlEventTouchUpInside];
-	[_emptySetImgView addSubview:inviteEmailButton];
-	
-	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -365,44 +353,6 @@
 //	_progressHUD.taskInProgress = YES;
 }
 
-- (void)_goInviteEmail {
-	if ([MFMailComposeViewController canSendMail]) {
-		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-		mailComposeViewController.mailComposeDelegate = self;
-		//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
-		[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
-		
-		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
-																			 message:@"Cannot send email from this device!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
-	}
-}
-
-- (void)_goInviteSMS {
-	if ([MFMessageComposeViewController canSendText]) {
-		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-		messageComposeViewController.messageComposeDelegate = self;
-		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-		
-		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-	
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
-																			 message:@"Cannot send SMS from this device!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
-	}
-}
-
 
 #pragma mark - Notifications
 - (void)_acceptChallenge:(NSNotification *)notification {
@@ -415,7 +365,7 @@
 
 - (void)_nextChallengeBlock:(NSNotification *)notification {	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_getSnaps", nil);
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -509,10 +459,49 @@
 	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0));
 }
 
+- (void)_showEmailComposer:(NSNotification *)notification {
+	if ([MFMailComposeViewController canSendMail]) {
+		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+		mailComposeViewController.mailComposeDelegate = self;
+		//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
+		[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+		
+		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+																			 message:@"Cannot send email from this device!"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+	}
+}
+
+- (void)_showSMSComposer:(NSNotification *)notification {
+	if ([MFMessageComposeViewController canSendText]) {
+		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+		messageComposeViewController.messageComposeDelegate = self;
+		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
+		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		
+		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+																			 message:@"Cannot send SMS from this device!"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+	}
+}
+
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count] + (int)_isMoreLoadable);
+	return ([_challenges count] + 1);//(int)_isMoreLoadable);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -546,7 +535,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kRowHeight);
+	return ((indexPath.row < [_challenges count]) ? kRowHeight : 140.0);
 }
 
 //- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -670,7 +659,7 @@
 }
 
 
-#pragma mark - MessageCompose Delegates
+#pragma mark - MailCompose Delegates
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
 	switch (result) {
 		case MFMailComposeResultCancelled:

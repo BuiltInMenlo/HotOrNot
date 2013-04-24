@@ -47,7 +47,7 @@
 	if ((self = [super init])) {
 		_hasChallenger = NO;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 360.0)];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 289.0)];
 		bgImgView.image = [UIImage imageNamed:@"timelineBackground_A"];
 		[self addSubview:bgImgView];
 	}
@@ -77,8 +77,8 @@
 	_tapOverlayImageView.layer.cornerRadius = 2.0;
 	_tapOverlayImageView.clipsToBounds = YES;
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 13.0, 200.0, 22.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 12.0, 200.0, 22.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
@@ -91,13 +91,13 @@
 	[self addSubview:subjectButton];
 	
 	if ([_challengeVO.rechallengedUsers length] > 0) {
-		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(203.0, 11.0, 24.0, 24.0)];
+		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(259.0, 8.0, 24.0, 24.0)];
 		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
 		[self addSubview:rechallengeImageView];		
 	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(238.0, 12.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:11];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -126,8 +126,8 @@
 	[creatorAvatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:creatorAvatarButton];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 216.0, 100.0, 20.0)];
-	creatorNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 218.0, 100.0, 20.0)];
+	creatorNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:12];
 	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
@@ -164,8 +164,8 @@
 		[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerAvatarButton];
 		
-		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 216.0, 100.0, 20.0)];
-		challengerNameLabel.font = [[HONAppDelegate honHelveticaNeueFontMedium] fontWithSize:12];
+		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 218.0, 100.0, 20.0)];
+		challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:12];
 		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
 		challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
@@ -181,9 +181,9 @@
 		likeImageView.image = [UIImage imageNamed:@"heartIcon_nonActive"];
 		[self addSubview:likeImageView];
 		
-		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(42.0, 253.0, 150.0, 24.0)];
-		_likesLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-		_likesLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 253.0, 150.0, 24.0)];
+		_likesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
+		_likesLabel.textColor = [HONAppDelegate honGreyDarkerColor];
 		_likesLabel.backgroundColor = [UIColor clearColor];
 		_likesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? NSLocalizedString(@"timeline_like", nil) : NSLocalizedString(@"timeline_likes", nil), (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		[self addSubview:_likesLabel];
@@ -200,15 +200,12 @@
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
-		UIButton *snapAtButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		snapAtButton.frame = CGRectMake(13.0, 291.0, 294.0, 54.0);
-		[snapAtButton setBackgroundImage:[UIImage imageNamed:@"tapHereButton_nonActive"] forState:UIControlStateNormal];
-		[snapAtButton setBackgroundImage:[UIImage imageNamed:@"tapHereButton_Active"] forState:UIControlStateHighlighted];
-		[snapAtButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-//		[snapAtButton.titleLabel setFont:[[HONAppDelegate cartoGothicBook] fontWithSize:16.0]];
-//		[snapAtButton.titleLabel setTextColor:[UIColor whiteColor]];
-//		[snapAtButton setTitle:NSLocalizedString(@"timeline_trade", nil) forState:UIControlStateNormal];
-		[self addSubview:snapAtButton];
+//		UIButton *snapAtButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		snapAtButton.frame = CGRectMake(10.0, 285.0, 300.0, 64.0);
+//		[snapAtButton setBackgroundImage:[UIImage imageNamed:@"tapHereButton_nonActive"] forState:UIControlStateNormal];
+//		[snapAtButton setBackgroundImage:[UIImage imageNamed:@"tapHereButton_Active"] forState:UIControlStateHighlighted];
+//		[snapAtButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+//		[self addSubview:snapAtButton];
 	}
 	
 	
@@ -223,7 +220,7 @@
 	[self addSubview:_loserImageView];
 	
 	_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(33.0, 100.0, 97.0, 42.0)];
-	_lScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:22];
+	_lScoreLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:22];
 	_lScoreLabel.backgroundColor = [UIColor clearColor];
 	_lScoreLabel.textColor = (_challengeVO.creatorScore >= _challengeVO.challengerScore) ? [UIColor whiteColor] : [HONAppDelegate honGreyTxtColor];
 	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
@@ -232,7 +229,7 @@
 	[self addSubview:_lScoreLabel];
 	
 	_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(193.0, 100.0, 97.0, 42.0)];
-	_rScoreLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:22];
+	_rScoreLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:22];
 	_rScoreLabel.backgroundColor = [UIColor clearColor];
 	_rScoreLabel.textColor = (_challengeVO.creatorScore >= _challengeVO.challengerScore) ? [HONAppDelegate honGreyTxtColor] : [UIColor whiteColor];
 	_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
@@ -244,11 +241,11 @@
 	commentsImageView.image = [UIImage imageNamed:@"commentIcon_nonActive"];
 	[self addSubview:commentsImageView];
 	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(42.0, (_hasChallenger) ? 277.0 : 256.0, 150.0, 24.0)];
-	_commentsLabel.font = [[HONAppDelegate honHelveticaNeueFontBold] fontWithSize:12];
-	_commentsLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, (_hasChallenger) ? 277.0 : 256.0, 150.0, 24.0)];
+	_commentsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
+	_commentsLabel.textColor = [HONAppDelegate honGreyDarkerColor];
 	_commentsLabel.backgroundColor = [UIColor clearColor];
-	_commentsLabel.text = (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];;
+	_commentsLabel.text = (_challengeVO.commentTotal == 0) ? NSLocalizedString(@"timeline_0comments", nil) : (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_1comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];
 	[self addSubview:_commentsLabel];
 	
 	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -434,14 +431,26 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																				delegate:self
-																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:(_hasChallenger) ? [NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName] : @"Snap@Me", @"Share", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:0];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	if (_hasChallenger) {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																					delegate:self
+																		cancelButtonTitle:@"Cancel"
+																 destructiveButtonTitle:@"Report Abuse"
+																		otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], [NSString stringWithFormat:@"Snap @%@", _challengeVO.creatorName], [NSString stringWithFormat:@"Snap @%@", _challengeVO.challengerName], nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:0];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	
+	} else {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																					delegate:self
+																		cancelButtonTitle:@"Cancel"
+																 destructiveButtonTitle:@"Report Abuse"
+																		otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], @"Snap@Me", nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:1];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	}
 }
 
 - (void)_goSubjectTimeline {
@@ -670,11 +679,56 @@
 			break;}
 				
 			case 1:
-				[[NSNotificationCenter defaultCenter] postNotificationName:(_hasChallenger) ? @"NEW_SUBJECT_CHALLENGE" : @"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
 				break;
 				
 			case 2:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_CHALLENGE" object:_challengeVO];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+				break;
+				
+			case 3:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+				break;
+		}
+	}
+	
+	else if (actionSheet.tag == 1) {
+		switch (buttonIndex) {
+			case 0: {
+				[[Mixpanel sharedInstance] track:@"Timeline - Flag"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+				
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+												[NSString stringWithFormat:@"%d", 11], @"action",
+												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+												[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+												nil];
+				
+				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+						//NSLog(@"HONVoteItemViewCell AFNetworking: %@", flagResult);
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
+				}];
+				
+				break;}
+				
+			case 1:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+				break;
+				
+			case 2:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 				break;
 		}
 	}

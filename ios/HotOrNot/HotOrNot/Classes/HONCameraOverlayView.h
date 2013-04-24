@@ -11,23 +11,20 @@
 
 @protocol HONCameraOverlayViewDelegate;
 @interface HONCameraOverlayView : UIView
-
-- (id)initWithFrame:(CGRect)frame withUsername:(NSString *)username withAvatar:(NSString *)avatar;
+- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username withAvatar:(NSString *)avatar;
 - (void)hidePreview;
 - (void)showPreviewImage:(UIImage *)image;
 - (void)showPreviewImageFlipped:(UIImage *)image;
 
 @property(nonatomic, assign) id <HONCameraOverlayViewDelegate> delegate;
-@property (nonatomic, weak) NSString *subjectName;
-
 @end
+
 
 @protocol HONCameraOverlayViewDelegate
 - (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView username:(NSString *)username;
+- (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName;
-- (void)cameraOverlayViewPickFBFriends:(HONCameraOverlayView *)cameraOverlayView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView;
