@@ -314,16 +314,12 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 + (BOOL)canPingAPIServer {
-	NetworkStatus apiStatus = [[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus];
-	
-	return (!(apiStatus == NotReachable));
+	return (!([[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus] == NotReachable));
 }
 
-//+ (BOOL)canPingParseServer {
-//	NetworkStatus parseStatus = [[Reachability reachabilityWithHostName:@"api.parse.com"] currentReachabilityStatus];
-//	
-//	return (!(parseStatus == NotReachable));
-//}
++ (BOOL)canPingParseServer {
+	return (!([[Reachability reachabilityWithHostName:@"api.parse.com"] currentReachabilityStatus] == NotReachable));
+}
 
 + (BOOL)audioMuted {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"] isEqualToString:@"YES"]);
@@ -565,6 +561,12 @@ NSString *const FacebookAppID = @"529054720443694";
 		[UAirship takeOff:takeOffOptions];
 		[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 		
+		// parse is down!!
+		if (![HONAppDelegate canPingParseServer]) {
+			[self _showOKAlert:@"Connection Error"
+				   withMessage:@"Could not connect to Volley initialization servers, please try again."];
+		}
+		
 		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
 		[PFUser enableAutomaticUser];
 		PFACL *defaultACL = [PFACL ACL];
@@ -577,7 +579,7 @@ NSString *const FacebookAppID = @"529054720443694";
 		// parse is down!!
 		if (apiActiveObject == nil) {
 			[self _showOKAlert:@"Connection Error"
-				   withMessage:@"Could not connect to the Volley endpoint servers, please try again."];
+				   withMessage:@"Could not connect to Volley endpoint servers, please try again."];
 		
 		} else {
 			if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
@@ -609,13 +611,6 @@ NSString *const FacebookAppID = @"529054720443694";
 					[HONAppDelegate setAllowsFBPosting:NO];
 				
 				[self _retrieveParseObj];
-				
-//				PFQuery *s3Query = [PFQuery queryWithClassName:@"S3Credentials"];
-//				PFObject *s3Object = [s3Query getObjectWithId:@"zofEGq6sLT"];
-//				[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-//																				  [s3Object objectForKey:@"key"], @"key",
-//																				  [s3Object objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
-				
 				[[NSUserDefaults standardUserDefaults] synchronize];
 			
 //				[TapForTap initializeWithAPIKey:@"13654ee85567a679c190698d04ee87e2"];
@@ -679,24 +674,30 @@ NSString *const FacebookAppID = @"529054720443694";
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
-		PFObject *apiActiveObject = [apiActiveQuery getObjectWithId:@"eFLGKQWRzD"];
-		
-		if (apiActiveObject != nil) {
-			if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
-				[self _retrieveParseObj];
-				
-				//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
-			
-			} else {
-				[self _showOKAlert:@"Upgrade Needed"
-					   withMessage:@"Please update to the latest version from the App Store to continue playing Volley."];
-			}
-			
-		} else {
+		if (![HONAppDelegate canPingParseServer]) {
 			[self _showOKAlert:@"Connection Error"
-				   withMessage:@"Could not connect to the Volley endpoint servers, please try again."];
+				   withMessage:@"Could not connect to the Volley initialization servers, please try again."];
+		
+		} else {
+			PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
+			PFObject *apiActiveObject = [apiActiveQuery getObjectWithId:@"eFLGKQWRzD"];
+			
+			if (apiActiveObject != nil) {
+				if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
+					[self _retrieveParseObj];
+					
+					//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+				
+				} else {
+					[self _showOKAlert:@"Upgrade Needed"
+						   withMessage:@"Please update to the latest version from the App Store to continue playing Volley."];
+				}
+				
+			} else {
+				[self _showOKAlert:@"Connection Error"
+					   withMessage:@"Could not connect to the Volley endpoint servers, please try again."];
+			}
 		}
 	}
 	
