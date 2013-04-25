@@ -18,7 +18,6 @@
 @interface HONUsernameViewController () <UITextFieldDelegate>
 @property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) UITextField *usernameTextField;
-@property(nonatomic, strong) UIButton *editButton;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
@@ -55,10 +54,10 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1ModalBackground-568h@2x" : @"fueStep1ModalBackground"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Username"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_username", nil)];
 	[headerView hideRefreshing];
 	[self.view addSubview:headerView];
 	
@@ -70,42 +69,33 @@
 	[headerView addSubview:cancelButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(246.0, 0.0, 74.0, 44.0);
+	submitButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:submitButton];
 	
-	UIImageView *logoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 87.0, 64.0, 64.0)];
-	logoImageView.image = [UIImage imageNamed:@"firstRun_AvatarIcon"];
-	logoImageView.userInteractionEnabled = YES;
-	[self.view addSubview:logoImageView];
-	
-	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(13.0, 177.0, 294.0, 64.0)];
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(34.0, 162.0, 251.0, 48.0)];
 	subjectBGImageView.image = [UIImage imageNamed:@"firstRun_InputField_nonActive"];
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(21.0, 21.0, 240.0, 20.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 10.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
+	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
-	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-	_usernameTextField.text = [[HONAppDelegate infoForUser] objectForKey:@"name"];
+	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_usernameTextField.textAlignment = NSTextAlignmentCenter;
+	_usernameTextField.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
 	_usernameTextField.delegate = self;
 	[subjectBGImageView addSubview:_usernameTextField];
 	
-	_editButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_editButton.frame = CGRectMake(237.0, 5.0, 34.0, 34.0);
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_nonActive"] forState:UIControlStateNormal];
-	[_editButton setBackgroundImage:[UIImage imageNamed:@"clearTextButton_Active"] forState:UIControlStateHighlighted];
-	[_editButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
-	//[subjectBGImageView addSubview:_editButton];
+	[_usernameTextField becomeFirstResponder];
 }
 
 - (void)viewDidLoad {
@@ -124,15 +114,6 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)_goEditSubject {
-	[[Mixpanel sharedInstance] track:@"Change Username - Edit"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	_usernameTextField.text = @"";
-	[_usernameTextField becomeFirstResponder];
 }
 
 - (void)_goSubmit {
@@ -188,6 +169,8 @@
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:1.5];
 				_progressHUD = nil;
+				
+				[_usernameTextField becomeFirstResponder];
 			}
 		}
 		
@@ -206,7 +189,6 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	_editButton.hidden = YES;
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -214,16 +196,27 @@
 	return YES;
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	if (textField.tag == 0) {
+		if ([textField.text isEqualToString:@""])
+			textField.text = @"@";
+	}
+	
+	return (YES);
+}
+
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
-	
-	_editButton.hidden = NO;
 	
 	if ([textField.text length] == 0)
 		textField.text = _username;
 	
-	else
-		_username = textField.text;
+	_username = [textField.text substringFromIndex:1];
+	
+	[[Mixpanel sharedInstance] track:@"Change Username - Submit"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  _username, @"username", nil]];
 }
 
 @end

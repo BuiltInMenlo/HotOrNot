@@ -164,18 +164,17 @@
 	footerImageView.userInteractionEnabled = YES;
 	[self.view addSubview:footerImageView];
 	
-	int offset = ([HONAppDelegate isRetina5]) ? 110.0 : 0.0;
-	
+	int offset = ([HONAppDelegate isRetina5]) ? 87.0 : 0.0;
 	UIButton *pokeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	pokeButton.frame = CGRectMake(33.0, 399.0 + offset, 44.0, 44.0);
+	pokeButton.frame = CGRectMake(33.0, 422.0 + offset, 44.0, 44.0);
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_nonActive"] forState:UIControlStateNormal];
 	[pokeButton setBackgroundImage:[UIImage imageNamed:@"pokeButton_Active"] forState:UIControlStateHighlighted];
 	[pokeButton addTarget:self action:(_isCreator || _challengeVO.statusID == 1 || _challengeVO.statusID == 2) ? @selector(_goPokeCreator) : @selector(_goPokeChallenger) forControlEvents:UIControlEventTouchUpInside];
 	pokeButton.hidden = (_isOwner);
-//	[self.view addSubview:pokeButton];
+	//	[self.view addSubview:pokeButton];
 	
 	UIButton *voteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	voteButton.frame = CGRectMake(32.0, 388.0 + offset, 44.0, 44.0);
+	voteButton.frame = CGRectMake(32.0, 410.0 + offset, 44.0, 44.0);
 	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_nonActive"] forState:UIControlStateNormal];
 	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_Active"] forState:UIControlStateHighlighted];
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
@@ -183,7 +182,7 @@
 	[self.view addSubview:voteButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(243.0, 388.0 + offset, 44.0, 44.0);
+	moreButton.frame = CGRectMake(243.0, 410.0 + offset, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"overlayMoreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];

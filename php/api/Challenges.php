@@ -281,7 +281,64 @@
 			$header = curl_getinfo($ch);
 			curl_close($ch);
 		}
-	    
+		
+		/**
+		 * Checks to see if a user ID is a default
+		 * @param $challenge_id The ID of the challenge
+		 * @return An associative object for a challenge (array)
+		**/
+		function acceptChallengeAsDefaultUser($challenge_id) {
+			
+			// list of default user IDs
+			$defaultUserID_arr = array(
+				2390,
+				2391,
+				2392,
+				2393,
+				2394
+			);
+			
+			// get challenge data
+			$query = 'SELECT `subject_id`, `creator_id`, `challenger_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+			$challenge_obj = mysql_fetch_object(mysql_query($query));
+			
+			// check for ID
+			$isFound = false;
+			foreach ($defaultUserID_arr as $key => $val) {
+				if ($challenge_obj->challenger_id == $val) {
+					$isFound = true;
+					break;
+				}
+			}
+			
+			// found a default user
+			if ($isFound) {
+				
+				// get the subject name for this challenge
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
+				$subject_name = mysql_fetch_object(mysql_query($query))->title;
+				
+				// get default user info
+				$query = 'SELECT `device_token`, `username` FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
+				$challenger_obj = mysql_fetch_object(mysql_query($query));
+				
+				// pick a random image
+				$img_url = "https://hotornot-challenges.s3.amazonaws.com/". $challenger_obj->device_token ."_000000000". mt_rand(0, 2);
+				
+				// get the creator's device info
+				$query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';			
+				$creator_obj = mysql_fetch_object(mysql_query($query));
+			
+				// send push if allowed
+				if ($creator_obj->notifications == "Y")
+					$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_obj->username .' has accepted your '. $subject_name .' snap!", "sound": "push_01.caf"}}'); 			
+
+				// update the challenge to started
+				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `started` = NOW() WHERE `id` = '. $challenge_id .';';
+				$result = mysql_query($query);
+			}
+		}
+		
 		
 		/**
 		 * Inserts a new challenge and attempts to match on a waiting challenge with the same subject
@@ -437,6 +494,8 @@
 			if (mysql_num_rows($challenger_result) > 0) {			
 				$challenger_id = mysql_fetch_object($challenger_result)->id;
 				
+				// look for default users
+				
 				// get the subject id for the subject name
 				$subject_id = $this->submitSubject($user_id, $subject);
 				
@@ -466,6 +525,11 @@
 			    
 				// get the newly created challenge
 				$challenge_arr = $this->getChallengeObj($challenge_id);
+				
+				
+				// auto-accept if sent to default user
+				$this->acceptChallengeAsDefaultUser($challenge_id);
+				
 			
 			// couldn't find this user
 			} else

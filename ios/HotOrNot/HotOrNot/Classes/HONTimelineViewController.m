@@ -718,7 +718,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count]);
+	return ([_challenges count] + ([_username length] > 0));
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -761,7 +761,7 @@
 			
 			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 			return (cell);
-			}
+		}
 		
 	} else {
 		HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];

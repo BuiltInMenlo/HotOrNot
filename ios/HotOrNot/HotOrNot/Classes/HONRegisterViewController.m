@@ -261,11 +261,6 @@
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:nextButton];
 	
-	UIImageView *logoImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 87.0, 64.0, 64.0)];
-	logoImageView.image = [UIImage imageNamed:@"firstRun_AvatarIcon"];
-	logoImageView.userInteractionEnabled = YES;
-//	[self.view addSubview:logoImageView];
-	
 	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(34.0, 162.0, 251.0, 48.0)];
 	subjectBGImageView.image = [UIImage imageNamed:@"firstRun_InputField_nonActive"];
 	subjectBGImageView.userInteractionEnabled = YES;
