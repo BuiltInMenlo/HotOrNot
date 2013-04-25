@@ -578,12 +578,6 @@ NSString *const FacebookAppID = @"529054720443694";
 		if (apiActiveObject == nil) {
 			[self _showOKAlert:@"Connection Error"
 				   withMessage:@"Could not connect to the Volley endpoint servers, please try again."];
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Connection Error"
-//																message:@"Could not connect to the Volley endpoint servers, please try again."
-//															   delegate:nil
-//													  cancelButtonTitle:nil
-//													  otherButtonTitles:@"OK", nil];
-//			[alertView show];
 		
 		} else {
 			if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
@@ -651,26 +645,12 @@ NSString *const FacebookAppID = @"529054720443694";
 			} else {
 				[self _showOKAlert:@"Upgrade Needed"
 					   withMessage:@"Please update to the latest version from the App Store to continue playing Volley."];
-//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Upgrade Needed"
-//																	message:@"Please update to the latest version from the App Store to continue playing Volley."
-//																   delegate:nil
-//														  cancelButtonTitle:nil
-//														  otherButtonTitles:@"OK", nil];
-//				[alertView show];
 			}
 		}
 	
 	} else {
 		[self _showOKAlert:@"No Network Connection"
 			   withMessage:@"This app requires a network connection to work."];
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"No Network Connection"
-//															message:@"This app requires a network connection to work."
-//														   delegate:self
-//												  cancelButtonTitle:nil
-//												  otherButtonTitles:@"OK", nil];
-//		[alertView setTag:0];
-//		[alertView show];
-
 	}
 	
 	return (YES);
@@ -712,23 +692,11 @@ NSString *const FacebookAppID = @"529054720443694";
 			} else {
 				[self _showOKAlert:@"Upgrade Needed"
 					   withMessage:@"Please update to the latest version from the App Store to continue playing Volley."];
-//				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Upgrade Needed"
-//																	message:@"Please update to the latest version from the App Store to continue playing Volley."
-//																   delegate:nil
-//														  cancelButtonTitle:nil
-//														  otherButtonTitles:@"OK", nil];
-//				[alertView show];
 			}
 			
 		} else {
 			[self _showOKAlert:@"Connection Error"
 				   withMessage:@"Could not connect to the Volley endpoint servers, please try again."];
-//			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Connection Error"
-//																message:@"Could not connect to the Volley endpoint servers, please try again."
-//															   delegate:nil
-//													  cancelButtonTitle:nil
-//													  otherButtonTitles:@"OK", nil];
-//			[alertView show];
 		}
 	}
 	
@@ -798,27 +766,12 @@ NSString *const FacebookAppID = @"529054720443694";
 		case 1:
 			[self _showOKAlert:@"Challenge Update"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-//			UIAlertView *alertView = [[UIAlertView alloc]
-//											  initWithTitle:@"Challenge Update"
-//											  message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-//											  delegate:nil
-//											  cancelButtonTitle:@"OK"
-//											  otherButtonTitles:nil];
-//			[alertView setTag:5];
-//			[alertView show];
 			break;
 			
 		// poke
 		case 2:
 			[self _showOKAlert:@"Poke"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-//			UIAlertView *alertView = [[UIAlertView alloc]
-//											  initWithTitle:@"Poke"
-//											  message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-//											  delegate:nil
-//											  cancelButtonTitle:@"OK"
-//											  otherButtonTitles:nil];
-//			[alertView show];
 			break;
 	}
 	 	
