@@ -22,10 +22,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 63.0)];
-		_bgImageView.image = [UIImage imageNamed:@"genericRowBackground_nonActive"];
+		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
 		
-		UIImageView *selectedImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 63.0)];
+		UIImageView *selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		selectedImageView.image = [UIImage imageNamed:@"rowGray_nonActive"];
 		
 		self.backgroundView = _bgImageView;

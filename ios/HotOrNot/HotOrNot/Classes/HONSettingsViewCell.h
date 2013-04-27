@@ -14,7 +14,6 @@
 + (NSString *)cellReuseIdentifier;
 
 - (id)initAsTopCell;
-//- (id)initAsMidCell:(NSString *)caption isGrey:(BOOL)grey;
 - (id)initAsMidCell:(NSString *)caption;
 - (void)updateCaption:(NSString *)caption;
 - (void)updateTopCell;

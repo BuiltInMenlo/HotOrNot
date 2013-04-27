@@ -32,7 +32,8 @@
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";
-"header_settings" = "";
+"header_profile" = "Profile";
+"header_settings" = "Settings";
 "header_username" = "ユーザ名";
 "header_create" = "";
 "header_preview" = "Preview";
@@ -62,14 +63,13 @@
 "activity_waiting" = "あなたが待っている…";
 "activity_waiting_f" = "あなたが待っている… (F)";
 
-"profile_inviteSMS_button" = "SMS経由で友達を招待する";
-"profile_notifications" = "通知";
-"profile_myPhotos" = "私の写真";
-"profile_inviteSMS" = "SMS経由で友達を招待";
-"profile_inviteEmail" = "電子メールを介して友達を招待";
-"profile_changeUsername" = "ユーザー名を変更";
-"profile_support" = "支援";
-"profile_privacy" = "個人情報保護方針";
+"settings_notifications" = "通知";
+"settings_myPhotos" = "私の写真";
+"settings_inviteSMS" = "SMS経由で友達を招待";
+"settings_inviteEmail" = "電子メールを介して友達を招待";
+"settings_changeUsername" = "ユーザー名を変更";
+"settings_support" = "支援";
+"settings_privacy" = "個人情報保護方針";
 "profile_snap" = "%@ スナップ";
 "profile_snaps" = "%@ スナップ";
 "profile_vote" = "%@ 投票する";
@@ -78,3 +78,5 @@
 "profile_points" = "%@ 点数";
 
 "userPlaceholder" = "@Enter a username to snap @";
+
+"invite_email" = "Come Snap @me on Volley!";

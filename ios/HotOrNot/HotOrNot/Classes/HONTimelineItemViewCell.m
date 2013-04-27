@@ -101,7 +101,7 @@
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];
+	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 	[self addSubview:timeLabel];
 	
 	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 44.0, 153.0, 153.0)];
@@ -407,18 +407,7 @@
 }
 
 - (void)_goScore {
-	
-//	if (_challengeVO.creatorScore + _challengeVO.challengerScore == 0) {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Like Snap"
-//																			 message:@"Do you want to be the first user to like this?"
-//																			delegate:self
-//																cancelButtonTitle:@"Cancel"
-//																otherButtonTitles:@"OK", nil];
-//		[alertView setTag:0];
-//		[alertView show];
-//	
-//	} else
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
 }
 
 - (void)_goComments {

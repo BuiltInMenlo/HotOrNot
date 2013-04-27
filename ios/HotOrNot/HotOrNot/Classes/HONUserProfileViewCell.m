@@ -6,12 +6,16 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
-
 #import "UIImageView+AFNetworking.h"
 
 #import "HONUserProfileViewCell.h"
 #import "HONAppDelegate.h"
+
+@interface HONUserProfileViewCell()
+@property (nonatomic, strong) UILabel *snapsLabel;
+@property (nonatomic, strong) UILabel *votesLabel;
+@property (nonatomic, strong) UILabel *ptsLabel;
+@end
 
 @implementation HONUserProfileViewCell
 
@@ -22,17 +26,16 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		
+		UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 163.0)];
+		bgImageView.image = [UIImage imageNamed:@"profileBackground"];
+		[self addSubview:bgImageView];
 	}
+	
 	return (self);
 }
 
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
-	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 163.0)];
-	bgImageView.image = [UIImage imageNamed:@"profileBackground"];
-	[self addSubview:bgImageView];
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 97.0, 97.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
@@ -48,29 +51,39 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 124.0, 107.0, 30.0)];
-	snapsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
-	snapsLabel.textColor = [UIColor whiteColor];
-	snapsLabel.backgroundColor = [UIColor clearColor];
-	snapsLabel.textAlignment = NSTextAlignmentCenter;
-	snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
-	[self addSubview:snapsLabel];
+	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 124.0, 107.0, 30.0)];
+	_snapsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+	_snapsLabel.textColor = [UIColor whiteColor];
+	_snapsLabel.backgroundColor = [UIColor clearColor];
+	_snapsLabel.textAlignment = NSTextAlignmentCenter;
+	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
+	[self addSubview:_snapsLabel];
 	
-	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(107.0, 124.0, 107.0, 30.0)];
-	votesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
-	votesLabel.textColor = [UIColor whiteColor];
-	votesLabel.backgroundColor = [UIColor clearColor];
-	votesLabel.textAlignment = NSTextAlignmentCenter;
-	votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
-	[self addSubview:votesLabel];
+	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(107.0, 124.0, 107.0, 30.0)];
+	_votesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+	_votesLabel.textColor = [UIColor whiteColor];
+	_votesLabel.backgroundColor = [UIColor clearColor];
+	_votesLabel.textAlignment = NSTextAlignmentCenter;
+	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
+	[self addSubview:_votesLabel];
 	
-	UILabel *pointsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 124.0, 107.0, 30.0)];
-	pointsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
-	pointsLabel.textColor = [UIColor whiteColor];
-	pointsLabel.backgroundColor = [UIColor clearColor];
-	pointsLabel.textAlignment = NSTextAlignmentCenter;
-	pointsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
-	[self addSubview:pointsLabel];
+	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(213.0, 124.0, 107.0, 30.0)];
+	_ptsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+	_ptsLabel.textColor = [UIColor whiteColor];
+	_ptsLabel.backgroundColor = [UIColor clearColor];
+	_ptsLabel.textAlignment = NSTextAlignmentCenter;
+	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
+	[self addSubview:_ptsLabel];
+}
+
+
+- (void)updateCell {
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
+	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
+	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
+	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 }
 
 

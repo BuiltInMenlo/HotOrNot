@@ -247,7 +247,7 @@ foreach ($vote_arr as $key => $val) {
 
 
 // INSERT STARTING CHALLENGES
-
+/*
 if (isset($_GET['userID'])) {
 	$user_id = $_GET['userID'];
 
@@ -283,8 +283,19 @@ if (isset($_GET['userID'])) {
 } else {
 	echo ("NO ['userID']!");
 }
+*/
 
 
+/*
+// fix updated dates
+$query = 'SELECT `id`, `started` FROM `tblChallenges`;';
+$result = mysql_query($query);
+
+while ($row = mysql_fetch_assoc($result)) {
+	$query = 'UPDATE `tblChallenges` SET `updated` = "'. $row['started'] .'" WHERE `id` = '. $row['id'] .';';
+	$upd_result = mysql_query($query);
+}
+*/
 
 
 			

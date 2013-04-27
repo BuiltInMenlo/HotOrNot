@@ -134,6 +134,7 @@
 				'has_viewed' => $challenge_obj->hasPreviewed, 
 				'started' => $challenge_obj->started, 
 				'added' => $challenge_obj->added, 
+				'updated' => $challenge_obj->updated, 
 				'creator' => $this->userForChallenge($challenge_obj->creator_id, $challenge_obj->id),
 				'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id),
 				'rechallenges' => $rechallenge_arr
@@ -291,12 +292,7 @@
 			
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
-			return (true);
-			
-			/*
-			example response:
-			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
-			*/
+			return (true);			
 		}
 		
 		/** 
@@ -307,7 +303,7 @@
 			$challenge_arr = array();
 			
 			// get available challenge rows
-			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 4 ORDER BY `started` DESC LIMIT 250;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 4 ORDER BY `updated` DESC LIMIT 250;';
 			$result = mysql_query($query);
 			
 			// loop thru rows
@@ -321,11 +317,6 @@
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
-			
-			/*
-			example response:
-			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
-			*/
 		}
 		
 		/** 
@@ -337,7 +328,7 @@
 			$challenge_arr = array();
 			
 			// get challenges based on subject
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `updated` DESC;';
 			$result = mysql_query($query);
 			
 			// loop thru challenges
@@ -348,11 +339,6 @@
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
-			
-			/*
-			example response:
-			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
-			*/
 		}
 		
 		/** 
@@ -368,7 +354,7 @@
 			$subject_id = mysql_fetch_object(mysql_query($query))->id;
 			
 			// get challenges based on subject
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `started` DESC;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `updated` DESC;';
 			$result = mysql_query($query);
 			
 			// loop thru challenges
@@ -379,11 +365,6 @@
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
-			
-			/*
-			example response:
-			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
-			*/
 		}
 		
 		
@@ -407,7 +388,7 @@
 				$user_id = mysql_fetch_object($user_result)->id;
 				
 				// get latest 10 challenges for user
-				$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 2 AND `status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `started` DESC LIMIT 50;';
+				$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 2 AND `status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50;';
 				$challenge_result = mysql_query($query);
 			
 				// loop thru the rows
@@ -429,6 +410,7 @@
 						'has_viewed' => $challenge_row['hasPreviewed'], 
 						'started' => $challenge_row['started'], 
 						'added' => $challenge_row['added'],
+						'updated' => $challenge_row['updated'],
 						'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
 						'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
 					));
@@ -438,13 +420,30 @@
 				$this->sendResponse(200, json_encode($challenge_arr));
 				return (true);
 			}
-			
-			/*
-			example response:
-			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
-			*/
 		}
 		
+		/** 
+		 * Gets a list of challenges between two users
+		 * @param $user_id The ID of the first user (integer)
+		 * @param $challenger_id The ID of the second user (integer)
+		 * @return The list of challenges (array)
+		**/
+		function getChallengesWithChallenger($user_id, $challenger_id) {
+			$challenge_arr = array();
+			
+			// get challenges with these two users
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE (`creator_id` = '. $user_id .' AND `challenger_id` = '. $challenger_id .') OR (`creator_id` = '. $challenger_id .' AND `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50';
+			$result = mysql_query($query);
+			
+			// loop thru challenges
+			while ($row = mysql_fetch_assoc($result))
+				array_push($challenge_arr, $this->getChallengeObj($row['id']));	
+				
+			
+			// return
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);
+		}
 		
 		/** 
 		 * Gets a challenge for an ID
@@ -458,11 +457,6 @@
 			array_push($challenge_arr, $this->getChallengeObj($challenge_id));
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
-			
-			/*
-			example response:
-			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}}]
-			*/
 		}
 		
 		
@@ -531,11 +525,6 @@
 			// return
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/*
-			example response:
-			[{"id":"3","fb_id":"1390251585","username":"typeoh","img_url":"https:\/\/graph.facebook.com\/1390251585\/picture?type=square","points":"178","votes":187,"pokes":30,"challenges":470},{"id":"2","fb_id":"1554917948","username":"toofus.magnus","img_url":"https:\/\/graph.facebook.com\/1554917948\/picture?type=square","points":"50","votes":14,"pokes":22,"challenges":83}]
-			*/
 		}
 		
 		/** 
@@ -579,8 +568,8 @@
 				$result = mysql_query($query);
 				$vote_id = mysql_insert_id();
 				
-				// increment vote total
-				$query = 'UPDATE `tblChallenges` SET `votes` = "'. ++$vote_tot .'" WHERE `id` = '. $challenge_id .';';
+				// increment vote total & update time
+				$query = 'UPDATE `tblChallenges` SET `votes` = "'. ++$vote_tot .'", `updated` = NOW() WHERE `id` = '. $challenge_id .';';
 				$result = mysql_query($query);
 			
 			// existing vote	
@@ -620,11 +609,6 @@
 			// return
 			$this->sendResponse(200, json_encode($this->getChallengeObj($challenge_id)));
 			return (true);
-			
-			/*
-			example response:
-			{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}}
-			*/
 		}
 		
 		
@@ -682,8 +666,11 @@
 				if (isset($_POST['challengeID']) && isset($_POST['userID']) && isset($_POST['creator']))
 					$votes->upvoteChallenge($_POST['challengeID'], $_POST['userID'], $_POST['creator']);
 				break;
-				
+			
+			// get a list of challenges between two users
 			case "7":
+				if (isset($_POST['userID']) && isset($_POST['challengerID']))
+					$votes->getChallengesWithChallenger($_POST['userID'], $_POST['challengerID']);
 				break;
 				
 			// challenges by a subject name

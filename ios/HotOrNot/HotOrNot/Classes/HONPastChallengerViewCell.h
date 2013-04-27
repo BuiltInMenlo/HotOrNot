@@ -1,17 +1,16 @@
 //
-//  HONUserProfileViewCell.h
+//  HONProfileViewCell.h
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 2/27/13.
+//  Created by Matthew Holcombe on 04.26.13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-
 #import "HONUserVO.h"
 
-@interface HONUserProfileViewCell : UITableViewCell
+@interface HONPastChallengerViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
-- (void)updateCell;
+
 @property (nonatomic, retain) HONUserVO *userVO;
 @end

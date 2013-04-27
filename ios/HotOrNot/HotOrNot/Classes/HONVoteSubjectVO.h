@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface HONVoteSubjectVO : NSObject
-
 + (HONVoteSubjectVO *)subjectWithDictionary:(NSDictionary *)dictionary;
 
 @property (nonatomic, retain) NSDictionary *dictionary;

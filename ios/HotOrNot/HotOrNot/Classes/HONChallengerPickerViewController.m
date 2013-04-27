@@ -205,13 +205,8 @@
 	if (_userVO != nil)
 		[params setObject:_userVO.username forKey:@"username"];
 	
-	NSLog(@"USERNAME:[%@]", _username);
-	
 	if (![_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] && [_username length] > 0)
 		[params setObject:[_username substringFromIndex:1] forKey:@"username"];
-	
-	
-	NSLog(@"PARAMS:[%@]", params);
 	
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];

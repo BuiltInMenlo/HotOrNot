@@ -178,6 +178,10 @@
 			$result = mysql_query($query);
 			$comment_id = mysql_insert_id();
 			
+			// update the time
+			$query = 'UPDATE `tblChallenges` SET `updated` = NOW() WHERE `id` = '. $challenge_id .';';
+			$result = mysql_query($query);
+			
 			// submitting user object
 			$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $user_id .';';
 			$user_obj = mysql_fetch_object(mysql_query($query));

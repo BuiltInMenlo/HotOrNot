@@ -167,6 +167,7 @@
 				'has_viewed' => $challenge_obj->hasPreviewed, 
 				'started' => $challenge_obj->started, 
 				'added' => $challenge_obj->added, 
+				'updated' => $challenge_obj->updated, 
 				'creator' => $this->userForChallenge($challenge_obj->creator_id, $challenge_obj->id),
 				'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id),
 				'rechallenges' => $rechallenge_arr
@@ -558,7 +559,7 @@
 			$challenge_result = mysql_query($query);
 			
 			// loop thru the rows
-			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
+			while ($challenge_row = mysql_fetch_assoc($challenge_result)) {
 				
 				// set challenge status to waiting if user is the challenger and it's been created
 				if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
@@ -576,6 +577,7 @@
 					'has_viewed' => $challenge_row['hasPreviewed'], 
 					'started' => $challenge_row['started'], 
 					'added' => $challenge_row['added'],
+					'updated' => $challenge_row['updated'], 
 					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
 					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
 				));
@@ -605,7 +607,7 @@
 			$challenge_result = mysql_query($query);
 			
 			// loop thru the rows
-			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
+			while ($challenge_row = mysql_fetch_assoc($challenge_result)) {
 				
 				// set challenge status to waiting if user is the challenger and it's been created
 				if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
@@ -659,7 +661,8 @@
 					'comments' => $comments, 
 					'has_viewed' => $challenge_row['hasPreviewed'], 
 					'started' => $challenge_row['started'], 
-					'added' => $challenge_row['added'],
+					'added' => $challenge_row['added'], 
+					'updated' => $challenge_row['updated'], 
 					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
 					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id']),
 					'rechallenges' => $rechallenge_arr
@@ -691,7 +694,7 @@
 			$challenge_result = mysql_query($query);
 			
 			// loop thru challenge rows
-			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
+			while ($challenge_row = mysql_fetch_assoc($challenge_result)) {
 				
 				// set challenge status to waiting if user is the challenger and it's been created
 				if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
@@ -708,7 +711,8 @@
 					'subject' => $sub_obj->title, 
 					'has_viewed' => $challenge_row['hasPreviewed'], 
 					'started' => $challenge_row['started'], 
-					'added' => $challenge_row['added'],
+					'added' => $challenge_row['added'], 
+					'updated' => $challenge_row['updated'], 
 					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
 					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
 				));
@@ -756,7 +760,7 @@
 				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_name .' has accepted your '. $subject_name .' snap!", "sound": "push_01.caf"}}'); 			
 
 			// update the challenge to started
-			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `started` = NOW() WHERE `id` = '. $challenge_id .';';
+			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
 			$result = mysql_query($query);			
 			
 			// return

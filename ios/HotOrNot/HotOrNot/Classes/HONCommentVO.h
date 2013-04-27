@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface HONCommentVO : NSObject
-
 + (HONCommentVO *)commentWithDictionary:(NSDictionary *)dictionary;
 
 @property (nonatomic, retain) NSDictionary *dictionary;

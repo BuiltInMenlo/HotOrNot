@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface HONChallengeVO : NSObject
-
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary;
 
 @property (nonatomic, retain) NSDictionary *dictionary;
@@ -23,6 +22,7 @@
 @property (nonatomic, retain) NSString *rechallengedUsers;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
+@property (nonatomic, retain) NSDate *updatedDate;
 
 @property (nonatomic) int creatorID;
 @property (nonatomic, retain) NSString *creatorFB;

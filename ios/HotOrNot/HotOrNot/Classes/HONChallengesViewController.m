@@ -20,12 +20,9 @@
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
 #import "HONChallengeVO.h"
-#import "HONSettingsViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONLoginViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONHeaderView.h"
-#import "HONFacebookCaller.h"
 #import "HONChallengePreviewViewController.h"
 #import "HONSearchBarHeaderView.h"
 
@@ -331,7 +328,7 @@
 		range.length = [_friends count] - range.location;
 	
 	NSLog(@"INVITING (%d-%d)/%d", range.location, range.location + range.length, [_friends count]);
-	[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends subarrayWithRange:range]];
+	//[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends subarrayWithRange:range]];
 	_blockCounter++;
 }
 
@@ -535,7 +532,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row < [_challenges count]) ? kRowHeight : 140.0);
+	return ((indexPath.row < [_challenges count]) ? kRowHeight : 64.0);
 }
 
 //- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -574,22 +571,22 @@
 		[alertView show];
 		
 	} else if ([vo.status isEqualToString:@"Waiting"]) {
-		_previewViewController = [[HONChallengePreviewViewController alloc] initAsCreator:vo];
-		//[self.view addSubview:_previewViewController.view];
+//		_previewViewController = [[HONChallengePreviewViewController alloc] initAsCreator:vo];
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
+//		[navigationController setNavigationBarHidden:YES];
+//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+//		[self presentViewController:navigationController animated:NO completion:nil];
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-		[self presentViewController:navigationController animated:NO completion:nil];
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 		
 	} else if ([vo.status isEqualToString:@"Accept"]) {
-		_previewViewController = [[HONChallengePreviewViewController alloc] initAsChallenger:vo];
-		//[self.view addSubview:_previewViewController.view];
+//		_previewViewController = [[HONChallengePreviewViewController alloc] initAsChallenger:vo];
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
+//		[navigationController setNavigationBarHidden:YES];
+//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+//		[self presentViewController:navigationController animated:NO completion:nil];
 		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
-		[navigationController setNavigationBarHidden:YES];
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-		[self presentViewController:navigationController animated:NO completion:nil];
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 			
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];

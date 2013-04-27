@@ -12,7 +12,7 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
-@interface HONRegisterCameraOverlayView()
+@interface HONRegisterCameraOverlayView() <UIAlertViewDelegate>
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIView *footerHolderView;
@@ -196,7 +196,13 @@
 
 #pragma mark - Navigation
 - (void)_goCancel {
-	[self.delegate cameraOverlayViewCancelCamera:self];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Skip Profile Snap"
+																		 message:@"Are you sure? Your profile photo is how people will know you are really you. We suggested you take your best selfie!"
+																		delegate:self
+															cancelButtonTitle:@"Cancel"
+															otherButtonTitles:@"OK", nil];
+	[alertView setTag:0];
+	[alertView show];
 }
 
 - (void)_goSubmit {
@@ -222,5 +228,19 @@
 	[self hidePreview];
 }
 
+
+#pragma mark - AlertView Delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		switch(buttonIndex) {
+			case 0:
+				break;
+				
+			case 1:
+				[self.delegate cameraOverlayViewCancelCamera:self];
+				break;
+		}
+	}
+}
 
 @end

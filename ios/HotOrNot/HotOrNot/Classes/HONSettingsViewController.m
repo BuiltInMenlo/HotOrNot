@@ -25,6 +25,7 @@
 #import "HONImagePickerViewController.h"
 #import "HONUsernameViewController.h"
 #import "HONSearchBarHeaderView.h"
+#import "HONTimelineViewController.h"
 
 @interface HONSettingsViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
@@ -41,15 +42,14 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
 		
-		_captions = [NSArray arrayWithObjects:@"",
-						 NSLocalizedString(@"profile_notifications", nil),
-						 NSLocalizedString(@"profile_myPhotos", nil),
-						 NSLocalizedString(@"profile_inviteSMS", nil),
-						 NSLocalizedString(@"profile_inviteEmail", nil),
-						 //(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook",
-						 NSLocalizedString(@"profile_changeUsername", nil),
-						 NSLocalizedString(@"profile_support", nil),
-						 NSLocalizedString(@"profile_privacy", nil), nil];
+		_captions = [NSArray arrayWithObjects:
+						 NSLocalizedString(@"settings_notifications", nil),
+						 NSLocalizedString(@"settings_myPhotos", nil),
+						 NSLocalizedString(@"settings_inviteSMS", nil),
+						 NSLocalizedString(@"settings_inviteEmail", nil),
+						 NSLocalizedString(@"settings_changeUsername", nil),
+						 NSLocalizedString(@"settings_support", nil),
+						 NSLocalizedString(@"settings_privacy", nil), nil];
 		
 		_notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(100.0, 5.0, 100.0, 50.0)];
 		[_notificationSwitch addTarget:self action:@selector(_goNotificationsSwitch:) forControlEvents:UIControlEventValueChanged];
@@ -64,8 +64,6 @@
 //																	name:HONSessionStateChangedNotification
 //																 object:nil];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_SETTINGS_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshSettingsTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
@@ -97,18 +95,25 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
-	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", nil)];
+	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
+	
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:doneButton];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:createChallengeButton];
+	//[_headerView addSubview:createChallengeButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -133,7 +138,7 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Profile - Create Snap"
+	[[Mixpanel sharedInstance] track:@"c - Create Snap"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -160,7 +165,7 @@
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Profile - Refresh"
+	[[Mixpanel sharedInstance] track:@"Settings - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -215,64 +220,6 @@
 
 
 #pragma mark - Notifications
-//- (void)_sessionStateChanged:(NSNotification *)notification {
-//	FBSession *session = (FBSession *)[notification object];
-//	
-//	[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
-//	
-//	HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:4 inSection:0]];
-//	[cell updateCaption:(session.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
-//}
-
-- (void)_refreshSettingsTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
-	[_headerView toggleRefresh:YES];
-	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 5], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									nil];
-	
-	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			NSLog(@"HONSettingsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-		} else {
-			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONSettingsViewController AFNetworking: %@", userResult);
-			
-			if ([userResult objectForKey:@"id"] != [NSNull null])
-				[HONAppDelegate writeUserInfo:userResult];
-			
-			HONSettingsViewCell *cell = (HONSettingsViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-			[cell updateTopCell];
-			
-			[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
-		}
-		
-		[_headerView toggleRefresh:NO];
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"SettingsViewController AFNetworking %@", [error localizedDescription]);
-		
-		[_headerView toggleRefresh:NO];
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		_progressHUD = nil;
-	}];
-}
-
 - (void)_inviteSMS:(NSNotification *)notification {
 	if ([MFMessageComposeViewController canSendText]) {
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
@@ -315,35 +262,24 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (8);
+	return ([_captions count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return (1);
 }
 
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
-//	return (headerView);
-//}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONSettingsViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
-	if (cell == nil) {
-		if (indexPath.row == 0) {
-			cell = [[HONSettingsViewCell alloc] initAsTopCell];
-		
-		} else
-			cell = [[HONSettingsViewCell alloc] initAsMidCell:[_captions objectAtIndex:indexPath.row]];
-	}
+	if (cell == nil)
+		cell = [[HONSettingsViewCell alloc] initAsMidCell:[_captions objectAtIndex:indexPath.row]];
 	
-	if (indexPath.row == 1) {
+	if (indexPath.row == 0) {
 		[cell hideChevron];
 		cell.accessoryView = _notificationSwitch;
 		
-	}// else if (indexPath.row == 4)
-	 //	[cell updateCaption:(FBSession.activeSession.state == 513) ? @"Logout of Facebook" : @"Login to Facebook"];
+	}
 			
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	return (cell);
@@ -352,24 +288,15 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == 0)
-		return (163.0);
-	
-	else
-		return (kRowHeight);
+	return (kRowHeight);
 }
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//	return (kSearchHeaderHeight);
-//}
-
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	if (indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4 || indexPath.row == 5 || indexPath.row == 6 || indexPath.row == 7)
-		return (indexPath);
+	if (indexPath.row == 0)
+		return (nil);
 	
 	else
-		return (nil);
+		return (indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -380,17 +307,16 @@
 	//HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	switch (indexPath.row) {
-		case 2: {
-			[[Mixpanel sharedInstance] track:@"Profile - My Snaps"
+		case 1:
+			[[Mixpanel sharedInstance] track:@"Settings - My Snaps"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-			
+			[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]] animated:YES];
 			break;
 			
-		case 3: {
-			[[Mixpanel sharedInstance] track:@"Profile - Invite via SMS"
+		case 2: {
+			[[Mixpanel sharedInstance] track:@"Settings - Invite via SMS"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
@@ -412,8 +338,8 @@
 			}
 			break;}
 			
-		case 4:
-			[[Mixpanel sharedInstance] track:@"Profile - Invite via Email"
+		case 3: {
+			[[Mixpanel sharedInstance] track:@"Settings - Invite via Email"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
@@ -434,24 +360,9 @@
 				[alertView show];
 			}
 			break;}
-//			[[Mixpanel sharedInstance] track:@"Profile - FB Login / Logout"
-//										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-//														 [NSString stringWithFormat:@"%d", (FBSession.activeSession.state == 513)], @"switch", nil]];
-//			
-//			if (FBSession.activeSession.state == 513) {
-//				[FBSession.activeSession closeAndClearTokenInformation];
-//				[cell updateCaption:@"Login to Facebook"];
-//			
-//			} else {
-//				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-//				[navigationController setNavigationBarHidden:YES];
-//				[self presentViewController:navigationController animated:YES completion:nil];
-//			}
-//			break;
-			
-		case 5:
-			[[Mixpanel sharedInstance] track:@"Profile - Change Username"
+
+		case 4:
+			[[Mixpanel sharedInstance] track:@"Settings - Change Username"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
@@ -460,8 +371,8 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
-		case 6:
-			[[Mixpanel sharedInstance] track:@"Profile - Show Support"
+		case 5:
+			[[Mixpanel sharedInstance] track:@"Settings - Show Support"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
@@ -470,8 +381,8 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
-		case 7:
-			[[Mixpanel sharedInstance] track:@"Profile - Show Privacy"
+		case 6:
+			[[Mixpanel sharedInstance] track:@"Settings - Show Privacy"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
@@ -544,12 +455,10 @@
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	
 	if (alertView.tag == 0) {
 		switch(buttonIndex) {
 			case 0: {
-				//NSLog(@"-----loginViewShowingLoggedInUser-----");
-				[[Mixpanel sharedInstance] track:@"Profile - Notifications"
+				[[Mixpanel sharedInstance] track:@"Settings - Notifications"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
@@ -605,7 +514,6 @@
 				break;
 		}
 	
-	} else if (alertView.tag == 1) {
 	}
 }
 

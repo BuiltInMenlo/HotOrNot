@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 @interface HONUserVO : NSObject
-
 + (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary;
 
 @property (nonatomic, retain) NSDictionary *dictionary;

@@ -11,7 +11,7 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, statusID, status, subjectName, commentTotal, hasViewed, rechallengedUsers, addedDate, startedDate;
+@synthesize challengeID, statusID, status, subjectName, commentTotal, hasViewed, rechallengedUsers, addedDate, startedDate, updatedDate;
 @synthesize creatorID, creatorFB, creatorName, creatorAvatar, creatorImgPrefix, creatorScore;
 @synthesize challengerID, challengerFB, challengerName, challengerAvatar, challengerImgPrefix, challengerScore;
 
@@ -41,6 +41,7 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	vo.addedDate = [dateFormat dateFromString:[dictionary objectForKey:@"added"]];
 	vo.startedDate = [dateFormat dateFromString:[dictionary objectForKey:@"started"]];
+	vo.updatedDate = [dateFormat dateFromString:[dictionary objectForKey:@"updated"]];
 	
 	switch (vo.statusID) {
 		case 1:

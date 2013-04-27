@@ -32,7 +32,8 @@
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";
-"header_settings" = "";
+"header_profile" = "Profile";
+"header_settings" = "Settings";
 "header_username" = "사용자 이름";
 "header_create" = "";
 "header_preview" = "Preview";
@@ -62,14 +63,13 @@
 "activity_waiting" = "당신은 기다리고 있습니다 …";
 "activity_waiting_f" = "당신은 기다리고 있습니다 … (F)";
 
-"profile_inviteSMS_button" = "SMS를 통해 친구 초대";
-"profile_notifications" = "알림";
-"profile_myPhotos" = "내 사진";
-"profile_inviteSMS" = "SMS를 통해 친구 초대";
-"profile_inviteEmail" = "이메일을 통해 친구 초대";
-"profile_changeUsername" = "사용자 이름을 변경";
-"profile_support" = "지원";
-"profile_privacy" = "개인 정보 보호 정책";
+"settings_notifications" = "알림";
+"settings_myPhotos" = "내 사진";
+"settings_inviteSMS" = "SMS를 통해 친구 초대";
+"settings_inviteEmail" = "이메일을 통해 친구 초대";
+"settings_changeUsername" = "사용자 이름을 변경";
+"settings_support" = "지원";
+"settings_privacy" = "개인 정보 보호 정책";
 "profile_snap" = "%@ 스냅";
 "profile_snaps" = "%@ 스냅";
 "profile_vote" = "%@ 투표";
@@ -78,3 +78,5 @@
 "profile_points" = "%@ 포인트";
 
 "userPlaceholder" = "Enter a username to snap @";
+
+"invite_email" = "Come Snap @me on Volley!";

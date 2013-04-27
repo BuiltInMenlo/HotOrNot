@@ -314,7 +314,7 @@
 			[_settingsButton setSelected:YES];
 			
 			mixPanelTrack = @"Tab Bar - Settings";
-			notificationName = @"REFRESH_SETTINGS_TAB";
+			notificationName = @"REFRESH_PROFILE_TAB";
 			break;
 	}
 	

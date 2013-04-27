@@ -32,7 +32,8 @@
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";
-"header_settings" = "";
+"header_profile" = "Profile";
+"header_settings" = "Settings";
 "header_username" = "Username";
 "header_create" = "";
 "header_preview" = "Preview";
@@ -62,14 +63,13 @@
 "activity_waiting" = "You are waiting…";
 "activity_waiting_f" = "You are waiting… (F)";
 
-"profile_inviteSMS_button" = "Invite friends via SMS";
-"profile_notifications" = "Notifications";
-"profile_myPhotos" = "Hình ảnh của tôi";
-"profile_inviteSMS" = "Invite Friends via SMS";
-"profile_inviteEmail" = "Invite Friends via Email";
-"profile_changeUsername" = "Change Username";
-"profile_support" = "Support";
-"profile_privacy" = "Privacy Policy";
+"settings_notifications" = "Notifications";
+"settings_myPhotos" = "Hình ảnh của tôi";
+"settings_inviteSMS" = "Invite Friends via SMS";
+"settings_inviteEmail" = "Invite Friends via Email";
+"settings_changeUsername" = "Change Username";
+"settings_support" = "Support";
+"settings_privacy" = "Privacy Policy";
 "profile_snap" = "%@ snap";
 "profile_snaps" = "%@ snaps";
 "profile_vote" = "%@ vote";
@@ -78,3 +78,5 @@
 "profile_points" = "%@ points";
 
 "userPlaceholder" = "Enter a username to snap @";
+
+"invite_email" = "Come Snap @me on Volley!";
