@@ -20,14 +20,13 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSearchHeaderHeight)];
-		_bgImageView.image = [UIImage imageNamed:@"searchInputField"];
+		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBackground"]];
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
 		_isUser = YES;
 		
-		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 13.0, 294.0, 20.0)];
+		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 13.0, 294.0, 24.0)];
 		//[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_searchTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -57,11 +56,9 @@
 - (void)toggleFocus:(BOOL)isFocused {
 	if (isFocused) {
 		[_searchTextField becomeFirstResponder];
-		_bgImageView.image = [UIImage imageNamed:@"searchInputField"];
 	
 	} else {
 		[_searchTextField resignFirstResponder];
-		_bgImageView.image = [UIImage imageNamed:@"searchInputField"];
 		_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	}
 	
@@ -70,7 +67,6 @@
 
 - (void)backgroundingReset {
 	[_searchTextField resignFirstResponder];
-	_bgImageView.image = [UIImage imageNamed:@"searchInputField"];
 	_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -84,7 +80,6 @@
 #pragma mark - Navigation
 - (void)_goCancel {
 	[_searchTextField resignFirstResponder];
-	_bgImageView.image = [UIImage imageNamed:@"searchInputField"];
 	_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	_cancelButton.hidden = YES;
 	
@@ -97,7 +92,6 @@
 
 - (void)_onTxtDoneEditing:(id)sender {
 	[_searchTextField resignFirstResponder];
-	_bgImageView.image = [UIImage imageNamed:@"searchInputField"];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
@@ -105,6 +99,11 @@
 	
 	if (![_searchTextField.text isEqualToString:@"@"] && ![_searchTextField.text isEqualToString:@"search for users to snap with…"])
 		[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"RETRIEVE_USER_SEARCH_RESULTS" : @"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:[_searchTextField.text substringFromIndex:1]];
+	
+	else {
+		_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+	}
 }
 
 
@@ -121,7 +120,6 @@
 	_cancelButton.alpha = 0.0;
 	_cancelButton.hidden = NO;
 	
-	_bgImageView.image = [UIImage imageNamed:@"searchExpandedInputField"];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 44.0);
 		_cancelButton.alpha = 1.0;
@@ -140,7 +138,6 @@
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
-	_bgImageView.image = [UIImage imageNamed:@"searchInputField"];
 }
 
 @end

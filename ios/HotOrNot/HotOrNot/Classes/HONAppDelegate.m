@@ -418,12 +418,12 @@ NSString *const FacebookAppID = @"529054720443694";
 - (BOOL)openSession {
 	NSLog(@"openSession");
 	return ([FBSession openActiveSessionWithPublishPermissions:[HONAppDelegate fbPermissions]
-											   defaultAudience:FBSessionDefaultAudienceEveryone
-												  allowLoginUI:NO
-											 completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
-												 NSLog(@"STATE:%d", state);
-												 [self sessionStateChanged:session state:state error:error];
-											 }]);
+															 defaultAudience:FBSessionDefaultAudienceEveryone
+																 allowLoginUI:NO
+														  completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+															  NSLog(@"STATE:%d", state);
+															  [self sessionStateChanged:session state:state error:error];
+														  }]);
 }
 
 - (void)sessionStateChanged:(FBSession *)session state:(FBSessionState)state error:(NSError *)error {
@@ -465,12 +465,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	if (error) {
 		[self _showOKAlert:@"Error"
 			   withMessage:error.localizedDescription];
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error"
-//																			 message:error.localizedDescription
-//																			delegate:nil
-//																cancelButtonTitle:@"OK"
-//																otherButtonTitles:nil];
-//		[alertView show];
 	}
 }
 

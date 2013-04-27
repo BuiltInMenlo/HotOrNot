@@ -39,8 +39,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectRightDiscoveryChallenge:) name:@"SELECT_RIGHT_DISCOVERY_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	}
 	
 	return (self);
@@ -212,7 +212,7 @@
 
 - (void)_showSearchTable:(NSNotification *)notification {
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, -44.0, self.view.frame.size.width, self.view.frame.size.height);
+		self.view.frame = CGRectMake(self.view.frame.origin.x, -kNavHeaderHeight, self.view.frame.size.width, self.view.frame.size.height);
 	}];
 }
 
@@ -241,17 +241,17 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *searchImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBackground"]];
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 10.0, 292.0, 24.0)];
-	label.textColor = [HONAppDelegate honGreyInputColor];
-	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
-	label.text = NSLocalizedString(@"search_placeHolder", nil);
-	[searchImageView addSubview:label];
+//	UIImageView *searchImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBackground"]];
+//	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 10.0, 292.0, 24.0)];
+//	label.textColor = [HONAppDelegate honGreyInputColor];
+//	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+//	label.text = NSLocalizedString(@"search_placeHolder", nil);
+//	[searchImageView addSubview:label];
+//	
+//	return (searchImageView);
 	
-	return (searchImageView);
-	
-//	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
-//	return (headerView);
+	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
+	return (headerView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
