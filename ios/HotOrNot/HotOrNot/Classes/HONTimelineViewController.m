@@ -782,10 +782,9 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if ([_username length] > 0 && indexPath.row == 0)
-		return (163.0);
+		return (116.0);
 	
 	else {
-//		return (314.0);
 		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
 		return ((vo.statusID == 1 || vo.statusID == 2) ? 289.0 : 314.0);
 	}

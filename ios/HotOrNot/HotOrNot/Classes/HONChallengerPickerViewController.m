@@ -362,7 +362,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Offical accounts" : @"People you trade pics with";
+	label.text = (section == 0) ? @"Official accounts" : @"People you have snapped with";
 	[headerView addSubview:label];
 	
 	return (headerView);

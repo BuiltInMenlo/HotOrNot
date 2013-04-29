@@ -105,16 +105,21 @@
 		[avatarImageView setImageWithURL:[NSURL URLWithString:avatar] placeholderImage:nil];
 		[self addSubview:avatarImageView];
 		
-		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, kNavHeaderHeight + 18.0, 270.0, 20.0)];
+		UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(55.0, kNavHeaderHeight + 16.0, 18.0, 18.0)];
+		arrowImageView.image = [UIImage imageNamed:@"outboundArrow"];
+		arrowImageView.hidden = ([_username length] == 0);
+		[self addSubview:arrowImageView];
+		
+		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, kNavHeaderHeight + 18.0, 270.0, 20.0)];
 		usernameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:14];
-		usernameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		usernameLabel.textColor = [UIColor whiteColor];
 		usernameLabel.backgroundColor = [UIColor clearColor];
 		usernameLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:usernameLabel];
 		
 		int offset = (int)[HONAppDelegate isRetina5] * 94;
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(35.0, 409.0 + offset, 44.0, 44.0);
+		cameraRollButton.frame = CGRectMake(15.0, 309.0 + offset, 64.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
@@ -122,7 +127,7 @@
 		
 		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(233.0, 409.0 + offset, 44.0, 44.0);
+			changeCameraButton.frame = CGRectMake(233.0, 309.0 + offset, 74.0, 44.0);
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];

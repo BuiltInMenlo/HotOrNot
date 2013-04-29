@@ -8,10 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "HONGenericRowViewCell.h"
 #import "HONUserVO.h"
 
-@interface HONSearchUserViewCell : HONGenericRowViewCell
+@interface HONSearchUserViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, strong) HONUserVO *userVO;

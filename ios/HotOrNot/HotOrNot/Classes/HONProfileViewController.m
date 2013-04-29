@@ -196,8 +196,15 @@
 	[self.view addSubview:bgImgView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_profile", nil)];
-	[[_headerView refreshButton] addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
+	
+	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	settingsButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_nonActive"] forState:UIControlStateNormal];
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_Active"] forState:UIControlStateHighlighted];
+	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:settingsButton];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
@@ -404,34 +411,25 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchHeader"]];
+	
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 310.0, 29.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
+	label.textColor = [HONAppDelegate honBlueTxtColor];
+	label.backgroundColor = [UIColor clearColor];
+	[headerImageView addSubview:label];
 	
 	if (section == 0) {
 		return (nil);
-	
+		
 	} else if (section == 1) {
-		UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchHeader"]];
-		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(5.0, 5.0, 310.0, 30.0)];
-		label.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-		label.textColor = [HONAppDelegate honBlueTxtColor];
-		label.backgroundColor = [UIColor clearColor];
-		label.text = @"Previous snaps";
-		[headerImageView addSubview:label];
-		
-		return (headerImageView);
+		label.text = @"Previously snapped with";
 		
 	} else {
-		UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchHeader"]];
-		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(5.0, 5.0, 310.0, 30.0)];
-		label.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-		label.textColor = [HONAppDelegate honBlueTxtColor];
-		label.backgroundColor = [UIColor clearColor];
-		label.text = @"Contact list";
-		[headerImageView addSubview:label];
-		
-		return (headerImageView);
+		label.text = @"Your contact list";
 	}
+	
+	return (headerImageView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -483,14 +481,14 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0)
-		return (163.0);
+		return (116.0);
 	
 	else
 		return (kRowHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((section == 0) ? 0.0 : kSearchHeaderHeight);
+	return ((section == 0) ? 0.0 : 31.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

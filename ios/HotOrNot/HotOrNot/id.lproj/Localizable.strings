@@ -70,12 +70,12 @@
 "settings_changeUsername" = "Change Username";
 "settings_support" = "Support";
 "settings_privacy" = "Privacy Policy";
-"profile_snap" = "%@ snap";
-"profile_snaps" = "%@ snaps";
+"profile_snap" = "%@ photo";
+"profile_snaps" = "%@ photos";
 "profile_vote" = "%@ vote";
 "profile_votes" = "%@ votes";
-"profile_point" = "%@ point";
-"profile_points" = "%@ points";
+"profile_point" = "%@ pt";
+"profile_points" = "%@ pts";
 
 "userPlaceholder" = "Enter a username to snap @";
 

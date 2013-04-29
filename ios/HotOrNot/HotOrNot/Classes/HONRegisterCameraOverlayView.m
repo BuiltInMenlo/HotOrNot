@@ -70,7 +70,7 @@
 		[_headerView addSubview:_submitButton];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(30.0, 30.0, 44.0, 44.0);
+		cameraRollButton.frame = CGRectMake(30.0, 30.0, 64.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
@@ -84,7 +84,7 @@
 		[_footerHolderView addSubview:_captureButton];
 		
 		UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		changeCameraButton.frame = CGRectMake(230.0, 30.0, 44.0, 44.0);
+		changeCameraButton.frame = CGRectMake(230.0, 30.0, 74.0, 44.0);
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 		[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 		[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];

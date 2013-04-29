@@ -23,12 +23,15 @@
 @interface HONSearchViewController () <UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *results;
+@property(nonatomic, strong) NSMutableArray *defaultUsers;
+@property(nonatomic, strong) NSMutableArray *pastUsers;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) NSString *subject;
 @property(nonatomic) BOOL isUser;
+@property(nonatomic) BOOL isResults;
 
 @end
 
@@ -40,6 +43,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_retrieveSubjectSearchResults:) name:@"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:nil];
 		
 		_isUser = YES;
+		_isResults = NO;
 	}
 	
 	return (self);
@@ -80,19 +84,18 @@
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:NO]]]];
 			//NSLog(@"HONSearchViewController AFNetworking: %@", unsortedUsers);
 			
-			_results = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
-					[_results addObject:vo];
+					[_defaultUsers addObject:vo];
 			}
 			
-			_emptySetImgView.hidden = ([_results count] > 0);
+			_emptySetImgView.hidden = ([_defaultUsers count] > 0);
 			[_tableView reloadData];
 			
 			if (_progressHUD != nil) {
-				if ([_results count] == 0) {
+				if ([_defaultUsers count] == 0) {
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -119,12 +122,74 @@
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
-	
 }
+
+- (void)_retrievePastUsers {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 4], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									nil];
+	
+	[httpClient postPath:kSearchAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"HONChallengerPickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+		} else {
+			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES]]]];
+			//NSLog(@"HONChallengerPickerViewController AFNetworking: %@", parsedUsers);
+			
+			for (NSDictionary *serverList in parsedUsers) {
+				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
+				
+				if (vo != nil)
+					[_pastUsers addObject:vo];
+			}
+			
+			if (_progressHUD != nil) {
+				if ([_pastUsers count] == 0) {
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"hud_noResults", nil);
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+					
+				} else {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
+			}
+			
+			[_tableView reloadData];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"HONChallengerPickerViewController AFNetworking %@", [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
 
 - (void)retrieveUsers:(NSString *)username {
 	_username = username;
 	_isUser = YES;
+	_isResults = YES;
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_searchUsers", nil);
@@ -273,6 +338,10 @@
 - (void)loadView {
 	[super loadView];
 	
+	_defaultUsers = [NSMutableArray array];
+	_pastUsers = [NSMutableArray array];
+	
+	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 280.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -286,22 +355,8 @@
 	[self.view addSubview:_tableView];
 	
 	[self retrieveDefaultUsers];
+	[self _retrievePastUsers];
 	
-//	_results = [NSMutableArray array];
-//	for (NSString *username in [HONAppDelegate searchUsers]) {
-//		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-//									 [NSNumber numberWithInt:0], @"id",
-//									 username, @"username",
-//									 @"", @"avatar_url",
-//									 [NSNumber numberWithInt:arc4random() % 100], @"points",
-//									 [NSNumber numberWithInt:arc4random() % 100], @"pokes",
-//									 [NSNumber numberWithInt:arc4random() % 100], @"votes",
-//									 @"", @"fb_id", nil];
-//		[_results addObject:[HONUserVO userWithDictionary:dict]];
-//	}
-	
-	
-	[_tableView reloadData];
 	[self performSelector:@selector(_showTable) withObject:nil afterDelay:0.25];
 }
 
@@ -336,19 +391,26 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_results count]);
+	return ((_isResults) ? [_results count] : (section == 0) ? [_defaultUsers count] : [_pastUsers count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
+	return ((_isResults) ? 1 : 2);
 }
 
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
-//	headerView.image = [UIImage imageNamed:@"searchTopRowPopularHeader"];
-//
-//	return (headerView);
-//}
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
+	headerView.image = [UIImage imageNamed:@"searchDiscoverHeader"];
+	
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 310.0, 31.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
+	label.textColor = [HONAppDelegate honBlueTxtColor];
+	label.backgroundColor = [UIColor clearColor];
+	label.text = (section == 0) ? @"Official accounts" : @"People you have snapped with";
+	[headerView addSubview:label];
+	
+	return (headerView);
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (_isUser) {
@@ -357,7 +419,7 @@
 		if (cell == nil)
 			cell = [[HONSearchUserViewCell alloc] init];
 		
-		cell.userVO = [_results objectAtIndex:indexPath.row];
+		cell.userVO = (_isResults) ? [_results objectAtIndex:indexPath.row] : (indexPath.section == 0) ? [_defaultUsers objectAtIndex:indexPath.row] : [_pastUsers objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
 		return (cell);
@@ -380,9 +442,9 @@
 	return (kRowHeight);
 }
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//	return (31.0);
-//}
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return ((_isResults) ? 0.0 : 31.0);
+}
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (indexPath);

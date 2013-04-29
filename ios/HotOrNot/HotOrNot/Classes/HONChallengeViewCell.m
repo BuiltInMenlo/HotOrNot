@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
-
 #import "UIImageView+AFNetworking.h"
 
 #import "HONChallengeViewCell.h"
@@ -59,37 +57,36 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
+	[self hideChevron];
 	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(29.0, 13.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:(isCreator) ? _challengeVO.challengerAvatar : _challengeVO.creatorAvatar] placeholderImage:nil];
-	avatarImageView.layer.cornerRadius = (int)[HONAppDelegate isRetina5] * 2.0;
-	avatarImageView.clipsToBounds = YES;
 	[self addSubview:avatarImageView];
 	
-	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 15.0, 180.0, 16.0)];
-	challengeLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:13];
+	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 12.0, 180.0, 20.0)];
+	challengeLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:16];
 	challengeLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	challengeLabel.backgroundColor = [UIColor clearColor];
 	challengeLabel.text = ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
 	[self addSubview:challengeLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(82.0, 31.0, 200.0, 20.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(86.0, 33.0, 200.0, 16.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
 	subjectLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(221.0, 12.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:11];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(239.0, 9.0, 60.0, 16.0)];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
 	[self addSubview:timeLabel];
 	
-	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(67.0, 28.0, 18.0, 18.0)];
+	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(69.0, 28.0, 18.0, 18.0)];
 	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
 	[self addSubview:arrowImageView];
 	
