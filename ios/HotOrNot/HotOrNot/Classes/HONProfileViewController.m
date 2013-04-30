@@ -7,6 +7,7 @@
 //
 
 #import <AddressBook/AddressBook.h>
+#import <AddressBookUI/AddressBookUI.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
 
@@ -47,6 +48,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteContact:) name:@"INVITE_CONTACT" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareSMS:) name:@"SHARE_SMS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareEmail:) name:@"SHARE_EMAIL" object:nil];
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	}
@@ -133,7 +136,8 @@
 
 #pragma mark - Device Functions
 - (void)_retrieveContacts {
-	ABAddressBookRef addressBook = ABAddressBookCreate();
+	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+	
 	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
 	CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
 	
@@ -225,7 +229,19 @@
 	[self.view addSubview:_tableView];
 	
 	[self _retrievePastUsers];
-	[self _retrieveContacts];
+	
+	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+			[self _retrieveContacts];
+		});
+	
+	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+		[self _retrieveContacts];
+	
+	else {
+		// denied access
+	}
 }
 
 - (void)viewDidLoad {
@@ -274,7 +290,7 @@
 		NSError *error = nil;
 		if (error != nil) {
 			NSLog(@"HONProfileViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
+			 
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSLog(@"HONProfileViewController AFNetworking: %@", userResult);
@@ -358,7 +374,6 @@
 			messageComposeViewController.messageComposeDelegate = self;
 			messageComposeViewController.recipients = [NSArray arrayWithObject:vo.mobileNumber];
 			messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-			
 			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 			
 		} else {
@@ -377,7 +392,6 @@
 			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:vo.email]];
 			[mailComposeViewController setSubject:NSLocalizedString(@"invite_email", nil)];
 			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
-			
 			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 			
 		} else {
@@ -388,7 +402,49 @@
 																	otherButtonTitles:nil];
 			[alertView show];
 		}
+	}
+}
+
+- (void)_shareSMS:(NSNotification *)notification {
+	if ([MFMessageComposeViewController canSendText]) {
+//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//		pasteboard.persistent = YES;
+//		pasteboard.image = [UIImage imageNamed:@"facebookBackground"];
+//		
+//		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"sms:" stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
 		
+		
+		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+		messageComposeViewController.messageComposeDelegate = self;
+		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
+																			 message:@"Cannot send SMS from this device!"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+	}
+}
+
+- (void)_shareEmail:(NSNotification *)notification {
+	if ([MFMailComposeViewController canSendMail]) {
+		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
+		mailComposeViewController.mailComposeDelegate = self;
+		[mailComposeViewController setSubject:NSLocalizedString(@"invite_email", nil)];
+//		[mailComposeViewController addAttachmentData:UIImagePNGRepresentation([UIImage imageNamed:@"facebookBackground"]) mimeType:@"image/png" fileName:@"MyImageName"];
+		[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
+		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
+																			 message:@"Cannot send email from this device!"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
 	}
 }
 
@@ -411,7 +467,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchHeader"]];
+	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileRowHeader"]];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 310.0, 29.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];

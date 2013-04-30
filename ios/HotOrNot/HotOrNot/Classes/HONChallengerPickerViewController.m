@@ -288,7 +288,7 @@
 	usernameBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:usernameBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 13.0, 320.0, 24.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 12.0, 320.0, 24.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -296,13 +296,13 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
+	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 	_usernameTextField.text = NSLocalizedString(@"userPlaceholder", nil);
 	_usernameTextField.delegate = self;
 	[usernameBGImageView addSubview:_usernameTextField];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 44.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight + 44.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 64.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -320,7 +320,7 @@
 																			  [NSString stringWithFormat:@"%d", 0], @"votes",
 																			  [NSString stringWithFormat:@"%d", 0], @"pokes",
 																			  [NSString stringWithFormat:@"%d", 0], @"pics",
-																			  @"random", @"username",
+																			  @"Random match", @"username",
 																			  @"", @"fb_id",
 																			  @"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png", @"avatar_url", nil]]];
 	[self _retrieveDefaultUsers];
@@ -358,11 +358,11 @@
 	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
 	headerView.image = [UIImage imageNamed:@"searchHeader"];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(5.0, 5.0, 310.0, 30.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 4.0, 310.0, 31.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Official accounts" : @"People you have snapped with";
+	label.text = (section == 0) ? @"Official accounts" : @"Previous snaps";
 	[headerView addSubview:label];
 	
 	return (headerView);

@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 
 #import "HONUserVO.h"
+#import "HONGenericRowViewCell.h"
 
-@interface HONChallengerViewCell : UITableViewCell
+@interface HONChallengerViewCell : HONGenericRowViewCell
 + (NSString *)cellReuseIdentifier;
 - (id)initAsRandomUser:(BOOL)isAnonymous;
-- (void)didSelect;
+
 @property (nonatomic, strong) HONUserVO *userVO;
 @end

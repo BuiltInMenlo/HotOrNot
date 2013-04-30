@@ -80,7 +80,7 @@
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 10.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 12.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -88,7 +88,7 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.textAlignment = NSTextAlignmentCenter;
 	_usernameTextField.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];

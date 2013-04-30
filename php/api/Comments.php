@@ -179,7 +179,7 @@
 			$comment_id = mysql_insert_id();
 			
 			// update the time
-			$query = 'UPDATE `tblChallenges` SET `updated` = NOW() WHERE `id` = '. $challenge_id .';';
+			$query = 'UPDATE `tblChallenges` SET `hasPreviewed` = "N", `updated` = NOW() WHERE `id` = '. $challenge_id .';';
 			$result = mysql_query($query);
 			
 			// submitting user object

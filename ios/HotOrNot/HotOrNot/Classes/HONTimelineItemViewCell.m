@@ -126,7 +126,7 @@
 	[self addSubview:creatorAvatarButton];
 	
 	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 221.0, 100.0, 20.0)];
-	creatorNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:12];
+	creatorNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
 	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
@@ -164,7 +164,7 @@
 		[self addSubview:challengerAvatarButton];
 		
 		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 221.0, 100.0, 20.0)];
-		challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:12];
+		challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
 		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
 		challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
@@ -208,12 +208,12 @@
 	}
 	
 	
-	_winnerImageView = [[UIImageView alloc] initWithFrame:CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 79.0 : 203.0, 104.0, 81.0, 52.0)];
+	_winnerImageView = [[UIImageView alloc] initWithFrame:CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 79.0 : 160.0, 104.0, 81.0, 52.0)];
 	_winnerImageView.image = [UIImage imageNamed:@"scoreWinner"];
 	_winnerImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
 	[self addSubview:_winnerImageView];
 	
-	_loserImageView = [[UIImageView alloc] initWithFrame:CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 160.0 : 43.0, 104.0, 81.0, 52.0)];
+	_loserImageView = [[UIImageView alloc] initWithFrame:CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 160.0 : 79.0, 104.0, 81.0, 52.0)];
 	_loserImageView.image = [UIImage imageNamed:@"scoreLoser"];
 	_loserImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
 	[self addSubview:_loserImageView];
@@ -473,8 +473,8 @@
 		}];
 		
 		_challengeVO.creatorScore++;
-		_winnerImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 30.0 : 190.0, 100.0, 97.0, 42.0);
-		_loserImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 190.0 : 30.0, 100.0, 97.0, 42.0);
+		_winnerImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 79.0 : 160.0, 104.0, 81.0, 52.0);
+		_loserImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 160.0 : 79.0, 104.0, 81.0, 52.0);
 		
 		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
@@ -538,8 +538,8 @@
 		}];
 		
 		_challengeVO.challengerScore++;
-		_winnerImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 30.0 : 190.0, 100.0, 97.0, 42.0);
-		_loserImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 190.0 : 30.0, 100.0, 97.0, 42.0);
+		_winnerImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 79.0 : 160.0, 104.0, 81.0, 52.0);
+		_loserImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 160.0 : 79.0, 104.0, 81.0, 52.0);
 		
 		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {

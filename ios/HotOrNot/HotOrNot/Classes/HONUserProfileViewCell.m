@@ -76,6 +76,12 @@
 	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:_ptsLabel];
 	
+	UIButton *timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	timelineButton.frame = CGRectMake(120.0, 28.0, 107.0, 80.0);
+	[timelineButton addTarget:self action:@selector(_goTimeline) forControlEvents:UIControlEventTouchUpInside];
+	//timelineButton.hidden = !isUser;
+	[self addSubview:timelineButton];
+	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareButton.frame = CGRectMake(269.0, 67.0, 44.0, 44.0);
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
@@ -99,21 +105,59 @@
 - (void)_goProfilePic {
 }
 
+- (void)_goTimeline {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_userVO.username];
+}
+
 - (void)_goShare {
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																				delegate:self
-																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:@"Share on Instagram", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:0];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																					delegate:self
+																		cancelButtonTitle:@"Cancel"
+																 destructiveButtonTitle:nil
+																		otherButtonTitles:@"Share on Instagram", @"Share via SMS", @"Share via Email", nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:0];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+		
+	} else {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																					delegate:self
+																		cancelButtonTitle:@"Cancel"
+																 destructiveButtonTitle:@"Report Abuse"
+																		otherButtonTitles:@"Share on Instagram", @"Share via SMS", @"Share via Email", [NSString stringWithFormat:@"Poke @%@", _userVO.username], [NSString stringWithFormat:@"snap @%@", _userVO.username], nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:1];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	}
 }
 
 
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
+		switch (buttonIndex) {
+			case 0: {
+				// SHARE instagram
+				
+				NSURL *instagramURL = [NSURL URLWithString:@"instagram://app"];
+				if ([[UIApplication sharedApplication] canOpenURL:instagramURL])
+					[[UIApplication sharedApplication] openURL:instagramURL];
+				
+				break;}
+				
+				// share SMS
+			case 1:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_SMS" object:nil];
+				break;
+				
+				// share Email
+			case 2:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_EMAIL" object:nil];
+				break;
+		}
+	
+	} else if (actionSheet.tag == 1) {
 		switch (buttonIndex) {
 			case 0: {
 				[[Mixpanel sharedInstance] track:@"Timeline - Flag"
@@ -144,12 +188,32 @@
 				break;}
 				
 			case 1: {
-				// SHARE
+				// SHARE instagram
 				
 				NSURL *instagramURL = [NSURL URLWithString:@"instagram://app"];
 				if ([[UIApplication sharedApplication] canOpenURL:instagramURL])
 					[[UIApplication sharedApplication] openURL:instagramURL];
 				
+				break;}
+				
+				// share SMS
+			case 2:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_SMS" object:nil];
+				break;
+				
+				// share Email
+			case 3:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_EMAIL" object:nil];
+				break;
+				
+				// poke
+			case 4: {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:_userVO];
+				break;}
+				
+				// snap
+			case 5: {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
 				break;}
 		}
 	}

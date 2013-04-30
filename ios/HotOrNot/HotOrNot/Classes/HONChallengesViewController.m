@@ -103,7 +103,7 @@
 			
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
+			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
 			
 			_challenges = [NSMutableArray array];
@@ -387,7 +387,7 @@
 			
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"added" ascending:NO]]]];
+			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
 			
 			[_challenges removeLastObject];
@@ -562,13 +562,7 @@
 	
 	NSLog(@"STATUS:[%@]", vo.status);
 	if ([vo.status isEqualToString:@"Created"]) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Waiting Challenge"
-																			 message:@"No game matches yet, try another hashtag!"
-																			delegate:self
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView setTag:1];
-		[alertView show];
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 		
 	} else if ([vo.status isEqualToString:@"Waiting"]) {
 //		_previewViewController = [[HONChallengePreviewViewController alloc] initAsCreator:vo];
@@ -577,7 +571,8 @@
 //		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 //		[self presentViewController:navigationController animated:NO completion:nil];
 		
-		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
+		//[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 		
 	} else if ([vo.status isEqualToString:@"Accept"]) {
 //		_previewViewController = [[HONChallengePreviewViewController alloc] initAsChallenger:vo];
@@ -586,10 +581,12 @@
 //		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 //		[self presentViewController:navigationController animated:NO completion:nil];
 		
-		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.challengerID challengerID:_challengeVO.creatorID] animated:YES];
+		//[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 			
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
-		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
+		//[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
 	}
 }
 

@@ -60,11 +60,16 @@
 	[self hideChevron];
 	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID;
 	
+	UIImageView *hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 23.0, 18.0, 18.0)];
+	hasSeenImageView.image = [UIImage imageNamed:@"newSnapIcon"];
+	hasSeenImageView.hidden = _challengeVO.hasViewed;
+	[self addSubview:hasSeenImageView];
+	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(29.0, 13.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:(isCreator) ? _challengeVO.challengerAvatar : _challengeVO.creatorAvatar] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
-	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(74.0, 12.0, 180.0, 20.0)];
+	UILabel *challengeLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 12.0, 180.0, 20.0)];
 	challengeLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:16];
 	challengeLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	challengeLabel.backgroundColor = [UIColor clearColor];
@@ -83,7 +88,7 @@
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.addedDate];
+	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 	[self addSubview:timeLabel];
 	
 	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(69.0, 28.0, 18.0, 18.0)];
@@ -99,11 +104,6 @@
 		
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
 		//challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
-		
-		UIImageView *hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 23.0, 18.0, 18.0)];
-		hasSeenImageView.image = [UIImage imageNamed:@"newSnapIcon"];
-		hasSeenImageView.hidden = _challengeVO.hasViewed;
-		[self addSubview:hasSeenImageView];
 		
 	} else if ([_challengeVO.status isEqualToString:@"Flagged"]) {
 		//challengeLabel.text = (_challengeVO.challengerID == 0) ? NSLocalizedString(@"activity_waiting_f", nil) : (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound_f", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound_f", nil), _challengeVO.creatorName];

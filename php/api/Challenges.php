@@ -335,7 +335,7 @@
 					$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_obj->username .' has accepted your '. $subject_name .' snap!", "sound": "push_01.caf"}}'); 			
 
 				// update the challenge to started
-				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `started` = NOW() WHERE `id` = '. $challenge_id .';';
+				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `hasPreviewed` = "N", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
 				$result = mysql_query($query);
 			}
 		}
@@ -381,7 +381,7 @@
 				$challenger_obj = mysql_fetch_object(mysql_query($query));
 				
 				// update the challenge to say it's nowe in session
-				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
+				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `hasPreviewed` = "N", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
 				$update_result = mysql_query($query);
 				
 				// send push if creator allows it
@@ -406,8 +406,8 @@
 				
 				// add challenge as waiting for someone
 				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "1", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0", "", "N", "0", NOW(), NOW());';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`) ';
+				$query .= 'VALUES (NULL, "1", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0", "", "N", "0", NOW(), NOW(), NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
 				
@@ -450,8 +450,8 @@
 			
 			// add the challenge
 			$query = 'INSERT INTO `tblChallenges` (';
-			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
-			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW());';
+			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`) ';
+			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW());';
 			$result = mysql_query($query);
 			$challenge_id = mysql_insert_id();
 			
@@ -511,8 +511,8 @@
 				
 				// add the new challenge
 				$query = 'INSERT INTO `tblChallenges` (';
-				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `started`, `added`) ';
-				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW());';
+				$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`) ';
+				$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW());';
 				$result = mysql_query($query);
 				$challenge_id = mysql_insert_id();
 				
@@ -555,7 +555,7 @@
 			$challenge_arr = array();			
 			
 			// get latest 10 challenges for user
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `added` DESC LIMIT 10;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 10;';
 			$challenge_result = mysql_query($query);
 			
 			// loop thru the rows
@@ -603,7 +603,7 @@
 			$challenge_arr = array();			
 			
 			// get latest 10 challenges for user
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `added` DESC;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC;';
 			$challenge_result = mysql_query($query);
 			
 			// loop thru the rows
@@ -690,7 +690,7 @@
 			$challenge_arr = array();			
 			
 			// get challenges
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND `added` < "'. $date .'" AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `added` DESC LIMIT 10;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND `added` < "'. $date .'" AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 10;';
 			$challenge_result = mysql_query($query);
 			
 			// loop thru challenge rows
@@ -760,7 +760,7 @@
 				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_name .' has accepted your '. $subject_name .' snap!", "sound": "push_01.caf"}}'); 			
 
 			// update the challenge to started
-			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
+			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `hasPreviewed` = "N", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
 			$result = mysql_query($query);			
 			
 			// return

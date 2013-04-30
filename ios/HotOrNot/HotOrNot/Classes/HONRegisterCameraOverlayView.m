@@ -23,6 +23,7 @@
 @property (nonatomic, strong) UIButton *cameraBackButton;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UILabel *captionLabel;
+@property (nonatomic, strong) UILabel *headerLabel;
 @end
 
 @implementation HONRegisterCameraOverlayView
@@ -47,15 +48,22 @@
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 474.0 : 397.0, 640.0, 105.0)];
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 474.0 : 387.0, 640.0, 105.0)];
 		[_bgImageView addSubview:_footerHolderView];
 		
-		_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_register2", nil)];
+		_headerView = [[HONHeaderView alloc] initWithTitle:@""];
 		[_headerView hideRefreshing];
 		[self addSubview:_headerView];
 		
+		_headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 200.0, 24.0)];
+		_headerLabel.backgroundColor = [UIColor clearColor];
+		_headerLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
+		_headerLabel.textColor = [UIColor whiteColor];
+		_headerLabel.text = NSLocalizedString(@"header_register2", nil);
+		[_headerView addSubview:_headerLabel];
+		
 		_skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_skipButton.frame = CGRectMake(2.0, 0.0, 64.0, 44.0);
+		_skipButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
 		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
 		[_skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
 		[_skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -125,6 +133,7 @@
 	
 	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
+	_headerLabel.hidden = YES;
 	[_headerView setTitle:NSLocalizedString(@"header_register3", nil)];
 	_captionLabel.text = NSLocalizedString(@"register_caption2", nil);
 	
@@ -161,6 +170,7 @@
 	_cameraBackButton.hidden = NO;
 	_captionLabel.text = NSLocalizedString(@"register_caption2", nil);
 	[_headerView setTitle:NSLocalizedString(@"header_register3", nil)];
+	_headerLabel.hidden = YES;
 	
 	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
@@ -179,7 +189,8 @@
 	_cameraBackButton.hidden = YES;
 	_skipButton.hidden = NO;
 	
-	[_headerView setTitle:NSLocalizedString(@"header_register2", nil)];
+	_headerLabel.hidden = NO;
+	[_headerView setTitle:@""];
 	_captionLabel.text = NSLocalizedString(@"register_caption1", nil);
 	
 	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{

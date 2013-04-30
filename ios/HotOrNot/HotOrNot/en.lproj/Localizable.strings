@@ -29,7 +29,7 @@
 "header_register" = "Enter a username";
 "header_register2" = "Take profile picture";
 "header_register3" = "Preview";
-"header_home" = "Home";
+"header_home" = "Vote";
 "header_activity" = "Snaps";
 "header_discover" = "Discover";
 "header_profile" = "Profile";

@@ -117,9 +117,8 @@
 		usernameLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:usernameLabel];
 		
-		int offset = (int)[HONAppDelegate isRetina5] * 94;
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(15.0, 309.0 + offset, 64.0, 44.0);
+		cameraRollButton.frame = CGRectMake(15.0, 309.0, 64.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
@@ -127,7 +126,7 @@
 		
 		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(233.0, 309.0 + offset, 74.0, 44.0);
+			changeCameraButton.frame = CGRectMake(233.0, 309.0, 74.0, 44.0);
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -135,7 +134,7 @@
 		}
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(128.0, 398.0 + offset, 64.0, 64.0);
+		_captureButton.frame = CGRectMake(128.0, 398.0 + ((int)[HONAppDelegate isRetina5] * 94), 64.0, 64.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
@@ -148,7 +147,7 @@
 		_subjectBGImageView.hidden = YES;
 		[self addSubview:_subjectBGImageView];
 		
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 13.0, 320.0, 24.0)];
+		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 12.0, 320.0, 24.0)];
 		//[_subjectTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -156,7 +155,7 @@
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 		[_subjectTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 		//[_subjectTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_subjectTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
+		_subjectTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = _subjectName;
 		_subjectTextField.delegate = self;

@@ -432,7 +432,7 @@
 			$challenge_arr = array();
 			
 			// get challenges with these two users
-			$query = 'SELECT `id` FROM `tblChallenges` WHERE (`creator_id` = '. $user_id .' AND `challenger_id` = '. $challenger_id .') OR (`creator_id` = '. $challenger_id .' AND `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50';
+			$query = 'SELECT `id` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' AND `challenger_id` = '. $challenger_id .') OR (`creator_id` = '. $challenger_id .' AND `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50';
 			$result = mysql_query($query);
 			
 			// loop thru challenges
@@ -569,7 +569,7 @@
 				$vote_id = mysql_insert_id();
 				
 				// increment vote total & update time
-				$query = 'UPDATE `tblChallenges` SET `votes` = "'. ++$vote_tot .'", `updated` = NOW() WHERE `id` = '. $challenge_id .';';
+				$query = 'UPDATE `tblChallenges` SET `votes` = "'. ++$vote_tot .'", `hasPreviewed` = "N", `updated` = NOW() WHERE `id` = '. $challenge_id .';';
 				$result = mysql_query($query);
 			
 			// existing vote	

@@ -318,6 +318,9 @@
 		4CABCEA4172DF8ED00AF5863 /* shareButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEA0172DF8ED00AF5863 /* shareButton_Active@2x.png */; };
 		4CABCEA5172DF8ED00AF5863 /* shareButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEA1172DF8ED00AF5863 /* shareButton_nonActive.png */; };
 		4CABCEA6172DF8ED00AF5863 /* shareButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEA2172DF8ED00AF5863 /* shareButton_nonActive@2x.png */; };
+		4CABCEA8172F46F800AF5863 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CABCEA7172F46F600AF5863 /* AddressBookUI.framework */; };
+		4CABCEAB172F935500AF5863 /* profileRowHeader.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEA9172F935500AF5863 /* profileRowHeader.png */; };
+		4CABCEAC172F935500AF5863 /* profileRowHeader@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEAA172F935500AF5863 /* profileRowHeader@2x.png */; };
 		4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */; };
 		4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9609167D676C0036E849 /* HONVoterViewCell.m */; };
 		4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF960C167D68B40036E849 /* HONVoterVO.m */; };
@@ -1192,6 +1195,9 @@
 		4CABCEA0172DF8ED00AF5863 /* shareButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shareButton_Active@2x.png"; sourceTree = "<group>"; };
 		4CABCEA1172DF8ED00AF5863 /* shareButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shareButton_nonActive.png; sourceTree = "<group>"; };
 		4CABCEA2172DF8ED00AF5863 /* shareButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shareButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CABCEA7172F46F600AF5863 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
+		4CABCEA9172F935500AF5863 /* profileRowHeader.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = profileRowHeader.png; sourceTree = "<group>"; };
+		4CABCEAA172F935500AF5863 /* profileRowHeader@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "profileRowHeader@2x.png"; sourceTree = "<group>"; };
 		4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVotersViewController.h; sourceTree = "<group>"; };
 		4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVotersViewController.m; sourceTree = "<group>"; };
 		4CAF9608167D676C0036E849 /* HONVoterViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoterViewCell.h; sourceTree = "<group>"; };
@@ -1474,6 +1480,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CABCEA8172F46F800AF5863 /* AddressBookUI.framework in Frameworks */,
 				4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */,
 				4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */,
 				4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */,
@@ -1818,6 +1825,7 @@
 		4C62652815F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CABCEA7172F46F600AF5863 /* AddressBookUI.framework */,
 				4C026019172B2CA8001CC476 /* AddressBook.framework */,
 				4CF07C151686770100E0FBC1 /* MediaPlayer.framework */,
 				4C81A016163367F300AB188B /* AVFoundation.framework */,
@@ -2462,6 +2470,8 @@
 			isa = PBXGroup;
 			children = (
 				4CABCE86172DAEC300AF5863 /* Settings */,
+				4CABCEA9172F935500AF5863 /* profileRowHeader.png */,
+				4CABCEAA172F935500AF5863 /* profileRowHeader@2x.png */,
 				4CABCE87172DAEDC00AF5863 /* settingsGear_Active.png */,
 				4CABCE88172DAEDC00AF5863 /* settingsGear_Active@2x.png */,
 				4CABCE89172DAEDC00AF5863 /* settingsGear_nonActive.png */,
@@ -3111,6 +3121,8 @@
 				4CABCEA4172DF8ED00AF5863 /* shareButton_Active@2x.png in Resources */,
 				4CABCEA5172DF8ED00AF5863 /* shareButton_nonActive.png in Resources */,
 				4CABCEA6172DF8ED00AF5863 /* shareButton_nonActive@2x.png in Resources */,
+				4CABCEAB172F935500AF5863 /* profileRowHeader.png in Resources */,
+				4CABCEAC172F935500AF5863 /* profileRowHeader@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

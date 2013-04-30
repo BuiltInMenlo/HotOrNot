@@ -36,6 +36,7 @@
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *username;
+@property(nonatomic, strong) NSDictionary *challengerDict;
 @property(nonatomic, strong) UIImageView *tutorialOverlayImgView;
 @property(nonatomic, strong) UIImageView *toggleImgView;
 @property(nonatomic, strong) UITableView *tableView;
@@ -132,6 +133,27 @@
 	return (self);
 }
 
+- (id)initWithUserID:(int)userID challengerID:(int)challengerID {
+	if ((self = [super init])) {
+		_isPushView = YES;
+		_subjectID = 0;
+		_challengeVO = nil;
+		_subjectName = nil;
+		_username = nil;
+		
+		_challengerDict = [NSDictionary dictionaryWithObjectsAndKeys:
+								 [NSNumber numberWithInt:userID], @"user1",
+								 [NSNumber numberWithInt:challengerID], @"user2", nil];
+		
+		self.view.backgroundColor = [UIColor whiteColor];
+		_challenges = [NSMutableArray new];
+		
+		[self _registerNotifications];
+	}
+	
+	return (self);
+}
+
 - (void)_registerNotifications {
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
@@ -143,6 +165,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallengerChallenge:) name:@"NEW_CHALLENGER_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newSubjectChallenge:) name:@"NEW_SUBJECT_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newUserChallenge:) name:@"NEW_USER_CHALLENGE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showComments:) name:@"SHOW_COMMENTS" object:nil];
 //	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
@@ -184,8 +207,15 @@
 				[params setObject:_username forKey:@"username"];
 				[params setObject:[NSString stringWithFormat:@"%d", 9] forKey:@"action"];
 				
-			} else
-				[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+			} else {
+				if (_challengerDict != 0) {
+					[params setObject:[_challengerDict objectForKey:@"user1"] forKey:@"userID"];
+					[params setObject:[_challengerDict objectForKey:@"user2"] forKey:@"challengerID"];
+					[params setObject:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
+					
+				} else
+					[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+			}
 		}
 	} else {
 		[params setObject:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
@@ -356,7 +386,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName : NSLocalizedString(@"header_home", nil)];
+	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName : NSLocalizedString(@"header_home", nil)];	
 	[_headerView toggleRefresh:NO];
 	[_headerView refreshButton].hidden = _isPushView;
 	[self.view addSubview:_headerView];
@@ -471,10 +501,13 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	if (_userVO == nil) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
+	} else
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
 }
 
 - (void)_goLocaleRestriction {
@@ -625,17 +658,18 @@
 }
 
 - (void)_newUserChallenge:(NSNotification *)notification {
-	if (_userVO != nil) {
-		[[Mixpanel sharedInstance] track:@"Timeline - New Snap at User"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	HONUserVO *vo = (HONUserVO *)[notification object];
 		
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+	[[Mixpanel sharedInstance] track:@"Timeline - New Snap at User"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
+	
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
 }
 
 - (void)_newSubjectChallenge:(NSNotification *)notification {
@@ -649,6 +683,49 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)_pokeUser:(NSNotification *)notification {
+	HONUserVO *vo = (HONUserVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline - Poke User"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 6], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
+									[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
+									nil];
+	
+	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil)
+			NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		
+		else {
+			NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+	}];
 }
 
 - (void)_showVoters:(NSNotification *)notification {

@@ -91,8 +91,8 @@
 	if ((self = [self init])) {
 		_caption = caption;
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 25.0, 250.0, 16.0)];
-		_captionLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:13];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 24.0, 250.0, 16.0)];
+		_captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 		_captionLabel.textColor = [HONAppDelegate honGreyInputColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.text = _caption;

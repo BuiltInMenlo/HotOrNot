@@ -37,10 +37,11 @@
 	_contactUserVO = contactUserVO;
 	
 	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 22.0, 180.0, 16.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
+	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 	nameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = [NSString stringWithFormat:@"%@ (%@)", _contactUserVO.fullName, (_contactUserVO.isSMSAvailable) ? @"SMS" : @"EMAIL"];
+	//nameLabel.text = [NSString stringWithFormat:@"%@ (%@)", _contactUserVO.fullName, (_contactUserVO.isSMSAvailable) ? @"SMS" : @"EMAIL"];
+	nameLabel.text = [NSString stringWithFormat:@"%@", _contactUserVO.fullName];
 	[self addSubview:nameLabel];
 }
 

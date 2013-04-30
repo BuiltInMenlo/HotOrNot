@@ -250,9 +250,16 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1ModalBackground-568h@2x" : @"fueStep1ModalBackground"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_register", nil)];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[headerView hideRefreshing];
 	[self.view addSubview:headerView];
+	
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 200.0, 24.0)];
+	titleLabel.backgroundColor = [UIColor clearColor];
+	titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
+	titleLabel.textColor = [UIColor whiteColor];
+	titleLabel.text = NSLocalizedString(@"header_register", nil);
+	[headerView addSubview:titleLabel];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
@@ -266,7 +273,7 @@
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 10.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 12.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -274,7 +281,7 @@
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.textAlignment = NSTextAlignmentCenter;
 	_usernameTextField.text = NSLocalizedString(@"register_username", nil);//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
