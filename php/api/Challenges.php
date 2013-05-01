@@ -335,7 +335,7 @@
 					$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_obj->username .' has accepted your '. $subject_name .' snap!", "sound": "push_01.caf"}}'); 			
 
 				// update the challenge to started
-				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `hasPreviewed` = "N", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
+				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
 				$result = mysql_query($query);
 			}
 		}
@@ -381,7 +381,7 @@
 				$challenger_obj = mysql_fetch_object(mysql_query($query));
 				
 				// update the challenge to say it's nowe in session
-				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `hasPreviewed` = "N", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
+				$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
 				$update_result = mysql_query($query);
 				
 				// send push if creator allows it
@@ -546,56 +546,9 @@
 			*/
 		}
 		
-		/** 
-		 * Gets the latest list of 10 challenges for a user
-		 * @param $user_id The ID of the user (integer)
-		 * @return The list of challenges (array)
-		**/
-		function getChallengesForUser($user_id) {
-			$challenge_arr = array();			
-			
-			// get latest 10 challenges for user
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 10;';
-			$challenge_result = mysql_query($query);
-			
-			// loop thru the rows
-			while ($challenge_row = mysql_fetch_assoc($challenge_result)) {
-				
-				// set challenge status to waiting if user is the challenger and it's been created
-				if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
-					$challenge_row['status_id'] = "0";
-				
-				// get the subject title
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
-				$sub_obj = mysql_fetch_object(mysql_query($query));
-				
-				// push challenge into list
-				array_push($challenge_arr, array(
-					'id' => $challenge_row['id'], 
-					'status' => $challenge_row['status_id'], 					
-					'subject' => $sub_obj->title, 
-					'has_viewed' => $challenge_row['hasPreviewed'], 
-					'started' => $challenge_row['started'], 
-					'added' => $challenge_row['added'],
-					'updated' => $challenge_row['updated'], 
-					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
-					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
-				));
-			}
-			
-			// return
-			$this->sendResponse(200, json_encode($challenge_arr));
-			return (true);
-			
-			/*
-			example response:
-			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
-			*/
-		}
-		
 		
 		/** 
-		 * Gets the latest list of 10 challenges for a user
+		 * Gets all the challenges for a user
 		 * @param $user_id The ID of the user (integer)
 		 * @return The list of challenges (array)
 		**/
@@ -666,6 +619,53 @@
 					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
 					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id']),
 					'rechallenges' => $rechallenge_arr
+				));
+			}
+			
+			// return
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);
+			
+			/*
+			example response:
+			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
+			*/
+		}
+		
+		/** 
+		 * Gets the latest list of 10 challenges for a user
+		 * @param $user_id The ID of the user (integer)
+		 * @return The list of challenges (array)
+		**/
+		function getChallengesForUser($user_id) {
+			$challenge_arr = array();			
+			
+			// get latest 10 challenges for user
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 10;';
+			$challenge_result = mysql_query($query);
+			
+			// loop thru the rows
+			while ($challenge_row = mysql_fetch_assoc($challenge_result)) {
+				
+				// set challenge status to waiting if user is the challenger and it's been created
+				if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
+					$challenge_row['status_id'] = "0";
+				
+				// get the subject title
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				$sub_obj = mysql_fetch_object(mysql_query($query));
+				
+				// push challenge into list
+				array_push($challenge_arr, array(
+					'id' => $challenge_row['id'], 
+					'status' => $challenge_row['status_id'], 					
+					'subject' => $sub_obj->title, 
+					'has_viewed' => $challenge_row['hasPreviewed'], 
+					'started' => $challenge_row['started'], 
+					'added' => $challenge_row['added'],
+					'updated' => $challenge_row['updated'], 
+					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
+					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
 				));
 			}
 			
@@ -760,7 +760,7 @@
 				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_name .' has accepted your '. $subject_name .' snap!", "sound": "push_01.caf"}}'); 			
 
 			// update the challenge to started
-			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `hasPreviewed` = "N", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
+			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
 			$result = mysql_query($query);			
 			
 			// return

@@ -29,6 +29,7 @@
 @property (nonatomic, strong) UIImageView *bgTextImageView;
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) NSIndexPath *idxPath;
+@property (nonatomic) BOOL isGoingBack;
 @end
 
 @implementation HONCommentsViewController
@@ -36,6 +37,7 @@
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		_challengeVO = vo;
+		_isGoingBack = NO;
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		self.comments = [NSMutableArray new];
@@ -194,7 +196,7 @@
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_commentTextField setReturnKeyType:UIReturnKeyDone];
+	[_commentTextField setReturnKeyType:UIReturnKeySend];
 	[_commentTextField setTextColor:[HONAppDelegate honGreyInputColor]];
 	[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_commentTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
@@ -236,8 +238,15 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
+	_isGoingBack = YES;
 	[_commentTextField resignFirstResponder];
-	[self.navigationController popViewControllerAnimated:YES];
+	[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
+		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+	
+	} completion:^(BOOL finished) {
+		_commentTextField.text = @"";
+		[self.navigationController popViewControllerAnimated:YES];
+	}];
 }
 
 - (void)_goTextField {
@@ -245,12 +254,10 @@
 }
 
 - (void)_goSend {
-	[[Mixpanel sharedInstance] track:@"Timeline Comments - Submit"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
-	[_commentTextField resignFirstResponder];
+	if ([_commentTextField.text length] > 0) {
+		[self _submitComment];
+		_commentTextField.text = @"";
+	}
 }
 
 
@@ -348,7 +355,7 @@
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, _bgTextImageView.frame.origin.y - 236.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 278.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 	} completion:^(BOOL finished) {
 	}];
 }
@@ -364,24 +371,20 @@
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
-	[textField resignFirstResponder];
+	//[textField resignFirstResponder];
 	return (YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
-	[textField resignFirstResponder];
 	
-	[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
-		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
-	} completion:^(BOOL finished) {
-		textField.text = @"";
-	}];
-	
-	if ([textField.text length] > 0) {
-		[self _submitComment];
-	}
+	if (!_isGoingBack)
+		[textField becomeFirstResponder];
 }
 
+- (void)_onTxtDoneEditing:(id)sender {
+	[_commentTextField becomeFirstResponder];
+	[self _goSend];
+}
 
 #pragma mark - AlerView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

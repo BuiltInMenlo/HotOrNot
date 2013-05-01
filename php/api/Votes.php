@@ -569,7 +569,7 @@
 				$vote_id = mysql_insert_id();
 				
 				// increment vote total & update time
-				$query = 'UPDATE `tblChallenges` SET `votes` = "'. ++$vote_tot .'", `hasPreviewed` = "N", `updated` = NOW() WHERE `id` = '. $challenge_id .';';
+				$query = 'UPDATE `tblChallenges` SET `votes` = "'. ++$vote_tot .'", `updated` = NOW() WHERE `id` = '. $challenge_id .';';
 				$result = mysql_query($query);
 			
 			// existing vote	

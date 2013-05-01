@@ -119,7 +119,8 @@
 - (void)_goSubmit {
 	[[Mixpanel sharedInstance] track:@"Change Username - Submit"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 _username, @"username", nil]];
 	
 	[_usernameTextField resignFirstResponder];
 	
@@ -212,11 +213,6 @@
 		textField.text = _username;
 	
 	_username = [textField.text substringFromIndex:1];
-	
-	[[Mixpanel sharedInstance] track:@"Change Username - Submit"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  _username, @"username", nil]];
 }
 
 @end

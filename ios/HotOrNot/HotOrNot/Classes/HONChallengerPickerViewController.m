@@ -284,7 +284,7 @@
 	[_headerView addSubview:backButton];
 	
 	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 44.0)];
-	usernameBGImageView.image = [UIImage imageNamed:@"searchBackground"];
+	usernameBGImageView.image = [UIImage imageNamed:@"searchBackground_B"];
 	usernameBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:usernameBGImageView];
 	

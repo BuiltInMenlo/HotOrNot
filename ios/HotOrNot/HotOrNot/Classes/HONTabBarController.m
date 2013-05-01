@@ -94,16 +94,15 @@
 	[self addCustomElements];
 	[self showNewTabBar];
 	
-	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(85.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
+	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(165.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
 	
-	//if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
-	//	[self _updateChallengeAlerts];
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
+		[self _updateChallengeAlerts];
 	
 //	[self _showAlertPopOverWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
 //												  [NSNumber numberWithInt:arc4random() % 15], @"status",
 //												  [NSNumber numberWithInt:arc4random() % 15], @"score",
 //												  [NSNumber numberWithInt:arc4random() % 15], @"comments", nil]];
-//	[self _updateChallengeAlerts];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -369,16 +368,18 @@
 			NSLog(@"HONTabBarViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
+			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"HONTabBarViewController AFNetworking %@", unsortedChallenges);
+			
 			int statusChanges = 0;
 			int voteChanges = 0;
 			int commentChanges = 0;
 			
-			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSMutableArray *challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in unsortedChallenges) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
-				if (vo != nil && (vo.statusID == 1 && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]))
+				if (vo != nil)// && (vo.statusID == 1 && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]))
 					[challenges addObject:vo];
 			}
 			
@@ -419,12 +420,11 @@
 				[alertTotals setValue:[NSNumber numberWithInt:[[alertTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])] forKey:@"status"];
 			}
 			
-			//NSLog(@"CHANGES:\n%@", alertTotals);
+			NSLog(@"CHANGES:\n%@", alertTotals);
 			
 			// update local
-			[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"local_challenges"];
-			[[NSUserDefaults standardUserDefaults] setValue:alertTotals forKey:@"alert_totals"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
+//			[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"local_challenges"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
 				[self _showAlertPopOverWithTotals:alertTotals];

@@ -565,6 +565,22 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 
+#pragma mark - UI Presentation
+- (void)_dropTabs {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+}
+
+- (void)_showOKAlert:(NSString *)title withMessage:(NSString *)message {
+	UIAlertView *alertView = [[UIAlertView alloc]
+									  initWithTitle:title
+									  message:message
+									  delegate:nil
+									  cancelButtonTitle:@"OK"
+									  otherButtonTitles:nil];
+	[alertView show];
+}
+
+
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -589,6 +605,9 @@ NSString *const FacebookAppID = @"529054720443694";
 		
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"audio_muted"])
 			[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"audio_muted"];
+		
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"])
+			[[NSUserDefaults standardUserDefaults] setValue:[NSArray array] forKey:@"local_challenges"];
 		
 		NSMutableDictionary *takeOffOptions = [[NSMutableDictionary alloc] init];
 		[takeOffOptions setValue:launchOptions forKey:UAirshipTakeOffOptionsLaunchOptionsKey];
@@ -826,7 +845,7 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 
-
+#pragma mark - Startup Operations
 - (void)_retrieveParseObj {
 	PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
 	PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
@@ -990,20 +1009,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	//[self performSelector:@selector(_dropTabs) withObject:nil afterDelay:2.0];
 }
 
-- (void)_dropTabs {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-}
 
-- (void)_showOKAlert:(NSString *)title withMessage:(NSString *)message {
-	UIAlertView *alertView = [[UIAlertView alloc]
-							  initWithTitle:title
-							  message:message
-							  delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil];
-	[alertView show];
-}
-
+#pragma mark - Debug Calls
 - (void)_testParseCloudCode {
 	// http://stackoverflow.com/questions/10795710/converting-a-curl-request-with-data-urlencode-into-afnetworking-get-request
 	/*
