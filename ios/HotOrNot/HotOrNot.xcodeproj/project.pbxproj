@@ -120,6 +120,14 @@
 		4C3E888516A3C050003301AF /* shareLarge_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E888116A3C050003301AF /* shareLarge_nonActive.png */; };
 		4C3E888616A3C050003301AF /* shareLarge_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E888216A3C050003301AF /* shareLarge_nonActive@2x.png */; };
 		4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */; };
+		4C442EE51730C8C1003DED81 /* magGlassIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EE31730C8C1003DED81 /* magGlassIcon.png */; };
+		4C442EE61730C8C1003DED81 /* magGlassIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EE41730C8C1003DED81 /* magGlassIcon@2x.png */; };
+		4C442EEB1730CF8F003DED81 /* searchToggle_Hashtags.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EE71730CF8F003DED81 /* searchToggle_Hashtags.png */; };
+		4C442EEC1730CF8F003DED81 /* searchToggle_Hashtags@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EE81730CF8F003DED81 /* searchToggle_Hashtags@2x.png */; };
+		4C442EED1730CF8F003DED81 /* searchToggle_Users.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EE91730CF8F003DED81 /* searchToggle_Users.png */; };
+		4C442EEE1730CF8F003DED81 /* searchToggle_Users@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EEA1730CF8F003DED81 /* searchToggle_Users@2x.png */; };
+		4C442EF11730D47E003DED81 /* pokeThumb.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EEF1730D47E003DED81 /* pokeThumb.png */; };
+		4C442EF21730D47E003DED81 /* pokeThumb@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EF01730D47E003DED81 /* pokeThumb@2x.png */; };
 		4C45FF4916DECE95002F1080 /* HONUserProfileViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */; };
 		4C48745816BF0E36007D901B /* HONSearchBarHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */; };
 		4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745A16C05699007D901B /* HONSearchViewController.m */; };
@@ -321,6 +329,8 @@
 		4CABCEA8172F46F800AF5863 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CABCEA7172F46F600AF5863 /* AddressBookUI.framework */; };
 		4CABCEAB172F935500AF5863 /* profileRowHeader.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEA9172F935500AF5863 /* profileRowHeader.png */; };
 		4CABCEAC172F935500AF5863 /* profileRowHeader@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEAA172F935500AF5863 /* profileRowHeader@2x.png */; };
+		4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CABCEAE173086D700AF5863 /* HONChangeAvatarViewController.m */; };
+		4CABCEB2173086FD00AF5863 /* HONAvatarCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CABCEB1173086FC00AF5863 /* HONAvatarCameraOverlayView.m */; };
 		4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */; };
 		4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9609167D676C0036E849 /* HONVoterViewCell.m */; };
 		4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF960C167D68B40036E849 /* HONVoterVO.m */; };
@@ -720,6 +730,14 @@
 		4C3E888216A3C050003301AF /* shareLarge_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shareLarge_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONImagePickerViewController.h; sourceTree = "<group>"; };
 		4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONImagePickerViewController.m; sourceTree = "<group>"; };
+		4C442EE31730C8C1003DED81 /* magGlassIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magGlassIcon.png; sourceTree = "<group>"; };
+		4C442EE41730C8C1003DED81 /* magGlassIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "magGlassIcon@2x.png"; sourceTree = "<group>"; };
+		4C442EE71730CF8F003DED81 /* searchToggle_Hashtags.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchToggle_Hashtags.png; sourceTree = "<group>"; };
+		4C442EE81730CF8F003DED81 /* searchToggle_Hashtags@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchToggle_Hashtags@2x.png"; sourceTree = "<group>"; };
+		4C442EE91730CF8F003DED81 /* searchToggle_Users.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchToggle_Users.png; sourceTree = "<group>"; };
+		4C442EEA1730CF8F003DED81 /* searchToggle_Users@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchToggle_Users@2x.png"; sourceTree = "<group>"; };
+		4C442EEF1730D47E003DED81 /* pokeThumb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pokeThumb.png; sourceTree = "<group>"; };
+		4C442EF01730D47E003DED81 /* pokeThumb@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pokeThumb@2x.png"; sourceTree = "<group>"; };
 		4C45FF4716DECE95002F1080 /* HONUserProfileViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileViewCell.h; sourceTree = "<group>"; };
 		4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileViewCell.m; sourceTree = "<group>"; };
 		4C48745616BF0E36007D901B /* HONSearchBarHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchBarHeaderView.h; sourceTree = "<group>"; };
@@ -1198,6 +1216,10 @@
 		4CABCEA7172F46F600AF5863 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		4CABCEA9172F935500AF5863 /* profileRowHeader.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = profileRowHeader.png; sourceTree = "<group>"; };
 		4CABCEAA172F935500AF5863 /* profileRowHeader@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "profileRowHeader@2x.png"; sourceTree = "<group>"; };
+		4CABCEAD173086D700AF5863 /* HONChangeAvatarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChangeAvatarViewController.h; sourceTree = "<group>"; };
+		4CABCEAE173086D700AF5863 /* HONChangeAvatarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChangeAvatarViewController.m; sourceTree = "<group>"; };
+		4CABCEB0173086FC00AF5863 /* HONAvatarCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAvatarCameraOverlayView.h; sourceTree = "<group>"; };
+		4CABCEB1173086FC00AF5863 /* HONAvatarCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAvatarCameraOverlayView.m; sourceTree = "<group>"; };
 		4CAF9604167D4F3E0036E849 /* HONVotersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVotersViewController.h; sourceTree = "<group>"; };
 		4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVotersViewController.m; sourceTree = "<group>"; };
 		4CAF9608167D676C0036E849 /* HONVoterViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoterViewCell.h; sourceTree = "<group>"; };
@@ -1524,6 +1546,12 @@
 		4C0AAAEA170C94F400BB32BD /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				4C442EE71730CF8F003DED81 /* searchToggle_Hashtags.png */,
+				4C442EE81730CF8F003DED81 /* searchToggle_Hashtags@2x.png */,
+				4C442EE91730CF8F003DED81 /* searchToggle_Users.png */,
+				4C442EEA1730CF8F003DED81 /* searchToggle_Users@2x.png */,
+				4C442EE31730C8C1003DED81 /* magGlassIcon.png */,
+				4C442EE41730C8C1003DED81 /* magGlassIcon@2x.png */,
 				4CABCE9B172DE33B00AF5863 /* searchDiscoverHeader.png */,
 				4CABCE9C172DE33B00AF5863 /* searchDiscoverHeader@2x.png */,
 				4CABCE97172DE26A00AF5863 /* searchDiscoverBackground.png */,
@@ -1554,7 +1582,7 @@
 			name = Fonts;
 			sourceTree = "<group>";
 		};
-		4C32B99815FA6F4C0023A0EE /* Challenges */ = {
+		4C32B99815FA6F4C0023A0EE /* Activity */ = {
 			isa = PBXGroup;
 			children = (
 				4C32B99915FA6F720023A0EE /* HONChallengeViewCell.h */,
@@ -1564,7 +1592,7 @@
 				4C673F7B1693AA23008B2CA4 /* HONChallengePreviewViewController.h */,
 				4C673F7C1693AA23008B2CA4 /* HONChallengePreviewViewController.m */,
 			);
-			name = Challenges;
+			name = Activity;
 			sourceTree = "<group>";
 		};
 		4C32B99C15FA75870023A0EE /* VO */ = {
@@ -2377,8 +2405,8 @@
 			isa = PBXGroup;
 			children = (
 				4C32B9A315FAB5F00023A0EE /* Timeline */,
-				4C32B99815FA6F4C0023A0EE /* Challenges */,
 				4C32B9A415FAB5FA0023A0EE /* Discovery */,
+				4C32B99815FA6F4C0023A0EE /* Activity */,
 				4CA8DA541613D03300B7B13C /* Profile */,
 			);
 			name = Tabs;
@@ -2403,6 +2431,10 @@
 				4CBE874B16371D22004084DF /* HONSupportViewController.m */,
 				4C51643B1681894500EB3C09 /* HONUsernameViewController.h */,
 				4C51643C1681894600EB3C09 /* HONUsernameViewController.m */,
+				4CABCEB0173086FC00AF5863 /* HONAvatarCameraOverlayView.h */,
+				4CABCEB1173086FC00AF5863 /* HONAvatarCameraOverlayView.m */,
+				4CABCEAD173086D700AF5863 /* HONChangeAvatarViewController.h */,
+				4CABCEAE173086D700AF5863 /* HONChangeAvatarViewController.m */,
 			);
 			name = Profile;
 			sourceTree = "<group>";
@@ -2421,6 +2453,8 @@
 				4C3BD58A1725E65E00C4A840 /* tapHereButton_Active@2x.png */,
 				4C3BD58D1725E66300C4A840 /* tapHereButton_nonActive.png */,
 				4C3BD5901725E66700C4A840 /* tapHereButton_nonActive@2x.png */,
+				4C442EEF1730D47E003DED81 /* pokeThumb.png */,
+				4C442EF01730D47E003DED81 /* pokeThumb@2x.png */,
 				4CD1128E1724C0C70049DFBF /* scoreLoser.png */,
 				4CD1128F1724C0C70049DFBF /* scoreLoser@2x.png */,
 				4CD112901724C0C70049DFBF /* scoreWinner.png */,
@@ -3123,6 +3157,14 @@
 				4CABCEA6172DF8ED00AF5863 /* shareButton_nonActive@2x.png in Resources */,
 				4CABCEAB172F935500AF5863 /* profileRowHeader.png in Resources */,
 				4CABCEAC172F935500AF5863 /* profileRowHeader@2x.png in Resources */,
+				4C442EE51730C8C1003DED81 /* magGlassIcon.png in Resources */,
+				4C442EE61730C8C1003DED81 /* magGlassIcon@2x.png in Resources */,
+				4C442EEB1730CF8F003DED81 /* searchToggle_Hashtags.png in Resources */,
+				4C442EEC1730CF8F003DED81 /* searchToggle_Hashtags@2x.png in Resources */,
+				4C442EED1730CF8F003DED81 /* searchToggle_Users.png in Resources */,
+				4C442EEE1730CF8F003DED81 /* searchToggle_Users@2x.png in Resources */,
+				4C442EF11730D47E003DED81 /* pokeThumb.png in Resources */,
+				4C442EF21730D47E003DED81 /* pokeThumb@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3220,6 +3262,8 @@
 				4C026015172AF87D001CC476 /* HONPastChallengerViewCell.m in Sources */,
 				4C026018172B092B001CC476 /* HONInviteUserViewCell.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
+				4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */,
+				4CABCEB2173086FD00AF5863 /* HONAvatarCameraOverlayView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4350,7 +4394,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "93E7DB52-6AEE-48CA-9666-5A372F0F2101";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7B1875CB-50B3-46DF-A7DA-EBC326DC9FBE";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

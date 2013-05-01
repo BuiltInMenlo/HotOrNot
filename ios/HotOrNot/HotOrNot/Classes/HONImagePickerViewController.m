@@ -191,7 +191,7 @@
 			_imagePicker.wantsFullScreenLayout = NO;
 			_imagePicker.showsCameraControls = NO;
 			_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
+//			_imagePicker.navigationBar.tintColor = [HONAppDelegate honBlueTxtColor];
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
 				[self _showOverlay];
@@ -205,7 +205,7 @@
 			_imagePicker.navigationBarHidden = YES;
 			_imagePicker.toolbarHidden = YES;
 			_imagePicker.wantsFullScreenLayout = NO;
-			_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
+//			_imagePicker.navigationBar.tintColor = [UIColor colorWithRed:0.039 green:0.396 blue:0.647 alpha:1.0];
 			
 			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
 			}];
@@ -607,6 +607,10 @@
 		//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	}
+}
+
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 }
 
 

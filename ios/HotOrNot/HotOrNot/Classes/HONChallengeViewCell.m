@@ -26,7 +26,7 @@
 	if ((self = [super init])) {
 		if (isBottom) {
 			_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			_loadMoreButton.frame = CGRectMake(108.0, 15.0, 103.0, 34.0);
+			_loadMoreButton.frame = CGRectMake(103.0, 10.0, 114.0, 44.0);
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];

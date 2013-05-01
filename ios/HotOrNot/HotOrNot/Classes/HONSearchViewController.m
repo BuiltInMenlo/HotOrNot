@@ -28,6 +28,7 @@
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
+@property(nonatomic, strong) UIImageView *toggleImageView;
 @property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) NSString *subject;
 @property(nonatomic) BOOL isUser;
@@ -341,8 +342,16 @@
 	_defaultUsers = [NSMutableArray array];
 	_pastUsers = [NSMutableArray array];
 	
+	UIView *whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 52.0)];
+	whiteBGView.backgroundColor = [UIColor whiteColor];
+	[self.view addSubview:whiteBGView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 280.0) style:UITableViewStylePlain];
+	_toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 301.0, 31.0)];
+	_toggleImageView.image = [UIImage imageNamed:@"searchToggle_Users"];
+	_toggleImageView.alpha = 0.0;
+	[self.view addSubview:_toggleImageView];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 52.0, 320.0, [UIScreen mainScreen].bounds.size.height - 332.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -367,6 +376,7 @@
 - (void)_showTable {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_tableView.alpha = 1.0;
+		_toggleImageView.alpha = 1.0;
 	}];
 }
 
@@ -395,7 +405,8 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return ((_isResults) ? 1 : 2);
+	//return ((_isResults) ? 1 : 2);
+	return (1);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {

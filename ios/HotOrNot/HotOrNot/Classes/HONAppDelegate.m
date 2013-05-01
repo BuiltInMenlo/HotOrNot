@@ -525,6 +525,45 @@ NSString *const FacebookAppID = @"529054720443694";
 	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[notification object]] animated:YES];
 }
 
+- (void)_pokeUser:(NSNotification *)notification {
+	HONUserVO *vo = (HONUserVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline - Poke User"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 6], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
+									[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
+									nil];
+	
+	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil)
+			NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		
+		else {
+			NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -539,6 +578,7 @@ NSString *const FacebookAppID = @"529054720443694";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
 	
 	//[self _testParseCloudCode];
 	//[self _showFonts];
@@ -935,8 +975,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	profileViewController = [[HONProfileViewController alloc] init];
 	
 	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
-	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
+	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
+	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
 	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];
 	
 	[navController1 setNavigationBarHidden:YES];

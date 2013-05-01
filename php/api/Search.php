@@ -228,7 +228,7 @@
 			
 			
 			// get the previous challengers
-			$query = 'SELECT `challenger_id` FROM `tblChallenges` WHERE `challenger_id` != 0 AND `creator_id` = '. $user_id .';';
+			$query = 'SELECT `challenger_id` FROM `tblChallenges` WHERE `challenger_id` != 0 AND `creator_id` = '. $user_id .' ORDER BY `updated` DESC LIMIT 8;';
 			$result = mysql_query($query);
 			
 			// loop thru result ids
@@ -249,7 +249,7 @@
 				
 				
 			// get the previous challenge creators
-			$query = 'SELECT `creator_id` FROM `tblChallenges` WHERE `challenger_id` = '. $user_id .';';
+			$query = 'SELECT `creator_id` FROM `tblChallenges` WHERE `challenger_id` = '. $user_id .' ORDER BY `updated` DESC LIMIT 8;';
 			$result = mysql_query($query);
 			
 			// loop thru result ids

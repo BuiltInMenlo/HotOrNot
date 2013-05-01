@@ -15,6 +15,7 @@
 #import "HONAppDelegate.h"
 
 @interface HONUserProfileViewCell() <UIAlertViewDelegate, UIActionSheetDelegate>
+@property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *snapsLabel;
 @property (nonatomic, strong) UILabel *votesLabel;
 @property (nonatomic, strong) UILabel *ptsLabel;
@@ -40,9 +41,11 @@
 	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 12.0, 93.0, 93.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-	[self addSubview:avatarImageView];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 12.0, 93.0, 93.0)];
+	_avatarImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	//[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:60.0] placeholderImage:nil success:nil failure:nil];
+	[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+	[self addSubview:_avatarImageView];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	snapButton.frame = CGRectMake(68.0, 72.0, 34.0, 34.0);
@@ -83,7 +86,7 @@
 	[self addSubview:timelineButton];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(269.0, 67.0, 44.0, 44.0);
+	shareButton.frame = CGRectMake(244.0, 32.0, 44.0, 44.0);
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
@@ -92,6 +95,15 @@
 
 
 - (void)updateCell {
+	NSString *avatarURL = ([_userVO.imageURL rangeOfString:@"?"].location == NSNotFound) ? [NSString stringWithFormat:@"%@?r=%d", _userVO.imageURL, arc4random()] : [NSString stringWithFormat:@"%@&r=%d", _userVO.imageURL, arc4random()];
+	NSLog(@"--------- UPDATE CELL[%@] ----------", avatarURL);
+	
+	[_avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
+//	__weak typeof(self) weakSelf = self;
+//	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:60.0] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//		weakSelf.avatarImageView.image = image;
+//	} failure:nil];
+	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
@@ -103,6 +115,7 @@
 
 #pragma mark - Navigation
 - (void)_goProfilePic {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TAKE_NEW_AVATAR" object:nil];
 }
 
 - (void)_goTimeline {

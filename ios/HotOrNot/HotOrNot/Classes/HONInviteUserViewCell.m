@@ -23,7 +23,7 @@
 		[self addSubview:bgImageView];
 		
 		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		inviteButton.frame = CGRectMake(245.0, 10.0, 64.0, 44.0);
+		inviteButton.frame = CGRectMake(235.0, 10.0, 74.0, 44.0);
 		[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
 		[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
 		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];

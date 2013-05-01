@@ -63,7 +63,7 @@
 	[self addSubview:subjectLabel];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(16.0, 20.0, 129.0, 72.0);
+	selectButton.frame = CGRectMake(16.0, 15.0, 129.0, 72.0);
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
@@ -100,7 +100,7 @@
 	[self addSubview:subjectLabel];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(172.0, 20.0, 129.0, 72.0);
+	selectButton.frame = CGRectMake(172.0, 15.0, 129.0, 72.0);
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];

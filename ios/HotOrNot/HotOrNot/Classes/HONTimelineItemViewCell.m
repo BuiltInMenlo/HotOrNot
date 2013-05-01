@@ -16,6 +16,7 @@
 #import "HONTimelineItemViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONVoterVO.h"
+#import "HONUserVO.h"
 
 
 @interface HONTimelineItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
@@ -195,16 +196,37 @@
 		
 	} else {
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 153.0, 153.0)];
-		rImgView.image = [UIImage imageNamed:@"thumbCameraAction"];
+		rImgView.image = [UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? @"pokeThumb" : @"thumbCameraAction"];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
-//		UIButton *snapAtButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		snapAtButton.frame = CGRectMake(10.0, 285.0, 300.0, 64.0);
-//		[snapAtButton setBackgroundImage:[UIImage imageNamed:@"tapHereButton_nonActive"] forState:UIControlStateNormal];
-//		[snapAtButton setBackgroundImage:[UIImage imageNamed:@"tapHereButton_Active"] forState:UIControlStateHighlighted];
-//		[snapAtButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-//		[self addSubview:snapAtButton];
+		if (_challengeVO.challengerID != 0) {
+			UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 209.0, 38.0, 38.0)];
+			challengerAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
+			[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
+			challengerAvatarImageView.userInteractionEnabled = YES;
+			challengerAvatarImageView.clipsToBounds = YES;
+			[self addSubview:challengerAvatarImageView];
+			
+			UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			challengerAvatarButton.frame = challengerAvatarImageView.frame;
+			[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+			[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
+			[self addSubview:challengerAvatarButton];
+			
+			UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 221.0, 100.0, 20.0)];
+			challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
+			challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+			challengerNameLabel.backgroundColor = [UIColor clearColor];
+			challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
+			[self addSubview:challengerNameLabel];
+			
+			UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			challengerNameButton.frame = challengerNameLabel.frame;
+			[challengerNameButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+			[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
+			[self addSubview:challengerNameButton];
+		}
 	}
 	
 	
@@ -352,8 +374,19 @@
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 			
-		} else
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+		} else {
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																				[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"id",
+																				[NSString stringWithFormat:@"%d", 0], @"points",
+																				[NSString stringWithFormat:@"%d", 0], @"votes",
+																				[NSString stringWithFormat:@"%d", 0], @"pokes",
+																				[NSString stringWithFormat:@"%d", 0], @"pics",
+																				_challengeVO.challengerName, @"username",
+																				_challengeVO.challengerFB, @"fb_id",
+																				_challengeVO.challengerAvatar, @"avatar_url", nil]];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];//[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+		}
 	}
 }
 
@@ -372,8 +405,9 @@
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 			
-		} else
+		} else {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+		}
 	}
 }
 
@@ -392,8 +426,19 @@
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 			
-		} else
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+		} else {
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																				[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"id",
+																				[NSString stringWithFormat:@"%d", 0], @"points",
+																				[NSString stringWithFormat:@"%d", 0], @"votes",
+																				[NSString stringWithFormat:@"%d", 0], @"pokes",
+																				[NSString stringWithFormat:@"%d", 0], @"pics",
+																				_challengeVO.challengerName, @"username",
+																				_challengeVO.challengerFB, @"fb_id",
+																				_challengeVO.challengerAvatar, @"avatar_url", nil]];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];//[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+		}
 	}
 }
 

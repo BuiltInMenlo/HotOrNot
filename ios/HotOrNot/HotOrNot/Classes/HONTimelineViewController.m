@@ -165,11 +165,8 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallengerChallenge:) name:@"NEW_CHALLENGER_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newSubjectChallenge:) name:@"NEW_SUBJECT_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newUserChallenge:) name:@"NEW_USER_CHALLENGE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showComments:) name:@"SHOW_COMMENTS" object:nil];
-//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
-//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserShare:) name:@"SHOW_USER_SHARE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
@@ -239,20 +236,18 @@
 				if (vo != nil) {
 					//NSLog(@"%d)--> ADDING CHALLENGE[%@]", cnt, vo.dictionary);
 					[_challenges addObject:vo];
+					
+					if (_challengerDict != nil) {
+						if (vo.challengerID == [[_challengerDict objectForKey:@"user2"] intValue] || vo.creatorID == [[_challengerDict objectForKey:@"user2"] intValue])
+							[_headerView setTitle:[NSString stringWithFormat:@"@%@", (vo.challengerID == [[_challengerDict objectForKey:@"user2"] intValue]) ? vo.challengerName : vo.creatorName]];
+					}
+						
 					cnt++;
 				}
 			}
 			
 			_emptySetImgView.hidden = ([_challenges count] > 0);
 			[_tableView reloadData];
-			
-//			if ([_challenges count] == 0) {
-//				[[[UIAlertView alloc] initWithTitle:@"Nothing Here!"
-//											message:@"No PicChallenges in session. You should start one."
-//										   delegate:nil
-//								  cancelButtonTitle:@"OK"
-//								  otherButtonTitles:nil] show];
-//			}
 		}
 		
 		[_headerView toggleRefresh:NO];
@@ -685,49 +680,6 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_pokeUser:(NSNotification *)notification {
-	HONUserVO *vo = (HONUserVO *)[notification object];
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - Poke User"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
-	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 6], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
-									[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
-									nil];
-	
-	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		
-		if (error != nil)
-			NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-		
-		else {
-			NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
-		
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		_progressHUD = nil;
-	}];
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-	}];
-}
-
 - (void)_showVoters:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
 	
@@ -747,34 +699,6 @@
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:vo] animated:YES];
 }
-
-- (void)_showSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, -44.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
-}
-
-- (void)_hideSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
-}
-
-/*
-- (void)_showUserShare:(NSNotification *)notification {
-	NSLog(@"_showUserShare:[%@]", _userVO);
-	
-	if ([HONAppDelegate appTabBarController].view != nil && _userVO != nil) {
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																 delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:@"Report User"
-														otherButtonTitles:[NSString stringWithFormat:@"Snap @%@", _userVO.username], nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-	}
-}
-*/
 
 - (void)_resignSearchBarFocus:(NSNotification *)notification {
 	if (_searchHeaderView != nil)

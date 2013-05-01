@@ -7,7 +7,6 @@
 //
 
 #import <AddressBook/AddressBook.h>
-#import <AddressBookUI/AddressBookUI.h>
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
 
@@ -27,6 +26,7 @@
 #import "HONSearchBarHeaderView.h"
 #import "HONContactUserVO.h"
 #import "HONImagePickerViewController.h"
+#import "HONChangeAvatarViewController.h"
 
 @interface HONProfileViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong) NSMutableArray *pastUsers;
@@ -50,8 +50,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteContact:) name:@"INVITE_CONTACT" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareSMS:) name:@"SHARE_SMS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareEmail:) name:@"SHARE_EMAIL" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_takeNewAvatar:) name:@"TAKE_NEW_AVATAR" object:nil];
 	}
 	
 	return (self);
@@ -147,6 +146,9 @@
 		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
 		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
 		
+		if ([fName length] == 0 || [lName length] == 0)
+			continue;
+		
 		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
 		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
 		
@@ -199,12 +201,12 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_profile", nil)];
+	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	settingsButton.frame = CGRectMake(0.0, 0.0, 54.0, 44.0);
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_nonActive"] forState:UIControlStateNormal];
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
@@ -229,19 +231,6 @@
 	[self.view addSubview:_tableView];
 	
 	[self _retrievePastUsers];
-	
-	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-			[self _retrieveContacts];
-		});
-	
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
-		[self _retrieveContacts];
-	
-	else {
-		// denied access
-	}
 }
 
 - (void)viewDidLoad {
@@ -319,6 +308,25 @@
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
+	
+	
+	_pastUsers = [NSMutableArray array];
+	_contactUsers = [NSMutableArray array];
+	
+	[self _retrievePastUsers];
+	
+	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+			[self _retrieveContacts];
+		});
+		
+	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+		[self _retrieveContacts];
+	
+	else {
+		// denied access
+	}
 }
 
 - (void)_inviteSMS:(NSNotification *)notification {
@@ -340,18 +348,6 @@
 	}
 }
 
-- (void)_showSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, -44.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
-}
-
-- (void)_hideSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
-}
-
 - (void)_tabsDropped:(NSNotification *)notification {
 	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 29.0));
 }
@@ -363,12 +359,12 @@
 - (void)_inviteContact:(NSNotification *)notification {
 	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Profile - Invite Contact"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 vo.fullName, @"name", nil]];
-	
 	if (vo.isSMSAvailable) {
+		[[Mixpanel sharedInstance] track:@"Profile - Invite Contact"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													 [NSString stringWithFormat:@"%@ - %@", vo.fullName, vo.mobileNumber], @"name", nil]];
+		
 		if ([MFMessageComposeViewController canSendText]) {
 			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 			messageComposeViewController.messageComposeDelegate = self;
@@ -386,6 +382,11 @@
 		}
 	
 	} else {
+		[[Mixpanel sharedInstance] track:@"Profile - Invite Contact"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													 [NSString stringWithFormat:@"%@ - %@", vo.fullName, vo.email], @"name", nil]];
+		
 		if ([MFMailComposeViewController canSendMail]) {
 			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 			mailComposeViewController.mailComposeDelegate = self;
@@ -446,6 +447,16 @@
 																otherButtonTitles:nil];
 		[alertView show];
 	}
+}
+
+- (void)_takeNewAvatar:(NSNotification *)notification {
+	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 

@@ -60,9 +60,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showEmailComposer:) name:@"SHOW_EMAIL_COMPOSER" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSMSComposer:) name:@"SHOW_SMS_COMPOSER" object:nil];
-		
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	}
 	
 	return (self);
@@ -434,18 +431,6 @@
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[self _retrieveChallenges];
 	[self _retrieveUser];
-}
-
-- (void)_showSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, -44.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
-}
-
-- (void)_hideSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
 }
 
 - (void)_tabsDropped:(NSNotification *)notification {
