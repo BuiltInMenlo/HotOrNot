@@ -8,7 +8,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "Facebook.h"
 #import "Mixpanel.h"
 
 #import "HONTabBarController.h"
@@ -330,7 +329,6 @@
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
-	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification object:FBSession.activeSession];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	
 	//[self _dropTabs];

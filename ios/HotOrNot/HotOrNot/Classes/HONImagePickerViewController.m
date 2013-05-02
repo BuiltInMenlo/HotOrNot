@@ -13,7 +13,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "Facebook.h"
 #import "MBProgressHUD.h"
 #import "Mixpanel.h"
 #import "UIImage+fixOrientation.h"
@@ -21,7 +20,6 @@
 #import "HONImagePickerViewController.h"
 #import "HONAppDelegate.h"
 #import "HONCameraOverlayView.h"
-#import "HONFacebookCaller.h"
 #import "HONHeaderView.h"
 #import "HONChallengerPickerViewController.h"
 
@@ -354,7 +352,7 @@
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
-				[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
+				//[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
 				
 				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];

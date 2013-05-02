@@ -11,7 +11,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "Facebook.h"
 #import "Mixpanel.h"
 #import "MBProgressHUD.h"
 
@@ -20,7 +19,6 @@
 #import "HONAppDelegate.h"
 #import "HONPrivacyViewController.h"
 #import "HONSupportViewController.h"
-#import "HONLoginViewController.h"
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONUsernameViewController.h"
@@ -59,16 +57,7 @@
 		else
 			_notificationSwitch.on = YES;
 		
-//		[[NSNotificationCenter defaultCenter] addObserver:self
-//															  selector:@selector(_sessionStateChanged:)
-//																	name:HONSessionStateChangedNotification
-//																 object:nil];
-		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	}
 	
 	return (self);
@@ -237,26 +226,6 @@
 																otherButtonTitles:nil];
 		[alertView show];
 	}
-}
-
-- (void)_showSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, -44.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
-}
-
-- (void)_hideSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
-}
-
-- (void)_tabsDropped:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 29.0));
-}
-
-- (void)_tabsRaised:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0));
 }
 
 

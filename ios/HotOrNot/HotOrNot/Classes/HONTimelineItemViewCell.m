@@ -390,7 +390,7 @@
 																				_challengeVO.challengerFB, @"fb_id",
 																				_challengeVO.challengerAvatar, @"avatar_url", nil]];
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];//[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];
 		}
 	}
 }
@@ -437,7 +437,7 @@
 																				_challengeVO.challengerFB, @"fb_id",
 																				_challengeVO.challengerAvatar, @"avatar_url", nil]];
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];//[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];
 		}
 	}
 }

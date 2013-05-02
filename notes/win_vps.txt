@@ -1,0 +1,102 @@
+Windows® Desktop (RDP) VPS - Custom Desktop (RDP) VPS
+768MB DDR3 RAM
+30GB RAID10 Disk Space
+250GB Bandwidth
+1x Intel Xeon @ 2.65 GHz
+
+
+CMS:
+https://my.vps6.net/clientarea.php?managedns
+apps@builtinmenlo.com
+password
+
+VPS:
+http://solusvm.vps6.net
+VPS426761
+password
+
+
+swag10
+[=-=-=-=-=-=]
+RDC:
+192.210.200.212
+Administrator
+swag10
+
+swag11
+[=-=-=-=-=-=]
+RDC:
+192.210.200.63
+Administrator
+Password1234
+
+swag12
+[=-=-=-=-=-=]
+RDC:
+192.210.200.88
+Administrator
+Password1234
+
+swag13
+[=-=-=-=-=-=]
+RDC:
+192.210.202.196
+Administrator
+swag13
+
+swag14
+[=-=-=-=-=-=]
+RDC:
+192.210.203.236
+Administrator
+swag14
+
+swag15
+[=-=-=-=-=-=]
+RDC:
+192.210.202.234
+Administrator
+Password1234
+
+swag16
+[=-=-=-=-=-=]
+RDC:
+192.210.202.29
+Administrator
+swag16
+
+
+
+
+NINJA GRAM:
+[=-=-=-=-=-=-=-=]
+swag10 - M7wsbnH4mrorSp1GpCZ7A9HzQAiqcvgl
+
+
+
+
+Windows VPS #5:
+
+CMS:
+https://crm.nqhost.com/clientarea.php
+jasonfesta82@gmail.com
+password1234
+
+
+VPS:
+web: https://vpsman.nqhost.com
+Login Name: JasonFesta
+Password: DgojOPDJGopop3
+
+RDC:
+Main IP: 108.170.22.207
+Username: Administrator
+Password: 4611NQje
+
+
+
+063100277
+003764487018
+
+Historical Person: tesla
+First boss: me

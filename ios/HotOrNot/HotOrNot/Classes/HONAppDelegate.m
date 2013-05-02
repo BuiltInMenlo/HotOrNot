@@ -6,39 +6,34 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 #import <AVFoundation/AVFoundation.h>
-#import <KiipSDK/KiipSDK.h>
 #import <Parse/Parse.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "AFJSONRequestOperation.h"
+#import "MBProgressHUD.h"
+#import "Mixpanel.h"
+#import "Parse/Parse.h"
+#import "Reachability.h"
 #import "UAirship.h"
 #import "UAPush.h"
-#import "HONAppDelegate.h"
-#import "Parse/Parse.h"
-#import "Mixpanel.h"
-#import "MBProgressHUD.h"
-#import "Reachability.h"
-#import "TapForTap.h"
-#import "Chartboost.h"
 
+#import "HONAppDelegate.h"
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONDiscoveryViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONProfileViewController.h"
-#import "HONLoginViewController.h"
 #import "HONChallengeVO.h"
 #import "HONUsernameViewController.h"
 #import "HONWebCTAViewController.h"
-#import "HONInviteFriendsViewController.h"
 #import "HONSearchViewController.h"
 
-NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
-NSString *const FacebookAppID = @"529054720443694";
+//NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
+//NSString *const FacebookAppID = @"529054720443694";
 
-@interface HONAppDelegate() <UIAlertViewDelegate, KiipDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate>
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic, strong) UIImageView *bgImgView;
@@ -59,20 +54,8 @@ NSString *const FacebookAppID = @"529054720443694";
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 }
 
-+ (NSString *)dailySubjectName {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"daily_challenge"]);
-}
-
 + (NSDictionary *)s3Credentials {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"s3_creds"]);
-}
-
-+ (NSString *)facebookCanvasURL {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"facebook_url"]);
-}
-
-+ (NSDictionary *)facebookFriendPosting {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"fb_network"]);
 }
 
 + (BOOL)isInviteCodeValid:(NSString *)code {
@@ -86,10 +69,10 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 + (NSString *)smsInviteFormat {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"]);
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_sms"] objectForKey:[HONAppDelegate deviceLocale]]);
 }
 + (NSString *)emailInviteFormat {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_email"]);
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_email"] objectForKey:[HONAppDelegate deviceLocale]]);
 }
 
 + (int)createPointMultiplier {
@@ -100,18 +83,6 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 + (int)pokePointMultiplier {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:1] intValue]);
-}
-
-+ (BOOL)isCharboostEnabled {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"ad_networks"] objectForKey:@"chartboost"] isEqualToString:@"Y"]);
-}
-
-+ (BOOL)isKiipEnabled {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"ad_networks"] objectForKey:@"kiip"] isEqualToString:@"Y"]);
-}
-
-+ (BOOL)isTapForTapEnabled {
-	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"ad_networks"] objectForKey:@"tapfortap"] isEqualToString:@"Y"]);
 }
 
 + (NSString *)rndDefaultSubject {
@@ -158,20 +129,6 @@ NSString *const FacebookAppID = @"529054720443694";
 
 + (NSDictionary *)infoForUser {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"]);
-}
-
-+ (void)writeFBProfile:(NSDictionary *)profile {
-	if (profile != nil)
-		[[NSUserDefaults standardUserDefaults] setObject:profile forKey:@"fb_profile"];
-	
-	else
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"fb_profile"];
-	
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+ (NSDictionary *)fbProfileForUser {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"fb_profile"]);
 }
 
 + (void)setAllowsFBPosting:(BOOL)canPost {
@@ -415,84 +372,7 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 
-- (BOOL)openSession {
-	NSLog(@"openSession");
-	return ([FBSession openActiveSessionWithPublishPermissions:[HONAppDelegate fbPermissions]
-															 defaultAudience:FBSessionDefaultAudienceEveryone
-																 allowLoginUI:NO
-														  completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
-															  NSLog(@"STATE:%d", state);
-															  [self sessionStateChanged:session state:state error:error];
-														  }]);
-}
-
-- (void)sessionStateChanged:(FBSession *)session state:(FBSessionState)state error:(NSError *)error {
-	// FBSample logic
-	// Any time the session is closed, we want to display the login controller (the user
-	// cannot use the application unless they are logged in to Facebook). When the session
-	// is opened successfully, hide the login controller and show the main UI.
-	
-	NSLog(@"sessionStateChanged:[%d]", state);
-	
-	switch (state) {
-		case FBSessionStateOpen: {
-			NSLog(@"--FBSessionStateOpen--AppDelegate");
-			[self.loginViewController dismissViewControllerAnimated:YES completion:nil];
-						
-			// FBSample logic
-			// Pre-fetch and cache the friends for the friend picker as soon as possible to improve
-			// responsiveness when the user tags their friends.
-			FBCacheDescriptor *cacheDescriptor = [FBFriendPickerViewController cacheDescriptor];
-			[cacheDescriptor prefetchAndCacheForSession:session];
-		} break;
-		
-		case FBSessionStateClosed:
-			NSLog(@"--FBSessionStateClosed--AppDelegate");
-			break;
-			
-		case FBSessionStateClosedLoginFailed: {
-			NSLog(@"--FBSessionStateClosedLoginFailed--AppDelegate");
-			
-			[FBSession.activeSession closeAndClearTokenInformation];
-		} break;
-		
-		default:
-			break;
-	}
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:HONSessionStateChangedNotification
-														object:session];
-	if (error) {
-		[self _showOKAlert:@"Error"
-			   withMessage:error.localizedDescription];
-	}
-}
-
-
 #pragma mark - Notifications
-- (void)_inviteFriends:(NSNotification *)notification {
-	
-	if (FBSession.activeSession.state == 513) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteFriendsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-		
-	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-	}
-}
-
-- (void)_webCTA:(NSNotification *)notification {
-	NSString *url = [[notification object] objectForKey:@"url"];
-	NSString *title = [[notification object] objectForKey:@"title"];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONWebCTAViewController alloc] initWithURL:url andTitle:title]];
-	[navigationController setNavigationBarHidden:YES];
-	[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)_showSearchTable:(NSNotification *)notification {
 	if (_searchViewController != nil) {
 		[_searchViewController.view removeFromSuperview];
@@ -588,8 +468,6 @@ NSString *const FacebookAppID = @"529054720443694";
 	NSLog(@"LANGUAGE:[%@]", [[NSLocale preferredLanguages] objectAtIndex:0]);
 	
 	_isFromBackground = NO;
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteFriends:) name:@"INVITE_FRIENDS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_webCTA:) name:@"WEB_CTA" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
@@ -720,8 +598,6 @@ NSString *const FacebookAppID = @"529054720443694";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-	[FBSession.activeSession handleDidBecomeActive];
-	
 	if (_isFromBackground && [HONAppDelegate hasNetwork]) {
 		[[Mixpanel sharedInstance] track:@"App Leaving Background"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -753,22 +629,10 @@ NSString *const FacebookAppID = @"529054720443694";
 			}
 		}
 	}
-	
-//	Chartboost *cb = [Chartboost sharedChartboost];
-//	cb.appId = @"50ba9e2717ba47d426000002";
-//	cb.appSignature = @"8526c7d52c380c02cc8e59c1c29e8cf4bf779646";
-//	[cb startSession];
-//	
-//	if ([HONAppDelegate isCharboostEnabled])
-//		[cb showInterstitial];
-	
-	if (_isFromBackground && [[[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"] isEqualToString:@"Y"])
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"WEB_CTA" object:[[[NSUserDefaults standardUserDefaults] objectForKey:@"web_ctas"] objectAtIndex:0]];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	[UAirship land];
-	[FBSession.activeSession close];
 }
 
 
@@ -840,25 +704,21 @@ NSString *const FacebookAppID = @"529054720443694";
 	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-	return [FBSession.activeSession handleOpenURL:url];
-}
+//- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+//	return [FBSession.activeSession handleOpenURL:url];
+//}
 
 
 #pragma mark - Startup Operations
 - (void)_retrieveParseObj {
-	PFQuery *dailyQuery = [PFQuery queryWithClassName:@"DailyChallenges"];
-	PFObject *dailyObject = [dailyQuery getObjectWithId:@"obmVTq3VHr"];
-	[[NSUserDefaults standardUserDefaults] setObject:[dailyObject objectForKey:@"subject_name"] forKey:@"daily_challenge"];
-	
-	
 	PFQuery *appDataQuery = [PFQuery queryWithClassName:@"Volley"];
-	PFObject *appDataObject = [appDataQuery getObjectWithId:@"fICB044MKB"];
+	//PFObject *appDataObject = [appDataQuery getObjectWithId:@"fICB044MKB"]; // live
+	PFObject *appDataObject = [appDataQuery getObjectWithId:@"Ogo4QU0jFf"];// dev
 	
 	NSError *error = nil;
 	NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
-															options:NSJSONReadingMutableContainers
-															  error:&error];
+																			  options:NSJSONReadingMutableContainers
+																				 error:&error];
 	
 	if (error != nil)
 		NSLog(@"Failed to parse app data list JSON: %@", [error localizedFailureReason]);
@@ -888,10 +748,6 @@ NSString *const FacebookAppID = @"529054720443694";
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"fb_path"] forKey:@"facebook_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"friend_wall"], @"friend_wall",
-														  [[appDict objectForKey:@"fb_posting_rules"] objectForKey:@"invite"], @"invite", nil] forKey:@"fb_network"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [[appDict objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
 														  [[appDict objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
@@ -899,25 +755,20 @@ NSString *const FacebookAppID = @"529054720443694";
 														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"poke"],
 														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
-		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"invite_sms"] forKey:@"invite_sms"];
-		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"invite_email"] forKey:@"invite_email"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-														  [NSDictionary dictionaryWithObjectsAndKeys:
-														   [[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"title"], @"title",
-														   [[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"url"], @"url",
-														   [[[appDict objectForKey:@"web_ctas"] objectAtIndex:0] objectForKey:@"enabled"], @"enabled", nil],
-														  [NSDictionary dictionaryWithObjectsAndKeys:
-														   [[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"title"], @"title",
-														   [[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"url"], @"url",
-														   [[[appDict objectForKey:@"web_ctas"] objectAtIndex:1] objectForKey:@"enabled"], @"enabled", nil], nil] forKey:@"web_ctas"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-														  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"waiting"],
-														  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"accepted"],
-														  [[appDict objectForKey:@"vote_wall_ctas"] objectForKey:@"created"], nil] forKey:@"ctas"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"chartboost"], @"chartboost",
-														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"kiip"], @"kiip",
-														  [[appDict objectForKey:@"ad_networks"] objectForKey:@"tapfortap"], @"tapfortap", nil] forKey:@"ad_networks"];
+																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
+																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
+																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"ko"], @"ko",
+																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"jp"], @"jp",
+																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"vi"], @"vi",
+																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_sms"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"en"], @"en",
+																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"id"], @"id",
+																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"ko"], @"ko",
+																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"jp"], @"jp",
+																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"vi"], @"vi",
+																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_email"];
 		[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
 		[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
 		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
@@ -1093,20 +944,6 @@ NSString *const FacebookAppID = @"529054720443694";
 		NSLog(@"EXIT APP");//exit(0);
 	
 	else if (alertView.tag == 1) {
-		UINavigationController *navigationController;
-		
-		switch (buttonIndex) {
-			case 0:
-				navigationController = [[UINavigationController alloc] initWithRootViewController:self.loginViewController];
-				break;
-				
-			case 1:
-				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
-				break;
-		}
-		
-		[navigationController setNavigationBarHidden:YES];
-		[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 	}
 	
 	else if (alertView.tag == 2) {

@@ -44,7 +44,7 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_PROFILE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteContact:) name:@"INVITE_CONTACT" object:nil];
@@ -327,25 +327,6 @@
 	
 	else {
 		// denied access
-	}
-}
-
-- (void)_inviteSMS:(NSNotification *)notification {
-	if ([MFMessageComposeViewController canSendText]) {
-		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-		messageComposeViewController.messageComposeDelegate = self;
-		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-		
-		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
-																			 message:@"Cannot send SMS from this device!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
 	}
 }
 

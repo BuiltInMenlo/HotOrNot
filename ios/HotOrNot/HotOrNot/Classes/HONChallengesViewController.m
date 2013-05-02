@@ -8,13 +8,11 @@
 
 #import <MessageUI/MFMessageComposeViewController.h>
 #import <MessageUI/MFMailComposeViewController.h>
-#import <KiipSDK/KiipSDK.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "Mixpanel.h"
 #import "MBProgressHUD.h"
-#import "TapForTap.h"
 
 #import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
@@ -27,7 +25,7 @@
 #import "HONSearchBarHeaderView.h"
 
 
-@interface HONChallengesViewController() <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate, TapForTapAdViewDelegate>
+@interface HONChallengesViewController() <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
@@ -206,14 +204,6 @@
 	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
 	
-	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-	[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
-	inviteButton.hidden = (FBSession.activeSession.state != 513);
-	//[_headerView addSubview:inviteButton];
-	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
@@ -237,26 +227,10 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
-	
-	//[self _populateFriends];
-	
-//	[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	// banner
-//	if ([HONAppDelegate isTapForTapEnabled])
-//		[self.view addSubview:[[TapForTapAdView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 50.0, 320.0, 50.0) delegate:self]];
-	
-	// ad modal
-//	[TapForTapInterstitial prepare];
-//	[TapForTapInterstitial showWithRootViewController: self]; // or possibly self.navigationController
-	
-	// app wall
-//	[TapForTapAppWall prepare];
-//	[TapForTapAppWall showWithRootViewController: self]; // or possibly self.navigationController
 }
 
 - (void)viewDidUnload {
@@ -284,14 +258,6 @@
 
 
 #pragma mark - Navigation
-- (void)_goLogin {
-	NSLog(@"_goLogin");
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONLoginViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Activity - Create Snap"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -300,33 +266,6 @@
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)_populateFriends {
-	_friends = [NSMutableArray array];
-	[FBRequestConnection startWithGraphPath:@"me/friends" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-		//NSLog(@"FRIENDS:[%@]", (NSDictionary *)result);
-		for (NSDictionary *friend in [(NSDictionary *)result objectForKey:@"data"])
-			[_friends addObject: [friend objectForKey:@"id"]];
-		
-		NSLog(@"RETRIEVED (%d) FRIENDS", [_friends count]);
-	}];
-}
-
-- (void)_goInvite {
-	NSRange range;
-	range.length = 50;
-	range.location = _blockCounter * range.length;
-	
-	if (range.location >= [_friends count])
-		range.location = 0;
-	
-	if (range.location + range.length > [_friends count])
-		range.length = [_friends count] - range.location;
-	
-	NSLog(@"INVITING (%d-%d)/%d", range.location, range.location + range.length, [_friends count]);
-	//[HONFacebookCaller sendAppRequestBroadcastWithIDs:[_friends subarrayWithRange:range]];
-	_blockCounter++;
 }
 
 - (void)_goRefresh {

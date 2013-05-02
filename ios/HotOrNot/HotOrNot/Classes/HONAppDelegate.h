@@ -7,12 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Facebook.h"
-#import "HONLoginViewController.h"
+
 #import "HONChallengeVO.h"
 
-extern NSString *const HONSessionStateChangedNotification;
-extern NSString *const FacebookAppID;
+//extern NSString *const HONSessionStateChangedNotification;
+//extern NSString *const FacebookAppID;
 
 @class SMClient;
 
@@ -24,33 +23,26 @@ extern NSString *const FacebookAppID;
 
 
 + (NSString *)apiServerPath;
-+ (NSString *)dailySubjectName;
 + (NSDictionary *)s3Credentials;
-+ (NSString *)facebookCanvasURL;
-+ (NSDictionary *)facebookFriendPosting;
 + (BOOL)isInviteCodeValid:(NSString *)code;
++ (BOOL)isLocaleEnabled;
+
 + (int)createPointMultiplier;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
+
 + (NSString *)smsInviteFormat;
 + (NSString *)emailInviteFormat;
-+ (BOOL)isCharboostEnabled;
-+ (BOOL)isKiipEnabled;
-+ (BOOL)isTapForTapEnabled;
 + (NSString *)rndDefaultSubject;
-+ (BOOL)isLocaleEnabled;
+
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
 
-- (BOOL)openSession;
 + (void)writeDeviceToken:(NSString *)token;
 + (NSString *)deviceToken;
 
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
-
-+ (void)writeFBProfile:(NSDictionary *)userInfo;
-+ (NSDictionary *)fbProfileForUser;
 
 + (void)setAllowsFBPosting:(BOOL)canPost;
 + (BOOL)allowsFBPosting;
@@ -119,6 +111,5 @@ extern NSString *const FacebookAppID;
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;
-@property (strong, nonatomic) HONLoginViewController *loginViewController;
 
 @end
