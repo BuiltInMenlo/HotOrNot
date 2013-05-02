@@ -1,7 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset='utf-8'></head><body>
+
+
 <?php
 
 $db_conn = mysql_connect('localhost', 'hotornot_usr', 'dope911t') or die("Could not connect to database.");
 mysql_select_db('hotornot-dev') or die("Could not select database.");
+
+function userForChallenge($user_id, $challenge_id) {	
+	// prime the user
+	$user_arr = array(
+		'id' => $user_id, 
+		'fb_id' => "",
+		'username' => "",
+		'avatar' => "",
+		'img' => "",
+		'score' => 0				
+	);
+	
+	// challenge object
+	$query = 'SELECT `status_id`, `creator_id`, `challenger_id`, `creator_img`, `challenger_img` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
+	$challenge_obj = mysql_fetch_object(mysql_query($query));
+	
+	// user is the creator
+	if ($user_id == $challenge_obj->creator_id) {
+		$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+		$user_arr['img'] = $challenge_obj->creator_img;
+					
+	// user is the challenger
+	} else {
+		$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $user_id .';';
+		$user_arr['img'] = $challenge_obj->challenger_img;			
+		
+		// invited challenger if challenge status is 7
+		if ($challenge_obj->status_id == "7")
+			$query = 'SELECT `fb_id`, `username` FROM `tblInvitedUsers` WHERE `id` = '. $user_id .';';
+	}
+	
+	// user object
+	$user_obj = mysql_fetch_object(mysql_query($query));			
+	if ($user_obj) {
+		$user_arr['fb_id'] = $user_obj->fb_id;
+		$user_arr['username'] = $user_obj->username;
+		
+		// find the avatar image
+		if ($user_obj->img_url == "") {
+			if ($user_obj->fb_id == "")
+				$user_arr['avatar'] = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
+			
+			else
+				$user_arr['avatar'] = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
+	
+		} else
+			$user_arr['avatar'] = $user_obj->img_url;		
+	}
+	
+	// votes for challenger
+	$query = 'SELECT `challenger_id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .';';
+   	$score_result = mysql_query($query);
+	
+	// increment score
+	while ($score_row = mysql_fetch_array($score_result, MYSQL_BOTH)) {										
+		if ($score_row['challenger_id'] == $user_id)
+			$user_arr['score']++;
+	}
+	
+	// return
+	return ($user_arr);
+}
 
 /* //SEND PUSH
 $query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = 3;';			
@@ -298,10 +364,155 @@ while ($row = mysql_fetch_assoc($result)) {
 */
 
 
-			
+/*
+// challenge totals between users
+
+if (!isset($_GET['userID'])) {
+	echo ("Requires userID!");
+	exit;
+}
+
+$user_id = $_GET['userID'];
+
+
+// get challenge param IDs for this user
+$challengeStat_arr = array();
+$query = 'SELECT `id`, `creator_id`, `challenger_id` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC;';
+$result = mysql_query($query);
+
+// loop thru the rows, populate array
+while ($row = mysql_fetch_object($result)) {
+	$k = $row->id;//creator_id ."_". $row->challenger_id;
+	$challengeStat_arr[$k] = array(
+		'id' => $row->id, 
+		'creator_id' => $row->creator_id, 
+		'challenger_id' => $row->challenger_id);
+}
+
+print_r($challengeStat_arr);
+echo("<hr /><br />");
+
+
+// prime challenge pairing keys
+$pairing_arr = array();
+foreach ($challengeStat_arr as $key => $val) {
+	//echo ("PRIME –[$key]—\»<br />[". $challengeStat_arr[$key]['creator_id'] ."_". $challengeStat_arr[$key]['challenger_id'] ."][". $challengeStat_arr[$key]['challenger_id'] ."_". $challengeStat_arr[$key]['creator_id'] ."]<br /><br />");
+	
+	// creator vs challenger
+	$k = $challengeStat_arr[$key]['creator_id'] ."_". $challengeStat_arr[$key]['challenger_id'];
+	$pairing_arr[$k][] = $key;
+	
+	// challenger vs creator
+	$k = $challengeStat_arr[$key]['challenger_id'] ."_". $challengeStat_arr[$key]['creator_id'];
+	$pairing_arr[$k][] = $key;
+}
+
+print_r($pairing_arr);
+echo("<hr /><br />");
+
+
+// flush rows that're creator/challenger reversed
+$cnt = 0;
+$flushID_arr = array();
+$conden_arr = array();
+foreach ($pairing_arr as $key => $val) {
+	$id_arr = explode('_', $key);
+	$k = $id_arr[1] ."_".  $id_arr[0];
+	
+	if ($cnt % 2 == 0) {
+		echo("STATS –[$key]—»<br />[". count($val) ."] --> (");
+		print_r($val);
+		echo(")<br />");
+	
+		$pairing_arr[$key ."-". $k] = $pairing_arr[$key] + $pairing_arr[$k];//$conden_arr[$key ."-". $k] = $pairing_arr[$key] + $pairing_arr[$k];
+	}
+	
+	$cnt++;
+	//$ind = array_search($k, $pairing_arr);
+	//echo("DUPS –[$key][$k]—»<br />@[$ind]<br />");
+	//array_push($flushID_arr, $ind);
+	echo ("[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]<br /><br />");
+}
+
+echo ("<hr /><hr />pairing_arr<br />");
+print_r($pairing_arr);
+echo ("<hr /><hr />");
+
+echo ("pairing_arr<br />");
+foreach ($pairing_arr as $key => $val) {
+	echo("STATS –[$key]—»<br />[". count($val) ."] --> (");
+	print_r($val);
+	echo(")<br />[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]<br /><br />");
+}
+
+// push most recent challenge from each pairing into ID array
+$challengeID_arr = array();
+foreach ($pairing_arr as $key => $val) {
+	$id_arr = explode('-', $key);
+	$k = (count($id_arr) == 2) ? $id_arr[0] ."-". $id_arr[1] : "";
+	
+	if ($key == $k) {
+		echo("VAL –[". $val[0] ."]<br />[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]<br /><br />");
+		array_push($challengeID_arr, $val[0]);
+	}
+}
+
+
+echo ("<hr />");
+print_r($challengeID_arr);
+echo("<hr /><br /><br />");
+
+//$ind = 0; $ind = ($ind % 2 == 1) ? $ind++ : $ind;
+// challenge lookup
+$challenge_arr = array();
+foreach ($challengeID_arr as $key => $val) {
+	$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $val .';';
+	$row = mysql_fetch_assoc(mysql_query($query));
+	
+	// set challenge status to waiting if user is the challenger and it's been created
+	if ($row['challenger_id'] == $user_id && $row['status_id'] == "2")
+		$row['status_id'] = "0";
+	
+	// get the subject title
+	$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row['subject_id'] .';';
+	$sub_obj = mysql_fetch_object(mysql_query($query));
+	
+	// get total number of comments
+	$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $row['id'] .';';
+	$comments = mysql_num_rows(mysql_query($query));
+	
+	// push challenge into list
+	array_push($challenge_arr, array(
+		'id' => $row['id'], 
+		'status' => $row['status_id'], 					
+		'subject' => $sub_obj->title, 
+		'comments' => $comments, 
+		'has_viewed' => $row['hasPreviewed'], 
+		'started' => $row['started'], 
+		'added' => $row['added'], 
+		'updated' => $row['updated'], 
+		'creator' => userForChallenge($row['creator_id'], $row['id']),
+		'challenger' => userForChallenge($row['challenger_id'], $row['id']),
+		'rechallenges' => array()
+	));
+}
+
+
+foreach ($challenge_arr as $key => $val) {
+	echo("challenge_arr[$key]—» (");
+	print_r($val);
+	echo(")<br />[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]<br /><br />");
+}
+*/
+
+
+
 if ($db_conn) {
 	mysql_close($db_conn);
 	$db_conn = null;
 }
 
 ?>
+
+
+</body></html>

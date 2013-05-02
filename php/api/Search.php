@@ -137,11 +137,6 @@
 			// return
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/* 
-			example response:
-			[{"id":"236","username":"Courtney","img_url":"https:\/\/graph.facebook.com\/100000466174725\/picture?type=square","points":"337","votes":39,"pokes":0}]
-			*/
 		}
 		
 		/**
@@ -179,11 +174,6 @@
 			// return
 			$this->sendResponse(200, json_encode($subject_arr));
 			return (true);
-			
-			/*
-			example response:
-			[{"id":"161","name":"#derp","img_url":"","score":2,"active":0},{"id":"162","name":"workItFace","img_url":"","score":1,"active":0}]
-			*/
 		}
 		
 		/** 
@@ -206,11 +196,6 @@
 			// return
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/* 
-			example response:
-			[{"id":"236","username":"Courtney","img_url":"https:\/\/graph.facebook.com\/100000466174725\/picture?type=square","points":"337","votes":39,"pokes":0}]
-			*/
 		}
 		
 		/**

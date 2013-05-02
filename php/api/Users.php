@@ -285,12 +285,7 @@
 			// return
 			$user_arr = $this->userObject($user_id);
 			$this->sendResponse(200, json_encode($user_arr));
-			return (true);	
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
+			return (true);
 		}
 		
 		/**
@@ -309,11 +304,6 @@
 			$user_arr = $this->userObject($user_id);
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);	
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
 		}
 		
 		/**
@@ -367,11 +357,6 @@
 			$user_arr = $this->userObject($user_id, $mail_result);
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
 		}
 		
 		/**
@@ -404,11 +389,6 @@
 			// return
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
 		}
 		
 		/**
@@ -427,11 +407,6 @@
 			$user_arr = $this->userObject($user_id);			
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
 		}
 		
 		/**
@@ -445,11 +420,6 @@
 			$user_arr = $this->userObject($user_id);			
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
 		}
 		
 		/**
@@ -466,11 +436,6 @@
 			$user_arr = $this->userObject($user_id);			
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
 		}
 		
 		/**
@@ -490,11 +455,6 @@
 			$user_arr = $this->userObject($user_id);			
 			$this->sendResponse(200, json_encode($user_arr));
 			return (true);
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
 		}
 		
 		/**
@@ -529,11 +489,6 @@
 				'id' => $poke_id
 			)));
 			return (true);
-			
-			/*
-			example response:
-			{"id":"2","name":"toofus.magnus","token":"d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed","fb_id":"1554917948","gender":"M","paid":"N","points":"50","votes":14,"pokes":22,"notifications":"Y","meta":""}
-			*/
 		}
 		
 		/** 
