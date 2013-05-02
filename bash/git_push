@@ -1,0 +1,35 @@
+#!/bin/bash
+# File: ~/bin/git_push
+
+# Adds, commits, then pushes project files in a git repo.
+# 
+# USAGE:
+# git_push comment
+# 	comment - the comment to include w/ this push
+
+
+
+#-- current dir not script's, change over
+if [ `pwd` != `dirname $0` ]; then
+	cd `dirname $0`; fi
+
+#-- move up one dir to proj root
+cd ../
+
+
+#-- no 1st param (comment), exit
+if [ ! "$1" ]; then
+	printf "\nUSAGE: \$git_push comment\n\$git_push \"Adding new libs to project\"\n"; exit 1; fi
+
+
+#-- assign comment
+comment="\"$1\""
+
+
+#-- perform git operations
+git add * && git commit -m `echo ${comment}`
+#git push -u origin master
+
+
+#-- terminate w/o error
+exit 0;
