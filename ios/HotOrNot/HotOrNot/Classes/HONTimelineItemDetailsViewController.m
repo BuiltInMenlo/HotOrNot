@@ -147,7 +147,7 @@
 	}
 	
 	__weak typeof(self) weakSelf = self;
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 69.0, kLargeW * 0.5, kLargeW * 0.5)];
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 69.0, kSnapLargeSize.width * 0.5, kSnapLargeSize.width * 0.5)];
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imgURL]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		weakSelf.imageView.image = image;
 		[weakSelf _hideHUD];
@@ -252,7 +252,7 @@
 										[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 										nil];
 				
-				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
 						NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -302,7 +302,7 @@
 												[NSString stringWithFormat:@"%d", (_isCreator) ? _challengeVO.creatorID : _challengeVO.challengerID], @"pokeeID", //(_isCreator || _challengeVO.statusID == 1 || _challengeVO.statusID == 2) ? _challengeVO.creatorID : _challengeVO.challengerID
 												nil];
 				
-				[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
 						NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);

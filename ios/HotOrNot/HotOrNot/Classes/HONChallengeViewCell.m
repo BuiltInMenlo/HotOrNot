@@ -133,6 +133,17 @@
 //	}
 //}
 
+- (void)toggleLoadMore:(BOOL)isEnabled {
+	if (isEnabled) {
+		[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_loadMoreButton];
+	
+	} else {
+		[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+		[_loadMoreButton removeFromSuperview];
+	}
+}
+
 - (void)disableLoadMore {
 	[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
 	[_loadMoreButton removeFromSuperview];

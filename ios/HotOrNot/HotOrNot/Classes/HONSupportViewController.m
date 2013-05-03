@@ -15,7 +15,7 @@
 @implementation HONSupportViewController
 
 - (id)init {
-	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/support.htm", [HONAppDelegate apiServerPath]] title:@"Support"])) {
+	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/support.htm", [HONAppDelegate customerServiceURL]] title:@"Support"])) {
 		self.view.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	}
 	

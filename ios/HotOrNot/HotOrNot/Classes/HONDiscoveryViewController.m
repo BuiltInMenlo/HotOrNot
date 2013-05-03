@@ -24,7 +24,8 @@
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
-@property(nonatomic, strong) NSMutableArray *challenges;
+@property(nonatomic, strong) NSMutableDictionary *allChallenges;
+@property(nonatomic, strong) NSMutableArray *currChallenges;
 @end
 
 @implementation HONDiscoveryViewController
@@ -61,12 +62,13 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[_headerView toggleRefresh:YES];
 	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
 	
-	[httpClient postPath:kDiscoverAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIDiscover parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			NSLog(@"HONDiscoverViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -74,14 +76,21 @@
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSLog(@"HONDiscoverViewController AFNetworking: %@", parsedLists);
-			_challenges = [NSMutableArray array];
 			
+			_allChallenges = [NSMutableDictionary dictionary];
+			NSMutableArray *retrievedChallenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *challengeVO = [HONChallengeVO challengeWithDictionary:serverList];
-				[_challenges addObject:challengeVO];
+				[retrievedChallenges addObject:[NSNumber numberWithInt:challengeVO.challengeID]];
+				[_allChallenges setObject:challengeVO forKey:[NSString stringWithFormat:@"c_%d", challengeVO.challengeID]];
 			}
 			
-			_emptySetImgView.hidden = ([_challenges count] > 0);
+			_currChallenges = [NSMutableArray array];
+			for (NSNumber *cID in [HONAppDelegate fillDiscoverChallenges:retrievedChallenges])
+				[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
+			
+			
+			_emptySetImgView.hidden = ([_currChallenges count] > 0);
 			[_tableView reloadData];
 		}
 		
@@ -126,7 +135,7 @@
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 260.0;
@@ -161,14 +170,17 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[_headerView toggleRefresh:YES];
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 //	_progressHUD.labelText = NSLocalizedString(@"hud_refresh", nil);
 //	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 //	_progressHUD.minShowTime = kHUDTime;
 //	_progressHUD.taskInProgress = YES;
 	
-	[self _retrieveChallenges];
+	_currChallenges = [NSMutableArray array];
+	for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
+		[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
+	
+	[_tableView reloadData];
 }
 
 - (void)_goCreateChallenge {
@@ -185,8 +197,7 @@
 #pragma mark - Notifications
 - (void)_refreshDiscoveryTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	[_headerView toggleRefresh:YES];
-	[self _retrieveChallenges];
+	[self _goRefresh];
 }
 
 - (void)_selectLeftDiscoveryChallenge:(NSNotification *)notification {
@@ -212,7 +223,7 @@
 
 - (void)_showSearchTable:(NSNotification *)notification {
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, -kNavHeaderHeight, self.view.frame.size.width, self.view.frame.size.height);
+		self.view.frame = CGRectMake(self.view.frame.origin.x, -kNavBarHeaderHeight, self.view.frame.size.width, self.view.frame.size.height);
 	}];
 }
 
@@ -223,17 +234,17 @@
 }
 
 - (void)_tabsDropped:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 29.0));
+	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
 }
 
 - (void)_tabsRaised:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0));
+	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
 }
 
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (ceil([_challenges count] * 0.5));
+	return (ceil([_currChallenges count] * 0.5));
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -261,10 +272,10 @@
 		cell = [[HONDiscoveryViewCell alloc] init];
 	}
 	
-	cell.lChallengeVO = [_challenges objectAtIndex:(indexPath.row * 2)];
+	cell.lChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2)];
 	
-	if ((indexPath.row * 2) + 1 < [_challenges count])
-		cell.rChallengeVO = [_challenges objectAtIndex:(indexPath.row * 2) + 1];
+	if ((indexPath.row * 2) + 1 < [_currChallenges count])
+		cell.rChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2) + 1];
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);

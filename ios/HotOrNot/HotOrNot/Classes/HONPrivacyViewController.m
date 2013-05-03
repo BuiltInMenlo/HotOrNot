@@ -15,7 +15,7 @@
 @implementation HONPrivacyViewController
 
 - (id)init {
-	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/privacy.htm", [HONAppDelegate apiServerPath]] title:@"Privacy Policy"])) {
+	if ((self = [super initWithURL:[NSString stringWithFormat:@"%@/privacy.htm", [HONAppDelegate customerServiceURL]] title:@"Privacy Policy"])) {
 	}
 	
 	return (self);

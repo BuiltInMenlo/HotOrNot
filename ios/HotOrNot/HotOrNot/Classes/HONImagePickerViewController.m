@@ -19,6 +19,7 @@
 
 #import "HONImagePickerViewController.h"
 #import "HONAppDelegate.h"
+#import "HONImagingDepictor.h"
 #import "HONCameraOverlayView.h"
 #import "HONHeaderView.h"
 #import "HONChallengerPickerViewController.h"
@@ -267,28 +268,28 @@
 	@try {
 		float ratio = image.size.height / image.size.width;
 		
-		UIImage *lImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kLargeW, kLargeW * ratio)];
-		lImage = [HONAppDelegate cropImage:lImage toRect:CGRectMake(0.0, 0.0, kLargeW, kLargeW)];
+		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeSize.width, kSnapLargeSize.width * ratio)];
+		lImage = [HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.width)];
 		
-		UIImage *mImage = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kMediumW * 2.0, kMediumH * 2.0)];
-		UIImage *t1Image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(kThumb1W * 2.0, kThumb1H * 2.0)];
+		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumSize.width * 2.0, kSnapMediumSize.height * 2.0)];
+		UIImage *t1Image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
 				
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(t1Image, kJPEGCompress);
+		por1.data = UIImageJPEGRepresentation(t1Image, kSnapJPEGCompress);
 		por1.delegate = self;
 		[s3 putObject:por1];
 		 
 		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(mImage, kJPEGCompress);
+		por2.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
 		por2.delegate = self;
 		[s3 putObject:por2];
 		
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.contentType = @"image/jpeg";
-		por3.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
+		por3.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
 		por3.delegate = self;
 		[s3 putObject:por3];
 		
@@ -318,7 +319,7 @@
 	_progressHUD.taskInProgress = YES;
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			NSLog(@"ImagePickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -352,12 +353,18 @@
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
-				//[HONFacebookCaller postToTimeline:[HONChallengeVO challengeWithDictionary:challengeResult]];
-				
-				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-				}];
+				if (_uploadCounter == 3) {
+					if (_imagePicker.parentViewController != nil) {
+						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+							[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+						}];
+						
+					} else {
+						[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+					}
+				}
 			}
 		}
 		
@@ -554,12 +561,12 @@
 		
 	if (image.size.width > image.size.height) {
 		float offset = image.size.height * (image.size.height / image.size.width);
-		image = [HONAppDelegate cropImage:image toRect:CGRectMake(offset * 0.5, 0.0, offset, image.size.height)];
+		image = [HONImagingDepictor cropImage:image toRect:CGRectMake(offset * 0.5, 0.0, offset, image.size.height)];
 	}
 	
 	if (image.size.height / image.size.width == 1.5) {
-		float offset = image.size.height - (image.size.width * kPhotoRatio);
-		image = [HONAppDelegate cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kPhotoRatio))];
+		float offset = image.size.height - (image.size.width * kSnapRatio);
+		image = [HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kSnapRatio))];
 	}
 	 
 	_challangeImage = image;
@@ -568,8 +575,27 @@
 	
 	if (_userVO != nil || _challengeVO != nil) {
 		if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-			[self dismissViewControllerAnimated:NO completion:^(void) {
-				[_cameraOverlayView showPreviewImage:image];
+			[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+				
+				if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+					NSMutableDictionary *params = [NSMutableDictionary dictionary];
+					[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+					[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
+					[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+					[params setObject:[NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 7 : _submitAction] forKey:@"action"];
+					[params setObject:_subjectName forKey:@"subject"];
+					[params setObject:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? _challengeVO.challengerName : _challengeVO.creatorName forKey:@"username"];
+					
+					if (_challengeVO != nil)
+						[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+					
+					if (_fbID != nil)
+						[params setObject:_fbID forKey:@"fbID"];
+					
+					[self _submitChallenge:params];
+				
+				} else
+					[_cameraOverlayView showPreviewImage:image];
 			}];
 			
 		} else {

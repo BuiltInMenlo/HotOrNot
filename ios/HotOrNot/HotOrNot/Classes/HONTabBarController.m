@@ -50,8 +50,6 @@
 		_touchPt = CGPointMake(_tabHolderView.center.x - location.x, _tabHolderView.center.y - location.y);
 		[self _toggleTabsEnabled:NO];
 	}
-	
-	[self _hideAlertPopOver];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -235,6 +233,11 @@
 }
 
 - (void)_hideAlertPopOver {
+	
+	// update local
+	[[NSUserDefaults standardUserDefaults] setValue:[[NSUserDefaults standardUserDefaults] objectForKey:@"update_challenges"] forKey:@"local_challenges"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	if (_alertPopOverView.alpha == 1.0) {
 		[UIView animateWithDuration:0.125 animations:^(void) {
 			_alertPopOverView.alpha = 0.0;
@@ -360,7 +363,7 @@
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									nil];
 	
-	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			NSLog(@"HONTabBarViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -418,11 +421,10 @@
 				[alertTotals setValue:[NSNumber numberWithInt:[[alertTotals objectForKey:@"status"] intValue] + ([updateChallenges count] - [localChallenges count])] forKey:@"status"];
 			}
 			
-			NSLog(@"CHANGES:\n%@", alertTotals);
+			[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"update_challenges"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
 			
-			// update local
-//			[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"local_challenges"];
-//			[[NSUserDefaults standardUserDefaults] synchronize];
+			NSLog(@"CHANGES:\n%@", alertTotals);
 			
 			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
 				[self _showAlertPopOverWithTotals:alertTotals];

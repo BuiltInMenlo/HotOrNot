@@ -176,68 +176,7 @@
 			// return
 			return ($challenge_arr);
 		}
-		
-		/**
-		 * Helper function to get the subject for a challenge
-		 * @param $subject_id The ID of the subject (integer)
-		 * @return Name of the subject (string)
-		**/
-		function subjectNameForChallenge($subject_id) {
-			$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $subject_id .';';
-			return (mysql_fetch_object(mysql_query($query))->title);
-		}
-		
-		/**
-		 * Helper function to get the total # of comments for a challenge
-		 * @param $challenge_id The ID of the challenge (integer)
-		 * @return Total # of comments (integer)
-		**/
-		function commentTotalForChallenge($challenge_id) {
-			$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_id .';';
-			return (mysql_num_rows(mysql_query($query)));
-		}
-		
-		/**
-		 * Helper function to get the rechallenges for a challenge
-		 * @param $challenge_obj The origin challenge (array)
-		 * @return An associative object for a user (array)
-		**/
-		function rechallengesForChallenge($challenge_obj) {
-			
-			$rechallenge_arr = array();
-			$query = 'SELECT `id`, `creator_id`, `added` FROM `tblChallenges` WHERE `subject_id` = '. $challenge_obj['subject_id'] .' AND `added` > "'. $challenge_obj['added'] .'" ORDER BY `added` ASC LIMIT 10;';
-			$rechallenge_result = mysql_query($query);
-		
-			// loop thru the rows
-			while ($rechallenge_row = mysql_fetch_assoc($rechallenge_result)) {
-				$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
-				$user_obj = mysql_fetch_object(mysql_query($query));
 				
-				// find the avatar image
-				if ($user_obj->img_url == "") {
-					if ($user_obj->fb_id == "")
-						$avatar_url = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
-				
-					else
-						$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
-		
-				} else
-					$avatar_url = $user_obj->img_url;
-			
-			
-				array_push($rechallenge_arr, array(
-					'id' => $rechallenge_row['id'],
-					'user_id' => $rechallenge_row['creator_id'],
-					'fb_id' => $user_obj->fb_id,
-					'img_url' => $avatar_url,
-					'username' => $user_obj->username,
-					'added' => $rechallenge_row['added']
-				));
-			}
-			
-			return ($rechallenge_arr);
-		}
-		
 		/**
 		 * Helper function to user info for a challenge
 		 * @param $user_id The creator or challenger ID (integer)
@@ -479,6 +418,11 @@
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
+			
+			/*
+			example response:
+			{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}}
+			*/
 		}
 		
 		/**
@@ -525,6 +469,11 @@
 			/// return
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
+			
+			/*
+			example response:
+			{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}}
+			*/
 		}
 		
 		/**
@@ -590,18 +539,70 @@
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
+			
+			/*
+			example response:
+			{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}}
+			*/
+		}
+		
+		/** 
+		 * Gets the latest list of 10 challenges for a user
+		 * @param $user_id The ID of the user (integer)
+		 * @return The list of challenges (array)
+		**/
+		function getChallengesForUser($user_id) {
+			$challenge_arr = array();			
+			
+			// get latest 10 challenges for user
+			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 10;';
+			$challenge_result = mysql_query($query);
+			
+			// loop thru the rows
+			while ($challenge_row = mysql_fetch_assoc($challenge_result)) {
+				
+				// set challenge status to waiting if user is the challenger and it's been created
+				if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
+					$challenge_row['status_id'] = "0";
+				
+				// get the subject title
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				$sub_obj = mysql_fetch_object(mysql_query($query));
+				
+				// push challenge into list
+				array_push($challenge_arr, array(
+					'id' => $challenge_row['id'], 
+					'status' => $challenge_row['status_id'], 					
+					'subject' => $sub_obj->title, 
+					'has_viewed' => $challenge_row['hasPreviewed'], 
+					'started' => $challenge_row['started'], 
+					'added' => $challenge_row['added'],
+					'updated' => $challenge_row['updated'], 
+					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
+					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
+				));
+			}
+			
+			// return
+			$this->sendResponse(200, json_encode($challenge_arr));
+			return (true);
+			
+			/*
+			example response:
+			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
+			*/
 		}
 		
 		
 		/** 
-		 * Gets all the challenges for a user
+		 * Gets the latest list of 10 challenges for a user
 		 * @param $user_id The ID of the user (integer)
 		 * @return The list of challenges (array)
 		**/
 		function getAllChallengesForUser($user_id) {
-			$challenge_arr = array();
+			$challenge_arr = array();			
 			
-			// get challenges for user
+			// get latest 10 challenges for user
 			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC;';
 			$challenge_result = mysql_query($query);
 			
@@ -611,19 +612,53 @@
 				// set challenge status to waiting if user is the challenger and it's been created
 				if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
 					$challenge_row['status_id'] = "0";
+				
+				// get the subject title
+				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
+				$sub_obj = mysql_fetch_object(mysql_query($query));
+				
+				// get total number of comments
+				$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_row['id'] .';';
+				$comments = mysql_num_rows(mysql_query($query));
 			
 				// get rechallenges
-				$rechallenge_arr = $this->rechallengesForChallenge(array(
-					'subject_id' => $challenge_row['subject_id'], 
-					'added' => $challenge_row['added']
-				));
+				$rechallenge_arr = array();
+				$query = 'SELECT `id`, `creator_id`, `added` FROM `tblChallenges` WHERE `subject_id` = '. $challenge_row['subject_id'] .' AND `added` > "'. $challenge_row['added'] .'" ORDER BY `added` ASC LIMIT 10;';
+				$rechallenge_result = mysql_query($query);
+			
+				// loop thru the rows
+				while ($rechallenge_row = mysql_fetch_assoc($rechallenge_result)) {
+					$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
+					$user_obj = mysql_fetch_object(mysql_query($query));
+					
+					// find the avatar image
+					if ($user_obj->img_url == "") {
+						if ($user_obj->fb_id == "")
+							$avatar_url = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
+					
+						else
+							$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
+			
+					} else
+						$avatar_url = $user_obj->img_url;
+				
+				
+					array_push($rechallenge_arr, array(
+						'id' => $rechallenge_row['id'],
+						'user_id' => $rechallenge_row['creator_id'],
+						'fb_id' => $user_obj->fb_id,
+						'img_url' => $avatar_url,
+						'username' => $user_obj->username,
+						'added' => $rechallenge_row['added']
+					));
+				}
 				
 				// push challenge into list
 				array_push($challenge_arr, array(
 					'id' => $challenge_row['id'], 
 					'status' => $challenge_row['status_id'], 					
-					'subject' => $this->subjectNameForChallenge($challenge_row['subject_id']), 
-					'comments' => $this->commentTotalForChallenge($challenge_row['id']), 
+					'subject' => $sub_obj->title, 
+					'comments' => $comments, 
 					'has_viewed' => $challenge_row['hasPreviewed'], 
 					'started' => $challenge_row['started'], 
 					'added' => $challenge_row['added'], 
@@ -637,102 +672,11 @@
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
-		}
-		
-		/** 
-		 * Gets the latest list of challenges for a user and the challengers
-		 * @param $user_id The ID of the user (integer)
-		 * @return The list of challenges (array)
-		**/
-		function getChallengesForUser($user_id) {
-			// get challenge param IDs for this user
-			$challengeStat_arr = array();
-			$query = 'SELECT `id`, `creator_id`, `challenger_id` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC;';
-			$result = mysql_query($query);
 			
-			// loop thru the rows, populate array
-			while ($row = mysql_fetch_object($result)) {
-				$k = $row->id;
-				$challengeStat_arr[$k] = array(
-					'id' => $row->id, 
-					'creator_id' => $row->creator_id, 
-					'challenger_id' => $row->challenger_id);
-			}
-			
-			// prime challenge pairing keys
-			$pairing_arr = array();
-			foreach ($challengeStat_arr as $key => $val) {
-	
-				// creator vs challenger
-				$k = $challengeStat_arr[$key]['creator_id'] ."_". $challengeStat_arr[$key]['challenger_id'];
-				$pairing_arr[$k][] = $key;
-	
-				// challenger vs creator
-				$k = $challengeStat_arr[$key]['challenger_id'] ."_". $challengeStat_arr[$key]['creator_id'];
-				$pairing_arr[$k][] = $key;
-			}
-			
-			// append a new key to the pairing array for combined creator vs challenger / challenger vs creator
-			$cnt = 0;
-			foreach ($pairing_arr as $key => $val) {
-				$id_arr = explode('_', $key);
-				$k = $id_arr[1] ."_".  $id_arr[0];
-				
-				// combined match [n] = creator vs challenger / [n+1] = challenger vs creator
-				if ($cnt % 2 == 0)
-					$pairing_arr[$key ."-". $k] = $pairing_arr[$key] + $pairing_arr[$k];
-	
-				$cnt++;
-			}
-			
-			// push most recent challenge from each combined pairing into ID array
-			$challengeID_arr = array();
-			foreach ($pairing_arr as $key => $val) {
-				$id_arr = explode('-', $key);
-				$k = (count($id_arr) == 2) ? $id_arr[0] ."-". $id_arr[1] : "";
-	
-				if ($key == $k)
-					array_push($challengeID_arr, $val[0]);
-			}
-			
-			
-			// challenge lookup
-			$challenge_arr = array();
-			foreach ($challengeID_arr as $key => $val) {
-				$query = 'SELECT * FROM `tblChallenges` WHERE `id` = '. $val .';';
-				$row = mysql_fetch_assoc(mysql_query($query));
-	
-				// set challenge status to waiting if user is the challenger and it's been created
-				if ($row['challenger_id'] == $user_id && $row['status_id'] == "2")
-					$row['status_id'] = "0";
-	
-				// get the subject title
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $row['subject_id'] .';';
-				$sub_obj = mysql_fetch_object(mysql_query($query));
-	
-				// get total number of comments
-				$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $row['id'] .';';
-				$comments = mysql_num_rows(mysql_query($query));
-	
-				// push challenge into list
-				array_push($challenge_arr, array(
-					'id' => $row['id'], 
-					'status' => $row['status_id'], 					
-					'subject' => $sub_obj->title, 
-					'comments' => $comments, 
-					'has_viewed' => $row['hasPreviewed'], 
-					'started' => $row['started'], 
-					'added' => $row['added'], 
-					'updated' => $row['updated'], 
-					'creator' => $this->userForChallenge($row['creator_id'], $row['id']),
-					'challenger' => $this->userForChallenge($row['challenger_id'], $row['id']),
-					'rechallenges' => array()
-				));
-			}
-			
-			// return
-			$this->sendResponse(200, json_encode($challenge_arr));
-			return (true);
+			/*
+			example response:
+			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
+			*/
 		}
 		
 		
@@ -777,6 +721,11 @@
 			// return
 			$this->sendResponse(200, json_encode($challenge_arr));
 			return (true);
+			
+			/*
+			example response:
+			[{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}},{"id":"1206","status":"4","subject":"#LockedOutHeaven","has_viewed":"N","started":"2013-01-11 03:10:53","added":"2013-01-11 03:05:05","creator":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873486","score":0},"challenger":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873838","score":1}}]
+			*/
 		}
 		
 		/**
@@ -819,6 +768,11 @@
 				'id' => $challenge_id
 			)));
 			return (true);
+			
+			/*
+			example response:
+			{"id":"1207","status":"4","subject":"#Scream&Shout","has_viewed":"N","started":"2013-01-11 03:06:16","added":"2013-01-11 03:05:51","creator":{"id":"3","fb_id":"1390251585","username":"typeoh","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460_1357873534","score":0},"challenger":{"id":"876","fb_id":"","username":"PicChallenge876","img":"https:\/\/hotornot-challenges.s3.amazonaws.com\/15239dd5a62a822bcbf51b9f5071189d728b12adacf5092c4d9ff4533306a1f3_1357873561","score":1}}
+			*/
 		}
 		
 		/**

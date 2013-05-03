@@ -137,7 +137,7 @@
 									_username, @"username",
 									nil];
 	
-	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			NSLog(@"HONUsernameViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);

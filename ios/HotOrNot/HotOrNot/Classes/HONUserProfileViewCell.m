@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "Mixpanel.h"
@@ -13,6 +15,7 @@
 
 #import "HONUserProfileViewCell.h"
 #import "HONAppDelegate.h"
+#import "HONImagingDepictor.h"
 
 @interface HONUserProfileViewCell() <UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) UIImageView *avatarImageView;
@@ -30,7 +33,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		//self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBackground"]];
 	}
 	
 	return (self);
@@ -41,19 +43,21 @@
 	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	
+	NSString *avatarURL = ([_userVO.imageURL rangeOfString:@"?"].location == NSNotFound) ? [NSString stringWithFormat:@"%@?r=%d", _userVO.imageURL, arc4random()] : [NSString stringWithFormat:@"%@&r=%d", _userVO.imageURL, arc4random()];
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 12.0, 93.0, 93.0)];
 	_avatarImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	//[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:60.0] placeholderImage:nil success:nil failure:nil];
-	[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+	[_avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
+	//_avatarImageView.image = [HONAppDelegate avatarImage];
+	_avatarImageView.userInteractionEnabled = YES;
 	[self addSubview:_avatarImageView];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(68.0, 72.0, 34.0, 34.0);
+	snapButton.frame = CGRectMake(57.0, 60.0, 34.0, 34.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"takeProfilePictureButton_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"takeProfilePictureButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
 	snapButton.hidden = !isUser;
-	[self addSubview:snapButton];
+	[_avatarImageView addSubview:snapButton];
 		
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -91,18 +95,24 @@
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:shareButton];
+	
+//	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(180.0, 50.0, 150.0, 50.0)];
+//	view.backgroundColor = [UIColor blackColor];
+//	[self addSubview:view];
+//	
+//	[view.layer addSublayer:[HONImageComposer drawTextToLayer:[NSString stringWithFormat:@"@%@", _userVO.username] inFrame:CGRectMake(0.0, 0.0, view.frame.size.width, view.frame.size.height) withFont:[[HONAppDelegate cartoGothicBold] fontWithSize:20.0] textColor:[UIColor whiteColor]]];
 }
 
 
 - (void)updateCell {
 	NSString *avatarURL = ([_userVO.imageURL rangeOfString:@"?"].location == NSNotFound) ? [NSString stringWithFormat:@"%@?r=%d", _userVO.imageURL, arc4random()] : [NSString stringWithFormat:@"%@&r=%d", _userVO.imageURL, arc4random()];
-	NSLog(@"--------- UPDATE CELL[%@] ----------", avatarURL);
 	
+	[_avatarImageView removeFromSuperview];
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
-//	__weak typeof(self) weakSelf = self;
-//	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData timeoutInterval:60.0] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//		weakSelf.avatarImageView.image = image;
-//	} failure:nil];
+	_avatarImageView.userInteractionEnabled = YES;
+	[self addSubview:_avatarImageView];
+	
+	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:kAvatarDefaultSize withUserDefaultsKey:@"avatar_image"];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -150,21 +160,21 @@
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
 		switch (buttonIndex) {
+				
+			// SHARE instagram
 			case 0: {
-				// SHARE instagram
-				
-				NSURL *instagramURL = [NSURL URLWithString:@"instagram://app"];
-				if ([[UIApplication sharedApplication] canOpenURL:instagramURL])
-					[[UIApplication sharedApplication] openURL:instagramURL];
-				
+				UIImage *image = [HONImagingDepictor prepImageForInstagram:[UIImage imageNamed:@"instagram_template-0000"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
+																																	 [HONAppDelegate instagramShareComment], @"caption",
+																																	 image, @"image", nil]];
 				break;}
 				
-				// share SMS
+			// share SMS
 			case 1:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_SMS" object:nil];
 				break;
 				
-				// share Email
+			// share Email
 			case 2:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_EMAIL" object:nil];
 				break;
@@ -184,7 +194,7 @@
 												[NSString stringWithFormat:@"%d", _userVO.userID], @"userID",
 												nil];
 				
-				[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
 						NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -200,13 +210,12 @@
 				
 				break;}
 				
-			case 1: {
-				// SHARE instagram
-				
-				NSURL *instagramURL = [NSURL URLWithString:@"instagram://app"];
-				if ([[UIApplication sharedApplication] canOpenURL:instagramURL])
-					[[UIApplication sharedApplication] openURL:instagramURL];
-				
+				// share instagram
+			case 1:{
+				UIImage *image = [HONImagingDepictor prepImageForInstagram:[UIImage imageNamed:@"instagram_template-0000"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
+																																	 [HONAppDelegate instagramShareComment], @"caption",
+																																	 image, @"image", nil]];
 				break;}
 				
 				// share SMS

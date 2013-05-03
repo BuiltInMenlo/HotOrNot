@@ -10,19 +10,35 @@
 
 #import "HONChallengeVO.h"
 
-//extern NSString *const HONSessionStateChangedNotification;
-//extern NSString *const FacebookAppID;
 
-@class SMClient;
+extern const NSInteger kNavBarHeaderHeight;
+extern const NSInteger kSearchHeaderHeight;
+extern const NSInteger kDefaultCellHeight;
+
+extern NSString * const kAPIChallenges;
+extern NSString * const kAPIComments;
+extern NSString * const kAPIDiscover;
+extern NSString * const kAPIPopular;
+extern NSString * const kAPISearch;
+extern NSString * const kAPIUsers;
+extern NSString * const kAPIVotes;
+
+const CGSize kSnapThumbSize;
+const CGSize kSnapMediumSize;
+const CGSize kSnapLargeSize;
+const CGSize kAvatarDefaultSize;
+
+static const CGFloat kSnapRatio;
+static const CGFloat kSnapJPEGCompress;
+
+static const CGFloat kHUDTime;
+static const CGFloat kSnapRatio;
+
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
-@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
-@property (strong, nonatomic) SMClient *client;
-
-
 + (NSString *)apiServerPath;
++ (NSString *)customerServiceURL;
 + (NSDictionary *)s3Credentials;
 + (BOOL)isInviteCodeValid:(NSString *)code;
 + (BOOL)isLocaleEnabled;
@@ -33,6 +49,8 @@
 
 + (NSString *)smsInviteFormat;
 + (NSString *)emailInviteFormat;
++ (NSString *)instagramShareComment;
+
 + (NSString *)rndDefaultSubject;
 
 + (NSArray *)searchSubjects;
@@ -43,6 +61,7 @@
 
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
++ (UIImage *)avatarImage;
 
 + (void)setAllowsFBPosting:(BOOL)canPost;
 + (BOOL)allowsFBPosting;
@@ -50,14 +69,10 @@
 + (int)hasVoted:(int)challengeID;
 + (void)setVote:(int)challengeID forCreator:(BOOL)isCreator;
 
++ (NSArray *)fillDiscoverChallenges:(NSArray *)challenges;
++ (NSArray *)refreshDiscoverChallenges;
+
 + (UIViewController *)appTabBarController;
-
-+ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size;
-+ (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor;
-+ (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
-+ (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect;
-
-+ (NSArray *)fbPermissions;
 
 + (BOOL)isRetina5;
 + (BOOL)hasNetwork;
@@ -82,32 +97,8 @@
 + (UIColor *)honGreyInputColor;
 + (UIColor *)honGreyDarkerColor;
 
-
-#define kChallengesAPI @"Challenges.php"
-#define kCommentsAPI @"Comments.php"
-#define kDiscoverAPI @"Discover.php"
-#define kPopularAPI @"Popular.php"
-#define kSearchAPI @"Search.php"
-#define kUsersAPI @"Users.php"
-#define kVotesAPI @"Votes.php"
-
-#define kThumb1W 38.0
-#define kThumb1H 50.0
-
-#define kMediumW 153.0
-#define kMediumH 205.0
-
-#define kLargeW 612.0
-#define kLargeH 816.0
-
-#define kPhotoRatio 1.333333333
-
-#define kHUDTime 0.5
-#define kJPEGCompress 0.5
-
-#define kNavHeaderHeight 45.0
-#define kSearchHeaderHeight 44.0
-#define kRowHeight 63.0
+@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UITabBarController *tabBarController;

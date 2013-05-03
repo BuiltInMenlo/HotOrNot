@@ -1,0 +1,41 @@
+59	23	*	*	*	/usr/local/bin/retriever_log.sh
+*/15	*	*	*	*	/usr/local/bin/content_update.sh >> /var/log/assembly/content-retriever.log 2>&1
+0	*/12	*	*	*	/usr/local/bin/picchallenge_cleanup.sh
+
+
+
+
+
+curl -X GET -u "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw" \
+        -H "Content-Type: application/json" \
+        --data '{"alias": "myalias"}' \
+        https://go.urbanairship.com/api/device_tokens/feedback/?since=2013-01-01+00:00:00 
+
+
+Jason iPhone 5
+fb984c1100eb39b30090fb2dcabc1e8ec47f34ff9aab50ce710204977384e460 - dev
+8bea49f58d8955b679bed628347d54b88db7777669e862ef0c65b215952e13c2 - live
+
+Matt iPhone 4
+d197f503d8a14322fe10eab4005fde4d0517ffb44581060811cf8a688eb47aed - dev
+e8c5e9d683cc61c2f83d2b40919dabccda7071da653f32b79197222e552ff5de - live
+
+
+priscilla.bibbins: 100004035109805
+jennyxoxox1234: 100004044170855
+
+c7bf64584c01bca092e204d95414985f
+
+
+curl -X POST -H "X-Parse-Application-Id: Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" \
+-H "X-Parse-REST-API-Key: Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6" \
+-H "Content-Type: application/json" \
+-d '{"app_name":"PicChallenge"}' \
+https://api.parse.com/1/functions/duration
+
+
+curl -X POST -H "X-Parse-Application-Id: avNXwB6BSTKdSeD5lDRVM71Bglq3mY78ORBQvV2i" \
+-H "X-Parse-REST-API-Key: yNUthh5WRYuAoKMv2Gyv6vwmg7D0YnvJ83RZWmXr" \
+-H "Content-Type: application/json" \
+-d '{"user_id":12}' \
+https://api.parse.com/1/functions/getUser

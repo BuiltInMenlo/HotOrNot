@@ -90,12 +90,6 @@
 	[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:subjectButton];
 	
-	if ([_challengeVO.rechallengedUsers length] > 0) {
-		UIImageView *rechallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(259.0, 11.0, 24.0, 24.0)];
-		rechallengeImageView.image = [UIImage imageNamed:@"reSnappedIcon"];
-		[self addSubview:rechallengeImageView];		
-	}
-	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(238.0, 15.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
@@ -108,7 +102,7 @@
 	_lHolderView.clipsToBounds = YES;
 	[self addSubview:_lHolderView];
 	
-	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
+	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kSnapMediumSize.width, kSnapMediumSize.height)];
 	lImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	lImgView.userInteractionEnabled = YES;
@@ -145,7 +139,7 @@
 	[self addSubview:_rHolderView];
 	
 	if (_hasChallenger) {
-		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kMediumW, kMediumH)];
+		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kSnapMediumSize.width, kSnapMediumSize.height)];
 		rImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
 		rImgView.userInteractionEnabled = YES;
@@ -545,7 +539,7 @@
 											@"Y", @"creator",
 											nil];
 			
-			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
 					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -609,7 +603,7 @@
 											@"N", @"creator",
 											nil];
 			
-			[httpClient postPath:kVotesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
 					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -691,7 +685,7 @@
 												[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 												nil];
 				
-				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
 						NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -736,7 +730,7 @@
 												[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 												nil];
 				
-				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
 						NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);

@@ -18,7 +18,7 @@
 @synthesize title = _title;
 
 - (id)initWithTitle:(NSString *)title {
-	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavHeaderHeight)])) {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
 		_title = title;
 		
 		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:self.frame];

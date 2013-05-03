@@ -16,6 +16,7 @@
 
 #import "HONChangeAvatarViewController.h"
 #import "HONAppDelegate.h"
+#import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 
 @interface HONChangeAvatarViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, HONAvatarCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
@@ -70,13 +71,13 @@
 		float avatarSize = 200.0;
 		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
 		
-		UIImage *lImage = (ratio.height >= 1.0) ? [HONAppDelegate scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONAppDelegate scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
-		lImage =	[HONAppDelegate cropImage:lImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
+		UIImage *lImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
+		lImage =	[HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
 		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:_filename inBucket:@"hotornot-avatars"];
 		por.contentType = @"image/jpeg";
-		por.data = UIImageJPEGRepresentation(lImage, kJPEGCompress);
+		por.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
 		por.delegate = self;
 		[s3 putObject:por];
 		
@@ -112,8 +113,9 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename] withDimensions:kAvatarDefaultSize withUserDefaultsKey:@"avatar_image"];
 	
-	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			NSLog(@"HONChangeAvatarViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);

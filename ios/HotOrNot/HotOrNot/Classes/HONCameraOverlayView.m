@@ -15,6 +15,7 @@
 
 #import "HONCameraOverlayView.h"
 #import "HONAppDelegate.h"
+#import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 
 @interface HONCameraOverlayView() <UITextFieldDelegate>
@@ -55,7 +56,7 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
 		
-		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, ([_username length] > 0) ? kNavHeaderHeight + 33.0 : kNavHeaderHeight + 10.0, 307.0, 306.0)];
+		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, ([_username length] > 0) ? kNavBarHeaderHeight + 33.0 : kNavBarHeaderHeight + 10.0, 307.0, 306.0)];
 		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
 		_irisImageView.alpha = 0.0;
 		[self addSubview:_irisImageView];
@@ -101,16 +102,16 @@
 		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:_randomSubjectButton];
 				
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, kNavHeaderHeight + 7.0, 37.0, 37.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, kNavBarHeaderHeight + 7.0, 37.0, 37.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:avatar] placeholderImage:nil];
 		[self addSubview:avatarImageView];
 		
-		UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(55.0, kNavHeaderHeight + 16.0, 18.0, 18.0)];
+		UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(55.0, kNavBarHeaderHeight + 16.0, 18.0, 18.0)];
 		arrowImageView.image = [UIImage imageNamed:@"outboundArrow"];
 		arrowImageView.hidden = ([_username length] == 0);
 		[self addSubview:arrowImageView];
 		
-		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, kNavHeaderHeight + 18.0, 270.0, 20.0)];
+		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, kNavBarHeaderHeight + 18.0, 270.0, 20.0)];
 		usernameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:14];
 		usernameLabel.textColor = [UIColor whiteColor];
 		usernameLabel.backgroundColor = [UIColor clearColor];
@@ -174,7 +175,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	NSLog(@"IMAGE:[%f][%f]", image.size.width, image.size.height);
-	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 480 * (image.size.height / image.size.width))];
+	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 480 * (image.size.height / image.size.width))];
 	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
 	[_previewHolderView addSubview:imgView];
@@ -196,7 +197,7 @@
 	NSLog(@"IMAGE FLIPPED:[%f][%f]", image.size.width, image.size.height);
 	
 
-	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;

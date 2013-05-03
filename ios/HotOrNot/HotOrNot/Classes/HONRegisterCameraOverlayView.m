@@ -10,6 +10,7 @@
 
 #import "HONRegisterCameraOverlayView.h"
 #import "HONAppDelegate.h"
+#import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
 
 @interface HONRegisterCameraOverlayView() <UIAlertViewDelegate>
@@ -38,7 +39,7 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
 		
-		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, 320.0, 320.0)];
+		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 320.0)];
 		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
 		_irisImageView.alpha = 0.0;
 		[self addSubview:_irisImageView];
@@ -137,7 +138,7 @@
 	[_headerView setTitle:NSLocalizedString(@"header_register3", nil)];
 	_captionLabel.text = NSLocalizedString(@"register_caption2", nil);
 	
-	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
 	[_previewHolderView addSubview:imgView];
@@ -172,7 +173,7 @@
 	[_headerView setTitle:NSLocalizedString(@"header_register3", nil)];
 	_headerLabel.hidden = YES;
 	
-	image = [HONAppDelegate scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;

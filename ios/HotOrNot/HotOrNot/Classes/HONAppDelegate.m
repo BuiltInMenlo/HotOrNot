@@ -30,10 +30,29 @@
 #import "HONWebCTAViewController.h"
 #import "HONSearchViewController.h"
 
-//NSString *const HONSessionStateChangedNotification = @"com.builtinmenlo.hotornot:HONSessionStateChangedNotification";
-//NSString *const FacebookAppID = @"529054720443694";
+const NSInteger kNavBarHeaderHeight = 44;
+const NSInteger kSearchHeaderHeight = 44;
+const NSInteger kDefaultCellHeight = 63;
 
-@interface HONAppDelegate() <UIAlertViewDelegate>
+NSString * const kAPIChallenges = @"Challenges.php";
+NSString * const kAPIComments = @"Comments.php";
+NSString * const kAPIDiscover = @"Discover.php";
+NSString * const kAPIPopular = @"Popular.php";
+NSString * const kAPISearch = @"Search.php";
+NSString * const kAPIUsers = @"Users.php";
+NSString * const kAPIVotes = @"Votes.php";
+
+const CGSize kSnapThumbSize = {38.0, 50.0};
+const CGSize kSnapMediumSize = {153.0, 205.0};
+const CGSize kSnapLargeSize = {612.0, 816.0};
+const CGSize kAvatarDefaultSize = {200.0, 200.0};
+
+static const CGFloat kSnapRatio = 1.33333333f;
+static const CGFloat kSnapJPEGCompress = 0.75f;
+
+
+@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic, strong) UIImageView *bgImgView;
@@ -48,12 +67,15 @@
 @synthesize tabBarController = _tabBarController;
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
-@synthesize client = _client;
+
 
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 }
 
++ (NSString *)customerServiceURL {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"service_url"]);
+}
 + (NSDictionary *)s3Credentials {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"s3_creds"]);
 }
@@ -73,6 +95,10 @@
 }
 + (NSString *)emailInviteFormat {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"invite_email"] objectForKey:[HONAppDelegate deviceLocale]]);
+}
+
++ (NSString *)instagramShareComment {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"insta_profile"] objectForKey:[HONAppDelegate deviceLocale]]);
 }
 
 + (int)createPointMultiplier {
@@ -127,8 +153,21 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
++ (void)writeUserAvatar:(UIImage *)image {
+	[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:@"avatar_image"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 + (NSDictionary *)infoForUser {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"]);
+}
+
++ (UIImage *)avatarImage {
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"])
+		return ([UIImage imageNamed:@"defaultAvatar"]);
+	
+	
+	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
 }
 
 + (void)setAllowsFBPosting:(BOOL)canPost {
@@ -152,6 +191,53 @@
 	return (0);
 }
 
++ (NSArray *)fillDiscoverChallenges:(NSArray *)challenges {
+	//NSLog(@"challenges:\n%@[%d]", challenges, [challenges count]);
+	
+	// fill up all challenges if first time
+	if ([challenges count] >= 12) {
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:challenges, @"total", challenges, @"remaining", nil] forKey:@"discover_challenges"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	// send back the 1st or next randomized set
+	return ([HONAppDelegate refreshDiscoverChallenges]);
+}
+
++ (NSArray *)refreshDiscoverChallenges {
+//	NSLog(@"allChallenges:\n%@", [discover_challenges objectForKey:@"total"]);
+	NSLog(@"remainingChallenges:\n%@", [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"]);
+	
+	NSArray *allChallenges = [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"total"];
+	NSMutableArray *remainingChallenges = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"] mutableCopy];
+	NSMutableArray *newChallenges = [NSMutableArray array];
+	
+	// loop for new set
+	for (int i=0; i<16; i++) {
+		NSLog(@"POP:[%d][%d]", i, [remainingChallenges count]);
+		
+		int rnd = arc4random() % [remainingChallenges count];
+		
+		// pick a random index and remove from pool
+		[newChallenges addObject:[remainingChallenges objectAtIndex:rnd]];
+		[remainingChallenges removeObjectAtIndex:rnd];
+		
+		if ([remainingChallenges count] == 0)
+			break;
+	}
+	
+	// no more left, repopulate
+	if ([remainingChallenges count] == 0) {
+		for (int i=0; i<[allChallenges count]; i++)
+			[remainingChallenges addObject:[allChallenges objectAtIndex:arc4random() % [allChallenges count]]];
+	}
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:allChallenges, @"total", remainingChallenges, @"remaining", nil] forKey:@"discover_challenges"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	return (newChallenges);
+}
+
 + (void)setVote:(int)challengeID forCreator:(BOOL)isCreator {
 	NSMutableArray *voteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
 	[voteArray addObject:[NSNumber numberWithInt:(isCreator) ? challengeID : -challengeID]];
@@ -165,94 +251,6 @@
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
 }
 
-+ (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)size {
-	UIGraphicsBeginImageContext(size);
-	
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextTranslateCTM(context, 0.0, size.height);
-	CGContextScaleCTM(context, 1.0, -1.0);
-	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
-	
-	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-	UIGraphicsEndImageContext();
-	
-	return (scaledImage);
-}
-
-
-+ (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor {
-	CGSize size = CGSizeMake(image.size.width * factor, image.size.height * factor);
-	
-	UIGraphicsBeginImageContext(size);
-	
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextTranslateCTM(context, 0.0, size.height);
-	CGContextScaleCTM(context, 1.0, -1.0);
-	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
-	
-	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
-	UIGraphicsEndImageContext();
-	
-	return (scaledImage);
-}
-
-+ (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect {
-	CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], rect);
-	
-	UIImage *croppedImage = [UIImage imageWithCGImage:imageRef];
-	CGImageRelease(imageRef);
-	
-	return (croppedImage);
-}
-
-+ (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect {
-	CGContextRef                context;
-	CGImageRef                  imageRef;
-	CGSize                      inputSize;
-	UIImage                     *outputImage = nil;
-	CGFloat                     scaleFactor, width;
-	
-	
-	// resize, maintaining aspect ratio:
-	inputSize = image.size;
-	scaleFactor = size.height / inputSize.height;
-	width = roundf(inputSize.width * scaleFactor);
-	
-	if (width > size.width) {
-		scaleFactor = size.width / inputSize.width;
-		size.height = roundf(inputSize.height * scaleFactor);
-		
-	} else {
-		size.width = width;
-	}
-	
-	UIGraphicsBeginImageContext(size);
-	
-	context = UIGraphicsGetCurrentContext();
-	CGContextDrawImage(context, CGRectMake(0.0, 0.0, size.width, size.height), image.CGImage);
-	outputImage = UIGraphicsGetImageFromCurrentImageContext();
-	
-	UIGraphicsEndImageContext();
-	
-	inputSize = size;
-	
-	// constrain crop rect to legitimate bounds
-	if (rect.origin.x >= inputSize.width || rect.origin.y >= inputSize.height) return (outputImage);
-	if (rect.origin.x + rect.size.width >= inputSize.width) rect.size.width = inputSize.width - rect.origin.x;
-	if (rect.origin.y + rect.size.height >= inputSize.height) rect.size.height = inputSize.height - rect.origin.y;
-	
-	// crop
-	if ((imageRef = CGImageCreateWithImageInRect(outputImage.CGImage, rect))) {
-		outputImage = [[UIImage alloc] initWithCGImage: imageRef];
-		CGImageRelease(imageRef);
-	}
-	
-	return (outputImage);
-}
-
-+ (NSArray *)fbPermissions {
-	return ([NSArray arrayWithObjects:@"publish_actions", @"publish_stream", nil]); //@"status_update",
-}
 
 + (BOOL)isRetina5 {
 	return ([UIScreen mainScreen].scale == 2.f && [UIScreen mainScreen].bounds.size.height == 568.0f);
@@ -340,19 +338,19 @@
 }
 
 + (UIFont *)cartoGothicBold {
-	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:18.0]);
+	return ([UIFont fontWithName:@"CartoGothicStd-Bold" size:24.0]);
 }
 
 + (UIFont *)cartoGothicBoldItalic {
-	return ([UIFont fontWithName:@"CartoGothicStd-BoldItalic" size:18.0]);
+	return ([UIFont fontWithName:@"CartoGothicStd-BoldItalic" size:24.0]);
 }
 
 + (UIFont *)cartoGothicBook {
-	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:18.0]);
+	return ([UIFont fontWithName:@"CartoGothicStd-Book" size:24.0]);
 }
 
 + (UIFont *)cartoGothicItalic {
-	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:18.0]);
+	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
 }
 
 + (UIColor *)honBlueTxtColor {
@@ -420,7 +418,7 @@
 									[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
 									nil];
 	
-	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
@@ -444,6 +442,31 @@
 	}];
 }
 
+
+- (void)_sendToInstagram:(NSNotification *)notification {
+	NSString *instaURL = @"instagram://app";
+	NSString *instaFormat = @"com.instagram.exclusivegram";
+	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
+	
+	NSDictionary *dict = [notification object];
+	UIImage *shareImage = [dict objectForKey:@"image"];//[UIImage imageNamed:@"instagram_template-0000"];
+	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+	
+	
+	if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:instaURL]]) {
+		//[[UIApplication sharedApplication] openURL:[NSURL URLWithString:instaURL]];
+		
+		_documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:savePath]];
+		_documentInteractionController.UTI = instaFormat;
+		_documentInteractionController.delegate = self;
+		_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
+		[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:[HONAppDelegate appTabBarController].view animated:YES];
+	
+	} else {
+		[self _showOKAlert:@"Not Available"
+				 withMessage:@"This device isn't allowed or doesn't recognize instagram"];
+	}
+}
 
 #pragma mark - UI Presentation
 - (void)_dropTabs {
@@ -473,6 +496,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_sendToInstagram:) name:@"SEND_TO_INSTAGRAM" object:nil];
 	
 	//[self _testParseCloudCode];
 	//[self _showFonts];
@@ -747,7 +771,8 @@
 			[users addObject:user];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api-dev"] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"service_url"] forKey:@"service_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [[appDict objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
 														  [[appDict objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
@@ -769,6 +794,13 @@
 																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"jp"], @"jp",
 																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"vi"], @"vi",
 																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_email"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"en"], @"en",
+																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"id"], @"id",
+																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"ko"], @"ko",
+																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"jp"], @"jp",
+																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"vi"], @"vi",
+																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"insta_profile"];
 		[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
 		[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
 		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
@@ -793,7 +825,7 @@
 									[HONAppDelegate deviceToken], @"token",
 									nil];
 	
-	[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
@@ -972,6 +1004,36 @@
 				break;
 		}
 	}
+}
+
+
+#pragma mark - DocumentInteraction Delegates
+- (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
+	[[Mixpanel sharedInstance] track:@"Presenting DocInteraction Shelf"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
+	[[Mixpanel sharedInstance] track:@"Dismissing DocInteraction Shelf"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
+	[[Mixpanel sharedInstance] track:@"Launching DocInteraction App"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [controller name], @"controller", nil]];
+}
+
+- (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
+	[[Mixpanel sharedInstance] track:@"Entering DocInteraction App Foreground"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [controller name], @"controller", nil]];
 }
 
 @end

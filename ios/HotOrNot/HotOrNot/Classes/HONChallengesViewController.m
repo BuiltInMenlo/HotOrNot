@@ -77,7 +77,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	_isMoreLoadable = YES;
+	_isMoreLoadable = NO;
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -85,7 +85,7 @@
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							nil];
 	
-	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -109,12 +109,17 @@
 					[_challenges addObject:vo];
 			}
 			
-			if ([parsedLists count] == 0 || [parsedLists count] % 10 != 0)
-				_isMoreLoadable = NO;
-			
+
 			_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
 			_emptySetImgView.hidden = ([_challenges count] > 0);
 			[_tableView reloadData];
+			
+			_isMoreLoadable = ([_challenges count] % 10 == 0 || [_challenges count] > 0);
+			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_challenges count] - 1) inSection:0]];
+			[cell toggleLoadMore:_isMoreLoadable];
+			
+			NSLog(@"CELL%@", cell);
+			
 			
 			[_headerView toggleRefresh:NO];
 			if (_progressHUD != nil) {
@@ -148,7 +153,7 @@
 								[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 								nil];
 		
-		[httpClient postPath:kUsersAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			if (error != nil) {
 				NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -196,6 +201,8 @@
 	[super loadView];
 	//NSLog(@"self.view.bounds:[%fx%f][%fx%f]", self.view.bounds.origin.x, self.view.bounds.origin.y, self.view.bounds.size.width, self.view.bounds.size.height);
 	
+	_isMoreLoadable = NO;
+	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
@@ -217,7 +224,7 @@
 	_emptySetImgView.userInteractionEnabled = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -303,14 +310,22 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	NSString *prevIDs = @"";
+	for (HONChallengeVO *vo in _challenges)
+		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.challengerID : vo.creatorID]];
+	
+	
+	//NSLog(@"NEXT\n%@\n%@", [prevIDs substringToIndex:[prevIDs length] - 1], _lastDate);
+	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 12], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									[prevIDs substringToIndex:[prevIDs length] - 1], @"prevIDs", 
 									_lastDate, @"datetime",
 									nil];
 	
-	[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -326,7 +341,7 @@
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
 			
-			[_challenges removeLastObject];
+			//[_challenges removeLastObject];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
@@ -334,16 +349,12 @@
 					[_challenges addObject:vo];
 			}
 			
-			if ([parsedLists count] == 0 || [parsedLists count] % 10 != 0)
-				_isMoreLoadable = NO;
-			
-			if (!_isMoreLoadable) {
-				HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[_challenges count] inSection:0]];
-				[cell disableLoadMore];
-			}
-			
 			_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
 			[_tableView reloadData];
+			
+			_isMoreLoadable = ([_challenges count] % 10 == 0 || [parsedLists count] > 0);
+			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_challenges count] - 1) inSection:0]];
+			[cell toggleLoadMore:_isMoreLoadable];
 			
 			[_headerView toggleRefresh:NO];
 			if (_progressHUD != nil) {
@@ -373,11 +384,11 @@
 }
 
 - (void)_tabsDropped:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 29.0));
+	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
 }
 
 - (void)_tabsRaised:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavHeaderHeight + 81.0));
+	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
 }
 
 - (void)_showEmailComposer:(NSNotification *)notification {
@@ -422,7 +433,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count] + 1);//(int)_isMoreLoadable);
+	return ([_challenges count] + 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -438,10 +449,11 @@
 	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 
 	if (cell == nil) {
-		if (indexPath.row == [_challenges count])
+		if (indexPath.row == [_challenges count]) {
 			cell = [[HONChallengeViewCell alloc] initAsBottomCell:YES];
+			[cell toggleLoadMore:_isMoreLoadable];
 				
-		else
+		} else
 			cell = [[HONChallengeViewCell alloc] initAsBottomCell:NO];
 	}
 	
@@ -456,7 +468,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row < [_challenges count]) ? kRowHeight : 64.0);
+	return ((indexPath.row < [_challenges count]) ? kDefaultCellHeight : 64.0);
 }
 
 //- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -630,7 +642,7 @@
 												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
 												nil];
 				
-				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
 						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
@@ -667,7 +679,7 @@
 												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
 												nil];
 				
-				[httpClient postPath:kChallengesAPI parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
 						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);

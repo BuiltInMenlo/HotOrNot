@@ -505,6 +505,105 @@ foreach ($challenge_arr as $key => $val) {
 }
 */
 
+function challengeOpponents($user_id) {
+	
+	// get challeges where user is the creator or the challenger
+	$query = 'SELECT `creator_id`, `challenger_id` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .')) ORDER BY `updated` DESC;';
+	$result = mysql_query($query);
+	
+	// push opponent id
+	$id_arr = array();
+	while ($row = mysql_fetch_assoc($result))
+		array_push($id_arr, ($user_id == $row['creator_id']) ? $row['challenger_id'] : $row['creator_id']);
+		
+	
+	// return
+	return (array_unique($id_arr));
+}
+
+function challengesWithOpponent($user_id, $opponent_id, $last_date="9999-99-99 99:99:99") {
+	
+	// get challenges where both users are included
+	$query = 'SELECT `id`, `creator_id`, `challenger_id`, `updated` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') AND (`creator_id` = '. $opponent_id .' OR `challenger_id` = '. $opponent_id .')) AND `updated` < "'. $last_date .'" ORDER BY `updated` DESC;';
+	$result = mysql_query($query);
+	
+	// push challenge id as key & updated time as val
+	while ($row = mysql_fetch_assoc($result))
+		$challenge_arr[$row['id']] = $row['updated'];
+		
+	// return
+	return ($challenge_arr);
+}
+
+
+
+// Load more
+/*
+if (!isset($_GET['userID'])) {
+	echo ("Requires userID!");
+	exit;
+}
+
+$user_id = $_GET['userID'];
+
+//$user_id = 1;//2383;
+$prevIDs = "2391|2|2383|1552|903|1064|1083|2169|2178|2365";
+$date = "2013-04-26 11:29:31";
+$prevID_arr = explode('|', $prevIDs);
+
+
+// get list of past opponents & loop thru
+$opponentID_arr = challengeOpponents($user_id);
+echo ("opponentID_arr<br />");
+print_r($opponentID_arr);
+echo ("<hr />");
+foreach($prevID_arr as $key => $val) {
+	$ind = array_search($val, $opponentID_arr);
+	
+	// check against previous opponents
+	if (is_numeric($ind))
+		array_splice($opponentID_arr, $ind, 1);
+}
+
+echo ("opponentID_arr<br />");
+print_r($opponentID_arr);
+echo ("<hr />");
+foreach($opponentID_arr as $key => $val) {
+	
+	// make sure it's not empty
+	if (count(challengesWithOpponent($user_id, $val, $date)) > 0)
+		$opponentChallenges_arr[$user_id .'_'. $val][] = challengesWithOpponent($user_id, $val, $date);
+}
+
+echo ("opponentChallenges_arr<br />");
+print_r($opponentChallenges_arr);
+echo ("<hr />");
+
+// loop thru each paired match & pull off most recent
+$challengeID_arr = array();
+foreach($opponentChallenges_arr as $key => $val)
+	array_push($challengeID_arr, key($val[0]));
+	
+
+// sort by date asc, then reverse to go desc
+sort($challengeID_arr);
+$challengeID_arr = array_reverse($challengeID_arr, true);
+
+echo ("challengeID_arr<br />");
+print_r($challengeID_arr);
+echo ("<hr />");
+
+// loop thru the most resent challenge ID per creator/challenger match
+$cnt = 0;
+$challenge_arr = array();
+foreach ($challengeID_arr as $key => $val) {
+	array_push($challenge_arr, $this->getChallengeObj($val));
+	
+	// stop at 10
+	if (++$cnt == 10)
+		break;
+}
+*/
 
 
 if ($db_conn) {
