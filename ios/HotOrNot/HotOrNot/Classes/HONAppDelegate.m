@@ -56,8 +56,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic, strong) UIImageView *bgImgView;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) HONSearchViewController *searchViewController;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONSearchViewController *searchViewController;
 - (void)_registerUser;
 @end
 
@@ -206,7 +206,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 + (NSArray *)refreshDiscoverChallenges {
 //	NSLog(@"allChallenges:\n%@", [discover_challenges objectForKey:@"total"]);
-	NSLog(@"remainingChallenges:\n%@", [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"]);
+//	NSLog(@"remainingChallenges:\n%@", [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"]);
 	
 	NSArray *allChallenges = [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"total"];
 	NSMutableArray *remainingChallenges = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"] mutableCopy];
@@ -215,7 +215,6 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	// loop for new set
 	for (int i=0; i<16; i++) {
 		NSLog(@"POP:[%d][%d]", i, [remainingChallenges count]);
-		
 		int rnd = arc4random() % [remainingChallenges count];
 		
 		// pick a random index and remove from pool
@@ -463,8 +462,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 		[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:[HONAppDelegate appTabBarController].view animated:YES];
 	
 	} else {
-		[self _showOKAlert:@"Not Available"
-				 withMessage:@"This device isn't allowed or doesn't recognize instagram"];
+		[self _showOKAlert:NSLocalizedString(@"alert_instagramError_t", nil)
+				 withMessage:NSLocalizedString(@"alert_instagramError_m", nil)];
 	}
 }
 
@@ -518,8 +517,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 		
 		// parse is down!!
 		if (![HONAppDelegate canPingParseServer]) {
-			[self _showOKAlert:@"Connection Error"
-				   withMessage:@"Could not connect to Volley initialization servers, please try again."];
+			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
+				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		}
 		
 		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
@@ -533,8 +532,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 		
 		// parse is down!!
 		if (apiActiveObject == nil) {
-			[self _showOKAlert:@"Connection Error"
-				   withMessage:@"Could not connect to Volley endpoint servers, please try again."];
+			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
+				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		
 		} else {
 			if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
@@ -628,8 +627,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		if (![HONAppDelegate canPingParseServer]) {
-			[self _showOKAlert:@"Connection Error"
-				   withMessage:@"Could not connect to the Volley initialization servers, please try again."];
+			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
+				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		
 		} else {
 			PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
@@ -648,8 +647,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 				}
 				
 			} else {
-				[self _showOKAlert:@"Connection Error"
-					   withMessage:@"Could not connect to the Volley endpoint servers, please try again."];
+				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
+					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 			}
 		}
 	}
@@ -706,7 +705,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 		
 		// challenge update
 		case 1:
-			[self _showOKAlert:@"Challenge Update"
+			[self _showOKAlert:@"Snap Update"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			break;
 			

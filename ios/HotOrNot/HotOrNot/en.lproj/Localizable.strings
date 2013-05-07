@@ -80,3 +80,24 @@
 "userPlaceholder" = "Enter a username to snap @";
 
 "invite_email" = "Come Snap @me on Volley!";
+
+
+"alert_yes" = "Yes";
+"alert_no" = "No";
+"alert_ok" = "OK";
+"alert_cancel" = "Cancel";
+"alert_connectionError_t" = "Connection Error";
+"alert_connectionError_m" = "Could not connect to Volley initialization servers, please try again.";
+"alert_instagramError_t" = "Not Available";
+"alert_instagramError_m" = "This device isn't allowed or doesn't recognize instagram";
+"alert_networkError_t" = "No Network Connection";
+"alert_networkError_m" = "This app requires a network connection to work.";
+"alert_upgrade_t" = "Upgrade Needed";
+"alert_upgrade_m" = "Please update to the latest version from the App Store to continue playing Volley.";
+"alert_rateApp_t" = "Rate Volley";
+"alert_rateApp_m" = "Why not rate Volley in the app store!";
+"alert_rateApp_no" = "No Thanks";
+"alert_rateApp_later" = "Ask Me Later";
+"alert_rateApp_store" = "Visit App Store";
+"alert_poke_t" = "";
+"alert_poke_m" = "";

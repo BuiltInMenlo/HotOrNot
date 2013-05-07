@@ -235,10 +235,10 @@
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																				delegate:self
-																	cancelButtonTitle:@"Cancel"
-															 destructiveButtonTitle:@"Report Abuse"
-																	otherButtonTitles:[NSString stringWithFormat:@"Poke @%@", (_isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], nil];
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:@"Report Abuse"
+													otherButtonTitles:[NSString stringWithFormat:@"Poke @%@", (_isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
