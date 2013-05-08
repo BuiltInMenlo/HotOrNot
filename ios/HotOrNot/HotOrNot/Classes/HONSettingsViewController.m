@@ -127,7 +127,7 @@
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"c - Create Snap"
+	[[Mixpanel sharedInstance] track:@"Settings - Create Snap"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	

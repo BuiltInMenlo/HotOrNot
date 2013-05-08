@@ -51,6 +51,9 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareSMS:) name:@"SHARE_SMS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareEmail:) name:@"SHARE_EMAIL" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_takeNewAvatar:) name:@"TAKE_NEW_AVATAR" object:nil];
+		
+		_pastUsers = [NSMutableArray array];
+		_contactUsers = [NSMutableArray array];
 	}
 	
 	return (self);
@@ -185,8 +188,6 @@
 																									email, @"email", nil]]];
 		}
 	}
-	
-	[_tableView reloadData];
 }
 
 
@@ -230,7 +231,7 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	[self _retrievePastUsers];
+	//[self _retrievePastUsers];
 }
 
 - (void)viewDidLoad {
@@ -322,10 +323,10 @@
 			[self _retrieveContacts];
 		});
 		
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized)
+	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 		[self _retrieveContacts];
 	
-	else {
+	} else {
 		// denied access
 	}
 }
@@ -456,7 +457,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (3);
+	return (2 + (int)(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized));
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -472,10 +473,10 @@
 		return (nil);
 		
 	} else if (section == 1) {
-		label.text = @"Previously snapped with";
+		label.text = @"Snap History";
 		
 	} else {
-		label.text = @"Your contact list";
+		label.text = [NSString stringWithFormat:@"Your Contact List (%d)", [_contactUsers count]];
 	}
 	
 	return (headerImageView);

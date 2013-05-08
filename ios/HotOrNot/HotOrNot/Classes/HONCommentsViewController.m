@@ -218,7 +218,14 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	[self performSelector:@selector(_goTextField) withObject:nil afterDelay:0.5];
+	
+	//[_commentTextField becomeFirstResponder];
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:0.0];
+	[UIView setAnimationDelay:0.0];
+	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
+	[_commentTextField becomeFirstResponder];  // <---- Only edit this line
+	[UIView commitAnimations];
 }
 
 - (void)viewDidUnload {
@@ -239,18 +246,21 @@
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	_isGoingBack = YES;
-	[_commentTextField resignFirstResponder];
-	[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
-		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+	//[_commentTextField resignFirstResponder];
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:0.0];
+	[UIView setAnimationDelay:0.0];
+	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
+	[_commentTextField resignFirstResponder];  // <---- Only edit this line
+	[UIView commitAnimations];
 	
-	} completion:^(BOOL finished) {
+	//[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
+	//	_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+	//
+	//} completion:^(BOOL finished) {
 		_commentTextField.text = @"";
 		[self.navigationController popViewControllerAnimated:YES];
-	}];
-}
-
-- (void)_goTextField {
-	[_commentTextField becomeFirstResponder];
+	//}];
 }
 
 - (void)_goSend {
@@ -354,10 +364,10 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+	//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 278.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
-	} completion:^(BOOL finished) {
-	}];
+	//} completion:^(BOOL finished) {
+	//}];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
@@ -371,18 +381,33 @@
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
-	//[textField resignFirstResponder];
 	return (YES);
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	
-	if (!_isGoingBack)
-		[textField becomeFirstResponder];
+	if (!_isGoingBack) {
+		//[textField becomeFirstResponder];
+		
+		[UIView beginAnimations:nil context:nil];
+		[UIView setAnimationDuration:0.0];
+		[UIView setAnimationDelay:0.0];
+		[UIView setAnimationCurve:UIViewAnimationCurveLinear];
+		[textField becomeFirstResponder];  // <---- Only edit this line
+		[UIView commitAnimations];
+	}
 }
 
 - (void)_onTxtDoneEditing:(id)sender {
-	[_commentTextField becomeFirstResponder];
+	//[_commentTextField becomeFirstResponder];
+	
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:0.0];
+	[UIView setAnimationDelay:0.0];
+	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
+	[_commentTextField becomeFirstResponder];  // <---- Only edit this line
+	[UIView commitAnimations];
+	
 	[self _goSend];
 }
 

@@ -359,7 +359,17 @@
 #pragma mark - Navigation
 - (void)_goNext {
 	[_usernameTextField resignFirstResponder];
-	[self _submitUsername];
+	
+	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
+		[[[UIAlertView alloc] initWithTitle:@"No Username!"
+											 message:@"You need to enter a usersname to start snapping"
+										   delegate:nil
+								cancelButtonTitle:@"OK"
+								otherButtonTitles:nil] show];
+	}
+	
+	else
+		[self _submitUsername];
 }
 
 #pragma mark - Notifications
@@ -483,8 +493,8 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	if ([textField.text isEqualToString:@"@"] || [textField.text isEqualToString:NSLocalizedString(@"register_username", nil)])
-		textField.text = [NSString stringWithFormat:@"@%@", _username];
+//	if ([textField.text isEqualToString:@"@"] || [textField.text isEqualToString:NSLocalizedString(@"register_username", nil)])
+//		textField.text = textField.text = [NSString stringWithFormat:@"@%@", _username];
 	
 	_username = textField.text;
 	[[Mixpanel sharedInstance] track:@"Register - Change Username"

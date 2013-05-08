@@ -460,7 +460,16 @@
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 													 _username, @"username", nil]];
 		
-		[self _submitChallenge];
+		if (![_username isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"name"]])
+			[self _submitChallenge];
+		
+		else {
+			[[[UIAlertView alloc] initWithTitle:@"Snap Problem!"
+												 message:@"You cannot snap at yourself!"
+												delegate:nil
+									cancelButtonTitle:@"OK"
+									otherButtonTitles:nil] show];
+		}
 	}
 }
 

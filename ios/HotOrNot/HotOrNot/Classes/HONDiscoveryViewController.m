@@ -180,6 +180,7 @@
 	for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
 		[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
 	
+	[_headerView toggleRefresh:NO];
 	[_tableView reloadData];
 }
 
@@ -197,6 +198,7 @@
 #pragma mark - Notifications
 - (void)_refreshDiscoveryTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_headerView toggleRefresh:YES];
 	[self _goRefresh];
 }
 
@@ -284,7 +286,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (92.0);
+	return (102.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

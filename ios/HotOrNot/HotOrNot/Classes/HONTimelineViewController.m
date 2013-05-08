@@ -304,10 +304,10 @@
 			
 			if ([_challenges count] == 0) {
 				[[[UIAlertView alloc] initWithTitle:@"Nothing Here!"
-											message:@"No PicChallenges in session. You should start one."
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
+													 message:@"No PicChallenges in session. You should start one."
+													delegate:nil
+										cancelButtonTitle:@"OK"
+										otherButtonTitles:nil] show];
 			}
 		}
 		
@@ -499,8 +499,17 @@
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	} else
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
+	} else {
+		if ([_userVO.username isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"name"]]) {
+			[[[UIAlertView alloc] initWithTitle:@"Snap Problem!"
+												 message:@"You cannot snap at yourself!"
+												delegate:nil
+									cancelButtonTitle:@"OK"
+									otherButtonTitles:nil] show];
+			
+		} else
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
+	}
 }
 
 - (void)_goLocaleRestriction {

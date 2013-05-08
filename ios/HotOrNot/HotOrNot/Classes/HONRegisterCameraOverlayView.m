@@ -71,11 +71,10 @@
 		[_headerView addSubview:_skipButton];
 		
 		_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_submitButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
+		_submitButton.frame = CGRectMake(330.0, 0.0, 64.0, 44.0);
 		[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
 		[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 		[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-		_submitButton.hidden = YES;
 		[_headerView addSubview:_submitButton];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -118,6 +117,10 @@
 - (void)showPreviewNormal:(UIImage *)image {
 	_skipButton.hidden = YES;
 	[_submitButton setEnabled:YES];
+	[UIView animateWithDuration:0.25 delay:0.33 options:UIViewAnimationOptionCurveLinear animations:^{
+		_submitButton.frame = CGRectMake(254.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
+	} completion:nil];
+	
 	
 	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
@@ -132,7 +135,6 @@
 		[_headerView addSubview:_cameraBackButton];
 	}
 	
-	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
 	_headerLabel.hidden = YES;
 	[_headerView setTitle:NSLocalizedString(@"header_register3", nil)];
@@ -153,6 +155,10 @@
 - (void)showPreviewFlipped:(UIImage *)image {
 	_skipButton.hidden = YES;
 	[_submitButton setEnabled:YES];
+	[UIView animateWithDuration:0.25 delay:0.33 options:UIViewAnimationOptionCurveLinear animations:^{
+		_submitButton.frame = CGRectMake(254.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
+	} completion:nil];
+	
 	
 	//[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_footerHolderView.frame = CGRectMake(-320.0, _footerHolderView.frame.origin.y, 640.0, 70.0);
@@ -167,7 +173,6 @@
 		[_headerView addSubview:_cameraBackButton];
 	}
 	
-	_submitButton.hidden = NO;
 	_cameraBackButton.hidden = NO;
 	_captionLabel.text = NSLocalizedString(@"register_caption2", nil);
 	[_headerView setTitle:NSLocalizedString(@"header_register3", nil)];
@@ -185,10 +190,13 @@
 }
 
 - (void)hidePreview {
-	_submitButton.hidden = YES;
 	_previewHolderView.hidden = YES;
 	_cameraBackButton.hidden = YES;
 	_skipButton.hidden = NO;
+	
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+		_submitButton.frame = CGRectMake(330.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
+	} completion:nil];
 	
 	_headerLabel.hidden = NO;
 	[_headerView setTitle:@""];

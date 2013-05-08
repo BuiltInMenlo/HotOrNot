@@ -93,8 +93,8 @@
 	
 	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(165.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
 	
-	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
-		[self _updateChallengeAlerts];
+	//if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
+	//	[self _updateChallengeAlerts];
 	
 //	[self _showAlertPopOverWithTotals:[NSDictionary dictionaryWithObjectsAndKeys:
 //												  [NSNumber numberWithInt:arc4random() % 15], @"status",
@@ -424,7 +424,7 @@
 			[[NSUserDefaults standardUserDefaults] setValue:updateChallenges forKey:@"update_challenges"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
-			NSLog(@"CHANGES:\n%@", alertTotals);
+			//NSLog(@"CHANGES:\n%@", alertTotals);
 			
 			if ([[alertTotals objectForKey:@"status"] intValue] > 0 || [[alertTotals objectForKey:@"score"] intValue] > 0 || [[alertTotals objectForKey:@"comments"] intValue] > 0) {
 				[self _showAlertPopOverWithTotals:alertTotals];

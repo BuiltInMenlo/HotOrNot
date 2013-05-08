@@ -70,7 +70,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 
 + (NSString *)apiServerPath {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	return (@"http://54.243.163.24:8080/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -695,7 +696,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	[[UAPush shared] handleNotification:userInfo applicationState:appState];
 	[[UAPush shared] resetBadge]; // zero badge after push received
 	
-	NSLog(@"alert: [%@]", [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);
+	NSLog(@"alert:(%d)[%@]", [[userInfo objectForKey:@"type"] intValue], [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);
 	
 	// sms sound
 	AudioServicesPlaySystemSound(1007);
@@ -713,6 +714,9 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 		case 2:
 			[self _showOKAlert:@"Poke"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+			
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+			[self.tabBarController.delegate tabBarController:self.tabBarController didSelectViewController:[self.tabBarController.viewControllers objectAtIndex:2]];
 			break;
 	}
 	 	
@@ -952,8 +956,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
 	//NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
-	if (tabBarController.selectedViewController == [[tabBarController viewControllers] objectAtIndex:1])
-		[tabBarController.selectedViewController.navigationController popToRootViewControllerAnimated:NO];
+	//if (tabBarController.selectedViewController == [[tabBarController viewControllers] objectAtIndex:1])
+	//	[tabBarController.selectedViewController.navigationController popToRootViewControllerAnimated:NO];
 		
 	return (YES);
 }

@@ -7,6 +7,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -234,6 +235,18 @@
 	_loserImageView.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
 	[self addSubview:_loserImageView];
 	
+//	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
+//		UIView *loserTintView = [[UIView alloc] initWithFrame:_loserImageView.frame];
+//		UIImageView *maskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"scoreLoser"]];
+//		[maskImageView setFrame:[loserTintView bounds]];
+//		[[loserTintView layer] setMask:[maskImageView layer]];
+//		[loserTintView setBackgroundColor:[UIColor grayColor]];
+//		[self addSubview:loserTintView];
+//	}
+	
+	if (_challengeVO.creatorScore != _challengeVO.challengerScore)
+		_loserImageView.alpha = 0.5;
+	
 	_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(108.0, 107.0, 52.0, 52.0)];
 	_lScoreLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:24];
 	_lScoreLabel.backgroundColor = [UIColor clearColor];
@@ -251,6 +264,12 @@
 	_rScoreLabel.textAlignment = NSTextAlignmentCenter;
 	_rScoreLabel.hidden = ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0);
 	[self addSubview:_rScoreLabel];
+	
+	if (_challengeVO.creatorScore < _challengeVO.challengerScore)
+		_lScoreLabel.alpha = 0.5;
+	
+	if (_challengeVO.creatorScore > _challengeVO.challengerScore)
+		_rScoreLabel.alpha = 0.5;
 	
 	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, (_hasChallenger) ? 279.0 : 256.0, 24.0, 24.0)];
 	commentsImageView.image = [UIImage imageNamed:@"commentIcon_nonActive"];
@@ -515,6 +534,13 @@
 		_winnerImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 79.0 : 160.0, 104.0, 81.0, 52.0);
 		_loserImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 160.0 : 79.0, 104.0, 81.0, 52.0);
 		
+//		UIView *loserTintView = [[UIView alloc] initWithFrame:_loserImageView.frame];
+//		UIImageView *maskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"scoreLoser"]];
+//		[maskImageView setFrame:[loserTintView bounds]];
+//		[[loserTintView layer] setMask:[maskImageView layer]];
+//		[loserTintView setBackgroundColor:[UIColor grayColor]];
+//		[self addSubview:loserTintView];
+		
 		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
@@ -579,6 +605,13 @@
 		_challengeVO.challengerScore++;
 		_winnerImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 79.0 : 160.0, 104.0, 81.0, 52.0);
 		_loserImageView.frame = CGRectMake((_challengeVO.creatorScore >= _challengeVO.challengerScore) ? 160.0 : 79.0, 104.0, 81.0, 52.0);
+		
+//		UIView *loserTintView = [[UIView alloc] initWithFrame:_loserImageView.frame];
+//		UIImageView *maskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"scoreLoser"]];
+//		[maskImageView setFrame:[loserTintView bounds]];
+//		[[loserTintView layer] setMask:[maskImageView layer]];
+//		[loserTintView setBackgroundColor:[UIColor grayColor]];
+//		[self addSubview:loserTintView];
 		
 		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
@@ -658,10 +691,10 @@
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_winnerImageView.alpha = 1.0;
-			_loserImageView.alpha = 1.0;
+			_loserImageView.alpha = (_challengeVO.creatorScore != _challengeVO.challengerScore) ? 0.5 : 1.0;
 			
-			_lScoreLabel.alpha = 1.0;
-			_rScoreLabel.alpha = 1.0;
+			_lScoreLabel.alpha = (_challengeVO.creatorScore < _challengeVO.challengerScore) ? 0.5 : 1.0;
+			_rScoreLabel.alpha = (_challengeVO.creatorScore > _challengeVO.challengerScore) ? 0.5 : 1.0;
 		} completion:^(BOOL finished) {
 		}];
 	}
@@ -693,6 +726,8 @@
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 						//NSLog(@"HONVoteItemViewCell AFNetworking: %@", flagResult);
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+						
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -738,6 +773,7 @@
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 						//NSLog(@"HONVoteItemViewCell AFNetworking: %@", flagResult);
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

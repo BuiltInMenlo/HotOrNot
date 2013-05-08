@@ -285,12 +285,6 @@
 	[_headerView toggleRefresh:YES];
 	[self _retrieveChallenges];
 	[self _retrieveUser];
-	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_refresh", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
 }
 
 
@@ -379,6 +373,7 @@
 
 - (void)_refreshChallengesTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_headerView toggleRefresh:YES];
 	[self _retrieveChallenges];
 	[self _retrieveUser];
 }

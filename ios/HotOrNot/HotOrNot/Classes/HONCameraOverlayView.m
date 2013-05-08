@@ -220,8 +220,12 @@
 	[_cameraBackButton removeFromSuperview];
 	_cameraBackButton = nil;
 	
-	[_submitButton removeFromSuperview];
-	_submitButton = nil;
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+		_submitButton.frame = CGRectMake(330.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
+	} completion:^(BOOL finished) {
+		[_submitButton removeFromSuperview];
+		_submitButton = nil;
+	}];
 	
 	_randomSubjectButton.hidden = NO;
 	[_headerView addSubview:_cancelButton];
@@ -244,11 +248,15 @@
 	[_headerView addSubview:_cameraBackButton];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+	_submitButton.frame = CGRectMake(330.0, 0.0, 64.0, 44.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:_submitButton];
+	
+	[UIView animateWithDuration:0.25 delay:0.33 options:UIViewAnimationOptionCurveLinear animations:^{
+		_submitButton.frame = CGRectMake(253.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
+	} completion:nil];
 	
 	_captureHolderView.frame = CGRectMake(-320.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
 }
