@@ -12,7 +12,6 @@
 #import "AFHTTPRequestOperation.h"
 #import "AFJSONRequestOperation.h"
 #import "MBProgressHUD.h"
-#import "Mixpanel.h"
 #import "Parse/Parse.h"
 #import "Reachability.h"
 #import "UAirship.h"
@@ -70,8 +69,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 
 + (NSString *)apiServerPath {
-	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
-	return (@"http://54.243.163.24:8080/hotornot/api-shane");
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	//return (@"http://54.243.163.24:8080/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -501,6 +500,9 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	//[self _testParseCloudCode];
 	//[self _showFonts];
 	
+//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
+	
 	if ([HONAppDelegate hasNetwork]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray array] forKey:@"votes"];
@@ -740,7 +742,9 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 - (void)_retrieveParseObj {
 	PFQuery *appDataQuery = [PFQuery queryWithClassName:@"Volley"];
 	//PFObject *appDataObject = [appDataQuery getObjectWithId:@"fICB044MKB"]; // live
-	PFObject *appDataObject = [appDataQuery getObjectWithId:@"Ogo4QU0jFf"];// dev
+	PFObject *appDataObject = [appDataQuery getObjectWithId:@"As9Jqu23KZ"];// testflight
+	//PFObject *appDataObject = [appDataQuery getObjectWithId:@"Ogo4QU0jFf"];// dev
+	
 	
 	NSError *error = nil;
 	NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
@@ -774,7 +778,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 			[users addObject:user];
 		
 		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api-dev"] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"service_url"] forKey:@"service_url"];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [[appDict objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",

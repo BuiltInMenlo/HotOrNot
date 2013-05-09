@@ -12,7 +12,6 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
-#import "Mixpanel.h"
 
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"

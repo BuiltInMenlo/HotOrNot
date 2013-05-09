@@ -6,7 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "Mixpanel.h"
 
 #import "HONRestrictedLocaleViewController.h"
 #import "HONAppDelegate.h"

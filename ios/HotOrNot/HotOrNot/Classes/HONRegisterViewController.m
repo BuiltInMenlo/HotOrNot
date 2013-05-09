@@ -11,7 +11,6 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
-#import "Mixpanel.h"
 #import "UIImage+fixOrientation.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -222,6 +221,7 @@
 				[HONAppDelegate writeUserInfo:userResult];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+					[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 				}];
 				
 			} else {
@@ -494,7 +494,7 @@
 	[textField resignFirstResponder];
 	
 //	if ([textField.text isEqualToString:@"@"] || [textField.text isEqualToString:NSLocalizedString(@"register_username", nil)])
-//		textField.text = textField.text = [NSString stringWithFormat:@"@%@", _username];
+//		textField.text = [NSString stringWithFormat:@"@%@", _username];
 	
 	_username = textField.text;
 	[[Mixpanel sharedInstance] track:@"Register - Change Username"

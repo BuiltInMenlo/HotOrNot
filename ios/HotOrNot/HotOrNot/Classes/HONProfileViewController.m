@@ -12,7 +12,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "Mixpanel.h"
 #import "MBProgressHUD.h"
 
 #import "HONProfileViewController.h"
@@ -29,11 +28,13 @@
 #import "HONChangeAvatarViewController.h"
 
 @interface HONProfileViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
-@property(nonatomic, strong) NSMutableArray *pastUsers;
-@property(nonatomic, strong) NSMutableArray *contactUsers;
+@property (nonatomic, strong) NSMutableArray *pastUsers;
+@property (nonatomic, strong) NSMutableArray *allPastUsers;
+@property (nonatomic, strong) NSMutableArray *contactUsers;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic) BOOL isContactsViewed;
 @end
 
 @implementation HONProfileViewController
@@ -41,6 +42,11 @@
 - (id)init {
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
+		
+		_pastUsers = [NSMutableArray array];
+		_allPastUsers = [NSMutableArray array];
+		_contactUsers = [NSMutableArray array];
+		_isContactsViewed = NO;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_PROFILE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_ALL_TABS" object:nil];
@@ -51,9 +57,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareSMS:) name:@"SHARE_SMS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareEmail:) name:@"SHARE_EMAIL" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_takeNewAvatar:) name:@"TAKE_NEW_AVATAR" object:nil];
-		
-		_pastUsers = [NSMutableArray array];
-		_contactUsers = [NSMutableArray array];
 	}
 	
 	return (self);
@@ -91,17 +94,41 @@
 			}
 			
 		} else {
+			
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES]]]];
+			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			//NSLog(@"HONChallengerPickerViewController AFNetworking: %@", parsedUsers);
 			
-			_pastUsers = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedUsers) {
+			int cnt = 0;
+			for (NSDictionary *serverList in unsortedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
 					[_pastUsers addObject:vo];
+				
+				cnt++;
+				if (cnt == 3)
+					break;
 			}
+			
+			[_pastUsers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																				  [NSString stringWithFormat:@"%d", 0], @"id",
+																				  [NSString stringWithFormat:@"%d", 0], @"points",
+																				  [NSString stringWithFormat:@"%d", 0], @"votes",
+																				  [NSString stringWithFormat:@"%d", 0], @"pokes",
+																				  [NSString stringWithFormat:@"%d", 0], @"pics",
+																				  @"Send a random match", @"username",
+																				  @"", @"fb_id",
+																				  @"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png", @"avatar_url", nil]]];
+			
+			for (NSDictionary *serverList in parsedUsers) {
+				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
+				
+				if (vo != nil)
+					[_allPastUsers addObject:vo];
+			}
+			
+			[_tableView reloadData];
 			
 			if (_progressHUD != nil) {
 				if ([_pastUsers count] == 0) {
@@ -118,8 +145,6 @@
 					_progressHUD = nil;
 				}
 			}
-			
-			[_tableView reloadData];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -188,15 +213,14 @@
 																									email, @"email", nil]]];
 		}
 	}
+	
+	[_tableView reloadData];
 }
 
 
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	_pastUsers = [NSMutableArray array];
-	_contactUsers = [NSMutableArray array];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
@@ -230,8 +254,6 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
-	
-	//[self _retrievePastUsers];
 }
 
 - (void)viewDidLoad {
@@ -291,6 +313,25 @@
 			HONUserProfileViewCell *cell = (HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 			[cell updateCell];
 			[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
+			
+			_pastUsers = [NSMutableArray array];
+			_allPastUsers = [NSMutableArray array];
+			_contactUsers = [NSMutableArray array];
+			
+			[self _retrievePastUsers];
+			
+			ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+				ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+					[self _retrieveContacts];
+				});
+				
+			} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+				[self _retrieveContacts];
+				
+			} else {
+				// denied access
+			}
 		}
 		
 		if (_progressHUD != nil) {
@@ -310,25 +351,6 @@
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
-	
-	
-	_pastUsers = [NSMutableArray array];
-	_contactUsers = [NSMutableArray array];
-	
-	[self _retrievePastUsers];
-	
-	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-			[self _retrieveContacts];
-		});
-		
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-		[self _retrieveContacts];
-	
-	} else {
-		// denied access
-	}
 }
 
 - (void)_tabsDropped:(NSNotification *)notification {
@@ -451,13 +473,16 @@
 	} else if (section == 1) {
 		return ([_pastUsers count]);
 		
+	} else if (section == 2) {
+		return ([_allPastUsers count]);
+		
 	} else {
-		return ([_contactUsers count]);
+		return ((_isContactsViewed) ? [_contactUsers count] : 1);
 	}
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2 + (int)(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized));
+	return (3 + (int)(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized));
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -473,10 +498,13 @@
 		return (nil);
 		
 	} else if (section == 1) {
-		label.text = @"Snap History";
+		label.text = @"Recent";
+		
+	} else if (section == 2) {
+		label.text = @"Friends";
 		
 	} else {
-		label.text = [NSString stringWithFormat:@"Your Contact List (%d)", [_contactUsers count]];
+		label.text = [NSString stringWithFormat:@"Contact List (%d)", [_contactUsers count]];
 	}
 	
 	return (headerImageView);
@@ -507,23 +535,57 @@
 		HONPastChallengerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONPastChallengerViewCell alloc] init];
+			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:indexPath.row == [_pastUsers count] - 1];
 		
 		cell.userVO = (HONUserVO *)[_pastUsers objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
 		return (cell);
 		
-	} else {
-		HONInviteUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	} else if (indexPath.section == 2) {
+		HONPastChallengerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONInviteUserViewCell alloc] init];
+			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:NO];
 		
-		cell.contactUserVO = (HONContactUserVO *)[_contactUsers objectAtIndex:indexPath.row];
+		cell.userVO = (HONUserVO *)[_allPastUsers objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
 		return (cell);
+		
+	} else {
+		if (_isContactsViewed) {
+			HONInviteUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			
+			if (cell == nil)
+				cell = [[HONInviteUserViewCell alloc] init];
+			
+			cell.contactUserVO = (HONContactUserVO *)[_contactUsers objectAtIndex:indexPath.row];
+			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+			
+			return (cell);
+			
+		} else {
+			HONPastChallengerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			
+			if (cell == nil)
+				cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:YES];
+			
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
+																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
+																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
+																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
+																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
+																				@"Load My Contact List", @"username",
+																				@"", @"fb_id",
+																				@"", @"avatar_url", nil]];
+			
+			cell.userVO = userVO;
+			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+			
+			return (cell);
+		}
 	}
 }
 
@@ -542,7 +604,7 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 0 || indexPath.row == 2)
+	if (indexPath.section == 0 || (indexPath.section == 3 && _isContactsViewed))
 		return (nil);
 	
 	else
@@ -552,15 +614,29 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	HONUserVO *vo = (HONUserVO *)[_pastUsers objectAtIndex:indexPath.row];
-	[[Mixpanel sharedInstance] track:@"Profile - Previous Snap"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 vo.username, @"username", nil]];
+	if (indexPath.section == 3) {
+		_isContactsViewed = YES;
+		[_tableView reloadData];
+		
+	} else {
+		
+		HONUserVO *vo = (HONUserVO *)[_pastUsers objectAtIndex:indexPath.row];
+		[[Mixpanel sharedInstance] track:@"Profile - Previous Snap"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													 vo.username, @"username", nil]];
+		
+		if (vo.userID == 0) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+		} else {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
+	}
 }
 
 

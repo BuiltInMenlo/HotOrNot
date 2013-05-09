@@ -11,7 +11,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "Mixpanel.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemViewCell.h"

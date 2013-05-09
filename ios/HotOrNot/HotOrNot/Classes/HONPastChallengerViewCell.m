@@ -11,6 +11,10 @@
 #import "HONPastChallengerViewCell.h"
 #import "HONAppDelegate.h"
 
+@interface HONPastChallengerViewCell()
+@property (nonatomic) BOOL isRandom;
+@end
+
 @implementation HONPastChallengerViewCell
 @synthesize userVO = _userVO;
 
@@ -18,9 +22,10 @@
 	return (NSStringFromClass(self));
 }
 
-- (id)init {
+- (id)initAsRandomUser:(BOOL)isAnonymous {
 	if ((self = [super init])) {
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
+		_isRandom = isAnonymous;
 		
 		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
 		chevronImageView.image = [UIImage imageNamed:@"chevron"];
@@ -30,18 +35,20 @@
 	return (self);
 }
 
+
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+	avatarImageView.hidden = _isRandom;
 	[self addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 22.0, 180.0, 16.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isRandom) ? 11.0 : 60.0, 22.0, 180.0, 16.0)];
 	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 	nameLabel.textColor = [HONAppDelegate honGreyTxtColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
+	nameLabel.text = [NSString stringWithFormat:(_isRandom) ? @"%@" : @"@%@", _userVO.username];
 	[self addSubview:nameLabel];
 }
 

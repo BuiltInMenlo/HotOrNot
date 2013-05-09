@@ -6,7 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "Mixpanel.h"
 #import "MBProgressHUD.h"
 
 #import "HONWebCTAViewController.h"

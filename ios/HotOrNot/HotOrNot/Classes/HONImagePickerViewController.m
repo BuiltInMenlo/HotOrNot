@@ -14,7 +14,6 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
-#import "Mixpanel.h"
 #import "UIImage+fixOrientation.h"
 
 #import "HONImagePickerViewController.h"

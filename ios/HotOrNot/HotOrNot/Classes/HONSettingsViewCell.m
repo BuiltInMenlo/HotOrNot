@@ -8,7 +8,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "Mixpanel.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSettingsViewCell.h"

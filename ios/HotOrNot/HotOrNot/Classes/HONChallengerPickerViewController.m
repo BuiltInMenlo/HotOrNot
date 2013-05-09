@@ -9,7 +9,6 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
-#import "Mixpanel.h"
 
 #import "HONChallengerPickerViewController.h"
 #import "HONAppDelegate.h"
@@ -17,7 +16,7 @@
 #import "HONUserVO.h"
 #import "HONChallengerViewCell.h"
 
-@interface HONChallengerPickerViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
+@interface HONChallengerPickerViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UIActionSheetDelegate>
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *username;
 @property (nonatomic, strong) UITextField *usernameTextField;
@@ -58,16 +57,22 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveDefaultUsers {
-	NSString *usernames = @"";
+//	NSString *usernames = @"";
+//	
+//	for (NSString *username in [HONAppDelegate searchUsers])
+//		usernames = [NSString stringWithFormat:@"%@|%@", usernames, username];
+//	
+//	usernames = [usernames substringFromIndex:1];
+//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+//	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+//									[NSString stringWithFormat:@"%d", 3], @"action",
+//									usernames, @"usernames",
+//									nil];
 	
-	for (NSString *username in [HONAppDelegate searchUsers])
-		usernames = [NSString stringWithFormat:@"%@|%@", usernames, username];
-	
-	usernames = [usernames substringFromIndex:1];
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 3], @"action",
-									usernames, @"usernames",
+									[NSString stringWithFormat:@"%d", 4], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									nil];
 	
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -81,16 +86,31 @@
 			}
 			
 		} else {
-			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:YES]]]];
+			NSArray *parsedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:YES]]]];
 			//NSLog(@"HONChallengerPickerViewController AFNetworking: %@", unsortedUsers);
 			
+			int cnt = 0;
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
 					[_defaultUsers addObject:vo];
+				
+				cnt++;
+				if (cnt == 3)
+					break;
 			}
+			
+			[_defaultUsers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																					  [NSString stringWithFormat:@"%d", 0], @"id",
+																					  [NSString stringWithFormat:@"%d", 0], @"points",
+																					  [NSString stringWithFormat:@"%d", 0], @"votes",
+																					  [NSString stringWithFormat:@"%d", 0], @"pokes",
+																					  [NSString stringWithFormat:@"%d", 0], @"pics",
+																					  @"Send a random match", @"username",
+																					  @"", @"fb_id",
+																					  @"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png", @"avatar_url", nil]]];
 			
 			if (_progressHUD != nil) {
 				if ([_defaultUsers count] == 0) {
@@ -144,10 +164,9 @@
 			
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES]]]];
+			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			//NSLog(@"HONChallengerPickerViewController AFNetworking: %@", parsedUsers);
 			
-			_pastUsers = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
@@ -245,6 +264,7 @@
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+				[TestFlight passCheckpoint:@"CREATED A SNAP"];
 			}
 		}
 		
@@ -283,6 +303,13 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:backButton];
 	
+	UIButton *findButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	findButton.frame = CGRectMake(275.0, 0.0, 44.0, 44.0);
+	[findButton setBackgroundImage:[UIImage imageNamed:@"plusButton_nonActive"] forState:UIControlStateNormal];
+	[findButton setBackgroundImage:[UIImage imageNamed:@"plusButton_Active"] forState:UIControlStateHighlighted];
+	[findButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:findButton];
+	
 	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 44.0)];
 	usernameBGImageView.image = [UIImage imageNamed:@"searchBackground_B"];
 	usernameBGImageView.userInteractionEnabled = YES;
@@ -314,15 +341,8 @@
 	[self.view addSubview:_tableView];
 	
 	_defaultUsers = [NSMutableArray array];
-	[_defaultUsers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																			  [NSString stringWithFormat:@"%d", 0], @"id",
-																			  [NSString stringWithFormat:@"%d", 0], @"points",
-																			  [NSString stringWithFormat:@"%d", 0], @"votes",
-																			  [NSString stringWithFormat:@"%d", 0], @"pokes",
-																			  [NSString stringWithFormat:@"%d", 0], @"pics",
-																			  @"Random match", @"username",
-																			  @"", @"fb_id",
-																			  @"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png", @"avatar_url", nil]]];
+	_pastUsers = [NSMutableArray array];
+	
 	[self _retrieveDefaultUsers];
 }
 
@@ -344,6 +364,17 @@
 	[self.navigationController popViewControllerAnimated:NO];
 }
 
+- (void)_goFindFriends {
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																				delegate:self
+																	cancelButtonTitle:@"Cancel"
+															 destructiveButtonTitle:nil
+																	otherButtonTitles:@"Find Friends from Contact List", @"Find Friends on Facebook", @"Find Friends on Instagram", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:0];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -362,7 +393,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Official accounts" : @"Previous snaps";
+	label.text = (section == 0) ? @"Recent snaps" : @"Friends";
 	[headerView addSubview:label];
 	
 	return (headerView);
@@ -373,7 +404,7 @@
 	
 	NSArray *users = [[_challengers objectAtIndex:indexPath.section] objectForKey:@"users"];
 	if (cell == nil) {
-		cell = [[HONChallengerViewCell alloc] initAsRandomUser:(indexPath.section == 0 && indexPath.row == 0)];
+		cell = [[HONChallengerViewCell alloc] initAsRandomUser:(indexPath.section == 0 && indexPath.row == [users count] - 1)];
 		cell.userVO = (HONUserVO *)[users objectAtIndex:indexPath.row];
 	}
 	
@@ -403,8 +434,8 @@
 	NSString *mixpanelEvent;
 	NSArray *users = [[_challengers objectAtIndex:indexPath.section] objectForKey:@"users"];
 	if (indexPath.section == 0) {
-		if (indexPath.row > 0) {
-			mixpanelEvent = @"Challenger Picker - Default User";
+		if (indexPath.row < [users count] - 1) {
+			mixpanelEvent = @"Challenger Picker - Past User";
 			_userVO = (HONUserVO *)[users objectAtIndex:indexPath.row];
 		
 		} else {
@@ -413,7 +444,7 @@
 	
 	} else if (indexPath.section == 1) {
 		_userVO = (HONUserVO *)[users objectAtIndex:indexPath.row];
-		mixpanelEvent = @"Challenger Picker - Past User";
+		mixpanelEvent = @"Challenger Picker - Default User";
 	}
 	
 	[[Mixpanel sharedInstance] track:mixpanelEvent
@@ -473,4 +504,29 @@
 	}
 }
 
+
+#pragma mark - ActionSheet Delegates
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		switch (buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Challenger Picker - Find Address Book Friends"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				break;
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Challenger Picker - Find FB Friends"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				break;
+				
+			case 2:
+				[[Mixpanel sharedInstance] track:@"Challenger Picker - Find Instagram Friends"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				break;
+		}
+	}
+}
 @end

@@ -8,7 +8,6 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
-#import "Mixpanel.h"
 
 #import "HONVotersViewController.h"
 #import "HONAppDelegate.h"

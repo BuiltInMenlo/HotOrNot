@@ -6,7 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "Mixpanel.h"
 
 #import "HONAvatarCameraOverlayView.h"
 #import "HONAppDelegate.h"

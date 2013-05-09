@@ -12,5 +12,6 @@
 @interface HONPastChallengerViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+- (id)initAsRandomUser:(BOOL)isAnonymous;
 @property (nonatomic, retain) HONUserVO *userVO;
 @end
