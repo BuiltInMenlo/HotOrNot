@@ -500,8 +500,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	//[self _testParseCloudCode];
 	//[self _showFonts];
 	
-//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
-//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
+	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
 	if ([HONAppDelegate hasNetwork]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
@@ -718,6 +718,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController.navigationController popToRootViewControllerAnimated:NO];
+			[self.tabBarController.navigationController popToRootViewControllerAnimated:NO];
 			[self.tabBarController.delegate tabBarController:self.tabBarController didSelectViewController:[self.tabBarController.viewControllers objectAtIndex:2]];
 			break;
 	}

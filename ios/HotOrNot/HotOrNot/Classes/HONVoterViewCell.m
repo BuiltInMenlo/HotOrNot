@@ -33,9 +33,7 @@
 - (void)setVoterVO:(HONVoterVO *)voterVO {
 	_voterVO = voterVO;
 	
-	NSLog(@"IMG:[%@]", _voterVO.imageURL);
-	
-	//NSString *imgURL = ([_voterVO.fbID isEqualToString:@""]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : _voterVO.imageURL;
+	//NSLog(@"IMG:[%@]", _voterVO.imageURL);
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 12.0, 38.0, 38.0)];
 	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[userImageView setImageWithURL:[NSURL URLWithString:_voterVO.imageURL] placeholderImage:nil];

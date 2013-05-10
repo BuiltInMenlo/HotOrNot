@@ -344,6 +344,7 @@
 		4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */; };
 		4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9609167D676C0036E849 /* HONVoterViewCell.m */; };
 		4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF960C167D68B40036E849 /* HONVoterVO.m */; };
+		4CB03BB5173C88B40062B607 /* HONFindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB03BB4173C88B40062B607 /* HONFindFriendsViewController.m */; };
 		4CB472F5168C176D007153DF /* HONWebCTAViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB472F4168C176D007153DF /* HONWebCTAViewController.m */; };
 		4CB75CBB16FEAC53001A8738 /* notificationBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB75CB316FEAC53001A8738 /* notificationBackground.png */; };
 		4CB75CBC16FEAC53001A8738 /* notificationBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB75CB416FEAC53001A8738 /* notificationBackground@2x.png */; };
@@ -1211,6 +1212,8 @@
 		4CAF9609167D676C0036E849 /* HONVoterViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterViewCell.m; sourceTree = "<group>"; };
 		4CAF960B167D68B40036E849 /* HONVoterVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoterVO.h; sourceTree = "<group>"; };
 		4CAF960C167D68B40036E849 /* HONVoterVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterVO.m; sourceTree = "<group>"; };
+		4CB03BB3173C88B40062B607 /* HONFindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFindFriendsViewController.h; sourceTree = "<group>"; };
+		4CB03BB4173C88B40062B607 /* HONFindFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFindFriendsViewController.m; sourceTree = "<group>"; };
 		4CB472F3168C176D007153DF /* HONWebCTAViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONWebCTAViewController.h; sourceTree = "<group>"; };
 		4CB472F4168C176D007153DF /* HONWebCTAViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONWebCTAViewController.m; sourceTree = "<group>"; };
 		4CB75CB316FEAC53001A8738 /* notificationBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationBackground.png; sourceTree = "<group>"; };
@@ -2684,6 +2687,8 @@
 				4CA4859A16E3CD2900DE0F24 /* HONRegisterCameraOverlayView.m */,
 				4C689379171A1BFE005F8D0A /* HONRestrictedLocaleViewController.h */,
 				4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */,
+				4CB03BB3173C88B40062B607 /* HONFindFriendsViewController.h */,
+				4CB03BB4173C88B40062B607 /* HONFindFriendsViewController.m */,
 			);
 			name = Splash;
 			sourceTree = "<group>";
@@ -3200,6 +3205,7 @@
 				4CABCEB2173086FD00AF5863 /* HONAvatarCameraOverlayView.m in Sources */,
 				4C51010E1733002500A5D342 /* HONImagingDepictor.m in Sources */,
 				4C51011417332B0700A5D342 /* UILabel+FormattedText.m in Sources */,
+				4CB03BB5173C88B40062B607 /* HONFindFriendsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4330,7 +4336,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "03AAF170-BF3F-4C47-ADDD-847F080BBCD3";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B621F0DB-1AEA-45D2-BA68-FFF0C9763BC5";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

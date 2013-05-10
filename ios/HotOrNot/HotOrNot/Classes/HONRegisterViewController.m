@@ -19,6 +19,7 @@
 #import "HONImagingDepictor.h"
 #import "HONRegisterCameraOverlayView.h"
 #import "HONHeaderView.h"
+#import "HONFindFriendsViewController.h"
 
 @interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, HONRegisterCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
@@ -28,7 +29,7 @@
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
-@property(nonatomic, strong) UITextField *usernameTextField;
+@property (nonatomic, strong) UITextField *usernameTextField;
 @end
 
 @implementation HONRegisterViewController
@@ -219,10 +220,10 @@
 				_progressHUD = nil;
 				
 				[HONAppDelegate writeUserInfo:userResult];
+				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
+				
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
-				}];
+				[self.navigationController pushViewController:[[HONFindFriendsViewController alloc] init] animated:YES];
 				
 			} else {
 				if (_progressHUD == nil)
@@ -462,7 +463,14 @@
 		
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
+		
+		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
+			[self.navigationController pushViewController:[[HONFindFriendsViewController alloc] init] animated:YES];
+		}];
+		
+		
+		//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 
@@ -514,7 +522,12 @@
 	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
+		
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[self.navigationController pushViewController:[[HONFindFriendsViewController alloc] init] animated:YES];
+		
+		//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
 }
 
