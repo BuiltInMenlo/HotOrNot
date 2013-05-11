@@ -608,7 +608,7 @@
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self dismissViewControllerAnimated:YES completion:nil];
-		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename] animated:YES];
+		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename] animated:NO];
 	}
 }
 
@@ -642,7 +642,6 @@
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
-	
 	if (_uploadCounter == 3) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;

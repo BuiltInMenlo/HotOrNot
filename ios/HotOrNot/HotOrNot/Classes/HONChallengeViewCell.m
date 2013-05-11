@@ -66,6 +66,7 @@
 	[self addSubview:hasSeenImageView];
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(29.0, 13.0, 38.0, 38.0)];
+	avatarImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:(isCreator) ? _challengeVO.challengerAvatar : _challengeVO.creatorAvatar] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
@@ -82,6 +83,16 @@
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
+	
+	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(230.0, 13.0, kSnapThumbSize.width, kSnapThumbSize.width)];
+	challengeImgHolderView.clipsToBounds = YES;
+	[self addSubview:challengeImgHolderView];
+	
+	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (kSnapThumbSize.height - kSnapThumbSize.width) * -0.5, kSnapThumbSize.width, kSnapThumbSize.height)];
+	challengeImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
+	[challengeImgHolderView addSubview:challengeImageView];
+	
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(239.0, 9.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];

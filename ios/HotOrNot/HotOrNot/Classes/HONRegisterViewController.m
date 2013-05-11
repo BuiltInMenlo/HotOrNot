@@ -222,8 +222,11 @@
 				[HONAppDelegate writeUserInfo:userResult];
 				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 				
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[self.navigationController pushViewController:[[HONFindFriendsViewController alloc] init] animated:YES];
+				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+					[self.navigationController pushViewController:[[HONFindFriendsViewController alloc] init] animated:YES];
+				}];
+				
 				
 			} else {
 				if (_progressHUD == nil)

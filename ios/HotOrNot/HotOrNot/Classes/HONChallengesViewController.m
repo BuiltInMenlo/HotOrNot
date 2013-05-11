@@ -26,7 +26,8 @@
 
 @interface HONChallengesViewController() <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate>
 @property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) NSMutableArray *challenges;
+@property(nonatomic, strong) NSMutableArray *recentChallenges;
+@property(nonatomic, strong) NSMutableArray *olderChallenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic) BOOL isMoreLoadable;
 @property(nonatomic, strong) NSDate *lastDate;
@@ -46,7 +47,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_challenges = [NSMutableArray array];
+		_recentChallenges = [NSMutableArray array];
+		_olderChallenges = [NSMutableArray array];
 		_blockCounter = 0;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
@@ -100,21 +102,27 @@
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
 			
-			_challenges = [NSMutableArray array];
+			_recentChallenges = [NSMutableArray array];
+			_olderChallenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
-				if (vo != nil)
-					[_challenges addObject:vo];
+				if (vo != nil) {
+					if ([[NSDate date] timeIntervalSinceDate:vo.updatedDate] < 172800)
+						[_recentChallenges addObject:vo];
+					
+					else
+						[_olderChallenges addObject:vo];
+				}
 			}
 			
 
-			_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
-			_emptySetImgView.hidden = ([_challenges count] > 0);
+			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
+			_emptySetImgView.hidden = ([_recentChallenges count] > 0 || [_olderChallenges count] > 0);
 			[_tableView reloadData];
 			
-			_isMoreLoadable = ([_challenges count] % 10 == 0 || [_challenges count] > 0);
-			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_challenges count] - 1) inSection:0]];
+			_isMoreLoadable = ([_olderChallenges count] % 10 == 0 || [_olderChallenges count] > 0);
+			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
 			[cell toggleLoadMore:_isMoreLoadable];
 			
 			NSLog(@"CELL%@", cell);
@@ -304,7 +312,11 @@
 	_progressHUD.taskInProgress = YES;
 	
 	NSString *prevIDs = @"";
-	for (HONChallengeVO *vo in _challenges)
+	for (HONChallengeVO *vo in _recentChallenges)
+		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.challengerID : vo.creatorID]];
+	
+	
+	for (HONChallengeVO *vo in _olderChallenges)
 		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.challengerID : vo.creatorID]];
 	
 	
@@ -338,15 +350,20 @@
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
-				if (vo != nil)
-					[_challenges addObject:vo];
+				if (vo != nil) {
+					if ([[NSDate date] timeIntervalSinceDate:vo.updatedDate] < 172800)
+						[_recentChallenges addObject:vo];
+					
+					else
+						[_olderChallenges addObject:vo];
+				}
 			}
 			
-			_lastDate = ((HONChallengeVO *)[_challenges lastObject]).addedDate;
+			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
 			[_tableView reloadData];
 			
-			_isMoreLoadable = ([_challenges count] % 10 == 0 || [parsedLists count] > 0);
-			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_challenges count] - 1) inSection:0]];
+			_isMoreLoadable = ([_olderChallenges count] % 10 == 0 || [parsedLists count] > 0);
+			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
 			[cell toggleLoadMore:_isMoreLoadable];
 			
 			[_headerView toggleRefresh:NO];
@@ -427,32 +444,51 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count] + 1);
+	return ((section == 0) ? [_recentChallenges count] : [_olderChallenges count] + 1);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
+	return (2);
 }
 
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, 71.0)];
-//	return (headerView);
-//}
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
+	headerView.image = [UIImage imageNamed:@"searchDiscoverHeader"];
+	
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 310.0, 31.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
+	label.textColor = [HONAppDelegate honBlueTxtColor];
+	label.backgroundColor = [UIColor clearColor];
+	label.text = (section == 0) ? @"Recent" : @"Older";
+	[headerView addSubview:label];
+	
+	return (headerView);
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 
 	if (cell == nil) {
-		if (indexPath.row == [_challenges count]) {
-			cell = [[HONChallengeViewCell alloc] initAsBottomCell:YES];
-			[cell toggleLoadMore:_isMoreLoadable];
-				
-		} else
+		if (indexPath.section == 0) {
 			cell = [[HONChallengeViewCell alloc] initAsBottomCell:NO];
+		
+		} else {
+			if (indexPath.row == [_olderChallenges count]) {
+				cell = [[HONChallengeViewCell alloc] initAsBottomCell:YES];
+				[cell toggleLoadMore:_isMoreLoadable];
+				
+			} else
+				cell = [[HONChallengeViewCell alloc] initAsBottomCell:NO];
+		}
 	}
 	
-	if (indexPath.row < [_challenges count])
-		cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
+	if (indexPath.section == 0) {
+		cell.challengeVO = [_recentChallenges objectAtIndex:indexPath.row];
+	
+	} else {
+		if (indexPath.row < [_olderChallenges count])
+			cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
+	}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
@@ -462,22 +498,31 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row < [_challenges count]) ? kDefaultCellHeight : 64.0);
+	return (kDefaultCellHeight);
 }
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//	return (kSearchHeaderHeight);
-//}
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (31.0);
+}
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row < [_challenges count]) {
-		
-		HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row];
+	if (indexPath.section == 0) {
+		HONChallengeVO *vo = [_recentChallenges objectAtIndex:indexPath.row];
 		if ([vo.status isEqualToString:@"Created"] || [vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"])
 			return (indexPath);
 		
 		else
 			return (nil);
+		
+	} else {
+		if (indexPath.row < [_olderChallenges count]) {
+			HONChallengeVO *vo = [_olderChallenges objectAtIndex:indexPath.row];
+			if ([vo.status isEqualToString:@"Created"] || [vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"])
+				return (indexPath);
+			
+			else
+				return (nil);
+		}
 	}
 	
 	return (nil);
@@ -487,7 +532,7 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	//[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
-	HONChallengeVO *vo = [_challenges objectAtIndex:indexPath.row];
+	HONChallengeVO *vo = (indexPath.section == 0) ? [_recentChallenges objectAtIndex:indexPath.row] : [_olderChallenges objectAtIndex:indexPath.row];
 	_challengeVO = vo;
 	
 	NSLog(@"STATUS:[%@]", vo.status);
@@ -525,14 +570,14 @@
 	// Return YES if you want the specified item to be editable.
 	
 	//return (indexPath.row > 0 && indexPath.row < [_challenges count] + 1);
-	return (indexPath.row < [_challenges count]);
+	return ((indexPath.section == 0) || (indexPath.section == 1 && indexPath.row < [_olderChallenges count]));
 }
 
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		
-		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+		HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
 		
 		[[Mixpanel sharedInstance] track:@"Activity - Swipe Row"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -546,7 +591,7 @@
 																	  delegate:self
 														  cancelButtonTitle:@"Report Abuse"
 														  otherButtonTitles:@"Yes", @"No", nil];
-		[alertView setTag:0];
+		[alertView setTag:indexPath.section];
 		[alertView show];
 	}
 }
@@ -613,12 +658,11 @@
 
 #pragma mark - AlerView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:_idxPath.row];
-	
 	NSLog(@"BUTTON INDEX:[%d]", buttonIndex);
 	
 	// delete
 	if (alertView.tag == 0) {
+		HONChallengeVO *vo = (HONChallengeVO *)[_recentChallenges objectAtIndex:_idxPath.row];
 		switch(buttonIndex) {
 			case 0: {
 				[[Mixpanel sharedInstance] track:@"Activity - Flag"
@@ -626,7 +670,7 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 				
-				[_challenges removeObjectAtIndex:_idxPath.row];
+				[_recentChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -664,7 +708,7 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 				
-				[_challenges removeObjectAtIndex:_idxPath.row];
+				[_recentChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -696,8 +740,80 @@
 		}
 	
 	} else if (alertView.tag == 1) {
-		switch (buttonIndex) {
-			case 0:
+		HONChallengeVO *vo = (HONChallengeVO *)[_olderChallenges objectAtIndex:_idxPath.row];
+		switch(buttonIndex) {
+			case 0: {
+				[[Mixpanel sharedInstance] track:@"Activity - Flag"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+				
+				[_olderChallenges removeObjectAtIndex:_idxPath.row];
+				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
+				
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+												[NSString stringWithFormat:@"%d", 11], @"action",
+												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
+												nil];
+				
+				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+						[self _goRefresh];
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+					
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+				}];
+				break;}
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Activity - Delete"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+															 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+				
+				[_olderChallenges removeObjectAtIndex:_idxPath.row];
+				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
+				
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+												[NSString stringWithFormat:@"%d", 10], @"action",
+												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
+												nil];
+				
+				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+					NSError *error = nil;
+					if (error != nil) {
+						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						
+					} else {
+					}
+					
+				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+					
+					_progressHUD.minShowTime = kHUDTime;
+					_progressHUD.mode = MBProgressHUDModeCustomView;
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+					[_progressHUD show:NO];
+					[_progressHUD hide:YES afterDelay:1.5];
+					_progressHUD = nil;
+				}];
 				break;
 		}
 	}
