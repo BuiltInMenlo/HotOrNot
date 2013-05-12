@@ -16,6 +16,7 @@
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONChallengerViewCell.h"
+#import "HONImagingDepictor.h"
 
 @interface HONChallengerPickerViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 @property(nonatomic, strong) NSString *subjectName;
@@ -26,16 +27,19 @@
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) NSString *imagePrefix;
+@property(nonatomic, strong) UIImage *previewImage;
 @property(nonatomic, strong) HONUserVO *userVO;
 @end
 
 @implementation HONChallengerPickerViewController
 
-- (id)initWithSubject:(NSString *)subject imagePrefix:(NSString *)imgPrefix {
+- (id)initWithSubject:(NSString *)subject imagePrefix:(NSString *)imgPrefix previewImage:(UIImage *)image {
 	if ((self = [super init])) {
 		_subjectName = subject;
 		_imagePrefix = imgPrefix;
 		_username = @"";
+		
+		_previewImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
 	}
 	
 	return (self);
@@ -74,12 +78,12 @@
 			
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+			//NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			//NSLog(@"HONChallengerPickerViewController AFNetworking: %@", parsedUsers);
 			
 			
 			int cnt = 0;
-			for (NSDictionary *serverList in parsedUsers) {
+			for (NSDictionary *serverList in unsortedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
@@ -162,11 +166,12 @@
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			
 			if ([[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 				_progressHUD.labelText = NSLocalizedString(@"hud_usernameNotFound", nil);
 				[_progressHUD show:NO];
@@ -174,6 +179,12 @@
 				_progressHUD = nil;
 				
 			} else {
+					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkIcon"]];
+				_progressHUD.labelText = NSLocalizedString(@"hud_sent", nil);
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:1.5];
+				_progressHUD = nil;
+				
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
@@ -224,13 +235,13 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:submitButton];
 	
-	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(12.0, 56.0, kSnapThumbSize.width, kSnapThumbSize.width)];
+	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, kSnapThumbSize.width, kSnapThumbSize.width)];
 	challengeImgHolderView.clipsToBounds = YES;
 	[self.view addSubview:challengeImgHolderView];
 	
 	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (kSnapThumbSize.height - kSnapThumbSize.width) * -0.5, kSnapThumbSize.width, kSnapThumbSize.height)];
 	challengeImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@_t.jpg", _imagePrefix]] placeholderImage:nil];
+	challengeImageView.image = _previewImage;
 	[challengeImgHolderView addSubview:challengeImageView];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(86.0, 55.0, 200.0, 16.0)];

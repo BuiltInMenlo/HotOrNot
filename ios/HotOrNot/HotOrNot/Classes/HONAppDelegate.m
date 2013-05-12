@@ -70,7 +70,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
-	//return (@"http://54.243.163.24:8080/hotornot/api-shane");
+	//return (@"http://54.243.163.24/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -214,7 +214,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	
 	// loop for new set
 	for (int i=0; i<16; i++) {
-		NSLog(@"POP:[%d][%d]", i, [remainingChallenges count]);
+		//NSLog(@"POP:[%d][%d]", i, [remainingChallenges count]);
 		int rnd = arc4random() % [remainingChallenges count];
 		
 		// pick a random index and remove from pool

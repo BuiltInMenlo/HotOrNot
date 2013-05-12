@@ -273,18 +273,10 @@
 				
 				// starting users & snaps
 				$snap_arr = array(
-					array(// @jason #bestFriend
-						'user_id' => "2393", 
-						'subject_id' => "9", 
-						'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc_0000000000"),
-					array(// @tyler #snapAtMe
+					array(// @Team Volley #snapAtMe
 						'user_id' => "2394", 
 						'subject_id' => "753", 
-						'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000002"), 
-					array(// @psy #me
-						'user_id' => "2392", 
-						'subject_id' => "28", 
-						'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff_0000000001") 
+						'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000002")
 				);
 				
 				// loop thru user/snap array

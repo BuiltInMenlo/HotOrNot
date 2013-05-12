@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface HONChallengerPickerViewController : UIViewController
-- (id)initWithSubject:(NSString *)subject imagePrefix:(NSString *)imgPrefix;
+- (id)initWithSubject:(NSString *)subject imagePrefix:(NSString *)imgPrefix previewImage:(UIImage *)image;
 @end

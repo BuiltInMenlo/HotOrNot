@@ -217,8 +217,8 @@
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Skip Profile Snap"
 																		 message:@"Are you sure? Your profile photo is how people will know you are really you. We suggested you take your best selfie!"
 																		delegate:self
-															cancelButtonTitle:@"Cancel"
-															otherButtonTitles:@"OK", nil];
+															cancelButtonTitle:@"Take Photo"
+															otherButtonTitles:@"Skip", nil];
 	[alertView setTag:0];
 	[alertView show];
 }

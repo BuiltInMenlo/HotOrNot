@@ -17,6 +17,7 @@
 - (void)disableLoadMore;
 - (void)toggleLoadMore:(BOOL)isEnabled;
 - (id)initAsBottomCell:(BOOL)isBottom;
+- (void)updateHasSeen;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @end

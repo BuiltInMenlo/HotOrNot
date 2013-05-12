@@ -326,7 +326,7 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 	self.selectedIndex = tabID;
-	[self _updateChallengeAlerts];
+	//[self _updateChallengeAlerts];
 	
 	selectedViewController.view.frame = CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
 	

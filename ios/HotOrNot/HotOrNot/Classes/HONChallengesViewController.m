@@ -202,6 +202,37 @@
 	}
 }
 
+- (void)_updateChallengeAsSeen {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 6], @"action",
+									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+									nil];
+	
+	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil)
+			NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		
+		else {
+			NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -546,6 +577,9 @@
 //		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 //		[self presentViewController:navigationController animated:NO completion:nil];
 		
+		[self _updateChallengeAsSeen];
+		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
+		
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
 		//[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 		
@@ -555,6 +589,9 @@
 //		[navigationController setNavigationBarHidden:YES];
 //		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 //		[self presentViewController:navigationController animated:NO completion:nil];
+		
+		[self _updateChallengeAsSeen];
+		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
 		
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.challengerID challengerID:_challengeVO.creatorID] animated:YES];
 		//[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];

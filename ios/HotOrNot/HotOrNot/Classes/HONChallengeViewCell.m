@@ -13,6 +13,7 @@
 
 @interface HONChallengeViewCell()
 @property (nonatomic, strong) UIButton *loadMoreButton;
+@property (nonatomic, strong) UIImageView *hasSeenImageView;
 @end
 
 @implementation HONChallengeViewCell
@@ -60,10 +61,10 @@
 	[self hideChevron];
 	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID;
 	
-	UIImageView *hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 23.0, 18.0, 18.0)];
-	hasSeenImageView.image = [UIImage imageNamed:@"newSnapIcon"];
-	hasSeenImageView.hidden = _challengeVO.hasViewed;
-	[self addSubview:hasSeenImageView];
+	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, 23.0, 18.0, 18.0)];
+	_hasSeenImageView.image = [UIImage imageNamed:@"newSnapIcon"];
+	_hasSeenImageView.hidden = _challengeVO.hasViewed;
+	[self addSubview:_hasSeenImageView];
 	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(29.0, 13.0, 38.0, 38.0)];
 	avatarImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
@@ -158,6 +159,10 @@
 - (void)disableLoadMore {
 	[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
 	[_loadMoreButton removeFromSuperview];
+}
+
+- (void)updateHasSeen {
+	_hasSeenImageView.hidden = YES;
 }
 
 #pragma mark - Navigation

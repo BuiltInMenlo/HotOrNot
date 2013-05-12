@@ -27,6 +27,7 @@
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
+@property(nonatomic, strong) UIView *whiteBGView;
 @property(nonatomic, strong) UIImageView *toggleImageView;
 @property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) NSString *subject;
@@ -341,9 +342,10 @@
 	_defaultUsers = [NSMutableArray array];
 	_pastUsers = [NSMutableArray array];
 	
-	UIView *whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 52.0)];
-	whiteBGView.backgroundColor = [UIColor whiteColor];
-	[self.view addSubview:whiteBGView];
+	_whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 52.0)];
+	_whiteBGView.backgroundColor = [UIColor whiteColor];
+	_whiteBGView.alpha = 0.0;
+	[self.view addSubview:_whiteBGView];
 	
 	_toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 301.0, 31.0)];
 	_toggleImageView.image = [UIImage imageNamed:@"searchToggle_Users"];
@@ -375,6 +377,7 @@
 - (void)_showTable {
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_tableView.alpha = 1.0;
+		_whiteBGView.alpha = 1.0;
 		_toggleImageView.alpha = 1.0;
 	}];
 }

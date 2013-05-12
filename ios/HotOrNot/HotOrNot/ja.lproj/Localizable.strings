@@ -24,6 +24,7 @@
 "hud_noResults" = "該当する結果が見つかりませんでした！";
 "hud_searchUsers" = "ユーザーを検索しています …";
 "hud_searchHashtags" = "ハッシュタグを検索しています …";
+"hud_sent" = "Sent";
 
 "header_restricted" = "アクセス制限";
 "header_register" = "ユーザー名を入力";

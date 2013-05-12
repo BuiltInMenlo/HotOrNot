@@ -24,6 +24,7 @@
 "hud_noResults" = "No results found!";
 "hud_searchUsers" = "Searching users…";
 "hud_searchHashtags" = "Searching hashtags…";
+"hud_sent" = "Sent";
 
 "header_restricted" = "restricted access";
 "header_register" = "Enter a username";
