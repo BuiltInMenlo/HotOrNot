@@ -21,7 +21,7 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
 		_title = title;
 		
-		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:self.frame];
+		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)];
 		[headerImgView setImage:[UIImage imageNamed:@"header"]];
 		[self addSubview:headerImgView];
 		

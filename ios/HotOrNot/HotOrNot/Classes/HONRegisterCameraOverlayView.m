@@ -115,7 +115,7 @@
 - (void)showPreviewNormal:(UIImage *)image {
 	_skipButton.hidden = YES;
 	[_submitButton setEnabled:YES];
-	[UIView animateWithDuration:0.25 delay:0.33 options:UIViewAnimationOptionCurveLinear animations:^{
+	[UIView animateWithDuration:0.125 delay:0.25 options:UIViewAnimationOptionCurveLinear animations:^{
 		_submitButton.frame = CGRectMake(254.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
 	} completion:nil];
 	
@@ -153,7 +153,7 @@
 - (void)showPreviewFlipped:(UIImage *)image {
 	_skipButton.hidden = YES;
 	[_submitButton setEnabled:YES];
-	[UIView animateWithDuration:0.25 delay:0.33 options:UIViewAnimationOptionCurveLinear animations:^{
+	[UIView animateWithDuration:0.125 delay:0.25 options:UIViewAnimationOptionCurveLinear animations:^{
 		_submitButton.frame = CGRectMake(254.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
 	} completion:nil];
 	
@@ -192,7 +192,7 @@
 	_cameraBackButton.hidden = YES;
 	_skipButton.hidden = NO;
 	
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+	[UIView animateWithDuration:0.1625 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_submitButton.frame = CGRectMake(330.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
 	} completion:nil];
 	
