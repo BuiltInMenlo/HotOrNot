@@ -134,7 +134,7 @@
 		}
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(128.0, 398.0 + ((int)[HONAppDelegate isRetina5] * 94), 64.0, 64.0);
+		_captureButton.frame = CGRectMake(128.0, 398.0 + ((int)[HONAppDelegate isRetina5] * 98), 64.0, 64.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];

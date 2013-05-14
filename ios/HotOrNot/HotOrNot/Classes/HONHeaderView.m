@@ -21,8 +21,7 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
 		_title = title;
 		
-		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)];
-		[headerImgView setImage:[UIImage imageNamed:@"header"]];
+		UIImageView *headerImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]];
 		[self addSubview:headerImgView];
 		
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 12.0, 320.0, 24.0)];
@@ -32,6 +31,26 @@
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];
+		
+		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+		_activityIndicatorView.frame = CGRectMake(11.0, 11.0, 24.0, 24.0);
+		[self addSubview:_activityIndicatorView];
+		
+		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_refreshButton.frame = CGRectMake(0.0, 0.0, 54.0, 44.0);
+		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+		[self addSubview:_refreshButton];
+	}
+	
+	return (self);
+}
+
+- (id)initAsVoteWall {
+	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
+		UIImageView *headerImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)];
+		[headerImgView setImage:[UIImage imageNamed:@"voteWallHeader"]];
+		[self addSubview:headerImgView];
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 		_activityIndicatorView.frame = CGRectMake(11.0, 11.0, 24.0, 24.0);

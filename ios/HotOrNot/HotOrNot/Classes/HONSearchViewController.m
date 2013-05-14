@@ -432,7 +432,7 @@
 		if (cell == nil)
 			cell = [[HONSearchUserViewCell alloc] init];
 		
-		cell.userVO = (_isResults) ? [_results objectAtIndex:indexPath.row] : (indexPath.section == 0) ? [_defaultUsers objectAtIndex:indexPath.row] : [_pastUsers objectAtIndex:indexPath.row];
+		cell.userVO = (_isResults) ? [_results objectAtIndex:indexPath.row] : [_defaultUsers objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
 		return (cell);
@@ -470,7 +470,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	
 	if (_isUser) {
-		HONUserVO *vo = (HONUserVO *)[_results objectAtIndex:indexPath.row];
+		HONUserVO *vo = (_isResults) ? (HONUserVO *)[_results objectAtIndex:indexPath.row] : (HONUserVO *)[_defaultUsers objectAtIndex:indexPath.row];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:vo.username];
 		
 	} else {

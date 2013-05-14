@@ -137,16 +137,16 @@
 }
 
 -(void)addCustomElements {
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kLipHeight, 320.0, (kLipHeight + kTabHeight))];
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
 	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kLipHeight - 13.0, 320.0, 67.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
 	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
 	[_tabHolderView addSubview:bgImageView];
 	
 	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_timelineButton.frame = CGRectMake(0.0, 7.0, 80.0, 64.0);
+	_timelineButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
@@ -156,7 +156,7 @@
 	[_timelineButton setSelected:YES];
 	
 	_discoveryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_discoveryButton.frame = CGRectMake(80.0, 7.0, 80.0, 64.0);
+	_discoveryButton.frame = CGRectMake(80.0, 0.0, 80.0, 44.0);
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Tapped"] forState:UIControlStateHighlighted];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected];
@@ -165,7 +165,7 @@
 	[_discoveryButton setTag:1];
 	
 	_challengesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_challengesButton.frame = CGRectMake(160.0, 7.0, 80.0, 64.0);
+	_challengesButton.frame = CGRectMake(160.0, 0.0, 80.0, 44.0);
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
@@ -174,7 +174,7 @@
 	[_challengesButton setTag:2];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_settingsButton.frame = CGRectMake(240.0, 7.0, 80.0, 64.0);
+	_settingsButton.frame = CGRectMake(240.0, 0.0, 80.0, 44.0);
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateNormal];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Tapped"] forState:UIControlStateHighlighted];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Active"] forState:UIControlStateSelected];

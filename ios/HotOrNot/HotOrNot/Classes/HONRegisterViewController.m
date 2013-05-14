@@ -262,7 +262,7 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1ModalBackground-568h@2x" : @"fueStep1ModalBackground"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1-568h@2x" : @"fueStep1"];
 	[self.view addSubview:bgImgView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
@@ -283,25 +283,19 @@
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:nextButton];
 	
-	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(34.0, 162.0, 251.0, 48.0)];
-	subjectBGImageView.image = [UIImage imageNamed:@"firstRun_InputField_nonActive"];
-	subjectBGImageView.userInteractionEnabled = YES;
-	[self.view addSubview:subjectBGImageView];
-	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 12.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(45.0, 190.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
-	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
+	[_usernameTextField setTextColor:[HONAppDelegate honBlueTxtColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.textAlignment = NSTextAlignmentCenter;
-	_usernameTextField.text = NSLocalizedString(@"register_username", nil);//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
+	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
-	[subjectBGImageView addSubview:_usernameTextField];
+	[self.view addSubview:_usernameTextField];
 	
 	//[_usernameTextField becomeFirstResponder];
 	
@@ -503,9 +497,6 @@
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
-	
-//	if ([textField.text isEqualToString:@"@"] || [textField.text isEqualToString:NSLocalizedString(@"register_username", nil)])
-//		textField.text = [NSString stringWithFormat:@"@%@", _username];
 	
 	_username = textField.text;
 	[[Mixpanel sharedInstance] track:@"Register - Change Username"

@@ -397,6 +397,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 - (void)_showUserSearchTimeline:(NSNotification *)notification {
 	[_searchViewController.view removeFromSuperview];
+	//[[NSNotificationCenter defaultCenter] postNotificationName:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
+	
 	
 	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
 	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[notification object]] animated:YES];

@@ -20,15 +20,11 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBackground_B"]];
+		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBackground"]];
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
 		_isUser = YES;
-		
-		UIImageView *magIconImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 10.0, 24.0, 24.0)];
-		magIconImageView.image = [UIImage imageNamed:@"magGlassIcon"];
-		[self addSubview:magIconImageView];
 		
 		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(40.0, 12.0, 294.0, 24.0)];
 		//[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -36,7 +32,7 @@
 		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_searchTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
-		[_searchTextField setTextColor:[HONAppDelegate honGreyTxtColor]];
+		[_searchTextField setTextColor:[HONAppDelegate honBlueTxtColor]];
 		[_searchTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_searchTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
@@ -64,7 +60,7 @@
 	
 	} else {
 		[_searchTextField resignFirstResponder];
-		_bgImageView.image = [UIImage imageNamed:@"searchBackground_B"];
+		_bgImageView.image = [UIImage imageNamed:@"searchBackground"];
 		_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	}
 	
@@ -73,7 +69,7 @@
 
 - (void)backgroundingReset {
 	[_searchTextField resignFirstResponder];
-	_bgImageView.image = [UIImage imageNamed:@"searchBackground_B"];
+	_bgImageView.image = [UIImage imageNamed:@"searchBackground"];
 	_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -87,7 +83,7 @@
 #pragma mark - Navigation
 - (void)_goCancel {
 	[_searchTextField resignFirstResponder];
-	_bgImageView.image = [UIImage imageNamed:@"searchBackground_B"];
+	_bgImageView.image = [UIImage imageNamed:@"searchBackground"];
 	_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 	_cancelButton.hidden = YES;
 	
@@ -109,7 +105,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"RETRIEVE_USER_SEARCH_RESULTS" : @"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:[_searchTextField.text substringFromIndex:1]];
 	
 	else {
-		_bgImageView.image = [UIImage imageNamed:@"searchBackground_B"];
+		_bgImageView.image = [UIImage imageNamed:@"searchBackground"];
 		_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	}

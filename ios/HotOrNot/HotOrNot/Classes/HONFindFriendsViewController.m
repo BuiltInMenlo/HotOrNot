@@ -125,29 +125,35 @@
 	[super loadView];
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1ModalBackground-568h@2x" : @"fueStep1ModalBackground"];
+	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriendsBackground-568h@2x" : @"findFriendsBackground"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Find Friends"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
 	[headerView hideRefreshing];
 	[self.view addSubview:headerView];
 	
+	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 200.0, 24.0)];
+	titleLabel.backgroundColor = [UIColor clearColor];
+	titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
+	titleLabel.textColor = [UIColor whiteColor];
+	titleLabel.text = NSLocalizedString(@"header_findFriends", nil);
+	[headerView addSubview:titleLabel];
+	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	skipButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
+	skipButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
 	[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:skipButton];
 	
-	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(40.0, 100.0, 240.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
+	shareButton.frame = CGRectMake(37.0, 399.0, 245.0, 36.0);
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goInstagram) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:shareButton];
 	
-	
+	/*
 	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(34.0, 262.0, 251.0, 48.0)];
 	subjectBGImageView.image = [UIImage imageNamed:@"firstRun_InputField_nonActive"];
 	subjectBGImageView.userInteractionEnabled = YES;
@@ -167,6 +173,7 @@
 	_usernameTextField.text = @"Input your friends @handle to start having fun.";//NSLocalizedString(@"register_username", nil);//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
 	[subjectBGImageView addSubview:_usernameTextField];
+	 */
 }
 
 - (void)viewDidLoad {

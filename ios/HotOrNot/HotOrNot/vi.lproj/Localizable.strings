@@ -30,6 +30,7 @@
 "header_register" = "nhập tên người dùng";
 "header_register2" = "có hình ảnh hồ sơ cá nhân";
 "header_register3" = "xem trước";
+"header_findFriends" = "Find Friends";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";

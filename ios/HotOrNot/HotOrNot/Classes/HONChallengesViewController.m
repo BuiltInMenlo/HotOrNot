@@ -484,7 +484,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
-	headerView.image = [UIImage imageNamed:@"searchDiscoverHeader"];
+	headerView.image = [UIImage imageNamed:@"tableHeaderBackground"];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 310.0, 31.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];

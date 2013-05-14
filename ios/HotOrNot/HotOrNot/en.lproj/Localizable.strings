@@ -30,6 +30,7 @@
 "header_register" = "Enter a username";
 "header_register2" = "Take profile picture";
 "header_register3" = "Preview";
+"header_findFriends" = "Find Friends";
 "header_home" = "Vote";
 "header_activity" = "Activity";
 "header_discover" = "Discover";

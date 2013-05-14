@@ -22,7 +22,6 @@
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONHeaderView.h"
-#import "HONSearchBarHeaderView.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONTimelineItemDetailsViewController.h"
@@ -43,7 +42,6 @@
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic) int submitAction;
 @property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) HONUserVO *userVO;
 @end
@@ -165,7 +163,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showComments:) name:@"SHOW_COMMENTS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserShare:) name:@"SHOW_USER_SHARE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
@@ -378,7 +375,12 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:(_isPushView) ? (_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName : NSLocalizedString(@"header_home", nil)];	
+	if (_isPushView)
+		_headerView = [[HONHeaderView alloc] initWithTitle:(_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName];
+	
+	else
+		_headerView = [[HONHeaderView alloc] initAsVoteWall];
+	
 	[_headerView toggleRefresh:NO];
 	[_headerView refreshButton].hidden = _isPushView;
 	[self.view addSubview:_headerView];
@@ -548,7 +550,6 @@
 
 #pragma mark - Notifications
 - (void)_refreshVoteTab:(NSNotification *)notification {
-	[_searchHeaderView backgroundingReset];
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
 	
@@ -706,11 +707,6 @@
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:vo] animated:YES];
 }
 
-- (void)_resignSearchBarFocus:(NSNotification *)notification {
-	if (_searchHeaderView != nil)
-		[_searchHeaderView toggleFocus:NO];
-}
-
 - (void)_tabsDropped:(NSNotification *)notification {
 	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
 }
@@ -734,14 +730,13 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	
-	if (_isPushView)
+//	if (_isPushView)
 		return (nil);
 	
-	else {
-		_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
-		return (_searchHeaderView);
-	}
+//	else {
+//		_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
+//		return (_searchHeaderView);
+//	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -792,8 +787,8 @@
 		return (116.0);
 	
 	else {
-		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
-		return ((vo.statusID == 1 || vo.statusID == 2) ? 289.0 : 314.0);
+		//HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
+		return (304.0);//(vo.statusID == 1 || vo.statusID == 2) ? 289.0 : 314.0);
 	}
 }
 

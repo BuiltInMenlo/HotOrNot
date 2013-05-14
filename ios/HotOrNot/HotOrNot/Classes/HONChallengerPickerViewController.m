@@ -137,14 +137,13 @@
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _imagePrefix] forKey:@"imgURL"];
 	[params setObject:_subjectName forKey:@"subject"];
-	[params setObject:[NSString stringWithFormat:@"%d", (_userVO == nil && ([_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] || [_username length] == 0)) ? 1 : 7] forKey:@"action"];
+	[params setObject:[NSString stringWithFormat:@"%d", ([_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] || [_userVO.username isEqualToString:@"Send a random match"]) ? 1 : 7] forKey:@"action"];
 	
 	if (_userVO != nil)
 		[params setObject:_userVO.username forKey:@"username"];
 	
 	if (![_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] && [_username length] > 0)
 		[params setObject:[_username substringFromIndex:1] forKey:@"username"];
-	
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -244,6 +243,11 @@
 	challengeImageView.image = _previewImage;
 	[challengeImgHolderView addSubview:challengeImageView];
 	
+	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(86.0, 44.0, 213.0, 36.0)];
+	usernameBGImageView.image = [UIImage imageNamed:@"hashtagInputField"];
+	usernameBGImageView.userInteractionEnabled = YES;
+	[self.view addSubview:usernameBGImageView];
+	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(86.0, 55.0, 200.0, 16.0)];
 	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
@@ -251,12 +255,7 @@
 	subjectLabel.text = _subjectName;
 	[self.view addSubview:subjectLabel];
 	
-	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(86.0, 70.0, 220.0, 44.0)];
-	usernameBGImageView.image = [UIImage imageNamed:@"searchBackground_B"];
-	usernameBGImageView.userInteractionEnabled = YES;
-	[self.view addSubview:usernameBGImageView];
-	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 12.0, 320.0, 24.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(86.0, 90.0, 320.0, 24.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -268,7 +267,7 @@
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
 	_usernameTextField.text = NSLocalizedString(@"userPlaceholder", nil);
 	_usernameTextField.delegate = self;
-	[usernameBGImageView addSubview:_usernameTextField];
+	[self.view addSubview:_usernameTextField];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 94.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 114.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -318,7 +317,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
-	headerView.image = [UIImage imageNamed:@"searchHeader"];
+	headerView.image = [UIImage imageNamed:@"tableHeaderBackground"];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 4.0, 310.0, 31.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
@@ -365,7 +364,7 @@
 	[[Mixpanel sharedInstance] track:@"Challenger Picker - Past User"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 (_userVO != nil) ? _userVO.username :@"RANDOM", @"challenger", nil]];
+												 (_userVO != nil) ? _userVO.username : @"RANDOM", @"challenger", nil]];
 
 	
 	[self _submitChallenge];

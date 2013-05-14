@@ -486,7 +486,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileRowHeader"]];
+	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 310.0, 29.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];

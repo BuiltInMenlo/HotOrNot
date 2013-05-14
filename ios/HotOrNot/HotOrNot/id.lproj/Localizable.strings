@@ -30,6 +30,7 @@
 "header_register" = "masukkan username";
 "header_register2" = "mengambil gambar profil";
 "header_register3" = "pratinjau";
+"header_findFriends" = "Find Friends";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";

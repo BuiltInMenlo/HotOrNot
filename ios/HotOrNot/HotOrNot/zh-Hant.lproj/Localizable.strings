@@ -30,6 +30,7 @@
 "header_register" = "輸入用戶名";
 "header_register2" = "資料圖片";
 "header_register3" = "預覽";
+"header_findFriends" = "Find Friends";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";

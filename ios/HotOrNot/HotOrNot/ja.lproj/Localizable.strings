@@ -30,6 +30,7 @@
 "header_register" = "ユーザー名を入力";
 "header_register2" = "プロフィールの写真を撮る";
 "header_register3" = "プレビュー";
+"header_findFriends" = "Find Friends";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";

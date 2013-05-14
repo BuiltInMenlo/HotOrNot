@@ -25,6 +25,7 @@
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) NSMutableDictionary *allChallenges;
 @property(nonatomic, strong) NSMutableArray *currChallenges;
+@property(nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @end
 
 @implementation HONDiscoveryViewController
@@ -41,6 +42,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
 	}
 	
 	return (self);
@@ -196,6 +198,7 @@
 
 #pragma mark - Notifications
 - (void)_refreshDiscoveryTab:(NSNotification *)notification {
+	[_searchHeaderView backgroundingReset];
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
 	[self _goRefresh];
@@ -242,6 +245,11 @@
 	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
 }
 
+- (void)_resignSearchBarFocus:(NSNotification *)notification {
+	if (_searchHeaderView != nil)
+		[_searchHeaderView toggleFocus:NO];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -253,17 +261,8 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	UIImageView *searchImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchBackground"]];
-//	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 10.0, 292.0, 24.0)];
-//	label.textColor = [HONAppDelegate honGreyInputColor];
-//	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
-//	label.text = NSLocalizedString(@"search_placeHolder", nil);
-//	[searchImageView addSubview:label];
-//	
-//	return (searchImageView);
-	
-	HONSearchBarHeaderView *headerView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
-	return (headerView);
+	_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
+	return (_searchHeaderView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
