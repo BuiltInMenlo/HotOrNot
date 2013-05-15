@@ -63,21 +63,21 @@
 	
 	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 28.0, 107.0, 20.0)];
 	_snapsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_snapsLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	_snapsLabel.textColor = [HONAppDelegate honGrey635Color];
 	_snapsLabel.backgroundColor = [UIColor clearColor];
 	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:_snapsLabel];
 	
 	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 52.0, 107.0, 20.0)];
 	_votesLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_votesLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	_votesLabel.textColor = [HONAppDelegate honGrey635Color];
 	_votesLabel.backgroundColor = [UIColor clearColor];
 	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:_votesLabel];
 	
 	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 76.0, 107.0, 20.0)];
 	_ptsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_ptsLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	_ptsLabel.textColor = [HONAppDelegate honGrey635Color];
 	_ptsLabel.backgroundColor = [UIColor clearColor];
 	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:_ptsLabel];
@@ -89,9 +89,9 @@
 	[self addSubview:timelineButton];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(244.0, 32.0, 44.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	shareButton.frame = CGRectMake(224.0, 37.0, 64.0, 44.0);
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:shareButton];
 	

@@ -196,7 +196,7 @@
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_commentTextField setReturnKeyType:UIReturnKeySend];
-	[_commentTextField setTextColor:[HONAppDelegate honGreyInputColor]];
+	[_commentTextField setTextColor:[HONAppDelegate honGrey518Color]];
 	[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_commentTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;

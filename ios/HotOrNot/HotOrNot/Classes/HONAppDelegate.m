@@ -356,15 +356,15 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	return ([UIColor colorWithRed:0.161 green:0.498 blue:1.0 alpha:1.0]);
 }
 
-+ (UIColor *)honGreyTxtColor {
++ (UIColor *)honGrey635Color {
 	return ([UIColor colorWithWhite:0.635 alpha:1.0]);
 }
 
-+ (UIColor *)honGreyInputColor {
++ (UIColor *)honGrey518Color {
 	return ([UIColor colorWithWhite:0.518 alpha:1.0]);
 }
 
-+ (UIColor *)honGreyDarkerColor {
++ (UIColor *)honGrey455Color {
 	return ([UIColor colorWithWhite:0.455 alpha:1.0]);
 }
 
@@ -424,10 +424,10 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil)
-			NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
+			NSLog(@"AFNetworking HONAppDelegate: %@", result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -744,12 +744,89 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 #pragma mark - Startup Operations
 - (void)_retrieveParseObj {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://54.243.163.24"]];
+	[httpClient postPath:@"boot-dev.json" parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		NSLog(@"JSON:[%@]", result);
+		
+		NSMutableArray *locales = [NSMutableArray array];
+		for (NSString *locale in [result objectForKey:@"enabled_locales"])
+			[locales addObject:locale];
+		
+		NSMutableArray *inviteCodes = [NSMutableArray array];
+		for (NSString *code in [result objectForKey:@"invite_codes"])
+			[inviteCodes addObject:code];
+		
+		NSMutableArray *hashtags = [NSMutableArray array];
+		for (NSString *hashtag in [result objectForKey:@"default_hashtags"])
+			[hashtags addObject:hashtag];
+		
+		NSMutableArray *subjects = [NSMutableArray array];
+		for (NSString *hashtag in [result objectForKey:@"search_hashtags"])
+			[subjects addObject:hashtag];
+		
+		NSMutableArray *users = [NSMutableArray array];
+		for (NSString *user in [result objectForKey:@"search_users"])
+			[users addObject:user];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
+																		  [[result objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																		  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
+																		  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
+																		  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
+																		  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
+																		  [[result objectForKey:@"invite_sms"] objectForKey:@"ko"], @"ko",
+																		  [[result objectForKey:@"invite_sms"] objectForKey:@"jp"], @"jp",
+																		  [[result objectForKey:@"invite_sms"] objectForKey:@"vi"], @"vi",
+																		  [[result objectForKey:@"invite_sms"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_sms"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [[result objectForKey:@"invite_email"] objectForKey:@"en"], @"en",
+																		  [[result objectForKey:@"invite_email"] objectForKey:@"id"], @"id",
+																		  [[result objectForKey:@"invite_email"] objectForKey:@"ko"], @"ko",
+																		  [[result objectForKey:@"invite_email"] objectForKey:@"jp"], @"jp",
+																		  [[result objectForKey:@"invite_email"] objectForKey:@"vi"], @"vi",
+																		  [[result objectForKey:@"invite_email"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_email"];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																		  [[result objectForKey:@"insta_profile"] objectForKey:@"en"], @"en",
+																		  [[result objectForKey:@"insta_profile"] objectForKey:@"id"], @"id",
+																		  [[result objectForKey:@"insta_profile"] objectForKey:@"ko"], @"ko",
+																		  [[result objectForKey:@"insta_profile"] objectForKey:@"jp"], @"jp",
+																		  [[result objectForKey:@"insta_profile"] objectForKey:@"vi"], @"vi",
+																		  [[result objectForKey:@"insta_profile"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"insta_profile"];
+		[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
+		[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
+		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
+		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
+		[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		if (error != nil)
+			NSLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+		
+		else {
+			NSLog(@"AFNetworking HONAppDelegate: %@", result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"HONAppDelegate AFNetworking %@", [error localizedDescription]);
+	}];
+	
+	
+	
+	/*
 	PFQuery *appDataQuery = [PFQuery queryWithClassName:@"Volley"];
 	//PFObject *appDataObject = [appDataQuery getObjectWithId:@"fICB044MKB"]; // live
 	PFObject *appDataObject = [appDataQuery getObjectWithId:@"As9Jqu23KZ"];// testflight
 	//PFObject *appDataObject = [appDataQuery getObjectWithId:@"Ogo4QU0jFf"];// dev
-	
-	
+	 
 	NSError *error = nil;
 	NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
 																			  options:NSJSONReadingMutableContainers
@@ -819,6 +896,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 		[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
+	 */
 }
 
 - (void)_registerUser {

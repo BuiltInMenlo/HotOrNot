@@ -93,9 +93,9 @@ static const CGFloat kSnapRatio;
 + (UIFont *)cartoGothicItalic;
 
 + (UIColor *)honBlueTxtColor;
-+ (UIColor *)honGreyTxtColor;
-+ (UIColor *)honGreyInputColor;
-+ (UIColor *)honGreyDarkerColor;
++ (UIColor *)honGrey635Color;
++ (UIColor *)honGrey518Color;
++ (UIColor *)honGrey455Color;
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;

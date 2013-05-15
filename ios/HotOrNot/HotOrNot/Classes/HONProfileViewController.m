@@ -489,7 +489,7 @@
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 310.0, 29.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
 	[headerImageView addSubview:label];

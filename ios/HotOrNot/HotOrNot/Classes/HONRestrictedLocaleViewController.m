@@ -49,7 +49,7 @@
 	
 	UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 180.0, 280.0, 30.0)];
 	captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
-	captionLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	captionLabel.textColor = [HONAppDelegate honGrey635Color];
 	captionLabel.backgroundColor = [UIColor clearColor];
 	captionLabel.textAlignment = NSTextAlignmentCenter;
 	captionLabel.numberOfLines = 0;
@@ -62,7 +62,7 @@
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_textField setReturnKeyType:UIReturnKeyDone];
-	[_textField setTextColor:[HONAppDelegate honGreyInputColor]];
+	[_textField setTextColor:[HONAppDelegate honGrey518Color]];
 	[_textField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_textField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
 	_textField.keyboardType = UIKeyboardTypeDefault;

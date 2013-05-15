@@ -29,7 +29,7 @@
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(240.0, 24.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
-	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	timeLabel.textColor = [HONAppDelegate honGrey635Color];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_commentVO.addedDate];
@@ -37,7 +37,7 @@
 		
 	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(61.0, 15.0, 200.0, 12.0)];
 	usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:10];
-	usernameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	usernameLabel.textColor = [HONAppDelegate honGrey635Color];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _commentVO.username];
 	[self addSubview:usernameLabel];

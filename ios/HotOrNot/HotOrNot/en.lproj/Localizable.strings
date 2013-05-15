@@ -79,7 +79,7 @@
 "profile_point" = "%@ pt";
 "profile_points" = "%@ pts";
 
-"userPlaceholder" = "Enter a username to snap @";
+"userPlaceholder" = "@username";
 
 "invite_email" = "Come Snap @me on Volley!";
 

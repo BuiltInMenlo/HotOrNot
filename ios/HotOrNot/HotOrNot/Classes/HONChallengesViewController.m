@@ -487,7 +487,7 @@
 	headerView.image = [UIImage imageNamed:@"tableHeaderBackground"];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 310.0, 31.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = (section == 0) ? @"Recent" : @"Older";

@@ -39,7 +39,7 @@
 		_imagePrefix = imgPrefix;
 		_username = @"";
 		
-		_previewImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
+		_previewImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(107.0 * 2.0, 143.0 * 2.0)];
 	}
 	
 	return (self);
@@ -234,34 +234,34 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:submitButton];
 	
-	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, kSnapThumbSize.width, kSnapThumbSize.width)];
+	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 107.0, 107.0)];
 	challengeImgHolderView.clipsToBounds = YES;
 	[self.view addSubview:challengeImgHolderView];
 	
-	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (kSnapThumbSize.height - kSnapThumbSize.width) * -0.5, kSnapThumbSize.width, kSnapThumbSize.height)];
+	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -18.0, 107.0, 143.0)];
 	challengeImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	challengeImageView.image = _previewImage;
 	[challengeImgHolderView addSubview:challengeImageView];
 	
-	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(86.0, 44.0, 213.0, 36.0)];
+	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(107.0, 44.0, 213.0, 36.0)];
 	usernameBGImageView.image = [UIImage imageNamed:@"hashtagInputField"];
 	usernameBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:usernameBGImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(86.0, 55.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(112.0, 55.0, 200.0, 18.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:15];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _subjectName;
 	[self.view addSubview:subjectLabel];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(86.0, 90.0, 320.0, 24.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(112.0, 87.0, 320.0, 24.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[HONAppDelegate honGreyInputColor]];
+	[_usernameTextField setTextColor:[HONAppDelegate honGrey635Color]];
 	//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
@@ -320,10 +320,10 @@
 	headerView.image = [UIImage imageNamed:@"tableHeaderBackground"];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 4.0, 310.0, 31.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = @"Recent snaps";
+	label.text = @"Recent";
 	[headerView addSubview:label];
 	
 	return (headerView);

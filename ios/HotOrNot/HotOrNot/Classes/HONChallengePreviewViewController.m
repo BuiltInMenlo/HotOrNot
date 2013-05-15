@@ -93,7 +93,7 @@
 	
 	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 26.0, 200.0, 14.0)];
 	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
-	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	creatorNameLabel.textColor = [HONAppDelegate honGrey635Color];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", (_isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
 	[self.view addSubview:creatorNameLabel];
@@ -106,7 +106,7 @@
 //	
 //	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(252.0, 24.0, 60.0, 12.0)];
 //	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
-//	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+//	timeLabel.textColor = [HONAppDelegate honGrey635Color];
 //	timeLabel.backgroundColor = [UIColor clearColor];
 //	timeLabel.textAlignment = NSTextAlignmentRight;
 //	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.startedDate];

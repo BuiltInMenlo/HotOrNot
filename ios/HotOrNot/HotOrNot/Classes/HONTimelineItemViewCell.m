@@ -75,7 +75,7 @@
 	_tapOverlayImageView.layer.cornerRadius = 2.0;
 	_tapOverlayImageView.clipsToBounds = YES;
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 14.0, 200.0, 22.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 15.0, 200.0, 22.0)];
 	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -90,7 +90,7 @@
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(238.0, 15.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
-	timeLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	timeLabel.textColor = [HONAppDelegate honGrey635Color];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
@@ -120,7 +120,7 @@
 	
 	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 221.0, 100.0, 20.0)];
 	creatorNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
-	creatorNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+	creatorNameLabel.textColor = [HONAppDelegate honGrey635Color];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
 	[self addSubview:creatorNameLabel];
@@ -158,7 +158,7 @@
 		
 		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 221.0, 100.0, 20.0)];
 		challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
-		challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+		challengerNameLabel.textColor = [HONAppDelegate honGrey635Color];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
 		challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
 		[self addSubview:challengerNameLabel];
@@ -176,7 +176,7 @@
 		
 		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 256.0, 150.0, 24.0)];
 		_likesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
-		_likesLabel.textColor = [HONAppDelegate honGreyDarkerColor];
+		_likesLabel.textColor = [HONAppDelegate honGrey455Color];
 		_likesLabel.backgroundColor = [UIColor clearColor];
 		_likesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? NSLocalizedString(@"timeline_like", nil) : NSLocalizedString(@"timeline_likes", nil), (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		[self addSubview:_likesLabel];
@@ -209,7 +209,7 @@
 			
 			UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 221.0, 100.0, 20.0)];
 			challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
-			challengerNameLabel.textColor = [HONAppDelegate honGreyTxtColor];
+			challengerNameLabel.textColor = [HONAppDelegate honGrey635Color];
 			challengerNameLabel.backgroundColor = [UIColor clearColor];
 			challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
 			[self addSubview:challengerNameLabel];
@@ -251,7 +251,7 @@
 	
 	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, (_hasChallenger) ? 279.0 : 254.0, 150.0, 24.0)];
 	_commentsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:11];
-	_commentsLabel.textColor = [HONAppDelegate honGreyDarkerColor];
+	_commentsLabel.textColor = [HONAppDelegate honGrey455Color];
 	_commentsLabel.backgroundColor = [UIColor clearColor];
 	_commentsLabel.text = (_challengeVO.commentTotal == 0) ? NSLocalizedString(@"timeline_0comments", nil) : (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_1comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];
 	[self addSubview:_commentsLabel];
