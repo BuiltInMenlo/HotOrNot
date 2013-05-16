@@ -383,7 +383,6 @@
 	
 	[_headerView toggleRefresh:NO];
 	[_headerView refreshButton].hidden = _isPushView;
-	[self.view addSubview:_headerView];
 	
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -420,6 +419,8 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	[self.view addSubview:_headerView];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
@@ -730,13 +731,19 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	if (_isPushView)
+	if (_isPushView)
 		return (nil);
 	
-//	else {
-//		_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
-//		return (_searchHeaderView);
-//	}
+	else {
+		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 52.0)];
+		bgView.backgroundColor = [UIColor whiteColor];
+		
+		UIImageView *toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 301.0, 31.0)];
+		toggleImageView.image = [UIImage imageNamed:@"searchToggle_Users"];
+		[bgView addSubview:toggleImageView];
+		
+		return (bgView);
+	}
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -793,7 +800,8 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);//kSearchHeaderHeight * (int)!_isPushView);
+	return (((int)!_isPushView) * 52.0);
+	//return (52.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

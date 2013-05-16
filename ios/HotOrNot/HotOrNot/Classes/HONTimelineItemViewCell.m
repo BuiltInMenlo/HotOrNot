@@ -25,7 +25,6 @@
 @property (nonatomic, strong) UILabel *lScoreLabel;
 @property (nonatomic, strong) UILabel *rScoreLabel;
 @property (nonatomic, strong) UIImageView *heartImageView;
-@property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) UIImageView *tapOverlayImageView;
@@ -75,7 +74,7 @@
 	_tapOverlayImageView.layer.cornerRadius = 2.0;
 	_tapOverlayImageView.clipsToBounds = YES;
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 15.0, 200.0, 22.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 14.0, 200.0, 22.0)];
 	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -169,24 +168,6 @@
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerNameButton];
 		
-		
-		UIImageView *likeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 256.0, 24.0, 24.0)];
-		likeImageView.image = [UIImage imageNamed:@"heartIcon_nonActive"];
-		[self addSubview:likeImageView];
-		
-		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 256.0, 150.0, 24.0)];
-		_likesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
-		_likesLabel.textColor = [HONAppDelegate honGrey455Color];
-		_likesLabel.backgroundColor = [UIColor clearColor];
-		_likesLabel.text = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? NSLocalizedString(@"timeline_like", nil) : NSLocalizedString(@"timeline_likes", nil), (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-		[self addSubview:_likesLabel];
-		
-		UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		likesButton.frame = CGRectMake(13.0, 256.0, 190.0, 24.0);
-		[likesButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-		[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:likesButton];
-		
 	} else {
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 153.0, 153.0)];
 		rImgView.image = [UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? @"pokeThumb" : @"thumbCameraAction"];
@@ -245,12 +226,12 @@
 	_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 	[_rHolderView addSubview:_rScoreLabel];
 	
-	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, (_hasChallenger) ? 279.0 : 256.0, 24.0, 24.0)];
+	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 263.0, 24.0, 24.0)];
 	commentsImageView.image = [UIImage imageNamed:@"commentIcon_nonActive"];
 	[self addSubview:commentsImageView];
 	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, (_hasChallenger) ? 279.0 : 254.0, 150.0, 24.0)];
-	_commentsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:11];
+	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 265.0, 150.0, 24.0)];
+	_commentsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:15];
 	_commentsLabel.textColor = [HONAppDelegate honGrey455Color];
 	_commentsLabel.backgroundColor = [UIColor clearColor];
 	_commentsLabel.text = (_challengeVO.commentTotal == 0) ? NSLocalizedString(@"timeline_0comments", nil) : (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_1comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];
@@ -263,7 +244,7 @@
 	[self addSubview:commentsButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(240.0, (_hasChallenger) ? 259.0 : 245.0, 64.0, 44.0);
+	moreButton.frame = CGRectMake(242.0, 250.0, 64.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
@@ -441,10 +422,6 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
 }
 
-- (void)_goScore {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
-}
-
 - (void)_goComments {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_COMMENTS" object:_challengeVO];
 }
@@ -460,7 +437,7 @@
 																					delegate:self
 																		cancelButtonTitle:@"Cancel"
 																 destructiveButtonTitle:@"Report Abuse"
-																		otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], [NSString stringWithFormat:@"Snap @%@", _challengeVO.creatorName], [NSString stringWithFormat:@"Snap @%@", _challengeVO.challengerName], nil];
+																		otherButtonTitles:@"View who liked this", [NSString stringWithFormat:@"Snap @%@", _challengeVO.creatorName], [NSString stringWithFormat:@"Snap @%@", _challengeVO.challengerName], [NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:0];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -510,10 +487,8 @@
 		
 		_challengeVO.creatorScore++;
 		
-		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
-			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		
 		} else {
 			[[Mixpanel sharedInstance] track:@"Timeline - Upvote Creator"
@@ -522,8 +497,6 @@
 														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 			
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
-			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", _challengeVO.creatorScore + _challengeVO.challengerScore];
-			
 			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
 			
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -550,7 +523,6 @@
 		}
 		
 		[self _animateUpVote];
-		_likesLabel.text = caption;
 	}
 }
 
@@ -573,10 +545,8 @@
 		
 		_challengeVO.challengerScore++;
 		
-		NSString *caption;
 		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
-			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 			
 		} else {
 			[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenger"
@@ -585,7 +555,6 @@
 														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 			
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
-			caption = [NSString stringWithFormat:(_challengeVO.creatorScore + _challengeVO.challengerScore == 1) ? @"%d Like" : @"%d Likes", _challengeVO.creatorScore + _challengeVO.challengerScore];
 			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
 			
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -612,7 +581,6 @@
 		}
 		
 		[self _animateUpVote];
-		_likesLabel.text = _likesLabel.text = caption;
 	}
 }
 
@@ -677,7 +645,7 @@
 			break;}
 				
 			case 1:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
 				break;
 				
 			case 2:
@@ -686,6 +654,10 @@
 				
 			case 3:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+				break;
+				
+			case 4:
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
 				break;
 		}
 	}

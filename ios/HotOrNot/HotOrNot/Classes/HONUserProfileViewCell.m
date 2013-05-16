@@ -137,7 +137,7 @@
 																					delegate:self
 																		cancelButtonTitle:@"Cancel"
 																 destructiveButtonTitle:nil
-																		otherButtonTitles:@"Share on Instagram", @"Share via SMS", @"Share via Email", nil];
+																		otherButtonTitles:@"View my timeline", @"Share on Instagram", @"Share via SMS", @"Share via Email", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:0];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -147,7 +147,7 @@
 																					delegate:self
 																		cancelButtonTitle:@"Cancel"
 																 destructiveButtonTitle:@"Report Abuse"
-																		otherButtonTitles:@"Share on Instagram", @"Share via SMS", @"Share via Email", [NSString stringWithFormat:@"Poke @%@", _userVO.username], [NSString stringWithFormat:@"snap @%@", _userVO.username], nil];
+																		otherButtonTitles:@"Share on Instagram", [NSString stringWithFormat:@"snap @%@", _userVO.username], [NSString stringWithFormat:@"Poke @%@", _userVO.username], nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -160,8 +160,12 @@
 	if (actionSheet.tag == 0) {
 		switch (buttonIndex) {
 				
+			case 0:
+				[self _goTimeline];
+				break;
+				
 			// SHARE instagram
-			case 0: {
+			case 1: {
 				UIImage *image = [HONImagingDepictor prepImageForInstagram:[UIImage imageNamed:@"instagram_template-0000"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
 																																	 [HONAppDelegate instagramShareComment], @"caption",
@@ -169,12 +173,12 @@
 				break;}
 				
 			// share SMS
-			case 1:
+			case 2:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_SMS" object:nil];
 				break;
 				
 			// share Email
-			case 2:
+			case 3:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_EMAIL" object:nil];
 				break;
 		}
@@ -217,25 +221,15 @@
 																																	 image, @"image", nil]];
 				break;}
 				
-				// share SMS
+				// snap
 			case 2:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_SMS" object:nil];
-				break;
-				
-				// share Email
-			case 3:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHARE_EMAIL" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
 				break;
 				
 				// poke
-			case 4: {
+			case 3:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:_userVO];
-				break;}
-				
-				// snap
-			case 5: {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
-				break;}
+				break;
 		}
 	}
 }

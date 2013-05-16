@@ -226,10 +226,6 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
-	[_headerView hideRefreshing];
-	[self.view addSubview:_headerView];
-	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	settingsButton.frame = CGRectMake(0.0, 0.0, 54.0, 44.0);
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_nonActive"] forState:UIControlStateNormal];
@@ -254,6 +250,10 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
+	[_headerView hideRefreshing];
+	[self.view addSubview:_headerView];
 }
 
 - (void)viewDidLoad {

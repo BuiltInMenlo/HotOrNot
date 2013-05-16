@@ -302,6 +302,9 @@
 }
 
 - (void)_goSubmit {
+	if ([_usernameTextField isFirstResponder])
+		[_usernameTextField resignFirstResponder];
+	
 	[self _submitChallenge];
 }
 
