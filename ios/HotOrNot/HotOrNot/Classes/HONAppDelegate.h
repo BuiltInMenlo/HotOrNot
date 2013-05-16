@@ -15,6 +15,7 @@ extern const NSInteger kNavBarHeaderHeight;
 extern const NSInteger kSearchHeaderHeight;
 extern const NSInteger kDefaultCellHeight;
 
+extern NSString * const kConfigURL;
 extern NSString * const kAPIChallenges;
 extern NSString * const kAPIComments;
 extern NSString * const kAPIDiscover;
@@ -23,6 +24,7 @@ extern NSString * const kAPISearch;
 extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
 
+const CGSize kTabSize;
 const CGSize kSnapThumbSize;
 const CGSize kSnapMediumSize;
 const CGSize kSnapLargeSize;
@@ -77,7 +79,8 @@ static const CGFloat kSnapRatio;
 + (BOOL)isRetina5;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;
-+ (BOOL)canPingParseServer;
+//+ (BOOL)canPingParseServer;
++ (BOOL)canPingConfigServer;
 + (BOOL)audioMuted;
 + (NSString *)deviceLocale;
 

@@ -138,6 +138,8 @@
 		4C45FF4916DECE95002F1080 /* HONUserProfileViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */; };
 		4C48745816BF0E36007D901B /* HONSearchBarHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */; };
 		4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745A16C05699007D901B /* HONSearchViewController.m */; };
+		4C4F90E11745882800FD0B02 /* homeToggle_globalActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4F90DF1745882800FD0B02 /* homeToggle_globalActive.png */; };
+		4C4F90E21745882800FD0B02 /* homeToggle_globalActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C4F90E01745882800FD0B02 /* homeToggle_globalActive@2x.png */; };
 		4C5101001732D94C00A5D342 /* instagram_template-0000.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5100FE1732D94C00A5D342 /* instagram_template-0000.png */; };
 		4C5101011732D94C00A5D342 /* instagram_template-0001.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5100FF1732D94C00A5D342 /* instagram_template-0001.png */; };
 		4C51010E1733002500A5D342 /* HONImagingDepictor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51010D1733002500A5D342 /* HONImagingDepictor.m */; };
@@ -774,6 +776,8 @@
 		4C48745916C05698007D901B /* HONSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchViewController.h; sourceTree = "<group>"; };
 		4C48745A16C05699007D901B /* HONSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchViewController.m; sourceTree = "<group>"; };
 		4C4C9D1817285630003899F4 /* HotOrNot.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = HotOrNot.entitlements; sourceTree = "<group>"; };
+		4C4F90DF1745882800FD0B02 /* homeToggle_globalActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = homeToggle_globalActive.png; sourceTree = "<group>"; };
+		4C4F90E01745882800FD0B02 /* homeToggle_globalActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "homeToggle_globalActive@2x.png"; sourceTree = "<group>"; };
 		4C5100FE1732D94C00A5D342 /* instagram_template-0000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "instagram_template-0000.png"; sourceTree = "<group>"; };
 		4C5100FF1732D94C00A5D342 /* instagram_template-0001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "instagram_template-0001.png"; sourceTree = "<group>"; };
 		4C51010C1733002400A5D342 /* HONImagingDepictor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONImagingDepictor.h; sourceTree = "<group>"; };
@@ -2444,6 +2448,8 @@
 		4CA8DA9816140F4A00B7B13C /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
+				4C4F90DF1745882800FD0B02 /* homeToggle_globalActive.png */,
+				4C4F90E01745882800FD0B02 /* homeToggle_globalActive@2x.png */,
 				4C7732DB17419B0200A86ED1 /* voteIconVoteTimeline.png */,
 				4C7732DC17419B0200A86ED1 /* voteIconVoteTimeline@2x.png */,
 				4CD112961724CA510049DFBF /* Profile */,
@@ -3179,6 +3185,8 @@
 				4C7732F41741B5AF00A86ED1 /* tapToShareButton_Active@2x.png in Resources */,
 				4C7732F51741B5AF00A86ED1 /* tapToShareButton_nonActive.png in Resources */,
 				4C7732F61741B5AF00A86ED1 /* tapToShareButton_nonActive@2x.png in Resources */,
+				4C4F90E11745882800FD0B02 /* homeToggle_globalActive.png in Resources */,
+				4C4F90E21745882800FD0B02 /* homeToggle_globalActive@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4380,7 +4388,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "011000AD-DE87-4101-A9AA-13B91B4B0285";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6101CD23-CD8B-42EA-A6FF-EC212BC92156";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";

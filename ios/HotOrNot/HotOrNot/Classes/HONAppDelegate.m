@@ -31,8 +31,11 @@
 
 const NSInteger kNavBarHeaderHeight = 44;
 const NSInteger kSearchHeaderHeight = 44;
+const NSInteger kTabBarHeight = 44;
 const NSInteger kDefaultCellHeight = 63;
 
+
+NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";//@"http://54.243.163.24";
 NSString * const kAPIChallenges = @"Challenges.php";
 NSString * const kAPIComments = @"Comments.php";
 NSString * const kAPIDiscover = @"Discover.php";
@@ -41,6 +44,7 @@ NSString * const kAPISearch = @"Search.php";
 NSString * const kAPIUsers = @"Users.php";
 NSString * const kAPIVotes = @"Votes.php";
 
+const CGSize kTabSize = {80.0, 44.0};
 const CGSize kSnapThumbSize = {38.0, 50.0};
 const CGSize kSnapMediumSize = {153.0, 205.0};
 const CGSize kSnapLargeSize = {612.0, 816.0};
@@ -271,8 +275,21 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	return (!([[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus] == NotReachable));
 }
 
-+ (BOOL)canPingParseServer {
-	return (!([[Reachability reachabilityWithHostName:@"api.parse.com"] currentReachabilityStatus] == NotReachable));
+//+ (BOOL)canPingParseServer {
+//	return (!([[Reachability reachabilityWithHostName:@"api.parse.com"] currentReachabilityStatus] == NotReachable));
+//}
+
++ (BOOL)canPingConfigServer {
+//	struct sockaddr_in address;
+//	address.sin_len = sizeof(address);
+//	address.sin_family = AF_INET;
+//	address.sin_port = htons(80);
+//	address.sin_addr.s_addr = inet_addr(kConfigURL);
+//	
+//	Reachability *reachability = [Reachability reachabilityWithAddress:&address];
+	
+	//return (!([[Reachability reachabilityWithAddress:kConfigURL] currentReachabilityStatus] == NotReachable));
+	return (YES);
 }
 
 + (BOOL)audioMuted {
@@ -520,28 +537,27 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 		[UAirship takeOff:takeOffOptions];
 		[[UAPush shared] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
 		
-		// parse is down!!
-		if (![HONAppDelegate canPingParseServer]) {
+		if (![HONAppDelegate canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		}
-		
-		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
-		[PFUser enableAutomaticUser];
-		PFACL *defaultACL = [PFACL ACL];
-		[defaultACL setPublicReadAccess:YES];
-		[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
-		
-		PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
-		PFObject *apiActiveObject = [apiActiveQuery getObjectWithId:@"eFLGKQWRzD"];
-		
-		// parse is down!!
-		if (apiActiveObject == nil) {
-			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
-				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
-		
-		} else {
-			if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
+//
+//		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
+//		[PFUser enableAutomaticUser];
+//		PFACL *defaultACL = [PFACL ACL];
+//		[defaultACL setPublicReadAccess:YES];
+//		[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
+//		
+//		PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
+//		PFObject *apiActiveObject = [apiActiveQuery getObjectWithId:@"eFLGKQWRzD"];
+//		
+//		// parse is down!!
+//		if (apiActiveObject == nil) {
+//			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
+//				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
+//		
+//		} else {
+//			if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
 			
 				int boot_total = 0;
 				if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
@@ -569,15 +585,9 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 				if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 					[HONAppDelegate setAllowsFBPosting:NO];
 				
-				[self _retrieveParseObj];
+				[self _retrieveConfigJSON];
 				[[NSUserDefaults standardUserDefaults] synchronize];
-			
-//				[TapForTap initializeWithAPIKey:@"13654ee85567a679c190698d04ee87e2"];
-//
-//				Kiip *kiip = [[Kiip alloc] initWithAppKey:@"app_key" andSecret:@"app_secret"];
-//				kiip.delegate = self;
-//				[Kiip setSharedInstance:kiip];
-			
+
 				[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
 				[[Mixpanel sharedInstance] track:@"App Boot"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -593,14 +603,12 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 				
 				self.window.rootViewController = self.tabBarController;
 				[self.window makeKeyAndVisible];
-				
-				//[[Kiip sharedInstance] saveMoment:@"Test Moment" withCompletionHandler:nil];
 						
-			} else {
-				[self _showOKAlert:@"Upgrade Needed"
-					   withMessage:@"Please update to the latest version from the App Store to continue playing Volley."];
-			}
-		}
+//			} else {
+//				[self _showOKAlert:@"Upgrade Needed"
+//					   withMessage:@"Please update to the latest version from the App Store to continue playing Volley."];
+//			}
+//		}
 	
 	} else {
 		[self _showOKAlert:@"No Network Connection"
@@ -631,30 +639,33 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		if (![HONAppDelegate canPingParseServer]) {
+		if (![HONAppDelegate canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		
 		} else {
-			PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
-			PFObject *apiActiveObject = [apiActiveQuery getObjectWithId:@"eFLGKQWRzD"];
+			[self _retrieveConfigJSON];
 			
-			if (apiActiveObject != nil) {
-				if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
-					[self _retrieveParseObj];
+			NSString *notificationName;
+			switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
+				case 0:
+					notificationName = @"REFRESH_VOTE_TAB";
+					break;
 					
-					//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+				case 1:
+					notificationName = @"REFRESH_DISCOVERY_TAB";
+					break;
 				
-				} else {
-					[self _showOKAlert:@"Upgrade Needed"
-						   withMessage:@"Please update to the latest version from the App Store to continue playing Volley."];
-				}
-				
-			} else {
-				[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
-					   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
+				case 2:
+					notificationName = @"REFRESH_CHALLENGES_TAB";
+					break;
+					
+				case 3:
+					notificationName = @"REFRESH_PROFILE_TAB";
+					break;
 			}
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 		}
 	}
 }
@@ -743,76 +754,75 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 
 #pragma mark - Startup Operations
-- (void)_retrieveParseObj {
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://54.243.163.24"]];
+- (void)_retrieveConfigJSON {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
 	[httpClient postPath:@"boot-dev.json" parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-		NSLog(@"JSON:[%@]", result);
-		
-		NSMutableArray *locales = [NSMutableArray array];
-		for (NSString *locale in [result objectForKey:@"enabled_locales"])
-			[locales addObject:locale];
-		
-		NSMutableArray *inviteCodes = [NSMutableArray array];
-		for (NSString *code in [result objectForKey:@"invite_codes"])
-			[inviteCodes addObject:code];
-		
-		NSMutableArray *hashtags = [NSMutableArray array];
-		for (NSString *hashtag in [result objectForKey:@"default_hashtags"])
-			[hashtags addObject:hashtag];
-		
-		NSMutableArray *subjects = [NSMutableArray array];
-		for (NSString *hashtag in [result objectForKey:@"search_hashtags"])
-			[subjects addObject:hashtag];
-		
-		NSMutableArray *users = [NSMutableArray array];
-		for (NSString *user in [result objectForKey:@"search_users"])
-			[users addObject:user];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
-		[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
-																		  [[result objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-																		  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
-																		  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
-																		  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
-																		  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
-																		  [[result objectForKey:@"invite_sms"] objectForKey:@"ko"], @"ko",
-																		  [[result objectForKey:@"invite_sms"] objectForKey:@"jp"], @"jp",
-																		  [[result objectForKey:@"invite_sms"] objectForKey:@"vi"], @"vi",
-																		  [[result objectForKey:@"invite_sms"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_sms"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [[result objectForKey:@"invite_email"] objectForKey:@"en"], @"en",
-																		  [[result objectForKey:@"invite_email"] objectForKey:@"id"], @"id",
-																		  [[result objectForKey:@"invite_email"] objectForKey:@"ko"], @"ko",
-																		  [[result objectForKey:@"invite_email"] objectForKey:@"jp"], @"jp",
-																		  [[result objectForKey:@"invite_email"] objectForKey:@"vi"], @"vi",
-																		  [[result objectForKey:@"invite_email"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_email"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [[result objectForKey:@"insta_profile"] objectForKey:@"en"], @"en",
-																		  [[result objectForKey:@"insta_profile"] objectForKey:@"id"], @"id",
-																		  [[result objectForKey:@"insta_profile"] objectForKey:@"ko"], @"ko",
-																		  [[result objectForKey:@"insta_profile"] objectForKey:@"jp"], @"jp",
-																		  [[result objectForKey:@"insta_profile"] objectForKey:@"vi"], @"vi",
-																		  [[result objectForKey:@"insta_profile"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"insta_profile"];
-		[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
-		[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
-		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
-		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
-		[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		if (error != nil)
 			NSLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			NSLog(@"AFNetworking HONAppDelegate: %@", result);
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"AFNetworking HONAppDelegate: %@", result);
+			
+			NSMutableArray *locales = [NSMutableArray array];
+			for (NSString *locale in [result objectForKey:@"enabled_locales"])
+				[locales addObject:locale];
+			
+			NSMutableArray *inviteCodes = [NSMutableArray array];
+			for (NSString *code in [result objectForKey:@"invite_codes"])
+				[inviteCodes addObject:code];
+			
+			NSMutableArray *hashtags = [NSMutableArray array];
+			for (NSString *hashtag in [result objectForKey:@"default_hashtags"])
+				[hashtags addObject:hashtag];
+			
+			NSMutableArray *subjects = [NSMutableArray array];
+			for (NSString *hashtag in [result objectForKey:@"search_hashtags"])
+				[subjects addObject:hashtag];
+			
+			NSMutableArray *users = [NSMutableArray array];
+			for (NSString *user in [result objectForKey:@"search_users"])
+				[users addObject:user];
+			
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																			  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
+																			  [[result objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
+																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
+																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
+																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																			  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
+																			  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
+																			  [[result objectForKey:@"invite_sms"] objectForKey:@"ko"], @"ko",
+																			  [[result objectForKey:@"invite_sms"] objectForKey:@"jp"], @"jp",
+																			  [[result objectForKey:@"invite_sms"] objectForKey:@"vi"], @"vi",
+																			  [[result objectForKey:@"invite_sms"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_sms"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																			  [[result objectForKey:@"invite_email"] objectForKey:@"en"], @"en",
+																			  [[result objectForKey:@"invite_email"] objectForKey:@"id"], @"id",
+																			  [[result objectForKey:@"invite_email"] objectForKey:@"ko"], @"ko",
+																			  [[result objectForKey:@"invite_email"] objectForKey:@"jp"], @"jp",
+																			  [[result objectForKey:@"invite_email"] objectForKey:@"vi"], @"vi",
+																			  [[result objectForKey:@"invite_email"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_email"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+																			  [[result objectForKey:@"insta_profile"] objectForKey:@"en"], @"en",
+																			  [[result objectForKey:@"insta_profile"] objectForKey:@"id"], @"id",
+																			  [[result objectForKey:@"insta_profile"] objectForKey:@"ko"], @"ko",
+																			  [[result objectForKey:@"insta_profile"] objectForKey:@"jp"], @"jp",
+																			  [[result objectForKey:@"insta_profile"] objectForKey:@"vi"], @"vi",
+																			  [[result objectForKey:@"insta_profile"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"insta_profile"];
+			[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
+			[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
+			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
+			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
+			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1042,9 +1052,6 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
 	//NSLog(@"shouldSelectViewController:[%@]", viewController);
 	
-	//if (tabBarController.selectedViewController == [[tabBarController viewControllers] objectAtIndex:1])
-	//	[tabBarController.selectedViewController.navigationController popToRootViewControllerAnimated:NO];
-		
 	return (YES);
 }
 

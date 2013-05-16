@@ -409,7 +409,7 @@
 	[self.view addSubview:_emptySetImgView];
 	
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + (81.0 * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username])))) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + ((kTabSize.height + 20.0) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username])))) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -738,8 +738,8 @@
 		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 52.0)];
 		bgView.backgroundColor = [UIColor whiteColor];
 		
-		UIImageView *toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 301.0, 31.0)];
-		toggleImageView.image = [UIImage imageNamed:@"searchToggle_Users"];
+		UIImageView *toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 9.0, 304.0, 34.0)];
+		toggleImageView.image = [UIImage imageNamed:@"homeToggle_globalActive"];
 		[bgView addSubview:toggleImageView];
 		
 		return (bgView);

@@ -168,6 +168,14 @@
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerNameButton];
 		
+		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 112.0, 34.0, 34.0)];
+		lScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
+		[_lHolderView addSubview:lScoreImageView];
+		
+		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 112.0, 34.0, 34.0)];
+		rScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
+		[_rHolderView addSubview:rScoreImageView];
+		
 	} else {
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 153.0, 153.0)];
 		rImgView.image = [UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? @"pokeThumb" : @"thumbCameraAction"];
@@ -203,27 +211,20 @@
 		}
 	}
 	
-	UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 112.0, 34.0, 34.0)];
-	lScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
-	[_lHolderView addSubview:lScoreImageView];
-	
 	_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(36.0, 107.0, 52.0, 52.0)];
 	_lScoreLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:24];
 	_lScoreLabel.backgroundColor = [UIColor clearColor];
 	_lScoreLabel.textColor = [UIColor whiteColor];
 	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+	_lScoreLabel.hidden = !_hasChallenger;
 	[_lHolderView addSubview:_lScoreLabel];
-	
-	
-	UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 112.0, 34.0, 34.0)];
-	rScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
-	[_rHolderView addSubview:rScoreImageView];
 	
 	_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(36.0, 107.0, 52.0, 52.0)];
 	_rScoreLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:24];
 	_rScoreLabel.backgroundColor = [UIColor clearColor];
 	_rScoreLabel.textColor = [UIColor whiteColor];
 	_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+	_rScoreLabel.hidden = !_hasChallenger;
 	[_rHolderView addSubview:_rScoreLabel];
 	
 	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 263.0, 24.0, 24.0)];

@@ -28,7 +28,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTabs:) name:@"SHOW_TABS" object:nil];
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTabs:) name:@"SHOW_TABS" object:nil];
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideTabs:) name:@"HIDE_TABS" object:nil];
 	}
 	
@@ -39,7 +39,7 @@
 	[super didReceiveMemoryWarning];
 }
 
-
+/*
 #pragma mark - Touch Handlers
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
 	UITouch *touch = [touches anyObject];
@@ -79,19 +79,20 @@
 	
 	[self _toggleTabsEnabled:YES];
 }
+*/
 
 
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
 	
-	[self hideTabBar];
+	[self _hideNativeTabBar];
+	[self _addCustomTabs];
 	
-	[self addCustomElements];
-	[self showNewTabBar];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	_alertPopOverView = [[HONAlertPopOverView alloc] initWithFrame:CGRectMake(165.0, self.view.frame.size.height - 74.0, 39.0, 39.0)];
-	
 	//if ([[NSUserDefaults standardUserDefaults] objectForKey:@"local_challenges"] != nil)
 	//	[self _updateChallengeAlerts];
 	
@@ -107,7 +108,7 @@
 
 
 #pragma mark - Presentation
-- (void)hideTabBar {
+- (void)_hideNativeTabBar {
 	for (UIView *view in self.view.subviews) {
 		if([view isKindOfClass:[UITabBar class]])
 			view.hidden = YES;//[view setFrame:CGRectMake(view.frame.origin.x, self.view.frame.size.height, view.frame.size.width, view.frame.size.height)];
@@ -136,17 +137,18 @@
 	_settingsButton.hidden = NO;
 }
 
--(void)addCustomElements {
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
+-(void)_addCustomTabs {
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, 44.0)];
 	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
 	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
+	bgImageView.userInteractionEnabled = YES;
 	[_tabHolderView addSubview:bgImageView];
 	
 	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_timelineButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
+	_timelineButton.frame = CGRectMake(0.0, 0.0, kTabSize.width, kTabSize.height);
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_nonActive"] forState:UIControlStateNormal];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Tapped"] forState:UIControlStateHighlighted];
 	[_timelineButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_homeButton_Active"] forState:UIControlStateSelected];
@@ -156,7 +158,7 @@
 	[_timelineButton setSelected:YES];
 	
 	_discoveryButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_discoveryButton.frame = CGRectMake(80.0, 0.0, 80.0, 44.0);
+	_discoveryButton.frame = CGRectMake(kTabSize.width, 0.0, kTabSize.width, kTabSize.height);
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_nonActive"] forState:UIControlStateNormal];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Tapped"] forState:UIControlStateHighlighted];
 	[_discoveryButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_discoveryButton_Active"] forState:UIControlStateSelected];
@@ -165,7 +167,7 @@
 	[_discoveryButton setTag:1];
 	
 	_challengesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_challengesButton.frame = CGRectMake(160.0, 0.0, 80.0, 44.0);
+	_challengesButton.frame = CGRectMake(kTabSize.width * 2.0, 0.0, kTabSize.width, kTabSize.height);
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_nonActive"] forState:UIControlStateNormal];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Tapped"] forState:UIControlStateHighlighted];
 	[_challengesButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_activityButton_Active"] forState:UIControlStateSelected];
@@ -174,7 +176,7 @@
 	[_challengesButton setTag:2];
 	
 	_settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_settingsButton.frame = CGRectMake(240.0, 0.0, 80.0, 44.0);
+	_settingsButton.frame = CGRectMake(kTabSize.width * 3.0, 0.0, kTabSize.width, kTabSize.height);
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_nonActive"] forState:UIControlStateNormal];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Tapped"] forState:UIControlStateHighlighted];
 	[_settingsButton setBackgroundImage:[UIImage imageNamed:@"tabMenu_profileButton_Active"] forState:UIControlStateSelected];
@@ -196,6 +198,7 @@
 	//[_bgImageView addSubview:toggleButton];
 }
 
+/*
 - (void)_dropTabs {
 	[[Mixpanel sharedInstance] track:@"Tab Bar - Lower Tabs"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -219,6 +222,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"TABS_RAISED" object:nil];
 	}];
 }
+ */
 
 - (void)_showAlertPopOverWithTotals:(NSDictionary *)dict {
 	[_alertPopOverView setAlerts:dict];
@@ -264,10 +268,10 @@
 
 #pragma mark - Navigation
 - (void)buttonClicked:(id)sender {
-	[self selectTab:[sender tag]];
+	[self _selectTab:[sender tag]];
 }
 
-- (void)selectTab:(int)tabID {
+- (void)_selectTab:(int)tabID {
 	UIViewController *selectedViewController = [self.viewControllers objectAtIndex:tabID];
 	[self.delegate tabBarController:self shouldSelectViewController:selectedViewController];
 	
@@ -333,11 +337,15 @@
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabID] forKey:@"current_tab"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	//[self _dropTabs];
 }
 
 
 #pragma mark - Notifications
+/*
 - (void)_showTabs:(NSNotification *)notification {
 	_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kTabHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 }
@@ -346,6 +354,7 @@
 	if (_tabHolderView.frame.origin.y == self.view.frame.size.height - (kLipHeight + kTabHeight))
 		[self _dropTabs];
 }
+*/
 
 
 #pragma mark - Data Housekeeping
