@@ -150,7 +150,7 @@
 }
 
 - (void)_registerNotifications {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showRegistration:) name:@"SHOW_REGISTRATION" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
@@ -165,7 +165,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserShare:) name:@"SHOW_USER_SHARE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showTutorial:) name:@"SHOW_TUTORIAL" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -408,8 +407,7 @@
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + ((kTabSize.height + 20.0) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username])))) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kNavBarHeaderHeight + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -441,7 +439,7 @@
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
 		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
-			[self performSelector:@selector(_goTutorial) withObject:self afterDelay:0.5];
+			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
 		
 	} else {
 		[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
@@ -528,7 +526,9 @@
 	}];
 }
 
-- (void)_goTutorial {
+- (void)_goRegistration {
+	[self _goTutorial];
+	
 	[[Mixpanel sharedInstance] track:@"Register User"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -543,7 +543,22 @@
 	}];
 }
 
+- (void)_goTutorial {
+	_tutorialOverlayImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1ModalBackground-568h@2x" : @"fueStep1ModalBackground"]];
+	_tutorialOverlayImgView.userInteractionEnabled = YES;
+	[self.view addSubview:_tutorialOverlayImgView];
+	
+	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	shareButton.frame = _tutorialOverlayImgView.frame;
+	[shareButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
+	[_tutorialOverlayImgView addSubview:shareButton];
+}
+
 - (void)_goTutorialClose {
+	[[Mixpanel sharedInstance] track:@"Close Tutorial"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_tutorialOverlayImgView.hidden = YES;
 	[_tutorialOverlayImgView removeFromSuperview];
 }
@@ -716,8 +731,8 @@
 	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
 }
 
-- (void)_showTutorial:(NSNotification *)notification {
-	[self _goTutorial];
+- (void)_showRegistration:(NSNotification *)notification {
+	[self _goRegistration];
 }
 
 

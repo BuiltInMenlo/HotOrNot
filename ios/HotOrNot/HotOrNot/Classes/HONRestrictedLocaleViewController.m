@@ -110,7 +110,7 @@
 			//[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_invite"];
 			//[[NSUserDefaults standardUserDefaults] synchronize];
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TUTORIAL" object:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_REGISTRATION" object:nil];
 		}];
 	
 	} else {
