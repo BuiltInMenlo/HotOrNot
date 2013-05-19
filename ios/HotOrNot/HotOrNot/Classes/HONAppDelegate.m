@@ -26,7 +26,6 @@
 #import "HONProfileViewController.h"
 #import "HONChallengeVO.h"
 #import "HONUsernameViewController.h"
-#import "HONWebCTAViewController.h"
 #import "HONSearchViewController.h"
 
 const NSInteger kNavBarHeaderHeight = 44;

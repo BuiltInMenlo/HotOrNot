@@ -155,7 +155,7 @@
 		[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerAvatarButton];
 		
-		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 221.0, 100.0, 20.0)];
+		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 220.0, 100.0, 20.0)];
 		challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
 		challengerNameLabel.textColor = [HONAppDelegate honGrey635Color];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
@@ -168,11 +168,11 @@
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:challengerNameButton];
 		
-		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 112.0, 34.0, 34.0)];
+		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 114.0, 34.0, 34.0)];
 		lScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
 		[_lHolderView addSubview:lScoreImageView];
 		
-		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 112.0, 34.0, 34.0)];
+		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 11004.0, 34.0, 34.0)];
 		rScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
 		[_rHolderView addSubview:rScoreImageView];
 		
@@ -196,7 +196,7 @@
 			[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 			[self addSubview:challengerAvatarButton];
 			
-			UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 221.0, 100.0, 20.0)];
+			UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 220.0, 100.0, 20.0)];
 			challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
 			challengerNameLabel.textColor = [HONAppDelegate honGrey635Color];
 			challengerNameLabel.backgroundColor = [UIColor clearColor];
@@ -231,8 +231,8 @@
 	commentsImageView.image = [UIImage imageNamed:@"commentIcon_nonActive"];
 	[self addSubview:commentsImageView];
 	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 265.0, 150.0, 24.0)];
-	_commentsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:15];
+	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 262.0, 150.0, 24.0)];
+	_commentsLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 	_commentsLabel.textColor = [HONAppDelegate honGrey455Color];
 	_commentsLabel.backgroundColor = [UIColor clearColor];
 	_commentsLabel.text = (_challengeVO.commentTotal == 0) ? NSLocalizedString(@"timeline_0comments", nil) : (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_1comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];

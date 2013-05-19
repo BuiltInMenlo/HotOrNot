@@ -8,6 +8,5 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONWebCTAViewController : UIViewController
-- (id)initWithURL:(NSString *)url andTitle:(NSString *)title;
+@interface HONShareViewController : UIViewController
 @end
