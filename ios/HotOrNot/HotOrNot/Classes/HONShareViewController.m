@@ -11,8 +11,10 @@
 #import "HONShareViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
+#import "HONImagingDepictor.h"
 
-@interface HONShareViewController ()
+@interface HONShareViewController () <UIDocumentInteractionControllerDelegate>
+@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @end
 
 @implementation HONShareViewController
@@ -87,7 +89,25 @@
 
 #pragma mark - Navigation
 - (void)_goCancel {
+	[[Mixpanel sharedInstance] track:@"Share Modal - Cancel"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)_goInstagram {
+	[[Mixpanel sharedInstance] track:@"Share Modal - Instagram"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+}
+
+- (void)_goFacebook {
+	
+}
+
+- (void)_goContacts {
+	
 }
 
 
