@@ -527,7 +527,7 @@
 }
 
 - (void)_goRegistration {
-	[self _goTutorial];
+	//[self _goTutorial];
 	
 	[[Mixpanel sharedInstance] track:@"Register User"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:

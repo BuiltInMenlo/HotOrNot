@@ -11,6 +11,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "KikAPI.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemViewCell.h"
@@ -433,6 +434,21 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
+	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
+	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
+	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+	
+	KikAPIMessage *myMessage = [KikAPIMessage message];
+	myMessage.title = _challengeVO.subjectName;
+	myMessage.description = @"";
+	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
+	myMessage.filePath = savePath;
+	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
+	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
+	
+	[KikAPIClient sendMessage:myMessage];
+	
+	/*
 	if (_hasChallenger) {
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																					delegate:self
@@ -453,6 +469,7 @@
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 	}
+	 */
 }
 
 - (void)_goSubjectTimeline {
@@ -508,7 +525,7 @@
 											@"Y", @"creator",
 											nil];
 			
-			[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
 					NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);

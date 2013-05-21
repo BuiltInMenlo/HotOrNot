@@ -311,6 +311,9 @@
 		4CA485F916EE870000DE0F24 /* genericRowBackground_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485F516EE870000DE0F24 /* genericRowBackground_nonActive@2x.png */; };
 		4CA485FC16EE917300DE0F24 /* newSnapIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485FA16EE917300DE0F24 /* newSnapIcon.png */; };
 		4CA485FD16EE917300DE0F24 /* newSnapIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485FB16EE917300DE0F24 /* newSnapIcon@2x.png */; };
+		4CA6BE40174ACCD900C57CF2 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA6BE3F174ACCD900C57CF2 /* FacebookSDK.framework */; };
+		4CA6BE42174ACD2600C57CF2 /* FacebookSDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CA6BE41174ACD2600C57CF2 /* FacebookSDKResources.bundle */; };
+		4CA6BE46174AF81B00C57CF2 /* kikapilib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA6BE45174AF81B00C57CF2 /* kikapilib.a */; };
 		4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA8D9F1161392C600B7B13C /* Social.framework */; };
 		4CA8D9F41613932500B7B13C /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA8D9F31613932500B7B13C /* AdSupport.framework */; };
 		4CA8D9F61613933600B7B13C /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA8D9F51613933600B7B13C /* Accounts.framework */; };
@@ -1191,6 +1194,10 @@
 		4CA485F516EE870000DE0F24 /* genericRowBackground_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "genericRowBackground_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CA485FA16EE917300DE0F24 /* newSnapIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newSnapIcon.png; sourceTree = "<group>"; };
 		4CA485FB16EE917300DE0F24 /* newSnapIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "newSnapIcon@2x.png"; sourceTree = "<group>"; };
+		4CA6BE3F174ACCD900C57CF2 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
+		4CA6BE41174ACD2600C57CF2 /* FacebookSDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = FacebookSDKResources.bundle; path = FacebookSDK.framework/Versions/A/Resources/FacebookSDKResources.bundle; sourceTree = "<group>"; };
+		4CA6BE44174AF81B00C57CF2 /* KikAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KikAPI.h; sourceTree = "<group>"; };
+		4CA6BE45174AF81B00C57CF2 /* kikapilib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = kikapilib.a; sourceTree = "<group>"; };
 		4CA8D9F1161392C600B7B13C /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		4CA8D9F31613932500B7B13C /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		4CA8D9F51613933600B7B13C /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
@@ -1544,6 +1551,8 @@
 				4C62673615F96E2900AA7FCE /* AWSiOSSDK.framework in Frameworks */,
 				4CEE1CA2161A3A3E00C54FBF /* Parse.framework in Frameworks */,
 				4C0761D9173ACCB1006C3836 /* libTestFlight.a in Frameworks */,
+				4CA6BE40174ACCD900C57CF2 /* FacebookSDK.framework in Frameworks */,
+				4CA6BE46174AF81B00C57CF2 /* kikapilib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1956,6 +1965,7 @@
 		4C62655A15F96E2900AA7FCE /* Other Classes */ = {
 			isa = PBXGroup;
 			children = (
+				4CA6BE43174AF81B00C57CF2 /* KikAPI */,
 				4C0761D4173ACCB1006C3836 /* TestFlightSDK1.2.4 */,
 				4C51011117332B0700A5D342 /* FormattedUILabel */,
 				4CA0851516A12FD900673F3A /* AFNetworking */,
@@ -2206,6 +2216,8 @@
 		4C6266AE15F96E2900AA7FCE /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CA6BE41174ACD2600C57CF2 /* FacebookSDKResources.bundle */,
+				4CA6BE3F174ACCD900C57CF2 /* FacebookSDK.framework */,
 				4CEE1CA1161A3A3E00C54FBF /* Parse.framework */,
 				4C6266AF15F96E2900AA7FCE /* AWSiOSSDK.framework */,
 			);
@@ -2405,6 +2417,15 @@
 				4CA34C5016F6B08F0000751E /* discoveryBackground@2x.png */,
 			);
 			name = Discovery;
+			sourceTree = "<group>";
+		};
+		4CA6BE43174AF81B00C57CF2 /* KikAPI */ = {
+			isa = PBXGroup;
+			children = (
+				4CA6BE44174AF81B00C57CF2 /* KikAPI.h */,
+				4CA6BE45174AF81B00C57CF2 /* kikapilib.a */,
+			);
+			path = KikAPI;
 			sourceTree = "<group>";
 		};
 		4CA8DA531613D00900B7B13C /* Tabs */ = {
@@ -3187,6 +3208,7 @@
 				4C7732F61741B5AF00A86ED1 /* tapToShareButton_nonActive@2x.png in Resources */,
 				4C4F90E11745882800FD0B02 /* homeToggle_globalActive.png in Resources */,
 				4C4F90E21745882800FD0B02 /* homeToggle_globalActive@2x.png in Resources */,
+				4CA6BE42174ACD2600C57CF2 /* FacebookSDKResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4388,7 +4410,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "6101CD23-CD8B-42EA-A6FF-EC212BC92156";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "011000AD-DE87-4101-A9AA-13B91B4B0285";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
@@ -4416,7 +4438,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B621F0DB-1AEA-45D2-BA68-FFF0C9763BC5";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E4D8BAC8-C629-4102-A7A5-58D68008A46A";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -4441,6 +4463,7 @@
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Airship\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Google Analytics\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/TestFlightSDK1.2.4\"",
+					"\"$(SRCROOT)/HotOrNot/Other Classes/KikAPI\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -4466,6 +4489,7 @@
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Airship\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/Google Analytics\"",
 					"\"$(SRCROOT)/HotOrNot/Other Classes/TestFlightSDK1.2.4\"",
+					"\"$(SRCROOT)/HotOrNot/Other Classes/KikAPI\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;

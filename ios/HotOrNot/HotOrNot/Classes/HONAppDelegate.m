@@ -12,6 +12,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "AFJSONRequestOperation.h"
 #import "MBProgressHUD.h"
+#import "KikAPI.h"
 #import "Parse/Parse.h"
 #import "Reachability.h"
 #import "UAirship.h"
@@ -540,6 +541,11 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		}
+		
+		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
+											withHomepageURI:@"http://www.builtinmenlo.com"
+												addAppButton:YES];
+		
 //
 //		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
 //		[PFUser enableAutomaticUser];
