@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "KikAPI.h"
 #import "MBProgressHUD.h"
 
 #import "HONShareViewController.h"
@@ -68,6 +69,13 @@
 	[instagramButton addTarget:self action:@selector(_goInstagram) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:instagramButton];
 	
+	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	kikButton.frame = CGRectMake(37.0, 150.0, 245.0, 36.0);
+	[kikButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_nonActive"] forState:UIControlStateNormal];
+	[kikButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_Active"] forState:UIControlStateHighlighted];
+	[kikButton addTarget:self action:@selector(_goKik) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:kikButton];
+	
 	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	facebookButton.frame = CGRectMake(37.0, 200.0, 245.0, 36.0);
 	[facebookButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_nonActive"] forState:UIControlStateNormal];
@@ -102,12 +110,37 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
-- (void)_goFacebook {
+- (void)_goKik {
+	[[Mixpanel sharedInstance] track:@"Share Modal - Kik"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
+	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
+	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+	
+	KikAPIMessage *myMessage = [KikAPIMessage message];
+	myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+	myMessage.description = @"";
+	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
+	myMessage.filePath = savePath;
+	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
+	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
+	
+	[KikAPIClient sendMessage:myMessage];
+
+}
+
+- (void)_goFacebook {
+	[[Mixpanel sharedInstance] track:@"Share Modal - Facebook"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
 - (void)_goContacts {
-	
+	[[Mixpanel sharedInstance] track:@"Share Modal - Contacts"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
 
