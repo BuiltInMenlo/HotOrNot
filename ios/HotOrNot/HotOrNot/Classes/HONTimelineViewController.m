@@ -12,10 +12,12 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
 #import "HONUserProfileViewCell.h"
+#import "HONChallengeToggleViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
@@ -26,6 +28,7 @@
 #import "HONCommentsViewController.h"
 #import "HONTimelineItemDetailsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
+#import "HONShareViewController.h"
 
 
 @interface HONTimelineViewController()
@@ -512,6 +515,16 @@
 	}
 }
 
+- (void)_goTimelineBanner {
+	[[Mixpanel sharedInstance] track:@"Timeline - Banner"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONShareViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_goLocaleRestriction {
 	//[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
 	//[[NSUserDefaults standardUserDefaults] synchronize];
@@ -738,7 +751,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count] + ([_username length] > 0));
+	return (([_username length] > 0) ? [_challenges count] + 1 : [_challenges count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -746,16 +759,22 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	if (_isPushView)
+	if ([_username length] > 0)
 		return (nil);
 	
 	else {
-		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 52.0)];
-		bgView.backgroundColor = [UIColor whiteColor];
+		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)];
+		bgView.backgroundColor = [UIColor grayColor];
 		
-		UIImageView *toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 9.0, 304.0, 34.0)];
-		toggleImageView.image = [UIImage imageNamed:@"homeToggle_globalActive"];
-		[bgView addSubview:toggleImageView];
+		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)];
+		bannerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
+		[bgView addSubview:bannerImageView];
+		
+		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		bannerButton.frame = bannerImageView.frame;
+		[bannerButton addTarget:self action:@selector(_goTimelineBanner) forControlEvents:UIControlEventTouchUpInside];
+		[bgView addSubview:bannerButton];
 		
 		return (bgView);
 	}
@@ -789,34 +808,43 @@
 		}
 		
 	} else {
-		HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		if (!_isPushView && indexPath.row == 0) {
+			HONChallengeToggleViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			
+			if (cell == nil) {
+				cell = [[HONChallengeToggleViewCell alloc] init];
+			}
+			
+			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+			return (cell);
 		
-		if (cell == nil) {
-			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-			cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONTimelineItemViewCell alloc] initAsWaitingCell] : [[HONTimelineItemViewCell alloc] initAsStartedCell];
-			cell.challengeVO = vo;
+		} else {
+			HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			
+			if (cell == nil) {
+				HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+				cell = (vo.statusID == 1 || vo.statusID == 2) ? [[HONTimelineItemViewCell alloc] initAsWaitingCell] : [[HONTimelineItemViewCell alloc] initAsStartedCell];
+				cell.challengeVO = vo;
+			}
+			
+			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+			return (cell);
 		}
-		
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-		return (cell);
 	}
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if ([_username length] > 0 && indexPath.row == 0)
-		return (116.0);
-	
-	else {
-		//HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - ((int)[_username length] > 0)];
-		return (304.0);//(vo.statusID == 1 || vo.statusID == 2) ? 289.0 : 314.0);
-	}
+	if (indexPath.row == 0) {
+		return (([_username length] > 0) ? 116.0 : ((_isPushView) ? 304.0 : 52.0));
+		
+	} else
+		return (304.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (((int)!_isPushView) * 52.0);
-	//return (52.0);
+	return (([[HONAppDelegate timelineBannerURL] length] > 0) ? ((int)![_username length] > 0) * 64.0 : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

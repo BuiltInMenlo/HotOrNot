@@ -49,6 +49,8 @@ static const CGFloat kSnapRatio;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
 
++ (NSString *)timelineBannerURL;
+
 + (NSString *)smsInviteFormat;
 + (NSString *)emailInviteFormat;
 + (NSString *)instagramShareComment;

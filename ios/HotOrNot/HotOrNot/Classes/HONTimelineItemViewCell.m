@@ -173,7 +173,7 @@
 		lScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
 		[_lHolderView addSubview:lScoreImageView];
 		
-		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 11004.0, 34.0, 34.0)];
+		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 114.0, 34.0, 34.0)];
 		rScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
 		[_rHolderView addSubview:rScoreImageView];
 		
@@ -434,21 +434,21 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
-	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
-	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
-	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+//	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
+//	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
+//	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+//	
+//	KikAPIMessage *myMessage = [KikAPIMessage message];
+//	myMessage.title = _challengeVO.subjectName;
+//	myMessage.description = @"";
+//	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
+//	myMessage.filePath = savePath;
+//	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
+//	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
+//	
+//	[KikAPIClient sendMessage:myMessage];
 	
-	KikAPIMessage *myMessage = [KikAPIMessage message];
-	myMessage.title = _challengeVO.subjectName;
-	myMessage.description = @"";
-	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
-	myMessage.filePath = savePath;
-	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
-	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
-	
-	[KikAPIClient sendMessage:myMessage];
-	
-	/*
+
 	if (_hasChallenger) {
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																					delegate:self
@@ -469,7 +469,6 @@
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 	}
-	 */
 }
 
 - (void)_goSubjectTimeline {

@@ -115,6 +115,10 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:1] intValue]);
 }
 
++ (NSString *)timelineBannerURL {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"]);
+}
+
 + (NSString *)rndDefaultSubject {
 	NSArray *subjects = [[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"];
 	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
@@ -801,6 +805,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeline_banner"] forKey:@"timeline_banner"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 																			  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
 																			  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
