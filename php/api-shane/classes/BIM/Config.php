@@ -36,6 +36,19 @@ class BIM_Config{
         );
     }
     
+    public static function tumblr(){
+        return (object) array(
+            'api' => (object) array(
+                'consumerKey' => 'TXB9fZ1LMYthFd8ZPTjV0qRKesFsKo6GIDPG3deOTmtAxxSO6L',
+                'consumerSecret' => 'oPos1EyfSnNDgfo7KLmH0I4PhMUNhHCGHLQZA2VJw4dEwUfzuh',
+            ),
+            'harvestSelfies' => (object) array(
+                'secsInPast' => 1800,
+                'maxItems' => 400,
+            )
+        );
+    }
+    
     public static function gearman(){
         return (object) array(
             'servers' => array(  
@@ -57,13 +70,13 @@ class BIM_Config{
         				'host' => '127.0.0.1',
         				'user' => 'root',
         				'pass' => '',
-        				'dbname' => 'queue'
+        				'dbname' => 'hotornot-dev'
         			),
         			'reader' => (object) array(
         				'host' => '127.0.0.1',
         				'user' => 'root',
         				'pass' => '',
-        				'dbname' => 'queue'
+        				'dbname' => 'hotornot-dev'
         			),
         		),
         	),

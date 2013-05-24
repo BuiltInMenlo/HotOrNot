@@ -1,6 +1,4 @@
 <?php
-require_once 'BIM/Data/ConnectionManager.php';
-require_once 'BIM/DAO.php';
 
 class BIM_DAO_Mysql extends BIM_DAO{
 

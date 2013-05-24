@@ -1,6 +1,4 @@
 <?php
-require_once 'BIM/DAO/Mysql.php';
-require_once 'BIM/Cron/Parser.php';
 
 class BIM_DAO_Mysql_Jobs extends BIM_DAO_Mysql{
 	
