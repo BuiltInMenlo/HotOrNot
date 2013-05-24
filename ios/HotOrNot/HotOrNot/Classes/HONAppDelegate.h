@@ -50,6 +50,7 @@ static const CGFloat kSnapRatio;
 + (int)pokePointMultiplier;
 
 + (NSString *)timelineBannerURL;
++ (BOOL)isFUEInviteEnabled;
 
 + (NSString *)smsInviteFormat;
 + (NSString *)emailInviteFormat;

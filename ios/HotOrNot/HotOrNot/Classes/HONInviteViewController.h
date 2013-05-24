@@ -1,5 +1,5 @@
 //
-//  HONWebCTAViewController.h
+//  HONInviteViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 12.26.12.
@@ -8,5 +8,5 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONShareViewController : UIViewController
+@interface HONInviteViewController : UIViewController
 @end

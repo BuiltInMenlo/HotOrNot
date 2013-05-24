@@ -28,7 +28,7 @@
 #import "HONCommentsViewController.h"
 #import "HONTimelineItemDetailsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
-#import "HONShareViewController.h"
+#import "HONInviteViewController.h"
 
 
 @interface HONTimelineViewController()
@@ -520,7 +520,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONShareViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 }

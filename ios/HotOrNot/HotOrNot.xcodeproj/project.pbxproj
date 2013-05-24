@@ -369,7 +369,7 @@
 		4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9609167D676C0036E849 /* HONVoterViewCell.m */; };
 		4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF960C167D68B40036E849 /* HONVoterVO.m */; };
 		4CB03BB5173C88B40062B607 /* HONFindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB03BB4173C88B40062B607 /* HONFindFriendsViewController.m */; };
-		4CB472F5168C176D007153DF /* HONShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB472F4168C176D007153DF /* HONShareViewController.m */; };
+		4CB472F5168C176D007153DF /* HONInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB472F4168C176D007153DF /* HONInviteViewController.m */; };
 		4CB75CBB16FEAC53001A8738 /* notificationBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB75CB316FEAC53001A8738 /* notificationBackground.png */; };
 		4CB75CBC16FEAC53001A8738 /* notificationBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB75CB416FEAC53001A8738 /* notificationBackground@2x.png */; };
 		4CB75CBD16FEAC53001A8738 /* notificationCameraIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB75CB516FEAC53001A8738 /* notificationCameraIcon.png */; };
@@ -1264,8 +1264,8 @@
 		4CAF960C167D68B40036E849 /* HONVoterVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterVO.m; sourceTree = "<group>"; };
 		4CB03BB3173C88B40062B607 /* HONFindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFindFriendsViewController.h; sourceTree = "<group>"; };
 		4CB03BB4173C88B40062B607 /* HONFindFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFindFriendsViewController.m; sourceTree = "<group>"; };
-		4CB472F3168C176D007153DF /* HONShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONShareViewController.h; sourceTree = "<group>"; };
-		4CB472F4168C176D007153DF /* HONShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONShareViewController.m; sourceTree = "<group>"; };
+		4CB472F3168C176D007153DF /* HONInviteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteViewController.h; sourceTree = "<group>"; };
+		4CB472F4168C176D007153DF /* HONInviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteViewController.m; sourceTree = "<group>"; };
 		4CB75CB316FEAC53001A8738 /* notificationBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationBackground.png; sourceTree = "<group>"; };
 		4CB75CB416FEAC53001A8738 /* notificationBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "notificationBackground@2x.png"; sourceTree = "<group>"; };
 		4CB75CB516FEAC53001A8738 /* notificationCameraIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationCameraIcon.png; sourceTree = "<group>"; };
@@ -2268,8 +2268,8 @@
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
 				4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */,
-				4CB472F3168C176D007153DF /* HONShareViewController.h */,
-				4CB472F4168C176D007153DF /* HONShareViewController.m */,
+				4CB472F3168C176D007153DF /* HONInviteViewController.h */,
+				4CB472F4168C176D007153DF /* HONInviteViewController.m */,
 				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
 				4C068AB017028A6B0019428A /* HONWebViewController.m */,
 			);
@@ -3271,7 +3271,7 @@
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
-				4CB472F5168C176D007153DF /* HONShareViewController.m in Sources */,
+				4CB472F5168C176D007153DF /* HONInviteViewController.m in Sources */,
 				4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */,
 				4CA944AD169A0D2F00507A08 /* HONAlternatingRowsViewCell.m in Sources */,
 				4C07B8E916A0E1F700E061FD /* HONTimelineItemDetailsViewController.m in Sources */,

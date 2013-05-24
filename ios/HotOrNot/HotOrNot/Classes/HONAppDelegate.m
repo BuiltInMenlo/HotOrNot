@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 #import <AVFoundation/AVFoundation.h>
+#import <FacebookSDK/FacebookSDK.h>
 #import <Parse/Parse.h>
 
 #import "AFHTTPClient.h"
@@ -92,6 +93,10 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	}
 	
 	return (NO);
+}
+
++ (BOOL)isFUEInviteEnabled {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"fue_invite"] isEqualToString:@"Y"]);
 }
 
 + (NSString *)smsInviteFormat {
@@ -643,6 +648,8 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+	[FBAppCall handleDidBecomeActive];
+	
 	if (_isFromBackground && [HONAppDelegate hasNetwork]) {
 		[[Mixpanel sharedInstance] track:@"App Leaving Background"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -681,8 +688,13 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 - (void)applicationWillTerminate:(UIApplication *)application {
 	[UAirship land];
+	[FBSession.activeSession close];
 }
 
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+	return ([FBAppCall handleOpenURL:url sourceApplication:sourceApplication]);
+}
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	[[UAPush shared] registerDeviceToken:deviceToken];
@@ -806,6 +818,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeline_banner"] forKey:@"timeline_banner"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"fue_invite"] forKey:@"fue_invite"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 																			  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
 																			  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
