@@ -18,10 +18,12 @@
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
+#import "HONInviteViewCell.h"
 
-@interface HONInviteViewController ()
+@interface HONInviteViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) NSMutableArray *contactUsers;
 @property (strong, nonatomic) FBRequestConnection *requestConnection;
+@property(nonatomic, strong) UITableView *tableView;
 @end
 
 @implementation HONInviteViewController
@@ -169,6 +171,19 @@
 	[headerView addSubview:cancelButton];
 	
 	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 100.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (100.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.rowHeight = 249.0;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.userInteractionEnabled = YES;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[self.view addSubview:_tableView];
+	
+	
+	/*
 	UIButton *instagramButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	instagramButton.frame = CGRectMake(37.0, 100.0, 245.0, 36.0);
 	[instagramButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_nonActive"] forState:UIControlStateNormal];
@@ -196,6 +211,7 @@
 	[contactsButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_Active"] forState:UIControlStateHighlighted];
 	[contactsButton addTarget:self action:@selector(_goContacts) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:contactsButton];	
+	*/
 }
 
 - (void)viewDidLoad {
@@ -302,6 +318,94 @@
 		
 	} else {
 		// denied access
+	}
+}
+
+
+#pragma mark - TableView DataSource Delegates
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return (4);
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (1);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
+	
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 310.0, 29.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
+	label.textColor = [HONAppDelegate honBlueTxtColor];
+	label.backgroundColor = [UIColor clearColor];
+	label.text = @"Invite";
+	[headerImageView addSubview:label];
+
+	return (headerImageView);
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONInviteViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	NSDictionary *dict;
+	
+	if (cell == nil)
+		cell = [[HONInviteViewCell alloc] init];
+	
+	if (indexPath.row == 0) {
+		dict = [NSDictionary dictionaryWithObjectsAndKeys:
+				@"IG", @"image",
+				@"Instagram", @"name", nil];
+		
+	} else if (indexPath.row == 1) {
+		dict = [NSDictionary dictionaryWithObjectsAndKeys:
+				@"KIK", @"image",
+				@"Kik", @"name", nil];
+		
+	} else if (indexPath.row == 2) {
+		dict = [NSDictionary dictionaryWithObjectsAndKeys:
+				@"FB", @"image",
+				@"Facebook", @"name", nil];
+		
+	} else if (indexPath.row == 3) {
+		dict = [NSDictionary dictionaryWithObjectsAndKeys:
+				@"CT", @"image",
+				@"Contacts", @"name", nil];
+	}
+	
+	[cell setContents:dict];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	
+	return (cell);
+}
+
+
+#pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (kDefaultCellHeight);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (31.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (indexPath);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	if (indexPath.row == 0) {
+		[self _goInstagram];
+		
+	} else if (indexPath.row == 1) {
+		[self _goKik];
+		
+	} else if (indexPath.row == 2) {
+		[self _goFacebook];
+		
+	} else if (indexPath.row == 3) {
+		[self _goContacts];
 	}
 }
 

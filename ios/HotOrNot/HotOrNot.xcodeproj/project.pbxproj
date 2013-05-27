@@ -54,6 +54,7 @@
 		4C0C414C162C9744007F0DA3 /* icon_512x512.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C4149162C9743007F0DA3 /* icon_512x512.png */; };
 		4C0C414E162C9761007F0DA3 /* icon_57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414D162C9761007F0DA3 /* icon_57x57.png */; };
 		4C0C4150162C9769007F0DA3 /* icon_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414F162C9769007F0DA3 /* icon_114x114.png */; };
+		4C0CA3F81751521D00DD0652 /* HONInviteViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0CA3F71751521D00DD0652 /* HONInviteViewCell.m */; };
 		4C19BF0D168E811E006D241E /* chevron.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0B168E811E006D241E /* chevron.png */; };
 		4C19BF0E168E811E006D241E /* chevron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0C168E811E006D241E /* chevron@2x.png */; };
 		4C31AFB01638745100358022 /* mainBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C31AFAD1638745100358022 /* mainBG.png */; };
@@ -561,6 +562,8 @@
 		4C0C4149162C9743007F0DA3 /* icon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_512x512.png; sourceTree = "<group>"; };
 		4C0C414D162C9761007F0DA3 /* icon_57x57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_57x57.png; sourceTree = "<group>"; };
 		4C0C414F162C9769007F0DA3 /* icon_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_114x114.png; sourceTree = "<group>"; };
+		4C0CA3F61751521D00DD0652 /* HONInviteViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteViewCell.h; sourceTree = "<group>"; };
+		4C0CA3F71751521D00DD0652 /* HONInviteViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteViewCell.m; sourceTree = "<group>"; };
 		4C19BF0B168E811E006D241E /* chevron.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron.png; sourceTree = "<group>"; };
 		4C19BF0C168E811E006D241E /* chevron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron@2x.png"; sourceTree = "<group>"; };
 		4C31AFAD1638745100358022 /* mainBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mainBG.png; sourceTree = "<group>"; };
@@ -1612,6 +1615,17 @@
 			name = Fonts;
 			sourceTree = "<group>";
 		};
+		4C0CA3F5175151FA00DD0652 /* Invite */ = {
+			isa = PBXGroup;
+			children = (
+				4C0CA3F61751521D00DD0652 /* HONInviteViewCell.h */,
+				4C0CA3F71751521D00DD0652 /* HONInviteViewCell.m */,
+				4CB472F3168C176D007153DF /* HONInviteViewController.h */,
+				4CB472F4168C176D007153DF /* HONInviteViewController.m */,
+			);
+			name = Invite;
+			sourceTree = "<group>";
+		};
 		4C32B99815FA6F4C0023A0EE /* Activity */ = {
 			isa = PBXGroup;
 			children = (
@@ -2259,6 +2273,7 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
+				4C0CA3F5175151FA00DD0652 /* Invite */,
 				4CE8B62E16E2EC4100D29191 /* Splash */,
 				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C48745C16C056E8007D901B /* Search */,
@@ -2268,8 +2283,6 @@
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
 				4CAAEDA9161E069B005AB2E1 /* HONTabBarController.m */,
-				4CB472F3168C176D007153DF /* HONInviteViewController.h */,
-				4CB472F4168C176D007153DF /* HONInviteViewController.m */,
 				4C068AAF17028A6B0019428A /* HONWebViewController.h */,
 				4C068AB017028A6B0019428A /* HONWebViewController.m */,
 			);
@@ -3314,6 +3327,7 @@
 				4C51011417332B0700A5D342 /* UILabel+FormattedText.m in Sources */,
 				4CB03BB5173C88B40062B607 /* HONFindFriendsViewController.m in Sources */,
 				4C53EB9F174C380B002899BF /* HONChallengeToggleViewCell.m in Sources */,
+				4C0CA3F81751521D00DD0652 /* HONInviteViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
