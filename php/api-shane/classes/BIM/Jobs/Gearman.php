@@ -1,7 +1,4 @@
 <?php
-require_once 'BIM/Jobs.php';
-require_once 'BIM/JobQueue/Gearman.php';
-require_once 'BIM/DAO/Mysql/Jobs.php';
 
 class BIM_Jobs_Gearman extends BIM_Jobs{
 	
