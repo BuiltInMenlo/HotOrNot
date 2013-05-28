@@ -152,6 +152,10 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"search_users"]);
 }
 
++ (NSArray *)inviteCelebs {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"invite_celebs"]);
+}
+
 + (void)writeDeviceToken:(NSString *)token {
 	[[NSUserDefaults standardUserDefaults] setObject:token forKey:@"device_token"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -807,6 +811,10 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 			for (NSString *user in [result objectForKey:@"search_users"])
 				[users addObject:user];
 			
+			NSMutableArray *celebs = [NSMutableArray array];
+			for (NSDictionary *celeb in [result objectForKey:@"invite_celebs"])
+				[celebs addObject:celeb];
+			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
@@ -845,6 +853,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
+			[[NSUserDefaults standardUserDefaults] setObject:[celebs copy] forKey:@"invite_celebs"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 		}
 		

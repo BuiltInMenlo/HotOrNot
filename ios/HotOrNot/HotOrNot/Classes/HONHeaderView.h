@@ -13,6 +13,7 @@
 - (id)initAsVoteWall;
 - (void)toggleRefresh:(BOOL)isRefreshing;
 - (void)hideRefreshing;
+- (void)leftAlignTitle;
 
 @property (nonatomic, strong) NSString *title;
 @property(nonatomic, strong) UIButton *refreshButton;

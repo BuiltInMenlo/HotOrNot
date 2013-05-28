@@ -19,7 +19,7 @@
 #import "HONImagingDepictor.h"
 #import "HONRegisterCameraOverlayView.h"
 #import "HONHeaderView.h"
-#import "HONInviteViewController.h"
+#import "HONInviteNetworkViewController.h"
 
 @interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, HONRegisterCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
@@ -226,7 +226,7 @@
 					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 					
 					if ([HONAppDelegate isFUEInviteEnabled])
-						[self.navigationController pushViewController:[[HONInviteViewController alloc] init] animated:YES];
+						[self.navigationController pushViewController:[[HONInviteNetworkViewController alloc] init] animated:YES];
 				}];
 				
 				if (![HONAppDelegate isFUEInviteEnabled])
@@ -469,7 +469,7 @@
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
 			
 			if ([HONAppDelegate isFUEInviteEnabled])
-				[self.navigationController pushViewController:[[HONInviteViewController alloc] init] animated:YES];
+				[self.navigationController pushViewController:[[HONInviteNetworkViewController alloc] init] animated:YES];
 		}];
 		
 		if (![HONAppDelegate isFUEInviteEnabled])
@@ -527,7 +527,7 @@
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		
 		if ([HONAppDelegate isFUEInviteEnabled])
-			[self.navigationController pushViewController:[[HONInviteViewController alloc] init] animated:YES];
+			[self.navigationController pushViewController:[[HONInviteNetworkViewController alloc] init] animated:YES];
 		
 		else
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];

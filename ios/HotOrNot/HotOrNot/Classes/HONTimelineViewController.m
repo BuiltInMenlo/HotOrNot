@@ -28,7 +28,8 @@
 #import "HONCommentsViewController.h"
 #import "HONTimelineItemDetailsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
-#import "HONInviteViewController.h"
+#import "HONInviteNetworkViewController.h"
+#import "HONInviteCelebViewController.h"
 
 
 @interface HONTimelineViewController()
@@ -520,7 +521,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -763,10 +764,10 @@
 		return (nil);
 	
 	else {
-		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)];
+		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 32.0)];
 		bgView.backgroundColor = [UIColor grayColor];
 		
-		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 64.0)];
+		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 32.0)];
 		bannerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
 		[bgView addSubview:bannerImageView];
@@ -844,7 +845,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (([[HONAppDelegate timelineBannerURL] length] > 0) ? ((int)![_username length] > 0) * 64.0 : 0.0);
+	return (([[HONAppDelegate timelineBannerURL] length] > 0) ? ((int)![_username length] > 0) * 32.0 : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

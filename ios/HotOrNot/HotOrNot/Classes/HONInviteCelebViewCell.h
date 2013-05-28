@@ -1,14 +1,14 @@
 //
-//  HONInviteViewCell.h
+//  HONInviteCelebViewCell.h
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 5/25/13.
+//  Created by Matthew Holcombe on 05.27.13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface HONInviteViewCell : UITableViewCell
+@interface HONInviteCelebViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
 - (void)setContents:(NSDictionary *)dict;

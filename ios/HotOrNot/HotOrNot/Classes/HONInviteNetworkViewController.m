@@ -1,5 +1,5 @@
 //
-//  HONInviteViewController.m
+//  HONInviteNetworkViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 12.26.12.
@@ -14,25 +14,25 @@
 #import "KikAPI.h"
 #import "MBProgressHUD.h"
 
-#import "HONInviteViewController.h"
+#import "HONInviteNetworkViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
-#import "HONInviteViewCell.h"
+#import "HONInviteNetworkViewCell.h"
 
-@interface HONInviteViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface HONInviteNetworkViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) NSMutableArray *contactUsers;
 @property (strong, nonatomic) FBRequestConnection *requestConnection;
 @property(nonatomic, strong) UITableView *tableView;
 @end
 
-@implementation HONInviteViewController
+@implementation HONInviteNetworkViewController
 
 @synthesize requestConnection = _requestConnection;
 
 - (id)init {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Share Modal - Open"
+		[[Mixpanel sharedInstance] track:@"Invite Friends - Open"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	}
@@ -160,7 +160,9 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Share Volley"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_inviteFriends", nil)];
+	[headerView hideRefreshing];
+	[headerView leftAlignTitle];
 	[self.view addSubview:headerView];
 	
 	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -181,46 +183,16 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
-	
-	
-	/*
-	UIButton *instagramButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	instagramButton.frame = CGRectMake(37.0, 100.0, 245.0, 36.0);
-	[instagramButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_nonActive"] forState:UIControlStateNormal];
-	[instagramButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_Active"] forState:UIControlStateHighlighted];
-	[instagramButton addTarget:self action:@selector(_goInstagram) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:instagramButton];
-	
-	UIButton *kikButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	kikButton.frame = CGRectMake(37.0, 150.0, 245.0, 36.0);
-	[kikButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_nonActive"] forState:UIControlStateNormal];
-	[kikButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_Active"] forState:UIControlStateHighlighted];
-	[kikButton addTarget:self action:@selector(_goKik) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:kikButton];
-	
-	UIButton *facebookButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	facebookButton.frame = CGRectMake(37.0, 200.0, 245.0, 36.0);
-	[facebookButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_nonActive"] forState:UIControlStateNormal];
-	[facebookButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_Active"] forState:UIControlStateHighlighted];
-	[facebookButton addTarget:self action:@selector(_goFacebook) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:facebookButton];
-	
-	UIButton *contactsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	contactsButton.frame = CGRectMake(37.0, 250.0, 245.0, 36.0);
-	[contactsButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_nonActive"] forState:UIControlStateNormal];
-	[contactsButton setBackgroundImage:[UIImage imageNamed:@"tapToShareButton_Active"] forState:UIControlStateHighlighted];
-	[contactsButton addTarget:self action:@selector(_goContacts) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:contactsButton];	
-	*/
 }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
 }
 
+
 #pragma mark - Navigation
 - (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Share Modal - Cancel"
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Cancel"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -228,7 +200,7 @@
 }
 
 - (void)_goInstagram {
-	[[Mixpanel sharedInstance] track:@"Share Modal - Instagram"
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Instagram"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -253,12 +225,10 @@
 	[prompt addSubview:textField2];
 	
 	[prompt show];
-								  
-								  // set cursor and show keyboard [textField becomeFirstResponder];
 }
 
 - (void)_goKik {
-	[[Mixpanel sharedInstance] track:@"Share Modal - Kik"
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Kik"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -279,7 +249,7 @@
 }
 
 - (void)_goFacebook {
-	[[Mixpanel sharedInstance] track:@"Share Modal - Facebook"
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Facebook"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -303,7 +273,7 @@
 }
 
 - (void)_goContacts {
-	[[Mixpanel sharedInstance] track:@"Share Modal - Contacts"
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Contacts"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -345,11 +315,11 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONInviteViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONInviteNetworkViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	NSDictionary *dict;
 	
 	if (cell == nil)
-		cell = [[HONInviteViewCell alloc] init];
+		cell = [[HONInviteNetworkViewCell alloc] init];
 	
 	if (indexPath.row == 0) {
 		dict = [NSDictionary dictionaryWithObjectsAndKeys:

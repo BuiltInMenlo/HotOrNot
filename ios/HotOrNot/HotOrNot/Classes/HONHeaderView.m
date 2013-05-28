@@ -24,7 +24,7 @@
 		UIImageView *headerImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]];
 		[self addSubview:headerImgView];
 		
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 12.0, 320.0, 24.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 290.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 		_titleLabel.textColor = [UIColor whiteColor];
@@ -79,6 +79,10 @@
 - (void)hideRefreshing {
 	[_activityIndicatorView removeFromSuperview];
 	[_refreshButton removeFromSuperview];
+}
+
+- (void)leftAlignTitle {
+	_titleLabel.textAlignment = NSTextAlignmentLeft;
 }
 
 

@@ -31,6 +31,8 @@
 "header_register2" = "資料圖片";
 "header_register3" = "預覽";
 "header_findFriends" = "Find Friends";
+"header_inviteFriends" = "Invite Friends";
+"header_inviteCelebs" = "Invite Celebrities";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";

@@ -1,16 +1,15 @@
 //
-//  HONInviteViewCell.m
+//  HONInviteCelebViewCell.m
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 5/25/13.
+//  Created by Matthew Holcombe on 05.27.13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONInviteViewCell.h"
-
+#import "HONInviteCelebViewCell.h"
 #import "HONAppDelegate.h"
 
-@implementation HONInviteViewCell
+@implementation HONInviteCelebViewCell
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -19,6 +18,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
+		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 	}
 	
 	return (self);

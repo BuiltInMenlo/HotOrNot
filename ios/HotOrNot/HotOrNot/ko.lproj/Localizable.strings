@@ -31,6 +31,8 @@
 "header_register2" = "프로필 사진을";
 "header_register3" = "시사";
 "header_findFriends" = "Find Friends";
+"header_inviteFriends" = "Invite Friends";
+"header_inviteCelebs" = "Invite Celebrities";
 "header_home" = "";
 "header_activity" = "";
 "header_discover" = "";

@@ -128,16 +128,10 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriendsBackground-568h@2x" : @"findFriendsBackground"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_findFriends", nil)];
 	[headerView hideRefreshing];
+	[headerView leftAlignTitle];
 	[self.view addSubview:headerView];
-	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 200.0, 24.0)];
-	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
-	titleLabel.textColor = [UIColor whiteColor];
-	titleLabel.text = NSLocalizedString(@"header_findFriends", nil);
-	[headerView addSubview:titleLabel];
 	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	skipButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);

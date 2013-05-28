@@ -501,10 +501,10 @@
 		label.text = @"Recent";
 		
 	} else if (section == 2) {
-		label.text = @"Friends";
+		label.text = @"All";
 		
 	} else {
-		label.text = [NSString stringWithFormat:@"Contact List (%d)", [_contactUsers count]];
+		label.text = @"Invite";//[NSString stringWithFormat:@"Contact List (%d)", [_contactUsers count]];
 	}
 	
 	return (headerImageView);
