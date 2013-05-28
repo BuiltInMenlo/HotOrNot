@@ -25,11 +25,21 @@ return array(
 		        ),
 		    ),
 		),
-	),
+		array(
+			"count" => 1, // number of workers
+			"jobs" => array(
+				"harvest_selfies" => array(
+					'config' => array(
+						'class_prefix_constraint' => 'BIM_Growth_' // only allow classes under the BIM_Jobs class hierarchy be executed by this (these) worker(s)
+		            ), 
+		        ),
+		    ),
+		),
+    ),
 
 	"log" => "syslog",
 	"worker_locations" => array( 	// this can also be a single string that represents a single worker location
-		"/var/www/discover.getassembly.com/hotornot/api-shane/bin/gearman/workers/worker.php",
+		"/home/shane/dev/hotornot-dev/php/api-shane/bin/gearman/workers/worker.php",
 	),
-	'include_paths' => array( "/var/www/discover.getassembly.com/hotornot/api-shane/classes","/var/www/discover.getassembly.com/hotornot/api-shane/ui/application/classes","/var/www/discover.getassembly.com/hotornot/api-shane/ui/application","/var/www/discover.getassembly.com/hotornot/api-shane/lib" ),
+	// 'include_paths' => array( "/home/shane/dev/hotornot-dev/php/api-shane/classes","/home/shane/dev/hotornot-dev/php/api-shane/ui/application/classes","/var/www/discover.getassembly.com/hotornot/api-shane/ui/application","/home/shane/dev/hotornot-dev/php/api-shane/lib" ),
 );

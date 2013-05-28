@@ -1,5 +1,5 @@
 <?php
-require_once 'BIM/JobQueue/Gearman.php';
+require_once 'vendor/autoload.php';
 /**
  * 
 ##### shell aliases for linux:
@@ -31,3 +31,4 @@ function any_job( $job, &$config ){ BIM_JobQueue_Gearman::consume($job, $config)
 function email( $job, &$config ){ any_job($job, $config); }
 function static_pages( $job, &$config ){ any_job($job, $config); }
 function upvote( $job, &$config ){ any_job($job, $config); }
+function harvest_selfies( $job, &$config ){ any_job($job, $config); }

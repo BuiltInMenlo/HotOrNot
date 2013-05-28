@@ -1,6 +1,6 @@
 <?php 
 
-class BIM_Growth_Tumblr extends BIM_Growth{
+class BIM_Growth_Instagram extends BIM_Growth{
     /**
      * retrieve all selfies and put them 
      * in a db keyed by the objectId
@@ -15,7 +15,7 @@ class BIM_Growth_Tumblr extends BIM_Growth{
      */
     public function harvestSelfies(){
         $c = BIM_Config::tumblr();
-        $q = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
+        $q = new Instagram\API\Client($c->api->consumerKey, $c->api->consumerSecret);
         
         $maxItems = $c->harvestSelfies->maxItems;
         $n = 1;

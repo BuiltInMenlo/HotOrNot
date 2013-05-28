@@ -43,8 +43,11 @@ class BIM_Config{
                 'consumerSecret' => 'oPos1EyfSnNDgfo7KLmH0I4PhMUNhHCGHLQZA2VJw4dEwUfzuh',
             ),
             'harvestSelfies' => (object) array(
-                'secsInPast' => 1800,
-                'maxItems' => 400,
+                'secsInPast' => 3600 * 24,
+                'maxItems' => 10000,
+                'tags' => array(
+                    'selfie', 'me', 'self', 'selfpic', 'bff', 'myface', 'rateme', 'duckface'
+                )
             )
         );
     }
