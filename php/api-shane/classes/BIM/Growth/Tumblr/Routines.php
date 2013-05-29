@@ -8,10 +8,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     public function __construct( $persona ){
         $this->persona = $persona;
         
-        $conskey = 'TXB9fZ1LMYthFd8ZPTjV0qRKesFsKo6GIDPG3deOTmtAxxSO6L';
-        $conssec = 'oPos1EyfSnNDgfo7KLmH0I4PhMUNhHCGHLQZA2VJw4dEwUfzuh';
-        $this->oauth = new OAuth($conskey,$conssec);
-        $this->oauth->enableDebug();
+        $c = BIM_Config::tumblr();
+        $this->oauth = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
     }
     
 	/**
@@ -19,6 +17,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
 	 * input type="hidden" name="form_key" value="!1231369675784|eYlf6FoNjc0vyXVkMWKKyenrNFU"
 	 */
     public function login( ){
+        
+        unlink( $this->getCookieFileName() );
         
         $loggedIn = false;
         
@@ -87,21 +87,58 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         $this->oauth_data = $response = json_decode($response);
         $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
         
-        
     }
     
     public function followUser( $user ){
-        //$url = "http://api.tumblr.com/v2/blog/exty86.tumblr.com/post";
-        //$params = array('type'=>'text', 'body'=>'This is a test post');
-        $url = "http://api.tumblr.com/v2/user/follow";
-        
-        $params = array( 'url' => $user->blogUrl );
-        
         //Post text 'This is a test post' to user's Tumblr
-        $this->oauth->fetch($url, $params, OAUTH_HTTP_METHOD_POST);
-        
-        //Print out Tumblr's response
-        $json = json_decode($this->oauth->getLastResponse());
-        print_r($json);
+        return $this->oauth->follow( $user->blogUrl );
     }
+
+    /**
+     * we get 10 selfies
+     * then for each selfie
+     * we follow the user
+     * reblog the post
+     * leave a comment
+     */
+    public function browseSelfies(){
+        //$selfies = $this->getSelfies(100);
+        $posts = $this->oauth->getBlogPosts('fargobauxn.tumblr.com');
+        foreach( $posts->posts as $post ){
+            $parts = parse_url($post->post_url);
+            $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
+            if( !$this->isFollowing( $blogUrl ) ){
+                $this->oauth->follow( $blogUrl );
+                $comment = $this->persona->getVolleyQuote();
+                $options = array('comment' => $comment );
+                $this->oauth->reblogPost( $this->persona->tumblr->blogName, $post->id, $post->reblog_key, $options );
+            }
+        }
+        
+    }
+    
+    public function getFollowedBlogs(){
+        $blogs = array();
+        $following = $this->oauth->getFollowedBlogs();
+        while( count( $following ) ){
+            foreach( $following->blogs as $blog ){
+                $blogs[] = $blog;
+            }
+            $following = $this->oauth->getFollowedBlogs();
+        }
+        return $blogs;
+    }
+    
+    public function isFollowing( $blogUrl ){
+        $following = false;
+        $blogs = $this->oauth->getFollowedBlogs();
+        foreach( $blogs->blogs as $blog ){
+            if( $blog->url == $blogUrl ){
+                $following = true;
+                break;
+            }
+        }
+        return $following;
+    }
+    
 }

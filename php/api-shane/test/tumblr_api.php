@@ -7,6 +7,7 @@ $persona = (object) array(
     	'username' => 'exty86',
     	'password' => 'i8ngot6',
     	'userid' => 'exty86',
+    	'blogName' => 'exty86.tumblr.com',
     )
 );
 
@@ -15,9 +16,14 @@ $user = (object) array(
 );
 
 // http://fargobauxn.tumblr.com/
-$p = new BIM_Growth_Persona( $persona );
+$persona = new BIM_Growth_Persona( $persona );
+$routines = new BIM_Growth_Tumblr_Routines( $persona );
 
-$o = new BIM_Growth_Tumblr_Routines( $p );
+try{
+    $routines->login();
+    $routines->browseSelfies();
+} catch( Exception $e ){
+    print_r( $e );
+}
 
-$o->login();
-$o->followUser( $user );
+//$o->followUser( $user );

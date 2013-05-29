@@ -6,4 +6,8 @@ class BIM_Growth_Persona{
             $this->$prop = $value;
         }
     }
+    
+    public function getVolleyQuote(){
+        return "HMU on TheSchnizz!";
+    }
 }

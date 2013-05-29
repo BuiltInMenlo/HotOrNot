@@ -1,11 +1,15 @@
 <?php 
 
 class BIM_Growth{
+    protected function getCookieFileName(){
+        return '/tmp/cookies.txt';
+    }
     
     protected function getCurlParams(){
+        $cookieFile = $this->getCookieFileName();
         return array(
-            CURLOPT_COOKIEJAR => '/tmp/cookies.txt',
-            CURLOPT_COOKIEFILE => '/tmp/cookies.txt',
+            CURLOPT_COOKIEJAR => $cookieFile,
+            CURLOPT_COOKIEFILE => $cookieFile,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_HEADER		   => true,
 			CURLOPT_FOLLOWLOCATION => true,
