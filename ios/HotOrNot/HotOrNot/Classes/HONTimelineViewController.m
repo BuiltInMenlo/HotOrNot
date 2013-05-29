@@ -521,7 +521,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteNetworkViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 }

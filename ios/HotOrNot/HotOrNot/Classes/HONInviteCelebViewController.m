@@ -140,5 +140,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	[[Mixpanel sharedInstance] track:@"Invite Celeb - Select"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 @"", @"celeb", nil]];
 }
 @end

@@ -572,44 +572,44 @@
 	
 	[self _uploadPhoto:_challangeImage];
 	
-	if (_userVO != nil || _challengeVO != nil) {
-		if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-			[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-				
-				if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-					NSMutableDictionary *params = [NSMutableDictionary dictionary];
-					[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-					[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
-					[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
-					[params setObject:[NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 7 : _submitAction] forKey:@"action"];
-					[params setObject:_subjectName forKey:@"subject"];
-					[params setObject:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? _challengeVO.challengerName : _challengeVO.creatorName forKey:@"username"];
-					
-					if (_challengeVO != nil)
-						[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-					
-					if (_fbID != nil)
-						[params setObject:_fbID forKey:@"fbID"];
-					
-					[self _submitChallenge:params];
-				
-				} else
-					[_cameraOverlayView showPreviewImage:image];
-			}];
-			
-		} else {
-			if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-				[_cameraOverlayView showPreviewImageFlipped:image];
-		
-			else
-				[_cameraOverlayView showPreviewImage:image];
-		}
-		
-	} else {
+//	if (_userVO != nil || _challengeVO != nil) {
+//		if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+//			[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+//				
+//				if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//					NSMutableDictionary *params = [NSMutableDictionary dictionary];
+//					[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+//					[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
+//					[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+//					[params setObject:[NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 7 : _submitAction] forKey:@"action"];
+//					[params setObject:_subjectName forKey:@"subject"];
+//					[params setObject:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? _challengeVO.challengerName : _challengeVO.creatorName forKey:@"username"];
+//					
+//					if (_challengeVO != nil)
+//						[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+//					
+//					if (_fbID != nil)
+//						[params setObject:_fbID forKey:@"fbID"];
+//					
+//					[self _submitChallenge:params];
+//				
+//				} else
+//					[_cameraOverlayView showPreviewImage:image];
+//			}];
+//			
+//		} else {
+//			if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
+//				[_cameraOverlayView showPreviewImageFlipped:image];
+//		
+//			else
+//				[_cameraOverlayView showPreviewImage:image];
+//		}
+//		
+//	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self dismissViewControllerAnimated:YES completion:nil];
 		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename previewImage:_challangeImage] animated:NO];
-	}
+//	}
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

@@ -26,6 +26,7 @@
 #import "HONContactUserVO.h"
 #import "HONImagePickerViewController.h"
 #import "HONChangeAvatarViewController.h"
+#import "HONInviteNetworkViewCell.h"
 
 @interface HONProfileViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) NSMutableArray *pastUsers;
@@ -226,20 +227,6 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(0.0, 0.0, 54.0, 44.0);
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_nonActive"] forState:UIControlStateNormal];
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_Active"] forState:UIControlStateHighlighted];
-	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:settingsButton];
-	
-	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
-	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:createChallengeButton];
-	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -254,6 +241,20 @@
 	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
+	
+	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	settingsButton.frame = CGRectMake(0.0, 0.0, 54.0, 44.0);
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_nonActive"] forState:UIControlStateNormal];
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_Active"] forState:UIControlStateHighlighted];
+	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:settingsButton];
+	
+	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
+	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
+	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[_headerView addSubview:createChallengeButton];
 }
 
 - (void)viewDidLoad {
@@ -477,12 +478,13 @@
 		return ([_allPastUsers count]);
 		
 	} else {
-		return ((_isContactsViewed) ? [_contactUsers count] : 1);
+		return (4);//(_isContactsViewed) ? [_contactUsers count] : 1);
 	}
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (3 + (int)(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized));
+	//return (3 + (int)(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized));
+	return (4);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
@@ -554,6 +556,39 @@
 		return (cell);
 		
 	} else {
+		HONInviteNetworkViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		NSDictionary *dict;
+		
+		if (cell == nil)
+			cell = [[HONInviteNetworkViewCell alloc] init];
+		
+		if (indexPath.row == 0) {
+			dict = [NSDictionary dictionaryWithObjectsAndKeys:
+					  @"IG", @"image",
+					  @"Instagram", @"name", nil];
+			
+		} else if (indexPath.row == 1) {
+			dict = [NSDictionary dictionaryWithObjectsAndKeys:
+					  @"KIK", @"image",
+					  @"Kik", @"name", nil];
+			
+		} else if (indexPath.row == 2) {
+			dict = [NSDictionary dictionaryWithObjectsAndKeys:
+					  @"FB", @"image",
+					  @"Facebook", @"name", nil];
+			
+		} else if (indexPath.row == 3) {
+			dict = [NSDictionary dictionaryWithObjectsAndKeys:
+					  @"CT", @"image",
+					  @"Contacts", @"name", nil];
+		}
+		
+		[cell setContents:dict];
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+		
+		return (cell);
+		
+		/*
 		if (_isContactsViewed) {
 			HONInviteUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 			
@@ -586,6 +621,7 @@
 			
 			return (cell);
 		}
+		*/
 	}
 }
 
