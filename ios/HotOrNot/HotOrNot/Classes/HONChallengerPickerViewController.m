@@ -14,21 +14,22 @@
 #import "HONChallengerPickerViewController.h"
 #import "HONAppDelegate.h"
 #import "HONHeaderView.h"
-#import "HONUserVO.h"
 #import "HONChallengerViewCell.h"
 #import "HONImagingDepictor.h"
 
 @interface HONChallengerPickerViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
-@property(nonatomic, strong) NSString *subjectName;
-@property(nonatomic, strong) NSString *username;
+@property (nonatomic, strong) NSString *subjectName;
+@property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) UITextField *usernameTextField;
-@property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) NSMutableArray *challengers;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) NSString *imagePrefix;
-@property(nonatomic, strong) UIImage *previewImage;
-@property(nonatomic, strong) HONUserVO *userVO;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *challengers;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) NSString *imagePrefix;
+@property (nonatomic, strong) UIImage *previewImage;
+@property (nonatomic, strong) HONUserVO *challengerVO;
+@property (nonatomic, strong) HONUserVO *userVO;
+@property (nonatomic, strong) HONChallengeVO *challengeVO;
 @end
 
 @implementation HONChallengerPickerViewController
@@ -40,6 +41,27 @@
 		_username = @"";
 		
 		_previewImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(107.0 * 2.0, 143.0 * 2.0)];
+	}
+	
+	return (self);
+}
+
+- (id)initWithSubject:(NSString *)subject imagePrefix:(NSString *)imgPrefix previewImage:(UIImage *)image userVO:(HONUserVO *)userVO challengeVO:(HONChallengeVO *)challengeVO {
+	if ((self = [super init])) {
+		_subjectName = subject;
+		_imagePrefix = imgPrefix;
+		_username = @"";
+		
+		_previewImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(107.0 * 2.0, 143.0 * 2.0)];
+		
+		_userVO = userVO;
+		_challengeVO = challengeVO;
+		
+		if (_userVO != nil)
+			_username = _userVO.username;
+		
+		if (_challengeVO != nil)
+			_username = _challengeVO.creatorName;
 	}
 	
 	return (self);
@@ -137,14 +159,17 @@
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _imagePrefix] forKey:@"imgURL"];
 	[params setObject:_subjectName forKey:@"subject"];
-	[params setObject:[NSString stringWithFormat:@"%d", ([_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] || [_userVO.username isEqualToString:@"Send a random match"]) ? 1 : 7] forKey:@"action"];
+	[params setObject:[NSString stringWithFormat:@"%d", (_challengeVO != nil) ? 4 : ([_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] || [_challengerVO.username isEqualToString:@"Send a random match"]) ? 1 : 7] forKey:@"action"];
 	
-	if (_userVO != nil)
-		[params setObject:_userVO.username forKey:@"username"];
+	if (_challengeVO != nil)
+		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+		
+	if (_challengerVO != nil)
+		[params setObject:_challengerVO.username forKey:@"username"];
 	
 	if (![_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] && [_username length] > 0)
-		[params setObject:[_username substringFromIndex:1] forKey:@"username"];
-	
+		[params setObject:([[_username substringToIndex:1] isEqualToString:@"@"]) ? [_username substringFromIndex:1] : _username forKey:@"username"];
+		
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -216,7 +241,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Send Photo"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
 	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
 	
@@ -243,19 +268,7 @@
 	challengeImageView.image = _previewImage;
 	[challengeImgHolderView addSubview:challengeImageView];
 	
-	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(107.0, 44.0, 213.0, 36.0)];
-	usernameBGImageView.image = [UIImage imageNamed:@"hashtagInputField"];
-	usernameBGImageView.userInteractionEnabled = YES;
-	[self.view addSubview:usernameBGImageView];
-	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(112.0, 55.0, 200.0, 18.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:15];
-	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = _subjectName;
-	[self.view addSubview:subjectLabel];
-	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(112.0, 87.0, 320.0, 24.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(112.0, 55.0, 320.0, 24.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -265,7 +278,7 @@
 	//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 	_usernameTextField.keyboardType = UIKeyboardTypeDefault;
-	_usernameTextField.text = NSLocalizedString(@"userPlaceholder", nil);
+	_usernameTextField.text = ([_username length] == 0) ? NSLocalizedString(@"userPlaceholder", nil) : [NSString stringWithFormat:@"@%@", _username];
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
@@ -363,11 +376,11 @@
 	HONChallengerViewCell *cell = (HONChallengerViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	[cell didSelect];
 	
-	_userVO = (HONUserVO *)[_challengers objectAtIndex:indexPath.row];		
+	_challengerVO = (HONUserVO *)[_challengers objectAtIndex:indexPath.row];		
 	[[Mixpanel sharedInstance] track:@"Challenger Picker - Past User"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 (_userVO != nil) ? _userVO.username : @"RANDOM", @"challenger", nil]];
+												 (_challengerVO != nil) ? _challengerVO.username : @"RANDOM", @"challenger", nil]];
 
 	
 	[self _submitChallenge];
