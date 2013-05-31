@@ -76,6 +76,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	//return (@"http://54.243.163.24/hotornot/api-shane");
+	//return (@"http://54.243.163.24/hotornot/api-dev");
 }
 
 + (NSString *)customerServiceURL {

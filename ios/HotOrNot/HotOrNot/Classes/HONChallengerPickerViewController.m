@@ -282,6 +282,13 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
+	UIButton *privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	privateToggleButton.frame = CGRectMake(274.0, 110.0, 34.0, 34.0);
+	[privateToggleButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[privateToggleButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+	[privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:privateToggleButton];
+	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 94.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 114.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;

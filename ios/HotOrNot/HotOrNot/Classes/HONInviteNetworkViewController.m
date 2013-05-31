@@ -204,7 +204,6 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	
 	UITextField *textField;
 	UITextField *textField2;
 	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Instagram Login"

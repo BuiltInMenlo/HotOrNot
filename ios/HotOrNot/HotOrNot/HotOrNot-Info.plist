@@ -41,9 +41,11 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb529054720443694</string>
+				<string>fb600550136636754</string>
 			</array>
 		</dict>
 		<dict>
@@ -60,9 +62,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>7346</string>
+	<string>7357</string>
 	<key>FacebookAppID</key>
-	<string>529054720443694</string>
+	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>
 	<string>Volley</string>
 	<key>LSRequiresIPhoneOS</key>
