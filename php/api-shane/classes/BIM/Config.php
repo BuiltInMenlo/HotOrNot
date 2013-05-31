@@ -36,6 +36,25 @@ class BIM_Config{
         );
     }
     
+    public static function instagram(){
+        return (object) array(
+            'api' => (object) array(
+                'client_id' => '63a3a9e66f22406799e904ccb91c3ab4',
+                'client_secret' => 'e09ed527c6cc43c897c80e59d7e9c137',
+                'access_token_url' => 'https://api.instagram.com/oauth/access_token',
+                'redirect_url' => "http://54.243.163.24/instagram_oauth.php"
+        
+            ),
+            'harvestSelfies' => (object) array(
+                'secsInPast' => 3600 * 24,
+                'maxItems' => 10000,
+                'tags' => array(
+                    'selfie', 'me', 'self', 'selfpic', 'bff', 'myface', 'rateme', 'duckface'
+                )
+            )
+        );
+    }
+    
     public static function tumblr(){
         return (object) array(
             'api' => (object) array(

@@ -1,13 +1,17 @@
 <?php 
 
 class BIM_Growth{
+    
+    protected $curl = null;
+    
     protected function getCookieFileName(){
         return '/tmp/cookies.txt';
     }
     
-    protected function getCurlParams(){
+    protected function getCurlParams( $headers = array() ){
         $cookieFile = $this->getCookieFileName();
         return array(
+            CURLOPT_HTTPHEADER => $headers,
             CURLOPT_COOKIEJAR => $cookieFile,
             CURLOPT_COOKIEFILE => $cookieFile,
 			CURLOPT_RETURNTRANSFER => true,
@@ -18,32 +22,32 @@ class BIM_Growth{
 			CURLOPT_CONNECTTIMEOUT => 60,
 			CURLOPT_TIMEOUT		   => 300,
 			CURLOPT_MAXREDIRS	   => 10,
-			CURLOPT_CUSTOMREQUEST  => 'GET',
 			CURLOPT_SSL_VERIFYPEER => true,
 			CURLOPT_VERBOSE        => false,
 			CURLOPT_USERAGENT => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
         );
     }
     
-	public function get( $url, $args = array(), $fullResponse = false ){
+	public function get( $url, $args = array(), $fullResponse = false, $headers = array() ){
         $queryStr = http_build_query($args);
 	    $url = "$url?$queryStr";
-		$options = $this->getCurlParams();
-	    return $this->handleRequest($url, $options, $fullResponse);
+		$options = $this->getCurlParams( $headers );
+	    return $this->handleRequest($url, $options, $fullResponse, $headers );
 	}
 	
-	public function post( $url, $args = array(), $fullResponse = false ){
+	public function post( $url, $args = array(), $fullResponse = false, $headers = array() ){
         $queryStr = http_build_query($args);
-        $options = $this->getCurlParams();
+        $options = $this->getCurlParams( $headers );
 		$options[CURLOPT_POSTFIELDS] = $queryStr;
-		$options[CURLOPT_CUSTOMREQUEST]  = 'POST';
-		return $this->handleRequest($url, $options, $fullResponse);
+		$options[CURLOPT_POST] = true;
+		return $this->handleRequest($url, $options, $fullResponse );
 	}
 	
-	public function handleRequest( $url, $options, $fullResponse ){
+	public function handleRequest( $url, $options, $fullResponse = false ){
 		// open the handle and execute the call to sendstream
 		$ch = curl_init($url);
 		curl_setopt_array($ch,$options);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		$responseStr = curl_exec($ch);
 		$err = curl_errno($ch);
 		$data = curl_getinfo( $ch );
@@ -52,14 +56,22 @@ class BIM_Growth{
 			$msg = "err no: $err - err msg: $errmsg\n";
 			error_log( print_r(array($msg,$data),true) );
 		}
-		curl_close($ch);
+		//curl_close($ch);
 		$response = self::parseResponse( $responseStr );
 		//		return $format == 'json' ? json_decode( $response['body'] ) : $response['body'];
+		$response['req_info'] = $data;
 		if( $fullResponse ){
 		    return $response;
         } else {
             return $response['body'];
         }
+	}
+	
+	protected function initCurl( $url ){
+	    if( !$this->curl ){
+	        $this->curl = curl_init( $url );
+	    }
+	    return $this->curl;
 	}
     
 	/**

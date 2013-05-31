@@ -129,12 +129,12 @@ class BIM_API_Instagram extends BIM_API
 	 * @param optional string of $xml if data needs to be sent with the api call
 	 * @return string - the response from sendstream
 	 */
-	public function call( $method, $args = array(), $format = 'json', $fullResponse = false ){
+	public function call( $method, $args = array(), $format = 'json', $fullResponse = false, $reqMethod = 'GET' ){
 	    
         $url = $this->api_root . "/$method";
         $args['client_id'] =  $this->client_id;
 
-        $REQ_METHOD = 'GET';
+        $REQ_METHOD = $reqMethod;
         if( isset( $this->methods[ $method ] ) ){
             $REQ_METHOD = $this->methods[ $method ];
         }
@@ -162,6 +162,7 @@ class BIM_API_Instagram extends BIM_API
 		// open the handle and execute the call to sendstream
 		$ch = curl_init($url);
 		curl_setopt_array($ch,$options);
+		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		$responseStr = curl_exec($ch);
 		$err = curl_errno($ch);
 		$data = curl_getinfo( $ch );
@@ -173,6 +174,7 @@ class BIM_API_Instagram extends BIM_API
 		curl_close($ch);
 		$response = self::parseResponse( $responseStr );
 		//		return $format == 'json' ? json_decode( $response['body'] ) : $response['body'];
+		$response['req_info'] = $data;
 		if( $fullResponse ){
 		    return $response;
         } else {
@@ -180,12 +182,12 @@ class BIM_API_Instagram extends BIM_API
         }
 	}
 	
-    public function throttledCall( $method, $args = array(), $format = 'json' ){
-    	$response = $this->call( $method, $args, $format, true );
+    public function throttledCall( $method, $args = array(), $format = 'json', $fullResponse = false, $reqMethod = 'GET' ){
+    	$response = $this->call( $method, $args, $format, true, $reqMethod );
         if( !$this->throttle( $response ) ){
     	    $response = $response['body'];
     	} else {
-        	$response = $this->call( $method, $args, $format, false );
+        	$response = $this->call( $method, $args, $format, false, $reqMethod );
        	}
        	return $response;
     }
