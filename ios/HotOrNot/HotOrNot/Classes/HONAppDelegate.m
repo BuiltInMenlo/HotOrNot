@@ -62,7 +62,6 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 @property (nonatomic, strong) UIImageView *bgImgView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONSearchViewController *searchViewController;
-- (void)_registerUser;
 @end
 
 @implementation HONAppDelegate
@@ -74,9 +73,9 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 
 
 + (NSString *)apiServerPath {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	//return (@"http://54.243.163.24/hotornot/api-shane");
-	//return (@"http://54.243.163.24/hotornot/api-dev");
+	return (@"http://54.243.163.24/hotornot/api-dev");
 }
 
 + (NSString *)customerServiceURL {
@@ -604,7 +603,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 				if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 					[HONAppDelegate setAllowsFBPosting:NO];
 				
-				[self _retrieveConfigJSON];
+		//[self _retrieveConfigJSON];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 
 				[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
@@ -711,8 +710,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	NSLog(@"didRegisterForRemoteNotificationsWithDeviceToken:[%@]", deviceID);
 	
 	[HONAppDelegate writeDeviceToken:deviceID];
-	//if (![[HONAppDelegate infoForUser] objectForKey:@"id"])
-		[self _registerUser];
+	[self _retrieveConfigJSON];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *) error {
@@ -722,7 +720,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 	NSLog(@"didFailToRegisterForRemoteNotificationsWithError:[%@]", deviceID);
 	
 	[HONAppDelegate writeDeviceToken:deviceID];
-	[self _registerUser];
+	[self _retrieveConfigJSON];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -856,90 +854,15 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
 			[[NSUserDefaults standardUserDefaults] setObject:[celebs copy] forKey:@"invite_celebs"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			[self _registerUser];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"HONAppDelegate AFNetworking %@", [error localizedDescription]);
 	}];
 	
-	
-	
-	/*
-	PFQuery *appDataQuery = [PFQuery queryWithClassName:@"Volley"];
-	//PFObject *appDataObject = [appDataQuery getObjectWithId:@"fICB044MKB"]; // live
-	PFObject *appDataObject = [appDataQuery getObjectWithId:@"As9Jqu23KZ"];// testflight
-	//PFObject *appDataObject = [appDataQuery getObjectWithId:@"Ogo4QU0jFf"];// dev
-	 
-	NSError *error = nil;
-	NSDictionary *appDict = [NSJSONSerialization JSONObjectWithData:[[appDataObject objectForKey:@"data"] dataUsingEncoding:NSUTF8StringEncoding]
-																			  options:NSJSONReadingMutableContainers
-																				 error:&error];
-	
-	if (error != nil)
-		NSLog(@"Failed to parse app data list JSON: %@", [error localizedFailureReason]);
-	
-	else {
-		//NSLog(@"appDict:\n%@", appDict);
-		
-		NSMutableArray *locales = [NSMutableArray array];
-		for (NSString *locale in [appDict objectForKey:@"enabled_locales"])
-			[locales addObject:locale];
-		
-		NSMutableArray *inviteCodes = [NSMutableArray array];
-		for (NSString *code in [appDict objectForKey:@"invite_codes"])
-			[inviteCodes addObject:code];
-		
-		NSMutableArray *hashtags = [NSMutableArray array];
-		for (NSString *hashtag in [appDict objectForKey:@"default_hashtags"])
-			[hashtags addObject:hashtag];
-		
-		NSMutableArray *subjects = [NSMutableArray array];
-		for (NSString *hashtag in [appDict objectForKey:@"search_hashtags"])
-			[subjects addObject:hashtag];
-		
-		NSMutableArray *users = [NSMutableArray array];
-		for (NSString *user in [appDict objectForKey:@"search_users"])
-			[users addObject:user];
-		
-		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-		[[NSUserDefaults standardUserDefaults] setObject:[[appDict objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
-		[[NSUserDefaults standardUserDefaults] setObject:[appDict objectForKey:@"service_url"] forKey:@"service_url"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-														  [[appDict objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
-														  [[appDict objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
-														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"vote"],
-														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"poke"],
-														  [[appDict objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
-																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
-																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"ko"], @"ko",
-																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"jp"], @"jp",
-																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"vi"], @"vi",
-																		  [[appDict objectForKey:@"invite_sms"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_sms"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"en"], @"en",
-																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"id"], @"id",
-																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"ko"], @"ko",
-																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"jp"], @"jp",
-																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"vi"], @"vi",
-																		  [[appDict objectForKey:@"invite_email"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"invite_email"];
-		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"en"], @"en",
-																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"id"], @"id",
-																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"ko"], @"ko",
-																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"jp"], @"jp",
-																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"vi"], @"vi",
-																		  [[appDict objectForKey:@"insta_profile"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"insta_profile"];
-		[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
-		[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
-		[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
-		[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
-		[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
-	 */
+
 }
 
 - (void)_registerUser {

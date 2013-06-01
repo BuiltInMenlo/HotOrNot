@@ -30,6 +30,7 @@
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UITextField *usernameTextField;
+@property (nonatomic, strong) UIScrollView *tutorialScrollView;
 @end
 
 @implementation HONRegisterViewController
@@ -269,16 +270,10 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1-568h@2x" : @"fueStep1"];
 	[self.view addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@""];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_register", nil)];
 	[headerView hideRefreshing];
+	[headerView leftAlignTitle];
 	[self.view addSubview:headerView];
-	
-	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 200.0, 24.0)];
-	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
-	titleLabel.textColor = [UIColor whiteColor];
-	titleLabel.text = NSLocalizedString(@"header_register", nil);
-	[headerView addSubview:titleLabel];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
@@ -301,8 +296,13 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
-	//[_usernameTextField becomeFirstResponder];
 	
+	_tutorialScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - (20.0))];
+	_tutorialScrollView.contentSize = CGSizeMake(960.0, [UIScreen mainScreen].bounds.size.height - (20.0));
+	_tutorialScrollView.pagingEnabled = YES;
+	[self.view addSubview:_tutorialScrollView];
+	
+	//[_usernameTextField becomeFirstResponder];	
 }
 
 - (void)viewDidLoad {
@@ -372,6 +372,10 @@
 	
 	else
 		[self _submitUsername];
+}
+
+- (void)_goCloseTutorial {
+	[_tutorialScrollView removeFromSuperview];
 }
 
 #pragma mark - Notifications

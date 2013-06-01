@@ -169,6 +169,8 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserShare:) name:@"SHOW_USER_SHARE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_togglePublicTimeline:) name:@"TOGGLE_PUBLIC_TIMELINE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_togglePrivateTimeline:) name:@"TOGGLE_PRIVATE_TIMELINE" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -747,6 +749,16 @@
 
 - (void)_showRegistration:(NSNotification *)notification {
 	[self _goRegistration];
+}
+
+- (void)_togglePublicTimeline:(NSNotification *)notification {
+	_submitAction = 4;
+	[self _retrieveChallenges];
+}
+
+- (void)_togglePrivateTimeline:(NSNotification *)notification {
+	_submitAction = 10;
+	[self _retrieveChallenges];
 }
 
 

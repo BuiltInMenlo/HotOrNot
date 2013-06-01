@@ -30,6 +30,7 @@
 @property (nonatomic, strong) HONUserVO *challengerVO;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic) BOOL isPrivate;
 @end
 
 @implementation HONChallengerPickerViewController
@@ -159,6 +160,7 @@
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _imagePrefix] forKey:@"imgURL"];
 	[params setObject:_subjectName forKey:@"subject"];
+	[params setObject:(_isPrivate) ? @"Y" : @"N" forKey:@"isPrivate"];
 	[params setObject:[NSString stringWithFormat:@"%d", (_challengeVO != nil) ? 4 : ([_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] || [_challengerVO.username isEqualToString:@"Send a random match"]) ? 1 : 7] forKey:@"action"];
 	
 	if (_challengeVO != nil)
@@ -235,6 +237,8 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	
+	_isPrivate = NO;
 	
 	_challengers = [NSMutableArray array];
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
@@ -326,6 +330,10 @@
 		[_usernameTextField resignFirstResponder];
 	
 	[self _submitChallenge];
+}
+
+- (void)_goPrivateToggle {
+	_isPrivate = !_isPrivate;
 }
 
 
