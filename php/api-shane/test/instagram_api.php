@@ -31,7 +31,8 @@ $media = (object) array( 'id' => 'fed2208ec99f11e2af6f22000a1f9a09_7' );
 
 try{
     $routines->loginAndAuthorizeApp();
-    print_r( json_decode( $routines->comment( "nice one", $media ) ) );
+    print_r( $routines->volleyUserPhotoComment() );
+//    print_r( json_decode( $routines->comment( "nice one", $media ) ) );
 } catch( Exception $e ){
     print_r( $e );
 }

@@ -26,9 +26,16 @@ return array(
 		    ),
 		),
 		array(
-			"count" => 1, // number of workers
+			"count" => 2, // number of workers
 			"jobs" => array(
+		        /*
 				"harvest_selfies" => array(
+					'config' => array(
+						'class_prefix_constraint' => 'BIM_Growth_' // only allow classes under the BIM_Jobs class hierarchy be executed by this (these) worker(s)
+		            ), 
+		        ),
+		        */
+				"growth" => array(
 					'config' => array(
 						'class_prefix_constraint' => 'BIM_Growth_' // only allow classes under the BIM_Jobs class hierarchy be executed by this (these) worker(s)
 		            ), 

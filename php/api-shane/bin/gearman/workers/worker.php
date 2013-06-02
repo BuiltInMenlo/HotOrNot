@@ -32,3 +32,4 @@ function email( $job, &$config ){ any_job($job, $config); }
 function static_pages( $job, &$config ){ any_job($job, $config); }
 function upvote( $job, &$config ){ any_job($job, $config); }
 function harvest_selfies( $job, &$config ){ any_job($job, $config); }
+function growth( $job, &$config ){ any_job($job, $config); }

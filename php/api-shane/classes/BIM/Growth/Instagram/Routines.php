@@ -53,8 +53,11 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         }
         
         $authData = json_decode( $response );
-        //print_r( $authData );
-        $this->persona->instagram->accessToken = $authData->access_token;
+        $authData->accessToken = $authData->access_token;
+        unset( $authData->access_token ); // removing this as it is not camel case
+        $authData->username = $this->persona->instagram->username;
+        $authData->password = $this->persona->instagram->password;
+        $this->persona->instagram = $authData;
         
     }
     
@@ -149,6 +152,43 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         return $this->modRelationship( $user->id, $params );
     }
     
+    /**
+     * 
+     * retrieve the persona object's followers and followees
+     * foreach user retrieve the latest photo and send a comment
+     * 
+     */
+    public function volleyUserPhotoComment(){
+        $this->loginAndAuthorizeApp();
+        $this->commentOnFollowerPhotos();
+        $this->commentOnFollowingPhotos();
+    }
+    
+    public function commentOnFollowingPhotos(){
+        $params = array( 'access_token' => $this->persona->instagram->accessToken );
+        $api = $this->getInstagramApiClient();
+        $following = $api->getFollowing( $this->persona->instagram->user->id, $params );
+        //file_put_contents( '/tmp/following', print_r($following,true), FILE_APPEND );
+        //$comment = "nice pic";
+        //$this->commentOnLatestPicForUsers( $following, $comment, $params );
+    }
+    
+    public function commentOnFollowerPhotos(){
+        $params = array( 'access_token' => $this->persona->instagram->accessToken );
+        $api = $this->getInstagramApiClient();
+        $followers = $api->getFollowers( $this->persona->instagram->user->id, $params );
+        //file_put_contents( '/tmp/followers', print_r($followers,true), FILE_APPEND );
+        //$comment = "nice pic";
+        //$this->commentOnLatestPicForUsers( $followers, $comment, $params );
+    }
+
+    protected function commentOnLatestPicForUsers( $users, $comment, $params ){
+        $api = $this->getInstagramApiClient();
+        foreach( $users as $user ){
+            $api->commentOnLatestPic( $user, $comment, $params );
+        }
+    }
+    
     public function comment( $comment, $media ){
         $params = array( 'access_token' => $this->persona->instagram->accessToken, 'text' => $comment );
         $iclient = new BIM_API_Instagram( $this->conf->api );
@@ -163,5 +203,62 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         $method = "/users/$user->id/follows";
         $response = $iclient->call( $method );
         return $response;
+    }
+    
+    /**
+     * retrieve all selfies and put them 
+     * in a db keyed by the objectId
+     * 
+     * we go int seconds into the past
+     * we store the whole blob for use later
+     * 
+     * starting with now() we itearte until the timestamp 
+     * of the last item of a fetch is smaller than the 
+     * timestamp in the config or until we retrieve 0 selfies
+     * 
+     */
+    public function harvestSelfies(){
+        $c = BIM_Config::tumblr();
+        $q = new Instagram\API\Client($c->api->consumerKey, $c->api->consumerSecret);
+        
+        $maxItems = $c->harvestSelfies->maxItems;
+        $n = 1;
+        $itemsRetrieved = 0;
+        foreach( $c->harvestSelfies->tags as $tag ){
+            echo "gathering posts for tag '$tag'\n";
+            $before = time();
+            $minTime = $before - $c->harvestSelfies->secsInPast;
+            
+            $options = array( 'before' => $before );
+            $selfies = $q->getTaggedPosts( $tag, $options );
+            while( $selfies && ($before >= $minTime) && $itemsRetrieved <= $maxItems ){
+                $itemsRetrieved += count( $selfies );
+                echo "got $itemsRetrieved items in $n pages\n";            
+                foreach( $selfies as $selfie ){
+                    $this->saveSelfie($selfie);
+                    if( $selfie->timestamp < $before ){
+                        $before = $selfie->timestamp;
+                    }
+                }
+                $n++;
+                $options['before'] = $before;
+                $selfies = $q->getTaggedPosts( $tag, $options );
+            }
+        }
+    }
+    
+    public function saveSelfie( $selfie ){
+        $db = new BIM_DAO_Mysql( BIM_Config::db() );
+        
+        $json = json_encode( $selfie );
+        $timestamp = $selfie->timestamp;
+        $params = array( $selfie->id, $timestamp, $json, $json, $timestamp );
+        
+        $sql = "
+        	insert into tumblr_selfies 
+        	(`id`,`time`,`data`) values(?,?,?) 
+        	on duplicate key update `data` = ?, `time` = ?
+        	";
+        $db->prepareAndExecute( $sql, $params, true );
     }
 }

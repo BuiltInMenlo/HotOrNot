@@ -1,5 +1,4 @@
 <?PHP
-require_once 'BIM/API.php';
 class BIM_API_Instagram extends BIM_API
 {
    /**
@@ -86,49 +85,6 @@ class BIM_API_Instagram extends BIM_API
         $this->client_secret = $params->client_secret;
     }
     
-   /**
-    * Log in and verify the user.
-    *
-    * @access  public
-    * @param   string      user
-    * @param   string      password
-    */
-    function login($user, $password)
-    {
-        $this->user     = $user;
-        
-        /* Call login to receive a nonce.
-         * (The nonce is stored in an error structure.)
-         */
-        $r = $this->call('users/login', array() );
-
-        $data = $this->_response_data;
-        $nonce = $r->nonce;
-        
-        // Generate the digested password response.
-        $response = md5( $nonce . ":" . md5($password) );
-        
-        // Send back the nonce and response.
-        $args = array(
-          'nonce'    => $nonce,
-          'response' => $response,
-        );
-        $r = $this->call('users/login', $args);
-        
-        // Store the provided user_key.
-        $this->user_key = $r->user_key;
-        
-        return 1;
-    }
-    
-	/**
-	 * function for making an http call to zvents
-	 *
-	 * @param string $url - the complete sendstream api url
-	 * @param string $method -  the http request method to use (GET,PUT,POST,DELETE)
-	 * @param optional string of $xml if data needs to be sent with the api call
-	 * @return string - the response from sendstream
-	 */
 	public function call( $method, $args = array(), $format = 'json', $fullResponse = false, $reqMethod = 'GET' ){
 	    
         $url = $this->api_root . "/$method";
@@ -159,7 +115,6 @@ class BIM_API_Instagram extends BIM_API
 			CURLOPT_VERBOSE        => false,
 		);
 
-		// open the handle and execute the call to sendstream
 		$ch = curl_init($url);
 		curl_setopt_array($ch,$options);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
@@ -287,92 +242,8 @@ class BIM_API_Instagram extends BIM_API
         }
 	
 	    return array("status" => $responseCode, "headers" => $responseHeaderArray, "body" => $responseBody);
-    } 
-    
-    /**
-     * returns a SimpleXML object
-     *
-     * @param string $xmlStr - string of well-formed xml
-     * @return SimpleXML object
-     */
-    public static function fromXML( $xmlStr ){
-    	return simplexml_load_string($xmlStr);
     }
-    
-	/**
-	 * The main function for converting to an XML document.
-	 * Pass in a multi dimensional array and this recrusively loops through and builds up an XML document.
-	 *
-	 * @param array $data
-	 * @param string $rootNodeName - what you want the root node to be - defaultsto data.
-	 * @param SimpleXMLElement $xml - should only be used recursively
-	 * @return string XML
-	 */
-	public static function toXml($data, $rootNodeName = 'data', $xml=null){
-		// turn off compatibility mode as simple xml throws a wobbly if you don't.
-		if (ini_get('zend.ze1_compatibility_mode') == 1)
-		{
-			ini_set ('zend.ze1_compatibility_mode', 0);
-		}
-		
-		if ($xml == null)
-		{
-			$xml = simplexml_load_string("<$rootNodeName />");
-		}
-		
-		// loop through the data passed in.
-		foreach($data as $key => $value) {
-			// no numeric keys in our xml please!
-			if ( is_numeric($key) ){
-				// make string key...
-				$key = "column". (string) $key;
-			}
-			
-			// replace anything not alpha numeric
-			$key = preg_replace('/[^a-z\-]/i', '', $key);
-			
-			// if there is another array found recursively call this function
-			if ( is_array($value) ) {
-				$node = $xml->addChild($key);
-				// recursive call.
-				self::toXml($value, $rootNodeName, $node);
-			} else {
-				// add single node.
-				$value = htmlentities($value);
-				$xml->addChild($key,$value);
-			}
-			
-		}
-		// pass back as string. or simple xml object if you want!
-		return $xml->asXML();
-	}
-	
-	/**
-	 * !!!!!!!!!!!!  THIS FUNCTION MIGHT THROTTLE AND MAKE THE PROCESS GO TO SLEEP !!!!!!!!!!!
-	 * @param object $event
-	 * 
-LAT	Latitude of the center search coordinate. If used, lng is required.
-MIN_TIMESTAMP	A unix timestamp. All media returned will be taken later than this timestamp.
-LNG	Longitude of the center search coordinate. If used, lat is required.
-MAX_TIMESTAMP	A unix timestamp. All media returned will be taken earlier than this timestamp.
-DISTANCE	Default is 1km (distance=1000), max distance is 5km.
-	 * 
-	 */
-    public function getPicsCloseTo( $event ){
-        $params = array(
-            'lat' => $event->venue->latitude,
-            'lng' => $event->venue->longitude,
-            'distance' => 1000,
-            'min_timestamp' => $event->media_collection->start_time,
-            'max_timestamp' => $event->media_collection->end_time,
-            'count' => 1000,
-        );
-        
-    	$pics = json_decode( $this->throttledCall( 'media/search', $params ) );
 
-        return $pics;
-    }
-    
     public function getPicsByHashTag( $tag, $max_id = null ){
         $params = null;
         if( $max_id ){
@@ -386,22 +257,6 @@ DISTANCE	Default is 1km (distance=1000), max distance is 5km.
         return $pics;
     }
 
-    /**
-	 * !!!!!!!!!!!!  THIS FUNCTION MIGHT THROTTLE AND MAKE THE PROCESS GO TO SLEEP !!!!!!!!!!!
-	 * @param object $venue
-	 */
-    public function getVenuesCloseTo( $exVenue ){
-        $params = array(
-            'lat' => $exVenue->latitude,
-            'lng' => $exVenue->longitude,
-            'distance' => 500
-         );
-        
-    	$venues = json_decode( $this->throttledCall( 'locations/search', $params ) );
-
-        return $venues;
-    }
-
     public function getUser( $userId ){
     	$user = json_decode( $this->throttledCall( "users/$userId" ) );
     	if( isset( $user->meta ) ){
@@ -409,56 +264,40 @@ DISTANCE	Default is 1km (distance=1000), max distance is 5km.
     	}
         return $user;
     }
-	/**
-	 * !!!!!!!!!!!!  THIS FUNCTION MIGHT THROTTLE AND MAKE THE PROCESS GO TO SLEEP !!!!!!!!!!!
-	 * 
- 	curl 
- 	-F 'client_id=ece86780bd9a49dd9a25275974fae1e7' 
- 	-F 'client_secret=b23fbde8a92d4b21bfbf95310ba265de' 
- 	-F 'object=geography' 
- 	-F 'aspect=media' 
- 	-F 'lat=37.7650' 
- 	-F 'lng=-122.4695' 
- 	-F 'radius=1000' 
- 	-F 'verify_token=1238_irving_street' 
- 	-F 'callback_url=http://dev.targetnode.com/gojo10backend/api/outpic/instagram/subscription/callback' 
- 	https://api.instagram.com/v1/subscriptions
- 	 */
-    public function subscribe( $params ){
-        $params['client_secret'] = $this->client_secret;
-        require_once 'BIM/API/Instagram.php';
-    	$venues = json_decode( $this->throttledCall( 'subscriptions', $params ) );
-        return $venues;
+    
+    public function getFollowing( $userId, $params  ){
+        $url = "users/$userId/follows";
+        $res = $this->call( $url, $params );
+        $res = json_decode( $res );
+        return $res->data;
     }
-	/**
-	 * 
-	 * !!!!!!!!!!!!  THIS FUNCTION MIGHT THROTTLE AND MAKE THE PROCESS GO TO SLEEP !!!!!!!!!!!
-	 * @param object $venue
-	 * @param object $event
-	 */
-    public function getVenuePicsForEvent( $venue, $event ){
-        
-        $params = array(
-            'min_timestamp' => $event->media_collection->start_time,
-            'max_timestamp' => $event->media_collection->end_time,
-        );
-
-        $url = 'locations/'.$venue->id.'/media/recent';
-
-        $pics_array = array();
-        $pics = json_decode( $this->throttledCall( $url, $params ) );
-    	$pics_array[] = $pics;
-    	
-    	$hasNext = isset( $pics->pagination ) && is_object( $pics->pagination ) && ( isset($pics->pagination->next_url) );
-    	while( $hasNext ){
-    	    $ptrn = '#'.$this->api_root.'#';
-	        $nextUrl = preg_replace( $ptrn, '', $pics->pagination->next_url );
-	        print "calling pics - pagination\n";
-	        $res = $this->throttledCall( $nextUrl, $params );
-    	    $pics = json_decode( $res );
-         	$pics_array[] = $pics;
-	        $hasNext = isset( $pics->pagination ) && is_object( $pics->pagination ) && ( isset($pics->pagination->next_url) );
-    	}
-    	return $pics_array;
+    
+    public function getFollowers( $userId, $params  ){
+        $url = "users/$userId/followed-by";
+        $res = $this->call( $url, $params );
+        $res = json_decode( $res );
+        return $res->data;
     }
+    
+    public function getLatestPicForUser( $userId, $params  ){
+        $url = "users/$userId/media/recent";
+        $res = $this->call( $url, $params );
+        $res = json_decode( $res );
+        return isset( $res->data[0] ) ? $res->data[0] : null;
+    }
+    
+    public function commentOnPic( $pic, $comment, $params ){
+        $params['text'] = $comment;
+        $method = "/media/$pic->id/comments";
+        $response = $this->call( $method, $params, 'json', false, 'POST' );
+        return $response;
+    }
+    
+    public function commentOnLatestPic( $userId, $comment, $params ){
+        $pic = $this->getLatestPicForUser( $userId, $params  );
+        if( $pic ){
+            $this->commentOnPic( $pic, $comment, $params );
+        }
+    }
+    
 }
