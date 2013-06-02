@@ -52,7 +52,7 @@ const CGSize kSnapLargeSize = {612.0, 816.0};
 const CGSize kAvatarDefaultSize = {200.0, 200.0};
 
 static const CGFloat kSnapRatio = 1.33333333f;
-static const CGFloat kSnapJPEGCompress = 0.75f;
+static const CGFloat kSnapJPEGCompress = 0.875f;
 
 
 @interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
@@ -118,6 +118,10 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 }
 + (int)pokePointMultiplier {
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:1] intValue]);
+}
+
++ (NSString *)tutorialImageForPage:(int)page {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"tutorial_images"] objectAtIndex:page]);
 }
 
 + (NSString *)timelineBannerURL {
@@ -798,6 +802,10 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 			for (NSString *code in [result objectForKey:@"invite_codes"])
 				[inviteCodes addObject:code];
 			
+			NSMutableArray *tutorialImages = [NSMutableArray array];
+			for (NSString *tutorialImage in [result objectForKey:@"tutorial_images"])
+				[tutorialImages addObject:tutorialImage];
+			
 			NSMutableArray *hashtags = [NSMutableArray array];
 			for (NSString *hashtag in [result objectForKey:@"default_hashtags"])
 				[hashtags addObject:hashtag];
@@ -849,6 +857,7 @@ static const CGFloat kSnapJPEGCompress = 0.75f;
 																			  [[result objectForKey:@"insta_profile"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"insta_profile"];
 			[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
 			[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
+			[[NSUserDefaults standardUserDefaults] setObject:[tutorialImages copy] forKey:@"tutorial_images"];
 			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];

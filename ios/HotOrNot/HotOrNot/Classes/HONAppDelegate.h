@@ -49,6 +49,7 @@ static const CGFloat kSnapRatio;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
 
++ (NSString *)tutorialImageForPage:(int)page;
 + (NSString *)timelineBannerURL;
 + (BOOL)isFUEInviteEnabled;
 

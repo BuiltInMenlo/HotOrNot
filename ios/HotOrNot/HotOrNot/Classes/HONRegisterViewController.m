@@ -21,7 +21,7 @@
 #import "HONHeaderView.h"
 #import "HONInviteNetworkViewController.h"
 
-@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, HONRegisterCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
+@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONRegisterCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic, strong) HONRegisterCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -29,8 +29,11 @@
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
+@property (nonatomic, strong) UIView *usernameHolderView;
 @property (nonatomic, strong) UITextField *usernameTextField;
+@property (nonatomic, strong) UIView *tutorialHolderView;
 @property (nonatomic, strong) UIScrollView *tutorialScrollView;
+@property (nonatomic, strong) UIPageControl *pageControl;
 @end
 
 @implementation HONRegisterViewController
@@ -266,14 +269,17 @@
 - (void)loadView {
 	[super loadView];
 	
+	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
+	[self.view addSubview:_usernameHolderView];
+	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1-568h@2x" : @"fueStep1"];
-	[self.view addSubview:bgImgView];
+	[_usernameHolderView addSubview:bgImgView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_register", nil)];
 	[headerView hideRefreshing];
 	[headerView leftAlignTitle];
-	[self.view addSubview:headerView];
+	[_usernameHolderView addSubview:headerView];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	nextButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
@@ -294,15 +300,44 @@
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
-	[self.view addSubview:_usernameTextField];
+	[_usernameHolderView addSubview:_usernameTextField];
 	
 	
-	_tutorialScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - (20.0))];
+	_tutorialHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
+	[self.view addSubview:_tutorialHolderView];
+	
+	_tutorialScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 20.0)];
 	_tutorialScrollView.contentSize = CGSizeMake(960.0, [UIScreen mainScreen].bounds.size.height - (20.0));
 	_tutorialScrollView.pagingEnabled = YES;
-	[self.view addSubview:_tutorialScrollView];
+	_tutorialScrollView.showsHorizontalScrollIndicator = NO;
+	_tutorialScrollView.delegate = self;
+	_tutorialScrollView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	[_tutorialHolderView addSubview:_tutorialScrollView];
 	
-	//[_usernameTextField becomeFirstResponder];	
+	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, 16.0, 288.0, _tutorialScrollView.frame.size.height - 32.0)];
+	[page1ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:0]] placeholderImage:nil];
+	[_tutorialScrollView addSubview:page1ImageView];
+	
+	UIImageView *page2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(336.0, 16.0, 288.0, _tutorialScrollView.frame.size.height - 32.0)];
+	[page2ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:1]] placeholderImage:nil];
+	[_tutorialScrollView addSubview:page2ImageView];
+	
+	UIImageView *page3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(656.0, 16.0, 288.0, _tutorialScrollView.frame.size.height - 32.0)];
+	[page3ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:2]] placeholderImage:nil];
+	[_tutorialScrollView addSubview:page3ImageView];
+	
+	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeTutorialButton.frame = CGRectMake(668.0, _tutorialScrollView.frame.size.height - 70.0, 264.0, 64.0);
+	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_nonActive"] forState:UIControlStateNormal];
+	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_Active"] forState:UIControlStateHighlighted];
+	[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+	[_tutorialScrollView addSubview:closeTutorialButton];
+	
+	_pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(60.0, [UIScreen mainScreen].bounds.size.height - 35.0, 200.0, 10.0)];
+	_pageControl.currentPage = 0;
+	_pageControl.userInteractionEnabled = NO;
+	_pageControl.numberOfPages = 3;
+	[_tutorialHolderView addSubview:_pageControl];
 }
 
 - (void)viewDidLoad {
@@ -375,7 +410,23 @@
 }
 
 - (void)_goCloseTutorial {
-	[_tutorialScrollView removeFromSuperview];
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.5];
+	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	[UIView commitAnimations];
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.5];
+	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	[UIView commitAnimations];
+	
+	[self performSelector:@selector(_goTextfieldFocus) withObject:nil afterDelay:0.33];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_goTextfieldFocus {
+	[_usernameTextField becomeFirstResponder];
 }
 
 #pragma mark - Notifications
@@ -515,6 +566,13 @@
 												 _username, @"username", nil]];
 	
 	[textField resignFirstResponder];
+}
+
+
+#pragma mark - ScrollView Delegates
+- (void)scrollViewDidScroll:(UIScrollView *)sender {
+	NSInteger page = _tutorialScrollView.contentOffset.x / _tutorialScrollView.frame.size.width;
+	_pageControl.currentPage = page;
 }
 
 
