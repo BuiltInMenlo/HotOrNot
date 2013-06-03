@@ -215,11 +215,22 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $user_id The ID of the user to get challenges (integer)
 	 * @return An array of user IDs (array)
 	**/
-	public function challengeOpponents($user_id) {
+	public function challengeOpponents($user_id, $private = false) {
 		$this->dbConnect();
-	    
+	    if( $private ){
+	        $privateSql = ' AND `is_private` = "Y" ';
+	    }
 		// get challeges where user is the creator or the challenger
-		$query = 'SELECT `creator_id`, `challenger_id` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .')) ORDER BY `updated` DESC;';
+		$query = 'SELECT `creator_id`, `challenger_id` 
+				  FROM `tblChallenges` 
+				  WHERE (
+				    `status_id` != 3 
+				  	AND `status_id` != 6 
+				  	AND `status_id` != 8
+				  	'.$privateSql.'
+				  	) 
+				  	AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .')) 
+				  ORDER BY `updated` DESC;';
 		$result = mysql_query($query);
 		
 		// push opponent id
@@ -239,11 +250,29 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $last_date The timestamp to start at (integer)
 	 * @return An associative obj of challenge IDs paired w/ timestamp (array)
 	**/
-	public function challengesWithOpponent($user_id, $opponent_id, $last_date="9999-99-99 99:99:99") {
+	public function challengesWithOpponent($user_id, $opponent_id, $last_date="9999-99-99 99:99:99", $private ) {
 		$this->dbConnect();
+	    if( $private ){
+	        $privateSql = ' AND `is_private` = "Y" ';
+	    }
 	    
+	    if( $last_date === null ){
+	        $last_date = "9999-99-99 99:99:99";
+	    }
+		
 		// get challenges where both users are included
-		$query = 'SELECT `id`, `creator_id`, `challenger_id`, `updated` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') AND (`creator_id` = '. $opponent_id .' OR `challenger_id` = '. $opponent_id .')) AND `updated` < "'. $last_date .'" ORDER BY `updated` DESC;';
+		$query = 'SELECT `id`, `creator_id`, `challenger_id`, `updated` 
+				  FROM `tblChallenges` 
+				  WHERE (
+				    `status_id` != 3 
+				  	AND `status_id` != 6 
+				  	AND `status_id` != 8
+				  	'.$privateSql.'
+				  	) 
+				  	AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') 
+				  	AND (`creator_id` = '. $opponent_id .' OR `challenger_id` = '. $opponent_id .')) 
+				  	AND `updated` < "'. $last_date .'" 
+				  ORDER BY `updated` DESC;';
 		$result = mysql_query($query);
 		
 		// push challenge id as key & updated time as val
@@ -439,7 +468,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $challenger_id The ID of the user to target (integer)
 	 * @return An associative object for a challenge (array)
 	**/
-	public function submitChallengeWithChallenger($user_id, $subject, $img_url, $challenger_id) {
+	public function submitChallengeWithChallenger($user_id, $subject, $img_url, $challenger_id, $is_private) {
 		$this->dbConnect();
 	    $challenge_arr = array();
 		
@@ -457,8 +486,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 		
 		// add the challenge
 		$query = 'INSERT INTO `tblChallenges` (';
-		$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`) ';
-		$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW());';
+		$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`) ';
+		$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW(), "'.$is_private.'" );';
 		$result = mysql_query($query);
 		$challenge_id = mysql_insert_id();
 		
@@ -485,7 +514,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $username The username of the user to target (string)
 	 * @return An associative object for a challenge (array)
 	**/
-	public function submitChallengeWithUsername($user_id, $subject, $img_url, $username) {
+	public function submitChallengeWithUsername($user_id, $subject, $img_url, $username, $is_private ) {
 		$this->dbConnect();
 	    $challenge_arr = array();
 		
@@ -513,8 +542,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 			
 			// add the new challenge
 			$query = 'INSERT INTO `tblChallenges` (';
-			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`) ';
-			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW());';
+			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`) ';
+			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW(), "'.$is_private.'");';
 			$result = mysql_query($query);
 			$challenge_id = mysql_insert_id();
 			
@@ -567,14 +596,15 @@ class BIM_App_Challenges extends BIM_App_Base{
 	/** 
 	 * Gets the latest list of challenges for a user and the challengers
 	 * @param $user_id The ID of the user (integer)
+	 * @param $private - boolean inducating whether or not to get private messgaes or public mesages
 	 * @return The list of challenges (array)
 	**/
-	public function getChallengesForUser($user_id) {
+	public function getChallengesForUser($user_id, $private = false ) {
 		
 		// get list of past opponents & loop thru
-		$opponentID_arr = $this->challengeOpponents($user_id);
+		$opponentID_arr = $this->challengeOpponents($user_id, $private);
 		foreach($opponentID_arr as $key => $val)
-			$opponentChallenges_arr[$user_id .'_'. $val][] = $this->challengesWithOpponent($user_id, $val);
+			$opponentChallenges_arr[$user_id .'_'. $val][] = $this->challengesWithOpponent($user_id, $val, null, $private);
 		
 		// loop thru each paired match & pull off most recent
 		$challengeID_arr = array();
@@ -610,12 +640,12 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $date the date/time to get challenges before (string)
 	 * @return The list of challenges (array)
 	**/
-	public function getChallengesForUserBeforeDate($user_id, $prevIDs, $date) {
+	public function getChallengesForUserBeforeDate($user_id, $prevIDs, $date, $private = false) {
 		$prevID_arr = explode('|', $prevIDs);
 		
 		
 		// get list of past opponents & loop thru
-		$opponentID_arr = $this->challengeOpponents($user_id);
+		$opponentID_arr = $this->challengeOpponents($user_id, $private );
 		
 		// loop thru prev id & remove from opponent array
 		foreach($prevID_arr as $key => $val) {
@@ -630,8 +660,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 		foreach($opponentID_arr as $key => $val) {
 			
 			// check against previous opponents
-			if (count($this->challengesWithOpponent($user_id, $val, $date)) > 0)
-				$opponentChallenges_arr[$user_id .'_'. $val][] = $this->challengesWithOpponent($user_id, $val, $date);
+			if (count($this->challengesWithOpponent($user_id, $val, $date, $private ) ) > 0)
+				$opponentChallenges_arr[$user_id .'_'. $val][] = $this->challengesWithOpponent($user_id, $val, $date, $private);
 		}
 		
 		

@@ -85,17 +85,17 @@ class BIM_Jobs_Challenges extends BIM_Jobs{
     /*
      * SUBMIT CHALLENGE WITH USERNAME JOBS
      */
-    public function queueSubmitChallengeWithUsernameJob( $userID, $subject, $imgUrl, $username ){
+    public function queueSubmitChallengeWithUsernameJob( $userID, $subject, $imgUrl, $username, $isPrivate ){
         $job = array(
         	'class' => 'BIM_Jobs_Challenges',
         	'method' => 'submitChallengeWithUsername',
-        	'data' => array( 'userID' => $userID, 'subject' => $subject, 'imgUrl' => $imgUrl, 'username' => $username ),
+        	'data' => array( 'userID' => $userID, 'subject' => $subject, 'imgUrl' => $imgUrl, 'username' => $username, 'isPrivate' => $isPrivate ),
         );
         return $this->enqueueBackground( $job, __CLASS__ );
     }
 	
     public function submitChallengeWithUsername( $workload ){
-        $this->challenges->submitChallengeWithUsername( $workload->data->userID, $workload->data->subject, $workload->data->imgUrl, $workload->data->username );
+        $this->challenges->submitChallengeWithUsername( $workload->data->userID, $workload->data->subject, $workload->data->imgUrl, $workload->data->username, $workload->data->isPrivate );
         $this->queueStaticPagesJobs();
     }
     
