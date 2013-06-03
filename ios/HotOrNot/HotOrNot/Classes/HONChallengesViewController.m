@@ -38,6 +38,8 @@
 @property(nonatomic, strong) NSMutableArray *friends;
 @property(nonatomic, retain) HONChallengePreviewViewController *previewViewController;
 @property(nonatomic) int blockCounter;
+@property (nonatomic, strong) UIImageView *togglePrivateImageView;
+@property (nonatomic) BOOL isPrivate;
 
 - (void)_retrieveChallenges;
 - (void)_retrieveUser;
@@ -262,7 +264,28 @@
 	_emptySetImgView.userInteractionEnabled = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
+	_isPrivate = NO;
+	
+	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 54.0)];
+	[self.view addSubview:toggleHolderView];
+	
+	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 9.0, 304.0, 34.0)];
+	_togglePrivateImageView.image = [UIImage imageNamed:@"homeToggle_globalActive"];
+	[toggleHolderView addSubview:_togglePrivateImageView];
+	
+	UIButton *publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	publicButton.frame = CGRectMake(8.0, 9.0, 152.0, 34.0);
+	publicButton.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.33];
+	[publicButton addTarget:self action:@selector(_goPublicChallenges) forControlEvents:UIControlEventTouchUpInside];
+	[toggleHolderView addSubview:publicButton];
+	
+	UIButton *privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	privateButton.frame = CGRectMake(160.0, 9.0, 152.0, 34.0);
+	privateButton.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.33];
+	[privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
+	[toggleHolderView addSubview:privateButton];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 52.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height + 52.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -323,6 +346,20 @@
 	[_headerView toggleRefresh:YES];
 	[self _retrieveChallenges];
 	[self _retrieveUser];
+}
+
+- (void)_goPublicChallenges {
+	_isPrivate = NO;
+	
+	_togglePrivateImageView.image = [UIImage imageNamed:@"homeToggle_globalActive"];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_PUBLIC_TIMELINE" object:nil];
+}
+
+- (void)_goPrivateChallenges {
+	_isPrivate = YES;
+	
+	_togglePrivateImageView.image = [UIImage imageNamed:@"homeToggle_globalActive"];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"TOGGLE_PRIVATE_TIMELINE" object:nil];
 }
 
 

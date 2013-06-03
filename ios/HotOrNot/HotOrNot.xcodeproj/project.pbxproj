@@ -154,7 +154,6 @@
 		4C5117411623A20D00370D3A /* Mixpanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51173C1623A20D00370D3A /* Mixpanel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C51643A1680082800EB3C09 /* error.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5164391680082800EB3C09 /* error.png */; };
 		4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51643C1681894600EB3C09 /* HONUsernameViewController.m */; };
-		4C53EB9F174C380B002899BF /* HONChallengeToggleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C53EB9E174C380B002899BF /* HONChallengeToggleViewCell.m */; };
 		4C6257F71753E52B006AD1F7 /* HONInviteCelebViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6257F61753E52B006AD1F7 /* HONInviteCelebViewCell.m */; };
 		4C6257FA1753F68C006AD1F7 /* HONInviteCelebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6257F91753F68B006AD1F7 /* HONInviteCelebViewController.m */; };
 		4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652915F96C7100AA7FCE /* UIKit.framework */; };
@@ -808,8 +807,6 @@
 		4C5164391680082800EB3C09 /* error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = error.png; sourceTree = "<group>"; };
 		4C51643B1681894500EB3C09 /* HONUsernameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUsernameViewController.h; sourceTree = "<group>"; };
 		4C51643C1681894600EB3C09 /* HONUsernameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUsernameViewController.m; sourceTree = "<group>"; };
-		4C53EB9D174C380B002899BF /* HONChallengeToggleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeToggleViewCell.h; sourceTree = "<group>"; };
-		4C53EB9E174C380B002899BF /* HONChallengeToggleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeToggleViewCell.m; sourceTree = "<group>"; };
 		4C6257F51753E52B006AD1F7 /* HONInviteCelebViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteCelebViewCell.h; sourceTree = "<group>"; };
 		4C6257F61753E52B006AD1F7 /* HONInviteCelebViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteCelebViewCell.m; sourceTree = "<group>"; };
 		4C6257F81753F68B006AD1F7 /* HONInviteCelebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteCelebViewController.h; sourceTree = "<group>"; };
@@ -1677,8 +1674,6 @@
 				4C45FF4B16DED0B6002F1080 /* Voters */,
 				4C45FF4716DECE95002F1080 /* HONUserProfileViewCell.h */,
 				4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */,
-				4C53EB9D174C380B002899BF /* HONChallengeToggleViewCell.h */,
-				4C53EB9E174C380B002899BF /* HONChallengeToggleViewCell.m */,
 				4C32B9A615FABBE80023A0EE /* HONTimelineItemViewCell.h */,
 				4C32B9A715FABBE80023A0EE /* HONTimelineItemViewCell.m */,
 				4C62673E15F96E5600AA7FCE /* HONTimelineViewController.h */,
@@ -3336,7 +3331,6 @@
 				4C51010E1733002500A5D342 /* HONImagingDepictor.m in Sources */,
 				4C51011417332B0700A5D342 /* UILabel+FormattedText.m in Sources */,
 				4CB03BB5173C88B40062B607 /* HONFindFriendsViewController.m in Sources */,
-				4C53EB9F174C380B002899BF /* HONChallengeToggleViewCell.m in Sources */,
 				4C0CA3F81751521D00DD0652 /* HONInviteNetworkViewCell.m in Sources */,
 				4C6257F71753E52B006AD1F7 /* HONInviteCelebViewCell.m in Sources */,
 				4C6257FA1753F68C006AD1F7 /* HONInviteCelebViewController.m in Sources */,

@@ -276,18 +276,6 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1-568h@2x" : @"fueStep1"];
 	[_usernameHolderView addSubview:bgImgView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_register", nil)];
-	[headerView hideRefreshing];
-	[headerView leftAlignTitle];
-	[_usernameHolderView addSubview:headerView];
-	
-	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
-	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:nextButton];
-	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(45.0, 190.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -301,6 +289,14 @@
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
 	[_usernameHolderView addSubview:_usernameTextField];
+	
+	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	nextButton.frame = CGRectMake(130.0, 250.0, 64.0, 44.0);
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	[_usernameHolderView addSubview:nextButton];
+	
 	
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:self.view.bounds];

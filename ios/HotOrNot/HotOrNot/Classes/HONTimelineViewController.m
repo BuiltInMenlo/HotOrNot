@@ -17,7 +17,6 @@
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
 #import "HONUserProfileViewCell.h"
-#import "HONChallengeToggleViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
@@ -169,8 +168,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserShare:) name:@"SHOW_USER_SHARE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_togglePublicTimeline:) name:@"TOGGLE_PUBLIC_TIMELINE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_togglePrivateTimeline:) name:@"TOGGLE_PRIVATE_TIMELINE" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -751,16 +748,6 @@
 	[self _goRegistration];
 }
 
-- (void)_togglePublicTimeline:(NSNotification *)notification {
-	_submitAction = 4;
-	[self _retrieveChallenges];
-}
-
-- (void)_togglePrivateTimeline:(NSNotification *)notification {
-	_submitAction = 10;
-	[self _retrieveChallenges];
-}
-
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -821,17 +808,6 @@
 		}
 		
 	} else {
-		if (!_isPushView && indexPath.row == 0) {
-			HONChallengeToggleViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-			
-			if (cell == nil) {
-				cell = [[HONChallengeToggleViewCell alloc] init];
-			}
-			
-			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-			return (cell);
-		
-		} else {
 			HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 			
 			if (cell == nil) {
@@ -842,7 +818,6 @@
 			
 			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 			return (cell);
-		}
 	}
 }
 
@@ -850,7 +825,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return (([_username length] > 0) ? 116.0 : ((_isPushView) ? 304.0 : 52.0));
+		return (([_username length] > 0) ? 116.0 : ((_isPushView) ? 304.0 : 52.0));//return (([_username length] > 0) ? 116.0 : 304.0);
 		
 	} else
 		return (304.0);
