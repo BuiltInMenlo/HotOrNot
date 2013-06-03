@@ -65,6 +65,16 @@ class BIM_Config{
         );
     }
     
+    public static function twilio(){
+        return (object) array(
+            'api' => (object) array(
+                'accountSid' => 'AC5a648733a2a7b0070f091c56482d2c99',
+                'authToken' => '1338153592f68f5df72dcb62b4fc1e09',
+                'number' => '4157023347'
+            ),
+        );
+    }
+    
     public static function tumblr(){
         return (object) array(
             'api' => (object) array(

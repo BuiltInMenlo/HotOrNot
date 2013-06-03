@@ -3,6 +3,8 @@
 class BIM_Growth{
     
     protected $curl = null;
+    protected $instagramApiClient = null; 
+    protected $twilioApiClient = null; 
     
     protected function getCookieFileName(){
         return '/tmp/cookies.txt';
@@ -130,5 +132,21 @@ class BIM_Growth{
         }
 	
 	    return array("status" => $responseCode, "headers" => $responseHeaderArray, "body" => $responseBody);
-    } 
+    }
+    
+    public function getInstagramApiClient(){
+        if( ! $this->instagramApiClient ){
+            $conf = BIM_Config::instagram();
+            $this->instagramApiClient = new BIM_API_Instagram( $conf->api );
+        }
+        return $this->instagramApiClient;
+    }
+    
+    public function getTwilioClient(){
+        if( ! $this->twilioApiClient ){
+            $conf = BIM_Config::twilio();
+            $this->twilioApiClient = new Services_Twilio( $conf->api->accountSid, $conf->api->authToken );
+        }
+        return $this->twilioApiClient;
+    }
 }

@@ -9,9 +9,9 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     public function __construct( $persona ){
         $this->persona = $persona;
         
-        $this->conf = BIM_Config::instagram();
-        $clientId = $this->conf->api->client_id;
-        $clientSecret = $this->conf->api->client_secret;
+        $this->instagramConf = BIM_Config::instagram();
+        $clientId = $this->instagramConf->api->client_id;
+        $clientSecret = $this->instagramConf->api->client_secret;
         
         //$this->oauth = new OAuth($conskey,$conssec);
         //$this->oauth->enableDebug();
@@ -62,8 +62,8 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     }
     
     public function authorizeApp( $authPageHtml ){
-        $clientId = $this->conf->api->client_id;
-        $redirectUri = $this->conf->api->redirect_url;
+        $clientId = $this->instagramConf->api->client_id;
+        $redirectUri = $this->instagramConf->api->redirect_url;
         
         $ptrn = '/<form.*?action="(.+?)"/';
         preg_match($ptrn, $authPageHtml, $matches);
@@ -94,8 +94,8 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     
     public function login(){
         
-        $clientId = $this->conf->api->client_id;
-        $redirectUri = $this->conf->api->redirect_url;
+        $clientId = $this->instagramConf->api->client_id;
+        $redirectUri = $this->instagramConf->api->redirect_url;
         $response = $this->get( $redirectUri );
         //print_r( $response ); exit;
            
@@ -130,7 +130,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     
     public function modRelationship( $userId, $params ){
         $params['access_token'] = $this->persona->instagram->accessToken;
-        $iclient = new BIM_API_Instagram( $this->conf->api );
+        $iclient = new BIM_API_Instagram( $this->instagramConf->api );
         $method = "/users/$userId/relationship";
         //$response = $iclient->call( $method, $params, 'json', true, 'POST' );
         //print_r( $response ); exit;
@@ -191,7 +191,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     
     public function comment( $comment, $media ){
         $params = array( 'access_token' => $this->persona->instagram->accessToken, 'text' => $comment );
-        $iclient = new BIM_API_Instagram( $this->conf->api );
+        $iclient = new BIM_API_Instagram( $this->instagramConf->api );
         $method = "/media/$media->id/comments";
         $response = $iclient->call( $method, $params, 'json', false, 'POST' );
         return $response;
@@ -199,7 +199,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     
     public function getFollowing( $user ){
         $params = array( 'access_token' => $this->persona->instagram->accessToken );
-        $iclient = new BIM_API_Instagram( $this->conf->api );
+        $iclient = new BIM_API_Instagram( $this->instagramConf->api );
         $method = "/users/$user->id/follows";
         $response = $iclient->call( $method );
         return $response;

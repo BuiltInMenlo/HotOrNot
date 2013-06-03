@@ -15,4 +15,11 @@ class BIM_App_G extends BIM_App_Base{
             return $o->queueEmailInvites( $params['userId'], $params['addresses'] );
         }
     }
+    
+    public function smsInvites( $params ){
+        if( isset( $params['userId']) && isset($params['numbers'] ) ){
+            $o = new BIM_Jobs_Growth();
+            return $o->queueSMSInvites( $params['userId'], $params['numbers'] );
+        }
+    }
 }

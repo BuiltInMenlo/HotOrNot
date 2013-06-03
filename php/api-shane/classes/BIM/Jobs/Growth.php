@@ -27,4 +27,25 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         
         $routines->emailInvites();
     }
+    
+    public function queueSMSInvites( $userId, $numbers ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Growth',
+        	'method' => 'smsInvites',
+        	'data' => array( 'userId' => $userId, 'numbers' => $numbers ),
+        );
+        
+        return $this->enqueueBackground( $job, 'growth' );
+    }
+	
+    public function smsInvites( $workload ){
+        $persona = (object) array(
+            'sms' => $workload->data
+        );
+        
+        $persona = new BIM_Growth_Persona( $persona );
+        $routines = new BIM_Growth_SMS_Routines( $persona );
+        
+        $routines->smsInvites();
+    }
 }

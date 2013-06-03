@@ -15,9 +15,10 @@ class BIM_Controller_G extends BIM_Controller_Base {
         if ( $input ) {
             if( $input['action'] == 0 ){
                 return $growth->volleyUserPhotoComment( $input );
-            }
-            else if( $input['action'] == 1 ){
+            } else if( $input['action'] == 1 ){
                 return $growth->emailInvites( $input );
+            } else if( $input['action'] == 2 ){
+                return $growth->smsInvites( $input );
             }
         }
     }
