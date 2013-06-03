@@ -9,4 +9,10 @@ class BIM_App_G extends BIM_App_Base{
         }
     }
     
+    public function emailInvites( $params ){
+        if( isset( $params['userId']) && isset($params['addresses'] ) ){
+            $o = new BIM_Jobs_Growth();
+            return $o->queueEmailInvites( $params['userId'], $params['addresses'] );
+        }
+    }
 }

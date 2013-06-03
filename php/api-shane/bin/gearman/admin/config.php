@@ -37,7 +37,7 @@ return array(
 		        */
 				"growth" => array(
 					'config' => array(
-						'class_prefix_constraint' => 'BIM_Growth_' // only allow classes under the BIM_Jobs class hierarchy be executed by this (these) worker(s)
+						'class_prefix_constraint' => 'BIM_Jobs_' // only allow classes under the BIM_Jobs class hierarchy be executed by this (these) worker(s)
 		            ), 
 		        ),
 		    ),

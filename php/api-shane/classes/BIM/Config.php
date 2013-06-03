@@ -4,6 +4,16 @@ class BIM_Config{
     
     static protected $data = array();
     
+    public static function growthEmailInvites(){
+        return (object) array(
+        	'to_email' => 'shane@shanehill.com',
+        	'to_name' => 'leyla',
+        	'from_email' => 'test@shanehill.com',
+        	'from_name' => 'BIM',
+        	'subject' => 'email test',
+        );
+    }
+    
     public static function queueFuncs(){
         return array(
             'BIM_Controller_Votes' => array(

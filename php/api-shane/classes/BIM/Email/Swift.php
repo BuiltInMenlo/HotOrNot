@@ -1,7 +1,5 @@
 <?php
-
 require_once 'smtp_mailer_swift/lib/swift_required.php';
-require_once 'BIM/Email.php';
 
 class BIM_Email_Swift extends BIM_Email{
 
