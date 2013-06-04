@@ -1,5 +1,4 @@
 <?php
-require_once 'BIM/App/Base.php';
 
 class BIM_App_Votes extends BIM_App_Base{
     

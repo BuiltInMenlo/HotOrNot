@@ -1,8 +1,4 @@
 <?php 
-require 'BIM/Resource.php';
-require 'BIM/Jobs/Votes.php';
-require_once 'BIM/Jobs.php';
-require_once 'BIM/App/Challenges.php';
 
 class BIM_Jobs_Challenges extends BIM_Jobs{
     

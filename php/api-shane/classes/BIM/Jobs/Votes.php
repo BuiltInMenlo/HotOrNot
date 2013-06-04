@@ -1,6 +1,4 @@
 <?php 
-require 'BIM/Resource.php';
-require_once 'BIM/Jobs.php';
 
 class BIM_Jobs_Votes extends BIM_Jobs{
     

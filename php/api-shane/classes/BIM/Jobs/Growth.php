@@ -32,7 +32,11 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         $job = array(
         	'class' => 'BIM_Jobs_Growth',
         	'method' => 'smsInvites',
-        	'data' => array( 'userId' => $userId, 'numbers' => $numbers ),
+        	'data' => array( 
+        				'userId' => $userId, 
+        				'numbers' => $numbers,
+        				'inviteMsg' => "Thanks for signing up for Volley! (iOS app) You have been chosen to be apart of our test group. Sign up here: http://bit.ly/letsvolley"
+                      ),
         );
         
         return $this->enqueueBackground( $job, 'growth' );

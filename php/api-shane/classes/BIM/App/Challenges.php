@@ -217,6 +217,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	**/
 	public function challengeOpponents($user_id, $private = false) {
 		$this->dbConnect();
+		$privateSql = '';
 	    if( $private ){
 	        $privateSql = ' AND `is_private` = "Y" ';
 	    }
@@ -252,7 +253,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 	**/
 	public function challengesWithOpponent($user_id, $opponent_id, $last_date="9999-99-99 99:99:99", $private ) {
 		$this->dbConnect();
-	    if( $private ){
+		$privateSql = '';
+		if( $private ){
 	        $privateSql = ' AND `is_private` = "Y" ';
 	    }
 	    
@@ -515,7 +517,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @return An associative object for a challenge (array)
 	**/
 	public function submitChallengeWithUsername($user_id, $subject, $img_url, $username, $is_private ) {
-		$this->dbConnect();
+	    $this->dbConnect();
 	    $challenge_arr = array();
 		
 		// get the targeted user's info
@@ -603,6 +605,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 		
 		// get list of past opponents & loop thru
 		$opponentID_arr = $this->challengeOpponents($user_id, $private);
+
 		foreach($opponentID_arr as $key => $val)
 			$opponentChallenges_arr[$user_id .'_'. $val][] = $this->challengesWithOpponent($user_id, $val, null, $private);
 		
@@ -611,11 +614,9 @@ class BIM_App_Challenges extends BIM_App_Base{
 		foreach($opponentChallenges_arr as $key => $val)
 			array_push($challengeID_arr, key($val[0]));
 			
-		
 		// sort by date asc, then reverse to go desc
 		asort($challengeID_arr);
 		$challengeID_arr = array_reverse($challengeID_arr, true);
-		
 		
 		// loop thru the most resent challenge ID per creator/challenger match
 		$cnt = 0;

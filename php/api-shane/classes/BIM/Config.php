@@ -68,9 +68,9 @@ class BIM_Config{
     public static function twilio(){
         return (object) array(
             'api' => (object) array(
-                'accountSid' => 'AC5a648733a2a7b0070f091c56482d2c99',
-                'authToken' => '1338153592f68f5df72dcb62b4fc1e09',
-                'number' => '4157023347'
+                'accountSid' => 'ACb76dc4d9482a77306bc7170a47f2ea47',
+                'authToken' => '00015969db460ffe0f0bd5b3df60972a',
+                'number' => '2394313268'
             ),
         );
     }

@@ -19,11 +19,11 @@ class BIM_Controller{
         }
         $r = new $controllerClass();
         
-        
         $res = $r->handleReq();
         if( is_bool( $res ) ){
             $res = array( 'result' => $res );
         }
+        setcookie( 'foo','poo', time() + 7200, '/','discover.getassembly.com' );
         $this->sendResponse( 200, $res );
     }
     

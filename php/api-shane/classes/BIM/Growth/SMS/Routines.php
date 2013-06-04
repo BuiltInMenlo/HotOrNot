@@ -25,6 +25,6 @@ class BIM_Growth_SMS_Routines extends BIM_Growth_SMS{
     }
     
     public function getTxtMsg(){
-        return "hey man";
+        return $this->persona->sms->inviteMsg;
     }
 }
