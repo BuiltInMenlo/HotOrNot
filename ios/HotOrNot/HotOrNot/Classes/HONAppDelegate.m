@@ -5,6 +5,9 @@
 //  Created by Matthew Holcombe on 09.06.12.
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
+
+
+#import <AdSupport/AdSupport.h>
 #import <AVFoundation/AVFoundation.h>
 #import <FacebookSDK/FacebookSDK.h>
 #import <Parse/Parse.h>
@@ -75,7 +78,9 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 + (NSString *)apiServerPath {
 	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	//return (@"http://54.243.163.24/hotornot/api-shane");
-	return (@"http://54.243.163.24/hotornot/api-dev");
+	
+	return (@"http://discover.getassembly.com/hotornot/api-shane");
+	//return (@"http://54.234.38.234/hotornot/api-dev");
 }
 
 + (NSString *)customerServiceURL {
@@ -535,6 +540,12 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 	
 	//[self _testParseCloudCode];
 	//[self _showFonts];
+	
+	if ([ASIdentifierManager sharedManager].isAdvertisingTrackingEnabled)
+		NSLog(@"advertisingIdentifier:[%@]", [[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
+	
+	
+	NSLog(@"identifierForVendor:[%@]", [[UIDevice currentDevice].identifierForVendor UUIDString]);
 	
 	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
