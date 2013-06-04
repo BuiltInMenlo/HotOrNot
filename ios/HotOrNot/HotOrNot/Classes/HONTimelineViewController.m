@@ -441,7 +441,7 @@
 	}
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
-		//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
 		
 	} else {
@@ -763,10 +763,10 @@
 		return (nil);
 	
 	else {
-		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 32.0)];
+		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 48.0)];
 		bgView.backgroundColor = [UIColor grayColor];
 		
-		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 32.0)];
+		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 48.0)];
 		bannerImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
 		[bgView addSubview:bannerImageView];
@@ -825,14 +825,14 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return (([_username length] > 0) ? 116.0 : ((_isPushView) ? 304.0 : 52.0));//return (([_username length] > 0) ? 116.0 : 304.0);
+		return (([_username length] > 0) ? 116.0 : 304.0);
 		
 	} else
 		return (304.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (([[HONAppDelegate timelineBannerURL] length] > 0) ? ((int)![_username length] > 0) * 32.0 : 0.0);
+	return (([[HONAppDelegate timelineBannerURL] length] > 0) ? ((int)![_username length] > 0) * 48.0 : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

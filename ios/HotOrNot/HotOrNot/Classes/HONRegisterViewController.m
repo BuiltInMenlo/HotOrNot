@@ -310,15 +310,15 @@
 	_tutorialScrollView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[_tutorialHolderView addSubview:_tutorialScrollView];
 	
-	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, 16.0, 288.0, _tutorialScrollView.frame.size.height - 32.0)];
+	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
 	[page1ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:0]] placeholderImage:nil];
 	[_tutorialScrollView addSubview:page1ImageView];
 	
-	UIImageView *page2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(336.0, 16.0, 288.0, _tutorialScrollView.frame.size.height - 32.0)];
+	UIImageView *page2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
 	[page2ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:1]] placeholderImage:nil];
 	[_tutorialScrollView addSubview:page2ImageView];
 	
-	UIImageView *page3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(656.0, 16.0, 288.0, _tutorialScrollView.frame.size.height - 32.0)];
+	UIImageView *page3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(640.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
 	[page3ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:2]] placeholderImage:nil];
 	[_tutorialScrollView addSubview:page3ImageView];
 	

@@ -95,9 +95,16 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 	[self addSubview:timeLabel];
 	
-	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 46.0, 153.0, 153.0)];
+	UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 46.0, 320.0, kSnapMediumSize.width)];
+	scrollView.contentSize = CGSizeMake(21.0 + (kSnapMediumSize.width * 2.0), kSnapMediumSize.width);
+	scrollView.pagingEnabled = NO;
+	scrollView.showsHorizontalScrollIndicator = NO;
+	scrollView.backgroundColor = [UIColor whiteColor];
+	[self addSubview:scrollView];
+	
+	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(7.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
 	_lHolderView.clipsToBounds = YES;
-	[self addSubview:_lHolderView];
+	[scrollView addSubview:_lHolderView];
 	
 	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kSnapMediumSize.width, kSnapMediumSize.height)];
 	lImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
@@ -105,35 +112,35 @@
 	lImgView.userInteractionEnabled = YES;
 	[_lHolderView addSubview:lImgView];
 	
-	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 209.0, 38.0, 38.0)];
+	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 160.0, 38.0, 38.0)];
 	creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 	creatorAvatarImageView.userInteractionEnabled = YES;
-	[self addSubview:creatorAvatarImageView];
+	[_lHolderView addSubview:creatorAvatarImageView];
 	
 	UIButton *creatorAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	creatorAvatarButton.frame = creatorAvatarImageView.frame;
 	[creatorAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 	[creatorAvatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:creatorAvatarButton];
+	[_lHolderView addSubview:creatorAvatarButton];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 221.0, 100.0, 20.0)];
-	creatorNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
-	creatorNameLabel.textColor = [HONAppDelegate honGrey635Color];
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 172.0, 100.0, 20.0)];
+	creatorNameLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:13];
+	creatorNameLabel.textColor = [UIColor whiteColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
-	[self addSubview:creatorNameLabel];
+	[_lHolderView addSubview:creatorNameLabel];
 	
 	UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	creatorNameButton.frame = creatorNameLabel.frame;
 	[creatorNameButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 	[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:creatorNameButton];
+	[_lHolderView addSubview:creatorNameButton];
 	
-	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 46.0, 153.0, 153.0)];
+	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(226.0, 0.0, 210.0, 210.0)];
 	_rHolderView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	_rHolderView.clipsToBounds = YES;
-	[self addSubview:_rHolderView];
+	[scrollView addSubview:_rHolderView];
 	
 	if (_hasChallenger) {
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kSnapMediumSize.width, kSnapMediumSize.height)];
@@ -142,42 +149,42 @@
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
-		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 209.0, 38.0, 38.0)];
+		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 160.0, 38.0, 38.0)];
 		challengerAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
 		challengerAvatarImageView.userInteractionEnabled = YES;
 		challengerAvatarImageView.clipsToBounds = YES;
-		[self addSubview:challengerAvatarImageView];
+		[_rHolderView addSubview:challengerAvatarImageView];
 		
 		UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		challengerAvatarButton.frame = challengerAvatarImageView.frame;
 		[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 		[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:challengerAvatarButton];
+		[_rHolderView addSubview:challengerAvatarButton];
 		
-		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(209.0, 220.0, 100.0, 20.0)];
-		challengerNameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
-		challengerNameLabel.textColor = [HONAppDelegate honGrey635Color];
+		UILabel *challengerNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 172.0, 100.0, 20.0)];
+		challengerNameLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:13];
+		challengerNameLabel.textColor = [UIColor whiteColor];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
 		challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
-		[self addSubview:challengerNameLabel];
+		[_rHolderView addSubview:challengerNameLabel];
 		
 		UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		challengerNameButton.frame = challengerNameLabel.frame;
 		[challengerNameButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:challengerNameButton];
+		[_rHolderView addSubview:challengerNameButton];
 		
-		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 114.0, 34.0, 34.0)];
+		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 3.0, 34.0, 34.0)];
 		lScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
 		[_lHolderView addSubview:lScoreImageView];
 		
-		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 114.0, 34.0, 34.0)];
+		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 3.0, 34.0, 34.0)];
 		rScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
 		[_rHolderView addSubview:rScoreImageView];
 		
 	} else {
-		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 153.0, 153.0)];
+		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
 		rImgView.image = [UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? @"pokeThumb" : @"thumbCameraAction"];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
@@ -211,19 +218,23 @@
 		}
 	}
 	
-	_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(36.0, 107.0, 52.0, 52.0)];
-	_lScoreLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:24];
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
+	_lScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(36.0, 0.0, 84.0, 52.0)];
+	_lScoreLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:24];
 	_lScoreLabel.backgroundColor = [UIColor clearColor];
 	_lScoreLabel.textColor = [UIColor whiteColor];
-	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+	
+	_lScoreLabel.text = [numberFormatter stringFromNumber:[NSNumber numberWithInt:_challengeVO.creatorScore]];//[NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 	_lScoreLabel.hidden = !_hasChallenger;
 	[_lHolderView addSubview:_lScoreLabel];
 	
-	_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(36.0, 107.0, 52.0, 52.0)];
-	_rScoreLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:24];
+	_rScoreLabel = [[UILabel alloc] initWithFrame:CGRectMake(36.0, 0.0, 84.0, 52.0)];
+	_rScoreLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:24];
 	_rScoreLabel.backgroundColor = [UIColor clearColor];
 	_rScoreLabel.textColor = [UIColor whiteColor];
-	_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+	_rScoreLabel.text = [numberFormatter stringFromNumber:[NSNumber numberWithInt:_challengeVO.challengerScore]];//[NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 	_rScoreLabel.hidden = !_hasChallenger;
 	[_rHolderView addSubview:_rScoreLabel];
 	

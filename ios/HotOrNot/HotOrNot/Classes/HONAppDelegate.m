@@ -47,7 +47,7 @@ NSString * const kAPIVotes = @"Votes.php";
 
 const CGSize kTabSize = {80.0, 44.0};
 const CGSize kSnapThumbSize = {38.0, 50.0};
-const CGSize kSnapMediumSize = {153.0, 205.0};
+const CGSize kSnapMediumSize = {210.0, 280.0};
 const CGSize kSnapLargeSize = {612.0, 816.0};
 const CGSize kAvatarDefaultSize = {200.0, 200.0};
 
