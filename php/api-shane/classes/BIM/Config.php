@@ -17,7 +17,7 @@ class BIM_Config{
     public static function queueFuncs(){
         return array(
             'BIM_Controller_Votes' => array(
-                'upvoteChallenge' => array( 'queue' => true ),
+                'upvoteChallenge' => array( 'queue' => false ),
             )
         );
     }
@@ -26,19 +26,19 @@ class BIM_Config{
         return array(
             'BIM_Controller_Discover' => array(
                 'getTopChallengesByVotes' => array( 
-                    'redirect' => true,
+                    'redirect' => false,
                 	'url' => "http://54.243.163.24/getTopChallengesByVotes.js",
                 	"path" => '/var/www/discover.getassembly.com/getTopChallengesByVotes.js.gz'
                 ),
             ),
         	'BIM_Controller_Votes' => array(
                 'getChallengesByDate' => array( 
-                    'redirect' => true,
+                    'redirect' => false,
                 	'url' => "http://54.243.163.24/getChallengesByDate.js",
                 	"path" => '/var/www/discover.getassembly.com/getChallengesByDate.js.gz'
                 ),
                 'getChallengesByActivity' => array( 
-                    'redirect' => true,
+                    'redirect' => false,
                 	'url' => "http://54.243.163.24/getChallengesByActivity.js",
                 	"path" => '/var/www/discover.getassembly.com/getChallengesByActivity.js.gz'
                 ),
