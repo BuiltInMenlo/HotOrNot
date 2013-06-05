@@ -4,11 +4,12 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     protected $persona = null;
     protected $oauth = null;
     protected $oauth_data = null;
+    protected $conf = null;
     
     public function __construct( $persona ){
         $this->persona = $persona;
         
-        $c = BIM_Config::tumblr();
+        $this->conf = $c = BIM_Config::tumblr();
         $this->oauth = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
     }
     
@@ -22,9 +23,15 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         
         $loggedIn = false;
         
+        $urls = $this->conf->urls;
+        $callbackUrl = $urls->oauth->callback;
+        $loginUrl = $urls->login;
+        $authUrl = $urls->oauth->authorize;
+        $accUrl = $urls->oauth->access_token;
+        
         // first we attempt to access our oauth script
         // and we get the oauth_token and the form_key from the response
-        $response = $this->get( 'http://54.243.163.24/tumblr_oauth.php' );
+        $response = $this->get( $callbackUrl );
         
         $ptrn = '/name="form_key" value="(.+?)"/';
         preg_match($ptrn, $response, $matches);
@@ -38,7 +45,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         preg_match($ptrn, $response, $matches);
         $recapPubKey = $matches[1];
         
-        $redirect_to = "http://www.tumblr.com/oauth/authorize?oauth_token=$oauthToken";
+        $redirect_to = "$authUrl?oauth_token=$oauthToken";
         
         $input = array(
             'user[email]' => $this->persona->tumblr->email,
@@ -54,7 +61,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             'used_suggestion' => '0',
         );
                 
-        $response = $this->post('https://www.tumblr.com/login', $input, true);
+        $response = $this->post( $loginUrl, $input, true);
         
         if( isset( $response['headers']['Set-Cookie'] ) && preg_match('/logged_in=1/', $response['headers']['Set-Cookie'] ) ){
             $loggedIn = true;
@@ -66,7 +73,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             'allow' => ''
         );
         
-        $response = $this->post("http://www.tumblr.com/oauth/authorize?oauth_token=$oauthToken", $input);
+        $response = $this->post("$authUrl?oauth_token=$oauthToken", $input);
         
         $ptrn = '/name="form_key" value="(.+?)"/';
         preg_match($ptrn, $response, $matches);
@@ -82,7 +89,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             'allow' => ''
         );
         
-        $response = $this->post("http://www.tumblr.com/oauth/authorize?oauth_token=$oauthToken", $input );
+        $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
         
         $this->oauth_data = $response = json_decode($response);
         $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
