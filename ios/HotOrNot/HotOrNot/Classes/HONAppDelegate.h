@@ -104,6 +104,7 @@ static const CGFloat kSnapRatio;
 + (UIColor *)honGrey635Color;
 + (UIColor *)honGrey518Color;
 + (UIColor *)honGrey455Color;
++ (UIColor *)honGreenColor;
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;

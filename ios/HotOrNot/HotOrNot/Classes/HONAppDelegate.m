@@ -76,7 +76,7 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 
 
 + (NSString *)apiServerPath {
-	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	//return (@"http://54.243.163.24/hotornot/api-shane");
 	
 	return (@"http://discover.getassembly.com/hotornot/api-shane");
@@ -405,6 +405,9 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 
 + (UIColor *)honGrey455Color {
 	return ([UIColor colorWithWhite:0.455 alpha:1.0]);
+}
++ (UIColor *)honGreenColor {
+	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
 }
 
 
@@ -834,7 +837,7 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 				[celebs addObject:celeb];
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api-dev"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 																			  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",

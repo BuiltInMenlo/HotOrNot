@@ -54,13 +54,13 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_PROFILE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteSMS:) name:@"INVITE_SMS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteContact:) name:@"INVITE_CONTACT" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareSMS:) name:@"SHARE_SMS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareEmail:) name:@"SHARE_EMAIL" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_takeNewAvatar:) name:@"TAKE_NEW_AVATAR" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSettings:) name:@"SHOW_SETTINGS" object:nil];
 	}
 	
 	return (self);
@@ -284,15 +284,8 @@
 	[self.view addSubview:_tableView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
-	[_headerView hideRefreshing];
+	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
-	
-	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(0.0, 0.0, 54.0, 44.0);
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_nonActive"] forState:UIControlStateNormal];
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"settingsGear_Active"] forState:UIControlStateHighlighted];
-	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:settingsButton];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
@@ -312,6 +305,14 @@
 
 
 #pragma mark - Navigation
+- (void)_goRefresh {
+	[[Mixpanel sharedInstance] track:@"Profile - Refresh"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE_TAB" object:nil];
+}
+
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Profile - Create Snap"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -323,16 +324,96 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
-- (void)_goSettings {
-	[[Mixpanel sharedInstance] track:@"Profile - Settings"
+- (void)_goInstagram {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Instagram"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	UITextField *textField;
+	UITextField *textField2;
+	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Instagram Login"
+																	 message:@"\n\n\n"
+																	delegate:nil
+														cancelButtonTitle:@"Cancel"
+														otherButtonTitles:@"OK", nil];
+	
+	textField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 50.0, 260.0, 25.0)];
+	[textField setBackgroundColor:[UIColor whiteColor]];
+	[textField setPlaceholder:@"username"];
+	[prompt addSubview:textField];
+	
+	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 85.0, 260.0, 25.0)];
+	[textField2 setBackgroundColor:[UIColor whiteColor]];
+	[textField2 setPlaceholder:@"password"];
+	[textField2 setSecureTextEntry:YES];
+	[prompt addSubview:textField2];
+	
+	[prompt show];
 }
 
+- (void)_goKik {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Kik"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
+	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
+	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+	
+	KikAPIMessage *myMessage = [KikAPIMessage message];
+	myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+	myMessage.description = @"";
+	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
+	myMessage.filePath = savePath;
+	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
+	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
+	
+	[KikAPIClient sendMessage:myMessage];
+	
+}
+
+- (void)_goFacebook {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Facebook"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	if (FBSession.activeSession.isOpen)
+		[self _callFB];
+	
+	else {
+		[FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+			if (error) {
+				UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+																				message:error.localizedDescription
+																			  delegate:nil
+																  cancelButtonTitle:@"OK"
+																  otherButtonTitles:nil];
+				[alert show];
+				
+			} else if (FB_ISSESSIONOPENWITHSTATE(status))
+				[self _callFB];
+		}];
+	}
+}
+
+- (void)_goContacts {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Contacts"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+			[self _retrieveContacts];
+		});
+		
+	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+		[self _retrieveContacts];
+		
+	} else {
+		// denied access
+	}
+}
 
 #pragma mark - Notifications
 - (void)_refreshProfileTab:(NSNotification *)notification {
@@ -398,6 +479,18 @@
 		_progressHUD = nil;
 	}];
 }
+
+
+- (void)_showSettings:(NSNotification *)notification {
+	[[Mixpanel sharedInstance] track:@"Profile - Settings"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 - (void)_tabsDropped:(NSNotification *)notification {
 	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
@@ -508,97 +601,6 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
-}
-
-- (void)_goInstagram {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Instagram"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UITextField *textField;
-	UITextField *textField2;
-	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Instagram Login"
-																	 message:@"\n\n\n"
-																	delegate:nil
-														cancelButtonTitle:@"Cancel"
-														otherButtonTitles:@"OK", nil];
-	
-	textField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 50.0, 260.0, 25.0)];
-	[textField setBackgroundColor:[UIColor whiteColor]];
-	[textField setPlaceholder:@"username"];
-	[prompt addSubview:textField];
-	
-	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 85.0, 260.0, 25.0)];
-	[textField2 setBackgroundColor:[UIColor whiteColor]];
-	[textField2 setPlaceholder:@"password"];
-	[textField2 setSecureTextEntry:YES];
-	[prompt addSubview:textField2];
-	
-	[prompt show];
-}
-
-- (void)_goKik {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Kik"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
-	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
-	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
-	
-	KikAPIMessage *myMessage = [KikAPIMessage message];
-	myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	myMessage.description = @"";
-	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
-	myMessage.filePath = savePath;
-	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
-	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
-	
-	[KikAPIClient sendMessage:myMessage];
-	
-}
-
-- (void)_goFacebook {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Facebook"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if (FBSession.activeSession.isOpen)
-		[self _callFB];
-	
-	else {
-		[FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
-			if (error) {
-				UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-																				message:error.localizedDescription
-																			  delegate:nil
-																  cancelButtonTitle:@"OK"
-																  otherButtonTitles:nil];
-				[alert show];
-				
-			} else if (FB_ISSESSIONOPENWITHSTATE(status))
-				[self _callFB];
-		}];
-	}
-}
-
-- (void)_goContacts {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Contacts"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-			[self _retrieveContacts];
-		});
-		
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-		[self _retrieveContacts];
-		
-	} else {
-		// denied access
-	}
 }
 
 
@@ -765,7 +767,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0)
-		return (116.0);
+		return (210.0);
 	
 	else
 		return (kDefaultCellHeight);

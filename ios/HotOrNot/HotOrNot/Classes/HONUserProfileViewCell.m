@@ -32,6 +32,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBackground"]];
+		[self addSubview:bgImageView];
 	}
 	
 	return (self);
@@ -43,42 +45,53 @@
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	
 	NSString *avatarURL = ([_userVO.imageURL rangeOfString:@"?"].location == NSNotFound) ? [NSString stringWithFormat:@"%@?r=%d", _userVO.imageURL, arc4random()] : [NSString stringWithFormat:@"%@&r=%d", _userVO.imageURL, arc4random()];
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 12.0, 93.0, 93.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(114.0, 12.0, 93.0, 93.0)];
 	_avatarImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
 	//_avatarImageView.image = [HONAppDelegate avatarImage];
 	_avatarImageView.userInteractionEnabled = YES;
 	[self addSubview:_avatarImageView];
 	
-	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(57.0, 60.0, 34.0, 34.0);
-	[snapButton setBackgroundImage:[UIImage imageNamed:@"takeProfilePictureButton_nonActive"] forState:UIControlStateNormal];
-	[snapButton setBackgroundImage:[UIImage imageNamed:@"takeProfilePictureButton_Active"] forState:UIControlStateHighlighted];
-	[snapButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
-	snapButton.hidden = !isUser;
-	[_avatarImageView addSubview:snapButton];
-		
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 28.0, 107.0, 20.0)];
+	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 125.0, 107.0, 20.0)];
 	_snapsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_snapsLabel.textColor = [HONAppDelegate honGrey635Color];
+	_snapsLabel.textColor = [UIColor whiteColor];
 	_snapsLabel.backgroundColor = [UIColor clearColor];
+	_snapsLabel.textAlignment = NSTextAlignmentCenter;
 	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:_snapsLabel];
 	
-	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 52.0, 107.0, 20.0)];
+	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 125.0, 20.0, 20.0)];
+	dots1Label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
+	dots1Label.textColor = [UIColor whiteColor];
+	dots1Label.backgroundColor = [UIColor clearColor];
+	dots1Label.textAlignment = NSTextAlignmentCenter;
+	dots1Label.text = @"•";
+	[self addSubview:dots1Label];
+	
+	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(105.0, 125.0, 107.0, 20.0)];
 	_votesLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_votesLabel.textColor = [HONAppDelegate honGrey635Color];
+	_votesLabel.textColor = [UIColor whiteColor];
 	_votesLabel.backgroundColor = [UIColor clearColor];
+	_votesLabel.textAlignment = NSTextAlignmentCenter;
 	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:_votesLabel];
 	
-	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 76.0, 107.0, 20.0)];
+	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(185.0, 125.0, 20.0, 20.0)];
+	dots2Label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
+	dots2Label.textColor = [UIColor whiteColor];
+	dots2Label.backgroundColor = [UIColor clearColor];
+	dots2Label.textAlignment = NSTextAlignmentCenter;
+	dots2Label.text = @"•";
+	[self addSubview:dots2Label];
+	
+	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(200.0, 125.0, 107.0, 20.0)];
 	_ptsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_ptsLabel.textColor = [HONAppDelegate honGrey635Color];
+	_ptsLabel.textColor = [UIColor whiteColor];
 	_ptsLabel.backgroundColor = [UIColor clearColor];
+	_ptsLabel.textAlignment = NSTextAlignmentCenter;
 	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:_ptsLabel];
 	
@@ -89,17 +102,28 @@
 	[self addSubview:timelineButton];
 	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(224.0, 37.0, 64.0, 44.0);
+	shareButton.frame = CGRectMake(224.0, 37.0, 24.0, 44.0);
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateHighlighted];
+	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+	shareButton.hidden = isUser;
 	[self addSubview:shareButton];
 	
-//	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(180.0, 50.0, 150.0, 50.0)];
-//	view.backgroundColor = [UIColor blackColor];
-//	[self addSubview:view];
-//	
-//	[view.layer addSublayer:[HONImageComposer drawTextToLayer:[NSString stringWithFormat:@"@%@", _userVO.username] inFrame:CGRectMake(0.0, 0.0, view.frame.size.width, view.frame.size.height) withFont:[[HONAppDelegate cartoGothicBold] fontWithSize:20.0] textColor:[UIColor whiteColor]]];
+	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	snapButton.frame = CGRectMake(20.0, 155.0, 144.0, 44.0);
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
+	[snapButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
+	snapButton.hidden = !isUser;
+	[self addSubview:snapButton];
+	
+	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	settingsButton.frame = CGRectMake(170.0, 155.0, 144.0, 44.0);
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_nonActive"] forState:UIControlStateNormal];
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_Active"] forState:UIControlStateHighlighted];
+	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+	settingsButton.hidden = !isUser;
+	[self addSubview:settingsButton];
 }
 
 
@@ -125,6 +149,10 @@
 #pragma mark - Navigation
 - (void)_goProfilePic {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"TAKE_NEW_AVATAR" object:nil];
+}
+
+- (void)_goSettings {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SETTINGS" object:nil];
 }
 
 - (void)_goTimeline {

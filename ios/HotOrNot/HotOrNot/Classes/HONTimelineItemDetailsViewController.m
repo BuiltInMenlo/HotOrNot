@@ -173,8 +173,8 @@
 	
 	UIButton *voteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	voteButton.frame = CGRectMake(32.0, 410.0 + offset, 44.0, 44.0);
-	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_nonActive"] forState:UIControlStateNormal];
-	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart_Active"] forState:UIControlStateHighlighted];
+	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart"] forState:UIControlStateNormal];
+	[voteButton setBackgroundImage:[UIImage imageNamed:@"largeHeart"] forState:UIControlStateHighlighted];
 	[voteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 	voteButton.hidden = (!_isInSession);
 	[self.view addSubview:voteButton];

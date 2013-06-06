@@ -322,17 +322,17 @@
 	
 	if (indexPath.row == 0) {
 		dict = [NSDictionary dictionaryWithObjectsAndKeys:
-				@"IG", @"image",
+				@"icon_Instagram", @"image",
 				@"Instagram", @"name", nil];
 		
 	} else if (indexPath.row == 1) {
 		dict = [NSDictionary dictionaryWithObjectsAndKeys:
-				@"KIK", @"image",
+				@"icon_Kik", @"image",
 				@"Kik", @"name", nil];
 		
 	} else if (indexPath.row == 2) {
 		dict = [NSDictionary dictionaryWithObjectsAndKeys:
-				@"FB", @"image",
+				@"icon_Facebook", @"image",
 				@"Facebook", @"name", nil];
 		
 	} else if (indexPath.row == 3) {

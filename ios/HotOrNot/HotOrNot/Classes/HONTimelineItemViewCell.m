@@ -24,7 +24,7 @@
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UILabel *lScoreLabel;
 @property (nonatomic, strong) UILabel *rScoreLabel;
-@property (nonatomic, strong) UIImageView *heartImageView;
+@property (nonatomic, strong) UIImageView *upvoteImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) UIImageView *tapOverlayImageView;
@@ -175,12 +175,12 @@
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[_rHolderView addSubview:challengerNameButton];
 		
-		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 3.0, 34.0, 34.0)];
-		lScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
+		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 3.0, 44.0, 44.0)];
+		lScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
 		[_lHolderView addSubview:lScoreImageView];
 		
-		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 3.0, 34.0, 34.0)];
-		rScoreImageView.image = [UIImage imageNamed:@"voteIconVoteTimeline"];
+		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(4.0, 3.0, 44.0, 44.0)];
+		rScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
 		[_rHolderView addSubview:rScoreImageView];
 		
 	} else {
@@ -256,7 +256,7 @@
 	[self addSubview:commentsButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(242.0, 250.0, 64.0, 44.0);
+	moreButton.frame = CGRectMake(290.0, 250.0, 24.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
@@ -486,23 +486,24 @@
 	if ([vo isEqual:_challengeVO]) {
 		//[self _playVoteSFX];
 		
-		_heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, 85.0, 84.0, 84.0)];
-		_heartImageView.image = [UIImage imageNamed:@"largeHeart_nonActive"];
-		[self addSubview:_heartImageView];
+		_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
+		_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
+		[_lHolderView addSubview:_upvoteImageView];
+		
+		UIImageView *heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 17.0, 94.0, 94.0)];
+		heartImageView.image = [UIImage imageNamed:@"largeHeart"];
+		[_upvoteImageView addSubview:heartImageView];
 		
 		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_heartImageView.alpha = 0.0;
+			_upvoteImageView.alpha = 0.0;
 		} completion:^(BOOL finished) {
-			[_heartImageView removeFromSuperview];
-			_heartImageView = nil;
+			[_upvoteImageView removeFromSuperview];
+			_upvoteImageView = nil;
 		}];
 		
 		_challengeVO.creatorScore++;
 		
-		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
-			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
-		
-		} else {
+		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
 			[[Mixpanel sharedInstance] track:@"Timeline - Upvote Creator"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -532,9 +533,9 @@
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 				NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
 			}];
-		}
 		
-		[self _animateUpVote];
+		} else
+			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 	}
 }
 
@@ -544,23 +545,24 @@
 	if ([vo isEqual:_challengeVO]) {
 		//[self _playVoteSFX];
 		
-		_heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(200.0, 85.0, 84.0, 84.0)];
-		_heartImageView.image = [UIImage imageNamed:@"largeHeart_nonActive"];
-		[self addSubview:_heartImageView];
+		_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
+		_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
+		[_rHolderView addSubview:_upvoteImageView];
+		
+		UIImageView *heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 17.0, 94.0, 94.0)];
+		heartImageView.image = [UIImage imageNamed:@"largeHeart"];
+		[_upvoteImageView addSubview:heartImageView];
 		
 		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_heartImageView.alpha = 0.0;
+			_upvoteImageView.alpha = 0.0;
 		} completion:^(BOOL finished) {
-			[_heartImageView removeFromSuperview];
-			_heartImageView = nil;
+			[_upvoteImageView removeFromSuperview];
+			_upvoteImageView = nil;
 		}];
 		
 		_challengeVO.challengerScore++;
 		
-		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] != 0) {
-			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
-			
-		} else {
+		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
 			[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenger"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -590,9 +592,9 @@
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 				NSLog(@"HONVoteItemViewCell AFNetworking %@", [error localizedDescription]);
 			}];
-		}
-		
-		[self _animateUpVote];
+			
+		} else
+			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 	}
 }
 
@@ -615,9 +617,6 @@
 - (void)_removeTapOverlay {
 	[_tappedOverlayView removeFromSuperview];
 	_tappedOverlayView = nil;
-}
-
-- (void)_animateUpVote {
 }
 
 

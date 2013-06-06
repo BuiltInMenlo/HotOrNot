@@ -307,7 +307,7 @@
 	_tutorialScrollView.pagingEnabled = YES;
 	_tutorialScrollView.showsHorizontalScrollIndicator = NO;
 	_tutorialScrollView.delegate = self;
-	_tutorialScrollView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	_tutorialScrollView.backgroundColor = [HONAppDelegate honGreenColor];
 	[_tutorialHolderView addSubview:_tutorialScrollView];
 	
 	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
