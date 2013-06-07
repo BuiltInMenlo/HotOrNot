@@ -823,10 +823,10 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return (([_username length] > 0) ? 210.0 : 304.0);
+		return (([_username length] > 0) ? 210.0 : 310.0);
 		
 	} else
-		return (304.0);
+		return (310.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

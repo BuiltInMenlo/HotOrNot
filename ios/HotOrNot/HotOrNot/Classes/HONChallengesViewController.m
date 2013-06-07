@@ -283,6 +283,21 @@
 	[privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
 	[toggleHolderView addSubview:privateButton];
 	
+	UIView *noChallengesView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 300.0, 320.0, [UIScreen mainScreen].bounds.size.height - 300.0)];
+	noChallengesView.hidden = ([_recentChallenges count] + [_olderChallenges count] > 1);
+	[self.view addSubview:noChallengesView];
+	
+	UIImageView *noChallengesImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 60.0)];
+	noChallengesImageView.image = [UIImage imageNamed:@"noOlderSnaps"];
+	[noChallengesView addSubview:noChallengesImageView];
+	
+	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	findFriendsButton.frame = CGRectMake(38.0, 100.0, 244.0, 64.0);
+	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
+	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_Active"] forState:UIControlStateHighlighted];
+	[findFriendsButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+	[noChallengesView addSubview:findFriendsButton];
+	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 46.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height + 52.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;

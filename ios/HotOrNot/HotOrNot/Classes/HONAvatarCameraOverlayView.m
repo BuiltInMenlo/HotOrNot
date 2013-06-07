@@ -73,7 +73,7 @@
 		//[_footerHolderView addSubview:cameraRollButton];
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(128.0, 15.0, 64.0, 64.0);
+		_captureButton.frame = CGRectMake(115.0, 7.0, 90.0, 80.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];

@@ -50,6 +50,7 @@ static const CGFloat kSnapRatio;
 + (int)pokePointMultiplier;
 
 + (NSString *)tutorialImageForPage:(int)page;
++ (NSString *)promoteInviteImage;
 + (NSString *)timelineBannerURL;
 + (BOOL)isFUEInviteEnabled;
 
@@ -105,6 +106,8 @@ static const CGFloat kSnapRatio;
 + (UIColor *)honGrey518Color;
 + (UIColor *)honGrey455Color;
 + (UIColor *)honGreenColor;
++ (UIColor *)honDarkGreenColor;
++ (UIColor *)honGreenTxtColor;
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;

@@ -22,7 +22,7 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
 		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
-		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
+		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(286.0, 19.0, 24.0, 24.0)];
 		chevronImageView.image = [UIImage imageNamed:@"chevron"];
 		[self addSubview:chevronImageView];
 	}
@@ -31,14 +31,13 @@
 }
 
 - (void)setContents:(NSDictionary *)dict {
-	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 38.0, 38.0)];
-	imageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 12.0, 38.0, 38.0)];
 	imageView.image = [UIImage imageNamed:[dict objectForKey:@"image"]];
 	[self addSubview:imageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 22.0, 180.0, 16.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
-	nameLabel.textColor = [HONAppDelegate honGrey635Color];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(67.0, 25.0, 180.0, 20.0)];
+	nameLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:16];
+	nameLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [dict objectForKey:@"name"];
 	[self addSubview:nameLabel];

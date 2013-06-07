@@ -13,6 +13,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "KikAPI.h"
 #import "MBProgressHUD.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "HONInviteNetworkViewController.h"
 #import "HONAppDelegate.h"
@@ -20,7 +21,7 @@
 #import "HONContactUserVO.h"
 #import "HONInviteNetworkViewCell.h"
 
-@interface HONInviteNetworkViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface HONInviteNetworkViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) NSMutableArray *contactUsers;
 @property (strong, nonatomic) FBRequestConnection *requestConnection;
 @property(nonatomic, strong) UITableView *tableView;
@@ -156,25 +157,23 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
+	self.view.backgroundColor = [HONAppDelegate honGreenColor];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_inviteFriends", nil)];
-	[headerView hideRefreshing];
-	[headerView leftAlignTitle];
-	[self.view addSubview:headerView];
+	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(52.0, 35.0, 214.0, 94.0)];
+	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImage]] placeholderImage:nil];
+	[self.view addSubview:promoteImageView];
 	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:cancelButton];
+	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipButton.frame = CGRectMake(253.0, 3.0, 64.0, 44.0);
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
+	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:skipButton];
 	
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 100.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (100.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 100.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (100.0 + (kNavBarHeaderHeight + kTabSize.height))) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 116.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 116.0) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
 	_tableView.delegate = self;
@@ -191,12 +190,37 @@
 
 
 #pragma mark - Navigation
-- (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Cancel"
+- (void)_goSkip {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Skip"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+																		 message:@"Really!? Volley is more fun with friends!"
+																		delegate:self
+															cancelButtonTitle:@"Cancel"
+															otherButtonTitles:@"Yes, I'm Sure", nil];
+	[alertView setTag:0];
+	[alertView show];
+}
+
+- (void)_goContacts {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Contacts"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+			[self _retrieveContacts];
+		});
+		
+	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+		[self _retrieveContacts];
+		
+	} else {
+		// denied access
+	}
 }
 
 - (void)_goInstagram {
@@ -226,27 +250,6 @@
 	[prompt show];
 }
 
-- (void)_goKik {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Kik"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
-	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
-	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
-	
-	KikAPIMessage *myMessage = [KikAPIMessage message];
-	myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	myMessage.description = @"";
-	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
-	myMessage.filePath = savePath;
-	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
-	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
-	
-	[KikAPIClient sendMessage:myMessage];
-
-}
-
 - (void)_goFacebook {
 	[[Mixpanel sharedInstance] track:@"Invite Friends - Facebook"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -271,29 +274,43 @@
 	}
 }
 
-- (void)_goContacts {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Contacts"
+- (void)_goTumblr {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Tumblr"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+}
+
+- (void)_goTwitter {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Twitter"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+}
+
+- (void)_goKik {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Kik"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-			[self _retrieveContacts];
-		});
-		
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-		[self _retrieveContacts];
-		
-	} else {
-		// denied access
-	}
+	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
+	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
+	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+	
+	KikAPIMessage *myMessage = [KikAPIMessage message];
+	myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+	myMessage.description = @"";
+	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
+	myMessage.filePath = savePath;
+	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
+	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
+	
+	[KikAPIClient sendMessage:myMessage];
+	
 }
 
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (4);
+	return (6);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -307,7 +324,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = @"Invite";
+	label.text = @"Promote Volley";
 	[headerImageView addSubview:label];
 
 	return (headerImageView);
@@ -322,13 +339,13 @@
 	
 	if (indexPath.row == 0) {
 		dict = [NSDictionary dictionaryWithObjectsAndKeys:
-				@"icon_Instagram", @"image",
-				@"Instagram", @"name", nil];
+				  @"icon_SMS", @"image",
+				  @"SMS Contacts", @"name", nil];
 		
 	} else if (indexPath.row == 1) {
 		dict = [NSDictionary dictionaryWithObjectsAndKeys:
-				@"icon_Kik", @"image",
-				@"Kik", @"name", nil];
+				  @"icon_Instagram", @"image",
+				  @"Instagram", @"name", nil];
 		
 	} else if (indexPath.row == 2) {
 		dict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -337,8 +354,18 @@
 		
 	} else if (indexPath.row == 3) {
 		dict = [NSDictionary dictionaryWithObjectsAndKeys:
-				@"CT", @"image",
-				@"Contacts", @"name", nil];
+				  @"icon_Tumblr", @"image",
+				  @"Tumblr", @"name", nil];
+		
+	} else if (indexPath.row == 4) {
+		dict = [NSDictionary dictionaryWithObjectsAndKeys:
+				  @"icon_Twitter", @"image",
+				  @"Twitter", @"name", nil];
+		
+	} else if (indexPath.row == 5) {
+		dict = [NSDictionary dictionaryWithObjectsAndKeys:
+				  @"icon_Kik", @"image",
+				  @"Kik", @"name", nil];
 	}
 	
 	[cell setContents:dict];
@@ -365,16 +392,45 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	if (indexPath.row == 0) {
-		[self _goInstagram];
+		[self _goContacts];
 		
 	} else if (indexPath.row == 1) {
-		[self _goKik];
+		[self _goInstagram];
 		
 	} else if (indexPath.row == 2) {
 		[self _goFacebook];
 		
 	} else if (indexPath.row == 3) {
-		[self _goContacts];
+		[self _goTumblr];
+		
+	} else if (indexPath.row == 4) {
+		[self _goTwitter];
+		
+	} else if (indexPath.row == 3) {
+		[self _goKik];
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		switch(buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Invite Friends - Skip Cancel"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				break;
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Invite Friends - Skip Confirm"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+				break;
+		}
 	}
 }
 

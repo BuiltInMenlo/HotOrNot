@@ -269,31 +269,33 @@
 - (void)loadView {
 	[super loadView];
 	
+	self.view.backgroundColor = [HONAppDelegate honGreenColor];
+	
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1-568h@2x" : @"fueStep1"];
-	[_usernameHolderView addSubview:bgImgView];
+	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(53.0, 60.0, 214.0, 118.0)];
+	usernameBGImageView.image = [UIImage imageNamed:@"fue_inputField"];
+	[_usernameHolderView addSubview:usernameBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(45.0, 190.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(68.0, 140.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
-	[_usernameTextField setTextColor:[HONAppDelegate honBlueTxtColor]];
+	[_usernameTextField setReturnKeyType:UIReturnKeyGo];
+	[_usernameTextField setTextColor:[HONAppDelegate honGreenTxtColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
+	_usernameTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
 	[_usernameHolderView addSubview:_usernameTextField];
 	
 	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(130.0, 250.0, 64.0, 44.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"nextButton_Active"] forState:UIControlStateHighlighted];
+	nextButton.frame = CGRectMake(41.0, 213.0, 237.0, 67.0);
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
+	[nextButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
 	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	[_usernameHolderView addSubview:nextButton];
 	
@@ -318,20 +320,22 @@
 	[page2ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:1]] placeholderImage:nil];
 	[_tutorialScrollView addSubview:page2ImageView];
 	
-	UIImageView *page3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(640.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
+	UIImageView *page3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(636.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
 	[page3ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:2]] placeholderImage:nil];
 	[_tutorialScrollView addSubview:page3ImageView];
 	
 	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = CGRectMake(668.0, _tutorialScrollView.frame.size.height - 70.0, 264.0, 64.0);
-	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_nonActive"] forState:UIControlStateNormal];
-	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"connectFacebook_Active"] forState:UIControlStateHighlighted];
+	closeTutorialButton.frame = CGRectMake(681.0, _tutorialScrollView.frame.size.height - 160.0, 237.0, 67.0);
+	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
+	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
 	[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialScrollView addSubview:closeTutorialButton];
 	
-	_pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(60.0, [UIScreen mainScreen].bounds.size.height - 35.0, 200.0, 10.0)];
+	_pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(60.0, [UIScreen mainScreen].bounds.size.height - 77.0, 200.0, 10.0)];
 	_pageControl.currentPage = 0;
 	_pageControl.userInteractionEnabled = NO;
+	_pageControl.pageIndicatorTintColor = [UIColor whiteColor];
+	_pageControl.currentPageIndicatorTintColor = [HONAppDelegate honDarkGreenColor];
 	_pageControl.numberOfPages = 3;
 	[_tutorialHolderView addSubview:_pageControl];
 }
@@ -406,6 +410,10 @@
 }
 
 - (void)_goCloseTutorial {
+	[[Mixpanel sharedInstance] track:@"Register - Close Scroll"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
 	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
@@ -562,6 +570,7 @@
 												 _username, @"username", nil]];
 	
 	[textField resignFirstResponder];
+	[self _goNext];
 }
 
 
@@ -571,13 +580,16 @@
 	_pageControl.currentPage = page;
 }
 
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+	[[Mixpanel sharedInstance] track:@"Register - Scroll Page"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d", (int)(scrollView.contentOffset.x / 320.0) + 1], @"page", nil]];
+}
+
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCancelCamera:(HONRegisterCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Register - Skip Photo"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
@@ -622,6 +634,12 @@
 	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+}
+
+- (void)cameraOverlayViewRetake:(HONRegisterCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Register - Retake"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
 - (void)cameraOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)cameraOverlayView username:(NSString *)username {

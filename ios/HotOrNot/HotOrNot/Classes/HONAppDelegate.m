@@ -129,6 +129,10 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"tutorial_images"] objectAtIndex:page]);
 }
 
++ (NSString *)promoteInviteImage {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"promote_images"] objectAtIndex:0]);
+}
+
 + (NSString *)timelineBannerURL {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"]);
 }
@@ -408,6 +412,14 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 }
 + (UIColor *)honGreenColor {
 	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
+}
+
++ (UIColor *)honDarkGreenColor {
+	return ([UIColor colorWithRed:0.204 green:0.373 blue:0.337 alpha:1.0]);
+}
+
++ (UIColor *)honGreenTxtColor {
+	return ([UIColor colorWithRed:0.337 green:0.545 blue:0.506 alpha:1.0]);
 }
 
 
@@ -820,6 +832,10 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 			for (NSString *tutorialImage in [result objectForKey:@"tutorial_images"])
 				[tutorialImages addObject:tutorialImage];
 			
+			NSMutableArray *promoteImages = [NSMutableArray array];
+			for (NSString *promoteImage in [result objectForKey:@"promote_images"])
+				[promoteImages addObject:promoteImage];
+			
 			NSMutableArray *hashtags = [NSMutableArray array];
 			for (NSString *hashtag in [result objectForKey:@"default_hashtags"])
 				[hashtags addObject:hashtag];
@@ -872,6 +888,7 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 			[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
 			[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
 			[[NSUserDefaults standardUserDefaults] setObject:[tutorialImages copy] forKey:@"tutorial_images"];
+			[[NSUserDefaults standardUserDefaults] setObject:[promoteImages copy] forKey:@"promote_images"];
 			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[users copy] forKey:@"search_users"];

@@ -26,4 +26,5 @@
 - (void)cameraOverlayViewChangeFlash:(HONRegisterCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONRegisterCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewShowCameraRoll:(HONRegisterCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewRetake:(HONRegisterCameraOverlayView *)cameraOverlayView;
 @end

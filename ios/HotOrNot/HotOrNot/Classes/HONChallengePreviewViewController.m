@@ -127,7 +127,7 @@
 	int offset = (int)[HONAppDelegate isRetina5] * 75;
 	if (!_isCreator) {
 		UIButton *acceptButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		acceptButton.frame = CGRectMake(30.0, 413.0 + offset, 64.0, 64.0);
+		acceptButton.frame = CGRectMake(18.0, 405.0 + offset, 90.0, 80.0);
 		[acceptButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[acceptButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];

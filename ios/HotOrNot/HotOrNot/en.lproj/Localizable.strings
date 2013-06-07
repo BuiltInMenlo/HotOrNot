@@ -78,8 +78,8 @@
 "profile_snaps" = "%@ photos";
 "profile_vote" = "%@ vote";
 "profile_votes" = "%@ votes";
-"profile_point" = "%@ pt";
-"profile_points" = "%@ pts";
+"profile_point" = "%@ rating";
+"profile_points" = "%@ rating";
 
 "userPlaceholder" = "@username";
 
