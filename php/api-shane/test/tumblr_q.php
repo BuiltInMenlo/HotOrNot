@@ -8,8 +8,8 @@ $job = (object) array(
     'params' => '{"personaName":"exty86", "method":"loginAndBrowseSelfies"}'
 );
 
-$r = new BIM_Jobs_Growth_Tumblr();
-$r->doRoutines($job);
+//$r = new BIM_Jobs_Growth_Tumblr();
+//$r->doRoutines($job);
 
-//$q = new BIM_JobQueue_Gearman();
-//$q->doBgJob( $job, 'growth' );
+$q = new BIM_JobQueue_Gearman();
+$q->doBgJob( $job, 'growth' );
