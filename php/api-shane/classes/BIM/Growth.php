@@ -6,8 +6,17 @@ class BIM_Growth{
     protected $instagramApiClient = null; 
     protected $twilioApiClient = null; 
     
+    public function purgeCookies(){
+        $file = $this->getCookieFileName();
+        if( file_exists( $file ) ){
+            unlink( $file );
+        }
+    }
+    
     protected function getCookieFileName(){
-        return '/tmp/cookies.txt';
+        $uniqueId = isset( $this->persona->uniqueId ) ? '_'.$this->persona->uniqueId : '';
+        $class = get_class( $this );
+        return "/tmp/cookies_{$class}{$uniqueId}.txt";
     }
     
     protected function getCurlParams( $headers = array() ){
@@ -46,8 +55,8 @@ class BIM_Growth{
 	}
 	
 	public function handleRequest( $url, $options, $fullResponse = false ){
-		// open the handle and execute the call to sendstream
-		$ch = curl_init($url);
+		$ch = curl_init( $url );
+		//$ch = $this->initCurl($url);
 		curl_setopt_array($ch,$options);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 		$responseStr = curl_exec($ch);
