@@ -1,5 +1,4 @@
 <?php
-require_once 'BIM/JobQueue.php';
 
 class BIM_JobQueue_Gearman extends BIM_JobQueue{
 
@@ -10,7 +9,6 @@ class BIM_JobQueue_Gearman extends BIM_JobQueue{
         	'data' => array(),
         );
         
-        require_once 'BIM/JobQueue/Gearman.php';
         $q = new BIM_JobQueue_Gearman();
         $q->doBgJob( $job, 'static_pages' );
 	}
@@ -63,50 +61,32 @@ class BIM_JobQueue_Gearman extends BIM_JobQueue{
 		$method = $workload->method;
 		
 		// get the class name prefix constraint
-		// default is the classname has to start with TH_
+		// default is the classname has to start with BIM_
 		$ptrn = '/^BIM_/';
 		if( isset( $config['class_prefix_constraint'] ) && $config['class_prefix_constraint'] ){
 			$ptrn = '/^'.$config['class_prefix_constraint'].'/';
 		}
 		#prevent arbitrary code execution
 		if( preg_match( $ptrn, $class ) ){
-			if( !class_exists($class) ){
-				// transform the class name
-				$class_path = preg_replace('/_/','/',$class).'.php';
-				// include the class
-				require_once $class_path;
-			}
-			// if the class and method exist
-			// execute the job
-			
-			if( class_exists( $class ) ){
-				$obj = new $class();
-				if( method_exists( $obj, $method ) ){
-					$call_data = array( $obj, $method );
-					
-					$jobId = uniqid();
-					$logFile = '/tmp/job_log';
-					
-					$time = time();
-					$date = new DateTime( "@$time" );
-					$date->setTimezone( new DateTimeZone( date_default_timezone_get() ) );
-					$date = $date->format('Y-m-d H:i:s T');
-				    file_put_contents( $logFile,"$jobId : 0 - begin $class $method $time $date\n", FILE_APPEND );
-				    
-				    call_user_func( $call_data, $workload );
-					
-					$time = time();
-					$date = new DateTime( "@$time" );
-					$date->setTimezone( new DateTimeZone( date_default_timezone_get() ) );
-					$date = $date->format('Y-m-d H:i:s T');
-					file_put_contents( $logFile,"$jobId : 1 - end $class $method $time $date\n", FILE_APPEND );
-					
-				} else {
-					syslog(LOG_WARNING,"############ method $method() does not exist in class $class. ############");
-				}
+		    $obj = new $class();
+		    if( method_exists( $obj, $method ) ){
+		        $call_data = array( $obj, $method );
+				$jobId = uniqid();
+                self::logJobEvent($jobId, $class, $method, 0);
+				call_user_func( $call_data, $workload );
+                self::logJobEvent($jobId, $class, $method, 1);
 			} else {
-				syslog(LOG_WARNING,"############ class $class is not loaded. ############");
+				syslog(LOG_WARNING,"############ method $method() does not exist in class $class. ############");
 			}
 		}
+	}
+	
+	protected static function logJobEvent( $jobId, $class, $method, $start ){
+		$logFile = '/tmp/job_log';
+		$time = time();
+		$date = new DateTime( "@$time" );
+		$date->setTimezone( new DateTimeZone( date_default_timezone_get() ) );
+		$date = $date->format('Y-m-d H:i:s T');
+	    file_put_contents( $logFile,"$jobId : $start - begin $class $method $time $time\n", FILE_APPEND );
 	}
 }

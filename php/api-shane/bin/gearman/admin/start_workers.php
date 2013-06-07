@@ -1,5 +1,5 @@
 <?php
-
+require_once 'vendor/autoload.php';
 /**
 
 PHP script for managing PHP based Gearman workers

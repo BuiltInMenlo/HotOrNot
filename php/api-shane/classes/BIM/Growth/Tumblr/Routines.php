@@ -7,10 +7,18 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     protected $conf = null;
     
     public function __construct( $persona ){
+        if( is_string( $persona )  ){
+            $persona = new BIM_Growth_Persona( $persona );
+        } 
         $this->persona = $persona;
         
         $this->conf = $c = BIM_Config::tumblr();
         $this->oauth = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
+    }
+    
+    public function loginAndBrowseSelfies(){
+        $this->login();
+        $this->browseSelfies();
     }
     
 	/**
@@ -19,8 +27,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
 	 */
     public function login( ){
         
-        unlink( $this->getCookieFileName() );
-        
+        $this->purgeCookies();
+                
         $loggedIn = false;
         
         $urls = $this->conf->urls;
@@ -49,7 +57,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         
         $input = array(
             'user[email]' => $this->persona->tumblr->email,
-            'user[password]' =>  $this->persona->tumblr->password,
+            'user[password]' => $this->persona->tumblr->password,
             'tumblelog[name]' => '',
             'user[age]' => '',
             'recaptcha_public_key' => $recapPubKey,
@@ -66,6 +74,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         if( isset( $response['headers']['Set-Cookie'] ) && preg_match('/logged_in=1/', $response['headers']['Set-Cookie'] ) ){
             $loggedIn = true;
         }
+        
+        //print_r( array( $response, "$authUrl?oauth_token=$oauthToken", $input, $loggedIn ) ); exit;
         
         $input = array(
             'form_key' => $formKey,
@@ -109,19 +119,57 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
      * leave a comment
      */
     public function browseSelfies(){
-        //$selfies = $this->getSelfies(100);
-        $posts = $this->oauth->getBlogPosts('fargobauxn.tumblr.com');
-        foreach( $posts->posts as $post ){
+        $posts = $this->getSelfies(10);
+        //$posts = $this->oauth->getBlogPosts('fargobauxn.tumblr.com');
+        $sleep = 1;
+        foreach( $posts as $post ){
             $parts = parse_url($post->post_url);
             $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
             if( !$this->isFollowing( $blogUrl ) ){
-                $this->oauth->follow( $blogUrl );
+                $this->log( $post->post_url );
+                echo( "sleeping for $sleep secs\n" );
+                sleep( $sleep );
+                /*$this->oauth->follow( $blogUrl );
                 $comment = $this->persona->getVolleyQuote();
                 $options = array('comment' => $comment );
-                $this->oauth->reblogPost( $this->persona->tumblr->blogName, $post->id, $post->reblog_key, $options );
+                $this->oauth->reblogPost( $this->persona->tumblr->blogName, $post->id, $post->reblog_key, $options ); */
             }
         }
-        
+    }
+    
+    public function log( $data ){
+        file_put_contents('/tmp/persona_log', print_r($data,1)."\n", FILE_APPEND);
+    }
+    
+    public function getSelfies( $maxItems ){
+        $c = BIM_Config::tumblr();
+        $q = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
+        $allSelfies = array();
+        $n = 0;
+        $itemsRetrieved = 0;
+        $options = array( 'limit' => $maxItems );
+        foreach( $c->harvestSelfies->tags as $tag ){
+            $n++;
+            $selfies = $q->getTaggedPosts( $tag, $options );
+            $itemsRetrieved += count( $selfies );
+            echo "got $itemsRetrieved items in $n pages\n";
+            foreach( $selfies as $selfie ){
+                $allSelfies[] = $selfie;                    
+            }
+            while( $selfies && $itemsRetrieved < $maxItems ){
+                $n++;
+                $selfies = $q->getTaggedPosts( $tag, $options );
+                $itemsRetrieved += count( $selfies );
+                echo "got $itemsRetrieved items in $n pages\n";
+                foreach( $selfies->posts as $selfie ){
+                    $allSelfies[] = $selfie;                    
+                }
+            }
+            if( $itemsRetrieved >= $maxItems){
+                break;
+            }
+        }
+        return $allSelfies;
     }
     
     public function getFollowedBlogs(){
