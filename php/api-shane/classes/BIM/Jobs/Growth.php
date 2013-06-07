@@ -52,4 +52,20 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         
         $routines->smsInvites();
     }
+    
+    public function doRoutines( $workload ){
+        $params = json_decode( $workload->params );
+        $personaName = '';
+        if( $params->personaName ){
+            $personaName = $params->personaName;
+        }
+        $class = $params->class;
+        if( isset( $params->routine ) && method_exists($class, $params->routine ) ){
+            $routine = $params->routine;
+            $r = new $class( $personaName );
+            $r->$routine();
+        } else {
+            echo "problem when executing tumblr routines it appears the the routine does not exist or was not defined in the workload:\n\n".print_r($workload,1);
+        }
+    }    
 }

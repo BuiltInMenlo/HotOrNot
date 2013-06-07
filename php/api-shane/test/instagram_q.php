@@ -5,11 +5,11 @@ require_once 'vendor/autoload.php';
 $job = (object) array(
 	'class' => 'BIM_Jobs_Growth',
 	'method' => 'doRoutines',
-    'params' => '{"personaName":"exty86", "routine":"loginAndBrowseSelfies","class":"BIM_Growth_Tumblr_Routines"}'
+    'params' => '{"personaName":"exty86", "routine":"loginAndAuthorizeApp","class":"BIM_Growth_Instagram_Routines"}'
 );
 
-$q = new BIM_Jobs_Growth();
-$q->doRoutines( $job );
+//$q = new BIM_Jobs_Growth();
+//$q->doRoutines( $job );
 
-//$q = new BIM_JobQueue_Gearman();
-//$q->doBgJob( $job, 'growth' );
+$q = new BIM_JobQueue_Gearman();
+$q->doBgJob( $job, 'growth' );

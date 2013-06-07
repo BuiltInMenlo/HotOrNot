@@ -7,6 +7,9 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     protected $oauth_data = null;
     
     public function __construct( $persona ){
+        if( is_string( $persona )  ){
+            $persona = new BIM_Growth_Persona( $persona );
+        } 
         $this->persona = $persona;
         
         $this->instagramConf = BIM_Config::instagram();
@@ -43,7 +46,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     
 	 */
     public function loginAndAuthorizeApp( ){
-        unlink( $this->getCookieFileName() );
+        $this->purgeCookies();
         
         $response = $this->login();
         $authData = json_decode( $response );
@@ -58,6 +61,8 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         $authData->username = $this->persona->instagram->username;
         $authData->password = $this->persona->instagram->password;
         $this->persona->instagram = $authData;
+        
+        print_r( $this->persona );
         
     }
     
@@ -169,7 +174,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         $api = $this->getInstagramApiClient();
         $following = $api->getFollowing( $this->persona->instagram->user->id, $params );
         //file_put_contents( '/tmp/following', print_r($following,true), FILE_APPEND );
-        //$comment = "nice pic";
+        //$comment = $this->persona->getVolleyQuote();
         //$this->commentOnLatestPicForUsers( $following, $comment, $params );
     }
     
@@ -178,7 +183,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         $api = $this->getInstagramApiClient();
         $followers = $api->getFollowers( $this->persona->instagram->user->id, $params );
         //file_put_contents( '/tmp/followers', print_r($followers,true), FILE_APPEND );
-        //$comment = "nice pic";
+        //$comment = $this->persona->getVolleyQuote();
         //$this->commentOnLatestPicForUsers( $followers, $comment, $params );
     }
 

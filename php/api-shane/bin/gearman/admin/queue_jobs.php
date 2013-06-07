@@ -1,6 +1,6 @@
 <?php
-
 require_once 'vendor/autoload.php';
+
 $conf = (object) array(
 	'db' => BIM_Config::db(),
 	'queue' => BIM_Config::gearman(),

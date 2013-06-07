@@ -87,6 +87,6 @@ class BIM_JobQueue_Gearman extends BIM_JobQueue{
 		$date = new DateTime( "@$time" );
 		$date->setTimezone( new DateTimeZone( date_default_timezone_get() ) );
 		$date = $date->format('Y-m-d H:i:s T');
-	    file_put_contents( $logFile,"$jobId : $start - begin $class $method $time $time\n", FILE_APPEND );
+	    file_put_contents( $logFile,"$jobId : $start - begin $class $method $time $date\n", FILE_APPEND );
 	}
 }
