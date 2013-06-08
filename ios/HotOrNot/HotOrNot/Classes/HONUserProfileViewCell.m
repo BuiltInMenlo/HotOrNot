@@ -46,7 +46,7 @@
 	
 	NSString *avatarURL = ([_userVO.imageURL rangeOfString:@"?"].location == NSNotFound) ? [NSString stringWithFormat:@"%@?r=%d", _userVO.imageURL, arc4random()] : [NSString stringWithFormat:@"%@&r=%d", _userVO.imageURL, arc4random()];
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(114.0, 17.0, 93.0, 93.0)];
-	_avatarImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	_avatarImageView.backgroundColor = [HONAppDelegate honGrey455Color];
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
 	//_avatarImageView.image = [HONAppDelegate avatarImage];
 	_avatarImageView.userInteractionEnabled = YES;
@@ -55,7 +55,7 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 125.0, 107.0, 20.0)];
+	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 127.0, 80.0, 16.0)];
 	_votesLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
 	_votesLabel.textColor = [UIColor whiteColor];
 	_votesLabel.backgroundColor = [UIColor clearColor];
@@ -63,7 +63,7 @@
 	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:_votesLabel];
 	
-	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(104.0, 127.0, 20.0, 20.0)];
+	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(105.0, 127.0, 20.0, 20.0)];
 	dots1Label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:17];
 	dots1Label.textColor = [UIColor whiteColor];
 	dots1Label.backgroundColor = [UIColor clearColor];
@@ -71,7 +71,7 @@
 	dots1Label.text = @"•";
 	[self addSubview:dots1Label];
 	
-	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(105.0, 125.0, 107.0, 20.0)];
+	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 127.0, 80.0, 16.0)];
 	_snapsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
 	_snapsLabel.textColor = [UIColor whiteColor];
 	_snapsLabel.backgroundColor = [UIColor clearColor];
@@ -79,7 +79,7 @@
 	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:_snapsLabel];
 	
-	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(191.0, 127.0, 20.0, 20.0)];
+	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 127.0, 20.0, 20.0)];
 	dots2Label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:17];
 	dots2Label.textColor = [UIColor whiteColor];
 	dots2Label.backgroundColor = [UIColor clearColor];
@@ -87,7 +87,7 @@
 	dots2Label.text = @"•";
 	[self addSubview:dots2Label];
 	
-	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(200.0, 125.0, 107.0, 20.0)];
+	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(211.0, 127.0, 80.0, 16.0)];
 	_ptsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
 	_ptsLabel.textColor = [UIColor whiteColor];
 	_ptsLabel.backgroundColor = [UIColor clearColor];
@@ -106,24 +106,31 @@
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	shareButton.hidden = isUser;
+	shareButton.hidden = YES;//isUser;
 	[self addSubview:shareButton];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(20.0, 155.0, 144.0, 44.0);
+	snapButton.frame = CGRectMake(12.0, 151.0, 144.0, 44.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
-	[snapButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
-	snapButton.hidden = !isUser;
+	[snapButton addTarget:self action:(isUser) ? @selector(_goProfilePic) : @selector(_goNewUserChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:snapButton];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(170.0, 155.0, 144.0, 44.0);
+	settingsButton.frame = CGRectMake(165.0, 151.0, 144.0, 44.0);
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_nonActive"] forState:UIControlStateNormal];
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 	settingsButton.hidden = !isUser;
 	[self addSubview:settingsButton];
+	
+	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	flagButton.frame = CGRectMake(165.0, 151.0, 144.0, 44.0);
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"profileReportButton_nonActive"] forState:UIControlStateNormal];
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"profileReportButton_Active"] forState:UIControlStateHighlighted];
+	[flagButton addTarget:self action:@selector(_goFlagUser) forControlEvents:UIControlEventTouchUpInside];
+	flagButton.hidden = isUser;
+	[self addSubview:flagButton];
 }
 
 
@@ -159,6 +166,10 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_userVO.username];
 }
 
+- (void)_goNewUserChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
+}
+
 - (void)_goShare {
 	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) {
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
@@ -180,6 +191,33 @@
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 	}
+}
+
+- (void)_goFlagUser {
+	[[Mixpanel sharedInstance] track:@"Timeline - Flag"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"user2", nil]];
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 10], @"action",
+									[NSString stringWithFormat:@"%d", _userVO.userID], @"userID",
+									nil];
+	
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSLog(@"HONVoteItemViewCell AFNetworking: %@", flagResult);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
+	}];
 }
 
 

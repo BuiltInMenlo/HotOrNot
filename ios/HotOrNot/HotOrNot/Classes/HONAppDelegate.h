@@ -50,7 +50,7 @@ static const CGFloat kSnapRatio;
 + (int)pokePointMultiplier;
 
 + (NSString *)tutorialImageForPage:(int)page;
-+ (NSString *)promoteInviteImage;
++ (NSString *)promoteInviteImageForType:(int)type;
 + (NSString *)timelineBannerURL;
 + (BOOL)isFUEInviteEnabled;
 

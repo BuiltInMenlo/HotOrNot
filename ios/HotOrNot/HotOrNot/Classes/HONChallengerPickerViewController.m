@@ -30,6 +30,7 @@
 @property (nonatomic, strong) HONUserVO *challengerVO;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) UIButton *privateToggleButton;
 @property (nonatomic) BOOL isPrivate;
 @end
 
@@ -286,14 +287,14 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
-	UIButton *privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	privateToggleButton.frame = CGRectMake(274.0, 110.0, 34.0, 34.0);
-	[privateToggleButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[privateToggleButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-	[privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:privateToggleButton];
+	_privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_privateToggleButton.frame = CGRectMake(274.0, 110.0, 34.0, 34.0);
+	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
+	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
+	[_privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_privateToggleButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 94.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 114.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 107.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 114.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -334,27 +335,54 @@
 
 - (void)_goPrivateToggle {
 	_isPrivate = !_isPrivate;
+	_privateToggleButton.alpha = 0.5 + ((int)!_isPrivate * 0.5);
 }
 
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
+	return (2);
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challengers count]);
+	
+	if (section == 0)
+		return ([_challengers count]);//return (0);
+	
+	if (section == 1)
+		return (0);//[_challengers count]);
+	
+	else if (section == 2)
+		return (0);
+	
+	else if (section == 3)
+		return (0);
+	else
+		return (0);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
 	headerView.image = [UIImage imageNamed:@"tableHeaderBackground"];
 	
+	NSString *caption = @"";
+	if (section == 0)
+		caption = @"Recent";//@"Privacy";
+	
+	else if (section == 1)
+		caption = @"Friends";//@"Recent";
+	
+	else if (section == 2)
+		caption = @"Share";//@"Friends";
+	
+//	else if (section == 3)
+//		caption = @"Share";
+	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 4.0, 310.0, 31.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:13];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = @"Recent";
+	label.text = caption;
 	[headerView addSubview:label];
 	
 	return (headerView);
@@ -363,10 +391,21 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONChallengerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
-	if (cell == nil) {
-		cell = [[HONChallengerViewCell alloc] initAsRandomUser:(indexPath.row == [_challengers count] - 1)];
-		cell.userVO = (HONUserVO *)[_challengers objectAtIndex:indexPath.row];
-	}
+	if (indexPath.section == 0) {
+		if (cell == nil) {
+			cell = [[HONChallengerViewCell alloc] initAsRandomUser:(indexPath.row == [_challengers count] - 1)];
+			cell.userVO = (HONUserVO *)[_challengers objectAtIndex:indexPath.row];
+		}
+		
+	}// else if (indexPath.section == 1) {
+//		if (cell == nil) {
+//			cell = [[HONChallengerViewCell alloc] initAsRandomUser:(indexPath.row == [_challengers count] - 1)];
+//			cell.userVO = (HONUserVO *)[_challengers objectAtIndex:indexPath.row];
+//		}
+//		
+//	} else if (indexPath.section == 2) {
+//	} else if (indexPath.section == 3) {
+//	}
 	
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);

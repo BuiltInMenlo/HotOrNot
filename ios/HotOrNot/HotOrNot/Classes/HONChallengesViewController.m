@@ -84,7 +84,7 @@
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 2], @"action",
+							[NSString stringWithFormat:@"%d", (_isPrivate) ? 8 : 2], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							nil];
 	
@@ -269,17 +269,17 @@
 	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 30.0)];
 	[self.view addSubview:toggleHolderView];
 	
-	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8.0, 8.0, 304.0, 30.0)];
+	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
 	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
 	[toggleHolderView addSubview:_togglePrivateImageView];
 	
 	UIButton *publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	publicButton.frame = CGRectMake(8.0, 9.0, 152.0, 34.0);
+	publicButton.frame = CGRectMake(0.0, 0.0, 160.0, 44.0);
 	[publicButton addTarget:self action:@selector(_goPublicChallenges) forControlEvents:UIControlEventTouchUpInside];
 	[toggleHolderView addSubview:publicButton];
 	
 	UIButton *privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	privateButton.frame = CGRectMake(160.0, 9.0, 152.0, 34.0);
+	privateButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
 	[privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
 	[toggleHolderView addSubview:privateButton];
 	
@@ -287,18 +287,18 @@
 	noChallengesView.hidden = ([_recentChallenges count] + [_olderChallenges count] > 1);
 	[self.view addSubview:noChallengesView];
 	
-	UIImageView *noChallengesImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 60.0)];
+	UIImageView *noChallengesImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 88.0)];
 	noChallengesImageView.image = [UIImage imageNamed:@"noOlderSnaps"];
 	[noChallengesView addSubview:noChallengesImageView];
 	
 	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	findFriendsButton.frame = CGRectMake(38.0, 100.0, 244.0, 64.0);
+	findFriendsButton.frame = CGRectMake(36.0, 100.0, 249.0, 49.0);
 	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
 	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_Active"] forState:UIControlStateHighlighted];
 	[findFriendsButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[noChallengesView addSubview:findFriendsButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 46.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height + 52.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 44.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height + 44.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -365,12 +365,14 @@
 	_isPrivate = NO;
 	
 	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
+	[self _retrieveChallenges];
 }
 
 - (void)_goPrivateChallenges {
 	_isPrivate = YES;
 	
 	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
+	[self _retrieveChallenges];
 }
 
 

@@ -313,15 +313,15 @@
 	[_tutorialHolderView addSubview:_tutorialScrollView];
 	
 	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
-	[page1ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:0]] placeholderImage:nil];
+	[page1ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:0], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
 	[_tutorialScrollView addSubview:page1ImageView];
 	
 	UIImageView *page2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
-	[page2ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:1]] placeholderImage:nil];
+	[page2ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:1], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
 	[_tutorialScrollView addSubview:page2ImageView];
 	
 	UIImageView *page3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(636.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
-	[page3ImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate tutorialImageForPage:2]] placeholderImage:nil];
+	[page3ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:2], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
 	[_tutorialScrollView addSubview:page3ImageView];
 	
 	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];

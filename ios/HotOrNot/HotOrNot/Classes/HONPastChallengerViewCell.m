@@ -27,7 +27,7 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
 		_isRandom = isAnonymous;
 		
-		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
+		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(283.0, 20.0, 24.0, 24.0)];
 		chevronImageView.image = [UIImage imageNamed:@"chevron"];
 		[self addSubview:chevronImageView];
 	}
@@ -39,13 +39,13 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 38.0, 38.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	avatarImageView.hidden = _isRandom;
 	[self addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isRandom) ? 11.0 : 60.0, 22.0, 180.0, 16.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isRandom) ? 11.0 : 56.0, 27.0, 180.0, 20.0)];
+	nameLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:16];
 	nameLabel.textColor = [HONAppDelegate honGrey635Color];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:(_isRandom) ? @"%@" : @"@%@", _userVO.username];

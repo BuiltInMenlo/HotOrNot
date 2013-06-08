@@ -16,6 +16,7 @@
 
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
+#import "HONFindFriendsViewController.h"
 #import "HONUserProfileViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
@@ -520,9 +521,16 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	if (rand() % 100 < 50) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteNetworkViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
+		
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFindFriendsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)_goLocaleRestriction {

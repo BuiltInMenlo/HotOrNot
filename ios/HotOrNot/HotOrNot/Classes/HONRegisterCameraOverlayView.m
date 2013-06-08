@@ -66,8 +66,8 @@
 		
 		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		retakeButton.frame = CGRectMake(340.0, 0.0, 121.0, 53.0);
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewReTAKEButton_nonActive.jpg"] forState:UIControlStateNormal];
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewReTAKEButton_Active.jpg"] forState:UIControlStateHighlighted];
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_nonActive"] forState:UIControlStateNormal];
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_Active"] forState:UIControlStateHighlighted];
 		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:retakeButton];
 		

@@ -95,7 +95,7 @@
 	[self addSubview:timeLabel];
 	
 	UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 44.0, 320.0, kSnapMediumSize.width)];
-	scrollView.contentSize = CGSizeMake(21.0 + (kSnapMediumSize.width * 2.0), kSnapMediumSize.width);
+	scrollView.contentSize = CGSizeMake(7.0 + ((kSnapMediumSize.width + 7.0) * (2.0 + (int)_hasChallenger)), kSnapMediumSize.width);
 	scrollView.pagingEnabled = NO;
 	scrollView.showsHorizontalScrollIndicator = NO;
 	scrollView.backgroundColor = [UIColor whiteColor];
@@ -192,6 +192,17 @@
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[_rHolderView addSubview:challengerNameButton];
 		
+		UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(442.0, 0.0, 210.0, 210.0)];
+		joinHolderView.backgroundColor = [UIColor colorWithWhite:0.894 alpha:1.0];
+		[scrollView addSubview:joinHolderView];
+		
+		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		joinButton.frame = CGRectMake(33.0, 83.0, 144.0, 44.0);
+		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
+		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
+		[joinButton addTarget:self action:@selector(_goNewSubjectChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[joinHolderView addSubview:joinButton];
+		
 	} else {
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
 		rImgView.image = [UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? @"pokeThumb" : @"thumbCameraAction"];
@@ -201,8 +212,8 @@
 		if (_challengeVO.challengerID == 0) {
 			UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			joinButton.frame = CGRectMake(33.0, 83.0, 144.0, 44.0);
-			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinVolley_nonActive"] forState:UIControlStateNormal];
-			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinVolley_Active"] forState:UIControlStateHighlighted];
+			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
+			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 			[joinButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 			[_rHolderView addSubview:joinButton];
 		
@@ -447,6 +458,10 @@
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];
 		}
 	}
+}
+
+- (void)_goNewSubjectChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
 }
 
 - (void)_goCreateChallenge {

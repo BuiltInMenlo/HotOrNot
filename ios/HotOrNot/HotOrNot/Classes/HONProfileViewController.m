@@ -324,6 +324,25 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
+- (void)_goContacts {
+	[[Mixpanel sharedInstance] track:@"Profile - Contacts"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+			[self _retrieveContacts];
+		});
+		
+	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+		[self _retrieveContacts];
+		
+	} else {
+		// denied access
+	}
+}
+
 - (void)_goInstagram {
 	[[Mixpanel sharedInstance] track:@"Invite Friends - Instagram"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -396,24 +415,18 @@
 	}
 }
 
-- (void)_goContacts {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Contacts"
+- (void)_goTumblr {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Tumblr"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-			[self _retrieveContacts];
-		});
-		
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-		[self _retrieveContacts];
-		
-	} else {
-		// denied access
-	}
 }
+
+- (void)_goTwitter {
+	[[Mixpanel sharedInstance] track:@"Invite Friends - Twitter"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+}
+
 
 #pragma mark - Notifications
 - (void)_refreshProfileTab:(NSNotification *)notification {
@@ -616,7 +629,7 @@
 		return ([_allPastUsers count]);
 		
 	} else {
-		return (4);//(_isContactsViewed) ? [_contactUsers count] : 1);
+		return (6);//(_isContactsViewed) ? [_contactUsers count] : 1);
 	}
 }
 
@@ -628,7 +641,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 310.0, 29.0)];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 2.0, 310.0, 29.0)];
 	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 	label.textColor = [HONAppDelegate honBlueTxtColor];
 	label.backgroundColor = [UIColor clearColor];
@@ -702,23 +715,33 @@
 		
 		if (indexPath.row == 0) {
 			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"IG", @"image",
-					  @"Instagram", @"name", nil];
+					  @"icon_SMS", @"image",
+					  @"SMS Contacts", @"name", nil];
 			
 		} else if (indexPath.row == 1) {
 			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"KIK", @"image",
-					  @"Kik", @"name", nil];
+					  @"icon_Instagram", @"image",
+					  @"Instagram", @"name", nil];
 			
 		} else if (indexPath.row == 2) {
 			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"FB", @"image",
+					  @"icon_Facebook", @"image",
 					  @"Facebook", @"name", nil];
 			
 		} else if (indexPath.row == 3) {
 			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"CT", @"image",
-					  @"Contacts", @"name", nil];
+					  @"icon_Tumblr", @"image",
+					  @"Tumblr", @"name", nil];
+			
+		} else if (indexPath.row == 4) {
+			dict = [NSDictionary dictionaryWithObjectsAndKeys:
+					  @"icon_Twitter", @"image",
+					  @"Twitter", @"name", nil];
+			
+		} else if (indexPath.row == 5) {
+			dict = [NSDictionary dictionaryWithObjectsAndKeys:
+					  @"icon_Kik", @"image",
+					  @"Kik", @"name", nil];
 		}
 		
 		[cell setContents:dict];
@@ -786,16 +809,22 @@
 	
 	if (indexPath.section == 3) {
 		if (indexPath.row == 0) {
-			[self _goInstagram];
+			[self _goContacts];
 			
 		} else if (indexPath.row == 1) {
-			[self _goKik];
+			[self _goInstagram];
 			
 		} else if (indexPath.row == 2) {
 			[self _goFacebook];
 			
 		} else if (indexPath.row == 3) {
-			[self _goContacts];
+			[self _goTumblr];
+			
+		} else if (indexPath.row == 4) {
+			[self _goTwitter];
+			
+		} else if (indexPath.row == 3) {
+			[self _goKik];
 		}
 	} else {
 		

@@ -159,8 +159,8 @@
 	
 	self.view.backgroundColor = [HONAppDelegate honGreenColor];
 	
-	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(52.0, 35.0, 214.0, 94.0)];
-	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImage]] placeholderImage:nil];
+	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 94.0)];
+	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:0]] placeholderImage:nil];
 	[self.view addSubview:promoteImageView];
 	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];

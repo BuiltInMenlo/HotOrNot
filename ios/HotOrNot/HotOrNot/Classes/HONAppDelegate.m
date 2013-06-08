@@ -129,8 +129,8 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"tutorial_images"] objectAtIndex:page]);
 }
 
-+ (NSString *)promoteInviteImage {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"promote_images"] objectAtIndex:0]);
++ (NSString *)promoteInviteImageForType:(int)type {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"promote_images"] objectAtIndex:type]);
 }
 
 + (NSString *)timelineBannerURL {
@@ -589,74 +589,55 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 											withHomepageURI:@"http://www.builtinmenlo.com"
 												addAppButton:YES];
 		
-//
-//		[Parse setApplicationId:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV" clientKey:@"Bv82pH4YB8EiXZG4V0E2KjEVtpLp4Xds25c5AkLP"];
-//		[PFUser enableAutomaticUser];
-//		PFACL *defaultACL = [PFACL ACL];
-//		[defaultACL setPublicReadAccess:YES];
-//		[PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
-//		
-//		PFQuery *apiActiveQuery = [PFQuery queryWithClassName:@"APIs"];
-//		PFObject *apiActiveObject = [apiActiveQuery getObjectWithId:@"eFLGKQWRzD"];
-//		
-//		// parse is down!!
-//		if (apiActiveObject == nil) {
-//			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
-//				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
-//		
-//		} else {
-//			if ([[apiActiveObject objectForKey:@"active"] isEqualToString:@"Y"]) {
 			
-				int boot_total = 0;
-				if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
-					[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
-				
-				else {
-					boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
-					[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
-				}
-				
-				if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
-					[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
-				
-				if (boot_total == 5) {
-					UIAlertView *alertView = [[UIAlertView alloc]
-												 initWithTitle:@"Rate Volley"
-												 message:@"Why not rate Volley in the app store!"
-												 delegate:self
-												 cancelButtonTitle:nil
-												 otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
-					[alertView setTag:2];
-					[alertView show];
-				}
-				
-				if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
-					[HONAppDelegate setAllowsFBPosting:NO];
+		int boot_total = 0;
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
+		
+		else {
+			boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
+		}
+		
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
+		
+		if (boot_total == 5) {
+			UIAlertView *alertView = [[UIAlertView alloc]
+										 initWithTitle:@"Rate Volley"
+										 message:@"Why not rate Volley in the app store!"
+										 delegate:self
+										 cancelButtonTitle:nil
+										 otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
+			[alertView setTag:2];
+			[alertView show];
+		}
+		
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
+			[HONAppDelegate setAllowsFBPosting:NO];
 				
 		//[self _retrieveConfigJSON];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 
-				[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
-				[[Mixpanel sharedInstance] track:@"App Boot"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				
-							
-				self.tabBarController = [[HONTabBarController alloc] init];
-				self.tabBarController.delegate = self;
-				
-				_bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
-				_bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-				[self.tabBarController.view addSubview:_bgImgView];
-				
-				self.window.rootViewController = self.tabBarController;
-				[self.window makeKeyAndVisible];
-						
-//			} else {
-//				[self _showOKAlert:@"Upgrade Needed"
-//					   withMessage:@"Please update to the latest version from the App Store to continue playing Volley."];
-//			}
-//		}
+		// Live App
+		[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
+		
+		// Focus Group
+		//[Mixpanel sharedInstanceWithToken:@"d93069ad5b368c367c3adc020cce8021"];
+		[[Mixpanel sharedInstance] track:@"App Boot"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+					
+		self.tabBarController = [[HONTabBarController alloc] init];
+		self.tabBarController.delegate = self;
+		
+		_bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
+		_bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
+		[self.tabBarController.view addSubview:_bgImgView];
+		
+		self.window.rootViewController = self.tabBarController;
+		[self.window makeKeyAndVisible];
 	
 	} else {
 		[self _showOKAlert:@"No Network Connection"
