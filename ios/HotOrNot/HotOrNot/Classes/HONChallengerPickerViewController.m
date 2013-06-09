@@ -172,7 +172,9 @@
 	
 	if (![_username isEqualToString:NSLocalizedString(@"userPlaceholder", nil)] && [_username length] > 0)
 		[params setObject:([[_username substringToIndex:1] isEqualToString:@"@"]) ? [_username substringFromIndex:1] : _username forKey:@"username"];
-		
+	
+	NSLog(@"PARAMS:[%@]", params);
+	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;

@@ -337,7 +337,7 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [[utcDate dateByAddingTimeInterval:90] timeIntervalSinceDate:date];
+	int secs = [[utcDate dateByAddingTimeInterval:30] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;

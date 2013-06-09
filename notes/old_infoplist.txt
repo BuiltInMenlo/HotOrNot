@@ -43,18 +43,24 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb600550136636754</string>
-			</array>
-		</dict>
-		<dict>
+			<key>CFBundleURLName</key>
+			<string></string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>hotornot</string>
 			</array>
 		</dict>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb529054720443694</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>kik-com.builtinmenlo.hotornot</string>
@@ -62,11 +68,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>7755</string>
+	<string>7326</string>
 	<key>FacebookAppID</key>
-	<string>600550136636754</string>
-	<key>FacebookDisplayName</key>
-	<string>Volley</string>
+	<string>529054720443694</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIAppFonts</key>

@@ -243,7 +243,7 @@
 		
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
 			UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			joinButton.frame = CGRectMake(33.0, 83.0, 144.0, 44.0);
+			joinButton.frame = CGRectMake(31.0, 81.0, 149.0, 49.0);
 			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 			[joinButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -274,9 +274,9 @@
 	commentsImageView.image = [UIImage imageNamed:@"commentBubble"];
 	[self addSubview:commentsImageView];
 	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 271.0, 150.0, 24.0)];
-	_commentsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
-	_commentsLabel.textColor = [HONAppDelegate honGrey455Color];
+	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 273.0, 150.0, 22.0)];
+	_commentsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:17];
+	_commentsLabel.textColor = [HONAppDelegate honGrey518Color];
 	_commentsLabel.backgroundColor = [UIColor clearColor];
 	_commentsLabel.text = (_challengeVO.commentTotal == 0) ? NSLocalizedString(@"timeline_0comments", nil) : (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_1comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];
 	[self addSubview:_commentsLabel];

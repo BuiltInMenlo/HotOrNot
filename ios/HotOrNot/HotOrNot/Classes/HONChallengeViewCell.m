@@ -52,7 +52,7 @@
 	_hasSeenImageView.hidden = _challengeVO.hasViewed;
 	[self addSubview:_hasSeenImageView];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(29.0, 13.0, 38.0, 38.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(28.0, 12.0, 38.0, 38.0)];
 	avatarImageView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:1.0];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:(isCreator) ? _challengeVO.challengerAvatar : _challengeVO.creatorAvatar] placeholderImage:nil];
 	[self addSubview:avatarImageView];
@@ -64,14 +64,18 @@
 	challengeLabel.text = ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
 	[self addSubview:challengeLabel];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(86.0, 37.0, 200.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:13];
-	subjectLabel.textColor = [HONAppDelegate honGrey635Color];
+	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(69.0, 34.0, 18.0, 18.0)];
+	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
+	//[self addSubview:arrowImageView];
+	
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(75.0, 35.0, 200.0, 18.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:15];
+	subjectLabel.textColor = [HONAppDelegate honGrey455Color];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(175.0, 24.0, 60.0, 16.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(177.0, 23.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
 	timeLabel.textColor = [HONAppDelegate honGrey635Color];
 	timeLabel.backgroundColor = [UIColor clearColor];
@@ -87,11 +91,6 @@
 	challengeImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[challengeImgHolderView addSubview:challengeImageView];
-	
-	
-	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(69.0, 34.0, 18.0, 18.0)];
-	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
-	[self addSubview:arrowImageView];
 	
 	if ([_challengeVO.status isEqualToString:@"Created"]) {
 		[avatarImageView setImageWithURL:[NSURL URLWithString:@"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png"] placeholderImage:nil];

@@ -561,7 +561,8 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	_username = textField.text;
+	_username = ([[textField.text substringToIndex:1] isEqualToString:@"@"]) ? [textField.text substringFromIndex:1] : textField.text;
+	
 	[[Mixpanel sharedInstance] track:@"Register - Change Username"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
