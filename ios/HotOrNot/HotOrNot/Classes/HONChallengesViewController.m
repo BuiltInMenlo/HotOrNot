@@ -22,6 +22,8 @@
 #import "HONHeaderView.h"
 #import "HONChallengePreviewViewController.h"
 #import "HONSearchBarHeaderView.h"
+#import "HONInviteNetworkViewController.h"
+#import "HONFindFriendsViewController.h"
 
 
 @interface HONChallengesViewController() <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate>
@@ -34,7 +36,7 @@
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) NSIndexPath *idxPath;
 @property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) UIImageView *emptySetImgView;
+@property(nonatomic, strong) UIView *emptySetView;
 @property(nonatomic, strong) NSMutableArray *friends;
 @property(nonatomic, retain) HONChallengePreviewViewController *previewViewController;
 @property(nonatomic) int blockCounter;
@@ -57,10 +59,9 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFindFriends:) name:@"SHOW_FIND_FRIENDS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showEmailComposer:) name:@"SHOW_EMAIL_COMPOSER" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSMSComposer:) name:@"SHOW_SMS_COMPOSER" object:nil];
 	}
 	
 	return (self);
@@ -120,10 +121,10 @@
 			
 
 			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
-			_emptySetImgView.hidden = ([_recentChallenges count] > 0 || [_olderChallenges count] > 0);
+			_emptySetView.hidden = ([_recentChallenges count] + [_olderChallenges count] > 1);
 			[_tableView reloadData];
 			
-			_isMoreLoadable = ([_olderChallenges count] % 10 == 0 || [_olderChallenges count] > 0);
+			_isMoreLoadable = ([_olderChallenges count] % 10 == 0 && [_olderChallenges count] > 0);
 			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
 			[cell toggleLoadMore:_isMoreLoadable];
 			
@@ -239,9 +240,9 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	//NSLog(@"self.view.bounds:[%fx%f][%fx%f]", self.view.bounds.origin.x, self.view.bounds.origin.y, self.view.bounds.size.width, self.view.bounds.size.height);
 	
 	_isMoreLoadable = NO;
+	_isPrivate = NO;
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
@@ -257,14 +258,6 @@
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:createChallengeButton];
-	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 285.0)];
-	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
-	_emptySetImgView.hidden = YES;
-	_emptySetImgView.userInteractionEnabled = YES;
-	[self.view addSubview:_emptySetImgView];
-	
-	_isPrivate = NO;
 	
 	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 30.0)];
 	[self.view addSubview:toggleHolderView];
@@ -282,22 +275,7 @@
 	privateButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
 	[privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
 	[toggleHolderView addSubview:privateButton];
-	
-	UIView *noChallengesView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 300.0, 320.0, [UIScreen mainScreen].bounds.size.height - 300.0)];
-	noChallengesView.hidden = ([_recentChallenges count] + [_olderChallenges count] > 1);
-	[self.view addSubview:noChallengesView];
-	
-	UIImageView *noChallengesImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 88.0)];
-	noChallengesImageView.image = [UIImage imageNamed:@"noOlderSnaps"];
-	[noChallengesView addSubview:noChallengesImageView];
-	
-	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	findFriendsButton.frame = CGRectMake(36.0, 100.0, 249.0, 49.0);
-	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
-	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_Active"] forState:UIControlStateHighlighted];
-	[findFriendsButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-	[noChallengesView addSubview:findFriendsButton];
-	
+		
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 44.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height + 44.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -308,6 +286,22 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	_emptySetView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 300.0, 320.0, [UIScreen mainScreen].bounds.size.height - 300.0)];
+	_emptySetView.hidden = YES;
+	_emptySetView.userInteractionEnabled = YES;
+	//[self.view addSubview:_emptySetView];
+	
+//	UIImageView *noChallengesImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 88.0)];
+//	noChallengesImageView.image = [UIImage imageNamed:@"noOlderSnaps"];
+//	[_emptySetView addSubview:noChallengesImageView];
+//	
+//	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	findFriendsButton.frame = CGRectMake(36.0, 80.0, 249.0, 49.0);
+//	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
+//	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_Active"] forState:UIControlStateHighlighted];
+//	[findFriendsButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+//	[_emptySetView addSubview:findFriendsButton];
 }
 
 - (void)viewDidLoad {
@@ -364,12 +358,24 @@
 - (void)_goPublicChallenges {
 	_isPrivate = NO;
 	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
 	[self _retrieveChallenges];
 }
 
 - (void)_goPrivateChallenges {
 	_isPrivate = YES;
+	
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
 	
 	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
 	[self _retrieveChallenges];
@@ -475,6 +481,19 @@
 	[self _retrieveUser];
 }
 
+- (void)_showFindFriends:(NSNotification *)notification {
+	if (rand() % 100 < 50) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteNetworkViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+		
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFindFriendsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
+}
+
 - (void)_tabsDropped:(NSNotification *)notification {
 	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
 }
@@ -483,6 +502,7 @@
 	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
 }
 
+/*
 - (void)_showEmailComposer:(NSNotification *)notification {
 	if ([MFMailComposeViewController canSendMail]) {
 		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
@@ -519,7 +539,7 @@
 																otherButtonTitles:nil];
 		[alertView show];
 	}
-}
+}*/
 
 
 
@@ -616,7 +636,7 @@
 	HONChallengeVO *vo = (indexPath.section == 0) ? [_recentChallenges objectAtIndex:indexPath.row] : [_olderChallenges objectAtIndex:indexPath.row];
 	_challengeVO = vo;
 	
-	NSLog(@"STATUS:[%@]", vo.status);
+	//NSLog(@"STATUS:[%@]", vo.status);
 	if ([vo.status isEqualToString:@"Created"]) {
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 		

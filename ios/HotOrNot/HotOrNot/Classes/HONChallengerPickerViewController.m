@@ -30,7 +30,7 @@
 @property (nonatomic, strong) HONUserVO *challengerVO;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) UIButton *privateToggleButton;
+@property (nonatomic, strong) UIImageView *privateToggleImageView;
 @property (nonatomic) BOOL isPrivate;
 @end
 
@@ -258,7 +258,7 @@
 	[_headerView addSubview:backButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
+	submitButton.frame = CGRectMake(250.0, 0.0, 64.0, 44.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -286,13 +286,16 @@
 	_usernameTextField.text = ([_username length] == 0) ? NSLocalizedString(@"userPlaceholder", nil) : [NSString stringWithFormat:@"@%@", _username];
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
+	[_usernameTextField becomeFirstResponder];
 	
-	_privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_privateToggleButton.frame = CGRectMake(274.0, 110.0, 34.0, 34.0);
-	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-	[_privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_privateToggleButton];
+	_privateToggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(217.0, 109.0, 94.0, 34.0)];
+	_privateToggleImageView.image = [UIImage imageNamed:@"privateToggle_OFF"];
+	[self.view addSubview:_privateToggleImageView];
+	
+	UIButton *privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	privateToggleButton.frame = _privateToggleImageView.frame;
+	[privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:privateToggleButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 107.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 114.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -335,7 +338,7 @@
 
 - (void)_goPrivateToggle {
 	_isPrivate = !_isPrivate;
-	_privateToggleButton.alpha = 0.5 + ((int)!_isPrivate * 0.5);
+	_privateToggleImageView.image = [UIImage imageNamed:(_isPrivate) ? @"privateToggle_ON" : @"privateToggle_OFF"];
 }
 
 
@@ -430,7 +433,9 @@
 	HONChallengerViewCell *cell = (HONChallengerViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	[cell didSelect];
 	
-	_challengerVO = (HONUserVO *)[_challengers objectAtIndex:indexPath.row];		
+	_challengerVO = (HONUserVO *)[_challengers objectAtIndex:indexPath.row];
+	_username = _challengerVO.username;
+	
 	[[Mixpanel sharedInstance] track:@"Challenger Picker - Past User"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -444,7 +449,9 @@
 #pragma mark - TextField Delegates
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
 	if (textField.tag == 0) {
-		textField.text = @"@";
+		
+		if ([textField.text isEqualToString:NSLocalizedString(@"userPlaceholder", nil)])
+			textField.text = @"@";
 	}
 }
 

@@ -26,7 +26,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 117.0)];
 		[self addSubview:_bgImageView];
 	}
 	
@@ -36,27 +36,27 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
-	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(20.0, 20.0, 61.0, 61.0)];
+	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, 73.0, 73.0)];
 	lHolderView.backgroundColor = [UIColor colorWithWhite:0.875 alpha:1.0];
 	lHolderView.clipsToBounds = YES;
 	[self addSubview:lHolderView];
 	
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 61.0, 81.0)];
+	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 73.0, 97.0)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[lHolderView addSubview:lImageView];
 	
-	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(81.0, 20.0, 61.0, 61.0)];
+	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(83.0, 10.0, 73.0, 73.0)];
 	rHolderView.backgroundColor = [UIColor colorWithWhite:0.875 alpha:1.0];
 	rHolderView.clipsToBounds = YES;
 	[self addSubview:rHolderView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 61.0, 81.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 73.0, 97.0)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[rHolderView addSubview:rImageView];
 	
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 88.0, 140.0, 14.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:12];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 97.0, 140.0, 20.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:16];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _lChallengeVO.subjectName;
@@ -72,28 +72,28 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(176.0, 20.0, 61.0, 61.0)];
+	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(164.0, 10.0, 73.0, 73.0)];
 	lHolderView.backgroundColor = [UIColor colorWithWhite:0.875 alpha:1.0];
 	lHolderView.clipsToBounds = YES;
 	[self addSubview:lHolderView];
 	
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 61.0, 81.0)];
+	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 73.0, 97.0)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[lHolderView addSubview:lImageView];
 	
 	
-	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(237.0, 20.0, 61.0, 61.0)];
+	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(237.0, 10.0, 73.0, 73.0)];
 	rHolderView.backgroundColor = [UIColor colorWithWhite:0.875 alpha:1.0];
 	rHolderView.clipsToBounds = YES;
 	[self addSubview:rHolderView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 61.0, 81.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 73.0, 97.0)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[rHolderView addSubview:rImageView];
 	
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(176.0, 88.0, 140.0, 16.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:13];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(164.0, 97.0, 140.0, 20.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:16];
 	subjectLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _rChallengeVO.subjectName;

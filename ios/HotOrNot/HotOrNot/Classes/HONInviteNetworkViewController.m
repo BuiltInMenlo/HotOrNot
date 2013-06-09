@@ -209,18 +209,19 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-			[self _retrieveContacts];
-		});
-		
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-		[self _retrieveContacts];
-		
-	} else {
-		// denied access
-	}
+	[self _showDisabledAlert];
+//	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+//	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+//		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+//			[self _retrieveContacts];
+//		});
+//		
+//	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+//		[self _retrieveContacts];
+//		
+//	} else {
+//		// denied access
+//	}
 }
 
 - (void)_goInstagram {
@@ -228,26 +229,28 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UITextField *textField;
-	UITextField *textField2;
-	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Instagram Login"
-																	 message:@"\n\n\n"
-																	delegate:nil
-														cancelButtonTitle:@"Cancel"
-														otherButtonTitles:@"OK", nil];
+//	UITextField *textField;
+//	UITextField *textField2;
+//	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Instagram Login"
+//																	 message:@"\n\n\n"
+//																	delegate:nil
+//														cancelButtonTitle:@"Cancel"
+//														otherButtonTitles:@"OK", nil];
+//	
+//	textField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 50.0, 260.0, 25.0)];
+//	[textField setBackgroundColor:[UIColor whiteColor]];
+//	[textField setPlaceholder:@"username"];
+//	[prompt addSubview:textField];
+//								  
+//	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 85.0, 260.0, 25.0)];
+//	[textField2 setBackgroundColor:[UIColor whiteColor]];
+//	[textField2 setPlaceholder:@"password"];
+//	[textField2 setSecureTextEntry:YES];
+//	[prompt addSubview:textField2];
+//	
+//	[prompt show];
 	
-	textField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 50.0, 260.0, 25.0)];
-	[textField setBackgroundColor:[UIColor whiteColor]];
-	[textField setPlaceholder:@"username"];
-	[prompt addSubview:textField];
-								  
-	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 85.0, 260.0, 25.0)];
-	[textField2 setBackgroundColor:[UIColor whiteColor]];
-	[textField2 setPlaceholder:@"password"];
-	[textField2 setSecureTextEntry:YES];
-	[prompt addSubview:textField2];
-	
-	[prompt show];
+	[self _showDisabledAlert];
 }
 
 - (void)_goFacebook {
@@ -255,58 +258,67 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if (FBSession.activeSession.isOpen)
-		[self _callFB];
-		
-	else {
-		[FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
-			if (error) {
-				UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-																				message:error.localizedDescription
-																			  delegate:nil
-																  cancelButtonTitle:@"OK"
-																  otherButtonTitles:nil];
-				[alert show];
+	[self _showDisabledAlert];
 	
-			} else if (FB_ISSESSIONOPENWITHSTATE(status))
-				[self _callFB];
-		}];
-	}
+//	if (FBSession.activeSession.isOpen)
+//		[self _callFB];
+//		
+//	else {
+//		[FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+//			if (error) {
+//				UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
+//																				message:error.localizedDescription
+//																			  delegate:nil
+//																  cancelButtonTitle:@"OK"
+//																  otherButtonTitles:nil];
+//				[alert show];
+//	
+//			} else if (FB_ISSESSIONOPENWITHSTATE(status))
+//				[self _callFB];
+//		}];
+//	}
 }
 
 - (void)_goTumblr {
 	[[Mixpanel sharedInstance] track:@"Invite Friends - Tumblr"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[self _showDisabledAlert];
 }
 
 - (void)_goTwitter {
 	[[Mixpanel sharedInstance] track:@"Invite Friends - Twitter"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[self _showDisabledAlert];
 }
 
 - (void)_goKik {
 	[[Mixpanel sharedInstance] track:@"Invite Friends - Kik"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[self _showDisabledAlert];
 	
-	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
-	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
-	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
-	
-	KikAPIMessage *myMessage = [KikAPIMessage message];
-	myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	myMessage.description = @"";
-	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
-	myMessage.filePath = savePath;
-	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
-	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
-	
-	[KikAPIClient sendMessage:myMessage];
-	
+//	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
+//	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
+//	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+//	
+//	KikAPIMessage *myMessage = [KikAPIMessage message];
+//	myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+//	myMessage.description = @"";
+//	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
+//	myMessage.filePath = savePath;
+//	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
+//	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
+//	
+//	[KikAPIClient sendMessage:myMessage];
 }
 
+
+#pragma mark - UI Presentation
+- (void)_showDisabledAlert {
+	[[[UIAlertView alloc] initWithTitle:@"Feature Disabled" message:@"This feature is turned off during testing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+}
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -406,7 +418,7 @@
 	} else if (indexPath.row == 4) {
 		[self _goTwitter];
 		
-	} else if (indexPath.row == 3) {
+	} else if (indexPath.row == 5) {
 		[self _goKik];
 	}
 }

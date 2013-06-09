@@ -40,7 +40,7 @@
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
 		
-		_headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 200.0, 24.0)];
+		_headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 18.0, 200.0, 24.0)];
 		_headerLabel.backgroundColor = [UIColor clearColor];
 		_headerLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 		_headerLabel.textColor = [UIColor whiteColor];
@@ -48,31 +48,31 @@
 		[self addSubview:_headerLabel];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(274.0, 0.0, 44.0, 44.0);
+		skipButton.frame = CGRectMake(270.0, 5.0, 44.0, 44.0);
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:skipButton];
 		
-		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 475.0 : 388.0, 640.0, 80.0)];
+		_footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 477.0 : 397.0, 640.0, 80.0)];
 		[self addSubview:_footerHolderView];
 		
 		UIButton *captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		captureButton.frame = CGRectMake(115.0, 7.0, 90.0, 80.0);
-		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive.jpg"] forState:UIControlStateNormal];
-		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active.jpg"] forState:UIControlStateHighlighted];
+		captureButton.frame = CGRectMake(115.0, 0.0, 90.0, 80.0);
+		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
+		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:captureButton];
 		
 		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		retakeButton.frame = CGRectMake(340.0, 0.0, 121.0, 53.0);
+		retakeButton.frame = CGRectMake(340.0, 16.0, 121.0, 53.0);
 		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_nonActive"] forState:UIControlStateNormal];
 		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_Active"] forState:UIControlStateHighlighted];
 		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
 		[_footerHolderView addSubview:retakeButton];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(490.0, 0.0, 121.0, 53.0);
+		submitButton.frame = CGRectMake(496.0, 16.0, 121.0, 53.0);
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_nonActive"] forState:UIControlStateNormal];
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

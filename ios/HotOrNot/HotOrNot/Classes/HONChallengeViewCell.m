@@ -27,25 +27,11 @@
 	if ((self = [super init])) {
 		if (isBottom) {
 			_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			_loadMoreButton.frame = CGRectMake(103.0, 10.0, 114.0, 44.0);
+			_loadMoreButton.frame = CGRectMake(53.0, 0.0, 214.0, 64.0);
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
 			[self addSubview:_loadMoreButton];
-			
-//			UIButton *inviteSMSButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			inviteSMSButton.frame = CGRectMake(68.0, 28.0, 184.0, 34.0);
-//			[inviteSMSButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsViaSMS_nonActive"] forState:UIControlStateNormal];
-//			[inviteSMSButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsViaSMS_nonActive"] forState:UIControlStateHighlighted];
-//			[inviteSMSButton addTarget:self action:@selector(_goInviteSMS) forControlEvents:UIControlEventTouchUpInside];
-//			[self addSubview:inviteSMSButton];
-//			
-//			UIButton *inviteEmailButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			inviteEmailButton.frame = CGRectMake(68.0, 78.0, 184.0, 34.0);
-//			[inviteEmailButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsViaEmail_nonActive"] forState:UIControlStateNormal];
-//			[inviteEmailButton setBackgroundImage:[UIImage imageNamed:@"inviteFriendsViaEmail_Active"] forState:UIControlStateHighlighted];
-//			[inviteEmailButton addTarget:self action:@selector(_goInviteEmail) forControlEvents:UIControlEventTouchUpInside];
-//			[self addSubview:inviteEmailButton];
 			
 			[self hideChevron];
 		}
@@ -153,12 +139,42 @@
 	} else {
 		[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
 		[_loadMoreButton removeFromSuperview];
+		
+		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		findFriendsButton.frame = CGRectMake(24.0, 9.0, 224.0, 44.0);
+		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsWhoVolley"] forState:UIControlStateNormal];
+		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsWhoVolley"] forState:UIControlStateHighlighted];
+		[findFriendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:findFriendsButton];
+		
+		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
+		chevronImageView.image = [UIImage imageNamed:@"chevron"];
+		[self addSubview:chevronImageView];
+		
+//		UIView *whiteOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kDefaultCellHeight)];
+//		whiteOverlayView.backgroundColor = [UIColor whiteColor];
+//		[self addSubview:whiteOverlayView];
 	}
 }
 
 - (void)disableLoadMore {
 	[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
 	[_loadMoreButton removeFromSuperview];
+	
+//	UIView *whiteOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kDefaultCellHeight)];
+//	whiteOverlayView.backgroundColor = [UIColor whiteColor];
+//	[self addSubview:whiteOverlayView];
+	
+	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	findFriendsButton.frame = CGRectMake(24.0, 9.0, 224.0, 44.0);
+	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsWhoVolley"] forState:UIControlStateNormal];
+	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsWhoVolley"] forState:UIControlStateHighlighted];
+	[findFriendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:findFriendsButton];
+	
+	UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
+	chevronImageView.image = [UIImage imageNamed:@"chevron"];
+	[self addSubview:chevronImageView];
 }
 
 - (void)updateHasSeen {
@@ -170,12 +186,9 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
 }
 
-- (void)_goInviteSMS {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SMS_COMPOSER" object:nil];
+- (void)_goFindFriends {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIND_FRIENDS" object:nil];
 }
 
-- (void)_goInviteEmail {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_EMAIL_COMPOSER" object:nil];
-}
 
 @end

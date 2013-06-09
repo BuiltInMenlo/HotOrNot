@@ -117,8 +117,11 @@
 		usernameLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:usernameLabel];
 		
+		int capturePos = ([HONAppDelegate isRetina5]) ? 479 : 390;		
+		int opsOffset = ([_username length] > 0) ? 40 : ([HONAppDelegate isRetina5]) ? 55 : 0;
+		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(15.0, 309.0, 64.0, 44.0);
+		cameraRollButton.frame = CGRectMake(15.0, 267.0 + opsOffset, 64.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
@@ -126,7 +129,7 @@
 		
 		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(233.0, 309.0, 74.0, 44.0);
+			changeCameraButton.frame = CGRectMake(233.0, 267.0 + opsOffset, 74.0, 44.0);
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
 			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
 			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -134,7 +137,7 @@
 		}
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(115.0, 390.0 + ((int)[HONAppDelegate isRetina5] * 98), 90.0, 90.0);
+		_captureButton.frame = CGRectMake(115.0, capturePos, 90.0, 80.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];

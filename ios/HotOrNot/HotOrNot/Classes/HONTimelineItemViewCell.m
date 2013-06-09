@@ -27,7 +27,6 @@
 @property (nonatomic, strong) UIImageView *upvoteImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UIView *tappedOverlayView;
-@property (nonatomic, strong) UIImageView *tapOverlayImageView;
 @property (nonatomic, strong) UIButton *votesButton;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasChallenger;
@@ -70,8 +69,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	_tapOverlayImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"blackOverlay_50"]];
-	_tapOverlayImageView.clipsToBounds = YES;
+	NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasChallenger);
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 13.0, 200.0, 24.0)];
 	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:19];
@@ -209,15 +207,7 @@
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
-		if (_challengeVO.challengerID == 0) {
-			UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			joinButton.frame = CGRectMake(33.0, 83.0, 144.0, 44.0);
-			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
-			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-			[joinButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-			[_rHolderView addSubview:joinButton];
-		
-		} else {
+		if (_challengeVO.challengerID != 0) {
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			rightButton.frame = lImgView.frame;
 			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
@@ -250,6 +240,15 @@
 			[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 			[_rHolderView addSubview:challengerNameButton];
 		}
+		
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+			UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			joinButton.frame = CGRectMake(33.0, 83.0, 144.0, 44.0);
+			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
+			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
+			[joinButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+			[_rHolderView addSubview:joinButton];
+		}
 	}
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
@@ -271,8 +270,8 @@
 	_rScoreLabel.hidden = !_hasChallenger;
 	[_rHolderView addSubview:_rScoreLabel];
 	
-	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(9.0, 261.0, 40.0, 40.0)];
-	commentsImageView.image = [UIImage imageNamed:@"commentIcon_nonActive"];
+	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, 270.0, 24.0, 24.0)];
+	commentsImageView.image = [UIImage imageNamed:@"commentBubble"];
 	[self addSubview:commentsImageView];
 	
 	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 271.0, 150.0, 24.0)];
@@ -364,7 +363,6 @@
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-		[self _showTapOverlayOnView:_lHolderView];
 		
 		if (_hasChallenger)
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CREATOR" object:_challengeVO];
@@ -387,7 +385,6 @@
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-		[self _showTapOverlayOnView:_rHolderView];
 		
 		if (_hasChallenger)
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CHALLENGER" object:_challengeVO];
@@ -414,8 +411,6 @@
 }
 
 - (void)_goDoubleTapLeft {
-	[self _showTapOverlayOnView:_lHolderView];
-	
 	[[Mixpanel sharedInstance] track:@"Timeline - Double Tap Creator"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -430,8 +425,6 @@
 }
 
 - (void)_goDoubleTapRight {
-	[self _showTapOverlayOnView:_rHolderView];
-	
 	[[Mixpanel sharedInstance] track:@"Timeline - Double Tap Challenger"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -487,7 +480,7 @@
 																					delegate:self
 																		cancelButtonTitle:@"Cancel"
 																 destructiveButtonTitle:@"Report Abuse"
-																		otherButtonTitles:@"View who liked this", [NSString stringWithFormat:@"Snap @%@", _challengeVO.creatorName], [NSString stringWithFormat:@"Snap @%@", _challengeVO.challengerName], [NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], nil];
+																		otherButtonTitles:@"View Likes", @"Join Volley", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:0];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -497,7 +490,7 @@
 																					delegate:self
 																		cancelButtonTitle:@"Cancel"
 																 destructiveButtonTitle:@"Report Abuse"
-																		otherButtonTitles:[NSString stringWithFormat:@"Snap this %@", _challengeVO.subjectName], @"Snap@Me", nil];
+																		otherButtonTitles:@"Join Volley", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -644,19 +637,6 @@
 	[_sfxPlayer play];
 }
 
-- (void)_showTapOverlayOnView:(UIView *)view {
-	_tappedOverlayView = [[UIView alloc] initWithFrame:view.frame];
-	_tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.33 alpha:0.33];
-	[self addSubview:_tappedOverlayView];
-	
-	[self performSelector:@selector(_removeTapOverlay) withObject:self afterDelay:0.125];
-}
-
-- (void)_removeTapOverlay {
-	[_tappedOverlayView removeFromSuperview];
-	_tappedOverlayView = nil;
-}
-
 
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -698,14 +678,6 @@
 				break;
 				
 			case 2:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-				break;
-				
-			case 3:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
-				break;
-				
-			case 4:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
 				break;
 		}
@@ -745,10 +717,6 @@
 				
 			case 1:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
-				break;
-				
-			case 2:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 				break;
 		}
 	}

@@ -283,9 +283,9 @@
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_usernameTextField setReturnKeyType:UIReturnKeyGo];
+	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreenTxtColor]];
-	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEnd];
 	_usernameTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
@@ -395,8 +395,6 @@
 
 #pragma mark - Navigation
 - (void)_goNext {
-	[_usernameTextField resignFirstResponder];
-	
 	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
 											 message:@"You need to enter a usersname to start snapping"
@@ -569,7 +567,12 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 _username, @"username", nil]];
 	
-	[textField resignFirstResponder];
+	//[textField resignFirstResponder];
+	//[self _goNext];
+}
+
+- (void)_onTxtDoneEditing:(id)sender {
+	[_usernameTextField resignFirstResponder];
 	[self _goNext];
 }
 

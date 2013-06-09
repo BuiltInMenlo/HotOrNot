@@ -11,7 +11,7 @@
 #import "HONFindFriendsViewController.h"
 #import "HONAppDelegate.h"
 
-@interface HONFindFriendsViewController ()
+@interface HONFindFriendsViewController () <UIAlertViewDelegate>
 @end
 
 @implementation HONFindFriendsViewController 
@@ -56,6 +56,10 @@
 	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:skipButton];
 	
+	UIView *whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 116.0, 320.0, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 116.0))];
+	whiteBGView.backgroundColor = [UIColor whiteColor];
+	[self.view addSubview:whiteBGView];
+	
 	UIImageView *mobileImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 116.0, 320.0, 320.0)];
 	mobileImageView.image = [UIImage imageNamed:@"mobileNumberHack"];
 	[self.view addSubview:mobileImageView];
@@ -77,15 +81,44 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-	}];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+																		 message:@"Really!? Volley is more fun with friends!"
+																		delegate:self
+															cancelButtonTitle:@"Cancel"
+															otherButtonTitles:@"Yes, I'm Sure", nil];
+	[alertView setTag:0];
+	[alertView show];
 }
 
 - (void)_goMobile {
 	[[Mixpanel sharedInstance] track:@"Find Friends -Clicked"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[[UIAlertView alloc] initWithTitle:@"Feature Disabled" message:@"This feature is turned off during testing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 }
 
+
+#pragma mark - AlertView Delegates
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		switch(buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Find Friends - Skip Cancel"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				break;
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Find Friends - Skip Confirm"
+											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+				break;
+		}
+	}
+}
 
 @end

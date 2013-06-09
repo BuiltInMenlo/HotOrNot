@@ -48,9 +48,15 @@
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(114.0, 17.0, 93.0, 93.0)];
 	_avatarImageView.backgroundColor = [HONAppDelegate honGrey455Color];
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
-	//_avatarImageView.image = [HONAppDelegate avatarImage];
 	_avatarImageView.userInteractionEnabled = YES;
 	[self addSubview:_avatarImageView];
+	
+	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	profilePicButton.frame = _avatarImageView.frame;
+	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+	[profilePicButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
+	profilePicButton.hidden = !isUser;
+	[self addSubview:profilePicButton];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -95,12 +101,6 @@
 	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:_ptsLabel];
 	
-	UIButton *timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	timelineButton.frame = CGRectMake(120.0, 28.0, 107.0, 80.0);
-	[timelineButton addTarget:self action:@selector(_goTimeline) forControlEvents:UIControlEventTouchUpInside];
-	//timelineButton.hidden = !isUser;
-	[self addSubview:timelineButton];
-	
 	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	shareButton.frame = CGRectMake(224.0, 37.0, 24.0, 44.0);
 	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
@@ -113,7 +113,7 @@
 	snapButton.frame = CGRectMake(12.0, 151.0, 144.0, 44.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
-	[snapButton addTarget:self action:(isUser) ? @selector(_goProfilePic) : @selector(_goNewUserChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[snapButton addTarget:self action:(isUser) ? @selector(_goNewChallenge) : @selector(_goNewUserChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:snapButton];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -166,7 +166,21 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_userVO.username];
 }
 
+- (void)_goNewChallenge {
+	[[Mixpanel sharedInstance] track:@"Timeline Profile - Create Snap Button"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGE" object:nil];
+}
+
 - (void)_goNewUserChallenge {
+	[[Mixpanel sharedInstance] track:@"Timeline Profile - New Snap At User"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
 }
 
@@ -186,7 +200,7 @@
 																					delegate:self
 																		cancelButtonTitle:@"Cancel"
 																 destructiveButtonTitle:@"Report Abuse"
-																		otherButtonTitles:@"Share on Instagram", [NSString stringWithFormat:@"snap @%@", _userVO.username], [NSString stringWithFormat:@"Poke @%@", _userVO.username], nil];
+																		otherButtonTitles:nil];//otherButtonTitles:@"Share on Instagram", [NSString stringWithFormat:@"snap @%@", _userVO.username], [NSString stringWithFormat:@"Poke @%@", _userVO.username], nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -194,30 +208,19 @@
 }
 
 - (void)_goFlagUser {
-	[[Mixpanel sharedInstance] track:@"Timeline - Flag"
+	[[Mixpanel sharedInstance] track:@"Timeline Profile - Report"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"user2", nil]];
+												 [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 10], @"action",
-									[NSString stringWithFormat:@"%d", _userVO.userID], @"userID",
-									nil];
-	
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-		} else {
-			//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONVoteItemViewCell AFNetworking: %@", flagResult);
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
-	}];
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																				delegate:self
+																	cancelButtonTitle:@"Cancel"
+															 destructiveButtonTitle:@"Report Abuse"
+																	otherButtonTitles:nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:1];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
 
@@ -250,12 +253,14 @@
 		}
 	
 	} else if (actionSheet.tag == 1) {
+		NSLog(@"buttonIndex:[%d]", buttonIndex);
+		
 		switch (buttonIndex) {
 			case 0: {
-				[[Mixpanel sharedInstance] track:@"Timeline - Flag"
+				[[Mixpanel sharedInstance] track:@"Timeline Profile - Flag"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"user2", nil]];
+															 [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -280,21 +285,7 @@
 				break;}
 				
 				// share instagram
-			case 1:{
-				UIImage *image = [HONImagingDepictor prepImageForInstagram:[UIImage imageNamed:@"instagram_template-0000"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
-																																	 [HONAppDelegate instagramShareComment], @"caption",
-																																	 image, @"image", nil]];
-				break;}
-				
-				// snap
-			case 2:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_USER_CHALLENGE" object:_userVO];
-				break;
-				
-				// poke
-			case 3:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:_userVO];
+			case 1:
 				break;
 		}
 	}
