@@ -75,8 +75,6 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $loggedIn = true;
         }
         
-        //print_r( array( $response, "$authUrl?oauth_token=$oauthToken", $input, $loggedIn ) ); exit;
-        
         $input = array(
             'form_key' => $formKey,
             'oauth_token' => $oauthToken,
@@ -119,26 +117,64 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
      * leave a comment
      */
     public function browseSelfies(){
-        $posts = $this->getSelfies(10);
+        $posts = $this->getSelfies(1);
         //$posts = $this->oauth->getBlogPosts('fargobauxn.tumblr.com');
         $sleep = 1;
         foreach( $posts as $post ){
             $parts = parse_url($post->post_url);
             $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
-            if( !$this->isFollowing( $blogUrl ) ){
-                $this->log( $post->post_url );
+            if( $this->canPing( $blogUrl ) ){
+                $comment = $this->persona->getVolleyQuote();
+                $parts = parse_url($post->post_url);
+                $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
+                if( mt_rand(1, 100) <= 10 ){
+                    $this->oauth->follow( $blogUrl );
+                }
+                $options = array('comment' => $comment );
+                $success = $this->oauth->reblogPost( $this->persona->getTumblrBlogName(), $post->id, $post->reblog_key, $options ); 
+                if( $success ){
+                    $this->logSuccess( $post, $comment );
+                    $this->updateLastContact( $blogUrl );
+                }
                 echo( "sleeping for $sleep secs\n" );
                 sleep( $sleep );
-                /*$this->oauth->follow( $blogUrl );
-                $comment = $this->persona->getVolleyQuote();
-                $options = array('comment' => $comment );
-                $this->oauth->reblogPost( $this->persona->tumblr->blogName, $post->id, $post->reblog_key, $options ); */
             }
         }
     }
     
-    public function log( $data ){
-        file_put_contents('/tmp/persona_log', print_r($data,1)."\n", FILE_APPEND);
+    public function canPing( $blogUrl ){
+        $canPing = ( !$this->isFollowing( $blogUrl ) ) && $this->canContact( $blogUrl );
+        return $canPing;
+    }
+    
+    public function canContact( $blogUrl ){
+        $canContact = false;
+        $timeSpan = 86000 * 7;
+        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+        $lastContact = $dao->getLastContact($blogUrl);
+        $time = time();
+        if( $lastContact == 0 || ($time - $lastContact) < $timeSpan ){
+            $canContact = true;
+        }
+        return $canContact;
+    }
+    
+    public function updateLastContact( $blogUrl ){
+        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+        $dao->updateLastContact($blogUrl, time() );
+    }
+    
+    public function logSuccess( $post, $comment ){
+        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+        $dao->logSuccess( $post, $comment, 'tumblr' );
+    }
+    
+    public function logError( $post,$comment ){
+        // print_r( array($post, $comment)  );
+        $delim = '::bim_delim::';
+        $line = join( $delim, array( time(), $post->post_url, $post->type, $post->date, $comment ) );
+        $line .="\n";
+        file_put_contents('/tmp/persona_log_errors', $line, FILE_APPEND);
     }
     
     public function getSelfies( $maxItems ){

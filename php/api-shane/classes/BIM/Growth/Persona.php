@@ -1,6 +1,8 @@
 <?php 
 
 class BIM_Growth_Persona{
+    protected $authenticQuotes = array();
+    protected $adQuotes = array();
     
     public function __construct( $params = null ){
         if( is_object($params) ){
@@ -10,10 +12,30 @@ class BIM_Growth_Persona{
         } else {
             $this->loadData( $params );
         }
+        $this->adQuotes = BIM_Config::adQuotes();
+        $this->authenticQuotes = BIM_Config::authenticQuotes();
     }
     
-    public function getVolleyQuote(){
-        return "HMU on TheSchnizz!";
+    public function getTumblrBlogName(){
+        $blogName = '';
+        if( isset( $this->tumblr->blogName ) ){
+            $blogName = $this->tumblr->blogName;
+        } else {
+            $blogName = $this->tumblr->name.'.tumblr.com';
+        }
+        return $blogName;
+    }
+    
+    public function getVolleyQuote( $authentic = true ){
+        if( $authentic ){
+            $quotes = $this->authenticQuotes;
+        } else {
+            $quotes = $this->adQuotes;
+        }
+        
+        $ct = count( $quotes ) - 1;
+        $idx = mt_rand(0, $ct);
+        return $quotes[ $idx ];
     }
     
     protected function loadData( $name ){

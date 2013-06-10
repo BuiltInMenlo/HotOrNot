@@ -217,7 +217,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	**/
 	public function challengeOpponents($user_id, $private = false) {
 		$this->dbConnect();
-		$privateSql = '';
+	    $privateSql = ' AND `is_private` != "Y" ';
 	    if( $private ){
 	        $privateSql = ' AND `is_private` = "Y" ';
 	    }
@@ -253,7 +253,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	**/
 	public function challengesWithOpponent($user_id, $opponent_id, $last_date="9999-99-99 99:99:99", $private ) {
 		$this->dbConnect();
-		$privateSql = '';
+	    $privateSql = ' AND `is_private` != "Y" ';
 		if( $private ){
 	        $privateSql = ' AND `is_private` = "Y" ';
 	    }
@@ -498,9 +498,11 @@ class BIM_App_Challenges extends BIM_App_Base{
 		$challenger_obj = mysql_fetch_object(mysql_query($query));
 		
 		// send push to targeted user if allowed
-		if ($challenger_obj->notifications == "Y")
-			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' snap!", "sound": "push_01.caf"}}');
-		
+		if ($challenger_obj->notifications == "Y"){
+		    $private = $is_private ? 'private' : '';
+		    $msg = "$creator_obj->username has sent you a $private Volley!";
+			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
+		}
 		// get the newly created challenge
 		$challenge_arr = $this->getChallengeObj($challenge_id);
 		
@@ -554,8 +556,11 @@ class BIM_App_Challenges extends BIM_App_Base{
 			$challenger_obj = mysql_fetch_object(mysql_query($query));
 			
 			// send push if allowed
-			if ($challenger_obj->notifications == "Y")
-				$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $creator_obj->username .' has sent you a '. $subject .' snap!", "sound": "push_01.caf"}}');
+			if ($challenger_obj->notifications == "Y"){
+		        $private = $is_private ? 'private' : '';
+		        $msg = "$creator_obj->username has sent you a $private Volley!";
+			    $this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
+			}
 		    
 			// get the newly created challenge
 			$challenge_arr = $this->getChallengeObj($challenge_id);
