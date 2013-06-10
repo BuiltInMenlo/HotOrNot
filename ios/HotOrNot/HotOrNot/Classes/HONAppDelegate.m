@@ -834,7 +834,7 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 				[celebs addObject:celeb];
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api-dev"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 																			  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",

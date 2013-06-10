@@ -42,9 +42,6 @@
 @property(nonatomic) int blockCounter;
 @property (nonatomic, strong) UIImageView *togglePrivateImageView;
 @property (nonatomic) BOOL isPrivate;
-
-- (void)_retrieveChallenges;
-- (void)_retrieveUser;
 @end
 
 @implementation HONChallengesViewController
