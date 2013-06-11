@@ -151,17 +151,41 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
      */
     
     public function browseTags(){
+        $this->handleLogin();
+        // $this->loginAndAuthorizeApp();
         $taggedIds = $this->getTaggedIds( );
         foreach( $taggedIds as $tag => $ids ){
             foreach( $ids as $id ){
                 $this->submitComment( $id );
-                $sleep = 5;
+                $sleep = $this->persona->getBrowseTagsCommentWait();
                 echo "submitted comment - sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
-            $sleep = 120;
+            $sleep = $this->persona->getBrowseTagsTagWait();
             echo "completed tag $tag - sleeping for $sleep seconds\n";
             sleep($sleep);
+        }
+    }
+    
+    /**
+     * 
+     * first we check to see if we are logged in
+     * if we are not then we login
+     * and check once more
+     * 
+     */
+    public function handleLogin(){
+        $url = 'http://web.stagram.com/tag/lol';
+        $response = $this->get( $url );
+        if( !$this->isLoggedIn($response) ){
+            $name = $this->persona->name;
+            echo "user $name not logged in!  loging in!\n";
+            $this->loginAndAuthorizeApp();
+            $response = $this->get( $url );
+            if( !$this->isLoggedIn($response) ){
+                echo "something is wrong with logging in $name to webstagram!  exiting!\n";
+                exit;
+            }
         }
     }
     
@@ -199,7 +223,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 array_splice( $ids, count( $ids ),  0, $matches[1] );
             }
             
-            $sleep = 2;
+            $sleep = $this->persona->getTagIdWaitTime();
             echo "sleeping for $sleep seconds\n";
             sleep( $sleep );
         }

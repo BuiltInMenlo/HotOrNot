@@ -42,7 +42,11 @@ class BIM_Growth_Persona{
         $this->dao = new BIM_DAO_Mysql_Persona( BIM_Config::db() );
         $data = $this->dao->getData( $name );
         if( $data ){
+            $type = 'authentic';
             foreach( $data as $row ){
+                if( isset( $row->type ) ){
+                    $type = $row->type;
+                }
                 $network = $row->network;
                 $this->$network = $row;
                 if( $row->extra ){
@@ -53,9 +57,12 @@ class BIM_Growth_Persona{
                         }
                     }
                 }
+                unset( $row->type );
                 unset( $row->network );
                 unset( $row->extra );
             }
+            $this->name = $name;
+            $this->type = $type;
         }
     }
     
@@ -64,6 +71,30 @@ class BIM_Growth_Persona{
             return BIM_Config::adTags();
         } else {
             return BIM_Config::authenticTags();
+        }
+    }
+    
+    public function getTagIdWaitTime( ){
+        if( $this->type == 'ad' ){
+            return 4;
+        } else {
+            return 2;
+        }
+    }
+    
+    public function getBrowseTagsCommentWait( ){
+        if( $this->type == 'ad' ){
+            return 10;
+        } else {
+            return 5;
+        }
+    }
+    
+    public function getBrowseTagsTagWait( ){
+        if( $this->type == 'ad' ){
+            return 420;
+        } else {
+            return 120;
         }
     }
 }
