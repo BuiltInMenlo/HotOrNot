@@ -151,19 +151,20 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
      */
     
     public function browseTags(){
-        $this->handleLogin();
-        // $this->loginAndAuthorizeApp();
-        $taggedIds = $this->getTaggedIds( );
-        foreach( $taggedIds as $tag => $ids ){
-            foreach( $ids as $id ){
-                $this->submitComment( $id );
-                $sleep = $this->persona->getBrowseTagsCommentWait();
-                echo "submitted comment - sleeping for $sleep seconds\n";
+        $loggedIn = $this->handleLogin();
+        if( $loggedIn ){
+            $taggedIds = $this->getTaggedIds( );
+            foreach( $taggedIds as $tag => $ids ){
+                foreach( $ids as $id ){
+                    $this->submitComment( $id );
+                    $sleep = $this->persona->getBrowseTagsCommentWait();
+                    echo "submitted comment - sleeping for $sleep seconds\n";
+                    sleep($sleep);
+                }
+                $sleep = $this->persona->getBrowseTagsTagWait();
+                echo "completed tag $tag - sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
-            $sleep = $this->persona->getBrowseTagsTagWait();
-            echo "completed tag $tag - sleeping for $sleep seconds\n";
-            sleep($sleep);
         }
     }
     
@@ -175,6 +176,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
      * 
      */
     public function handleLogin(){
+        $loggedIn = true;
         $url = 'http://web.stagram.com/tag/lol';
         $response = $this->get( $url );
         if( !$this->isLoggedIn($response) ){
@@ -184,21 +186,21 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $response = $this->get( $url );
             if( !$this->isLoggedIn($response) ){
                 echo "something is wrong with logging in $name to webstagram!  exiting!\n";
-                exit;
+                $loggedIn = false;
             }
         }
+        return $loggedIn;
     }
     
     public function getTaggedIds( ){
         $tags = $this->persona->getTags();
-        shuffle($tags);
-        $tags = array_slice( $tags, 0, 2 );
         $taggedIds = array();
+        $idsPerTag = $this->persona->idsPerTagInsta();
         foreach( $tags as $tag ){
             $ids = $this->getIdsForTag($tag, 2);
             $taggedIds[ $tag ] = array();
             foreach( $ids as $id ){
-                if( count( $taggedIds[ $tag ] ) < 5 && $this->canPing( $id ) ){
+                if( count( $taggedIds[ $tag ] ) < $idsPerTag && $this->canPing( $id ) ){
                     $taggedIds[ $tag ][] = $id;
                 }
             }
@@ -224,7 +226,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             }
             
             $sleep = $this->persona->getTagIdWaitTime();
-            echo "sleeping for $sleep seconds\n";
+            echo "sleeping for $sleep seconds after fetching $pageUrl\n";
             sleep( $sleep );
         }
         $ids = array_unique( $ids );

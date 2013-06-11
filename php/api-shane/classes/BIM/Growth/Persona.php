@@ -68,33 +68,54 @@ class BIM_Growth_Persona{
     
     public function getTags(){
         if( isset( $this->type ) && $this->type == 'ad' ){
-            return BIM_Config::adTags();
+            $tags = BIM_Config::adTags();
         } else {
-            return BIM_Config::authenticTags();
+            $tags = BIM_Config::authenticTags();
+        }
+        shuffle($tags);
+        $tags = array_slice( $tags, 0, $this->numTagsToRetrieveInsta() );
+        return $tags;
+    }
+    
+    public function numTagsToRetrieveInsta( ){
+        if( $this->type == 'ad' ){
+            return 1;
+        } else {
+            return 1;
         }
     }
     
     public function getTagIdWaitTime( ){
         if( $this->type == 'ad' ){
-            return 4;
+            return mt_rand(4, 6);
         } else {
-            return 2;
+            return mt_rand(4, 6);
         }
     }
     
     public function getBrowseTagsCommentWait( ){
         if( $this->type == 'ad' ){
-            return 10;
+            return mt_rand(15, 30);
         } else {
-            return 5;
+            return mt_rand(15, 30);
         }
     }
     
     public function getBrowseTagsTagWait( ){
         if( $this->type == 'ad' ){
-            return 420;
+            return mt_rand(120, 420);
         } else {
-            return 120;
+            return mt_rand(120, 420);
         }
     }
+    
+    // idsPerTagInsta
+    public function idsPerTagInsta( ){
+        if( $this->type == 'ad' ){
+            return 5;
+        } else {
+            return 5;
+        }
+    }
+    
 }

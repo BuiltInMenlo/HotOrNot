@@ -28,8 +28,11 @@ alias gwstop='/usr/bin/php /var/www/discover.getassembly.com/hotornot/api-shane/
  * @param Array $config - contains some data that can be declared in the config for the GearmanManager daemon manager class
  */
 function any_job( $job, &$config ){ BIM_JobQueue_Gearman::consume($job, $config); }
+
+// all the functions below call any_job()
 function email( $job, &$config ){ any_job($job, $config); }
 function static_pages( $job, &$config ){ any_job($job, $config); }
 function upvote( $job, &$config ){ any_job($job, $config); }
 function harvest_selfies( $job, &$config ){ any_job($job, $config); }
 function growth( $job, &$config ){ any_job($job, $config); }
+function webstagram( $job, &$config ){ any_job($job, $config); }
