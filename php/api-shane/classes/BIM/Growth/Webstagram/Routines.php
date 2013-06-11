@@ -155,24 +155,31 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         foreach( $taggedIds as $tag => $ids ){
             foreach( $ids as $id ){
                 $this->submitComment( $id );
+                $sleep = 5;
+                echo "submitted comment - sleeping for $sleep seconds\n";
+                sleep($sleep);
             }
+            $sleep = 120;
+            echo "completed tag $tag - sleeping for $sleep seconds\n";
+            sleep($sleep);
         }
     }
     
     public function getTaggedIds( ){
         $tags = $this->persona->getTags();
-        
-        print_r( $tags ); exit;
+        shuffle($tags);
+        $tags = array_slice( $tags, 0, 2 );
         $taggedIds = array();
         foreach( $tags as $tag ){
-            $ids = $this->getIdsForTag($tag);
+            $ids = $this->getIdsForTag($tag, 2);
             $taggedIds[ $tag ] = array();
             foreach( $ids as $id ){
-                if( count( $taggedIds[ $tag ] ) <= 5 && $this->canPing( $id ) ){
+                if( count( $taggedIds[ $tag ] ) < 5 && $this->canPing( $id ) ){
                     $taggedIds[ $tag ][] = $id;
                 }
             }
         }
+        // print_r( $taggedIds ); exit;
         return $taggedIds;
     }
     
@@ -183,8 +190,8 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $response = $this->get( $pageUrl );
             // here we ensure that we are logged in still
             // $this->handleLogin( $response );
+            //print_r( $this->isLoggedIn($response ) ); exit;
             
-            print_r( $response ); exit;
             // type="image" name="comment__166595034299642639_37459491"
             $ptrn = '/type="image" name="comment__(.+?)"/';
             preg_match_all($ptrn, $response, $matches);
@@ -192,10 +199,12 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 array_splice( $ids, count( $ids ),  0, $matches[1] );
             }
             
-            $sleep = 1;
+            $sleep = 2;
             echo "sleeping for $sleep seconds\n";
             sleep( $sleep );
         }
+        $ids = array_unique( $ids );
+        // print_r( array($ids, $tag) );exit;
         return $ids;
     }
     
@@ -203,7 +212,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $canPing = false;
         list( $imageId, $userId ) = explode( '_', $id, 2 );
         if( $imageId && $userId ){
-            $dao = new BIM_DAO_Mysql_Growth_Webstagam( BIM_Config::db() );
+            $dao = new BIM_DAO_Mysql_Growth_Webstagram( BIM_Config::db() );
             $timeSpan = 86400 * 7;
             $currentTime = time();
             $lastContact = $dao->getLastContact( $userId );
@@ -223,17 +232,18 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $message = $this->persona->getVolleyQuote();
         $params = array(
             'message' => $message,
-            'messageid' => 	$id,
-            't'=>	5069
+            'messageid' => $id,
+            't'=> 5069
         );
         print_r( $params );
-        //$response = $this->post( 'http://web.stagram.com/post_comment/', $params);
-        //$response = json_decode( $response );
-        //print_r( $response );
-        //if( $response ){
-        //    $dao = new BIM_DAO_Mysql_Growth_Webstagam( BIM_Config::db() );
-        //    list( $imageId, $userId ) = explode('_', $id, 2 );
-        //    $dao->updateLastContact( $userId, time() );
-        //}
+        $response = $this->post( 'http://web.stagram.com/post_comment/', $params);
+        $response = json_decode( $response );
+        print_r( $response );
+        if( $response ){
+            $dao = new BIM_DAO_Mysql_Growth_Webstagram( BIM_Config::db() );
+            list( $imageId, $userId ) = explode('_', $id, 2 );
+            $dao->updateLastContact( $userId, time() );
+            $dao->logSuccess($id, $message, $this->persona->instagram->name );
+        }
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-class BIM_DAO_Mysql_Growth_Webstagam extends BIM_DAO_Mysql_Growth{
+class BIM_DAO_Mysql_Growth_Webstagram extends BIM_DAO_Mysql_Growth{
 	
 	public function getLastContact( $userId ){
 		$sql = "
 			select last_contact 
-			from growth.webstagram_blog_contact
-			where blog_id = ?
+			from growth.webstagram_user_contact
+			where user_id = ?
 		";
 		$params = array($userId);
 		$stmt = $this->prepareAndExecute($sql, $params);
@@ -21,8 +21,8 @@ class BIM_DAO_Mysql_Growth_Webstagam extends BIM_DAO_Mysql_Growth{
 	
 	public function updateLastContact( $userId, $time ){
 		$sql = "
-			insert into growth.webstagram_blog_contact
-			(blog_id, last_contact) values (?,?)
+			insert into growth.webstagram_user_contact
+			(user_id, last_contact) values (?,?)
 			on duplicate key update last_contact = ?
 		";
 		$params = array( $userId, $time, $time );

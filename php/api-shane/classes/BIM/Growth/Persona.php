@@ -26,11 +26,11 @@ class BIM_Growth_Persona{
         return $blogName;
     }
     
-    public function getVolleyQuote( $authentic = true ){
-        if( $authentic ){
-            $quotes = $this->authenticQuotes;
-        } else {
+    public function getVolleyQuote( ){
+        if( isset( $this->type ) && $this->type == 'ad' ){
             $quotes = $this->adQuotes;
+        } else {
+            $quotes = $this->authenticQuotes;
         }
         
         $ct = count( $quotes ) - 1;
