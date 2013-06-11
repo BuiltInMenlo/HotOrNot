@@ -1,5 +1,5 @@
 //
-//  HONInviteUserViewCell.h
+//  HONProfileContactUserViewCell.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 04.26.13.
@@ -10,7 +10,7 @@
 
 #import "HONContactUserVO.h"
 
-@interface HONInviteUserViewCell : UITableViewCell
+@interface HONProfileContactUserViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, retain) HONContactUserVO *contactUserVO;

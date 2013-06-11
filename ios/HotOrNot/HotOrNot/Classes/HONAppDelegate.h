@@ -63,6 +63,7 @@ static const CGFloat kSnapRatio;
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
 + (NSArray *)inviteCelebs;
++ (NSArray *)defaultFollowing;
 
 + (void)writeDeviceToken:(NSString *)token;
 + (NSString *)deviceToken;

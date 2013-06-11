@@ -10,8 +10,11 @@
 
 #import "HONFindFriendsViewController.h"
 #import "HONAppDelegate.h"
+#import "HONAddFriendsViewController.h"
 
-@interface HONFindFriendsViewController () <UIAlertViewDelegate>
+@interface HONFindFriendsViewController () <UIAlertViewDelegate, UITextFieldDelegate>
+@property (nonatomic, retain) UITextField *mobileTextField;
+@property (nonatomic, retain) NSString *phoneNumber;
 @end
 
 @implementation HONFindFriendsViewController 
@@ -64,10 +67,19 @@
 	mobileImageView.image = [UIImage imageNamed:@"mobileNumberHack"];
 	[self.view addSubview:mobileImageView];
 	
-	UIButton *mobileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	mobileButton.frame = mobileImageView.frame;
-	[mobileButton addTarget:self action:@selector(_goMobile) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:mobileButton];
+	_mobileTextField = [[UITextField alloc] initWithFrame:CGRectMake(61.0, 220.0, 230.0, 30.0)];
+	//[_mobileTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[_mobileTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_mobileTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_mobileTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_mobileTextField setReturnKeyType:UIReturnKeyGo];
+	[_mobileTextField setTextColor:[HONAppDelegate honBlueTxtColor]];
+	//[_mobileTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEnd];
+	_mobileTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
+	_mobileTextField.keyboardType = UIKeyboardTypeDefault;//UIKeyboardTypePhonePad;
+	_mobileTextField.text = @"";
+	_mobileTextField.delegate = self;
+	[self.view addSubview:_mobileTextField];
 }
 
 - (void)viewDidLoad {
@@ -90,12 +102,9 @@
 	[alertView show];
 }
 
-- (void)_goMobile {
-	[[Mixpanel sharedInstance] track:@"Find Friends -Clicked"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[[[UIAlertView alloc] initWithTitle:@"Feature Disabled" message:@"This feature is turned off during testing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+- (void)_goNext {
+	//[[[UIAlertView alloc] initWithTitle:@"Feature Disabled" message:@"This feature is turned off during testing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+	[self.navigationController pushViewController:[[HONAddFriendsViewController alloc] init] animated:YES];
 }
 
 
@@ -120,5 +129,43 @@
 		}
 	}
 }
+
+
+#pragma mark - TextField Delegates
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	textField.text = @"";
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+	[textField resignFirstResponder];
+	return (YES);
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+	return (YES);
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+	[textField resignFirstResponder];
+	
+	if ([textField.text length] > 0) {
+		_phoneNumber = textField.text;
+		[[Mixpanel sharedInstance] track:@"Find Friends - Entered Mobile Number"
+									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+													 _phoneNumber, @"mobile", nil]];
+		
+		//[textField resignFirstResponder];
+		[self _goNext];
+		
+	} else
+		textField.text = @"";
+}
+
+- (void)_onTxtDoneEditing:(id)sender {
+	[_mobileTextField resignFirstResponder];
+	[self _goNext];
+}
+
 
 @end

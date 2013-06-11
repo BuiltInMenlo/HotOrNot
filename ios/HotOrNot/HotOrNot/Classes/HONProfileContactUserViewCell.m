@@ -1,15 +1,15 @@
 //
-//  HONInviteUserViewCell.m
+//  HONProfileContactUserViewCell.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 04.26.13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONInviteUserViewCell.h"
+#import "HONProfileContactUserViewCell.h"
 #import "HONAppDelegate.h"
 
-@implementation HONInviteUserViewCell
+@implementation HONProfileContactUserViewCell
 @synthesize contactUserVO = _contactUserVO;
 
 + (NSString *)cellReuseIdentifier {
