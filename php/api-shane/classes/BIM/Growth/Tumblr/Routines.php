@@ -143,11 +143,13 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     }
     
     public function canPing( $blogUrl ){
-        $canPing = ( !$this->isFollowing( $blogUrl ) ) && $this->canContact( $blogUrl );
+        // $canPing = ( !$this->isFollowing( $blogUrl ) ) && $this->canContact( $blogUrl );
+        $canPing = $this->canContact( $blogUrl );
         return $canPing;
     }
     
     public function canContact( $blogUrl ){
+        echo "checking $blogUrl for last contact\n";
         $canContact = false;
         $timeSpan = 86000 * 7;
         $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
@@ -166,7 +168,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     
     public function logSuccess( $post, $comment ){
         $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
-        $dao->logSuccess( $post, $comment, 'tumblr' );
+        $dao->logSuccess( $post, $comment, 'tumblr', $this->persona->tumblr->name );
     }
     
     public function logError( $post,$comment ){
@@ -184,28 +186,31 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         $n = 0;
         $itemsRetrieved = 0;
         $options = array( 'limit' => $maxItems );
-        foreach( $c->harvestSelfies->tags as $tag ){
+        $tag = $this->getRandomTag( );
+        $n++;
+        $selfies = $q->getTaggedPosts( $tag, $options );
+        $itemsRetrieved += count( $selfies );
+        echo "got $itemsRetrieved items in $n pages\n";
+        foreach( $selfies as $selfie ){
+            $allSelfies[] = $selfie;
+        }
+        while( $selfies && $itemsRetrieved < $maxItems ){
             $n++;
             $selfies = $q->getTaggedPosts( $tag, $options );
             $itemsRetrieved += count( $selfies );
             echo "got $itemsRetrieved items in $n pages\n";
-            foreach( $selfies as $selfie ){
+            foreach( $selfies->posts as $selfie ){
                 $allSelfies[] = $selfie;                    
-            }
-            while( $selfies && $itemsRetrieved < $maxItems ){
-                $n++;
-                $selfies = $q->getTaggedPosts( $tag, $options );
-                $itemsRetrieved += count( $selfies );
-                echo "got $itemsRetrieved items in $n pages\n";
-                foreach( $selfies->posts as $selfie ){
-                    $allSelfies[] = $selfie;                    
-                }
-            }
-            if( $itemsRetrieved >= $maxItems){
-                break;
             }
         }
         return $allSelfies;
+    }
+    
+    public function getRandomTag(){
+        $c = BIM_Config::tumblr();
+        $ct = count( $c->harvestSelfies->tags );
+        $idx = mt_rand(0, $ct - 1);
+        return $c->harvestSelfies->tags[$idx];
     }
     
     public function getFollowedBlogs(){
@@ -230,6 +235,10 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             }
         }
         return $following;
+    }
+    
+    public function getUserInfo(){
+        return $this->oauth->getUserInfo();
     }
     
 }

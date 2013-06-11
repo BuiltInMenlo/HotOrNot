@@ -14,7 +14,7 @@ class BIM_Growth{
     }
     
     protected function getCookieFileName(){
-        $uniqueId = isset( $this->persona->uniqueId ) ? '_'.$this->persona->uniqueId : '';
+        $uniqueId = isset( $this->persona->name ) ? '_'.$this->persona->name : '';
         $class = get_class( $this );
         return "/tmp/cookies_{$class}{$uniqueId}.txt";
     }
@@ -78,13 +78,6 @@ class BIM_Growth{
         }
 	}
 	
-	protected function initCurl( $url ){
-	    if( !$this->curl ){
-	        $this->curl = curl_init( $url );
-	    }
-	    return $this->curl;
-	}
-    
 	/**
 	 * parses a curlhttp response
 	 *

@@ -1,14 +1,14 @@
 <?php
 
-class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
+class BIM_DAO_Mysql_Growth_Webstagam extends BIM_DAO_Mysql_Growth{
 	
-	public function getLastContact( $blogUrl ){
+	public function getLastContact( $userId ){
 		$sql = "
 			select last_contact 
-			from growth.tumblr_blog_contact
+			from growth.webstagram_blog_contact
 			where blog_id = ?
 		";
-		$params = array($blogUrl);
+		$params = array($userId);
 		$stmt = $this->prepareAndExecute($sql, $params);
 		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
 		if( $data ){
@@ -19,23 +19,23 @@ class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
 		return $data;
 	}
 	
-	public function updateLastContact( $blogUrl, $time ){
+	public function updateLastContact( $userId, $time ){
 		$sql = "
-			insert into growth.tumblr_blog_contact
+			insert into growth.webstagram_blog_contact
 			(blog_id, last_contact) values (?,?)
 			on duplicate key update last_contact = ?
 		";
-		$params = array($blogUrl, $time, $time);
+		$params = array( $userId, $time, $time );
 		$this->prepareAndExecute($sql, $params);
 	}
 	
-    public function logSuccess( $post, $comment, $network, $name ){
+    public function logSuccess( $id, $comment, $name ){
 		$sql = "
-			insert into growth.contact_log
+			insert into growth.webstagram_contact_log
 			( `time`, `url`, `type`, `comment`, `network`, `name` ) values (?,?,?,?,?,?)
 		";
 		
-		$params = array( time(), $post->post_url, $post->type, $comment, $network, $name );
+		$params = array( time(), $id, 'photo', $comment, 'webstagram', $name );
 		$this->prepareAndExecute( $sql, $params );
     }
 }

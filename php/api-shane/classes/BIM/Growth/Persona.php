@@ -58,4 +58,12 @@ class BIM_Growth_Persona{
             }
         }
     }
+    
+    public function getTags(){
+        if( isset( $this->type ) && $this->type == 'ad' ){
+            return BIM_Config::adTags();
+        } else {
+            return BIM_Config::authenticTags();
+        }
+    }
 }
