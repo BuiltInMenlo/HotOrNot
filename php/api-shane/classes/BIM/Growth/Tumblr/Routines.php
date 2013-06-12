@@ -155,7 +155,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
         $lastContact = $dao->getLastContact($blogUrl);
         $time = time();
-        if( $lastContact == 0 || ($time - $lastContact) < $timeSpan ){
+        if( $lastContact == 0 || ($time - $lastContact) >= $timeSpan ){
             $canContact = true;
         }
         return $canContact;
