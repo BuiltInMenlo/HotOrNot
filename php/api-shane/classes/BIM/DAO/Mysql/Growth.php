@@ -32,10 +32,34 @@ class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
     public function logSuccess( $post, $comment, $network, $name ){
 		$sql = "
 			insert into growth.contact_log
-			( `time`, `url`, `type`, `comment`, `network`, `name` ) values (?,?,?,?,?,?)
+			( `time`, `url`, `type`, `comment`, `network`, `name` ) 
+			values (?,?,?,?,?,?)
 		";
 		
 		$params = array( time(), $post->post_url, $post->type, $comment, $network, $name );
 		$this->prepareAndExecute( $sql, $params );
     }
+    
+	public function getTags(){
+		$sql = "select * from growth.tags";
+		$stmt = $this->prepareAndExecute($sql);
+		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+		if( $data ){
+		    $data = $data[0]->last_contact;
+		} else {
+		    $data = 0;
+		}
+		return $data;
+	}
+	
+	public function saveTags( $data ){
+		$sql = "
+			insert into growth.tags
+			(network, tags) values (?,?)
+			on duplicate key update tags = ?
+		";
+		$params = array( $data->network, $data->tags );
+		$this->prepareAndExecute( $sql, $params );
+	}
+	
 }
