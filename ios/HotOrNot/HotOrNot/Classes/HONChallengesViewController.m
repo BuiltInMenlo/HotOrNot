@@ -38,6 +38,9 @@
 @property(nonatomic, strong) HONHeaderView *headerView;
 @property(nonatomic, strong) UIView *emptySetView;
 @property(nonatomic, strong) NSMutableArray *friends;
+@property(nonatomic, strong) UIButton *publicButton;
+@property(nonatomic, strong) UIButton *privateButton;
+
 @property(nonatomic, retain) HONChallengePreviewViewController *previewViewController;
 @property(nonatomic) int blockCounter;
 @property (nonatomic, strong) UIImageView *togglePrivateImageView;
@@ -124,9 +127,6 @@
 			_isMoreLoadable = ([_olderChallenges count] % 10 == 0 && [_olderChallenges count] > 0);
 			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
 			[cell toggleLoadMore:_isMoreLoadable];
-			
-			NSLog(@"CELL%@", cell);
-			
 			
 			[_headerView toggleRefresh:NO];
 			if (_progressHUD != nil) {
@@ -256,23 +256,6 @@
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:createChallengeButton];
 	
-	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 30.0)];
-	[self.view addSubview:toggleHolderView];
-	
-	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
-	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
-	[toggleHolderView addSubview:_togglePrivateImageView];
-	
-	UIButton *publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	publicButton.frame = CGRectMake(0.0, 0.0, 160.0, 44.0);
-	[publicButton addTarget:self action:@selector(_goPublicChallenges) forControlEvents:UIControlEventTouchUpInside];
-	[toggleHolderView addSubview:publicButton];
-	
-	UIButton *privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	privateButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
-	[privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
-	[toggleHolderView addSubview:privateButton];
-		
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 44.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height + 44.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -283,6 +266,33 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 51.0)];
+	[self.view addSubview:toggleHolderView];
+	
+	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 51.0)];
+	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
+	[toggleHolderView addSubview:_togglePrivateImageView];
+	
+	_publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_publicButton.frame = CGRectMake(0.0, 0.0, 160.0, 44.0);
+	_publicButton.titleLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
+	[_publicButton setTitleColor:[HONAppDelegate honGrey455Color] forState:UIControlStateNormal];
+	[_publicButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+	[_publicButton setTitle:@"Public" forState:UIControlStateNormal];
+	[_publicButton addTarget:self action:@selector(_goPublicChallenges) forControlEvents:UIControlEventTouchUpInside];
+	[_publicButton setSelected:YES];
+	[toggleHolderView addSubview:_publicButton];
+	
+	_privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_privateButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
+	_privateButton.titleLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
+	[_privateButton setTitleColor:[HONAppDelegate honGrey455Color] forState:UIControlStateNormal];
+	[_privateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+	[_privateButton setTitle:@"Private" forState:UIControlStateNormal];
+	[_privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
+	[_privateButton setSelected:NO];
+	[toggleHolderView addSubview:_privateButton];
 	
 	_emptySetView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 300.0, 320.0, [UIScreen mainScreen].bounds.size.height - 300.0)];
 	_emptySetView.hidden = YES;
@@ -355,6 +365,9 @@
 - (void)_goPublicChallenges {
 	_isPrivate = NO;
 	
+	[_publicButton setSelected:YES];
+	[_privateButton setSelected:NO];
+	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -367,6 +380,9 @@
 
 - (void)_goPrivateChallenges {
 	_isPrivate = YES;
+	
+	[_publicButton setSelected:NO];
+	[_privateButton setSelected:YES];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);

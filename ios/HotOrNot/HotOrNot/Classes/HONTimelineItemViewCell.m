@@ -103,9 +103,9 @@
 	_lHolderView.clipsToBounds = YES;
 	[scrollView addSubview:_lHolderView];
 	
-	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kSnapMediumSize.width, kSnapMediumSize.height)];
+	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
 	lImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
+	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	lImgView.userInteractionEnabled = YES;
 	[_lHolderView addSubview:lImgView];
 	
@@ -116,7 +116,6 @@
 	[_lHolderView addSubview:leftButton];
 	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 162.0, 38.0, 38.0)];
-	creatorAvatarImageView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
 	creatorAvatarImageView.userInteractionEnabled = YES;
 	[_lHolderView addSubview:creatorAvatarImageView];
@@ -145,9 +144,8 @@
 	[scrollView addSubview:_rHolderView];
 	
 	if (_hasChallenger) {
-		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -25.0, kSnapMediumSize.width, kSnapMediumSize.height)];
-		rImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
+		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		

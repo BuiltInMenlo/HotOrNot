@@ -57,6 +57,8 @@ const CGSize kAvatarDefaultSize = {200.0, 200.0};
 static const CGFloat kSnapRatio = 1.33333333f;
 static const CGFloat kSnapJPEGCompress = 0.875f;
 
+static const CGFloat kCameraZoom = 1.5f;
+
 
 @interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
@@ -546,8 +548,6 @@ static const CGFloat kSnapJPEGCompress = 0.875f;
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	
-	NSLog(@"LANGUAGE:[%@]", [[NSLocale preferredLanguages] objectAtIndex:0]);
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];

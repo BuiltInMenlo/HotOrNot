@@ -29,12 +29,10 @@
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *cameraBackButton;
 @property (nonatomic, strong) UIButton *submitButton;
+@property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *subjectName;
-
-@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
-@property (nonatomic) CGSize gutterSize;
 @end
 
 @implementation HONCameraOverlayView
@@ -47,35 +45,25 @@
 		_subjectName = subject;
 		_username = username;
 		
-		NSLog(@"AVATAR:[%d]", [_username length]);
-		
-		int photoSize = 250.0;
-		_gutterSize = CGSizeMake((320.0 - photoSize) * 0.5, (self.frame.size.height - photoSize) * 0.5);
-		
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
 		
 		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, ([_username length] > 0) ? kNavBarHeaderHeight + 33.0 : kNavBarHeaderHeight + 10.0, 307.0, 306.0)];
-		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
+		//_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
 		_irisImageView.alpha = 0.0;
 		[self addSubview:_irisImageView];
 		
 		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
-		_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? ([_username length] > 0) ? @"cameraExperience_Overlay-568h" : @"FUEcameraViewBackground-568h" : ([_username length] > 0) ? @"cameraExperience_Overlay" : @"FUEcameraViewBackground"];
+		//_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? ([_username length] > 0) ? @"cameraExperience_Overlay-568h" : @"FUEcameraViewBackground-568h" : ([_username length] > 0) ? @"cameraExperience_Overlay" : @"FUEcameraViewBackground"];
 		_bgImageView.userInteractionEnabled = YES;
 		[self addSubview:_bgImageView];
-		
-		UIImageView *footerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 472.0 : 384.0, 320.0, 96.0)];
-		footerImageView.image = [UIImage imageNamed:@"cameraFooterBackground"];
-		footerImageView.userInteractionEnabled = YES;
-		[_bgImageView addSubview:footerImageView];
 		
 		_captureHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
 		_captureHolderView.userInteractionEnabled = YES;
 		[_bgImageView addSubview:_captureHolderView];
 		
 		_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
-		[_bgImageView addSubview:_headerView];
+		//[_bgImageView addSubview:_headerView];
 		
 		UIImageView *dotsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(148.0, 35.0, 24.0, 6.0)];
 		dotsImageView.image = [UIImage imageNamed:@"cameraExperienceDots"];
@@ -85,14 +73,14 @@
 		UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		subjectButton.frame = CGRectMake(0.0, 12.0, 320.0, 24.0);
 		[subjectButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:subjectButton];
+		//[_headerView addSubview:subjectButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(1.0, 0.0, 64.0, 44.0);
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+		_cancelButton.frame = CGRectMake(270.0, 5.0, 44.0, 44.0);
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:_cancelButton];
+		[self addSubview:_cancelButton];
 		
 		_randomSubjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_randomSubjectButton.frame = CGRectMake(244.0, 0.0, 74.0, 44.0);
@@ -117,31 +105,36 @@
 		usernameLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:usernameLabel];
 		
-		int capturePos = ([HONAppDelegate isRetina5]) ? 479 : 390;		
-		int opsOffset = ([_username length] > 0) ? 40 : ([HONAppDelegate isRetina5]) ? 55 : 0;
-		
-		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(15.0, 267.0 + opsOffset, 64.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
-		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
-		[_captureHolderView addSubview:cameraRollButton];
-		
-		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
-			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			changeCameraButton.frame = CGRectMake(233.0, 267.0 + opsOffset, 74.0, 44.0);
-			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
-			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
-			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
-			[_captureHolderView addSubview:changeCameraButton];
-		}
+//		int opsOffset = ([_username length] > 0) ? 40 : ([HONAppDelegate isRetina5]) ? 55 : 0;
+//		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		cameraRollButton.frame = CGRectMake(15.0, 267.0 + opsOffset, 64.0, 44.0);
+//		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
+//		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
+//		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
+//		[_captureHolderView addSubview:cameraRollButton];
+//		
+//		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
+//			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//			changeCameraButton.frame = CGRectMake(233.0, 267.0 + opsOffset, 74.0, 44.0);
+//			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
+//			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
+//			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
+//			[_captureHolderView addSubview:changeCameraButton];
+//		}
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(115.0, capturePos, 90.0, 80.0);
+		_captureButton.frame = CGRectMake(115.0, ([HONAppDelegate isRetina5]) ? 479 : 390, 90.0, 80.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[_captureHolderView addSubview:_captureButton];
+		
+		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_optionsButton.frame = CGRectMake(15.0, [UIScreen mainScreen].bounds.size.height - 60, 44.0, 44.0);
+		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_nonActive"] forState:UIControlStateNormal];
+		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_Active"] forState:UIControlStateHighlighted];
+		[_optionsButton addTarget:self action:@selector(_goOptions) forControlEvents:UIControlEventTouchUpInside];
+		[_captureHolderView addSubview:_optionsButton];
 		
 		
 		_subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
@@ -292,12 +285,18 @@
 	[_headerView setTitle:_subjectName];
 	_subjectTextField.text = _subjectName;
 	
-	[[Mixpanel sharedInstance] track:@"Camera - Random Hashtag"
+	[[Mixpanel sharedInstance] track:@"Create Snap - Random Hashtag"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 											 _subjectName, @"subject", nil]];
 	
 	[self.delegate cameraOverlayViewChangeSubject:self subject:_subjectName];
+}
+
+- (void)_goOptions {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Options"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
 - (void)_goTakePhoto {

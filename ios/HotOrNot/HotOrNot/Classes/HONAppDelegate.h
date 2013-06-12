@@ -36,6 +36,8 @@ static const CGFloat kSnapJPEGCompress;
 static const CGFloat kHUDTime;
 static const CGFloat kSnapRatio;
 
+static const CGFloat kCameraZoom;
+
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
