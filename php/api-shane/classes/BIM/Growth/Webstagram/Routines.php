@@ -154,16 +154,22 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $taggedIds = $this->getTaggedIds( );
-            foreach( $taggedIds as $tag => $ids ){
-                foreach( $ids as $id ){
+            $lastTag =& end( $taggedIds );
+            foreach( $taggedIds as $tag => &$ids ){
+                $lastId =& end( $ids );
+                foreach( $ids as &$id ){
                     $this->submitComment( $id );
-                    $sleep = $this->persona->getBrowseTagsCommentWait();
-                    echo "submitted comment - sleeping for $sleep seconds\n";
+                    if( $id !== $lastId ){
+                        $sleep = $this->persona->getBrowseTagsCommentWait();
+                        echo "submitted comment - sleeping for $sleep seconds\n";
+                        sleep($sleep);
+                    }
+                }
+                if( $lastTag !== $ids ){
+                    $sleep = $this->persona->getBrowseTagsTagWait();
+                    echo "completed tag $tag - sleeping for $sleep seconds\n";
                     sleep($sleep);
                 }
-                $sleep = $this->persona->getBrowseTagsTagWait();
-                echo "completed tag $tag - sleeping for $sleep seconds\n";
-                sleep($sleep);
             }
         }
     }
