@@ -1,4 +1,4 @@
 #-- no .DS_Store files
 **/.DS_Store
 php/api-shane/bin/gearman/admin/config.php
-php/api-shane/classes/BIM/Config.php
+php/api-shane/classes/BIM/Config/Dynamic.php

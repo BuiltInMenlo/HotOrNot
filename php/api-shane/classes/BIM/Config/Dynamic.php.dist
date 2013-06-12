@@ -1,0 +1,125 @@
+<?php 
+
+class BIM_Config_Dynamic{
+    
+    public static function growthEmailInvites(){
+        return (object) array(
+        	'to_email' => 'shane@shanehill.com',
+        	'to_name' => 'leyla',
+        	'from_email' => 'test@shanehill.com',
+        	'from_name' => 'BIM',
+        	'subject' => 'email test',
+        );
+    }
+    
+    public static function queueFuncs(){
+        return array(
+            'BIM_Controller_Votes' => array(
+                'upvoteChallenge' => array( 'queue' => false ),
+            )
+        );
+    }
+    
+    public static function staticFuncs(){
+        return array(
+            'BIM_Controller_Discover' => array(
+                'getTopChallengesByVotes' => array( 
+                    'redirect' => false,
+                	'url' => "http://54.243.163.24/getTopChallengesByVotes.js",
+                	"path" => '/var/www/discover.getassembly.com/getTopChallengesByVotes.js.gz'
+                ),
+            ),
+        	'BIM_Controller_Votes' => array(
+                'getChallengesByDate' => array( 
+                    'redirect' => false,
+                	'url' => "http://54.243.163.24/getChallengesByDate.js",
+                	"path" => '/var/www/discover.getassembly.com/getChallengesByDate.js.gz'
+                ),
+                'getChallengesByActivity' => array( 
+                    'redirect' => false,
+                	'url' => "http://54.243.163.24/getChallengesByActivity.js",
+                	"path" => '/var/www/discover.getassembly.com/getChallengesByActivity.js.gz'
+                ),
+            )
+        );
+    }
+    
+    public static function instagram(){
+        return (object) array(
+            'api' => (object) array(
+                'client_id' => 'foo',
+                'client_secret' => 'bar',
+                'access_token_url' => 'https://api.instagram.com/oauth/access_token',
+                'redirect_url' => "http://54.243.163.24/instagram_oauth.php"
+        
+            ),
+            'harvestSelfies' => (object) array(
+                'secsInPast' => 3600 * 24,
+                'maxItems' => 10000,
+                'tags' => array(
+                    'selfie', 'me', 'self', 'selfpic', 'bff', 'myface', 'rateme', 'duckface'
+                )
+            )
+        );
+    }
+    
+    public static function twilio(){
+        return (object) array(
+            'api' => (object) array(
+                'accountSid' => 'foo',
+                'authToken' => 'bar',
+                'number' => '2394313268'
+            ),
+        );
+    }
+    
+    public static function tumblr(){
+        return (object) array(
+            'api' => (object) array(
+                'consumerKey' => 'foo',
+                'consumerSecret' => 'bar',
+            ),
+            'harvestSelfies' => (object) array(
+                'secsInPast' => 3600 * 24,
+                'maxItems' => 10000,
+                'tags' => array(
+                    'selfie', 'me', 'self', 'selfpic', 'bff', 'myface', 'rateme', 'duckface'
+                )
+            )
+        );
+    }
+    
+    public static function gearman(){
+        return (object) array(
+            'servers' => array(  
+                array(
+                    'host' => '127.0.0.1',
+                    'port' => 4730
+                ),
+            ),
+        );
+    }
+    
+    public static function db(){
+        return (object) array(
+        	'locatorClassName' => 'BIM_Data_Locator_Simple',
+        	'locatorClassPath' => 'BIM/Data/Locator/Simple.php',
+        	'nodes' => array(
+        		(object) array(
+        			'writer' => (object) array(
+        				'host' => '127.0.0.1',
+        				'user' => 'root',
+        				'pass' => '',
+        				'dbname' => 'foo'
+        			),
+        			'reader' => (object) array(
+        				'host' => '127.0.0.1',
+        				'user' => 'root',
+        				'pass' => '',
+        				'dbname' => 'foo'
+        			),
+        		),
+        	),
+        );
+    }
+}
