@@ -12,7 +12,7 @@ class BIM_Config{
     static protected $authenticQuotes = array();
     static protected $adQuotes = array();
     
-    public function __callstatic( $name, $params ){
+    public static function __callstatic( $name, $params ){
         $callable = array('BIM_Config_Dynamic', $name);
         return call_user_func($callable,$params);
     }
