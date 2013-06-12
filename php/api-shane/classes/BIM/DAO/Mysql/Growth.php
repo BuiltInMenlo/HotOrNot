@@ -44,22 +44,34 @@ class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
 		$sql = "select * from growth.tags";
 		$stmt = $this->prepareAndExecute($sql);
 		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
-		if( $data ){
-		    $data = $data[0]->last_contact;
-		} else {
-		    $data = 0;
-		}
 		return $data;
 	}
 	
 	public function saveTags( $data ){
 		$sql = "
 			insert into growth.tags
-			(network, tags) values (?,?)
+			(network, type, tags) values (?,?,?)
 			on duplicate key update tags = ?
 		";
-		$params = array( $data->network, $data->tags );
+		$params = array( $data->network, $data->type, $data->tags, $data->tags );
 		$this->prepareAndExecute( $sql, $params );
 	}
 	
+	
+	public function getQuotes(){
+		$sql = "select * from growth.quotes";
+		$stmt = $this->prepareAndExecute($sql);
+		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+		return $data;
+	}
+	
+	public function saveQuotes( $data ){
+		$sql = "
+			insert into growth.quotes
+			(network, type, quotes) values (?,?,?)
+			on duplicate key update quotes = ?
+		";
+		$params = array( $data->network, $data->type, $data->quotes, $data->quotes );
+		$this->prepareAndExecute( $sql, $params );
+	}
 }
