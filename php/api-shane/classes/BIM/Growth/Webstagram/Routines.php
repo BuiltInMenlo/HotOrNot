@@ -159,17 +159,13 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 $lastId =& end( $ids );
                 foreach( $ids as &$id ){
                     $this->submitComment( $id );
-                    if( $id !== $lastId ){
-                        $sleep = $this->persona->getBrowseTagsCommentWait();
-                        echo "submitted comment - sleeping for $sleep seconds\n";
-                        sleep($sleep);
-                    }
-                }
-                if( $lastTag !== $ids ){
-                    $sleep = $this->persona->getBrowseTagsTagWait();
-                    echo "completed tag $tag - sleeping for $sleep seconds\n";
+                    $sleep = $this->persona->getBrowseTagsCommentWait();
+                    echo "submitted comment - sleeping for $sleep seconds\n";
                     sleep($sleep);
                 }
+                $sleep = $this->persona->getBrowseTagsTagWait();
+                echo "completed tag $tag - sleeping for $sleep seconds\n";
+                sleep($sleep);
             }
         }
     }
@@ -268,7 +264,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             't'=> 5069
         );
         print_r( $params );
-        $response = $this->post( 'http://web.stagram.com/post_comment/', $params);
+        $response = $this->post( 'http://web.stagram.com/post_comment/', $params );
         $response = json_decode( $response );
         print_r( $response );
         if( isset($response->status) && $response->status == 'OK' ){
@@ -277,7 +273,10 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $dao->updateLastContact( $userId, time() );
             $dao->logSuccess($id, $message, $this->persona->instagram->name );
         } else {
-            echo $this->persona->name." no longer logged in! trying login again!\n";
+            print_r( $response );
+            $sleep = $this->persona->getLoginWaitTime();
+            echo $this->persona->name." no longer logged in! trying login again after sleeping for $sleep seconds\n";
+            sleep( $sleep );
             $this->loginAndAuthorizeApp();
         }
     }

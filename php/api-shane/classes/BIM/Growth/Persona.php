@@ -85,6 +85,14 @@ class BIM_Growth_Persona{
         }
     }
     
+    public function getLoginWaitTime( ){
+        if( $this->type == 'ad' ){
+            return mt_rand(180, 300);
+        } else {
+            return mt_rand(180, 300);
+        }
+    }
+    
     public function getTagIdWaitTime( ){
         if( $this->type == 'ad' ){
             return mt_rand(4, 6);
