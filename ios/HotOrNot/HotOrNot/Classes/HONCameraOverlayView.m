@@ -16,11 +16,13 @@
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 #import "HONHeaderView.h"
+#import "HONCreateChallengeOptionsView.h"
 
 @interface HONCameraOverlayView() <UITextFieldDelegate>
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIImageView *subjectBGImageView;
+@property (nonatomic, strong) HONCreateChallengeOptionsView *optionsView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *captureHolderView;
@@ -44,6 +46,8 @@
 	if ((self = [super initWithFrame:frame])) {
 		_subjectName = subject;
 		_username = username;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closeOptions:) name:@"CLOSE_OPTIONS" object:nil];
 		
 		_previewHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, self.frame.size.width, self.frame.size.height)];
 		[self addSubview:_previewHolderView];
@@ -297,6 +301,17 @@
 	[[Mixpanel sharedInstance] track:@"Create Snap - Options"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_optionsView = [[HONCreateChallengeOptionsView alloc] initWithFrame:self.frame];
+	_optionsView.frame = CGRectOffset(_optionsView.frame, 0.0, self.frame.size.height);
+	[self addSubview:_optionsView];
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.25];
+	[UIView setAnimationDelay:0.0];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+	_optionsView.frame = self.frame;
+	[UIView commitAnimations];
 }
 
 - (void)_goTakePhoto {
@@ -325,6 +340,15 @@
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
 	[_headerView setTitle:_subjectTextField.text];
+}
+
+- (void)_closeOptions:(NSNotification *)notification {
+	[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
+		_optionsView.frame = CGRectOffset(_optionsView.frame, 0.0, self.frame.size.height);
+	} completion:^(BOOL finished) {
+		[_optionsView removeFromSuperview];
+		_optionsView = nil;
+	}];
 }
 
 

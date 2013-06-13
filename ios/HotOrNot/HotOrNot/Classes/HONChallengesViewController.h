@@ -8,5 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONChallengesViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+const NSInteger kOlderThresholdSeconds;
+
+@interface HONChallengesViewController : UIViewController
 @end

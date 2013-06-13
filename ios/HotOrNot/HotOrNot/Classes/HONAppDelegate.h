@@ -11,10 +11,7 @@
 #import "HONChallengeVO.h"
 
 
-extern const NSInteger kNavBarHeaderHeight;
-extern const NSInteger kSearchHeaderHeight;
-extern const NSInteger kDefaultCellHeight;
-
+// api endpts
 extern NSString * const kConfigURL;
 extern NSString * const kAPIChallenges;
 extern NSString * const kAPIComments;
@@ -24,19 +21,25 @@ extern NSString * const kAPISearch;
 extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
 
+// view heights
+const CGFloat kNavBarHeaderHeight;
+const CGFloat kSearchHeaderHeight;
+const CGFloat kOrthodoxTableHeaderHeight;
+const CGFloat kOrthodoxTableCellHeight;
+
+// snap params
+const CGFloat kSnapRatio;
+const CGFloat kSnapJPEGCompress;
+
+// animation params
+const CGFloat kHUDTime;
+
+// image sizes
 const CGSize kTabSize;
 const CGSize kSnapThumbSize;
 const CGSize kSnapMediumSize;
 const CGSize kSnapLargeSize;
 const CGSize kAvatarDefaultSize;
-
-static const CGFloat kSnapRatio;
-static const CGFloat kSnapJPEGCompress;
-
-static const CGFloat kHUDTime;
-static const CGFloat kSnapRatio;
-
-static const CGFloat kCameraZoom;
 
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>

@@ -23,18 +23,18 @@
 	return (NSStringFromClass(self));
 }
 
-- (id)initAsBottomCell:(BOOL)isBottom {
+- (id)initAsLoadMoreCell:(BOOL)isMoreLoadable {
 	if ((self = [super init])) {
-		if (isBottom) {
+		if (isMoreLoadable) {
 			_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			_loadMoreButton.frame = CGRectMake(53.0, 0.0, 214.0, 64.0);
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
 			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
 			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
 			[self addSubview:_loadMoreButton];
-			
-			[self hideChevron];
 		}
+		
+		[self hideChevron];
 	}
 	
 	return (self);
@@ -85,28 +85,42 @@
 	//[self addSubview:arrowImageView];
 	
 	if ([_challengeVO.status isEqualToString:@"Created"]) {
-		//challengeLabel.text = NSLocalizedString(@"activity_waiting", nil);
-		
 	} else if ([_challengeVO.status isEqualToString:@"Waiting"]) {
-		//challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_outbound", nil), _challengeVO.challengerName];
-		
 	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
-		//challengeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
-		
 	} else if ([_challengeVO.status isEqualToString:@"Flagged"]) {
-		//challengeLabel.text = (_challengeVO.challengerID == 0) ? NSLocalizedString(@"activity_waiting_f", nil) : (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound_f", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound_f", nil), _challengeVO.creatorName];
-		
 	} else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"]) {
-		//challengeLabel.text = (isCreator) ? [NSString stringWithFormat:NSLocalizedString(@"activity_outbound", nil), _challengeVO.challengerName] : [NSString stringWithFormat:NSLocalizedString(@"activity_inbound", nil), _challengeVO.creatorName];
 	}
 }
+
+- (void)toggleLoadMore:(BOOL)isEnabled {
+	if (isEnabled) {
+		[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_loadMoreButton];
+	
+	} else {
+		[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
+		[_loadMoreButton removeFromSuperview];
+	}
+}
+
+- (void)updateHasSeen {
+	_hasSeenImageView.hidden = YES;
+}
+
+
+#pragma mark - Navigation
+- (void)_goLoadMore {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
+}
+
+
 
 
 //- (void)willTransitionToState:(UITableViewCellStateMask)state {
 //	[super willTransitionToState:state];
 //
 //	NSLog(@"willTransitionToState");
-//	
+//
 //	if ((state & UITableViewCellStateShowingDeleteConfirmationMask) == UITableViewCellStateShowingDeleteConfirmationMask) {
 //		for (UIView *subview in self.subviews) {
 //			if ([NSStringFromClass([subview class]) isEqualToString:@"UITableViewCellDeleteConfirmationControl"]) {
@@ -117,65 +131,5 @@
 //		}
 //	}
 //}
-
-- (void)toggleLoadMore:(BOOL)isEnabled {
-	if (isEnabled) {
-		[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_loadMoreButton];
-	
-	} else {
-		[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-		[_loadMoreButton removeFromSuperview];
-		
-		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		findFriendsButton.frame = CGRectMake(24.0, 9.0, 224.0, 44.0);
-		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsWhoVolley"] forState:UIControlStateNormal];
-		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsWhoVolley"] forState:UIControlStateHighlighted];
-		[findFriendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:findFriendsButton];
-		
-		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
-		chevronImageView.image = [UIImage imageNamed:@"chevron"];
-		[self addSubview:chevronImageView];
-		
-//		UIView *whiteOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kDefaultCellHeight)];
-//		whiteOverlayView.backgroundColor = [UIColor whiteColor];
-//		[self addSubview:whiteOverlayView];
-	}
-}
-
-- (void)disableLoadMore {
-	[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-	[_loadMoreButton removeFromSuperview];
-	
-//	UIView *whiteOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kDefaultCellHeight)];
-//	whiteOverlayView.backgroundColor = [UIColor whiteColor];
-//	[self addSubview:whiteOverlayView];
-	
-	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	findFriendsButton.frame = CGRectMake(24.0, 9.0, 224.0, 44.0);
-	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsWhoVolley"] forState:UIControlStateNormal];
-	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsWhoVolley"] forState:UIControlStateHighlighted];
-	[findFriendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:findFriendsButton];
-	
-	UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
-	chevronImageView.image = [UIImage imageNamed:@"chevron"];
-	[self addSubview:chevronImageView];
-}
-
-- (void)updateHasSeen {
-	_hasSeenImageView.hidden = YES;
-}
-
-#pragma mark - Navigation
-- (void)_goLoadMore {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
-}
-
-- (void)_goFindFriends {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIND_FRIENDS" object:nil];
-}
-
 
 @end

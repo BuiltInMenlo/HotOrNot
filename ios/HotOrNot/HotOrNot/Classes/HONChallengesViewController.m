@@ -16,32 +16,32 @@
 #import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
+#import "HONEmptyChallengeViewCell.h"
 #import "HONChallengeVO.h"
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONHeaderView.h"
-#import "HONChallengePreviewViewController.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONInviteNetworkViewController.h"
 #import "HONFindFriendsViewController.h"
 
 
-@interface HONChallengesViewController() <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate>
+const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
+
+
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *recentChallenges;
 @property(nonatomic, strong) NSMutableArray *olderChallenges;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic) BOOL isMoreLoadable;
 @property(nonatomic, strong) NSDate *lastDate;
 @property(nonatomic, strong) HONChallengeVO *challengeVO;
 @property(nonatomic, strong) NSIndexPath *idxPath;
 @property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) UIView *emptySetView;
 @property(nonatomic, strong) NSMutableArray *friends;
 @property(nonatomic, strong) UIButton *publicButton;
 @property(nonatomic, strong) UIButton *privateButton;
 
-@property(nonatomic, retain) HONChallengePreviewViewController *previewViewController;
 @property(nonatomic) int blockCounter;
 @property (nonatomic, strong) UIImageView *togglePrivateImageView;
 @property (nonatomic) BOOL isPrivate;
@@ -80,85 +80,14 @@
 }
 
 #pragma mark - Data Calls
-- (void)_retrieveChallenges {
-	_isMoreLoadable = NO;
-	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", (_isPrivate) ? 8 : 2], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							nil];
-	
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-			[_headerView toggleRefresh:NO];
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
-		} else {
-			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
-			
-			_recentChallenges = [NSMutableArray array];
-			_olderChallenges = [NSMutableArray array];
-			for (NSDictionary *serverList in parsedLists) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				
-				if (vo != nil) {
-					if ([[NSDate date] timeIntervalSinceDate:vo.updatedDate] < 172800)
-						[_recentChallenges addObject:vo];
-					
-					else
-						[_olderChallenges addObject:vo];
-				}
-			}
-			
-
-			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
-			_emptySetView.hidden = ([_recentChallenges count] + [_olderChallenges count] > 1);
-			[_tableView reloadData];
-			
-			_isMoreLoadable = ([_olderChallenges count] % 10 == 0 && [_olderChallenges count] > 0);
-			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
-			[cell toggleLoadMore:_isMoreLoadable];
-			
-			[_headerView toggleRefresh:NO];
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
-		
-		[_headerView toggleRefresh:NO];
-		if (_progressHUD == nil)
-			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		_progressHUD = nil;
-	}];
-}
-
 - (void)_retrieveUser {
 	if ([HONAppDelegate infoForUser]) {
 		
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-								[NSString stringWithFormat:@"%d", 5], @"action",
-								[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-								nil];
+										[NSString stringWithFormat:@"%d", 5], @"action",
+										[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+										nil];
 		
 		[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
@@ -202,6 +131,145 @@
 	}
 }
 
+- (void)_retrieveChallenges {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", (_isPrivate) ? 8 : 2], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							nil];
+	
+	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+			[_headerView toggleRefresh:NO];
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+		} else {
+			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
+			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			
+			_recentChallenges = [NSMutableArray array];
+			_olderChallenges = [NSMutableArray array];
+			for (NSDictionary *serverList in parsedLists) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+				
+				if (vo != nil) {
+					if ([[NSDate date] timeIntervalSinceDate:vo.updatedDate] < kOlderThresholdSeconds)
+						[_recentChallenges addObject:vo];
+					
+					else
+						[_olderChallenges addObject:vo];
+				}
+			}
+
+			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
+			[_tableView reloadData];
+			
+			[_headerView toggleRefresh:NO];
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+		
+		[_headerView toggleRefresh:NO];
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_retrieveNextChallengeBlock {
+	NSString *prevIDs = @"";
+	for (HONChallengeVO *vo in _recentChallenges)
+		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.challengerID : vo.creatorID]];
+	
+	
+	for (HONChallengeVO *vo in _olderChallenges)
+		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.challengerID : vo.creatorID]];
+	
+	
+	//NSLog(@"NEXT\n%@\n%@", [prevIDs substringToIndex:[prevIDs length] - 1], _lastDate);
+	
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 12], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									[prevIDs substringToIndex:[prevIDs length] - 1], @"prevIDs",
+									_lastDate, @"datetime",
+									nil];
+	
+	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+			[_headerView toggleRefresh:NO];
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+		} else {
+			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
+			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			
+			//[_challenges removeLastObject];
+			for (NSDictionary *serverList in parsedLists) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+				
+				if (vo != nil) {
+					if ([[NSDate date] timeIntervalSinceDate:vo.updatedDate] < 172800)
+						[_recentChallenges addObject:vo];
+					
+					else
+						[_olderChallenges addObject:vo];
+				}
+			}
+			
+			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
+			[_tableView reloadData];
+			
+			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
+			[cell toggleLoadMore:([parsedLists count] > 0)];
+			
+			[_headerView toggleRefresh:NO];
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+		
+		[_headerView toggleRefresh:NO];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
+	}];
+}
+
 - (void)_updateChallengeAsSeen {
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -214,10 +282,10 @@
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil)
-			NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"AFNetworking HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
+			NSLog(@"AFNetworking HONChallengesViewController: %@", result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -238,7 +306,6 @@
 - (void)loadView {
 	[super loadView];
 	
-	_isMoreLoadable = NO;
 	_isPrivate = NO;
 	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
@@ -293,22 +360,6 @@
 	[_privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
 	[_privateButton setSelected:NO];
 	[toggleHolderView addSubview:_privateButton];
-	
-	_emptySetView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 300.0, 320.0, [UIScreen mainScreen].bounds.size.height - 300.0)];
-	_emptySetView.hidden = YES;
-	_emptySetView.userInteractionEnabled = YES;
-	//[self.view addSubview:_emptySetView];
-	
-//	UIImageView *noChallengesImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 88.0)];
-//	noChallengesImageView.image = [UIImage imageNamed:@"noOlderSnaps"];
-//	[_emptySetView addSubview:noChallengesImageView];
-//	
-//	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	findFriendsButton.frame = CGRectMake(36.0, 80.0, 249.0, 49.0);
-//	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_nonActive"] forState:UIControlStateNormal];
-//	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findFriends_Active"] forState:UIControlStateHighlighted];
-//	[findFriendsButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-//	[_emptySetView addSubview:findFriendsButton];
 }
 
 - (void)viewDidLoad {
@@ -351,8 +402,6 @@
 }
 
 - (void)_goRefresh {
-	_isMoreLoadable = NO;
-	
 	[[Mixpanel sharedInstance] track:@"Activity - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -411,80 +460,7 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	NSString *prevIDs = @"";
-	for (HONChallengeVO *vo in _recentChallenges)
-		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.challengerID : vo.creatorID]];
-	
-	
-	for (HONChallengeVO *vo in _olderChallenges)
-		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.challengerID : vo.creatorID]];
-	
-	
-	//NSLog(@"NEXT\n%@\n%@", [prevIDs substringToIndex:[prevIDs length] - 1], _lastDate);
-	
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 12], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									[prevIDs substringToIndex:[prevIDs length] - 1], @"prevIDs", 
-									_lastDate, @"datetime",
-									nil];
-	
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
-			
-			[_headerView toggleRefresh:NO];
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
-		} else {
-			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
-			
-			//[_challenges removeLastObject];
-			for (NSDictionary *serverList in parsedLists) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				
-				if (vo != nil) {
-					if ([[NSDate date] timeIntervalSinceDate:vo.updatedDate] < 172800)
-						[_recentChallenges addObject:vo];
-					
-					else
-						[_olderChallenges addObject:vo];
-				}
-			}
-			
-			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
-			[_tableView reloadData];
-			
-			_isMoreLoadable = ([_olderChallenges count] % 10 == 0 || [parsedLists count] > 0);
-			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
-			[cell toggleLoadMore:_isMoreLoadable];
-			
-			[_headerView toggleRefresh:NO];
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
-		
-		[_headerView toggleRefresh:NO];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
-		_progressHUD = nil;
-	}];
+	[self _retrieveNextChallengeBlock];
 }
 
 - (void)_refreshChallengesTab:(NSNotification *)notification {
@@ -515,46 +491,6 @@
 	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
 }
 
-/*
-- (void)_showEmailComposer:(NSNotification *)notification {
-	if ([MFMailComposeViewController canSendMail]) {
-		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-		mailComposeViewController.mailComposeDelegate = self;
-		//[mailComposeViewController setToRecipients:[NSArray arrayWithObject:@"matt.holcombe@gmail.com"]];
-		[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
-		
-		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
-																			 message:@"Cannot send email from this device!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
-	}
-}
-
-- (void)_showSMSComposer:(NSNotification *)notification {
-	if ([MFMessageComposeViewController canSendText]) {
-		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-		messageComposeViewController.messageComposeDelegate = self;
-		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-		
-		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
-																			 message:@"Cannot send SMS from this device!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
-	}
-}*/
-
-
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -580,43 +516,49 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-
-	if (cell == nil) {
-		if (indexPath.section == 0) {
-			cell = [[HONChallengeViewCell alloc] initAsBottomCell:NO];
+	if (indexPath.section == 0) {
+		HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		
+		if (cell == nil)
+			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
+	
+		cell.challengeVO = [_recentChallenges objectAtIndex:indexPath.row];
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+		return (cell);
+		
+	} else {
+		if ([_olderChallenges count] == 0) {
+			HONEmptyChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			
+			if (cell == nil)
+				cell = [[HONEmptyChallengeViewCell alloc] init];
+			
+			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+			return (cell);
 		
 		} else {
-			if (indexPath.row == [_olderChallenges count]) {
-				cell = [[HONChallengeViewCell alloc] initAsBottomCell:YES];
-				[cell toggleLoadMore:_isMoreLoadable];
-				
-			} else
-				cell = [[HONChallengeViewCell alloc] initAsBottomCell:NO];
+			HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			
+			if (cell == nil)
+				cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:([_olderChallenges count] > 0 && indexPath.row == [_olderChallenges count])];
+			
+			if (indexPath.row < [_olderChallenges count])
+				cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
+			
+			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+			return (cell);
 		}
 	}
-	
-	if (indexPath.section == 0) {
-		cell.challengeVO = [_recentChallenges objectAtIndex:indexPath.row];
-	
-	} else {
-		if (indexPath.row < [_olderChallenges count])
-			cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
-	}
-	
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-	
-	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kDefaultCellHeight);
+	return ((indexPath.section == 1 && [_olderChallenges count] == 0) ? kOrthodoxTableCellHeight * 2.0 : kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (31.0);
+	return (kOrthodoxTableHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -654,42 +596,23 @@
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 		
 	} else if ([vo.status isEqualToString:@"Waiting"]) {
-//		_previewViewController = [[HONChallengePreviewViewController alloc] initAsCreator:vo];
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
-//		[navigationController setNavigationBarHidden:YES];
-//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-//		[self presentViewController:navigationController animated:NO completion:nil];
-		
 		[self _updateChallengeAsSeen];
 		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-		
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
-		//[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 		
 	} else if ([vo.status isEqualToString:@"Accept"]) {
-//		_previewViewController = [[HONChallengePreviewViewController alloc] initAsChallenger:vo];
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:_previewViewController];
-//		[navigationController setNavigationBarHidden:YES];
-//		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-//		[self presentViewController:navigationController animated:NO completion:nil];
-		
 		[self _updateChallengeAsSeen];
 		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-		
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.challengerID challengerID:_challengeVO.creatorID] animated:YES];
-		//[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 			
 	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
-		//[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
 	}
 }
 
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-	// Return YES if you want the specified item to be editable.
-	
-	//return (indexPath.row > 0 && indexPath.row < [_challenges count] + 1);
+	// return YES if you want the specified item to be editable.
 	return ((indexPath.section == 0) || (indexPath.section == 1 && indexPath.row < [_olderChallenges count]));
 }
 
@@ -720,59 +643,6 @@
 #pragma mark - ScrollView Delegates
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-}
-
-
-#pragma mark - MessageCompose Delegates
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-	
-	switch (result) {
-		case MessageComposeResultCancelled:
-			NSLog(@"SMS: canceled");
-			break;
-			
-		case MessageComposeResultSent:
-			NSLog(@"SMS: sent");
-			break;
-			
-		case MessageComposeResultFailed:
-			NSLog(@"SMS: failed");
-			break;
-			
-		default:
-			NSLog(@"SMS: not sent");
-			break;
-	}
-	
-	[self dismissViewControllerAnimated:YES completion:nil];
-}
-
-
-#pragma mark - MailCompose Delegates
-- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-	switch (result) {
-		case MFMailComposeResultCancelled:
-			NSLog(@"EMAIL: canceled");
-			break;
-			
-		case MFMailComposeResultFailed:
-			NSLog(@"EMAIL: failed");
-			break;
-			
-		case MFMailComposeResultSaved:
-			NSLog(@"EMAIL: saved");
-			break;
-			
-		case MFMailComposeResultSent:
-			NSLog(@"EMAIL: sent");
-			break;
-			
-		default:
-			NSLog(@"EMAIL: not sent");
-			break;
-	}
-	
-	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 
@@ -939,10 +809,5 @@
 	}
 }
 
-
-#pragma mark - AdView Delegates
-- (UIViewController *)rootViewController {
-	return (self);
-}
 
 @end

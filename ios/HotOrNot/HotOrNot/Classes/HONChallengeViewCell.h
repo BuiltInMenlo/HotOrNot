@@ -14,9 +14,8 @@
 @interface HONChallengeViewCell : HONGenericRowViewCell
 + (NSString *)cellReuseIdentifier;
 
-- (void)disableLoadMore;
+- (id)initAsLoadMoreCell:(BOOL)isMoreLoadable;
 - (void)toggleLoadMore:(BOOL)isEnabled;
-- (id)initAsBottomCell:(BOOL)isBottom;
 - (void)updateHasSeen;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;

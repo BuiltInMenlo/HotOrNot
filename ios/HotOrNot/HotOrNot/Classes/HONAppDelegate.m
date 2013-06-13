@@ -33,12 +33,8 @@
 #import "HONUsernameViewController.h"
 #import "HONSearchViewController.h"
 
-const NSInteger kNavBarHeaderHeight = 44;
-const NSInteger kSearchHeaderHeight = 44;
-const NSInteger kTabBarHeight = 44;
-const NSInteger kDefaultCellHeight = 63;
 
-
+// api endpts
 NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";//@"http://54.243.163.24";
 NSString * const kAPIChallenges = @"Challenges.php";
 NSString * const kAPIComments = @"Comments.php";
@@ -48,16 +44,26 @@ NSString * const kAPISearch = @"Search.php";
 NSString * const kAPIUsers = @"Users.php";
 NSString * const kAPIVotes = @"Votes.php";
 
+// view heights
+const CGFloat kNavBarHeaderHeight = 44.0f;
+const CGFloat kSearchHeaderHeight = 44.0f;
+const CGFloat kTabBarHeight = 44.0f;
+const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
+const CGFloat kOrthodoxTableCellHeight = 63.0f;
+
+// snap params
+const CGFloat kSnapRatio = 1.33333333f;
+const CGFloat kSnapJPEGCompress = 0.875f;
+
+// animation params
+const CGFloat kHUDTime = 2.33f;
+
+// image sizes
 const CGSize kTabSize = {80.0, 44.0};
 const CGSize kSnapThumbSize = {38.0, 50.0};
 const CGSize kSnapMediumSize = {210.0, 280.0};
 const CGSize kSnapLargeSize = {612.0, 816.0};
 const CGSize kAvatarDefaultSize = {200.0, 200.0};
-
-static const CGFloat kSnapRatio = 1.33333333f;
-static const CGFloat kSnapJPEGCompress = 0.875f;
-
-static const CGFloat kCameraZoom = 1.5f;
 
 
 @interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>

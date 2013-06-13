@@ -574,6 +574,7 @@
 		
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 		messageComposeViewController.messageComposeDelegate = self;
+		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
 		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
 		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		
@@ -793,11 +794,11 @@
 		return (210.0);
 	
 	else
-		return (kDefaultCellHeight);
+		return (kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((section == 0) ? 0.0 : 31.0);
+	return ((section == 0) ? 0.0 : kOrthodoxTableHeaderHeight);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

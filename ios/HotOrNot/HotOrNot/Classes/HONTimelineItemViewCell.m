@@ -69,7 +69,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasChallenger);
+	//NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasChallenger);
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 13.0, 200.0, 24.0)];
 	subjectLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:19];
