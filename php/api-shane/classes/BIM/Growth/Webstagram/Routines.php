@@ -271,11 +271,14 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $response = $this->post( 'http://web.stagram.com/post_comment/', $params);
         $response = json_decode( $response );
         print_r( $response );
-        if( $response ){
+        if( isset($response->status) && $response->status == 'OK' ){
             $dao = new BIM_DAO_Mysql_Growth_Webstagram( BIM_Config::db() );
             list( $imageId, $userId ) = explode('_', $id, 2 );
             $dao->updateLastContact( $userId, time() );
             $dao->logSuccess($id, $message, $this->persona->instagram->name );
+        } else {
+            echo "no longer logged in! trying login again!\n";
+            $this->loginAndAuthorizeApp();
         }
     }
 }
