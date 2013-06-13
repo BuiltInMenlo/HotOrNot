@@ -277,7 +277,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $dao->updateLastContact( $userId, time() );
             $dao->logSuccess($id, $message, $this->persona->instagram->name );
         } else {
-            echo "no longer logged in! trying login again!\n";
+            echo $this->persona->name." no longer logged in! trying login again!\n";
             $this->loginAndAuthorizeApp();
         }
     }
