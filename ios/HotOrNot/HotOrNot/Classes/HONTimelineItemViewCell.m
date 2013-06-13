@@ -15,6 +15,7 @@
 
 #import "HONTimelineItemViewCell.h"
 #import "HONAppDelegate.h"
+#import "HONImageLoadingView.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
 
@@ -31,6 +32,9 @@
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasChallenger;
 @property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
+@property (nonatomic, strong) HONImageLoadingView *lImageLoading;
+@property (nonatomic, strong) HONImageLoadingView *rImageLoading;
+
 @end
 
 @implementation HONTimelineItemViewCell
@@ -92,18 +96,23 @@
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 	[self addSubview:timeLabel];
 	
-	UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 44.0, 320.0, kSnapMediumSize.width)];
-	scrollView.contentSize = CGSizeMake(7.0 + ((kSnapMediumSize.width + 7.0) * (2.0 + (int)_hasChallenger)), kSnapMediumSize.width);
+	UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 44.0, 320.0, kSnapLargeDim)];
+	scrollView.contentSize = CGSizeMake(7.0 + ((kSnapLargeDim + 7.0) * (2.0 + (int)_hasChallenger)), kSnapLargeDim);
 	scrollView.pagingEnabled = NO;
 	scrollView.showsHorizontalScrollIndicator = NO;
 	scrollView.backgroundColor = [UIColor whiteColor];
 	[self addSubview:scrollView];
 	
-	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(6.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+	//_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(6.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(6.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 	_lHolderView.clipsToBounds = YES;
 	[scrollView addSubview:_lHolderView];
 	
-	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+	_lImageLoading = [[HONImageLoadingView alloc] initAtPos:CGPointMake(93.0, 93.0)];
+	[_lHolderView addSubview:_lImageLoading];
+	
+	//UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 	lImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	lImgView.userInteractionEnabled = YES;
@@ -138,13 +147,17 @@
 	[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[_lHolderView addSubview:creatorNameButton];
 	
-	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(225.0, 0.0, 210.0, 210.0)];
+	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(14.0 + kSnapLargeDim, 0.0, kSnapLargeDim, kSnapLargeDim)];//[[UIView alloc] initWithFrame:CGRectMake(225.0, 0.0, 210.0, 210.0)];
 	_rHolderView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	_rHolderView.clipsToBounds = YES;
 	[scrollView addSubview:_rHolderView];
 	
+	_rImageLoading = [[HONImageLoadingView alloc] initAtPos:CGPointMake(93.0, 93.0)];
+	[_rHolderView addSubview:_rImageLoading];
+	
 	if (_hasChallenger) {
-		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+		//UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
@@ -200,7 +213,8 @@
 		[joinHolderView addSubview:joinButton];
 		
 	} else {
-		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+		//UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
+		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 		rImgView.image = [UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? @"pokeThumb" : @"thumbCameraAction"];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];

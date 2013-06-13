@@ -453,7 +453,7 @@
 		[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
 	}
 	
-	NSLog(@"CONFIG_JSON:[%@]", [HONAppDelegate apiServerPath]);
+	NSLog(@"API END PT:[%@]", [HONAppDelegate apiServerPath]);
 }
 
 - (void)viewDidLoad {

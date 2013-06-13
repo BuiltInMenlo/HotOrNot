@@ -35,6 +35,10 @@ const CGFloat kSnapJPEGCompress;
 const CGFloat kHUDTime;
 
 // image sizes
+const CGFloat kSnapThumbDim;
+const CGFloat kSnapMediumDim;
+const CGFloat kSnapLargeDim;
+
 const CGSize kTabSize;
 const CGSize kSnapThumbSize;
 const CGSize kSnapMediumSize;

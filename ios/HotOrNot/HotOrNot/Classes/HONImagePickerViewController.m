@@ -165,18 +165,22 @@
 	_progressHUD.taskInProgress = YES;
 	
 	@try {
-		float ratio = image.size.height / image.size.width;
+//		float ratio = image.size.height / image.size.width;
+//		
+//		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeSize.width, kSnapLargeSize.width * ratio)];
+//		lImage = [HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.width)];
+//		
+//		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumSize.width * 2.0, kSnapMediumSize.height * 2.0)];
+//		UIImage *t1Image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
 		
-		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeSize.width, kSnapLargeSize.width * ratio)];
-		lImage = [HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.width)];
-		
-		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumSize.width * 2.0, kSnapMediumSize.height * 2.0)];
-		UIImage *t1Image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
+		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeDim * 2.0, kSnapLargeDim * 2.0)];
+		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
+		UIImage *tImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbDim * 2.0, kSnapThumbDim * 2.0)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(t1Image, kSnapJPEGCompress);
+		por1.data = UIImageJPEGRepresentation(tImage, kSnapJPEGCompress);
 		por1.delegate = self;
 		[s3 putObject:por1];
 		
@@ -558,58 +562,36 @@
 	if (image.imageOrientation != 0)
 		image = [image fixOrientation];
 		
+	// image is wider than tall (800x600)
 	if (image.size.width > image.size.height) {
-		float offset = image.size.height * (image.size.height / image.size.width);
-		image = [HONImagingDepictor cropImage:image toRect:CGRectMake(offset * 0.5, 0.0, offset, image.size.height)];
+//		float offset = image.size.height * (image.size.height / image.size.width);
+//		image = [HONImagingDepictor cropImage:image toRect:CGRectMake(offset * 0.5, 0.0, offset, image.size.height)];
+		
+		float offset = (image.size.width - image.size.height) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:image toRect:CGRectMake(offset, 0.0, image.size.height, image.size.height)];
+	
+		// image is taller than wide (600x800)
+	} else if (image.size.width < image.size.height) {
+		float offset = (image.size.height - image.size.width) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, offset, image.size.width, image.size.width)];
+	
+		// image is square
+	} else {
+		_challangeImage = image;
 	}
 	
-	if (image.size.height / image.size.width == 1.5) {
-		float offset = image.size.height - (image.size.width * kSnapRatio);
-		image = [HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kSnapRatio))];
-	}
+//	if (image.size.height / image.size.width == 1.5) {
+//		float offset = image.size.height - (image.size.width * kSnapRatio);
+//		image = [HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kSnapRatio))];
+//	}
 	 
-	_challangeImage = image;
+//	_challangeImage = image;
 	
 	[self _uploadPhoto:_challangeImage];
 	
-//	if (_userVO != nil || _challengeVO != nil) {
-//		if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-//			[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-//				
-//				if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//					NSMutableDictionary *params = [NSMutableDictionary dictionary];
-//					[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-//					[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
-//					[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
-//					[params setObject:[NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 7 : _submitAction] forKey:@"action"];
-//					[params setObject:_subjectName forKey:@"subject"];
-//					[params setObject:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? _challengeVO.challengerName : _challengeVO.creatorName forKey:@"username"];
-//					
-//					if (_challengeVO != nil)
-//						[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-//					
-//					if (_fbID != nil)
-//						[params setObject:_fbID forKey:@"fbID"];
-//					
-//					[self _submitChallenge:params];
-//				
-//				} else
-//					[_cameraOverlayView showPreviewImage:image];
-//			}];
-//			
-//		} else {
-//			if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-//				[_cameraOverlayView showPreviewImageFlipped:image];
-//		
-//			else
-//				[_cameraOverlayView showPreviewImage:image];
-//		}
-//		
-//	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[self dismissViewControllerAnimated:YES completion:nil];
-		[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename previewImage:_challangeImage userVO:_userVO challengeVO:_challengeVO] animated:NO];
-//	}
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	[self dismissViewControllerAnimated:YES completion:nil];
+	[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename previewImage:_challangeImage userVO:_userVO challengeVO:_challengeVO] animated:NO];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
