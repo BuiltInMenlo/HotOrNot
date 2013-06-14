@@ -12,6 +12,25 @@ class BIM_Config_Dynamic{
         );
     }
     
+    public static function warningEmail(){
+        return (object) array(
+            'emailData' => (object) array(
+            	'to_email' => 'shane@shanehill.com',
+            	'from_email' => 'apps@builtinmenlo.com',
+            	'from_name' => 'Built In Menlo',
+            	'subject' => 'Warning From Botlandia!!',
+            	'text' => '',
+            ),
+
+            'smtp' =>  (object) array(
+                'host' => 'smtp.mandrillapp.com',
+                'port' => 587,
+                'username' => 'apps@builtinmenlo.com',
+                'password' => 'JW-zqg_yVLs7suuVBwG_xw'
+            )
+        );
+    }
+
     public static function queueFuncs(){
         return array(
             'BIM_Controller_Votes' => array(
