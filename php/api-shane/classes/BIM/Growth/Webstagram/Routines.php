@@ -187,11 +187,26 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $this->loginAndAuthorizeApp();
             $response = $this->get( $url );
             if( !$this->isLoggedIn($response) ){
-                echo "something is wrong with logging in $name to webstagram!  exiting!\n";
+                $msg = "something is wrong with logging in $name to webstagram!  disabling the user!\n";
+                echo $msg;
+                $this->disablePersona( $msg );
                 $loggedIn = false;
             }
         }
         return $loggedIn;
+    }
+    
+    public function disablePersona( $reason ){
+        $dao = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
+        $dao->disableJob($this->persona->instagram->name);
+        $this->sendWarningEmail( $reason );
+    }
+    
+    public function sendWarningEmail( $reason ){
+        $c = BIM_Config::warningEmail();
+        $e = new BIM_Email_Swift( $c->smtp );
+        $c->emailData->text = $reason;
+        $e->sendEmail( $c->emailData );
     }
     
     public function getTaggedIds( ){
@@ -277,7 +292,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $sleep = $this->persona->getLoginWaitTime();
             echo $this->persona->name." no longer logged in! trying login again after sleeping for $sleep seconds\n";
             sleep( $sleep );
-            $this->loginAndAuthorizeApp();
+            $this->handleLogin();
         }
     }
 }
