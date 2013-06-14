@@ -23,7 +23,7 @@
 #import "HONHeaderView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONInviteNetworkViewController.h"
-#import "HONFindFriendsViewController.h"
+#import "HONVerifyMobileViewController.h"
 
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
@@ -477,7 +477,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFindFriendsViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyMobileViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}

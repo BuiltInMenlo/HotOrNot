@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 const NSInteger kTotalDots;
-const CGFloat kDotWidth;
+const CGFloat kDotDimensions;
 const CGFloat kDotSpacing;
 const CGFloat kAnimationTime;
 const CGFloat kDelay;
@@ -20,5 +20,4 @@ const CGFloat kDelay;
 
 - (void)startAnimating;
 - (void)stopAnimating;
-- (void)toggleAnimating:(BOOL)isAnimating;
 @end

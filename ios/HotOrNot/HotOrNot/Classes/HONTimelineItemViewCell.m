@@ -103,7 +103,6 @@
 	scrollView.backgroundColor = [UIColor whiteColor];
 	[self addSubview:scrollView];
 	
-	//_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(6.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
 	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(6.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 	_lHolderView.clipsToBounds = YES;
 	[scrollView addSubview:_lHolderView];
@@ -111,11 +110,16 @@
 	_lImageLoading = [[HONImageLoadingView alloc] initAtPos:CGPointMake(93.0, 93.0)];
 	[_lHolderView addSubview:_lImageLoading];
 	
-	//UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
 	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
-	lImgView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-	[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	lImgView.userInteractionEnabled = YES;
+	
+	if (kIsImageCacheEnabled)
+		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
+	
+	else
+		[lImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];//[lImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+	
+	
 	[_lHolderView addSubview:lImgView];
 	
 	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -148,7 +152,6 @@
 	[_lHolderView addSubview:creatorNameButton];
 	
 	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(14.0 + kSnapLargeDim, 0.0, kSnapLargeDim, kSnapLargeDim)];//[[UIView alloc] initWithFrame:CGRectMake(225.0, 0.0, 210.0, 210.0)];
-	_rHolderView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	_rHolderView.clipsToBounds = YES;
 	[scrollView addSubview:_rHolderView];
 	
@@ -156,10 +159,15 @@
 	[_rHolderView addSubview:_rImageLoading];
 	
 	if (_hasChallenger) {
-		//UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
-		[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
 		rImgView.userInteractionEnabled = YES;
+		
+		if (kIsImageCacheEnabled)
+			[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
+		
+		else
+			[rImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+		
 		[_rHolderView addSubview:rImgView];
 		
 		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 44.0, 44.0)];
@@ -213,7 +221,6 @@
 		[joinHolderView addSubview:joinButton];
 		
 	} else {
-		//UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumSize.width, kSnapMediumSize.width)];
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 		rImgView.image = [UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? @"pokeThumb" : @"thumbCameraAction"];
 		rImgView.userInteractionEnabled = YES;

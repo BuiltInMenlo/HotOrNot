@@ -50,6 +50,8 @@ const CGFloat kSearchHeaderHeight = 44.0f;
 const CGFloat kTabBarHeight = 44.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
+const CGSize kTabSize = {80.0, 44.0};
+
 
 // snap params
 const CGFloat kSnapRatio = 1.33333333f;
@@ -59,16 +61,18 @@ const CGFloat kSnapJPEGCompress = 0.875f;
 const CGFloat kHUDTime = 2.33f;
 
 // image sizes
-const CGSize kTabSize = {80.0, 44.0};
-const CGSize kSnapThumbSize = {38.0, 50.0};
-const CGSize kSnapMediumSize = {210.0, 280.0};
-const CGSize kSnapLargeSize = {612.0, 816.0};
-const CGSize kAvatarDefaultSize = {200.0, 200.0};
+
+//const CGSize kSnapThumbSize = {38.0, 50.0};
+//const CGSize kSnapMediumSize = {210.0, 280.0};
+//const CGSize kSnapLargeSize = {612.0, 816.0};
+//const CGSize kAvatarDefaultSize = {200.0, 200.0};
 
 const CGFloat kSnapThumbDim = 63.0f;
 const CGFloat kSnapMediumDim = 73.0f;
 const CGFloat kSnapLargeDim = 210.0f;
+const CGFloat kAvatarDim = 200.0;
 
+const BOOL kIsImageCacheEnabled = NO;
 
 @interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;

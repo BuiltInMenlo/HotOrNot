@@ -20,7 +20,7 @@
 #import "HONRegisterCameraOverlayView.h"
 #import "HONHeaderView.h"
 #import "HONInviteNetworkViewController.h"
-#import "HONFindFriendsViewController.h"
+#import "HONVerifyMobileViewController.h"
 
 @interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONRegisterCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
@@ -199,7 +199,7 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename] withDimensions:kAvatarDefaultSize withUserDefaultsKey:@"avatar_image"];
+	[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -231,7 +231,7 @@
 					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 					
 					if ([HONAppDelegate isFUEInviteEnabled])
-						[self.navigationController pushViewController:[[HONFindFriendsViewController alloc] init] animated:YES];
+						[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 				}];
 				
 				if (![HONAppDelegate isFUEInviteEnabled])
@@ -528,7 +528,7 @@
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
 			
 			if ([HONAppDelegate isFUEInviteEnabled])
-				[self.navigationController pushViewController:[[HONFindFriendsViewController alloc] init] animated:YES];
+				[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 		}];
 		
 		if (![HONAppDelegate isFUEInviteEnabled])
@@ -603,7 +603,7 @@
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		
 		if ([HONAppDelegate isFUEInviteEnabled])
-			[self.navigationController pushViewController:[[HONFindFriendsViewController alloc] init] animated:YES];
+			[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 		
 		else
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];

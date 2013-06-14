@@ -400,7 +400,7 @@
 		4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9605167D4F3E0036E849 /* HONVotersViewController.m */; };
 		4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF9609167D676C0036E849 /* HONVoterViewCell.m */; };
 		4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CAF960C167D68B40036E849 /* HONVoterVO.m */; };
-		4CB03BB5173C88B40062B607 /* HONFindFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB03BB4173C88B40062B607 /* HONFindFriendsViewController.m */; };
+		4CB03BB5173C88B40062B607 /* HONVerifyMobileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CB03BB4173C88B40062B607 /* HONVerifyMobileViewController.m */; };
 		4CB30A301769062D00D3E0C8 /* cancel_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB30A121769062D00D3E0C8 /* cancel_Active.png */; };
 		4CB30A311769062D00D3E0C8 /* cancel_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB30A131769062D00D3E0C8 /* cancel_Active@2x.png */; };
 		4CB30A321769062D00D3E0C8 /* cancel_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CB30A141769062D00D3E0C8 /* cancel_nonActive.png */; };
@@ -1378,8 +1378,8 @@
 		4CAF9609167D676C0036E849 /* HONVoterViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterViewCell.m; sourceTree = "<group>"; };
 		4CAF960B167D68B40036E849 /* HONVoterVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoterVO.h; sourceTree = "<group>"; };
 		4CAF960C167D68B40036E849 /* HONVoterVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoterVO.m; sourceTree = "<group>"; };
-		4CB03BB3173C88B40062B607 /* HONFindFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFindFriendsViewController.h; sourceTree = "<group>"; };
-		4CB03BB4173C88B40062B607 /* HONFindFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFindFriendsViewController.m; sourceTree = "<group>"; };
+		4CB03BB3173C88B40062B607 /* HONVerifyMobileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVerifyMobileViewController.h; sourceTree = "<group>"; };
+		4CB03BB4173C88B40062B607 /* HONVerifyMobileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVerifyMobileViewController.m; sourceTree = "<group>"; };
 		4CB30A121769062D00D3E0C8 /* cancel_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancel_Active.png; sourceTree = "<group>"; };
 		4CB30A131769062D00D3E0C8 /* cancel_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cancel_Active@2x.png"; sourceTree = "<group>"; };
 		4CB30A141769062D00D3E0C8 /* cancel_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancel_nonActive.png; sourceTree = "<group>"; };
@@ -1750,8 +1750,8 @@
 				4C6257F61753E52B006AD1F7 /* HONInviteCelebViewCell.m */,
 				4C6257F81753F68B006AD1F7 /* HONInviteCelebViewController.h */,
 				4C6257F91753F68B006AD1F7 /* HONInviteCelebViewController.m */,
-				4CB03BB3173C88B40062B607 /* HONFindFriendsViewController.h */,
-				4CB03BB4173C88B40062B607 /* HONFindFriendsViewController.m */,
+				4CB03BB3173C88B40062B607 /* HONVerifyMobileViewController.h */,
+				4CB03BB4173C88B40062B607 /* HONVerifyMobileViewController.m */,
 				4C6A3E1617669D7400B6CD4D /* HONFollowFriendViewCell.h */,
 				4C6A3E1717669D7400B6CD4D /* HONFollowFriendViewCell.m */,
 				4C6A3E191766AD3500B6CD4D /* HONAddContactViewCell.h */,
@@ -2416,8 +2416,8 @@
 		4C62676A15F9776900AA7FCE /* Root */ = {
 			isa = PBXGroup;
 			children = (
-				4C0CA3F5175151FA00DD0652 /* Invite */,
 				4CE8B62E16E2EC4100D29191 /* Splash */,
+				4C0CA3F5175151FA00DD0652 /* Invite */,
 				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C48745C16C056E8007D901B /* Search */,
 				4C45FF4516DECE40002F1080 /* Views */,
@@ -3661,7 +3661,7 @@
 				4CABCEB2173086FD00AF5863 /* HONAvatarCameraOverlayView.m in Sources */,
 				4C51010E1733002500A5D342 /* HONImagingDepictor.m in Sources */,
 				4C51011417332B0700A5D342 /* UILabel+FormattedText.m in Sources */,
-				4CB03BB5173C88B40062B607 /* HONFindFriendsViewController.m in Sources */,
+				4CB03BB5173C88B40062B607 /* HONVerifyMobileViewController.m in Sources */,
 				4C0CA3F81751521D00DD0652 /* HONInviteNetworkViewCell.m in Sources */,
 				4C6257F71753E52B006AD1F7 /* HONInviteCelebViewCell.m in Sources */,
 				4C6257FA1753F68C006AD1F7 /* HONInviteCelebViewController.m in Sources */,

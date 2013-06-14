@@ -36,21 +36,21 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
-	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, 73.0, 73.0)];
+	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, kSnapMediumDim, kSnapMediumDim)];
 	lHolderView.backgroundColor = [UIColor colorWithWhite:0.875 alpha:1.0];
 	lHolderView.clipsToBounds = YES;
 	[self addSubview:lHolderView];
 	
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 73.0, 97.0)];
+	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[lHolderView addSubview:lImageView];
 	
-	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(83.0, 10.0, 73.0, 73.0)];
+	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(83.0, 10.0, kSnapMediumDim, kSnapMediumDim)];
 	rHolderView.backgroundColor = [UIColor colorWithWhite:0.875 alpha:1.0];
 	rHolderView.clipsToBounds = YES;
 	[self addSubview:rHolderView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 73.0, 97.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[rHolderView addSubview:rImageView];
 	
@@ -72,22 +72,22 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(164.0, 10.0, 73.0, 73.0)];
+	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(164.0, 10.0, kSnapMediumDim, kSnapMediumDim)];
 	lHolderView.backgroundColor = [UIColor colorWithWhite:0.875 alpha:1.0];
 	lHolderView.clipsToBounds = YES;
 	[self addSubview:lHolderView];
 	
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 73.0, 97.0)];
+	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[lHolderView addSubview:lImageView];
 	
 	
-	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(237.0, 10.0, 73.0, 73.0)];
+	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(237.0, 10.0, kSnapMediumDim, kSnapMediumDim)];
 	rHolderView.backgroundColor = [UIColor colorWithWhite:0.875 alpha:1.0];
 	rHolderView.clipsToBounds = YES;
 	[self addSubview:rHolderView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10.0, 73.0, 97.0)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix]] placeholderImage:nil];
 	[rHolderView addSubview:rImageView];
 	

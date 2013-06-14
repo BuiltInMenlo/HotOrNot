@@ -1,23 +1,25 @@
 //
-//  HONFindFriendsViewController.m
+//  HONHONVerifyMobileViewController.m
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 05.09.13.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <MessageUI/MFMessageComposeViewController.h>
+
 #import "UIImageView+AFNetworking.h"
 
-#import "HONFindFriendsViewController.h"
+#import "HONVerifyMobileViewController.h"
 #import "HONAppDelegate.h"
 #import "HONAddFriendsViewController.h"
 
-@interface HONFindFriendsViewController () <UIAlertViewDelegate, UITextFieldDelegate>
+@interface HONVerifyMobileViewController () <MFMessageComposeViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, retain) UITextField *mobileTextField;
 @property (nonatomic, retain) NSString *phoneNumber;
 @end
 
-@implementation HONFindFriendsViewController 
+@implementation HONVerifyMobileViewController 
 
 - (id)init {
 	if ((self = [super init])) {
@@ -67,19 +69,26 @@
 	mobileImageView.image = [UIImage imageNamed:@"mobileNumberHack"];
 	[self.view addSubview:mobileImageView];
 	
-	_mobileTextField = [[UITextField alloc] initWithFrame:CGRectMake(61.0, 220.0, 230.0, 30.0)];
-	//[_mobileTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-	[_mobileTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_mobileTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_mobileTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_mobileTextField setReturnKeyType:UIReturnKeyGo];
-	[_mobileTextField setTextColor:[HONAppDelegate honBlueTxtColor]];
-	//[_mobileTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEnd];
-	_mobileTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
-	_mobileTextField.keyboardType = UIKeyboardTypeDefault;//UIKeyboardTypePhonePad;
-	_mobileTextField.text = @"";
-	_mobileTextField.delegate = self;
-	[self.view addSubview:_mobileTextField];
+	UIButton *smsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	smsButton.frame = CGRectMake(61.0, 220.0, 230.0, 30.0);
+	[smsButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
+	[smsButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
+	[smsButton addTarget:self action:@selector(_goSMS) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:smsButton];
+	
+//	_mobileTextField = [[UITextField alloc] initWithFrame:CGRectMake(61.0, 220.0, 230.0, 30.0)];
+//	//[_mobileTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+//	[_mobileTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+//	[_mobileTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+//	_mobileTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+//	[_mobileTextField setReturnKeyType:UIReturnKeyGo];
+//	[_mobileTextField setTextColor:[HONAppDelegate honBlueTxtColor]];
+//	//[_mobileTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEnd];
+//	_mobileTextField.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
+//	_mobileTextField.keyboardType = UIKeyboardTypeDefault;//UIKeyboardTypePhonePad;
+//	_mobileTextField.text = @"";
+//	_mobileTextField.delegate = self;
+//	[self.view addSubview:_mobileTextField];
 }
 
 - (void)viewDidLoad {
@@ -88,6 +97,33 @@
 
 
 #pragma mark - Navigation
+- (void)_goSMS {
+	if ([MFMessageComposeViewController canSendText]) {
+//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//		pasteboard.persistent = YES;
+//		pasteboard.image = [UIImage imageNamed:@"facebookBackground"];
+//
+//		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"sms:" stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
+		
+		
+		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+		messageComposeViewController.messageComposeDelegate = self;
+		messageComposeViewController.recipients = [NSArray arrayWithObject:@"2394313268"];
+		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		//messageComposeViewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
+															message:@"Cannot send SMS from this device!"
+														   delegate:nil
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView show];
+	}
+}
+
+
 - (void)_goSkip {
 	[[Mixpanel sharedInstance] track:@"Find Friends - Skip"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -164,6 +200,32 @@
 
 - (void)_onTxtDoneEditing:(id)sender {
 	[_mobileTextField resignFirstResponder];
+	[self _goNext];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	
+	switch (result) {
+		case MessageComposeResultCancelled:
+			NSLog(@"SMS: canceled");
+			break;
+			
+		case MessageComposeResultSent:
+			NSLog(@"SMS: sent");
+			break;
+			
+		case MessageComposeResultFailed:
+			NSLog(@"SMS: failed");
+			break;
+			
+		default:
+			NSLog(@"SMS: not sent");
+			break;
+	}
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
 	[self _goNext];
 }
 

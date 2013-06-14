@@ -113,7 +113,7 @@
 //	[self.view addSubview:timeLabel];
 	
 	__weak typeof(self) weakSelf = self;
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 69.0, kSnapLargeSize.width * 0.5, kSnapLargeSize.width * 0.5)];
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(7.0, 69.0, kSnapLargeDim, kSnapLargeDim)];
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorImgPrefix]]] placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		weakSelf.imageView.image = image;
 		[weakSelf _hideHUD];

@@ -142,7 +142,7 @@
 	_avatarImageView.userInteractionEnabled = YES;
 	[self addSubview:_avatarImageView];
 	
-	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:kAvatarDefaultSize withUserDefaultsKey:@"avatar_image"];
+	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];

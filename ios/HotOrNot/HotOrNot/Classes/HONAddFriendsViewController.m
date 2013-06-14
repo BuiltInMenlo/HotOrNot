@@ -23,6 +23,7 @@
 @property(nonatomic, strong) NSMutableArray *contacts;
 @property(nonatomic, strong) NSMutableArray *following;
 @property(nonatomic, strong) UITableView *tableView;
+@property(nonatomic, strong) NSString *smsRecipients;
 @end
 
 @implementation HONAddFriendsViewController
@@ -62,7 +63,6 @@
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									nil];
 	
-	
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
@@ -84,6 +84,32 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		NSLog(@"HONAddFriendsViewController AFNetworking %@", [error localizedDescription]);
 		
+	}];
+}
+
+- (void)_sendContactsSMS {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 12], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							_smsRecipients, @"sms_recipients",
+							nil];
+	
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			NSLog(@"HONAddFriendsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *sendResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSLog(@"HONAddFriendsViewController AFNetworking: %@", sendResult);
+			
+			[self _goDone];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		NSLog(@"HONAddFriendsViewController AFNetworking %@", [error localizedDescription]);
 	}];
 }
 
@@ -178,16 +204,26 @@
 	//[self _retreiveFollowing];
 	
 	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+	NSLog(@"ABAddressBookGetAuthorizationStatus() = [%ld]", ABAddressBookGetAuthorizationStatus());
+	
+	// first time asking for access
 	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
 		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
 			[self _retrieveContacts];
 		});
 		
+	// already granted access
 	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
 		[self _retrieveContacts];
-		
+	
+	// denied permission
 	} else {
-		// denied access
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Contacts Permissions"
+															message:@"We need your OK to access the the address book."
+														   delegate:nil
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView show];
 	}
 }
 
@@ -219,6 +255,15 @@
 	[[Mixpanel sharedInstance] track:@"Add Friends - Invite All"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_smsRecipients = @"";
+	for (HONContactUserVO *contactUserVO in _contacts) {
+		if (contactUserVO.isSMSAvailable)
+			[_smsRecipients stringByAppendingString:[NSString stringWithFormat:@"%@|", contactUserVO.mobileNumber]];
+	}
+	
+	_smsRecipients = [_smsRecipients substringToIndex:[_smsRecipients length] - 1];
+	[self _sendContactsSMS];
 }
 
 
@@ -239,6 +284,9 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 vo.fullName, @"contact", nil]];
+	
+	_smsRecipients = vo.mobileNumber;
+	[self _sendContactsSMS];
 }
 
 
@@ -267,6 +315,7 @@
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_nonActive"] forState:UIControlStateNormal];
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_Active"] forState:UIControlStateHighlighted];
 	[inviteButton addTarget:self action:(section == 0) ? @selector(_goFollowFriends) : @selector(_goInviteAllContacts) forControlEvents:UIControlEventTouchUpInside];
+	//inviteButton.hidden = (section == 0 && [_contacts count] > 0;
 	[headerImageView addSubview:inviteButton];
 	
 	return (headerImageView);

@@ -47,11 +47,11 @@
 	[self hideChevron];
 	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID;
 	
-	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 63.0, 63.0)];
+	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
 	challengeImgHolderView.clipsToBounds = YES;
 	[self addSubview:challengeImgHolderView];
 	
-	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -10, 63.0, 84.0)];
+	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
 	challengeImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[challengeImgHolderView addSubview:challengeImageView];

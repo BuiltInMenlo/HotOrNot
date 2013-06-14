@@ -16,7 +16,7 @@
 
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
-#import "HONFindFriendsViewController.h"
+#import "HONVerifyMobileViewController.h"
 #import "HONUserProfileViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
@@ -30,6 +30,7 @@
 #import "HONRestrictedLocaleViewController.h"
 #import "HONInviteNetworkViewController.h"
 #import "HONInviteCelebViewController.h"
+#import "HONAddFriendsViewController.h"
 
 
 @interface HONTimelineViewController()
@@ -526,17 +527,20 @@
 	[[Mixpanel sharedInstance] track:@"Timeline - Banner"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 	
-	if (rand() % 100 < 50) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteNetworkViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-		
-	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFindFriendsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+//	if (rand() % 100 < 50) {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteNetworkViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
+//		
+//	} else {
+//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFindFriendsViewController alloc] init]];
+//		[navigationController setNavigationBarHidden:YES];
+//		[self presentViewController:navigationController animated:YES completion:nil];
+//	}
 }
 
 - (void)_goLocaleRestriction {

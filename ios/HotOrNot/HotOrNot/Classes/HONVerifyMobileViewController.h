@@ -1,5 +1,5 @@
 //
-//  HONFindFriendsViewController.h
+//  HONHONVerifyMobileViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 05.09.13.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONFindFriendsViewController : UIViewController
+@interface HONVerifyMobileViewController : UIViewController
 
 @end

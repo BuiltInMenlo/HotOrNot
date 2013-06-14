@@ -26,6 +26,7 @@ const CGFloat kNavBarHeaderHeight;
 const CGFloat kSearchHeaderHeight;
 const CGFloat kOrthodoxTableHeaderHeight;
 const CGFloat kOrthodoxTableCellHeight;
+const CGSize kTabSize;
 
 // snap params
 const CGFloat kSnapRatio;
@@ -38,13 +39,14 @@ const CGFloat kHUDTime;
 const CGFloat kSnapThumbDim;
 const CGFloat kSnapMediumDim;
 const CGFloat kSnapLargeDim;
+const CGFloat kAvatarDim;
 
-const CGSize kTabSize;
-const CGSize kSnapThumbSize;
-const CGSize kSnapMediumSize;
-const CGSize kSnapLargeSize;
-const CGSize kAvatarDefaultSize;
+//const CGSize kSnapThumbSize;
+//const CGSize kSnapMediumSize;
+//const CGSize kSnapLargeSize;
+//const CGSize kAvatarDefaultSize;
 
+const BOOL kIsImageCacheEnabled;
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
