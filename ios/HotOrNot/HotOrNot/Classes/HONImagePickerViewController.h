@@ -11,6 +11,8 @@
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 
+const CGFloat kFocusInterval;
+
 @interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 - (id)initWithUser:(HONUserVO *)userVO;

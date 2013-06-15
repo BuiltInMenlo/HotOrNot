@@ -180,6 +180,10 @@
 		4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675115F96FA800AA7FCE /* Security.framework */; };
 		4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675215F96FA800AA7FCE /* StoreKit.framework */; };
 		4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */; };
+		4C667186176CF8E30012770E /* addButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667182176CF8E30012770E /* addButton_Active.png */; };
+		4C667187176CF8E30012770E /* addButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667183176CF8E30012770E /* addButton_Active@2x.png */; };
+		4C667188176CF8E30012770E /* addButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667184176CF8E30012770E /* addButton_nonActive.png */; };
+		4C667189176CF8E30012770E /* addButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667185176CF8E30012770E /* addButton_nonActive@2x.png */; };
 		4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C673F7C1693AA23008B2CA4 /* HONChallengePreviewViewController.m */; };
 		4C687DC316D9445C001A1B22 /* HONAlertPopOverView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C687DC216D9445C001A1B22 /* HONAlertPopOverView.m */; };
 		4C6893691719EF88005F8D0A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C68936B1719EF88005F8D0A /* Localizable.strings */; };
@@ -1001,6 +1005,10 @@
 		4C62675115F96FA800AA7FCE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4C62675215F96FA800AA7FCE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		4C667182176CF8E30012770E /* addButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addButton_Active.png; sourceTree = "<group>"; };
+		4C667183176CF8E30012770E /* addButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addButton_Active@2x.png"; sourceTree = "<group>"; };
+		4C667184176CF8E30012770E /* addButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addButton_nonActive.png; sourceTree = "<group>"; };
+		4C667185176CF8E30012770E /* addButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C673F7B1693AA23008B2CA4 /* HONChallengePreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengePreviewViewController.h; sourceTree = "<group>"; };
 		4C673F7C1693AA23008B2CA4 /* HONChallengePreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengePreviewViewController.m; sourceTree = "<group>"; };
 		4C687DC116D9445C001A1B22 /* HONAlertPopOverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlertPopOverView.h; sourceTree = "<group>"; };
@@ -2933,6 +2941,10 @@
 		4CB75CC416FEACDF001A8738 /* Nav */ = {
 			isa = PBXGroup;
 			children = (
+				4C667182176CF8E30012770E /* addButton_Active.png */,
+				4C667183176CF8E30012770E /* addButton_Active@2x.png */,
+				4C667184176CF8E30012770E /* addButton_nonActive.png */,
+				4C667185176CF8E30012770E /* addButton_nonActive@2x.png */,
 				4CADE48E17682F5E00A356E4 /* timeButton_Active.png */,
 				4CADE48F17682F5E00A356E4 /* timeButton_Active@2x.png */,
 				4CADE49017682F5E00A356E4 /* timeButton_nonActive.png */,
@@ -3563,6 +3575,10 @@
 				4C801274176A6FEB00BD795D /* loadingDot_03.png in Resources */,
 				4C801275176A6FEB00BD795D /* loadingDot_02.png in Resources */,
 				4C801276176A6FEB00BD795D /* loadingDot_01.png in Resources */,
+				4C667186176CF8E30012770E /* addButton_Active.png in Resources */,
+				4C667187176CF8E30012770E /* addButton_Active@2x.png in Resources */,
+				4C667188176CF8E30012770E /* addButton_nonActive.png in Resources */,
+				4C667189176CF8E30012770E /* addButton_nonActive@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4566,7 +4582,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F5601835-1C88-4060-A13A-082A78FCCA0F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "011000AD-DE87-4101-A9AA-13B91B4B0285";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
@@ -4594,7 +4610,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "B9FAA7EC-7348-45BE-AF1B-AB88432A7C5F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "375A5D6D-3B08-4169-8DE0-A15AD557218D";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

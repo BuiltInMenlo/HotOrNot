@@ -26,6 +26,7 @@
 - (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName;
 @optional
+- (void)cameraOverlayViewAddChallengers:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeFlash:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView;

@@ -21,8 +21,10 @@
 #import "HONImagingDepictor.h"
 #import "HONCameraOverlayView.h"
 #import "HONHeaderView.h"
+#import "HONAddChallengersViewController.h"
 #import "HONChallengerPickerViewController.h"
 
+const CGFloat kFocusInterval = 0.5f;
 
 @interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONCameraOverlayViewDelegate>
 @property (nonatomic, strong) NSString *filename;
@@ -54,10 +56,7 @@
 		_needsChallenger = YES;
 		_isFirstAppearance = YES;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_didShowViewController:)
-																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];
+		[self _registerNotifications];
 	}
 	
 	return (self);
@@ -71,10 +70,7 @@
 		_submitAction = 9;
 		_isFirstAppearance = YES;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_didShowViewController:)
-																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];
+		[self _registerNotifications];
 	}
 	
 	return (self);
@@ -85,15 +81,11 @@
 		_needsChallenger = NO;
 		_subjectName = subject;
 		_userVO = userVO;
+		_needsChallenger = NO;
 		_submitAction = 9;
 		_isFirstAppearance = YES;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_didShowViewController:)
-																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];
-		
-		_needsChallenger = NO;
+		[self _registerNotifications];
 	}
 	
 	return (self);
@@ -108,10 +100,7 @@
 		_needsChallenger = NO;
 		_isFirstAppearance = YES;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_didShowViewController:)
-																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];
+		_needsChallenger = NO;
 	}
 	
 	return (self);
@@ -128,6 +117,7 @@
 															  selector:@selector(_didShowViewController:)
 																	name:@"UINavigationControllerDidShowViewControllerNotification"
 																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_notificationReceived:) name:nil object:nil];
 	}
 	
 	return (self);
@@ -138,7 +128,8 @@
 }
 
 - (void)dealloc {
-	
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:nil object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraControllerPreviewStartedNotification" object:nil];
 }
 
 - (BOOL)shouldAutorotate {
@@ -147,6 +138,18 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	return (NO);
+}
+
+- (void)_registerNotifications {
+//	[[NSNotificationCenter defaultCenter] addObserver:self
+//														  selector:@selector(_notificationReceived:)
+//																name:nil
+//															 object:nil];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+														  selector:@selector(_previewStarted:)
+																name:@"PLCameraControllerPreviewStartedNotification"
+															 object:nil];
 }
 
 
@@ -165,14 +168,6 @@
 	_progressHUD.taskInProgress = YES;
 	
 	@try {
-//		float ratio = image.size.height / image.size.width;
-//		
-//		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeSize.width, kSnapLargeSize.width * ratio)];
-//		lImage = [HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.width)];
-//		
-//		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumSize.width * 2.0, kSnapMediumSize.height * 2.0)];
-//		UIImage *t1Image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbSize.width * 2.0, kSnapThumbSize.height * 2.0)];
-		
 		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeDim * 2.0, kSnapLargeDim * 2.0)];
 		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
 		UIImage *tImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbDim * 2.0, kSnapThumbDim * 2.0)];
@@ -289,6 +284,7 @@
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	NSLog(@"loadView");
 	[super loadView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_create", nil)];
@@ -303,10 +299,12 @@
 }
 
 - (void)viewDidLoad {
+	NSLog(@"viewDidLoad");
 	[super viewDidLoad];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
+	NSLog(@"viewDidAppear");
 	[super viewDidAppear:animated];
 		
 	if (_isFirstAppearance) {
@@ -349,6 +347,7 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+	NSLog(@"viewDidDisappear");
 	[super viewDidDisappear:animated];
 	
 	_isFirstAppearance = YES;
@@ -356,6 +355,30 @@
 
 
 #pragma mark - UI Presentation
+- (void)_removeIris {
+	_cameraIrisImageView.hidden = YES;
+	[_cameraIrisImageView removeFromSuperview];
+	
+	_plCameraIrisAnimationView.hidden = YES;
+	[_plCameraIrisAnimationView removeFromSuperview];
+}
+
+- (void)_restoreIris {
+	_cameraIrisImageView.hidden = NO;
+	[self.view insertSubview:_cameraIrisImageView atIndex:1];
+	
+	_plCameraIrisAnimationView.hidden = NO;
+	
+	UIView *view = self.view;
+	while (view.subviews.count && (view = [view.subviews objectAtIndex:2])) {
+		if ([[[view class] description] isEqualToString:@"PLCropOverlay"]) {
+			[view insertSubview:_plCameraIrisAnimationView atIndex:0];
+			_plCameraIrisAnimationView = nil;
+			break;
+		}
+	}
+}
+
 - (void)_showOverlay {
 	_challengerName = @"";
 	if (_challengeVO != nil)
@@ -368,18 +391,18 @@
 	_cameraOverlayView.delegate = self;
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
-	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
 
-- (void)autofocusCamera {
+- (void)_autofocusCamera {
 	NSArray *devices = [AVCaptureDevice devices];
 	NSError *error;
+	
 	for (AVCaptureDevice *device in devices) {
 		if ([device position] == AVCaptureDevicePositionBack) {
 			[device lockForConfiguration:&error];
-			if ([device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+			
+			if ([device isFocusModeSupported:AVCaptureFocusModeAutoFocus])
             device.focusMode = AVCaptureFocusModeAutoFocus;
-			}
 			
 			[device unlockForConfiguration];
 		}
@@ -406,51 +429,28 @@
 
 
 #pragma mark - Notifications
-- (void)_didShowViewController:(NSNotification *)notification {
-	UIView *view = _imagePicker.view;
-	_plCameraIrisAnimationView = nil;
-	_cameraIrisImageView = nil;
-	
-	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
-		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
-			for (UIView *subview in view.subviews) {
-				if ([subview isKindOfClass:[UIImageView class]])
-					_cameraIrisImageView = (UIImageView *)subview;
-				
-				else if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
-					for (UIView *subsubview in subview.subviews) {
-						if ([[[subsubview class] description] isEqualToString:@"PLCameraIrisAnimationView"])
-							_plCameraIrisAnimationView = subsubview;
-					}
-				}
-			}
-		}
-	}
-	_cameraIrisImageView.hidden = YES;
-	[_cameraIrisImageView removeFromSuperview];
-	[_plCameraIrisAnimationView removeFromSuperview];
-	
-	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+- (void)_notificationReceived:(NSNotification *)notification {
+	//NSLog(@"_notificationReceived:[%@]", [notification name]);
 }
 
-- (void)_irisAnimationEnded:(NSNotification *)notification {
-	_cameraIrisImageView.hidden = NO;
+
+- (void)_previewStarted:(NSNotification *)notification {
+	[self _removeIris];
 	
-	UIView *view = _imagePicker.view;
-	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
-		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
-			for (UIView *subview in view.subviews) {
-				if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
-					[subview insertSubview:_plCameraIrisAnimationView atIndex:1];
-					_plCameraIrisAnimationView = nil;
-					break;
-				}
-			}
-		}
-	}
+	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
+}
+
+
+#pragma mark - NavigationController Delegates
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 	
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+	_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
+	_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
+}
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	[self _removeIris];
 }
 
 
@@ -547,6 +547,14 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
+- (void)cameraOverlayViewAddChallengers:(HONCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Add Friends"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[_imagePicker presentViewController:[[HONAddChallengersViewController alloc] init] animated:YES completion:nil];
+}
+
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
@@ -614,9 +622,9 @@
 	}
 }
 
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-}
+//- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+//	navigationController.navigationBar.barStyle = UIBarStyleDefault;
+//}
 
 
 #pragma mark - AWS Delegates

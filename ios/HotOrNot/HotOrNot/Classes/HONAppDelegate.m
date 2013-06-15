@@ -7,10 +7,10 @@
 //
 
 
+#import <AddressBook/AddressBook.h>
 #import <AdSupport/AdSupport.h>
 #import <AVFoundation/AVFoundation.h>
 #import <FacebookSDK/FacebookSDK.h>
-#import <Parse/Parse.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -361,6 +361,8 @@ const BOOL kIsImageCacheEnabled = NO;
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
+	
+	//NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit fromDate:date];
 	
 	//NSLog(@"[%d][%d][%d][%d]", days, hours, mins, secs);
 	

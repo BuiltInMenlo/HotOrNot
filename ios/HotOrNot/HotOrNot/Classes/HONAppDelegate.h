@@ -41,10 +41,6 @@ const CGFloat kSnapMediumDim;
 const CGFloat kSnapLargeDim;
 const CGFloat kAvatarDim;
 
-//const CGSize kSnapThumbSize;
-//const CGSize kSnapMediumSize;
-//const CGSize kSnapLargeSize;
-//const CGSize kAvatarDefaultSize;
 
 const BOOL kIsImageCacheEnabled;
 
@@ -97,7 +93,6 @@ const BOOL kIsImageCacheEnabled;
 + (BOOL)isRetina5;
 + (BOOL)hasNetwork;
 + (BOOL)canPingAPIServer;
-//+ (BOOL)canPingParseServer;
 + (BOOL)canPingConfigServer;
 + (BOOL)audioMuted;
 + (NSString *)deviceLocale;

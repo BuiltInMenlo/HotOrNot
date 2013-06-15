@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
-
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "UIImageView+AFNetworking.h"
@@ -28,11 +26,12 @@
 @property (nonatomic, strong) UIView *captureHolderView;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *randomSubjectButton;
+@property (nonatomic, strong) UIButton *addFriendsButton;
 @property (nonatomic, strong) UIButton *cancelButton;
-@property (nonatomic, strong) UIButton *cameraBackButton;
-@property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UIButton *captureButton;
+@property (nonatomic, strong) UIButton *cameraBackButton;
+@property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *subjectName;
 @end
@@ -78,6 +77,13 @@
 		subjectButton.frame = CGRectMake(0.0, 12.0, 320.0, 24.0);
 		[subjectButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
 		//[_headerView addSubview:subjectButton];
+		
+		_addFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_addFriendsButton.frame = CGRectMake(5.0, 5.0, 44.0, 44.0);
+		[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_nonActive"] forState:UIControlStateNormal];
+		[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_Active"] forState:UIControlStateHighlighted];
+		[_addFriendsButton addTarget:self action:@selector(_goAddFriends) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_addFriendsButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_cancelButton.frame = CGRectMake(270.0, 5.0, 44.0, 44.0);
@@ -285,6 +291,10 @@
 
 - (void)_goSubmit {
 	[self.delegate cameraOverlayViewSubmitChallenge:self];
+}
+
+- (void)_goAddFriends {
+	[self.delegate cameraOverlayViewAddChallengers:self];
 }
 
 - (void)_goEditSubject {
