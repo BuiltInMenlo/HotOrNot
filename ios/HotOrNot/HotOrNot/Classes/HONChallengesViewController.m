@@ -75,9 +75,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+- (BOOL)shouldAutorotate {
 	return (NO);
 }
+
 
 #pragma mark - Data Calls
 - (void)_retrieveUser {

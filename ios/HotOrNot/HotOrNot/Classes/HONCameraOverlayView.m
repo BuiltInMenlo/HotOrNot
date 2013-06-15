@@ -41,7 +41,7 @@
 @synthesize subjectName = _subjectName;
 @synthesize delegate = _delegate;
 
-- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username withAvatar:(NSString *)avatar {
+- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username {
 	if ((self = [super initWithFrame:frame])) {
 		_subjectName = subject;
 		_username = username;
@@ -99,20 +99,11 @@
 		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:_randomSubjectButton];
 				
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, kNavBarHeaderHeight + 7.0, 37.0, 37.0)];
-		[avatarImageView setImageWithURL:[NSURL URLWithString:avatar] placeholderImage:nil];
-		[self addSubview:avatarImageView];
-		
-		UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(55.0, kNavBarHeaderHeight + 16.0, 18.0, 18.0)];
-		arrowImageView.image = [UIImage imageNamed:@"outboundArrow"];
-		arrowImageView.hidden = ([_username length] == 0);
-		[self addSubview:arrowImageView];
-		
-		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, kNavBarHeaderHeight + 18.0, 270.0, 20.0)];
+		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 18.0, 210.0, 20.0)];
 		usernameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:14];
 		usernameLabel.textColor = [UIColor whiteColor];
 		usernameLabel.backgroundColor = [UIColor clearColor];
-		usernameLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
+		usernameLabel.text = _username;
 		[self addSubview:usernameLabel];
 		
 //		int opsOffset = ([_username length] > 0) ? 40 : ([HONAppDelegate isRetina5]) ? 55 : 0;

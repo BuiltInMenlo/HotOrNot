@@ -136,10 +136,6 @@ const CGFloat kFocusInterval = 0.5f;
 	return (NO);
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return (NO);
-}
-
 - (void)_registerNotifications {
 //	[[NSNotificationCenter defaultCenter] addObserver:self
 //														  selector:@selector(_notificationReceived:)
@@ -387,7 +383,7 @@ const CGFloat kFocusInterval = 0.5f;
 	if (_userVO != nil)
 		_challengerName = _userVO.username;
 	
-	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName withAvatar:(_challengeVO != nil) ? _challengeVO.creatorAvatar : _userVO.imageURL];
+	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
 	_cameraOverlayView.delegate = self;
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;

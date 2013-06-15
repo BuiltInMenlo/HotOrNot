@@ -11,7 +11,7 @@
 
 @protocol HONCameraOverlayViewDelegate;
 @interface HONCameraOverlayView : UIView
-- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username withAvatar:(NSString *)avatar;
+- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username;
 - (void)hidePreview;
 - (void)showPreviewImage:(UIImage *)image;
 - (void)showPreviewImageFlipped:(UIImage *)image;
