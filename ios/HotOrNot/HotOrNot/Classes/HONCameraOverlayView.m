@@ -13,15 +13,15 @@
 #import "HONCameraOverlayView.h"
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
-#import "HONHeaderView.h"
 #import "HONCreateChallengeOptionsView.h"
+#import "HONCreateChallengePreviewView.h"
 
 @interface HONCameraOverlayView() <UITextFieldDelegate>
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIImageView *subjectBGImageView;
 @property (nonatomic, strong) HONCreateChallengeOptionsView *optionsView;
-@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *captureHolderView;
 @property (nonatomic, strong) UITextField *subjectTextField;
@@ -65,14 +65,6 @@
 		_captureHolderView.userInteractionEnabled = YES;
 		[_bgImageView addSubview:_captureHolderView];
 		
-		_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
-		//[_bgImageView addSubview:_headerView];
-		
-		UIImageView *dotsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(148.0, 35.0, 24.0, 6.0)];
-		dotsImageView.image = [UIImage imageNamed:@"cameraExperienceDots"];
-		dotsImageView.userInteractionEnabled = YES;
-		[_headerView addSubview:dotsImageView];
-		
 		UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		subjectButton.frame = CGRectMake(0.0, 12.0, 320.0, 24.0);
 		[subjectButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
@@ -97,13 +89,13 @@
 		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randomButton_nonActive"] forState:UIControlStateNormal];
 		[_randomSubjectButton setBackgroundImage:[UIImage imageNamed:@"randomButton_Active"] forState:UIControlStateHighlighted];
 		[_randomSubjectButton addTarget:self action:@selector(_goRandomSubject) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:_randomSubjectButton];
+		//[self addSubview:_randomSubjectButton];
 				
-		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 18.0, 210.0, 20.0)];
-		usernameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:14];
+		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 210.0, 20.0)];
+		usernameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 		usernameLabel.textColor = [UIColor whiteColor];
 		usernameLabel.backgroundColor = [UIColor clearColor];
-		usernameLabel.text = _username;
+		usernameLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:usernameLabel];
 		
 //		int opsOffset = ([_username length] > 0) ? 40 : ([HONAppDelegate isRetina5]) ? 55 : 0;
@@ -172,100 +164,31 @@
 
 
 #pragma mark - Accessors
-- (void)showPreviewImage:(UIImage *)image {
-	[[Mixpanel sharedInstance] track:@"Image Preview"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+- (void)showPreviewImage:(UIImage *)image asMirrored:(BOOL)isMirrored {
+	NSLog(@"IMAGE:[%@][%d]", NSStringFromCGSize(image.size), image.imageOrientation);
 	
-	NSLog(@"IMAGE:[%f][%f]", image.size.width, image.size.height);
-	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 480 * (image.size.height / image.size.width))];
-	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
-	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
-	[_previewHolderView addSubview:imgView];
-	_previewHolderView.hidden = NO;
+	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
+	//previewImageView.transform = CGAffineTransformScale(previewImageView.transform, 1.0f, -1.0f);
 	
-	if ([HONAppDelegate isRetina5]) {
-		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
-		imgView.frame = frame;
-	}
+	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.frame withSubject:_subjectName withImage:image];
+	[self addSubview:_previewView];
 	
-	[self _showPreviewUI];
-}
-
-- (void)showPreviewImageFlipped:(UIImage *)image {
-	[[Mixpanel sharedInstance] track:@"Image Preview"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	NSLog(@"IMAGE FLIPPED:[%f][%f]", image.size.width, image.size.height);
-	
-
-	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
-	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUpMirrored]];
-	[_previewHolderView addSubview:imgView];
-	_previewHolderView.hidden = NO;
-	
-	if ([HONAppDelegate isRetina5]) {
-		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
-		imgView.frame = frame;
-	}
-	
-	[self _showPreviewUI];
+	previewImageView = nil;
 }
 
 - (void)hidePreview {
-	_previewHolderView.hidden = YES;
-	
-	for (UIView *subview in _previewHolderView.subviews) {
-		[subview removeFromSuperview];
-	}
-	
-	[_cameraBackButton removeFromSuperview];
-	_cameraBackButton = nil;
-	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-		_submitButton.frame = CGRectMake(330.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
-	} completion:^(BOOL finished) {
-		[_submitButton removeFromSuperview];
-		_submitButton = nil;
-	}];
-	
-	_randomSubjectButton.hidden = NO;
-	[_headerView addSubview:_cancelButton];
-	_captureHolderView.frame = CGRectMake(0.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
-	
-	[self.delegate cameraOverlayViewPreviewBack:self];
+	//- [self.delegate cameraOverlayViewPreviewBack:self];
+}
+
+- (void)enablePreview {
+	[_previewView showKeyboard];
 }
 
 
 #pragma mark - UI Presentation
-- (void)_showPreviewUI {
-	_randomSubjectButton.hidden = YES;
-	[_cancelButton removeFromSuperview];
-	
-	_cameraBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_cameraBackButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[_cameraBackButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-	[_cameraBackButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_cameraBackButton];
-	
-	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(330.0, 0.0, 64.0, 44.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:_submitButton];
-	
-	[UIView animateWithDuration:0.25 delay:0.33 options:UIViewAnimationOptionCurveLinear animations:^{
-		_submitButton.frame = CGRectMake(253.0, _submitButton.frame.origin.y, _submitButton.frame.size.width, _submitButton.frame.size.height);
-	} completion:nil];
-	
-	_captureHolderView.frame = CGRectMake(-320.0, _captureHolderView.frame.origin.y, 640.0, self.frame.size.height);
-}
-
 - (void)_animateShutter {
 	_irisImageView.alpha = 1.0;
+	
 	[UIView animateWithDuration:0.33 animations:^(void) {
 		_irisImageView.alpha = 0.0;
 	} completion:^(BOOL finished){}];
@@ -274,14 +197,13 @@
 
 #pragma mark - Navigation
 - (void)_goBack {
-	_captureButton.enabled = YES;
 	[self hidePreview];
 	
-	[self.delegate cameraOverlayViewPreviewBack:self];
+	//- [self.delegate cameraOverlayViewPreviewBack:self];
 }
 
 - (void)_goSubmit {
-	[self.delegate cameraOverlayViewSubmitChallenge:self];
+	//- [self.delegate cameraOverlayViewSubmitChallenge:self];
 }
 
 - (void)_goAddFriends {
@@ -294,7 +216,6 @@
 
 - (void)_goRandomSubject {
 	_subjectName = [HONAppDelegate rndDefaultSubject];
-	[_headerView setTitle:_subjectName];
 	_subjectTextField.text = _subjectName;
 	
 	[[Mixpanel sharedInstance] track:@"Create Snap - Random Hashtag"
@@ -302,7 +223,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 											 _subjectName, @"subject", nil]];
 	
-	[self.delegate cameraOverlayViewChangeSubject:self subject:_subjectName];
+	//- [self.delegate cameraOverlayViewChangeSubject:self subject:_subjectName];
 }
 
 - (void)_goOptions {
@@ -323,7 +244,6 @@
 }
 
 - (void)_goTakePhoto {
-	_captureButton.enabled = NO;
 	[self _animateShutter];
 	[self.delegate cameraOverlayViewTakePicture:self];
 }
@@ -347,7 +267,7 @@
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
-	[_headerView setTitle:_subjectTextField.text];
+	//[_headerView setTitle:_subjectTextField.text];
 }
 
 - (void)_closeOptions:(NSNotification *)notification {
@@ -375,7 +295,7 @@
 		
 		_subjectBGImageView.hidden = NO;
 		[UIView animateWithDuration:0.25 animations:^(void){
-			_subjectBGImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (44.0 + 216.0), _subjectBGImageView.frame.size.width, _subjectBGImageView.frame.size.height);
+			_subjectBGImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 216.0), _subjectBGImageView.frame.size.width, _subjectBGImageView.frame.size.height);
 		}];
 	}
 }
@@ -421,8 +341,7 @@
 			}
 			
 			_subjectName = textField.text;
-			[_headerView setTitle:_subjectName];
-			[self.delegate cameraOverlayViewChangeSubject:self subject:_subjectName];
+			//- [self.delegate cameraOverlayViewChangeSubject:self subject:_subjectName];
 		}
 		
 	}

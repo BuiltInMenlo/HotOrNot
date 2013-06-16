@@ -113,6 +113,7 @@
 		4C3BD696172656C600C4A840 /* FUEcameraViewBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD693172656BF00C4A840 /* FUEcameraViewBackground@2x.png */; };
 		4C3BD699172703F900C4A840 /* HONChallengerPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3BD698172703F900C4A840 /* HONChallengerPickerViewController.m */; };
 		4C3BD69C1727063700C4A840 /* HONChallengerViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3BD69B1727063700C4A840 /* HONChallengerViewCell.m */; };
+		4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */; };
 		4C3DA1BC16BA4D3400261651 /* HONVoteSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA1BB16BA4D3400261651 /* HONVoteSubjectVO.m */; };
 		4C3E884B16A3B2BD003301AF /* pokeButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E884716A3B2BD003301AF /* pokeButton_Active.png */; };
 		4C3E884C16A3B2BD003301AF /* pokeButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E884816A3B2BD003301AF /* pokeButton_Active@2x.png */; };
@@ -831,6 +832,8 @@
 		4C3BD698172703F900C4A840 /* HONChallengerPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengerPickerViewController.m; sourceTree = "<group>"; };
 		4C3BD69A1727063700C4A840 /* HONChallengerViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengerViewCell.h; sourceTree = "<group>"; };
 		4C3BD69B1727063700C4A840 /* HONChallengerViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengerViewCell.m; sourceTree = "<group>"; };
+		4C3D7E90176D3B8400AE07B3 /* HONCreateChallengePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateChallengePreviewView.h; sourceTree = "<group>"; };
+		4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateChallengePreviewView.m; sourceTree = "<group>"; };
 		4C3DA1BA16BA4D3400261651 /* HONVoteSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteSubjectVO.h; sourceTree = "<group>"; };
 		4C3DA1BB16BA4D3400261651 /* HONVoteSubjectVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONVoteSubjectVO.m; sourceTree = "<group>"; };
 		4C3E884716A3B2BD003301AF /* pokeButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pokeButton_Active.png; sourceTree = "<group>"; };
@@ -1841,14 +1844,16 @@
 				4C6BBC851615455000145996 /* HONCameraOverlayView.m */,
 				4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */,
 				4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */,
+				4CB30A4E1769067200D3E0C8 /* HONCreateChallengeOptionsView.h */,
+				4CB30A4F1769067200D3E0C8 /* HONCreateChallengeOptionsView.m */,
+				4C3D7E90176D3B8400AE07B3 /* HONCreateChallengePreviewView.h */,
+				4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */,
+				4C93B25017697267002FABFF /* HONAddChallengersViewController.h */,
+				4C93B25117697267002FABFF /* HONAddChallengersViewController.m */,
 				4C3BD69A1727063700C4A840 /* HONChallengerViewCell.h */,
 				4C3BD69B1727063700C4A840 /* HONChallengerViewCell.m */,
 				4C3BD697172703F900C4A840 /* HONChallengerPickerViewController.h */,
 				4C3BD698172703F900C4A840 /* HONChallengerPickerViewController.m */,
-				4CB30A4E1769067200D3E0C8 /* HONCreateChallengeOptionsView.h */,
-				4CB30A4F1769067200D3E0C8 /* HONCreateChallengeOptionsView.m */,
-				4C93B25017697267002FABFF /* HONAddChallengersViewController.h */,
-				4C93B25117697267002FABFF /* HONAddChallengersViewController.m */,
 			);
 			name = "Create Challenge";
 			sourceTree = "<group>";
@@ -3688,6 +3693,7 @@
 				4CB30A5317693F6200D3E0C8 /* HONEmptyChallengeViewCell.m in Sources */,
 				4C93B25217697267002FABFF /* HONAddChallengersViewController.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
+				4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

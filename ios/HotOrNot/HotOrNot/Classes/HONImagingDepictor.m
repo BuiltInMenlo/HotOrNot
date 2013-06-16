@@ -81,8 +81,8 @@
 	UIGraphicsBeginImageContext(size);
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextTranslateCTM(context, 0.0, size.height);
-	CGContextScaleCTM(context, 1.0, -1.0);
+	CGContextTranslateCTM(context, 0.0f, size.height);
+	CGContextScaleCTM(context, 1.0f, -1.0f);
 	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
 	
 	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -98,8 +98,8 @@
 	UIGraphicsBeginImageContext(size);
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
-	CGContextTranslateCTM(context, 0.0, size.height);
-	CGContextScaleCTM(context, 1.0, -1.0);
+	CGContextTranslateCTM(context, 0.0f, size.height);
+	CGContextScaleCTM(context, 1.0f, -1.0f);
 	CGContextDrawImage(context, CGRectMake(0.0f, 0.0f, size.width, size.height), image.CGImage);
 	
 	UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -160,6 +160,16 @@
 	}
 	
 	return (outputImage);
+}
+
++ (UIImage *)mirrorImage:(UIImage *)image {
+	NSLog(@"ORIENTATION:[%d]", image.imageOrientation);
+	
+//	UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+//	imageView.transform = CGAffineTransformScale(imageView.transform, -1.0f, 1.0f);
+//	return ([HONImagingDepictor createImageFromView:imageView]);
+	
+	return ([UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:(image.imageOrientation == UIImageOrientationUp) ? UIImageOrientationUpMirrored : UIImageOrientationUp]);
 }
 
 + (UIImage *)prepImageForInstagram:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle {

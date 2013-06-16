@@ -62,11 +62,6 @@ const CGFloat kHUDTime = 2.33f;
 
 // image sizes
 
-//const CGSize kSnapThumbSize = {38.0, 50.0};
-//const CGSize kSnapMediumSize = {210.0, 280.0};
-//const CGSize kSnapLargeSize = {612.0, 816.0};
-//const CGSize kAvatarDefaultSize = {200.0, 200.0};
-
 const CGFloat kSnapThumbDim = 63.0f;
 const CGFloat kSnapMediumDim = 73.0f;
 const CGFloat kSnapLargeDim = 210.0f;

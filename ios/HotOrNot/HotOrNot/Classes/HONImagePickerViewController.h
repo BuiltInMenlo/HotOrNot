@@ -14,10 +14,8 @@
 const CGFloat kFocusInterval;
 
 @interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
-
 - (id)initWithUser:(HONUserVO *)userVO;
-- (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject;
 - (id)initWithSubject:(NSString *)subject;
+- (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
-
 @end

@@ -23,6 +23,7 @@
 + (UIImage *)scaleImage:(UIImage *)image byFactor:(float)factor;
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
 + (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect;
++ (UIImage *)mirrorImage:(UIImage *)image;
 
 + (UIImage *)prepImageForInstagram:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle;
 

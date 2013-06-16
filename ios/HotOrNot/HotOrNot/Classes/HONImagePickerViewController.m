@@ -20,13 +20,13 @@
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 #import "HONCameraOverlayView.h"
-#import "HONHeaderView.h"
 #import "HONAddChallengersViewController.h"
 #import "HONChallengerPickerViewController.h"
+#import "HONCreateChallengePreviewView.h"
 
 const CGFloat kFocusInterval = 0.5f;
 
-@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONCameraOverlayViewDelegate>
+@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *challengerName;
@@ -41,6 +41,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic, strong) NSTimer *focusTimer;
 @property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
+@property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UIImage *challangeImage;
@@ -53,6 +54,7 @@ const CGFloat kFocusInterval = 0.5f;
 		self.view.backgroundColor = [UIColor blackColor];
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_submitAction = 1;
+		_challengerName = @"";
 		_needsChallenger = YES;
 		_isFirstAppearance = YES;
 		
@@ -66,8 +68,23 @@ const CGFloat kFocusInterval = 0.5f;
 	if ((self = [super init])) {
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
+		_challengerName = userVO.username;
 		_needsChallenger = NO;
 		_submitAction = 9;
+		_isFirstAppearance = YES;
+		
+		[self _registerNotifications];
+	}
+	
+	return (self);
+}
+
+- (id)initWithSubject:(NSString *)subject {
+	if ((self = [super init])) {
+		_subjectName = subject;
+		_submitAction = 1;
+		_challengerName = @"";
+		_needsChallenger = YES;
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -81,6 +98,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_needsChallenger = NO;
 		_subjectName = subject;
 		_userVO = userVO;
+		_challengerName = userVO.username;
 		_needsChallenger = NO;
 		_submitAction = 9;
 		_isFirstAppearance = YES;
@@ -97,27 +115,11 @@ const CGFloat kFocusInterval = 0.5f;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
 		_submitAction = 4;
+		_challengerName = vo.challengerName;
 		_needsChallenger = NO;
 		_isFirstAppearance = YES;
 		
-		_needsChallenger = NO;
-	}
-	
-	return (self);
-}
-
-- (id)initWithSubject:(NSString *)subject {
-	if ((self = [super init])) {
-		_subjectName = subject;
-		_submitAction = 1;
-		_needsChallenger = YES;
-		_isFirstAppearance = YES;
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_didShowViewController:)
-																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_notificationReceived:) name:nil object:nil];
+		[self _registerNotifications];
 	}
 	
 	return (self);
@@ -137,10 +139,10 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_registerNotifications {
-//	[[NSNotificationCenter defaultCenter] addObserver:self
-//														  selector:@selector(_notificationReceived:)
-//																name:nil
-//															 object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+														  selector:@selector(_notificationReceived:)
+																name:nil
+															 object:nil];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 														  selector:@selector(_previewStarted:)
@@ -204,7 +206,6 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_submitChallenge:(NSMutableDictionary *)params {
-	
 	if (_progressHUD == nil)
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
@@ -247,18 +248,13 @@ const CGFloat kFocusInterval = 0.5f;
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
-				if (_uploadCounter == 3) {
-					if (_imagePicker.parentViewController != nil) {
-						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-							[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-						}];
-						
-					} else {
-						[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				if (_imagePicker.parentViewController != nil) {
+					[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-					}
-				}
+					}];
+					
+				} else
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 			}
 		}
 		
@@ -280,109 +276,105 @@ const CGFloat kFocusInterval = 0.5f;
 
 #pragma mark - View lifecycle
 - (void)loadView {
-	NSLog(@"loadView");
 	[super loadView];
-	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_create", nil)];
-	//[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
 	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:backButton];
+	[self.view addSubview:backButton];
 }
 
 - (void)viewDidLoad {
-	NSLog(@"viewDidLoad");
 	[super viewDidLoad];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-	NSLog(@"viewDidAppear");
 	[super viewDidAppear:animated];
 		
 	if (_isFirstAppearance) {
 		_isFirstAppearance = NO;
 		
-		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
-						
-			_imagePicker = [[UIImagePickerController alloc] init];
-			_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-			_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-			_imagePicker.delegate = self;
-			_imagePicker.allowsEditing = NO;
-			_imagePicker.cameraOverlayView = nil;
-			_imagePicker.navigationBarHidden = YES;
-			_imagePicker.toolbarHidden = YES;
-			_imagePicker.wantsFullScreenLayout = NO;
-			_imagePicker.showsCameraControls = NO;
-			_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-			_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
-			
-			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-				[self _showOverlay];
-			}];
-		
-		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-			_imagePicker = [[UIImagePickerController alloc] init];
-			_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-			_imagePicker.delegate = self;
-			_imagePicker.allowsEditing = NO;
-			_imagePicker.navigationBarHidden = YES;
-			_imagePicker.toolbarHidden = YES;
-			_imagePicker.wantsFullScreenLayout = NO;
-//			_imagePicker.navigationBar.tintColor = [UIColor colorWithRed:0.039 green:0.396 blue:0.647 alpha:1.0];
-			
-			[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-			}];
-		}
+		[self _showCamera];
 	}
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-	NSLog(@"viewDidDisappear");
 	[super viewDidDisappear:animated];
 	
-	_isFirstAppearance = YES;
+	NSLog(@"viewDidDisappear");
+	
+	//_isFirstAppearance = YES;
 }
 
 
 #pragma mark - UI Presentation
 - (void)_removeIris {
-	_cameraIrisImageView.hidden = YES;
-	[_cameraIrisImageView removeFromSuperview];
-	
-	_plCameraIrisAnimationView.hidden = YES;
-	[_plCameraIrisAnimationView removeFromSuperview];
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		_cameraIrisImageView.hidden = YES;
+		[_cameraIrisImageView removeFromSuperview];
+		
+		_plCameraIrisAnimationView.hidden = YES;
+		[_plCameraIrisAnimationView removeFromSuperview];
+	}
 }
 
 - (void)_restoreIris {
-	_cameraIrisImageView.hidden = NO;
-	[self.view insertSubview:_cameraIrisImageView atIndex:1];
-	
-	_plCameraIrisAnimationView.hidden = NO;
-	
-	UIView *view = self.view;
-	while (view.subviews.count && (view = [view.subviews objectAtIndex:2])) {
-		if ([[[view class] description] isEqualToString:@"PLCropOverlay"]) {
-			[view insertSubview:_plCameraIrisAnimationView atIndex:0];
-			_plCameraIrisAnimationView = nil;
-			break;
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		_cameraIrisImageView.hidden = NO;
+		[self.view insertSubview:_cameraIrisImageView atIndex:1];
+		
+		_plCameraIrisAnimationView.hidden = NO;
+		
+		UIView *view = self.view;
+		while (view.subviews.count && (view = [view.subviews objectAtIndex:2])) {
+			if ([[[view class] description] isEqualToString:@"PLCropOverlay"]) {
+				[view insertSubview:_plCameraIrisAnimationView atIndex:0];
+				_plCameraIrisAnimationView = nil;
+				break;
+			}
 		}
 	}
 }
 
+- (void)_showCamera {
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
+		
+		_imagePicker = [[UIImagePickerController alloc] init];
+		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
+		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
+		_imagePicker.delegate = self;
+		_imagePicker.allowsEditing = NO;
+		_imagePicker.cameraOverlayView = nil;
+		_imagePicker.navigationBarHidden = YES;
+		_imagePicker.toolbarHidden = YES;
+		_imagePicker.wantsFullScreenLayout = NO;
+		_imagePicker.showsCameraControls = NO;
+		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+		
+		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+			[self _showOverlay];
+		}];
+		
+	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+		_imagePicker = [[UIImagePickerController alloc] init];
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+		_imagePicker.delegate = self;
+		_imagePicker.allowsEditing = NO;
+		_imagePicker.navigationBarHidden = YES;
+		_imagePicker.toolbarHidden = YES;
+		_imagePicker.wantsFullScreenLayout = NO;
+//		_imagePicker.navigationBar.tintColor = [UIColor colorWithRed:0.039 green:0.396 blue:0.647 alpha:1.0];
+		
+		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+		}];
+	}
+}
+
 - (void)_showOverlay {
-	_challengerName = @"";
-	if (_challengeVO != nil)
-		_challengerName = _challengeVO.creatorName;
-	
-	if (_userVO != nil)
-		_challengerName = _userVO.username;
-	
 	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
 	_cameraOverlayView.delegate = self;
 	
@@ -427,6 +419,9 @@ const CGFloat kFocusInterval = 0.5f;
 #pragma mark - Notifications
 - (void)_notificationReceived:(NSNotification *)notification {
 	//NSLog(@"_notificationReceived:[%@]", [notification name]);
+	
+//	if ([[notification name] isEqualToString:@"UINavigationControllerDidShowViewControllerNotification"])
+//		_isFirstAppearance = YES;
 }
 
 
@@ -439,14 +434,107 @@ const CGFloat kFocusInterval = 0.5f;
 
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	NSLog(@"navigationController:[%@] willShowViewController:[%@]", [navigationController description], [viewController description]);
+	
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 	
-	_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
-	_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
+		_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
+	}
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	NSLog(@"navigationController:[%@] didShowViewController:[%@]", [navigationController description], [viewController description]);
+	
 	[self _removeIris];
+}
+
+
+#pragma mark - ImagePicker Delegates
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+	if (_focusTimer != nil) {
+		[_focusTimer invalidate];
+		_focusTimer = nil;
+	}
+	
+	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+	
+	if (image.imageOrientation != 0)
+		image = [image fixOrientation];
+	
+	NSLog(@"IMAGE:[%@]", NSStringFromCGSize(image.size));
+	
+	// image is wider than tall (800x600)
+	if (image.size.width > image.size.height) {
+		float offset = (image.size.width - image.size.height) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:image toRect:CGRectMake(offset, 0.0, image.size.height, image.size.height)];
+		
+		// image is taller than wide (600x800)
+	} else if (image.size.width < image.size.height) {
+		float offset = (image.size.height - image.size.width) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, offset, image.size.width, image.size.width)];
+		
+		// image is square
+	} else {
+		_challangeImage = image;
+	}
+	
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+		//		[self dismissViewControllerAnimated:YES completion:^(void) {
+		//			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename previewImage:_challangeImage userVO:_userVO challengeVO:_challengeVO] animated:NO];//[_cameraOverlayView showPreviewImage:image asMirrored:NO];
+		//		}];
+		
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+			//[_cameraOverlayView showPreviewImage:_challangeImage asMirrored:NO];
+			//[self.view addSubview:[[UIImageView alloc] initWithImage:image]];
+			
+			//[self _makePreviewWithImage:_challangeImage];
+			
+			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withImage:_challangeImage];
+			_previewView.delegate = self;
+			[self.view addSubview:_previewView];
+		}];
+		
+	} else {
+		
+		[self dismissViewControllerAnimated:NO completion:^(void) {
+			//[_cameraOverlayView showPreviewImage:_challangeImage asMirrored:(_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)];
+			
+			if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
+				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withMirroredImage:_challangeImage];
+			
+			else
+				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withImage:_challangeImage];
+			
+			_previewView.delegate = self;
+			[self.view addSubview:_previewView];
+		}];
+	}
+	
+	[self _uploadPhoto:_challangeImage];
+	
+	
+	//	[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename previewImage:_challangeImage userVO:_userVO challengeVO:_challengeVO] animated:NO];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+		_imagePicker.cameraOverlayView = nil;
+		_imagePicker.navigationBarHidden = YES;
+		_imagePicker.toolbarHidden = YES;
+		_imagePicker.wantsFullScreenLayout = NO;
+		_imagePicker.showsCameraControls = NO;
+		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
+		
+		[self _showOverlay];
+		
+	} else {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+	}
 }
 
 
@@ -517,7 +605,7 @@ const CGFloat kFocusInterval = 0.5f;
 	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
 	[params setObject:[NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 7 : _submitAction] forKey:@"action"];
 	[params setObject:_subjectName forKey:@"subject"];
-	[params setObject:_challengerName forKey:@"username"];
+	[params setObject:(_submitAction != 1) ? _challengerName : @"" forKey:@"username"];
 	
 	if (_challengeVO != nil)
 		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
@@ -552,75 +640,34 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 
-#pragma mark - ImagePicker Delegates
--(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-	if (_focusTimer != nil) {
-		[_focusTimer invalidate];
-		_focusTimer = nil;
-	}
-	
-	//_subjectName = _cameraOverlayView.subjectName;
-	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-	
-	NSLog(@"ORIENTATION:[%d]", image.imageOrientation);
-	if (image.imageOrientation != 0)
-		image = [image fixOrientation];
-		
-	// image is wider than tall (800x600)
-	if (image.size.width > image.size.height) {
-//		float offset = image.size.height * (image.size.height / image.size.width);
-//		image = [HONImagingDepictor cropImage:image toRect:CGRectMake(offset * 0.5, 0.0, offset, image.size.height)];
-		
-		float offset = (image.size.width - image.size.height) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:image toRect:CGRectMake(offset, 0.0, image.size.height, image.size.height)];
-	
-		// image is taller than wide (600x800)
-	} else if (image.size.width < image.size.height) {
-		float offset = (image.size.height - image.size.width) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, offset, image.size.width, image.size.width)];
-	
-		// image is square
-	} else {
-		_challangeImage = image;
-	}
-	
-//	if (image.size.height / image.size.width == 1.5) {
-//		float offset = image.size.height - (image.size.width * kSnapRatio);
-//		image = [HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, offset * 0.5, image.size.width, (image.size.width * kSnapRatio))];
-//	}
-	 
-//	_challangeImage = image;
-	
-	[self _uploadPhoto:_challangeImage];
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[self dismissViewControllerAnimated:YES completion:nil];
-	[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename previewImage:_challangeImage userVO:_userVO challengeVO:_challengeVO] animated:NO];
+#pragma mark - PreviewView Delegates
+- (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
+	NSLog(@"previewViewBackToCamera");
+	[self _showCamera];
 }
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.cameraOverlayView = nil;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = NO;
-		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
-		
-		[self _showOverlay];
-		
-	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		//[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-	}
+- (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView withSubject:(NSString *)subject {
+	NSLog(@"previewViewSubmit withSubject:[%@]",subject);
+	_subjectName = subject;
+	
+	NSMutableDictionary *params = [NSMutableDictionary dictionary];
+	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
+	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
+	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
+	[params setObject:_subjectName forKey:@"subject"];
+	[params setObject:_challengerName forKey:@"username"];
+	
+	if (_challengeVO != nil)
+		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+	
+	if (_fbID != nil)
+		[params setObject:_fbID forKey:@"fbID"];
+	
+	NSLog(@"PARAMS:[%@]", params);
+	
+	[self _submitChallenge:params];
 }
-
-//- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-//	navigationController.navigationBar.barStyle = UIBarStyleDefault;
-//}
 
 
 #pragma mark - AWS Delegates
@@ -631,6 +678,9 @@ const CGFloat kFocusInterval = 0.5f;
 	if (_uploadCounter == 3) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
+		
+		//[_cameraOverlayView enablePreview];
+		[_previewView showKeyboard];
 	}
 }
 
