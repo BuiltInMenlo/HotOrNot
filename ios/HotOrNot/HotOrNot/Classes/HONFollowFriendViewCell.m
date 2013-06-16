@@ -11,7 +11,8 @@
 #import "HONUserVO.h"
 
 @interface HONFollowFriendViewCell ()
-
+@property (nonatomic, strong) UIButton *followButton;
+@property (nonatomic, strong) UIButton *checkButton;
 @end
 
 @implementation HONFollowFriendViewCell
@@ -27,12 +28,20 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
 		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
-		UIButton *followButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		followButton.frame = CGRectMake(248.0, 9.0, 64.0, 44.0);
-		[followButton setBackgroundImage:[UIImage imageNamed:@"addFriend_nonActive"] forState:UIControlStateNormal];
-		[followButton setBackgroundImage:[UIImage imageNamed:@"addFriend_Active"] forState:UIControlStateHighlighted];
-		[followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:followButton];
+		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_checkButton.frame = CGRectMake(256.0, 7.0, 48.0, 48.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"selectedRowCheck"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"selectedRowCheck"] forState:UIControlStateHighlighted];
+		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
+		_checkButton.hidden = YES;
+		[self addSubview:_checkButton];
+		
+		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_followButton.frame = CGRectMake(248.0, 9.0, 64.0, 44.0);
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"addFriend_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"addFriend_Active"] forState:UIControlStateHighlighted];
+		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_followButton];
 	}
 	
 	return (self);
@@ -45,7 +54,17 @@
 
 #pragma mark - Navigation
 - (void)_goFollow {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"FOLLOW_FRIEND" object:_userVO];
+	_followButton.hidden = YES;
+	_checkButton.hidden = NO;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_FOLLOW_FRIEND" object:_userVO];
+}
+
+- (void)_goUnfollow {
+	_followButton.hidden = NO;
+	_checkButton.hidden = YES;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"DROP_FOLLOW_FRIEND" object:_userVO];
 }
 
 @end

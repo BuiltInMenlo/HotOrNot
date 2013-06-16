@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface HONAddChallengersViewController : UIViewController
-
+- (id)initWithChallengersSelected:(NSArray *)challengers;
 @end

@@ -170,7 +170,7 @@
 	[_subjectTextField resignFirstResponder];
 	[self _dropKeyboardAndRemove:YES];
 	
-	[self.delegate previewViewSubmit:self withSubject:_subjectName];
+	[self.delegate previewViewSubmit:self];
 }
 
 - (void)_onTextDoneEditing:(id)sender {
@@ -228,11 +228,6 @@
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-	[[Mixpanel sharedInstance] track:@"Camera Preview - Edit Hashtag"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 textField.text, @"subject", nil]];
-	
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 																	name:@"UITextFieldTextDidChangeNotification"
 																 object:textField];
@@ -251,6 +246,7 @@
 		_subjectName = textField.text;
 	}
 	
+	[self.delegate previewView:self changeSubject:_subjectName];
 	[self _dropKeyboardAndRemove:NO];
 }
 

@@ -34,8 +34,10 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_followFriend:) name:@"FOLLOW_FRIEND" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteContact:) name:@"INVITE_CONTACT" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addFollowFriend:) name:@"ADD_FOLLOW_FRIEND" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dropFollowFriend:) name:@"DROP_FOLLOW_FRIEND" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addContactInvite:) name:@"ADD_CONTACT_INVITE" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dropContactInvite:) name:@"DROP_CONTACT_INVITE" object:nil];
 	}
 	
 	return (self);
@@ -268,22 +270,43 @@
 
 
 #pragma mark - Notifications
-- (void)_followFriend:(NSNotification *)notification {
+- (void)_addFollowFriend:(NSNotification *)notification {
 	HONUserVO *vo = (HONUserVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Add Friends - Follow Friend"
+	[[Mixpanel sharedInstance] track:@"Add Friends - Select Following"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"friend", nil]];
 }
 
-- (void)_inviteContact:(NSNotification *)notification {
+- (void)_addContactInvite:(NSNotification *)notification {
 	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
 	
-	[[Mixpanel sharedInstance] track:@"Add Friends - Invite Contact"
+	[[Mixpanel sharedInstance] track:@"Add Friends - Select Contact"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 vo.fullName, @"contact", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
+	
+	_smsRecipients = vo.mobileNumber;
+	[self _sendContactsSMS];
+}
+
+- (void)_dropFollowFriend:(NSNotification *)notification {
+	HONUserVO *vo = (HONUserVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Add Friends - Deselect Following"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"friend", nil]];
+}
+
+- (void)_dropContactInvite:(NSNotification *)notification {
+	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
+	
+	[[Mixpanel sharedInstance] track:@"Add Friends - Deselect Contact"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
 	
 	_smsRecipients = vo.mobileNumber;
 	[self _sendContactsSMS];

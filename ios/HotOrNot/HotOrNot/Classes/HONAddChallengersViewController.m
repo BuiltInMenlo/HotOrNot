@@ -18,9 +18,11 @@
 
 
 @interface HONAddChallengersViewController () <UITableViewDataSource, UITableViewDelegate>
-@property(nonatomic, strong) NSMutableArray *contacts;
-@property(nonatomic, strong) NSMutableArray *following;
-@property(nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *contacts;
+@property (nonatomic, strong) NSMutableArray *following;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *selectedContacts;
+@property (nonatomic, strong) NSMutableArray *selectedFollowing;
 @end
 
 
@@ -28,7 +30,17 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		
+		_selectedContacts = [NSMutableArray array];
+		_selectedFollowing = [NSMutableArray array];
+	}
+	
+	return (self);
+}
+
+- (id)initWithChallengersSelected:(NSArray *)challengers {
+	if ((self = [super init])) {
+		_selectedContacts = [NSMutableArray array];
+		_selectedFollowing = [challengers copy];
 	}
 	
 	return (self);
@@ -147,12 +159,12 @@
 	self.view.backgroundColor = [HONAppDelegate honGreenColor];
 	
 	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonGreen_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonGreen_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:cancelButton];
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonGreen_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonGreen_Active"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:doneButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - kNavBarHeaderHeight) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
@@ -216,12 +228,66 @@
 
 
 #pragma mark - Navigation
-- (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Add Friends - Cancel"
+- (void)_goDone {
+	[[Mixpanel sharedInstance] track:@"Add Challengers - Done"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)_goFollowFriends {
+	[[Mixpanel sharedInstance] track:@"Add Challengers - Select All Following"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+}
+
+- (void)_goAllContacts {
+	[[Mixpanel sharedInstance] track:@"Add Challengers - Select All Contacts"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+}
+
+
+#pragma mark - Notifications
+- (void)_addFollowFriend:(NSNotification *)notification {
+	HONUserVO *vo = (HONUserVO *)[notification object];
+	[_selectedFollowing addObject:[NSNumber numberWithInt:vo.userID]];
+	
+	[[Mixpanel sharedInstance] track:@"Add Challengers - Select Following"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], nil]];
+}
+
+- (void)_addInviteContact:(NSNotification *)notification {
+	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
+	[_selectedContacts addObject:vo.mobileNumber];
+	
+	[[Mixpanel sharedInstance] track:@"Add Challengers - Select Contact"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
+}
+
+- (void)_dropFollowFriend:(NSNotification *)notification {
+	HONUserVO *vo = (HONUserVO *)[notification object];
+	[_selectedFollowing removeObjectIdenticalTo:[NSNumber numberWithInt:vo.userID]];
+	
+	[[Mixpanel sharedInstance] track:@"Add Challengers - Deselect Following"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], nil]];
+}
+
+- (void)_dropInviteContact:(NSNotification *)notification {
+	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
+	[_selectedContacts removeObjectIdenticalTo:vo.mobileNumber];
+	
+	[[Mixpanel sharedInstance] track:@"Add Challengers - Deselect Contact"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
 }
 
 
@@ -249,7 +315,7 @@
 	inviteButton.frame = CGRectMake(254.0, 3.0, 54.0, 24.0);
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_nonActive"] forState:UIControlStateNormal];
 	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_Active"] forState:UIControlStateHighlighted];
-	[inviteButton addTarget:self action:(section == 0) ? @selector(_goFollowFriends) : @selector(_goInviteAllContacts) forControlEvents:UIControlEventTouchUpInside];
+	[inviteButton addTarget:self action:(section == 0) ? @selector(_goFollowFriends) : @selector(_goAllContacts) forControlEvents:UIControlEventTouchUpInside];
 	inviteButton.hidden = ((section == 0 && [_following count] == 0) || (section == 1 && [_contacts count] == 0));
 	[headerImageView addSubview:inviteButton];
 	
@@ -296,7 +362,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	//[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 }
 
 

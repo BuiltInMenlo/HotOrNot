@@ -19,5 +19,6 @@
 
 @protocol HONCreateChallengePreviewViewDelegate
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView;
-- (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView withSubject:(NSString *)subject;
+- (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject;
+- (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView;
 @end

@@ -9,6 +9,11 @@
 #import "HONAddContactViewCell.h"
 #import "HONAppDelegate.h"
 
+@interface HONAddContactViewCell ()
+@property (nonatomic, strong) UIButton *checkButton;
+@property (nonatomic, strong) UIButton *inviteButton;
+@end
+
 @implementation HONAddContactViewCell
 @synthesize userVO = _userVO;
 
@@ -22,12 +27,20 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
 		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
-		UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		inviteButton.frame = CGRectMake(248.0, 9.0, 64.0, 44.0);
-		[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriend_nonActive"] forState:UIControlStateNormal];
-		[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriend_Active"] forState:UIControlStateHighlighted];
-		[inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:inviteButton];
+		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_checkButton.frame = CGRectMake(256.0, 7.0, 48.0, 48.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"selectedRowCheck"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"selectedRowCheck"] forState:UIControlStateHighlighted];
+		[_checkButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
+		_checkButton.hidden = YES;
+		[self addSubview:_checkButton];
+		
+		_inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_inviteButton.frame = CGRectMake(248.0, 9.0, 64.0, 44.0);
+		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriend_nonActive"] forState:UIControlStateNormal];
+		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteFriend_Active"] forState:UIControlStateHighlighted];
+		[_inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_inviteButton];
 	}
 	
 	return (self);
@@ -40,7 +53,6 @@
 	nameLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
 	nameLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	//nameLabel.text = [NSString stringWithFormat:@"%@ (%@)", _contactUserVO.fullName, (_contactUserVO.isSMSAvailable) ? @"SMS" : @"EMAIL"];
 	nameLabel.text = _userVO.fullName;
 	[self addSubview:nameLabel];
 	
@@ -48,7 +60,6 @@
 	contactLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
 	contactLabel.textColor = [HONAppDelegate honGrey518Color];
 	contactLabel.backgroundColor = [UIColor clearColor];
-	//nameLabel.text = [NSString stringWithFormat:@"%@ (%@)", _contactUserVO.fullName, (_contactUserVO.isSMSAvailable) ? @"SMS" : @"EMAIL"];
 	contactLabel.text = (_userVO.isSMSAvailable) ? _userVO.mobileNumber : _userVO.email;
 	[self addSubview:contactLabel];
 }
@@ -56,7 +67,17 @@
 
 #pragma mark - Navigation
 - (void)_goInvite {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"INVITE_CONTACT" object:_userVO];
+	_checkButton.hidden = NO;
+	_inviteButton.hidden = YES;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_CONTACT_INVITE" object:_userVO];
+}
+
+- (void)_goUninvite {
+	_checkButton.hidden = YES;
+	_inviteButton.hidden = NO;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"DROP_CONTACT_INVITE" object:_userVO];
 }
 
 @end

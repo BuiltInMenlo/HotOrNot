@@ -592,45 +592,6 @@ const CGFloat kFocusInterval = 0.5f;
 	}];
 }
 
-- (void)cameraOverlayViewSubmitChallenge:(HONCameraOverlayView *)cameraOverlayView {
-	NSLog(@"cameraOverlayViewSubmitChallenge [%@]", _challengerName);
-	
-	[[Mixpanel sharedInstance] track:@"Create Snap - Submit"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	NSMutableDictionary *params = [NSMutableDictionary dictionary];
-	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
-	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
-	[params setObject:[NSString stringWithFormat:@"%d", (_challengeVO == nil) ? 7 : _submitAction] forKey:@"action"];
-	[params setObject:_subjectName forKey:@"subject"];
-	[params setObject:(_submitAction != 1) ? _challengerName : @"" forKey:@"username"];
-	
-	if (_challengeVO != nil)
-		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-	
-	if (_fbID != nil)
-		[params setObject:_fbID forKey:@"fbID"];
-	
-	[self _submitChallenge:params];
-}
-
-- (void)cameraOverlayViewChangeSubject:(HONCameraOverlayView *)cameraOverlayView subject:(NSString *)subjectName {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Edit Hashtag"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  subjectName, @"subject", nil]];
-	
-	_subjectName = subjectName;
-}
-
-- (void)cameraOverlayViewPreviewBack:(HONCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Back to Camera"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-}
-
 - (void)cameraOverlayViewAddChallengers:(HONCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Snap - Add Friends"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -640,15 +601,24 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 
+
 #pragma mark - PreviewView Delegates
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
-	NSLog(@"previewViewBackToCamera");
 	[self _showCamera];
 }
 
-- (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView withSubject:(NSString *)subject {
-	NSLog(@"previewViewSubmit withSubject:[%@]",subject);
+- (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
+	NSLog(@"previewView:changeSubject:[%@]", subject);
 	_subjectName = subject;
+	
+	[[Mixpanel sharedInstance] track:@"Camera Preview - Change Hashtag"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 _subjectName, @"subject", nil]];
+}
+
+- (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
+	NSLog(@"previewViewSubmit");
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
