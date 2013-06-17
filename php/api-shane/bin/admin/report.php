@@ -98,20 +98,22 @@ $report = $r->getReportData();
         <table cellpadding="0" cellspacing="0" border="0" class="display" id="example" style="width:980px">
         	<thead>
         		<tr>
-        			<th>Total</th>
+        			<th>Overall</th>
         			<?php $networks = get_object_vars( $report->totals->byNetwork ); ?>
         			<?php foreach( $networks as $network => $data ) {?>
         			<th style="text-align: center;"><?php echo $network;?></th>
         			<?php }?>
+        			<th style="text-align: center;">Total</th>
         		</tr>
         	</thead>
         	<tbody>
         		<tr class="gradeA">
-        			<td><?php echo $report->totals->total; ?></td>
+        			<td>Overall</td>
         			<?php $networks = get_object_vars( $report->totals->byNetwork ); ?>
         			<?php foreach( $networks as $network => $data ) {?>
         			<td class="center"><?php echo $report->totals->byNetwork->$network->total;?></td>
         			<?php }?>
+        			<td><?php echo $report->totals->total; ?></td>
         		</tr>
         	</tbody>
         </table>
@@ -128,16 +130,21 @@ $report = $r->getReportData();
         			<?php foreach( $networks as $network => $data ) {?>
         			<th class="center"><?php echo $network;?></th>
         			<?php }?>
+        			<th class="center">Total</th>
         		</tr>
         	</thead>
         	<tbody>
         		<tr class="gradeA">
+        			<?php $total = 0; ?>
         			<?php foreach( $report->totals->byMonth as $month => $monthData ) {?>
             			<td><?php echo $month; ?></td>
             			<?php $networks = get_object_vars( $report->totals->byMonth->$month->byNetwork ); ?>
-            			<?php foreach( $networks as $network => $data ) {?>
+            			<?php foreach( $networks as $network => $data ) {
+            			       $total += $report->totals->byMonth->$month->byNetwork->$network;
+            			?>
             			<td class="center"><?php echo $report->totals->byMonth->$month->byNetwork->$network;?></td>
             			<?php }?>
+	        			<td class="center"><?php echo $total;?></td>
         			<?php }?>
         		</tr>
         	</tbody>
@@ -150,22 +157,25 @@ $report = $r->getReportData();
         <table cellpadding="0" cellspacing="0" border="0" class="display" id="example3" style="width:980px">
         	<thead>
         		<tr>
-        			<th>Month</th>
+        			<th>Day</th>
         			<?php $networks = get_object_vars( $report->totals->byNetwork ); ?>
         			<?php foreach( $networks as $network => $data ) {?>
         			<th class="center"><?php echo $network;?></th>
         			<?php }?>
+        			<th class="center">Total</th>
         		</tr>
         	</thead>
         	<tbody>
     			<?php foreach( $report->totals->byDay as $day => $dayData ) {?>
 	        		<tr class="gradeA">
+            			<?php $total = 0; ?>
             			<td><?php echo $day; ?></td>
             			<?php foreach( $networks as $network => $data ) {
-            			    $total = isset( $report->totals->byDay->$day->byNetwork->$network )?$report->totals->byDay->$day->byNetwork->$network:0;
+            			    $total += $networkTotal = isset( $report->totals->byDay->$day->byNetwork->$network )?$report->totals->byDay->$day->byNetwork->$network:0;
             			?>
-            			<td class="center"><?php echo $total;?></td>
+            			<td class="center"><?php echo $networkTotal;?></td>
             			<?php }?>
+            			<td class="center"><?php echo $total;?></td>
 	        		</tr>
     			<?php }?>
         	</tbody>
@@ -183,19 +193,22 @@ $report = $r->getReportData();
         			<?php foreach( $networks as $network => $data ) {?>
         			<th class="center"><?php echo $network;?></th>
         			<?php }?>
+        			<th class="center">Total</th>
         		</tr>
         	</thead>
         	<tbody>
     			<?php foreach( $report->personaTotals as $persona => $personaData ) {?>
 	        		<tr class="gradeA">
+            			<?php $total = 0; ?>
             			<td><?php echo $persona; ?></td>
             			<?php foreach( $networks as $network => $data ) {
-            			    $total = isset( $report->personaTotals->$persona->byNetwork->$network->total )
+            			    $total += $networkTotal = isset( $report->personaTotals->$persona->byNetwork->$network->total )
             			        ?  $report->personaTotals->$persona->byNetwork->$network->total
             			        : 0;
             			?>
-            			<td class="center"><?php echo $total;?></td>
+            			<td class="center"><?php echo $networkTotal;?></td>
             			<?php }?>
+            			<td class="center"><?php echo $total;?></td>
 	        		</tr>
     			<?php }?>
         	</tbody>
