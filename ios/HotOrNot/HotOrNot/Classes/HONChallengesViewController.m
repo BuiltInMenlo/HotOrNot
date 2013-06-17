@@ -472,13 +472,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_showFindFriends:(NSNotification *)notification {
-	if (rand() % 100 < 50) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteNetworkViewController alloc] init]];
+	if (rand() % 100 > 0) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyMobileViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 		
 	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyMobileViewController alloc] init]];
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteNetworkViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}

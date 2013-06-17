@@ -32,7 +32,7 @@
 #endif
 
 #ifdef DEBUG
-#define DebugLog(...) NSLog(__VA_ARGS__)
+#define DebugLog(...)//#define DebugLog(...) NSLog(__VA_ARGS__)
 #else
 #define DebugLog(...)
 #endif

@@ -114,7 +114,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
 		_submitAction = 4;
-		_challengerName = vo.challengerName;
+		_challengerName = _challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;;
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -613,7 +613,6 @@ const CGFloat kFocusInterval = 0.5f;
 			for (HONUserVO *dropVO in following) {
 				if (vo.userID == dropVO.userID) {
 					[removeVOs addObject:vo];
-					continue;
 				}
 			}
 		}

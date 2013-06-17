@@ -23,6 +23,9 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *selectedContacts;
 @property (nonatomic, strong) NSMutableArray *selectedFollowing;
+@property (nonatomic, strong) NSMutableArray *followingCells;
+@property (nonatomic, strong) NSMutableArray *contactCells;
+@property (nonatomic, strong) NSMutableArray *cellArray;
 @end
 
 @implementation HONAddChallengersViewController
@@ -30,6 +33,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_cellArray = [[NSMutableArray alloc] init];
+		
+		
 		_selectedContacts = [NSMutableArray array];
 		_selectedFollowing = [NSMutableArray array];
 		
@@ -75,8 +81,10 @@
 
 #pragma mark - Data Calls
 - (void)_retreiveFollowing {
+	_following = [NSMutableArray array];
+	_followingCells = [NSMutableArray array];
+
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action", // 11 on Users.php actual following // 4 on Search is past challengers
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -92,7 +100,7 @@
 																					 sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			NSLog(@"HONAddChallengersViewController AFNetworking: %@", parsedUsers);
 			
-			_following = [NSMutableArray array];
+			
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				[_following addObject:vo];
@@ -114,9 +122,9 @@
 #pragma mark - Device Functions
 - (void)_retrieveContacts {
 	_contacts = [NSMutableArray array];
+	_contactCells = [NSMutableArray array];
 	
 	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-	
 	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
 	CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
 	
@@ -176,6 +184,7 @@
 	
 	self.view.backgroundColor = [HONAppDelegate honGreenColor];
 	
+	//_cellDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSMutableArray array], @"followers", [NSMutableArray array], @"contacts", nil];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
@@ -259,7 +268,15 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self.delegate addChallengers:self selectFollowing:[_following copy] forAppending:YES];
+	
+	NSLog(@"[_selectedFollowing count] :: [_following count] :: [%d][%d]", [_selectedFollowing count], [_following count]);
+	BOOL isDeselecting = ([_selectedFollowing count] >= [_following count]);
+	
+	for (HONFollowFriendViewCell *cell in _followingCells)
+		[cell toggleSelected:!isDeselecting];
+	
+	_selectedFollowing = [_following mutableCopy];
+	[self.delegate addChallengers:self selectFollowing:[_selectedFollowing copy] forAppending:!isDeselecting];
 }
 
 - (void)_goAllContacts {
@@ -267,7 +284,14 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self.delegate addChallengers:self selectFollowing:[_contacts copy] forAppending:YES];
+	NSLog(@"[_selectedContacts count] :: [_contacts count] :: [%d][%d]", [_selectedContacts count], [_contacts count]);
+	BOOL isDeselecting = ([_selectedFollowing count] >= [_following count]);
+	
+	for (HONAddContactViewCell *cell in _contactCells)
+		[cell toggleSelected:!isDeselecting];
+	
+	_selectedContacts = [_contacts mutableCopy];
+	[self.delegate addChallengers:self selectFollowing:[_selectedContacts copy] forAppending:!isDeselecting];
 }
 
 
@@ -293,7 +317,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
 	
-	[self.delegate addChallengers:self selectContacts:[NSArray arrayWithObject:vo] forAppending:YES];
+	[self.delegate addChallengers:self selectFollowing:[NSArray arrayWithObject:vo] forAppending:YES];
 }
 
 - (void)_dropFollowFriend:(NSNotification *)notification {
@@ -366,8 +390,10 @@
 					break;
 				}
 			}
+			 //NSDictionary *followCellsDict = [NSDictionary dictionaryWithObject:cellArray forKey:@"followers"];
 		}
 		
+		[_followingCells addObject:cell];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
 		
@@ -386,6 +412,7 @@
 			}
 		}
 		
+		[_contactCells addObject:cell];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
 	}

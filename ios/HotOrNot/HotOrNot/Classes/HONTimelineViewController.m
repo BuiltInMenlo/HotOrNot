@@ -527,20 +527,17 @@
 	[[Mixpanel sharedInstance] track:@"Timeline - Banner"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
 	
-//	if (rand() % 100 < 50) {
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteNetworkViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:YES completion:nil];
-//		
-//	} else {
-//		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONFindFriendsViewController alloc] init]];
-//		[navigationController setNavigationBarHidden:YES];
-//		[self presentViewController:navigationController animated:YES completion:nil];
-//	}
+	if (arc4random() % 100 > 0) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyMobileViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+		
+	} else {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)_goLocaleRestriction {

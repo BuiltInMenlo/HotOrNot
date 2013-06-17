@@ -37,7 +37,7 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username {
 	if ((self = [super initWithFrame:frame])) {
 		_usernames = [NSArray arrayWithObject:username];
-		_username = [_usernames objectAtIndex:0];
+		_username = username;//[_usernames objectAtIndex:0];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closeOptions:) name:@"CLOSE_OPTIONS" object:nil];
 		
@@ -66,14 +66,15 @@
 		
 		NSString *usernames = @"";
 		for (NSString *username in _usernames)
-			usernames = [usernames stringByAppendingFormat:@"%@, ", username];
+			usernames = [usernames stringByAppendingFormat:@"%@, ", _username];
 		
+		NSLog(@"usernames:[%@]", usernames);
 		_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 210.0, 20.0)];
 		_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 		_usernamesLabel.textColor = [UIColor whiteColor];
 		_usernamesLabel.backgroundColor = [UIColor clearColor];
 		_usernamesLabel.text = [usernames substringToIndex:[usernames length] - 2];
-		//_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
+		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:_usernamesLabel];
 		
 //		int opsOffset = ([_username length] > 0) ? 40 : ([HONAppDelegate isRetina5]) ? 55 : 0;
