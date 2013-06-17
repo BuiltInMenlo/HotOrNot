@@ -67,7 +67,7 @@ const CGFloat kSnapMediumDim = 73.0f;
 const CGFloat kSnapLargeDim = 210.0f;
 const CGFloat kAvatarDim = 200.0;
 
-const BOOL kIsImageCacheEnabled = NO;
+const BOOL kIsImageCacheEnabled = YES;
 
 @interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;

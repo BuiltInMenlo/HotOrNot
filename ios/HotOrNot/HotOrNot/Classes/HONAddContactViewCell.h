@@ -13,5 +13,6 @@
 @interface HONAddContactViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+- (void)toggleSelected:(BOOL)isSelected;
 @property (nonatomic, retain) HONContactUserVO *userVO;
 @end

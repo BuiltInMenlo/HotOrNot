@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UIImageView+AFNetworking.h"
+
 #import "HONFollowFriendViewCell.h"
 #import "HONAppDelegate.h"
 #import "HONUserVO.h"
@@ -49,6 +51,22 @@
 
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
+	
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
+	[self addSubview:avatarImageView];
+	
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 24.0, 180.0, 18.0)];
+	nameLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
+	nameLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	nameLabel.backgroundColor = [UIColor clearColor];
+	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
+	[self addSubview:nameLabel];
+}
+
+- (void)toggleSelected:(BOOL)isSelected {
+	_followButton.hidden = isSelected;
+	_checkButton.hidden = !isSelected;
 }
 
 

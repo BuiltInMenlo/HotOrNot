@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol HONAddChallengersDelegate;
 @interface HONAddChallengersViewController : UIViewController
-- (id)initWithChallengersSelected:(NSArray *)challengers;
+- (id)initWithFollowersSelected:(NSArray *)followers contactsSelected:(NSArray *)contacts;
+
+@property(nonatomic, assign) id <HONAddChallengersDelegate> delegate;
+@end
+
+@protocol HONAddChallengersDelegate
+- (void)addChallengers:(HONAddChallengersViewController *)viewController selectFollowing:(NSArray *)following forAppending:(BOOL)isAppend;
+- (void)addChallengers:(HONAddChallengersViewController *)viewController selectContacts:(NSArray *)contacts forAppending:(BOOL)isAppend;
 @end

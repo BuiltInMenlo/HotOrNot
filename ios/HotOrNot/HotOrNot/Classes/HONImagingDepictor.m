@@ -15,7 +15,7 @@
 @implementation HONImagingDepictor
 
 + (UIImage *)createImageFromView:(UIView *)view {
-	UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.isOpaque, 0.0f);
+	UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0f);
 	[view.layer renderInContext:UIGraphicsGetCurrentContext()];
 	
 	UIImage *viewImage = UIGraphicsGetImageFromCurrentImageContext();

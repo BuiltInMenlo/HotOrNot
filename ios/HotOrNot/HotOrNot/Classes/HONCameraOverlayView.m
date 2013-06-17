@@ -14,18 +14,20 @@
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 #import "HONCreateChallengeOptionsView.h"
-
+#import "HONUserVO.h"
+#import "HONContactUserVO.h"
 
 @interface HONCameraOverlayView()
-@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) HONCreateChallengeOptionsView *optionsView;
 @property (nonatomic, strong) UIView *controlsHolderView;
 @property (nonatomic, strong) UIButton *addFriendsButton;
+@property (nonatomic, strong) UILabel *usernamesLabel;
 @property (nonatomic, strong) UIButton *cancelButton;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) UIButton *submitButton;
+@property (nonatomic, strong) NSArray *usernames;
 @property (nonatomic, strong) NSString *username;
 @end
 
@@ -34,7 +36,8 @@
 
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username {
 	if ((self = [super initWithFrame:frame])) {
-		_username = username;
+		_usernames = [NSArray arrayWithObject:username];
+		_username = [_usernames objectAtIndex:0];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closeOptions:) name:@"CLOSE_OPTIONS" object:nil];
 		
@@ -43,19 +46,9 @@
 		_irisImageView.alpha = 0.0;
 		//[self addSubview:_irisImageView];
 		
-		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 568.0 : 480.0)];
-		//_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? ([_username length] > 0) ? @"cameraExperience_Overlay-568h" : @"FUEcameraViewBackground-568h" : ([_username length] > 0) ? @"cameraExperience_Overlay" : @"FUEcameraViewBackground"];
-		_bgImageView.userInteractionEnabled = YES;
-		[self addSubview:_bgImageView];
-		
-		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
+		_controlsHolderView = [[UIView alloc] initWithFrame:self.frame];
 		_controlsHolderView.userInteractionEnabled = YES;
-		[_bgImageView addSubview:_controlsHolderView];
-		
-		UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		subjectButton.frame = CGRectMake(0.0, 12.0, 320.0, 24.0);
-		[subjectButton addTarget:self action:@selector(_goEditSubject) forControlEvents:UIControlEventTouchUpInside];
-		//[_headerView addSubview:subjectButton];
+		[self addSubview:_controlsHolderView];
 		
 		_addFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_addFriendsButton.frame = CGRectMake(5.0, 5.0, 44.0, 44.0);
@@ -71,12 +64,17 @@
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_cancelButton];
 		
-		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 210.0, 20.0)];
-		usernameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
-		usernameLabel.textColor = [UIColor whiteColor];
-		usernameLabel.backgroundColor = [UIColor clearColor];
-		usernameLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
-		[self addSubview:usernameLabel];
+		NSString *usernames = @"";
+		for (NSString *username in _usernames)
+			usernames = [usernames stringByAppendingFormat:@"%@, ", username];
+		
+		_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 210.0, 20.0)];
+		_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
+		_usernamesLabel.textColor = [UIColor whiteColor];
+		_usernamesLabel.backgroundColor = [UIColor clearColor];
+		_usernamesLabel.text = [usernames substringToIndex:[usernames length] - 2];
+		//_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
+		[self addSubview:_usernamesLabel];
 		
 //		int opsOffset = ([_username length] > 0) ? 40 : ([HONAppDelegate isRetina5]) ? 55 : 0;
 //		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -120,6 +118,22 @@
 	return (self);
 }
 
+
+#pragma mark - Public API
+- (void)updateChallengers:(NSArray *)challengers {
+	_usernames = challengers;
+	
+	NSString *usernames = @"";
+	for (NSString *username in _usernames)
+		usernames = [usernames stringByAppendingFormat:@"%@, ", username];
+	
+	
+	if ([usernames length] == 0)
+		_usernamesLabel.text = @"";
+		
+	else
+		_usernamesLabel.text = [usernames substringToIndex:[usernames length] - 2];
+}
 
 #pragma mark - UI Presentation
 - (void)_animateShutter {

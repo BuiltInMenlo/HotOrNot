@@ -65,6 +65,14 @@
 }
 
 
+- (void)toggleSelected:(BOOL)isSelected {
+	NSLog(@"toggleSelected:isSelected %d", isSelected);
+	
+	_inviteButton.hidden = isSelected;
+	_checkButton.hidden = !isSelected;
+}
+
+
 #pragma mark - Navigation
 - (void)_goInvite {
 	_checkButton.hidden = NO;

@@ -23,20 +23,24 @@
 #import "HONAddChallengersViewController.h"
 #import "HONChallengerPickerViewController.h"
 #import "HONCreateChallengePreviewView.h"
+#import "HONUserVO.h"
+#import "HONContactUserVO.h"
+
 
 const CGFloat kFocusInterval = 0.5f;
 
-@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>
+@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONCameraOverlayViewDelegate, HONAddChallengersDelegate, HONCreateChallengePreviewViewDelegate>
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *challengerName;
+@property (nonatomic, strong) NSMutableArray *addContacts;
+@property (nonatomic, strong) NSMutableArray *addFollowing;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *fbID;
 @property (nonatomic) int submitAction;
 @property (nonatomic) HONUserVO *userVO;
 @property (nonatomic) int uploadCounter;
-@property (nonatomic) BOOL needsChallenger;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic, strong) NSTimer *focusTimer;
@@ -55,7 +59,6 @@ const CGFloat kFocusInterval = 0.5f;
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_submitAction = 1;
 		_challengerName = @"";
-		_needsChallenger = YES;
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -69,7 +72,6 @@ const CGFloat kFocusInterval = 0.5f;
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
 		_challengerName = userVO.username;
-		_needsChallenger = NO;
 		_submitAction = 9;
 		_isFirstAppearance = YES;
 		
@@ -84,7 +86,6 @@ const CGFloat kFocusInterval = 0.5f;
 		_subjectName = subject;
 		_submitAction = 1;
 		_challengerName = @"";
-		_needsChallenger = YES;
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -95,11 +96,9 @@ const CGFloat kFocusInterval = 0.5f;
 
 - (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject {
 	if ((self = [super init])) {
-		_needsChallenger = NO;
 		_subjectName = subject;
 		_userVO = userVO;
 		_challengerName = userVO.username;
-		_needsChallenger = NO;
 		_submitAction = 9;
 		_isFirstAppearance = YES;
 		
@@ -116,7 +115,6 @@ const CGFloat kFocusInterval = 0.5f;
 		_subjectName = vo.subjectName;
 		_submitAction = 4;
 		_challengerName = vo.challengerName;
-		_needsChallenger = NO;
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -228,7 +226,7 @@ const CGFloat kFocusInterval = 0.5f;
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSLog(@"ImagePickerViewController AFNetworking %@", challengeResult);
+			//NSLog(@"ImagePickerViewController AFNetworking %@", challengeResult);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -278,12 +276,8 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)loadView {
 	[super loadView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:backButton];
+	_addContacts = [NSMutableArray array];
+	_addFollowing = [NSMutableArray array];
 }
 
 - (void)viewDidLoad {
@@ -303,9 +297,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
 	
-	NSLog(@"viewDidDisappear");
-	
-	//_isFirstAppearance = YES;
+	//NSLog(@"viewDidDisappear");
 }
 
 
@@ -399,21 +391,6 @@ const CGFloat kFocusInterval = 0.5f;
 
 
 #pragma mark - Navigation
-- (void)_goBack {
-	
-	if (_focusTimer != nil) {
-		[_focusTimer invalidate];
-		_focusTimer = nil;
-	}
-	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:^(void) {
-		if (_imagePicker != nil)
-			_imagePicker = nil;
-		
-		_cameraOverlayView = nil;
-		;
-	}];
-}
 
 
 #pragma mark - Notifications
@@ -434,18 +411,52 @@ const CGFloat kFocusInterval = 0.5f;
 
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	NSLog(@"navigationController:[%@] willShowViewController:[%@]", [navigationController description], [viewController description]);
+	//NSLog(@"navigationController:[%@] willShowViewController:[%@]", [navigationController description], [viewController description]);
 	
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
 		_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
 		_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
+		
+		
+//		NSLog(@"VC:view:subviews\n %@\n\n", [[viewController view] subviews]);
+//		
+//		UIView *uiView = [[[viewController view] subviews] objectAtIndex:0];
+//		NSLog(@"VC:view:UIView:subviews\n %@\n\n", [uiView subviews]);
+//			UIView *PLCameraPreviewView = [[uiView subviews] objectAtIndex:0];
+//			NSLog(@"VC:view:PLCameraPreviewView:subviews\n %@\n\n", [PLCameraPreviewView subviews]);
+//			
+//		UIView *uiImageView = [[[viewController view] subviews] objectAtIndex:1];
+//		NSLog(@"VC:view:UIImageView:subviews\n %@\n\n", [uiImageView subviews]);
+//			
+//		UIView *PLCropOverlay = [[[viewController view] subviews] objectAtIndex:2];
+//		NSLog(@"VC:view:PLCropOverlay:subviews\n %@\n\n", [PLCropOverlay subviews]);
+//			UIView *PLCameraIrisAnimationView = [[PLCropOverlay subviews] objectAtIndex:0];
+//			NSLog(@"VC:view:PLCropOverlay:PLCameraIrisAnimationView:subviews\n %@\n\n", [PLCameraIrisAnimationView subviews]);
 	}
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	NSLog(@"navigationController:[%@] didShowViewController:[%@]", [navigationController description], [viewController description]);
+	//NSLog(@"navigationController:[%@] didShowViewController:[%@]", [navigationController description], [viewController description]);
+	
+	
+//	NSLog(@"VC:view:subviews\n %@\n\n", [[viewController view] subviews]);
+//	
+//	UIView *uiView = [[[viewController view] subviews] objectAtIndex:0];
+//	NSLog(@"VC:view:UIView:subviews\n %@\n\n", [uiView subviews]);
+//	UIView *PLCameraPreviewView = [[uiView subviews] objectAtIndex:0];
+//	NSLog(@"VC:view:PLCameraPreviewView:subviews\n %@\n\n", [PLCameraPreviewView subviews]);
+//	
+//	UIView *uiImageView = [[[viewController view] subviews] objectAtIndex:1];
+//	NSLog(@"VC:view:UIImageView:subviews\n %@\n\n", [uiImageView subviews]);
+//	
+//	UIView *PLCropOverlay = [[[viewController view] subviews] objectAtIndex:2];
+//	NSLog(@"VC:view:PLCropOverlay:subviews\n %@\n\n", [PLCropOverlay subviews]);
+//	UIView *PLCameraIrisAnimationView = [[PLCropOverlay subviews] objectAtIndex:0];
+//	NSLog(@"VC:view:PLCropOverlay:PLCameraIrisAnimationView:subviews\n %@\n\n", [PLCameraIrisAnimationView subviews]);
+//	UIView *PLCropOverlayBottomBar = [[PLCropOverlay subviews] objectAtIndex:1];
+//	NSLog(@"VC:view:PLCropOverlay:PLCropOverlayBottomBar:subviews\n %@\n\n", [PLCropOverlayBottomBar subviews]);
 	
 	[self _removeIris];
 }
@@ -458,60 +469,48 @@ const CGFloat kFocusInterval = 0.5f;
 		_focusTimer = nil;
 	}
 	
-	UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+	UIImage *rawImage = [info objectForKey:UIImagePickerControllerOriginalImage];
 	
-	if (image.imageOrientation != 0)
-		image = [image fixOrientation];
+	if (rawImage.imageOrientation != 0)
+		rawImage = [rawImage fixOrientation];
 	
-	NSLog(@"IMAGE:[%@]", NSStringFromCGSize(image.size));
+	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(rawImage.size));
 	
 	// image is wider than tall (800x600)
-	if (image.size.width > image.size.height) {
-		float offset = (image.size.width - image.size.height) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:image toRect:CGRectMake(offset, 0.0, image.size.height, image.size.height)];
+	if (rawImage.size.width > rawImage.size.height) {
+		float offset = (rawImage.size.width - rawImage.size.height) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:rawImage toRect:CGRectMake(offset, 0.0, rawImage.size.height, rawImage.size.height)];
 		
 		// image is taller than wide (600x800)
-	} else if (image.size.width < image.size.height) {
-		float offset = (image.size.height - image.size.width) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:image toRect:CGRectMake(0.0, offset, image.size.width, image.size.width)];
+	} else if (rawImage.size.width < rawImage.size.height) {
+		float offset = (rawImage.size.height - rawImage.size.width) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:rawImage toRect:CGRectMake(0.0, offset, rawImage.size.width, rawImage.size.width)];
 		
 		// image is square
 	} else {
-		_challangeImage = image;
+		_challangeImage = rawImage;
 	}
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-		//		[self dismissViewControllerAnimated:YES completion:^(void) {
-		//			[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename previewImage:_challangeImage userVO:_userVO challengeVO:_challengeVO] animated:NO];//[_cameraOverlayView showPreviewImage:image asMirrored:NO];
-		//		}];
-		
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			//[_cameraOverlayView showPreviewImage:_challangeImage asMirrored:NO];
-			//[self.view addSubview:[[UIImageView alloc] initWithImage:image]];
-			
-			//[self _makePreviewWithImage:_challangeImage];
-			
 			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withImage:_challangeImage];
 			_previewView.delegate = self;
 			[self.view addSubview:_previewView];
 		}];
 		
 	} else {
-		
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			//[_cameraOverlayView showPreviewImage:_challangeImage asMirrored:(_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)];
-			
 			if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withMirroredImage:_challangeImage];
+				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withMirroredImage:rawImage];
 			
 			else
-				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withImage:_challangeImage];
+				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withImage:rawImage];
 			
 			_previewView.delegate = self;
 			[self.view addSubview:_previewView];
 		}];
 	}
-	
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	[self _uploadPhoto:_challangeImage];
 	
 	
@@ -597,9 +596,82 @@ const CGFloat kFocusInterval = 0.5f;
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[_imagePicker presentViewController:[[HONAddChallengersViewController alloc] init] animated:YES completion:nil];
+	HONAddChallengersViewController *addChallengersViewController = [[HONAddChallengersViewController alloc] initWithFollowersSelected:[_addFollowing copy] contactsSelected:[_addContacts copy]];
+	addChallengersViewController.delegate = self;
+	[_imagePicker presentViewController:addChallengersViewController animated:YES completion:nil];
 }
 
+
+#pragma mark - AddFriends Delegate
+- (void)addChallengers:(HONAddChallengersViewController *)viewController selectFollowing:(NSArray *)following forAppending:(BOOL)isAppend {
+	if (isAppend) {
+		[_addFollowing addObjectsFromArray:following];
+	
+	} else {
+		NSMutableArray *removeVOs = [NSMutableArray array];
+		for (HONUserVO *vo in _addFollowing) {
+			for (HONUserVO *dropVO in following) {
+				if (vo.userID == dropVO.userID) {
+					[removeVOs addObject:vo];
+					continue;
+				}
+			}
+		}
+		
+		[_addFollowing removeObjectsInArray:removeVOs];
+		removeVOs = nil;
+	}
+	
+	NSLog(@"following:%@", following);
+	NSLog(@"_addFollowing:%@", _addFollowing);
+	
+	NSMutableArray *usernames = [NSMutableArray array];
+	for (HONUserVO *vo in _addFollowing)
+		[usernames addObject:[NSString stringWithFormat:@"@%@", vo.username]];
+	
+	for (HONContactUserVO *vo in _addContacts)
+		[usernames addObject:vo.fullName];
+	
+	
+	if ([_addFollowing count] > 0)
+		_challengerName = [_addFollowing objectAtIndex:0];
+	
+	
+	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil))
+		_submitAction = 1;
+	
+	[_cameraOverlayView updateChallengers:[usernames copy]];
+}
+
+- (void)addChallengers:(HONAddChallengersViewController *)viewController selectContacts:(NSArray *)contacts forAppending:(BOOL)isAppend {
+	if (isAppend)
+		[_addContacts addObjectsFromArray:contacts];
+	
+	else  {
+		NSMutableArray *removeVOs = [NSMutableArray array];
+		for (HONContactUserVO *vo in _addContacts) {
+			for (HONContactUserVO *dropVO in contacts) {
+				if ([vo.fullName isEqualToString:dropVO.fullName]) {
+					[removeVOs addObject:vo];
+					continue;
+				}
+			}
+		}
+		
+		[_addContacts removeObjectsInArray:removeVOs];
+		removeVOs = nil;
+	}
+	
+	
+	NSMutableArray *usernames = [NSMutableArray array];
+	for (HONUserVO *vo in _addFollowing)
+		[usernames addObject:[NSString stringWithFormat:@"@%@", vo.username]];
+	
+	for (HONContactUserVO *vo in _addContacts)
+		[usernames addObject:vo.fullName];
+	
+	[_cameraOverlayView updateChallengers:[usernames copy]];
+}
 
 
 #pragma mark - PreviewView Delegates
@@ -615,27 +687,35 @@ const CGFloat kFocusInterval = 0.5f;
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 _subjectName, @"subject", nil]];
+	
+	
+	
+	// accepting, now submit new against username w/ subject
+	if (_submitAction == 4 && (_challengeVO != nil && ![_subjectName isEqualToString:_challengeVO.subjectName])) {
+		_submitAction = 7;
+		_challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;
+		//_challengeVO = nil;
+	}
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
-	NSLog(@"previewViewSubmit");
-	
-	NSMutableDictionary *params = [NSMutableDictionary dictionary];
-	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
-	[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
-	[params setObject:[NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename] forKey:@"imgURL"];
-	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
-	[params setObject:_subjectName forKey:@"subject"];
-	[params setObject:_challengerName forKey:@"username"];
+	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											 [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+											 [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+											 [NSString stringWithFormat:@"%d", _submitAction], @"action",
+											 _subjectName, @"subject",
+											 _challengerName, @"username", nil];
 	
 	if (_challengeVO != nil)
 		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+	
+	if (_userVO != nil)
+		[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
 	
 	if (_fbID != nil)
 		[params setObject:_fbID forKey:@"fbID"];
 	
 	NSLog(@"PARAMS:[%@]", params);
-	
 	[self _submitChallenge:params];
 }
 

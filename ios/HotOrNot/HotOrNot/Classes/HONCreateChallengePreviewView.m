@@ -26,17 +26,21 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
+		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
 		_previewImage = image;
 		_subjectName = subject;
 		
-		//CGSize scaleSize = CGSizeMake(self.frame.size.width / image.size.width, self.frame.size.height / image.size.height);
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:self.frame.size.width / image.size.width];
+		NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
 		[self addSubview:previewImageView];
 		
+		[self _makeUI];
+		
+		/*
 		UIImageView *addFriendsButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addButton_nonActive"]];
 		addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 5.0, 5.0);
 		[self addSubview:addFriendsButtonImageView];
@@ -54,7 +58,7 @@
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 44.0, 320.0, 44.0)];
+		_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
 		_subjectBGView.backgroundColor = [UIColor blackColor];
 		_subjectBGView.hidden = YES;
 		[self addSubview:_subjectBGView];
@@ -65,7 +69,7 @@
 		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 		[_subjectTextField setTextColor:[HONAppDelegate honGrey518Color]];
-		[_subjectTextField addTarget:self action:@selector(_onTextDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_subjectTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = _subjectName;
@@ -78,6 +82,7 @@
 		[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
 		[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 		[_subjectBGView addSubview:sendButton];
+		 */
 	}
 	
 	return (self);
@@ -86,15 +91,17 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
+		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
 		_previewImage = image;
 		_subjectName = subject;
 		
-		//CGSize scaleSize = CGSizeMake(self.frame.size.width / image.size.width, self.frame.size.height / image.size.height);
-		_previewImage = [HONImagingDepictor scaleImage:image byFactor:self.frame.size.width / image.size.width];
+		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.83333f : 0.83333f];
+		NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
+		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 		previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 		[self addSubview:previewImageView];
 		
@@ -115,7 +122,7 @@
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:backButton];
 		
-		_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 44.0, 320.0, 44.0)];
+		_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
 		_subjectBGView.backgroundColor = [UIColor blackColor];
 		_subjectBGView.hidden = YES;
 		[self addSubview:_subjectBGView];
@@ -126,7 +133,7 @@
 		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 		[_subjectTextField setTextColor:[HONAppDelegate honGrey518Color]];
-		[_subjectTextField addTarget:self action:@selector(_onTextDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+		[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_subjectTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = _subjectName;
@@ -145,9 +152,56 @@
 }
 
 
+#pragma mark Puplic APIs
 - (void)showKeyboard {
 	[_subjectTextField becomeFirstResponder];
 	[self _raiseKeyboard];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_makeUI {
+	UIImageView *addFriendsButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addButton_nonActive"]];
+	addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 5.0, 5.0);
+	[self addSubview:addFriendsButtonImageView];
+	
+	UIImageView *closeButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"closeButton_nonActive"]];
+	closeButtonImageView.frame = CGRectOffset(closeButtonImageView.frame, 270.0, 5.0);
+	[self addSubview:closeButtonImageView];
+	
+	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
+	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
+	[self addSubview:overlayView];
+	
+	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	backButton.frame = self.frame;
+	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:backButton];
+	
+	_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
+	_subjectBGView.backgroundColor = [UIColor blackColor];
+	_subjectBGView.hidden = YES;
+	[self addSubview:_subjectBGView];
+	
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 12.0, 320.0, 24.0)];
+	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
+	[_subjectTextField setTextColor:[HONAppDelegate honGrey518Color]];
+	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
+	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
+	_subjectTextField.text = _subjectName;
+	_subjectTextField.delegate = self;
+	[_subjectBGView addSubview:_subjectTextField];
+	
+	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	sendButton.frame = CGRectMake(260.0, 0.0, 64.0, 44.0);
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
+	[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[_subjectBGView addSubview:sendButton];
 }
 
 #pragma mark - Navigation
@@ -170,11 +224,13 @@
 	[_subjectTextField resignFirstResponder];
 	[self _dropKeyboardAndRemove:YES];
 	
+	[self.delegate previewView:self changeSubject:_subjectName];
 	[self.delegate previewViewSubmit:self];
 }
 
-- (void)_onTextDoneEditing:(id)sender {
-	NSLog(@"_onTextDoneEditing");
+- (void)_onTextDoneEditingOnExit:(id)sender {
+	NSLog(@"_onTextDoneEditingOnExit");
+	[self _goSubmit];
 }
 
 
@@ -194,8 +250,6 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
 	} completion:^(BOOL finished) {
-		//_subjectBGView.hidden = YES;
-		
 		if (isRemoved)
 			[self removeFromSuperview];
 	}];
@@ -212,8 +266,6 @@
 														  selector:@selector(_textFieldTextDidChangeChange:)
 																name:UITextFieldTextDidChangeNotification
 															 object:textField];
-	
-	//[self _raiseKeyboard];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -228,9 +280,7 @@
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-																	name:@"UITextFieldTextDidChangeNotification"
-																 object:textField];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UITextFieldTextDidChangeNotification" object:textField];
 	
 	if ([textField.text length] == 0 || [textField.text isEqualToString:@"#"])
 		textField.text = _subjectName;
@@ -242,12 +292,9 @@
 			NSString *hashTag = ([[hashTags objectAtIndex:1] hasSuffix:@" "]) ? [[hashTags objectAtIndex:1] substringToIndex:[[hashTags objectAtIndex:1] length] - 1] : [hashTags objectAtIndex:1];
 			textField.text = [NSString stringWithFormat:@"#%@", hashTag];
 		}
-		
-		_subjectName = textField.text;
 	}
 	
-	[self.delegate previewView:self changeSubject:_subjectName];
-	[self _dropKeyboardAndRemove:NO];
+	_subjectName = textField.text;
 }
 
 

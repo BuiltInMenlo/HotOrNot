@@ -12,6 +12,8 @@
 @protocol HONCameraOverlayViewDelegate;
 @interface HONCameraOverlayView : UIView
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username;
+- (void)updateChallengers:(NSArray *)challengers;
+
 @property(nonatomic, assign) id <HONCameraOverlayViewDelegate> delegate;
 @end
 
