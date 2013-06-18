@@ -6,6 +6,19 @@ class BIM_Growth{
     protected $instagramApiClient = null; 
     protected $twilioApiClient = null; 
     
+    public function disablePersona( $reason ){
+        $dao = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
+        $dao->disableJob($this->persona->name);
+        $this->sendWarningEmail( $reason );
+    }
+    
+    public function sendWarningEmail( $reason ){
+        $c = BIM_Config::warningEmail();
+        $e = new BIM_Email_Swift( $c->smtp );
+        $c->emailData->text = $reason;
+        $e->sendEmail( $c->emailData );
+    }
+    
     public function purgeCookies(){
         $file = $this->getCookieFileName();
         if( file_exists( $file ) ){
