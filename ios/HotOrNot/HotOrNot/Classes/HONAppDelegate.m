@@ -32,6 +32,7 @@
 #import "HONChallengeVO.h"
 #import "HONUsernameViewController.h"
 #import "HONSearchViewController.h"
+#import "HONImagingDepictor.h"
 
 
 // api endpts
@@ -427,6 +428,11 @@ const BOOL kIsImageCacheEnabled = YES;
 + (UIColor *)honGrey455Color {
 	return ([UIColor colorWithWhite:0.455 alpha:1.0]);
 }
+
++ (UIColor *)honGrey0245Color {
+	return ([UIColor colorWithWhite:0.245 alpha:1.0]);
+}
+
 + (UIColor *)honGreenColor {
 	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
 }
@@ -495,14 +501,14 @@ const BOOL kIsImageCacheEnabled = YES;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil)
-			NSLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			NSLog(@"AFNetworking HONAppDelegate: %@", result);
+			VolleyJSONLog(@"AFNetworking HONAppDelegate: %@", result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking HONAppDelegate %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -805,14 +811,14 @@ const BOOL kIsImageCacheEnabled = YES;
 
 #pragma mark - Startup Operations
 - (void)_retrieveConfigJSON {
-	NSLog(@"CONFIG_JSON:[%@]", kConfigURL);
+	VolleyJSONLog(@"CONFIG_JSON:[%@]", kConfigURL);
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
 	[httpClient postPath:@"boot-dev.json" parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		
 		if (error != nil)
-			NSLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -902,7 +908,7 @@ const BOOL kIsImageCacheEnabled = YES;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONAppDelegate AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"HONAppDelegate AFNetworking %@", [error localizedDescription]);
 	}];
 	
 
@@ -928,7 +934,7 @@ const BOOL kIsImageCacheEnabled = YES;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
-			NSLog(@"AppDelegate AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AppDelegate AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -941,16 +947,18 @@ const BOOL kIsImageCacheEnabled = YES;
 			_progressHUD = nil;
 		
 		} else {
-			NSLog(@"HONAppDelegate AFNetworking: %@", userResult);
+			VolleyJSONLog(@"HONAppDelegate AFNetworking: %@", userResult);
 			
-			if ([userResult objectForKey:@"id"] != [NSNull null])
+			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				[HONAppDelegate writeUserInfo:userResult];
+				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_image"] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
+			}
 			
 			[self _initTabs];
 		}
 				
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"AppDelegate AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AppDelegate AFNetworking %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -1001,7 +1009,7 @@ const BOOL kIsImageCacheEnabled = YES;
 	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
 	 
 	if (!jsonData) {
-		NSLog(@"NSJSONSerialization failed %@", error);
+		VolleyJSONLog(@"NSJSONSerialization failed %@", error);
 	}
 	 
 	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
@@ -1022,7 +1030,7 @@ const BOOL kIsImageCacheEnabled = YES;
 	[client setDefaultHeader:@"Content-Type" value:@"application/json"];
 	[client registerHTTPOperationClass:[AFJSONRequestOperation class]];
 	
-	NSLog(@"%@", parameters);
+	VolleyJSONLog(@"%@", parameters);
 	
 	//[client postPath:@"duration"
 	[client postPath:@"getUser"
@@ -1030,10 +1038,10 @@ const BOOL kIsImageCacheEnabled = YES;
 			  success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				  NSError *error = nil;
 				  NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				  NSLog(@"SUCCESS\n%@", result);
+				  VolleyJSONLog(@"SUCCESS\n%@", result);
 				  
 			  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				  NSLog(@"FAILED\n%@", error);
+				  VolleyJSONLog(@"FAILED\n%@", error);
 			  }
 	 ];
 }

@@ -226,7 +226,7 @@
 	}
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
-	[self _goNext];
+	//[self _goNext];
 }
 
 

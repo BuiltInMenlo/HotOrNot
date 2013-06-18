@@ -31,8 +31,8 @@
 #define IFT_ETHER 0x6 // ethernet CSMACD
 #endif
 
-#ifdef DEBUG
-#define DebugLog(...)//#define DebugLog(...) NSLog(__VA_ARGS__)
+#ifdef MIXPANEL_LOG
+#define DebugLog(...) NSLog(__VA_ARGS__)
 #else
 #define DebugLog(...)
 #endif

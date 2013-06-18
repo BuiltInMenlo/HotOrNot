@@ -8,6 +8,12 @@
 #warning "This project uses features only available in iOS SDK 4.0 and later."
 #endif
 
+#ifdef VOLLEY_JSON_LOG
+#define VolleyJSONLog(...) NSLog(__VA_ARGS__)
+#else
+#define VolleyJSONLog(...)
+#endif
+
 #ifdef __OBJC__
 	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>

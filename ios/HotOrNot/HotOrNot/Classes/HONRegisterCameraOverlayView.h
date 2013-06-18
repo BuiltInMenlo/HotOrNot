@@ -8,9 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol HONRegisterCameraOverlayViewDelegate;
-@interface HONRegisterCameraOverlayView : UIView
-@property(nonatomic, assign) id <HONRegisterCameraOverlayViewDelegate> delegate;
+#import "HONBaseCameraOverlayView.h"
+
+@protocol HONAvatarOverlayViewDelegate;
+@interface HONRegisterCameraOverlayView : HONBaseCameraOverlayView
+@property(nonatomic, assign) id <HONCameraOverlayViewDelegate> createCameraOverlayDelegate;
+@property(nonatomic, assign) id <HONAvatarOverlayViewDelegate> avatarOverlayDelegate;
 @property (nonatomic, strong) NSString *username;
 
 - (void)showPreviewNormal:(UIImage *)image;
@@ -18,13 +21,7 @@
 - (void)hidePreview;
 @end
 
-@protocol HONRegisterCameraOverlayViewDelegate
-- (void)cameraOverlayViewTakePicture:(HONRegisterCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewCancelCamera:(HONRegisterCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)cameraOverlayView username:(NSString *)username;
+@protocol HONAvatarOverlayViewDelegate
+- (void)avatarOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)avatarOverlayView username:(NSString *)username;
 @optional
-- (void)cameraOverlayViewChangeFlash:(HONRegisterCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewChangeCamera:(HONRegisterCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewShowCameraRoll:(HONRegisterCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewRetake:(HONRegisterCameraOverlayView *)cameraOverlayView;
 @end

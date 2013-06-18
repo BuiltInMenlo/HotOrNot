@@ -22,7 +22,7 @@
 #import "HONInviteNetworkViewController.h"
 #import "HONVerifyMobileViewController.h"
 
-@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONRegisterCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
+@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONCameraOverlayViewDelegate, HONAvatarOverlayViewDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic, strong) HONRegisterCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -41,11 +41,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_didShowViewController:)
-																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];
-		
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_didShowViewController:) name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
 		_username = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 	}
 	
@@ -71,7 +67,6 @@
 		_username = [_username substringFromIndex:1];
 	
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 7], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -84,11 +79,10 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONRegisterViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -102,7 +96,7 @@
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSLog(@"HONRegisterViewController AFNetworking: %@", userResult);
+			VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController: %@", userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];
@@ -127,7 +121,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONRegisterViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -204,7 +198,7 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONRegisterViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -218,7 +212,7 @@
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSLog(@"HONRegisterViewController AFNetworking: %@", userResult);
+			VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController: %@", userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];
@@ -251,7 +245,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONRegisterViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -350,7 +344,44 @@
 }
 
 
+#pragma mark - Navigation
+- (void)_goNext {
+	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
+		[[[UIAlertView alloc] initWithTitle:@"No Username!"
+											 message:@"You need to enter a usersname to start snapping"
+										   delegate:nil
+								cancelButtonTitle:@"OK"
+								otherButtonTitles:nil] show];
+	}
+	
+	else
+		[self _submitUsername];
+}
+
+- (void)_goCloseTutorial {
+	[[Mixpanel sharedInstance] track:@"Register - Close Scroll"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.5];
+	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	[UIView commitAnimations];
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.5];
+	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	[UIView commitAnimations];
+	
+	[self performSelector:@selector(_goTextfieldFocus) withObject:nil afterDelay:0.33];
+}
+
+
 #pragma mark - UI Presentation
+- (void)_goTextfieldFocus {
+	[_usernameTextField becomeFirstResponder];
+}
+
 - (void)_presentCamera {
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker = [[UIImagePickerController alloc] init];
@@ -395,91 +426,101 @@
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
 
-#pragma mark - Navigation
-- (void)_goNext {
-	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
-		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-											 message:@"You need to enter a usersname to start snapping"
-										   delegate:nil
-								cancelButtonTitle:@"OK"
-								otherButtonTitles:nil] show];
-	}
-	
-	else
-		[self _submitUsername];
-}
-
-- (void)_goCloseTutorial {
-	[[Mixpanel sharedInstance] track:@"Register - Close Scroll"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-	[UIView commitAnimations];
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.5];
-	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-	[UIView commitAnimations];
-	
-	[self performSelector:@selector(_goTextfieldFocus) withObject:nil afterDelay:0.33];
-}
-
 
 #pragma mark - UI Presentation
-- (void)_goTextfieldFocus {
-	[_usernameTextField becomeFirstResponder];
+- (void)_removeIris {
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		_cameraIrisImageView.hidden = YES;
+		[_cameraIrisImageView removeFromSuperview];
+		
+		_plCameraIrisAnimationView.hidden = YES;
+		[_plCameraIrisAnimationView removeFromSuperview];
+	}
+}
+
+- (void)_restoreIris {
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		_cameraIrisImageView.hidden = NO;
+		[self.view insertSubview:_cameraIrisImageView atIndex:1];
+		
+		_plCameraIrisAnimationView.hidden = NO;
+		
+		UIView *view = self.view;
+		while (view.subviews.count && (view = [view.subviews objectAtIndex:2])) {
+			if ([[[view class] description] isEqualToString:@"PLCropOverlay"]) {
+				[view insertSubview:_plCameraIrisAnimationView atIndex:0];
+				_plCameraIrisAnimationView = nil;
+				break;
+			}
+		}
+	}
 }
 
 #pragma mark - Notifications
-- (void)_didShowViewController:(NSNotification *)notification {
-	UIView *view = _imagePicker.view;
-	_plCameraIrisAnimationView = nil;
-	_cameraIrisImageView = nil;
+
+
+#pragma mark - NavigationController Delegates
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	//NSLog(@"navigationController:[%@] willShowViewController:[%@]", [navigationController description], [viewController description]);
 	
-	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
-		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
-			for (UIView *subview in view.subviews) {
-				if ([subview isKindOfClass:[UIImageView class]])
-					_cameraIrisImageView = (UIImageView *)subview;
-				
-				else if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
-					for (UIView *subsubview in subview.subviews) {
-						if ([[[subsubview class] description] isEqualToString:@"PLCameraIrisAnimationView"])
-							_plCameraIrisAnimationView = subsubview;
-					}
-				}
-			}
-		}
+	navigationController.navigationBar.barStyle = UIBarStyleDefault;
+	
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
+		_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
 	}
-	_cameraIrisImageView.hidden = YES;
-	[_cameraIrisImageView removeFromSuperview];
-	[_plCameraIrisAnimationView removeFromSuperview];
-	
-	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
 }
 
-- (void)_irisAnimationEnded:(NSNotification *)notification {
-	_cameraIrisImageView.hidden = NO;
-	
-	UIView *view = _imagePicker.view;
-	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
-		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
-			for (UIView *subview in view.subviews) {
-				if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
-					[subview insertSubview:_plCameraIrisAnimationView atIndex:1];
-					_plCameraIrisAnimationView = nil;
-					break;
-				}
-			}
-		}
-	}
-	
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	[self _removeIris];
 }
+
+//- (void)_didShowViewController:(NSNotification *)notification {
+//	UIView *view = _imagePicker.view;
+//	_plCameraIrisAnimationView = nil;
+//	_cameraIrisImageView = nil;
+//	
+//	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
+//		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
+//			for (UIView *subview in view.subviews) {
+//				if ([subview isKindOfClass:[UIImageView class]])
+//					_cameraIrisImageView = (UIImageView *)subview;
+//				
+//				else if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
+//					for (UIView *subsubview in subview.subviews) {
+//						if ([[[subsubview class] description] isEqualToString:@"PLCameraIrisAnimationView"])
+//							_plCameraIrisAnimationView = subsubview;
+//					}
+//				}
+//			}
+//		}
+//	}
+//	_cameraIrisImageView.hidden = YES;
+//	[_cameraIrisImageView removeFromSuperview];
+//	[_plCameraIrisAnimationView removeFromSuperview];
+//	
+//	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
+//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+//}
+
+//- (void)_irisAnimationEnded:(NSNotification *)notification {
+//	_cameraIrisImageView.hidden = NO;
+//	
+//	UIView *view = _imagePicker.view;
+//	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
+//		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
+//			for (UIView *subview in view.subviews) {
+//				if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
+//					[subview insertSubview:_plCameraIrisAnimationView atIndex:1];
+//					_plCameraIrisAnimationView = nil;
+//					break;
+//				}
+//			}
+//		}
+//	}
+//	
+//	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+//}
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
@@ -534,10 +575,6 @@
 		if (![HONAppDelegate isFUEInviteEnabled])
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
-}
-
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 }
 
 
@@ -595,7 +632,7 @@
 
 
 #pragma mark - CameraOverlayView Delegates
-- (void)cameraOverlayViewCancelCamera:(HONRegisterCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewCloseCamera:(HONRegisterCameraOverlayView *)cameraOverlayView {
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
@@ -648,7 +685,9 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
-- (void)cameraOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)cameraOverlayView username:(NSString *)username {
+
+#pragma mark - AvatarOverlay Delegates
+- (void)avatarOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)avatarOverlayView username:(NSString *)username {
 	[[Mixpanel sharedInstance] track:@"Register - Submit"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

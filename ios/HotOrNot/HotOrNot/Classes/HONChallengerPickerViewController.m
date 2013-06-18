@@ -93,7 +93,7 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONChallengerPickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -103,7 +103,7 @@
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			//NSLog(@"HONChallengerPickerViewController AFNetworking: %@", parsedUsers);
+			//VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController: %@", parsedUsers);
 			
 			
 			int cnt = 0;
@@ -137,7 +137,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONChallengerPickerViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -179,7 +179,7 @@
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONChallengerPickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -190,7 +190,7 @@
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSLog(@"HONChallengerPickerViewController AFNetworking %@", challengeResult);
+			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", challengeResult);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -223,7 +223,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONChallengerPickerViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

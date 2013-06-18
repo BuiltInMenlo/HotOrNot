@@ -151,7 +151,7 @@
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+			VolleyJSONLog(@"AFNetworking [-]  ChallengePreviewViewController %@", [error localizedDescription]);
 			
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -272,7 +272,7 @@
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+				VolleyJSONLog(@"AFNetworking [-]  ChallengePreviewViewController %@", [error localizedDescription]);
 				
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -314,7 +314,7 @@
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+				VolleyJSONLog(@"AFNetworking [-]  ChallengePreviewViewController %@", [error localizedDescription]);
 				
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -353,15 +353,15 @@
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", flagResult);
+						//VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController: %@", flagResult);
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController %@", [error localizedDescription]);
 				}];
 				
 				break;}
@@ -391,7 +391,7 @@
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  ChallengePreviewViewController %@", [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;

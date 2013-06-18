@@ -19,7 +19,7 @@
 #import "HONImagePickerViewController.h"
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
-#import "HONCameraOverlayView.h"
+#import "HONSnapCameraOverlayView.h"
 #import "HONAddChallengersViewController.h"
 #import "HONChallengerPickerViewController.h"
 #import "HONCreateChallengePreviewView.h"
@@ -29,7 +29,7 @@
 
 const CGFloat kFocusInterval = 0.5f;
 
-@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONCameraOverlayViewDelegate, HONAddChallengersDelegate, HONCreateChallengePreviewViewDelegate>
+@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONAddChallengersDelegate, HONCreateChallengePreviewViewDelegate>
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *challengerName;
@@ -44,7 +44,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic, strong) NSTimer *focusTimer;
-@property (nonatomic, strong) HONCameraOverlayView *cameraOverlayView;
+@property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
@@ -215,7 +215,7 @@ const CGFloat kFocusInterval = 0.5f;
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"ImagePickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  ImagePickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -226,7 +226,7 @@ const CGFloat kFocusInterval = 0.5f;
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"ImagePickerViewController AFNetworking %@", challengeResult);
+			//VolleyJSONLog(@"AFNetworking [-]  ImagePickerViewController %@", challengeResult);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -257,7 +257,7 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"ImagePickerViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  ImagePickerViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -367,7 +367,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_showOverlay {
-	_cameraOverlayView = [[HONCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
+	_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
 	_cameraOverlayView.delegate = self;
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
@@ -538,7 +538,7 @@ const CGFloat kFocusInterval = 0.5f;
 
 
 #pragma mark - CameraOverlay Delegates
-- (void)cameraOverlayViewTakePicture:(HONCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewTakePicture:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Snap - Take Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -551,7 +551,7 @@ const CGFloat kFocusInterval = 0.5f;
 	[_imagePicker takePicture];
 }
 
-- (void)cameraOverlayViewShowCameraRoll:(HONCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewShowCameraRoll:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Snap - Camera Roll"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -560,7 +560,7 @@ const CGFloat kFocusInterval = 0.5f;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
-- (void)cameraOverlayViewChangeCamera:(HONCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Snap - Switch Camera"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -575,7 +575,7 @@ const CGFloat kFocusInterval = 0.5f;
 	}
 }
 
-- (void)cameraOverlayViewCloseCamera:(HONCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Snap - Cancel"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -591,7 +591,7 @@ const CGFloat kFocusInterval = 0.5f;
 	}];
 }
 
-- (void)cameraOverlayViewAddChallengers:(HONCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Snap - Add Friends"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

@@ -168,11 +168,11 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONSettingsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONSettingsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONSettingsViewController AFNetworking: %@", userResult);
+			//VolleyJSONLog(@"AFNetworking [-]  HONSettingsViewController: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
@@ -190,7 +190,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"SettingsViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  SettingsViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		
@@ -442,11 +442,11 @@
 				[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONSettingsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONSettingsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//NSLog(@"HONSettingsViewController AFNetworking: %@", userResult);
+						//VolleyJSONLog(@"AFNetworking [-]  HONSettingsViewController: %@", userResult);
 						
 						if ([userResult objectForKey:@"id"] != [NSNull null])
 							[HONAppDelegate writeUserInfo:userResult];
@@ -464,7 +464,7 @@
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"SettingsViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  SettingsViewController %@", [error localizedDescription]);
 					
 					[_headerView toggleRefresh:NO];
 					_progressHUD.minShowTime = kHUDTime;

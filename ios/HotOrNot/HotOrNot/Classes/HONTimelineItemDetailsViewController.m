@@ -254,15 +254,15 @@
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", flagResult);
+						//VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController: %@", flagResult);
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController %@", [error localizedDescription]);
 				}];
 				
 				break;}
@@ -304,15 +304,15 @@
 				[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONTimelineItemDetailsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						NSDictionary *pokeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						NSLog(@"HONTimelineItemDetailsViewController AFNetworking: %@", pokeResult);
+						VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController: %@", pokeResult);
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"HONTimelineItemDetailsViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController %@", [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;

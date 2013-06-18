@@ -93,12 +93,12 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONAddChallengersViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONAddChallengersViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																					 sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			NSLog(@"HONAddChallengersViewController AFNetworking: %@", parsedUsers);
+			VolleyJSONLog(@"AFNetworking [-]  HONAddChallengersViewController: %@", parsedUsers);
 			
 			
 			for (NSDictionary *serverList in parsedUsers) {
@@ -113,7 +113,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONAddChallengersViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONAddChallengersViewController %@", [error localizedDescription]);
 		
 	}];
 }
@@ -188,8 +188,8 @@
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonGreen_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"cancelButtonGreen_Active"] forState:UIControlStateHighlighted];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:doneButton];
 	

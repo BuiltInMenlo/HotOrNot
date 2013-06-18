@@ -93,7 +93,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			if (error != nil) {
-				NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 				[_headerView toggleRefresh:NO];
 				if (_progressHUD != nil) {
@@ -103,7 +103,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				
 			} else {
 				NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				//NSLog(@"HONChallengesViewController AFNetworking: %@", userResult);
+				//VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController: %@", userResult);
 				
 				if ([userResult objectForKey:@"id"] != [NSNull null])
 					[HONAppDelegate writeUserInfo:userResult];
@@ -118,7 +118,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+			VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
 			
 			[_headerView toggleRefresh:NO];
 			_progressHUD.minShowTime = kHUDTime;
@@ -142,7 +142,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			[_headerView toggleRefresh:NO];
 			if (_progressHUD != nil) {
@@ -153,7 +153,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			//VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController: %@", unsortedChallenges);
 			
 			_recentChallenges = [NSMutableArray array];
 			_olderChallenges = [NSMutableArray array];
@@ -180,7 +180,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		if (_progressHUD == nil)
@@ -218,7 +218,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			[_headerView toggleRefresh:NO];
 			if (_progressHUD != nil) {
@@ -229,7 +229,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//NSLog(@"HONChallengesViewController AFNetworking: %@", unsortedChallenges);
+			//VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController: %@", unsortedChallenges);
 			
 			//[_challenges removeLastObject];
 			for (NSDictionary *serverList in parsedLists) {
@@ -258,7 +258,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;
@@ -290,7 +290,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"ChallengePreviewViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  ChallengePreviewViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -674,14 +674,14 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						[self _goRefresh];
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -711,13 +711,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -752,14 +752,14 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						[self _goRefresh];
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -789,13 +789,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONChallengesViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"ChallengesViewController AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;

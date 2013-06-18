@@ -221,14 +221,14 @@
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONHONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONHONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			//NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
-			//NSLog(@"HONHONTimelineViewController AFNetworking: %@", parsedLists);
+			//VolleyJSONLog(@"AFNetworking [-]  HONHONTimelineViewController: %@", parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;
@@ -259,7 +259,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		if (_progressHUD == nil)
@@ -285,11 +285,11 @@
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONHONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONHONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONHONTimelineViewController AFNetworking: %@", parsedLists);
+			//VolleyJSONLog(@"AFNetworking [-]  HONHONTimelineViewController: %@", parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;
@@ -322,7 +322,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		
@@ -351,10 +351,10 @@
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
-			NSLog(@"HONTimelineViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
-			//NSLog(@"HONTimelineViewController AFNetworking: %@", userResult);
+			//VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				_userVO = [HONUserVO userWithDictionary:userResult];
@@ -371,7 +371,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONTimelineViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController %@", [error localizedDescription]);
 	}];
 }
 
@@ -447,7 +447,7 @@
 	}
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+		// if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
 		
 	} else {

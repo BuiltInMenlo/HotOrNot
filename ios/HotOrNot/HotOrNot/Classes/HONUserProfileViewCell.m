@@ -43,11 +43,15 @@
 	_userVO = userVO;
 	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-	
-	NSString *avatarURL = ([_userVO.imageURL rangeOfString:@"?"].location == NSNotFound) ? [NSString stringWithFormat:@"%@?r=%d", _userVO.imageURL, arc4random()] : [NSString stringWithFormat:@"%@&r=%d", _userVO.imageURL, arc4random()];
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(114.0, 17.0, 93.0, 93.0)];
-	_avatarImageView.backgroundColor = [HONAppDelegate honGrey455Color];
-	[_avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
+	_avatarImageView.backgroundColor = [HONAppDelegate honGrey0245Color];
+	
+	if (isUser)
+		_avatarImageView.image = [HONAppDelegate avatarImage];
+	
+	else
+		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+	
 	_avatarImageView.userInteractionEnabled = YES;
 	[self addSubview:_avatarImageView];
 	
@@ -133,17 +137,7 @@
 	[self addSubview:flagButton];
 }
 
-
 - (void)updateCell {
-	NSString *avatarURL = ([_userVO.imageURL rangeOfString:@"?"].location == NSNotFound) ? [NSString stringWithFormat:@"%@?r=%d", _userVO.imageURL, arc4random()] : [NSString stringWithFormat:@"%@&r=%d", _userVO.imageURL, arc4random()];
-	
-	[_avatarImageView removeFromSuperview];
-	[_avatarImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
-	_avatarImageView.userInteractionEnabled = YES;
-	[self addSubview:_avatarImageView];
-	
-	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
-	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
@@ -271,15 +265,15 @@
 				[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						NSLog(@"HONVoteItemViewCell AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONVoteItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//NSLog(@"HONVoteItemViewCell AFNetworking: %@", flagResult);
+						//VolleyJSONLog(@"AFNetworking [-]  HONVoteItemViewCell: %@", flagResult);
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					NSLog(@"VoteItemViewCell AFNetworking %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  VoteItemViewCell %@", [error localizedDescription]);
 				}];
 				
 				break;}

@@ -70,14 +70,14 @@
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONVotersViewControler AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONVotersViewControler - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [unsortedList sortedArrayUsingDescriptors:
 											[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
 			
-			//NSLog(@"HONVotersViewControler AFNetworking: %@", unsortedList);
+			//VolleyJSONLog(@"AFNetworking [-]  HONVotersViewControler: %@", unsortedList);
 			_voters = [NSMutableArray new];
 			for (NSDictionary *serverList in parsedLists) {
 				HONVoterVO *vo = [HONVoterVO voterWithDictionary:serverList];
@@ -90,7 +90,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"VotersViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  VotersViewController %@", [error localizedDescription]);
 	}];
 }
 

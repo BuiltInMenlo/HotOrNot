@@ -68,11 +68,11 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONAddFriendsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSLog(@"HONAddFriendsViewController AFNetworking: %@", parsedLists);
+			VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController: %@", parsedLists);
 			
 			_following = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
@@ -84,7 +84,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONAddFriendsViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController %@", [error localizedDescription]);
 		
 	}];
 }
@@ -101,17 +101,17 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONAddFriendsViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSDictionary *sendResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSLog(@"HONAddFriendsViewController AFNetworking: %@", sendResult);
+			VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController: %@", sendResult);
 			
 			[self _goDone];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONAddFriendsViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController %@", [error localizedDescription]);
 	}];
 }
 

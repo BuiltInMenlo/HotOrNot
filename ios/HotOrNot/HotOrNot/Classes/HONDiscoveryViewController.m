@@ -72,11 +72,11 @@
 	[httpClient postPath:kAPIDiscover parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONDiscoverViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONDiscoverViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONDiscoverViewController AFNetworking: %@", parsedLists);
+			//VolleyJSONLog(@"AFNetworking [-]  HONDiscoverViewController: %@", parsedLists);
 			
 			_allChallenges = [NSMutableDictionary dictionary];
 			NSMutableArray *retrievedChallenges = [NSMutableArray array];
@@ -102,7 +102,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONDiscoverViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONDiscoverViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;

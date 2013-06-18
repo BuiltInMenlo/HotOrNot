@@ -10,14 +10,14 @@
 #import "AFHTTPRequestOperation.h"
 #import "UIImageView+AFNetworking.h"
 
-#import "HONCameraOverlayView.h"
+#import "HONSnapCameraOverlayView.h"
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 #import "HONCreateChallengeOptionsView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
 
-@interface HONCameraOverlayView()
+@interface HONSnapCameraOverlayView()
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) HONCreateChallengeOptionsView *optionsView;
 @property (nonatomic, strong) UIView *controlsHolderView;
@@ -31,7 +31,7 @@
 @property (nonatomic, strong) NSString *username;
 @end
 
-@implementation HONCameraOverlayView
+@implementation HONSnapCameraOverlayView
 @synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username {
@@ -135,6 +135,7 @@
 	else
 		_usernamesLabel.text = [usernames substringToIndex:[usernames length] - 2];
 }
+
 
 #pragma mark - UI Presentation
 - (void)_animateShutter {

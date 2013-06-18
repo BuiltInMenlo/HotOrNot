@@ -112,6 +112,7 @@ const BOOL kIsImageCacheEnabled;
 + (UIColor *)honGrey635Color;
 + (UIColor *)honGrey518Color;
 + (UIColor *)honGrey455Color;
++ (UIColor *)honGrey0245Color;
 + (UIColor *)honGreenColor;
 + (UIColor *)honDarkGreenColor;
 + (UIColor *)honGreenTxtColor;

@@ -1,15 +1,43 @@
 #!/bin/bash
+# ./cp_assets
+#
+# 
+# SYNOPSIS:
+#
+#     ./cp_assets [ -l ] 'expression'
+# 
+# 
+# DESCRIPTION:
+#
+#     Copies any resources matching a search expression from the 
+#     current assets folder over to the project's Resources. 
+#     Specifying the -l option will copy the results into each locale
+#     folder if found.
+# 
+# 
+#     [ -l ]            If specified, locale folders are identified 
+#                       w/in the Resources folder. Assets that are
+#                       matched are placed there instead.
+# 
+#     'expression'	    An expression to run against
+#
+# 
+# EXAMPLE:
+# 
+#     Copies the back buttons over to the project's locale resource folders.
+#     cp_assets -l 'backButton*'
+# 
 
 asset_grp=$1
-assets_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/media/skinning/06052013-tmp/PARTS
-resources_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/ios/HotOrNot/HotOrNot/Resources_test
+assets_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/media/skinning/06052013/PARTS
+resources_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/ios/HotOrNot/HotOrNot/Resources
 
 
 for lproj in `find $resources_dir -type d -name '*.lproj'`; do 
 	locale_id=`basename "${lproj}"`
 	
 	find ${assets_dir} -type f -name "${asset_grp}" -exec cp {} "${lproj}" \;
-	printf "Copying %s to %s...\n\n" "${asset_grp}" `basename "${lproj}"`
+	printf "Copying '%s' to %s...\n" "${asset_grp}" `basename "${lproj}"`
 done
 
 

@@ -13,6 +13,17 @@
 
 const CGFloat kFocusInterval;
 
+typedef enum {
+	/** Challenge is submitted for a match */
+	HONChallengeTypeAnonymous,
+	/** Challenge has been created and is awaiting another */
+	HONChallengeTypeAccept,
+	/** Challenge is directed at a user and is public */
+	HONChallengeTypePublicUserTargeted,
+	/** Challenge is directed at a user and is private */
+	HONChallengeTypePrivateUserTargeted,
+} HONChallengeType;
+
 @interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 - (id)initWithUser:(HONUserVO *)userVO;
 - (id)initWithSubject:(NSString *)subject;

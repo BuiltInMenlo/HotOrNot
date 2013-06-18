@@ -29,6 +29,7 @@
 #import "HONImagePickerViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONInviteNetworkViewCell.h"
+#import "HONTimelineViewController.h"
 
 @interface HONProfileViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) NSMutableArray *pastUsers;
@@ -39,6 +40,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (strong, nonatomic) FBRequestConnection *requestConnection;
 @property (nonatomic) BOOL isContactsViewed;
+@property (nonatomic) BOOL hasRefreshed;
 @end
 
 @implementation HONProfileViewController
@@ -90,7 +92,7 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONChallengerPickerViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -101,7 +103,7 @@
 			
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			//NSLog(@"HONChallengerPickerViewController AFNetworking: %@", parsedUsers);
+			//VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController: %@", parsedUsers);
 			
 			int cnt = 0;
 			for (NSDictionary *serverList in unsortedUsers) {
@@ -152,7 +154,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"HONChallengerPickerViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -268,6 +270,7 @@
 - (void)loadView {
 	[super loadView];
 	
+	_hasRefreshed = NO;
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
@@ -310,6 +313,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	_hasRefreshed = YES;
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE_TAB" object:nil];
 }
 
@@ -441,17 +445,16 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			NSLog(@"HONProfileViewController AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			 
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"HONProfileViewController AFNetworking: %@", userResult);
+			//VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
 			
-			HONUserProfileViewCell *cell = (HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-			[cell updateCell];
+			[(HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] updateCell];
 			[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 			
 			_pastUsers = [NSMutableArray array];
@@ -480,7 +483,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		NSLog(@"SettingsViewController AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  SettingsViewController %@", [error localizedDescription]);
 		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
@@ -680,6 +683,8 @@
 																			[[HONAppDelegate infoForUser] objectForKey:@"username"], @"username",
 																			[[HONAppDelegate infoForUser] objectForKey:@"fb_id"], @"fb_id",
 																			[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"], @"avatar_url", nil]];
+		
+		
 		[cell setUserVO:userVO];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
@@ -830,21 +835,12 @@
 	} else {
 		
 		HONUserVO *vo = (HONUserVO *)[_pastUsers objectAtIndex:indexPath.row];
-		[[Mixpanel sharedInstance] track:@"Profile - Previous Snap"
+		[[Mixpanel sharedInstance] track:@"Profile - Follower Timeline"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 vo.username, @"username", nil]];
+													 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"follower", nil]];
 		
-		if (vo.userID == 0) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-	
-		} else {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		}
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:vo.username] animated:YES];
 	}
 }
 

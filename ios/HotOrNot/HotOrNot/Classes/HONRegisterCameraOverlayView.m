@@ -154,7 +154,7 @@
 }
 
 - (void)_goSubmit {
-	[self.delegate cameraOverlayViewSubmitWithUsername:self username:_username];
+	[self.avatarOverlayDelegate avatarOverlayViewSubmitWithUsername:self username:_username];
 }
 
 - (void)_goCapture {
@@ -171,7 +171,7 @@
 }
 
 - (void)_goCameraBack {
-	[self.delegate cameraOverlayViewRetake:self];
+	[self.delegate cameraOverlayViewCloseCamera:self];
 	[self hidePreview];
 }
 
@@ -185,7 +185,7 @@
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-				[self.delegate cameraOverlayViewCancelCamera:self];
+				[self.delegate cameraOverlayViewCloseCamera:self];
 				break;
 				
 			case 1:
