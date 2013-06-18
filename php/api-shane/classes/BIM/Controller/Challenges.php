@@ -109,7 +109,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     			$uv = $this->jobs->queueSubmitMatchingChallengeJob( $_POST['userID'], $_POST['subject'], $_POST['imgURL'] );
 	        }
 	        if( !$uv ){
-    		    $uv = $this->challenges->submitMatchingChallenge( $_POST['userID'], $_POST['challengeID'], $_POST['imgURL'] );
+    		    $uv = $this->challenges->submitMatchingChallenge( $_POST['userID'], $_POST['subject'], $_POST['imgURL'] );
     		    $this->queueStaticPagesJobs();
    	        }
 		}
@@ -178,7 +178,8 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     }
     
     protected function queueStaticPagesJobs(){
-    	$this->voteJobs->queueStaticChallengesByDate();
+    	return;
+	$this->voteJobs->queueStaticChallengesByDate();
     	$this->voteJobs->queueStaticChallengesByActivity();
     	$this->voteJobs->queueStaticTopChallengesByVotes();
     }

@@ -292,7 +292,6 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @return null
 	**/
 	public function sendPush($msg) {
-	    return;
 		// curl urban airship's api
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
@@ -499,8 +498,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 		
 		// send push to targeted user if allowed
 		if ($challenger_obj->notifications == "Y"){
-		    $private = $is_private ? 'private' : '';
-		    $msg = "$creator_obj->username has sent you a $private Volley!";
+ 		    $private = $is_private == 'Y' ? 'private' : '';
+ 		    $msg = "@$creator_obj->username has sent you a $private Volley!";
 			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
 		}
 		// get the newly created challenge
@@ -557,8 +556,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 			
 			// send push if allowed
 			if ($challenger_obj->notifications == "Y"){
-		        $private = $is_private ? 'private' : '';
-		        $msg = "$creator_obj->username has sent you a $private Volley!";
+ 		        $private = $is_private == 'Y' ? 'private' : '';
+ 		        $msg = "@$creator_obj->username has sent you a $private Volley!";
 			    $this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
 			}
 		    

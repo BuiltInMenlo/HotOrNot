@@ -471,11 +471,10 @@ class BIM_App_Users extends BIM_App_Base{
 		   $mail_res = false;  
 		
 		// return
-		$this->sendResponse(200, json_encode(array(
+		return array(
 			'id' => $user_id,
 			'mail' => $mail_res
-		)));
-		return (true);
+		);
 	}
 	
 	
