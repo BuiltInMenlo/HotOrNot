@@ -51,6 +51,9 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $popIds = $this->getPopular();
+            
+            //print_r( $popIds );exit;
+            
             foreach( $popIds as $id ){
                 $this->submitQuestion('bouncyxoxo');
                 $sleep = $this->persona->getBrowseTagsCommentWait();
@@ -180,7 +183,7 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
         
         if( !preg_match('/your question has been sent/i', $response ) ){
             $this->disablePersona( "disabling ".$this->persona->name." in (class :: function) ".__CLASS__.' :: '.__FUNCTION__ );
-            $this->reLoginWithWait();
+            //$this->reLoginWithWait();
         } else {
             $this->logSuccess( $id, $message );
         }
