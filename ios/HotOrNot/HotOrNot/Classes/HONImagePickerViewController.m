@@ -143,6 +143,11 @@ const CGFloat kFocusInterval = 0.5f;
 															 object:nil];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
+														  selector:@selector(_didShowViewController:)
+																name:@"UINavigationControllerDidShowViewControllerNotification"
+															 object:nil];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
 														  selector:@selector(_previewStarted:)
 																name:@"PLCameraControllerPreviewStartedNotification"
 															 object:nil];
@@ -297,7 +302,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
 	
-	//NSLog(@"viewDidDisappear");
+	//_isFirstAppearance = YES;
 }
 
 
@@ -331,9 +336,9 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_showCamera {
+	NSLog(@"_showCamera");
+	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"COMPOSE_SOURCE_CAMERA" object:nil];
-		
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
@@ -348,7 +353,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
 		
 		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-			[self _showOverlay];
+			//[self _showOverlay];
 		}];
 		
 	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -367,6 +372,11 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_showOverlay {
+	if (_imagePicker.cameraOverlayView != nil) {
+		_imagePicker.cameraOverlayView = nil;
+		_cameraOverlayView = nil;
+	}
+	
 	_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
 	_cameraOverlayView.delegate = self;
 	
@@ -396,16 +406,23 @@ const CGFloat kFocusInterval = 0.5f;
 #pragma mark - Notifications
 - (void)_notificationReceived:(NSNotification *)notification {
 	//NSLog(@"_notificationReceived:[%@]", [notification name]);
+}
+
+
+- (void)_didShowViewController:(NSNotification *)notification {
+	//NSLog(@"_didShowViewController:[%@]", [notification object]);
 	
-//	if ([[notification name] isEqualToString:@"UINavigationControllerDidShowViewControllerNotification"])
-//		_isFirstAppearance = YES;
+	//_isFirstAppearance = YES;
 }
 
 
 - (void)_previewStarted:(NSNotification *)notification {
-	[self _removeIris];
+	NSLog(@"_previewStarted");
+	//[self _removeIris];
 	
-	_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
+	[self _showOverlay];
+	
+	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
 }
 
 
@@ -421,12 +438,12 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		
 //		NSLog(@"VC:view:subviews\n %@\n\n", [[viewController view] subviews]);
-//		
+//
 //		UIView *uiView = [[[viewController view] subviews] objectAtIndex:0];
 //		NSLog(@"VC:view:UIView:subviews\n %@\n\n", [uiView subviews]);
 //			UIView *PLCameraPreviewView = [[uiView subviews] objectAtIndex:0];
 //			NSLog(@"VC:view:PLCameraPreviewView:subviews\n %@\n\n", [PLCameraPreviewView subviews]);
-//			
+//
 //		UIView *uiImageView = [[[viewController view] subviews] objectAtIndex:1];
 //		NSLog(@"VC:view:UIImageView:subviews\n %@\n\n", [uiImageView subviews]);
 //			
@@ -440,9 +457,11 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	//NSLog(@"navigationController:[%@] didShowViewController:[%@]", [navigationController description], [viewController description]);
 	
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+		[self _removeIris];
 	
 //	NSLog(@"VC:view:subviews\n %@\n\n", [[viewController view] subviews]);
-//	
+//
 //	UIView *uiView = [[[viewController view] subviews] objectAtIndex:0];
 //	NSLog(@"VC:view:UIView:subviews\n %@\n\n", [uiView subviews]);
 //	UIView *PLCameraPreviewView = [[uiView subviews] objectAtIndex:0];
@@ -457,8 +476,6 @@ const CGFloat kFocusInterval = 0.5f;
 //	NSLog(@"VC:view:PLCropOverlay:PLCameraIrisAnimationView:subviews\n %@\n\n", [PLCameraIrisAnimationView subviews]);
 //	UIView *PLCropOverlayBottomBar = [[PLCropOverlay subviews] objectAtIndex:1];
 //	NSLog(@"VC:view:PLCropOverlay:PLCropOverlayBottomBar:subviews\n %@\n\n", [PLCropOverlayBottomBar subviews]);
-	
-	[self _removeIris];
 }
 
 
@@ -510,6 +527,7 @@ const CGFloat kFocusInterval = 0.5f;
 			[self.view addSubview:_previewView];
 		}];
 	}
+	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	[self _uploadPhoto:_challangeImage];
 	
@@ -518,17 +536,11 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+	NSLog(@"imagePickerControllerDidCancel");
+	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.cameraOverlayView = nil;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = NO;
-		_imagePicker.showsCameraControls = NO;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
-		
-		[self _showOverlay];
+		//[self _showOverlay];
 		
 	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -556,7 +568,6 @@ const CGFloat kFocusInterval = 0.5f;
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
@@ -675,6 +686,7 @@ const CGFloat kFocusInterval = 0.5f;
 
 #pragma mark - PreviewView Delegates
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
+	NSLog(@"previewViewBackToCamera");
 	[self _showCamera];
 }
 
@@ -728,7 +740,6 @@ const CGFloat kFocusInterval = 0.5f;
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 		
-		//[_cameraOverlayView enablePreview];
 		[_previewView showKeyboard];
 	}
 }

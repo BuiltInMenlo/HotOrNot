@@ -18,7 +18,7 @@
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 
-@interface HONChangeAvatarViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, HONAvatarCameraOverlayViewDelegate, AmazonServiceRequestDelegate>
+@interface HONChangeAvatarViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic, strong) HONAvatarCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -31,10 +31,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self
-															  selector:@selector(_didShowViewController:)
-																	name:@"UINavigationControllerDidShowViewControllerNotification"
-																 object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_didShowViewController:)	name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
 	}
 	
 	return (self);
@@ -236,6 +233,34 @@
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
 
+- (void)_removeIris {
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		_cameraIrisImageView.hidden = YES;
+		[_cameraIrisImageView removeFromSuperview];
+		
+		_plCameraIrisAnimationView.hidden = YES;
+		[_plCameraIrisAnimationView removeFromSuperview];
+	}
+}
+
+- (void)_restoreIris {
+	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+		_cameraIrisImageView.hidden = NO;
+		[self.view insertSubview:_cameraIrisImageView atIndex:1];
+		
+		_plCameraIrisAnimationView.hidden = NO;
+		
+		UIView *view = self.view;
+		while (view.subviews.count && (view = [view.subviews objectAtIndex:2])) {
+			if ([[[view class] description] isEqualToString:@"PLCropOverlay"]) {
+				[view insertSubview:_plCameraIrisAnimationView atIndex:0];
+				_plCameraIrisAnimationView = nil;
+				break;
+			}
+		}
+	}
+}
+
 
 #pragma mark - Notifications
 - (void)_didShowViewController:(NSNotification *)notification {
@@ -292,15 +317,15 @@
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[_cameraOverlayView showPreviewNormal:image];
+			[_cameraOverlayView showPreview:image];
 		}];
 		
 	} else {
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-			[_cameraOverlayView showPreviewFlipped:image];
+			[_cameraOverlayView showPreviewAsFlipped:image];
 		
 		else
-			[_cameraOverlayView showPreviewNormal:image];
+			[_cameraOverlayView showPreview:image];
 	}
 	
 	[self _uploadPhoto:image];
@@ -331,7 +356,7 @@
 
 
 #pragma mark - CameraOverlayView Delegates
-- (void)cameraOverlayViewCancelCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Change Avatar - Cancel"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -340,14 +365,6 @@
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
-}
-
-- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Change Avatar - Take Photo"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[_imagePicker takePicture];
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
@@ -372,6 +389,18 @@
 	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+}
+
+- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Change Avatar - Take Photo"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[_imagePicker takePicture];
+}
+
+- (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	
 }
 
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {

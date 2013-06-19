@@ -39,50 +39,6 @@
 		[self addSubview:previewImageView];
 		
 		[self _makeUI];
-		
-		/*
-		UIImageView *addFriendsButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addButton_nonActive"]];
-		addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 5.0, 5.0);
-		[self addSubview:addFriendsButtonImageView];
-		
-		UIImageView *closeButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"closeButton_nonActive"]];
-		closeButtonImageView.frame = CGRectOffset(closeButtonImageView.frame, 270.0, 5.0);
-		[self addSubview:closeButtonImageView];
-		
-		UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
-		overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
-		[self addSubview:overlayView];
-		
-		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = self.frame;
-		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:backButton];
-		
-		_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
-		_subjectBGView.backgroundColor = [UIColor blackColor];
-		_subjectBGView.hidden = YES;
-		[self addSubview:_subjectBGView];
-		
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 12.0, 320.0, 24.0)];
-		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[HONAppDelegate honGrey518Color]];
-		[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_subjectTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
-		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
-		_subjectTextField.text = _subjectName;
-		_subjectTextField.delegate = self;
-		[_subjectBGView addSubview:_subjectTextField];
-		
-		UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		sendButton.frame = CGRectMake(260.0, 0.0, 64.0, 44.0);
-		[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
-		[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
-		[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-		[_subjectBGView addSubview:sendButton];
-		 */
 	}
 	
 	return (self);
@@ -203,6 +159,7 @@
 	[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_subjectBGView addSubview:sendButton];
 }
+
 
 #pragma mark - Navigation
 - (void)_goBack {

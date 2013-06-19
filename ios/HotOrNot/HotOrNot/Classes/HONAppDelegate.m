@@ -36,7 +36,8 @@
 
 
 // api endpts
-NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";//@"http://54.243.163.24";
+//NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";//@"http://50.17.142.22/hotornot";
+NSString * const kConfigURL = @"http://50.17.142.22/hotornot";
 NSString * const kAPIChallenges = @"Challenges.php";
 NSString * const kAPIComments = @"Comments.php";
 NSString * const kAPIDiscover = @"Discover.php";

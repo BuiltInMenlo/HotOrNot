@@ -68,7 +68,6 @@
 		for (NSString *username in _usernames)
 			usernames = [usernames stringByAppendingFormat:@"%@, ", _username];
 		
-		NSLog(@"usernames:[%@]", usernames);
 		_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 210.0, 20.0)];
 		_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 		_usernamesLabel.textColor = [UIColor whiteColor];

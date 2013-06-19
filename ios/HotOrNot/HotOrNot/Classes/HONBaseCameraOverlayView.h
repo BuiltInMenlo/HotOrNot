@@ -23,6 +23,7 @@
 
 @protocol HONCameraOverlayViewDelegate
 - (void)cameraOverlayViewTakePicture:(HONBaseCameraOverlayView *)previewView;
+- (void)cameraOverlayViewRetake:(HONBaseCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONBaseCameraOverlayView *)previewView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONBaseCameraOverlayView *)previewView;

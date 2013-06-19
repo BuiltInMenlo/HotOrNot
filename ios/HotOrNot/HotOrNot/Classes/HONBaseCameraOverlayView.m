@@ -14,7 +14,6 @@
 @interface HONBaseCameraOverlayView ()
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIView *controlsHolderView;
-
 @end
 
 @implementation HONBaseCameraOverlayView

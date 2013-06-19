@@ -55,7 +55,6 @@
 		4C0C414E162C9761007F0DA3 /* icon_57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414D162C9761007F0DA3 /* icon_57x57.png */; };
 		4C0C4150162C9769007F0DA3 /* icon_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414F162C9769007F0DA3 /* icon_114x114.png */; };
 		4C0CA3F81751521D00DD0652 /* HONInviteNetworkViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0CA3F71751521D00DD0652 /* HONInviteNetworkViewCell.m */; };
-		4C0E8D98176FEE20003FECA7 /* HONBaseCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0E8D97176FEE20003FECA7 /* HONBaseCameraOverlayView.m */; };
 		4C19BF0D168E811E006D241E /* chevron.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0B168E811E006D241E /* chevron.png */; };
 		4C19BF0E168E811E006D241E /* chevron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0C168E811E006D241E /* chevron@2x.png */; };
 		4C31AFB01638745100358022 /* mainBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C31AFAD1638745100358022 /* mainBG.png */; };
@@ -127,6 +126,7 @@
 		4C3E888516A3C050003301AF /* shareLarge_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E888116A3C050003301AF /* shareLarge_nonActive.png */; };
 		4C3E888616A3C050003301AF /* shareLarge_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E888216A3C050003301AF /* shareLarge_nonActive@2x.png */; };
 		4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */; };
+		4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */; };
 		4C442EE51730C8C1003DED81 /* magGlassIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EE31730C8C1003DED81 /* magGlassIcon.png */; };
 		4C442EE61730C8C1003DED81 /* magGlassIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EE41730C8C1003DED81 /* magGlassIcon@2x.png */; };
 		4C442EEB1730CF8F003DED81 /* searchToggle_Hashtags.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C442EE71730CF8F003DED81 /* searchToggle_Hashtags.png */; };
@@ -334,7 +334,6 @@
 		4CA34C5116F6B08F0000751E /* discoveryBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA34C4F16F6B08F0000751E /* discoveryBackground.png */; };
 		4CA34C5216F6B08F0000751E /* discoveryBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA34C5016F6B08F0000751E /* discoveryBackground@2x.png */; };
 		4CA34C5516F6B6550000751E /* HONGenericRowViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA34C5416F6B6550000751E /* HONGenericRowViewCell.m */; };
-		4CA4859B16E3CD2900DE0F24 /* HONRegisterCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA4859A16E3CD2900DE0F24 /* HONRegisterCameraOverlayView.m */; };
 		4CA4859E16E920D700DE0F24 /* HONDiscoveryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA4859D16E920D700DE0F24 /* HONDiscoveryViewController.m */; };
 		4CA485A116E920EF00DE0F24 /* HONDiscoveryViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CA485A016E920EF00DE0F24 /* HONDiscoveryViewCell.m */; };
 		4CA485C516EC109A00DE0F24 /* tabMenuBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485B316EC109A00DE0F24 /* tabMenuBackground@2x.png */; };
@@ -396,7 +395,6 @@
 		4CABCEA5172DF8ED00AF5863 /* shareButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEA1172DF8ED00AF5863 /* shareButton_nonActive.png */; };
 		4CABCEA6172DF8ED00AF5863 /* shareButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CABCEA2172DF8ED00AF5863 /* shareButton_nonActive@2x.png */; };
 		4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CABCEAE173086D700AF5863 /* HONChangeAvatarViewController.m */; };
-		4CABCEB2173086FD00AF5863 /* HONAvatarCameraOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CABCEB1173086FC00AF5863 /* HONAvatarCameraOverlayView.m */; };
 		4CADE4881767F3D300A356E4 /* newSnapDot.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CADE4861767F3D300A356E4 /* newSnapDot.png */; };
 		4CADE4891767F3D300A356E4 /* newSnapDot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CADE4871767F3D300A356E4 /* newSnapDot@2x.png */; };
 		4CADE48C1767F41E00A356E4 /* viewedSnapCheck.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CADE48A1767F41E00A356E4 /* viewedSnapCheck.png */; };
@@ -668,8 +666,6 @@
 		4C0C414F162C9769007F0DA3 /* icon_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_114x114.png; sourceTree = "<group>"; };
 		4C0CA3F61751521D00DD0652 /* HONInviteNetworkViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteNetworkViewCell.h; sourceTree = "<group>"; };
 		4C0CA3F71751521D00DD0652 /* HONInviteNetworkViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteNetworkViewCell.m; sourceTree = "<group>"; };
-		4C0E8D96176FEE20003FECA7 /* HONBaseCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONBaseCameraOverlayView.h; sourceTree = "<group>"; };
-		4C0E8D97176FEE20003FECA7 /* HONBaseCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONBaseCameraOverlayView.m; sourceTree = "<group>"; };
 		4C19BF0B168E811E006D241E /* chevron.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron.png; sourceTree = "<group>"; };
 		4C19BF0C168E811E006D241E /* chevron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron@2x.png"; sourceTree = "<group>"; };
 		4C31AFAD1638745100358022 /* mainBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mainBG.png; sourceTree = "<group>"; };
@@ -853,6 +849,8 @@
 		4C3E888216A3C050003301AF /* shareLarge_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "shareLarge_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONImagePickerViewController.h; sourceTree = "<group>"; };
 		4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONImagePickerViewController.m; sourceTree = "<group>"; };
+		4C43C8D21772127800983BE8 /* HONAvatarCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAvatarCameraOverlayView.h; sourceTree = "<group>"; };
+		4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAvatarCameraOverlayView.m; sourceTree = "<group>"; };
 		4C442EE31730C8C1003DED81 /* magGlassIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magGlassIcon.png; sourceTree = "<group>"; };
 		4C442EE41730C8C1003DED81 /* magGlassIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "magGlassIcon@2x.png"; sourceTree = "<group>"; };
 		4C442EE71730CF8F003DED81 /* searchToggle_Hashtags.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchToggle_Hashtags.png; sourceTree = "<group>"; };
@@ -1310,8 +1308,6 @@
 		4CA34C5016F6B08F0000751E /* discoveryBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discoveryBackground@2x.png"; sourceTree = "<group>"; };
 		4CA34C5316F6B6550000751E /* HONGenericRowViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONGenericRowViewCell.h; sourceTree = "<group>"; };
 		4CA34C5416F6B6550000751E /* HONGenericRowViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONGenericRowViewCell.m; sourceTree = "<group>"; };
-		4CA4859916E3CD2900DE0F24 /* HONRegisterCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRegisterCameraOverlayView.h; sourceTree = "<group>"; };
-		4CA4859A16E3CD2900DE0F24 /* HONRegisterCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRegisterCameraOverlayView.m; sourceTree = "<group>"; };
 		4CA4859C16E920D700DE0F24 /* HONDiscoveryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDiscoveryViewController.h; sourceTree = "<group>"; };
 		4CA4859D16E920D700DE0F24 /* HONDiscoveryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONDiscoveryViewController.m; sourceTree = "<group>"; };
 		4CA4859F16E920EF00DE0F24 /* HONDiscoveryViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONDiscoveryViewCell.h; sourceTree = "<group>"; };
@@ -1380,8 +1376,6 @@
 		4CABCEA7172F46F600AF5863 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		4CABCEAD173086D700AF5863 /* HONChangeAvatarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChangeAvatarViewController.h; sourceTree = "<group>"; };
 		4CABCEAE173086D700AF5863 /* HONChangeAvatarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChangeAvatarViewController.m; sourceTree = "<group>"; };
-		4CABCEB0173086FC00AF5863 /* HONAvatarCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAvatarCameraOverlayView.h; sourceTree = "<group>"; };
-		4CABCEB1173086FC00AF5863 /* HONAvatarCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAvatarCameraOverlayView.m; sourceTree = "<group>"; };
 		4CADE4861767F3D300A356E4 /* newSnapDot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = newSnapDot.png; sourceTree = "<group>"; };
 		4CADE4871767F3D300A356E4 /* newSnapDot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "newSnapDot@2x.png"; sourceTree = "<group>"; };
 		4CADE48A1767F41E00A356E4 /* viewedSnapCheck.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = viewedSnapCheck.png; sourceTree = "<group>"; };
@@ -1950,8 +1944,8 @@
 				4C0C40D1162BD2E5007F0DA3 /* HONHeaderView.m */,
 				4C80126E176A530500BD795D /* HONImageLoadingView.h */,
 				4C80126F176A530500BD795D /* HONImageLoadingView.m */,
-				4C0E8D96176FEE20003FECA7 /* HONBaseCameraOverlayView.h */,
-				4C0E8D97176FEE20003FECA7 /* HONBaseCameraOverlayView.m */,
+				4C43C8D21772127800983BE8 /* HONAvatarCameraOverlayView.h */,
+				4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -2699,8 +2693,6 @@
 				4CBE874B16371D22004084DF /* HONSupportViewController.m */,
 				4C51643B1681894500EB3C09 /* HONUsernameViewController.h */,
 				4C51643C1681894600EB3C09 /* HONUsernameViewController.m */,
-				4CABCEB0173086FC00AF5863 /* HONAvatarCameraOverlayView.h */,
-				4CABCEB1173086FC00AF5863 /* HONAvatarCameraOverlayView.m */,
 				4CABCEAD173086D700AF5863 /* HONChangeAvatarViewController.h */,
 				4CABCEAE173086D700AF5863 /* HONChangeAvatarViewController.m */,
 			);
@@ -3060,8 +3052,6 @@
 			children = (
 				4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */,
 				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
-				4CA4859916E3CD2900DE0F24 /* HONRegisterCameraOverlayView.h */,
-				4CA4859A16E3CD2900DE0F24 /* HONRegisterCameraOverlayView.m */,
 				4C689379171A1BFE005F8D0A /* HONRestrictedLocaleViewController.h */,
 				4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */,
 			);
@@ -3676,7 +3666,6 @@
 				4C687DC316D9445C001A1B22 /* HONAlertPopOverView.m in Sources */,
 				4C45FF4916DECE95002F1080 /* HONUserProfileViewCell.m in Sources */,
 				4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */,
-				4CA4859B16E3CD2900DE0F24 /* HONRegisterCameraOverlayView.m in Sources */,
 				4CA4859E16E920D700DE0F24 /* HONDiscoveryViewController.m in Sources */,
 				4CA485A116E920EF00DE0F24 /* HONDiscoveryViewCell.m in Sources */,
 				4CA34C5516F6B6550000751E /* HONGenericRowViewCell.m in Sources */,
@@ -3692,7 +3681,6 @@
 				4C026018172B092B001CC476 /* HONProfileContactUserViewCell.m in Sources */,
 				4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */,
 				4CABCEAF173086D800AF5863 /* HONChangeAvatarViewController.m in Sources */,
-				4CABCEB2173086FD00AF5863 /* HONAvatarCameraOverlayView.m in Sources */,
 				4C51010E1733002500A5D342 /* HONImagingDepictor.m in Sources */,
 				4C51011417332B0700A5D342 /* UILabel+FormattedText.m in Sources */,
 				4CB03BB5173C88B40062B607 /* HONVerifyMobileViewController.m in Sources */,
@@ -3707,7 +3695,7 @@
 				4C93B25217697267002FABFF /* HONAddChallengersViewController.m in Sources */,
 				4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */,
 				4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */,
-				4C0E8D98176FEE20003FECA7 /* HONBaseCameraOverlayView.m in Sources */,
+				4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

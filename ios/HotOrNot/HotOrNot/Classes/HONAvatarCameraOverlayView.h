@@ -8,6 +8,22 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol HONAvatarCameraOverlayDelegate;
 @interface HONAvatarCameraOverlayView : UIView
+- (void)showPreview:(UIImage *)image;
+- (void)showPreviewAsFlipped:(UIImage *)image;
+- (void)hidePreview;
 
+@property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
+@end
+
+@protocol HONAvatarCameraOverlayDelegate
+- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView;
+@optional
+- (void)cameraOverlayViewChangeFlash:(HONAvatarCameraOverlayView *)previewView;
+- (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)previewView;
+- (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)previewView;
 @end

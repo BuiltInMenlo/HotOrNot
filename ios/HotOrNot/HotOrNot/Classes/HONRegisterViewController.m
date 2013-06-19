@@ -17,14 +17,14 @@
 #import "HONRegisterViewController.h"
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
-#import "HONRegisterCameraOverlayView.h"
+#import "HONAvatarCameraOverlayView.h"
 #import "HONHeaderView.h"
 #import "HONInviteNetworkViewController.h"
 #import "HONVerifyMobileViewController.h"
 
-@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONCameraOverlayViewDelegate, HONAvatarOverlayViewDelegate, AmazonServiceRequestDelegate>
+@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
-@property (nonatomic, strong) HONRegisterCameraOverlayView *cameraOverlayView;
+@property (nonatomic, strong) HONAvatarCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *username;
@@ -280,7 +280,7 @@
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[HONAppDelegate honGreenTxtColor]];
-	//[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEnd];
+	//[_usernameTextField addTarget:self action:@selector(_onTextEditingDone:) forControlEvents:UIControlEventEditingDidEnd];
 	_usernameTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
@@ -418,10 +418,8 @@
 }
 
 - (void)_showOverlay {
-	_cameraOverlayView = [[HONRegisterCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_cameraOverlayView.delegate = self;
-	[_cameraOverlayView setUsername:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
@@ -456,12 +454,10 @@
 	}
 }
 
-#pragma mark - Notifications
-
 
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	//NSLog(@"navigationController:[%@] willShowViewController:[%@]", [navigationController description], [viewController description]);
+	NSLog(@"navigationController:[%@] willShowViewController:[%@]", [navigationController description], [viewController description]);
 	
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 	
@@ -472,6 +468,8 @@
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+	NSLog(@"navigationController:[%@] didShowViewController:[%@]", [navigationController description], [viewController description]);
+	
 	[self _removeIris];
 }
 
@@ -527,25 +525,19 @@
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[_cameraOverlayView showPreviewNormal:image];
-		}];
+		//[self dismissViewControllerAnimated:NO completion:^(void) {
+			[_cameraOverlayView showPreview:image];
+		//}];
 		
 	} else {
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-			[_cameraOverlayView showPreviewFlipped:image];
+			[_cameraOverlayView showPreviewAsFlipped:image];
 		
 		else
-			[_cameraOverlayView showPreviewNormal:image];
+			[_cameraOverlayView showPreview:image];
 	}
-//	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-//		[self dismissViewControllerAnimated:NO completion:^(void) {
-//			[_cameraOverlayView showPreview];
-//		}];
-//	
-//	} else
-//	 	[_cameraOverlayView showPreview];
 	
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	[self _uploadPhoto:image];
 }
 
@@ -632,7 +624,7 @@
 
 
 #pragma mark - CameraOverlayView Delegates
-- (void)cameraOverlayViewCloseCamera:(HONRegisterCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
@@ -647,15 +639,7 @@
 	}];
 }
 
-- (void)cameraOverlayViewTakePicture:(HONRegisterCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Register - Take Photo"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[_imagePicker takePicture];
-}
-
-- (void)cameraOverlayViewChangeCamera:(HONRegisterCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Register - Switch Camera"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -670,7 +654,7 @@
 	}
 }
 
-- (void)cameraOverlayViewShowCameraRoll:(HONRegisterCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewShowCameraRoll:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Register - Camera Roll"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -679,21 +663,28 @@
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
-- (void)cameraOverlayViewRetake:(HONRegisterCameraOverlayView *)cameraOverlayView {
+- (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Register - Retake"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 }
 
+- (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Register - Take Photo"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[_imagePicker takePicture];
+}
 
-#pragma mark - AvatarOverlay Delegates
-- (void)avatarOverlayViewSubmitWithUsername:(HONRegisterCameraOverlayView *)avatarOverlayView username:(NSString *)username {
+- (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Register - Submit"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self _finalizeUser];
 }
+
 
 
 #pragma mark - AWS Delegates
