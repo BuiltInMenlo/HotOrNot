@@ -30,15 +30,39 @@
 
 asset_grp=$1
 assets_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/media/skinning/06052013/PARTS
-resources_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/ios/HotOrNot/HotOrNot/Resources
+resources_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/ios/HotOrNot/HotOrNot/Resources_test
 
+isLocale=false
+while getopts "l" optname #--//> there's a '-l'
+	do #--/ loop thru the params
+		case "${optname}" in #  -/> set flag based on char
+			"l") # )-/> passed in '-l'
+				isLocale=true
+			;;
 
-for lproj in `find $resources_dir -type d -name '*.lproj'`; do 
-	locale_id=`basename "${lproj}"`
-	
-	find ${assets_dir} -type f -name "${asset_grp}" -exec cp {} "${lproj}" \;
-	printf "Copying '%s' to %s...\n" "${asset_grp}" `basename "${lproj}"`
+			"?") # )-/> anything else
+				printf "Unknown option %s\n" "${optname}" ; exit 0
+			;;
+			
+			*) # )-/> shouldn't occur
+				printf "Unknown error\n" ; exit 0
+			;;
+	esac
 done
+
+
+if $isLocale; then
+	for lproj in `find $resources_dir -type d -name '*.lproj'`; do 
+		locale_id=`basename "${lproj}"`
+	
+		find ${assets_dir} -type f -name "${asset_grp}" -exec cp {} "${lproj}" \; -print | awk -F\/ '{print $NF}'
+		printf "Copying '%s' to %s...\n" "${asset_grp}" `basename "${lproj}"`
+	done
+	
+else
+	find ${assets_dir} -type f -name "${asset_grp}" -exec cp {} "${resources_dir}" \; -print | awk -F\/ '{print $NF}'
+	printf "Copying '%s' to %s...\n" "${asset_grp}" `basename "${resources_dir}"`
+fi
 
 
 exit 0;
