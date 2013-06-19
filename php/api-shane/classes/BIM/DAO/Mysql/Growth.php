@@ -74,4 +74,13 @@ class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
 		$params = array( $data->network, $data->type, $data->quotes, $data->quotes );
 		$this->prepareAndExecute( $sql, $params );
 	}
+	
+	public function updateUserStats( $data ){
+		$sql = "
+			insert into growth.persona_stats_log
+			(time,name,network,followers,following,likes) values (?,?,?,?,?,?)
+		";
+		$params = array( time(), $data->name, $data->network, $data->followers, $data->following, $data->likes );
+		$this->prepareAndExecute( $sql, $params );
+	}
 }

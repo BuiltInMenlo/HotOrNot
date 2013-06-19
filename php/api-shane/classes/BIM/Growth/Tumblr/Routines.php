@@ -241,4 +241,34 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         return $this->oauth->getUserInfo();
     }
     
+    /**
+     *  update the users stats that we use to guage the effectiveness of our auto outreach
+     *  
+     *  we get the following for tumblr
+     *  
+     *  	total followers  getBlogFollowers
+     *      total following getFollowedBlogs()
+     *  	total likes getBlogLikes()
+     *  	
+     */
+    public function updateUserStats(){
+        $this->login();
+        $blogName = $this->persona->tumblr->blogName;
+        $followers = $this->oauth->getBlogFollowers( $blogName );
+        $following = $this->oauth->getFollowedBlogs( );
+        $likes = $this->oauth->getBlogLikes( $blogName );
+        
+        $userStats = (object) array(
+            'followers' => $followers->total_users,
+            'following' => $following->total_blogs,
+            'likes' => $likes->liked_count,
+            'network' => 'tumblr',
+            'name' => $this->persona->name,
+        );
+        
+        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+        $dao->updateUserStats( $userStats );
+        
+    }
+    
 }

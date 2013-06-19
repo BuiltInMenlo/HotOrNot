@@ -295,4 +295,50 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $this->handleLogin();
         }
     }
+    
+    /**
+     *  update the users stats that we use to guage the effectiveness of our auto outreach
+     *  
+     *  we get the following for tumblr
+     *  
+     *  	total followers  getBlogFollowers
+     *      total following getFollowedBlogs()
+     *  	total likes getBlogLikes()
+     *  	
+     */
+    public function updateUserStats(){
+        $this->handleLogin();
+
+        $name = 'jennybartenxoxo';// $this->persona->name;
+        $profileUrl = "http://web.stagram.com/n/$name/";
+        $response = $this->get( $profileUrl );
+
+        $following = 0;
+        $followers = 0;
+        $likes = 0;
+
+        $ptrn = '/<\s*span.+?id="follower_count_\d+"\s*>(.*?)</im';
+        preg_match( $ptrn, $response, $matches );
+        if( isset( $matches[1] ) ){
+            $followers = $matches[1];
+        }
+
+        $ptrn = '/<\s*span.+?id="following_count_\d+"\s*>(.*?)</im';
+        preg_match( $ptrn, $response, $matches );
+        if( isset( $matches[1] ) ){
+            $following = $matches[1];
+        }
+
+        $userStats = (object) array(
+            'name' => $this->persona->name,
+            'followers' => $followers,
+            'following' => $following,
+            'likes' => $likes,
+            'network' => 'webstagram',
+        );
+
+        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+        $dao->updateUserStats( $userStats );
+        
+    }
 }

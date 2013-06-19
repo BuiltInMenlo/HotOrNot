@@ -264,7 +264,7 @@ class BIM_App_Votes extends BIM_App_Base{
 		
 		
 		// get available challenge rows
-		$query = 'SELECT * FROM `tblChallenges` WHERE `status_id` = 1 OR `status_id` = 4 ORDER BY `updated` DESC LIMIT 250;';
+		$query = 'SELECT * FROM `tblChallenges` WHERE `is_private` != "Y" AND (`status_id` = 1 OR `status_id` = 4) ORDER BY `updated` DESC LIMIT 250;'; 
 		
 		$result = mysql_query($query);
 		

@@ -84,7 +84,7 @@ class BIM_Controller_Comments extends BIM_Controller_Base {
     			$uv = $this->jobs->queueSubmitCommentForChallengeJob( $_POST['challengeID'], $_POST['userID'], $_POST['text'] );
 	        }
 	        if( !$uv ){
-    		    $uv = $this->challenges->submitCommentForChallenge( $_POST['challengeID'], $_POST['userID'], $_POST['text'] );
+    		    $uv = $this->comments->submitCommentForChallenge( $_POST['challengeID'], $_POST['userID'], $_POST['text'] );
     		    $this->queueStaticPagesJobs();
    	        }
 		}
@@ -92,7 +92,8 @@ class BIM_Controller_Comments extends BIM_Controller_Base {
     }
     
     protected function queueStaticPagesJobs(){
-    	$this->voteJobs->queueStaticChallengesByDate();
+        return;    
+	$this->voteJobs->queueStaticChallengesByDate();
     	$this->voteJobs->queueStaticChallengesByActivity();
     	$this->voteJobs->queueStaticTopChallengesByVotes();
     }

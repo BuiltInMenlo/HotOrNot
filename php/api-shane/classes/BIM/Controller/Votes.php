@@ -99,9 +99,9 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
 	        }
 	        if( !$uv ){
     		    $uv = $this->votes->upvoteChallenge( $_POST['challengeID'], $_POST['userID'], $_POST['creator'] );
-    			$this->jobs->queueStaticChallengesByDate();
-    			$this->jobs->queueStaticChallengesByActivity();
-    			$this->jobs->queueStaticTopChallengesByVotes();
+    			//$this->jobs->queueStaticChallengesByDate();
+    			//$this->jobs->queueStaticChallengesByActivity();
+    			//$this->jobs->queueStaticTopChallengesByVotes();
 	        }
 		}
 		return $uv;

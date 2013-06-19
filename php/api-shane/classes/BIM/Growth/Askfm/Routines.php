@@ -11,135 +11,150 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
             $persona = new BIM_Growth_Persona( $persona );
         } 
         $this->persona = $persona;
-        
-        $this->askfmConf = BIM_Config::askfm();
-        $clientId = $this->askfmConf->api->client_id;
-        $clientSecret = $this->askfmConf->api->client_secret;
-    }
-    
-    public function loginAndAuthorizeApp( ){
-        $this->purgeCookies();
-        
-        $response = $this->login();
-        
-        $ptrn = '/Authorization Request/';
-        if( preg_match( $ptrn, $response ) ){
-            // we are at the authorize page
-            $response = $this->authorizeApp($response);
-        }
-    }
-    
-    public function authorizeApp( $authPageHtml ){
-        
-        $ptrn = '/<form.*?action="(.+?)"/';
-        preg_match($ptrn, $authPageHtml, $matches);
-        $formActionUrl = 'https://askfm.com'.$matches[1];
-        
-        $ptrn = '/name="csrfmiddlewaretoken" value="(.+?)"/';
-        preg_match($ptrn, $authPageHtml, $matches);
-        $csrfmiddlewaretoken = $matches[1];
-
-        $responseType = 'code';
-        
-        $args = array(
-            'csrfmiddlewaretoken' => $csrfmiddlewaretoken,
-            'allow' => 'Authorize',
-        );
-        
-        $headers = array(
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            "Referer: $formActionUrl",
-            'Origin: https://askfm.com',
-        );
-        $response = $this->post( $formActionUrl, $args, false, $headers);
-        // print_r( array( $url, $args, $response)  ); exit;
-        return $response;
-    }
-    
-    public function login(){
-        
-        $redirectUri = 'https://api.askfm.com/oauth/authorize/';
-        $params = array(
-            'client_id' => '9d836570317f4c18bca0db6d2ac38e29',
-            'redirect_uri' => 'http://web.stagram.com/',
-            'response_type' => 'code',
-            'scope' => 'likes comments relationships',
-        );
-        $response = $this->get( $redirectUri, $params );
-           
-        // now we should have the login form
-        // so we login and make sure we are logged in
-        $ptrn = '/name="csrfmiddlewaretoken" value="(.+?)"/';
-        preg_match($ptrn, $response, $matches);
-        $csrfmiddlewaretoken = $matches[1];
-        
-        // <form method="POST" id="login-form" class="adjacent" action="/accounts/login/?next=/oauth/authorize/%3Fclient_id%3D63a3a9e66f22406799e904ccb91c3ab4%26redirect_uri%3Dhttp%3A//54.243.163.24/askfm_oauth.php%26response_type%3Dcode"
-        $ptrn = '/<form .*? action="(.+?)"/';
-        preg_match($ptrn, $response, $matches);
-        $formActionUrl = 'https://askfm.com'.$matches[1];
-        
-        $args = array(
-            'csrfmiddlewaretoken' => $csrfmiddlewaretoken,
-            'username' => $this->persona->askfm->username,
-            'password' => $this->persona->askfm->password
-        );
-        
-        $headers = array(
-            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Referer: https://askfm.com/accounts/login/',
-            'Origin: https://askfm.com',
-        );
-        //print_r(  array( $response, $args, $headers ) ); exit;
-        
-        $response = $this->post( $formActionUrl, $args, false, $headers );
-        
-        //print_r( array( $formActionUrl, $args, $response)  ); exit;
-        
-        return $response;
     }
     
     /**
-     * login and authorize the app
-     * 
-     * then get the tag array appropriate for this type of persona
-     * 
-     * we collect up to 5 posts for the tag
-     * 
-     * when collecting
-     * 		we hit the tag page
-     * 		get all of the ids from the page
-     * 		and for each id check the db to see if we have commented on this before
-     * 		we also check to see if we have commented on this user in the last week
-     *		if either condition is true, we DO NOT comment
-     *		then we put the id in an array
-     *		as soon as we have 5 items or have gone throu 2 pages we return the array and comment on each item
-     *
-     * 
-     * when we have the 5 items or less
-     * we comment on each item and we sleep for 5 seconds
-     * 
-     * when we are dome with the tag we sleep for 7 minutes
-     * 
-     */
+    authenticity_token	7WDGigOVDymawSjk5K5vWa3HVtxtuOIYhntJ1JkDOkk=
+    login	exty86@gmail.com
+    password	i8ngot6
+    follow	
+    like	
+    back	
+    authenticity_token	7WDGigOVDymawSjk5K5vWa3HVtxtuOIYhntJ1JkDOkk= 
+    */
+    public function login(){
+        $url = 'http://www.ask.fm';
+        $response = $this->get( $url );
+        
+        $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
+        preg_match($ptrn,$response,$matches);
+        
+        if( isset( $matches[1] ) ){
+            $authToken = $matches[1];
+        }
+        
+        $args = array(
+            'login' => $this->persona->askfm->username,
+            'password' => $this->persona->askfm->password,
+            'authenticity_token' => $authToken,
+            'follow' => '',
+            'like' => '',
+            'back' => ''
+        );
+        
+        $response = $this->post( 'http://ask.fm/session', $args );
+        
+        return $response;
+    }
     
     public function browseQuestions(){
+        return $this->askQuestions();
+    }
+    
+    public function askQuestions(){
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
-            $taggedIds = $this->getTaggedIds( );
-            $lastTag =& end( $taggedIds );
-            foreach( $taggedIds as $tag => &$ids ){
-                $lastId =& end( $ids );
-                foreach( $ids as &$id ){
-                    $this->submitComment( $id );
-                    $sleep = $this->persona->getBrowseTagsCommentWait();
-                    echo "submitted comment - sleeping for $sleep seconds\n";
-                    sleep($sleep);
-                }
-                $sleep = $this->persona->getBrowseTagsTagWait();
-                echo "completed tag $tag - sleeping for $sleep seconds\n";
+            $popIds = $this->getPopular();
+            
+            //print_r( $popIds );exit;
+            
+            foreach( $popIds as $id ){
+                $this->submitQuestion( $id );
+                $sleep = $this->persona->getBrowseTagsCommentWait();
+                echo "submitted comment - sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
+            $sleep = $this->persona->getBrowseTagsTagWait();
+            echo "completed askfm - sleeping for $sleep seconds\n";
+            sleep($sleep);
         }
+    }
+    
+    public function answerQuestions(){
+        $loggedIn = $this->handleLogin();
+        if( $loggedIn ){
+            $questions = $this->getQuestions();
+            
+            $name = $this->persona->name;
+            foreach( $questions as $question ){
+                $this->answerQuestion( $question );
+                $sleep = $this->persona->getBrowseTagsCommentWait();
+                echo "submitted comment for $name - sleeping for $sleep seconds\n";
+                sleep($sleep);
+            }
+            $sleep = $this->persona->getBrowseTagsTagWait();
+            echo "completed asking questions for $name - sleeping for $sleep seconds\n";
+            sleep($sleep);
+        }
+    }
+    
+    
+    /**
+_method	put
+authenticity_token	QYZClITpvvoMDQNlKJiHYHkAc5Uw4gWVsR0DYPJ0yCM=
+question[answer_text]	none
+photo_request_id	
+commit	Answer
+question[submit_stream]	1
+question[submit_twitter]	0
+question[submit_facebook]	0
+     */
+    public function answerQuestion( $questionId ){
+        $name = $this->persona->askfm->username;
+        $url = "http://ask.fm/$name/questions/$questionId/reply";
+        $response = $this->get( $url );
+
+        $authToken = '';
+        $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
+        preg_match($ptrn,$response,$matches);
+        if( isset( $matches[1] ) ){
+            $authToken = $matches[1];
+        }
+        
+        $answer = $this->persona->getVolleyAnswer( 'askfm' );
+        
+        $params = array(
+            '_method' => 'put',
+            'authenticity_token' => $authToken,
+            'question[answer_text]'	=> $answer,
+            'photo_request_id'	=> '',
+            'commit'	=> 'Answer',
+            'question[submit_stream]'	=> 1,
+            'question[submit_twitter]'	=> 0,
+            'question[submit_facebook]'	=> 0
+        );
+        
+        $formActionUrl = "http://ask.fm/questions/$questionId/answer";
+        
+        $response = $this->post( $formActionUrl, $params, true );
+        
+        print_r( array($response, $params, $formActionUrl) ); exit;
+        
+    }
+    
+    public function getQuestions(){
+        $url = 'http://ask.fm/account/questions';
+        $response = $this->get( $url );
+        // <div class="question" dir="ltr">
+        //<span class="text-bold"><span dir="ltr">Do you already have Ask.fm app for iPhone?</span></span>
+        $pattern = '/<div class="questionBox" id="inbox_question_(.*?)">/i';
+        // $pattern = '@<div class="question" dir="ltr">\s*<span class="text-bold"><span dir="ltr">(.*?)</span>@';
+        preg_match_all($pattern, $response, $matches);
+        $questions = isset( $matches[1] ) ? $matches[1] : array();
+        
+        $idsPerTag = $this->persona->idsPerTagInsta();
+        
+        $goodQ = array();
+        foreach( $questions as $questionId ){
+            if( count( $goodQ ) < $idsPerTag && $this->canAnswer( $questionId ) ){
+                $goodQ[] = $questionId;
+            }
+        }
+        return $goodQ;
+    }
+    
+    public function canAnswer( $questionId ){
+        return true;
     }
     
     /**
@@ -151,14 +166,14 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
      */
     public function handleLogin(){
         $loggedIn = true;
-        $url = 'http://web.stagram.com/tag/lol';
+        $url = 'http://www.ask.fm';
         $response = $this->get( $url );
-        if( !$this->isLoggedIn($response) ){
+        if( $this->isNotLoggedIn($response) ){
             $name = $this->persona->name;
             echo "user $name not logged in!  loging in!\n";
-            $this->loginAndAuthorizeApp();
+            $this->login();
             $response = $this->get( $url );
-            if( !$this->isLoggedIn($response) ){
+            if( $this->isNotLoggedIn($response) ){
                 $msg = "something is wrong with logging in $name to askfm!  disabling the user!\n";
                 echo $msg;
                 $this->disablePersona( $msg );
@@ -168,103 +183,113 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
         return $loggedIn;
     }
     
-    public function disablePersona( $reason ){
-        $dao = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
-        $dao->disableJob($this->persona->askfm->name);
-        $this->sendWarningEmail( $reason );
-    }
-    
-    public function sendWarningEmail( $reason ){
-        $c = BIM_Config::warningEmail();
-        $e = new BIM_Email_Swift( $c->smtp );
-        $c->emailData->text = $reason;
-        $e->sendEmail( $c->emailData );
-    }
-    
-    public function getTaggedIds( ){
-        $tags = $this->persona->getTags();
+    public function getPopular( ){
         $taggedIds = array();
         $idsPerTag = $this->persona->idsPerTagInsta();
-        foreach( $tags as $tag ){
-            $ids = $this->getIdsForTag($tag, 2);
-            $taggedIds[ $tag ] = array();
-            foreach( $ids as $id ){
-                if( count( $taggedIds[ $tag ] ) < $idsPerTag && $this->canPing( $id ) ){
-                    $taggedIds[ $tag ][] = $id;
-                }
+        $ids = $this->getPopularIds();
+        foreach( $ids as $id ){
+            if( count( $taggedIds ) < $idsPerTag && $this->canPing( $id ) ){
+                $taggedIds[] = $id;
             }
         }
         // print_r( $taggedIds ); exit;
         return $taggedIds;
     }
     
-    public function getIdsForTag( $tag, $iterations = 1 ){
+    // http://ask.fm/account/popular
+        /* <div class="popular-headSet">
+    <a href="/Mariiaangeeless" class="border-none"><img alt="" class="popular-pic" src="http://img6.ask.fm/assets/171/805/569/thumb/befunky_instant_156.jpg.jpg"></a>
+*/
+    public function getPopularIds( $iterations = 1 ){
         $ids = array();
-        $pageUrl = "http://web.stagram.com/tag/$tag";
+        $pageUrl = "http://ask.fm/account/popular";
         for( $n = 0; $n < $iterations; $n++ ){
             $response = $this->get( $pageUrl );
-            // here we ensure that we are logged in still
-            // $this->handleLogin( $response );
-            //print_r( $this->isLoggedIn($response ) ); exit;
-            
-            // type="image" name="comment__166595034299642639_37459491"
-            $ptrn = '/type="image" name="comment__(.+?)"/';
+            $ptrn = '/class="popular-headSet".+?a href="(.+?)".*?class="border-none"/is';
             preg_match_all($ptrn, $response, $matches);
+            // print_r( array($response, $matches) ); exit();
             if( isset( $matches[1] ) ){
                 array_splice( $ids, count( $ids ),  0, $matches[1] );
             }
-            
             $sleep = $this->persona->getTagIdWaitTime();
             echo "sleeping for $sleep seconds after fetching $pageUrl\n";
             sleep( $sleep );
         }
         $ids = array_unique( $ids );
+        $ids = array_map( function( $el ){ return trim( $el, '/ ' ); } , $ids);
         // print_r( array($ids, $tag) );exit;
         return $ids;
     }
     
     public function canPing( $id ){
         $canPing = false;
-        list( $imageId, $userId ) = explode( '_', $id, 2 );
-        if( $imageId && $userId ){
-            $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
-            $timeSpan = 86400 * 7;
-            $currentTime = time();
-            $lastContact = $dao->getLastContact( $userId );
-            if( ($currentTime - $lastContact) >= $timeSpan ){
-                $canPing = true;
-            }
+        $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
+        $timeSpan = 86400 * 7;
+        $currentTime = time();
+        $lastContact = $dao->getLastContact( $id );
+        if( ($currentTime - $lastContact) >= $timeSpan ){
+            $canPing = true;
         }
         return $canPing;
     }
     
-    public function isLoggedIn( $html ){
-        $ptrn = '@LOG OUT</a>@';
+    public function isNotLoggedIn( $html ){
+        $ptrn = '@create_account_link@';
         return preg_match($ptrn, $html);
     }
     
-    public function submitComment( $id ){
+    /*
+authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
+question[question_text]	asking myself a question. durrrr. I am so lonely.
+question[force_anonymous]	
+question[force_anonymous]	force_anonymous
+authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8= 
+
+authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
+question[question_text]	why dont you have a pic yet?
+question[force_anonymous]	
+authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
+     */
+    
+    public function submitQuestion( $id ){
         $message = $this->persona->getVolleyQuote();
-        $params = array(
-            'message' => $message,
-            'messageid' => $id,
-            't'=> 5069
-        );
-        print_r( $params );
-        $response = $this->post( 'http://web.stagram.com/post_comment/', $params );
-        $response = json_decode( $response );
-        print_r( $response );
-        if( isset($response->status) && $response->status == 'OK' ){
-            $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
-            list( $imageId, $userId ) = explode('_', $id, 2 );
-            $dao->updateLastContact( $userId, time() );
-            $dao->logSuccess($id, $message, $this->persona->askfm->name );
-        } else {
-            print_r( $response );
-            $sleep = $this->persona->getLoginWaitTime();
-            echo $this->persona->name." no longer logged in! trying login again after sleeping for $sleep seconds\n";
-            sleep( $sleep );
-            $this->handleLogin();
+        $html = $this->get("http://ask.fm/$id");
+        
+        $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
+        preg_match($ptrn,$html,$matches);
+        $authToken = '';
+        if( isset( $matches[1] ) ){
+            $authToken = $matches[1];
         }
+        
+        $params = array(
+            'authenticity_token' => $authToken,
+            'question[question_text]' => $message,
+            'question[force_anonymous]' => '',
+        );
+        
+        print_r( $params );
+        
+        $response = $this->post( "http://ask.fm/$id/questions/create", $params );
+        
+        if( !preg_match('/your question has been sent/i', $response ) ){
+            $this->disablePersona( "disabling ".$this->persona->name." in (class :: function) ".__CLASS__.' :: '.__FUNCTION__ );
+            //$this->reLoginWithWait();
+        } else {
+            $this->logSuccess( $id, $message );
+        }
+    }
+    
+    public function reLoginWithWait(){
+        $sleep = $this->persona->getLoginWaitTime();
+        echo $this->persona->name." no longer logged in! trying login again after sleeping for $sleep seconds\n";
+        sleep( $sleep );
+        $this->handleLogin();
+    }
+    
+    public function logSuccess( $id, $message ){
+        $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
+        $dao->updateLastContact( $id, time() );
+        $dao->logSuccess($id, $message, $this->persona->name );
     }
 }
