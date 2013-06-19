@@ -12,8 +12,8 @@ class BIM_Growth_Persona{
         } else {
             $this->loadData( $params );
         }
-        $this->adQuotes = BIM_Config::adQuotes();
-        $this->authenticQuotes = BIM_Config::authenticQuotes();
+        $this->adQuotes = BIM_Config::adQuotes('askfm');
+        $this->authenticQuotes = BIM_Config::authenticQuotes('askfm');
     }
     
     public function getTumblrBlogName(){
@@ -31,6 +31,18 @@ class BIM_Growth_Persona{
             $quotes = $this->adQuotes;
         } else {
             $quotes = $this->authenticQuotes;
+        }
+        
+        $ct = count( $quotes ) - 1;
+        $idx = mt_rand(0, $ct);
+        return $quotes[ $idx ];
+    }
+    
+    public function getVolleyAnswer( $network = '' ){
+        if( isset( $this->type ) && $this->type == 'ad' ){
+            $quotes = BIM_Config::adTags( $network );
+        } else {
+            $quotes = BIM_Config::authenticTags( $network );
         }
         
         $ct = count( $quotes ) - 1;

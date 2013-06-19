@@ -48,6 +48,10 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
     }
     
     public function browseQuestions(){
+        return $this->askQuestions();
+    }
+    
+    public function askQuestions(){
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $popIds = $this->getPopular();
@@ -55,7 +59,7 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
             //print_r( $popIds );exit;
             
             foreach( $popIds as $id ){
-                $this->submitQuestion('bouncyxoxo');
+                $this->submitQuestion( $id );
                 $sleep = $this->persona->getBrowseTagsCommentWait();
                 echo "submitted comment - sleeping for $sleep seconds\n";
                 sleep($sleep);
@@ -64,6 +68,93 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
             echo "completed askfm - sleeping for $sleep seconds\n";
             sleep($sleep);
         }
+    }
+    
+    public function answerQuestions(){
+        $loggedIn = $this->handleLogin();
+        if( $loggedIn ){
+            $questions = $this->getQuestions();
+            
+            $name = $this->persona->name;
+            foreach( $questions as $question ){
+                $this->answerQuestion( $question );
+                $sleep = $this->persona->getBrowseTagsCommentWait();
+                echo "submitted comment for $name - sleeping for $sleep seconds\n";
+                sleep($sleep);
+            }
+            $sleep = $this->persona->getBrowseTagsTagWait();
+            echo "completed asking questions for $name - sleeping for $sleep seconds\n";
+            sleep($sleep);
+        }
+    }
+    
+    
+    /**
+_method	put
+authenticity_token	QYZClITpvvoMDQNlKJiHYHkAc5Uw4gWVsR0DYPJ0yCM=
+question[answer_text]	none
+photo_request_id	
+commit	Answer
+question[submit_stream]	1
+question[submit_twitter]	0
+question[submit_facebook]	0
+     */
+    public function answerQuestion( $questionId ){
+        $name = $this->persona->askfm->username;
+        $url = "http://ask.fm/$name/questions/$questionId/reply";
+        $response = $this->get( $url );
+
+        $authToken = '';
+        $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
+        preg_match($ptrn,$response,$matches);
+        if( isset( $matches[1] ) ){
+            $authToken = $matches[1];
+        }
+        
+        $answer = $this->persona->getVolleyAnswer( 'askfm' );
+        
+        $params = array(
+            '_method' => 'put',
+            'authenticity_token' => $authToken,
+            'question[answer_text]'	=> $answer,
+            'photo_request_id'	=> '',
+            'commit'	=> 'Answer',
+            'question[submit_stream]'	=> 1,
+            'question[submit_twitter]'	=> 0,
+            'question[submit_facebook]'	=> 0
+        );
+        
+        $formActionUrl = "http://ask.fm/questions/$questionId/answer";
+        
+        $response = $this->post( $formActionUrl, $params, true );
+        
+        print_r( array($response, $params, $formActionUrl) ); exit;
+        
+    }
+    
+    public function getQuestions(){
+        $url = 'http://ask.fm/account/questions';
+        $response = $this->get( $url );
+        // <div class="question" dir="ltr">
+        //<span class="text-bold"><span dir="ltr">Do you already have Ask.fm app for iPhone?</span></span>
+        $pattern = '/<div class="questionBox" id="inbox_question_(.*?)">/i';
+        // $pattern = '@<div class="question" dir="ltr">\s*<span class="text-bold"><span dir="ltr">(.*?)</span>@';
+        preg_match_all($pattern, $response, $matches);
+        $questions = isset( $matches[1] ) ? $matches[1] : array();
+        
+        $idsPerTag = $this->persona->idsPerTagInsta();
+        
+        $goodQ = array();
+        foreach( $questions as $questionId ){
+            if( count( $goodQ ) < $idsPerTag && $this->canAnswer( $questionId ) ){
+                $goodQ[] = $questionId;
+            }
+        }
+        return $goodQ;
+    }
+    
+    public function canAnswer( $questionId ){
+        return true;
     }
     
     /**

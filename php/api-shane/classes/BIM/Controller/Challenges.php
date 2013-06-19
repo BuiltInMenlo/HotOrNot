@@ -87,6 +87,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         		// get challenges for a user prior to a date
     			case "13":
     			    return $this->getPrivateChallengesForUserBeforeDate();
+    			    
     			case "14":
     			    return $this->submitChallengeWithUsernames();
         	}

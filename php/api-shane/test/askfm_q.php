@@ -5,12 +5,11 @@ require_once 'vendor/autoload.php';
 $job = (object) array(
 	'class' => 'BIM_Jobs_Growth',
 	'method' => 'doRoutines',
-    'params' => '{"personaName":"exty86", "routine":"browseQuestions","class":"BIM_Growth_Askfm_Routines"}'
+    'params' => '{"personaName":"exty86", "routine":"askQuestions","class":"BIM_Growth_Askfm_Routines"}'
 );
 
-$q = new BIM_Jobs_Growth();
-$q->doRoutines( $job );
+//$q = new BIM_Jobs_Growth();
+//$q->doRoutines( $job );
 
-//$q = new BIM_JobQueue_Gearman();
-//$q->doBgJob( $job, 'webstagram' );
-
+$q = new BIM_JobQueue_Gearman();
+$q->doBgJob( $job, 'askfm' );
