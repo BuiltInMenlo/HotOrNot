@@ -29,8 +29,8 @@
 # 
 
 asset_grp=$1
-assets_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/media/skinning/06052013/PARTS
-resources_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/ios/HotOrNot/HotOrNot/Resources_test
+assets_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/media/skinning/06192013
+resources_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/ios/HotOrNot/HotOrNot/Resources
 
 isLocale=false
 while getopts "l" optname #--//> there's a '-l'
