@@ -339,7 +339,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[self.view addSubview:toggleHolderView];
 	
 	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
+	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
 	[toggleHolderView addSubview:_togglePrivateImageView];
 	
 	_publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -416,7 +416,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
+	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
 	[self _retrieveChallenges];
 }
 
@@ -432,7 +432,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
+	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
 	[self _retrieveChallenges];
 }
 

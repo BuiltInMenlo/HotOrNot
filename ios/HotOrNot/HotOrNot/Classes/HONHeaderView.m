@@ -25,7 +25,7 @@
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 290.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
-		_titleLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
 		[self addSubview:_titleLabel];
@@ -47,7 +47,7 @@
 - (id)initAsVoteWall {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"voteWallHeader"]]];
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]]];
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 		_activityIndicatorView.frame = CGRectMake(11.0, 11.0, 24.0, 24.0);
@@ -65,7 +65,7 @@
 
 - (id)initAsModalWithTitle:(NSString *)title {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"modalHeaderBackground"]]];
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
 		_title = title;
 		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 12.0, 290.0, 24.0)];

@@ -265,23 +265,23 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [HONAppDelegate honGreenColor];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]]];
 	
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
 	
 	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 60.0, 320.0, 110.0)];
-	captionImageView.image = [UIImage imageNamed:@"fue_caption"];
+	captionImageView.image = [UIImage imageNamed:@"firstRunCopy_username"];
 	[_usernameHolderView addSubview:captionImageView];
 	
 	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, 140.0, 244.0, 44.0)];
-	inputBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
+	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
 	[_usernameHolderView addSubview:inputBGImageView];
 	
 //	UIButton *inputBGButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	inputBGButton.frame = CGRectMake(198.0, 220.0, 244.0, 44.0);
-//	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"firstRunInputBG"] forState:UIControlStateNormal];
-//	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"firstRunInputBG_Active"] forState:UIControlStateHighlighted];
+//	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"fue_inputField_nonActive"] forState:UIControlStateNormal];
+//	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"fue_inputField_Active"] forState:UIControlStateHighlighted];
 //	[inputBGButton addTarget:self action:@selector(_goTextfieldFocus) forControlEvents:UIControlEventTouchUpInside];
 //	[self.view addSubview:inputBGButton];
 	
@@ -317,7 +317,7 @@
 	_tutorialScrollView.pagingEnabled = YES;
 	_tutorialScrollView.showsHorizontalScrollIndicator = NO;
 	_tutorialScrollView.delegate = self;
-	_tutorialScrollView.backgroundColor = [HONAppDelegate honGreenColor];
+	//_tutorialScrollView.backgroundColor = [HONAppDelegate honGreenColor];
 	[_tutorialHolderView addSubview:_tutorialScrollView];
 	
 	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];

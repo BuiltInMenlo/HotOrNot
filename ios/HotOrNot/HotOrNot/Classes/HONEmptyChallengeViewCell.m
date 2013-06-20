@@ -18,8 +18,7 @@
 
 - (id)init {
 	if ((self = [super init])) {		
-		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 63.0)];
-		imageView.image = [UIImage imageNamed:@"nonMessaages"];
+		UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOlderSnaps"]];
 		[self addSubview:imageView];
 		
 		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];

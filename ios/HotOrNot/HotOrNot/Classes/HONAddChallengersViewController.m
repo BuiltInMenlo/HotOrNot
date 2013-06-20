@@ -365,13 +365,13 @@
 	label.text = (section == 0) ? @"Friends on Volley" : @"Invite Friends from Contacts";
 	[headerImageView addSubview:label];
 	
-	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteButton.frame = CGRectMake(254.0, 3.0, 54.0, 24.0);
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_nonActive"] forState:UIControlStateNormal];
-	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_Active"] forState:UIControlStateHighlighted];
-	[inviteButton addTarget:self action:(section == 0) ? @selector(_goFollowFriends) : @selector(_goAllContacts) forControlEvents:UIControlEventTouchUpInside];
-	inviteButton.hidden = ((section == 0 && [_following count] == 0) || (section == 1 && [_contacts count] == 0));
-	[headerImageView addSubview:inviteButton];
+//	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	inviteButton.frame = CGRectMake(254.0, 3.0, 54.0, 24.0);
+//	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_nonActive"] forState:UIControlStateNormal];
+//	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_Active"] forState:UIControlStateHighlighted];
+//	[inviteButton addTarget:self action:(section == 0) ? @selector(_goFollowFriends) : @selector(_goAllContacts) forControlEvents:UIControlEventTouchUpInside];
+//	inviteButton.hidden = ((section == 0 && [_following count] == 0) || (section == 1 && [_contacts count] == 0));
+//	[headerImageView addSubview:inviteButton];
 	
 	return (headerImageView);
 }

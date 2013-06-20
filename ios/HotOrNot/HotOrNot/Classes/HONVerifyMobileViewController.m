@@ -49,11 +49,11 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [HONAppDelegate honGreenColor];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]]];
 	
-//	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 94.0)];
-//	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:1]] placeholderImage:nil];
-//	[self.view addSubview:promoteImageView];
+	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 94.0)];
+	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:1]] placeholderImage:nil];
+	[self.view addSubview:promoteImageView];
 	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	skipButton.frame = CGRectMake(253.0, 3.0, 64.0, 44.0);
@@ -61,10 +61,6 @@
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
 	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:skipButton];
-	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 110.0)];
-	captionImageView.image = [UIImage imageNamed:@"mobile1Copy_username"];
-	[self.view addSubview:captionImageView];
 	
 	UIButton *inputBGButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	inputBGButton.frame = CGRectMake(38.0, 220.0, 244.0, 44.0);
@@ -106,7 +102,7 @@
 	if ([MFMessageComposeViewController canSendText]) {
 //		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 //		pasteboard.persistent = YES;
-//		pasteboard.image = [UIImage imageNamed:@"facebookBackground"];
+//		pasteboard.image = [UIImage imageNamed:@"instagram_template-0001"];
 //
 //		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"sms:" stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
 		

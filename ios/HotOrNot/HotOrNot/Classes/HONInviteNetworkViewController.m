@@ -157,7 +157,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [HONAppDelegate honGreenColor];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]]];
 	
 	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 94.0)];
 	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:0]] placeholderImage:nil];

@@ -47,7 +47,7 @@
 	if ((self = [super init])) {
 		_hasChallenger = NO;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"voteTimelineBackground"]];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
 		[self addSubview:bgImgView];
 	}
 	
@@ -61,7 +61,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteCreator:) name:@"UPVOTE_CREATOR" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteChallenger:) name:@"UPVOTE_CHALLENGER" object:nil];
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"voteTimelineBackground"]];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
 		[self addSubview:bgImgView];
 	}
 	
@@ -207,22 +207,25 @@
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[_rHolderView addSubview:challengerNameButton];
 		
-		UIImageView *likeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(85.0, 254.0, 24.0, 24.0)];
-		likeImageView.image = [UIImage imageNamed:@"heartIcon_nonActive"];
-		[self addSubview:likeImageView];
+		UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		likesButton.frame = CGRectMake(85.0, 270.0, 24.0, 24.0);
+		[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon_nonActive"] forState:UIControlStateNormal];
+		[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon_nonActive"] forState:UIControlStateHighlighted];
+		[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:likesButton];
 		
-		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 253.0, 150.0, 24.0)];
-		_likesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
+		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(110.0, 273.0, 40.0, 22.0)];
+		_likesLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:17];
 		_likesLabel.textColor = [HONAppDelegate honBlueTxtColor];
 		_likesLabel.backgroundColor = [UIColor clearColor];
 		_likesLabel.text = (_challengeVO.creatorScore + _challengeVO.challengerScore > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
 		[self addSubview:_likesLabel];
 		
-		UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		likesButton.frame = CGRectMake(13.0, 256.0, 190.0, 24.0);
-		[likesButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-		[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:likesButton];
+		UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		likesLabelButton.frame = _likesLabel.frame;
+		[likesLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+		[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:likesLabelButton];
 		
 		UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(442.0, 0.0, 210.0, 210.0)];
 		joinHolderView.backgroundColor = [UIColor colorWithWhite:0.894 alpha:1.0];
@@ -304,22 +307,25 @@
 	_rScoreLabel.hidden = !_hasChallenger;
 	[_rHolderView addSubview:_rScoreLabel];
 	
-	UIImageView *commentsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(16.0, 270.0, 24.0, 24.0)];
-	commentsImageView.image = [UIImage imageNamed:@"commentBubble"];
-	[self addSubview:commentsImageView];
+	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	commentsButton.frame = CGRectMake(16.0, 270.0, 24.0, 24.0);
+	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateNormal];
+	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateHighlighted];
+	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:commentsButton];
 	
 	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 273.0, 40.0, 22.0)];
 	_commentsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:17];
-	_commentsLabel.textColor = [HONAppDelegate honGrey518Color];
+	_commentsLabel.textColor = [HONAppDelegate honBlueTxtColor];
 	_commentsLabel.backgroundColor = [UIColor clearColor];
 	_commentsLabel.text = (_challengeVO.commentTotal >= 99) ? @"99+" : [NSString stringWithFormat:@"%d", _challengeVO.commentTotal];
 	[self addSubview:_commentsLabel];
 	
-	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	commentsButton.frame = _commentsLabel.frame;
-	[commentsButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:commentsButton];
+	UIButton *commentsLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	commentsLabelButton.frame = _commentsLabel.frame;
+	[commentsLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+	[commentsLabelButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:commentsLabelButton];
 	
 	
 //	UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
@@ -512,6 +518,10 @@
 
 - (void)_goComments {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_COMMENTS" object:_challengeVO];
+}
+
+- (void)_goScore {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
 }
 
 - (void)_goMore {

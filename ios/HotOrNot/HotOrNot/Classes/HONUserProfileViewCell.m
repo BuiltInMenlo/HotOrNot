@@ -105,36 +105,52 @@
 	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:_ptsLabel];
 	
-	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = CGRectMake(224.0, 37.0, 24.0, 44.0);
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
-	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
-	shareButton.hidden = YES;//isUser;
-	[self addSubview:shareButton];
-	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(12.0, 151.0, 137.0, 40.0);
-	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
-	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
-	[snapButton addTarget:self action:(isUser) ? @selector(_goNewChallenge) : @selector(_goNewUserChallenge) forControlEvents:UIControlEventTouchUpInside];
+	snapButton.frame = CGRectMake(20.0, 151.0, 279.0, 44.0);
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessage_nonActive"] forState:UIControlStateNormal];
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessage_Active"] forState:UIControlStateHighlighted];
+	[snapButton addTarget:self action:@selector(_goNewUserChallenge) forControlEvents:UIControlEventTouchUpInside];
+	snapButton.hidden = isUser;
 	[self addSubview:snapButton];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(165.0, 151.0, 137.0, 40.0);
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_nonActive"] forState:UIControlStateNormal];
-	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_Active"] forState:UIControlStateHighlighted];
+	settingsButton.frame = CGRectMake(20, 151.0, 279.0, 44.0);
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"privacySettings_nonActive"] forState:UIControlStateNormal];
+	[settingsButton setBackgroundImage:[UIImage imageNamed:@"privacySettings_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
 	settingsButton.hidden = !isUser;
 	[self addSubview:settingsButton];
 	
-	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	flagButton.frame = CGRectMake(165.0, 151.0, 144.0, 44.0);
-	[flagButton setBackgroundImage:[UIImage imageNamed:@"profileReportButton_nonActive"] forState:UIControlStateNormal];
-	[flagButton setBackgroundImage:[UIImage imageNamed:@"profileReportButton_Active"] forState:UIControlStateHighlighted];
-	[flagButton addTarget:self action:@selector(_goFlagUser) forControlEvents:UIControlEventTouchUpInside];
-	flagButton.hidden = isUser;
-	[self addSubview:flagButton];
+//	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	shareButton.frame = CGRectMake(224.0, 37.0, 24.0, 44.0);
+//	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+//	[shareButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+//	[shareButton addTarget:self action:@selector(_goShare) forControlEvents:UIControlEventTouchUpInside];
+//	shareButton.hidden = YES;//isUser;
+//	[self addSubview:shareButton];
+//	
+//	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	snapButton.frame = CGRectMake(12.0, 151.0, 137.0, 40.0);
+//	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
+//	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
+//	[snapButton addTarget:self action:(isUser) ? @selector(_goProfilePic) : @selector(_goNewUserChallenge) forControlEvents:UIControlEventTouchUpInside];
+//	[self addSubview:snapButton];
+//	
+//	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	settingsButton.frame = CGRectMake(165.0, 151.0, 137.0, 40.0);
+//	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_nonActive"] forState:UIControlStateNormal];
+//	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_Active"] forState:UIControlStateHighlighted];
+//	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+//	settingsButton.hidden = !isUser;
+//	[self addSubview:settingsButton];
+//	
+//	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	flagButton.frame = CGRectMake(165.0, 151.0, 144.0, 44.0);
+//	[flagButton setBackgroundImage:[UIImage imageNamed:@"profileReportButton_nonActive"] forState:UIControlStateNormal];
+//	[flagButton setBackgroundImage:[UIImage imageNamed:@"profileReportButton_Active"] forState:UIControlStateHighlighted];
+//	[flagButton addTarget:self action:@selector(_goFlagUser) forControlEvents:UIControlEventTouchUpInside];
+//	flagButton.hidden = isUser;
+//	[self addSubview:flagButton];
 }
 
 - (void)updateCell {

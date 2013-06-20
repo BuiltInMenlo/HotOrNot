@@ -173,8 +173,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1ModalBackground-568h@2x" : @"fueStep1ModalBackground"];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 	[self.view addSubview:bgImgView];
 }
 

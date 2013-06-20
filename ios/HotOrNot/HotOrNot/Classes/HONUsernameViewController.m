@@ -52,8 +52,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1ModalBackground-568h@2x" : @"fueStep1ModalBackground"];
+	UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 	[self.view addSubview:bgImgView];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_username", nil)];
@@ -74,8 +73,8 @@
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:submitButton];
 	
-	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(34.0, 162.0, 251.0, 48.0)];
-	subjectBGImageView.image = [UIImage imageNamed:@"firstRun_InputField_nonActive"];
+	UIImageView *subjectBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, 140.0, 244.0, 44.0)];
+	subjectBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
 	subjectBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:subjectBGImageView];
 	

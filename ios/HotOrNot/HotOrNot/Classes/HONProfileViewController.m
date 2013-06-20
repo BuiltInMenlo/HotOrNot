@@ -570,7 +570,7 @@
 	if ([MFMessageComposeViewController canSendText]) {
 //		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 //		pasteboard.persistent = YES;
-//		pasteboard.image = [UIImage imageNamed:@"facebookBackground"];
+//		pasteboard.image = [UIImage imageNamed:@"instagram_template-0001"];
 //		
 //		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"sms:" stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
 		
@@ -596,7 +596,7 @@
 		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
 		mailComposeViewController.mailComposeDelegate = self;
 		[mailComposeViewController setSubject:NSLocalizedString(@"invite_email", nil)];
-//		[mailComposeViewController addAttachmentData:UIImagePNGRepresentation([UIImage imageNamed:@"facebookBackground"]) mimeType:@"image/png" fileName:@"MyImageName"];
+//		[mailComposeViewController addAttachmentData:UIImagePNGRepresentation([UIImage imageNamed:@"instagram_template-0001"]) mimeType:@"image/png" fileName:@"MyImageName"];
 		[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
 		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
 		

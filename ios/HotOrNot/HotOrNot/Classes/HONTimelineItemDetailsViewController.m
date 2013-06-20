@@ -158,7 +158,7 @@
 	[self.view addSubview:_imageView];
 		
 	UIImageView *footerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 472.0 : 384.0, 320.0, 96.0)];
-	footerImageView.image = [UIImage imageNamed:@"cameraFooterBackground"];
+	//footerImageView.image = [UIImage imageNamed:@"cameraFooterBackground"];
 	footerImageView.userInteractionEnabled = YES;
 	[self.view addSubview:footerImageView];
 	

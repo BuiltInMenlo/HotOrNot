@@ -348,7 +348,7 @@
 	[self.view addSubview:_whiteBGView];
 	
 	_toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 301.0, 50.0)];
-	_toggleImageView.image = [UIImage imageNamed:@"searchToggle_Users"];
+	_toggleImageView.image = [UIImage imageNamed:@"searchToggleB"];
 	_toggleImageView.alpha = 0.0;
 	[self.view addSubview:_toggleImageView];
 	

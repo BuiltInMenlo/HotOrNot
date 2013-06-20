@@ -383,14 +383,14 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	if (_isPushView)
+	if (_isPushView) {
 		_headerView = [[HONHeaderView alloc] initWithTitle:(_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName];
+		[_headerView hideRefreshing];
 	
-	else
+	} else
 		_headerView = [[HONHeaderView alloc] initAsVoteWall];
 	
-	[_headerView toggleRefresh:NO];
-	[_headerView refreshButton].hidden = _isPushView;
+	//[_headerView toggleRefresh:NO];
 	
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -574,7 +574,7 @@
 }
 
 - (void)_goTutorial {
-	_tutorialOverlayImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fueStep1ModalBackground-568h@2x" : @"fueStep1ModalBackground"]];
+	_tutorialOverlayImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 	_tutorialOverlayImgView.userInteractionEnabled = YES;
 	[self.view addSubview:_tutorialOverlayImgView];
 	
