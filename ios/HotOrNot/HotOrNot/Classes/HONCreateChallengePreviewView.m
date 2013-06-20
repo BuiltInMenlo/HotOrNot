@@ -108,7 +108,7 @@
 }
 
 
-#pragma mark Puplic APIs
+#pragma mark - Puplic APIs
 - (void)showKeyboard {
 	[_subjectTextField becomeFirstResponder];
 	[self _raiseKeyboard];

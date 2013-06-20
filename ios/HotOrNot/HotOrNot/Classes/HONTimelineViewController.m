@@ -405,7 +405,7 @@
 	}
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
+	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -447,7 +447,7 @@
 	}
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+		//if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
 		
 	} else {
@@ -565,6 +565,8 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+	
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:^(void) {
@@ -681,7 +683,6 @@
 	
 	UINavigationController *navigationController = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]] : (vo.statusID == 1 || vo.statusID == 2) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
@@ -786,7 +787,9 @@
 		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
 		
 		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
-		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
+		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]]
+																					cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+																			  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 		[bgView addSubview:bannerImageView];
 		
 		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -843,10 +846,10 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return (([_username length] > 0) ? 210.0 : 310.0);
+		return (([_username length] > 0) ? 210.0 : 320.0);
 		
 	} else
-		return (310.0);
+		return (320.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

@@ -342,12 +342,12 @@
 	_defaultUsers = [NSMutableArray array];
 	_pastUsers = [NSMutableArray array];
 	
-	_whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 52.0)];
+	_whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 	_whiteBGView.backgroundColor = [UIColor whiteColor];
 	_whiteBGView.alpha = 0.0;
 	[self.view addSubview:_whiteBGView];
 	
-	_toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 301.0, 31.0)];
+	_toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 301.0, 50.0)];
 	_toggleImageView.image = [UIImage imageNamed:@"searchToggle_Users"];
 	_toggleImageView.alpha = 0.0;
 	[self.view addSubview:_toggleImageView];

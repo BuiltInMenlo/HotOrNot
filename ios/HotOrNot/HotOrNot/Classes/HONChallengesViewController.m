@@ -318,7 +318,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[self.view addSubview:_headerView];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(266.0, 0.0, 54.0, 44.0);
+	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -335,29 +335,21 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 51.0)];
+	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0)];
 	[self.view addSubview:toggleHolderView];
 	
-	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 51.0)];
+	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
 	[toggleHolderView addSubview:_togglePrivateImageView];
 	
 	_publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_publicButton.frame = CGRectMake(0.0, 0.0, 160.0, 44.0);
-	_publicButton.titleLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
-	[_publicButton setTitleColor:[HONAppDelegate honGrey455Color] forState:UIControlStateNormal];
-	[_publicButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
-	[_publicButton setTitle:@"Public" forState:UIControlStateNormal];
 	[_publicButton addTarget:self action:@selector(_goPublicChallenges) forControlEvents:UIControlEventTouchUpInside];
 	[_publicButton setSelected:YES];
 	[toggleHolderView addSubview:_publicButton];
 	
 	_privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_privateButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
-	_privateButton.titleLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
-	[_privateButton setTitleColor:[HONAppDelegate honGrey455Color] forState:UIControlStateNormal];
-	[_privateButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
-	[_privateButton setTitle:@"Private" forState:UIControlStateNormal];
 	[_privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
 	[_privateButton setSelected:NO];
 	[toggleHolderView addSubview:_privateButton];

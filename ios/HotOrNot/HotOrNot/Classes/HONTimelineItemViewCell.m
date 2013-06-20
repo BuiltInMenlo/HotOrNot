@@ -47,8 +47,7 @@
 	if ((self = [super init])) {
 		_hasChallenger = NO;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 310.0)];
-		bgImgView.image = [UIImage imageNamed:@"voteTimelineBackground"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"voteTimelineBackground"]];
 		[self addSubview:bgImgView];
 	}
 	
@@ -62,8 +61,7 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteCreator:) name:@"UPVOTE_CREATOR" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteChallenger:) name:@"UPVOTE_CHALLENGER" object:nil];
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 310.0)];
-		bgImgView.image = [UIImage imageNamed:@"voteTimelineBackground"];
+		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"voteTimelineBackground"]];
 		[self addSubview:bgImgView];
 	}
 	
@@ -114,10 +112,10 @@
 	lImgView.userInteractionEnabled = YES;
 	
 	if (kIsImageCacheEnabled)
-		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:nil];
+		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:[UIImage imageNamed:@"timeline_image_background"]];
 	
 	else
-		[lImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+		[lImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:[UIImage imageNamed:@"timeline_image_background"] success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 	
 	
 	[_lHolderView addSubview:lImgView];
@@ -163,18 +161,18 @@
 		rImgView.userInteractionEnabled = YES;
 		
 		if (kIsImageCacheEnabled)
-			[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] placeholderImage:nil];
+			[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] placeholderImage:[UIImage imageNamed:@"timeline_image_background"]];
 		
 		else
-			[rImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+			[rImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:[UIImage imageNamed:@"timeline_image_background"] success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 		
 		[_rHolderView addSubview:rImgView];
 		
-		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 44.0, 44.0)];
+		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
 		lScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
 		[_lHolderView addSubview:lScoreImageView];
 		
-		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 44.0, 44.0)];
+		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
 		rScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
 		[_rHolderView addSubview:rScoreImageView];
 		
@@ -214,7 +212,7 @@
 		[scrollView addSubview:joinHolderView];
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		joinButton.frame = CGRectMake(33.0, 83.0, 144.0, 44.0);
+		joinButton.frame = CGRectMake(48.0, 73.0, 114.0, 64.0);
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 		[joinButton addTarget:self action:@selector(_goNewSubjectChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -262,7 +260,7 @@
 		
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
 			UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			joinButton.frame = CGRectMake(31.0, 81.0, 149.0, 49.0);
+			joinButton.frame = CGRectMake(48.0, 73.0, 114.0, 64.0);
 			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 			[joinButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -306,8 +304,19 @@
 	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:commentsButton];
 	
+	
+//	UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
+//	lScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
+//	[_lHolderView addSubview:lScoreImageView];
+//	
+//	UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
+//	rScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
+//	[_rHolderView addSubview:rScoreImageView];
+	
+	
+	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(291.0, 260.0, 24.0, 44.0);
+	moreButton.frame = CGRectMake(271.0, 260.0, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];

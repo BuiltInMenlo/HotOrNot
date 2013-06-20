@@ -17,7 +17,6 @@
 #import "AFJSONRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "KikAPI.h"
-#import "Parse/Parse.h"
 #import "Reachability.h"
 #import "UAirship.h"
 #import "UAPush.h"
@@ -49,10 +48,9 @@ NSString * const kAPIVotes = @"Votes.php";
 // view heights
 const CGFloat kNavBarHeaderHeight = 44.0f;
 const CGFloat kSearchHeaderHeight = 44.0f;
-const CGFloat kTabBarHeight = 44.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
-const CGSize kTabSize = {80.0, 44.0};
+const CGSize kTabSize = {80.0, 50.0};
 
 
 // snap params
@@ -63,13 +61,13 @@ const CGFloat kSnapJPEGCompress = 0.875f;
 const CGFloat kHUDTime = 2.33f;
 
 // image sizes
-
 const CGFloat kSnapThumbDim = 63.0f;
 const CGFloat kSnapMediumDim = 73.0f;
 const CGFloat kSnapLargeDim = 210.0f;
 const CGFloat kAvatarDim = 200.0;
 
 const BOOL kIsImageCacheEnabled = YES;
+const NSUInteger kFollowingUsersDisplayTotal = 3;
 
 @interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
@@ -89,11 +87,11 @@ const BOOL kIsImageCacheEnabled = YES;
 
 
 + (NSString *)apiServerPath {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
-	//return (@"http://54.243.163.24/hotornot/api-shane");
+	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	return (@"http://50.17.142.22/hotornot/api-shane");
 	
-	return (@"http://discover.getassembly.com/hotornot/api-shane");
-	//return (@"http://54.234.38.234/hotornot/api-dev");
+	//return (@"http://discover.getassembly.com/hotornot/api-shane");
+	//return (@"http://50.17.142.22/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {

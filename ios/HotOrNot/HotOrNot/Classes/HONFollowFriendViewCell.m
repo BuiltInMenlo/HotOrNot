@@ -31,17 +31,17 @@
 		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(256.0, 7.0, 48.0, 48.0);
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"selectedRowCheck"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"selectedRowCheck"] forState:UIControlStateHighlighted];
+		_checkButton.frame = CGRectMake(258.0, 9.0, 44.0, 44.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self addSubview:_checkButton];
 		
 		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_followButton.frame = CGRectMake(248.0, 9.0, 64.0, 44.0);
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"addFriend_nonActive"] forState:UIControlStateNormal];
-		[_followButton setBackgroundImage:[UIImage imageNamed:@"addFriend_Active"] forState:UIControlStateHighlighted];
+		_followButton.frame = CGRectMake(258.0, 9.0, 44.0, 44.0);
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"plusButton_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:@"plusButton_Active"] forState:UIControlStateHighlighted];
 		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_followButton];
 	}

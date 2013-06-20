@@ -661,7 +661,7 @@ const CGFloat kFocusInterval = 0.5f;
 		NSMutableArray *removeVOs = [NSMutableArray array];
 		for (HONContactUserVO *vo in _addContacts) {
 			for (HONContactUserVO *dropVO in contacts) {
-				if ([vo.fullName isEqualToString:dropVO.fullName]) {
+				if ([vo.mobileNumber isEqualToString:dropVO.mobileNumber]) {
 					[removeVOs addObject:vo];
 					continue;
 				}

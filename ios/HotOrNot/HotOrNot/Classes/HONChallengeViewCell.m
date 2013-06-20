@@ -74,7 +74,7 @@
 	subjectTimeLabel.text = [NSString stringWithFormat:@"%@ at %@", _challengeVO.subjectName, [[dateFormatter stringFromDate:_challengeVO.updatedDate] lowercaseString]];
 	[self addSubview:subjectTimeLabel];
 	
-	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(280.0, 20.0, 24.0, 24.0)];
+	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(270.0, 10.0, 44.0, 44.0)];
 	_hasSeenImageView.image = [UIImage imageNamed:(_challengeVO.hasViewed) ? @"viewedSnapCheck" : @"newSnapDot"];
 	[self addSubview:_hasSeenImageView];
 	

@@ -43,6 +43,7 @@ const CGFloat kAvatarDim;
 
 
 const BOOL kIsImageCacheEnabled;
+const NSUInteger kFollowingUsersDisplayTotal;
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 

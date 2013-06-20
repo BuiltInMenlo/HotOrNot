@@ -25,19 +25,20 @@
 # EXAMPLE:
 # 
 #     Copies the back buttons over to the project's locale resource folders.
-#     cp_assets -l 'backButton*'
+#     cp_assets -1 'backButton*'
 # 
 
 asset_grp=$1
-assets_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/media/skinning/06192013
+assets_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/media/skinning/06192013/PARTS
 resources_dir=/Volumes/Skuld/labor/clients/built_in_menlo/projects/hotornot/ios/HotOrNot/HotOrNot/Resources
 
 isLocale=false
-while getopts "l" optname #--//> there's a '-l'
+while getopts "l:" optname #--//> there's a '-l'
 	do #--/ loop thru the params
 		case "${optname}" in #  -/> set flag based on char
 			"l") # )-/> passed in '-l'
 				isLocale=true
+				asset_grp=$OPTARG
 			;;
 
 			"?") # )-/> anything else

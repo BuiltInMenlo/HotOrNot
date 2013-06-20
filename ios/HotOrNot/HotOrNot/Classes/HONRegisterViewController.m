@@ -32,6 +32,7 @@
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UIView *usernameHolderView;
 @property (nonatomic, strong) UITextField *usernameTextField;
+@property (nonatomic, retain) UIButton *submitButton;
 @property (nonatomic, strong) UIView *tutorialHolderView;
 @property (nonatomic, strong) UIScrollView *tutorialScrollView;
 @property (nonatomic, strong) UIPageControl *pageControl;
@@ -222,7 +223,7 @@
 				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 				
 				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+					[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 					
 					if ([HONAppDelegate isFUEInviteEnabled])
 						[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
@@ -269,11 +270,22 @@
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
 	
-	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(53.0, 60.0, 214.0, 118.0)];
-	usernameBGImageView.image = [UIImage imageNamed:@"fue_inputField"];
-	[_usernameHolderView addSubview:usernameBGImageView];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 60.0, 320.0, 110.0)];
+	captionImageView.image = [UIImage imageNamed:@"fue_caption"];
+	[_usernameHolderView addSubview:captionImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(68.0, 140.0, 230.0, 30.0)];
+	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, 140.0, 244.0, 44.0)];
+	inputBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
+	[_usernameHolderView addSubview:inputBGImageView];
+	
+//	UIButton *inputBGButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	inputBGButton.frame = CGRectMake(198.0, 220.0, 244.0, 44.0);
+//	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"firstRunInputBG"] forState:UIControlStateNormal];
+//	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"firstRunInputBG_Active"] forState:UIControlStateHighlighted];
+//	[inputBGButton addTarget:self action:@selector(_goTextfieldFocus) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:inputBGButton];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(68.0, 150.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -287,12 +299,13 @@
 	_usernameTextField.delegate = self;
 	[_usernameHolderView addSubview:_usernameTextField];
 	
-	UIButton *nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	nextButton.frame = CGRectMake(41.0, 213.0, 237.0, 67.0);
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
-	[nextButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
-	[nextButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	[_usernameHolderView addSubview:nextButton];
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	_submitButton.hidden = YES;
+	[_usernameHolderView addSubview:_submitButton];
 	
 	
 	
@@ -373,13 +386,20 @@
 	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 	[UIView commitAnimations];
 	
-	[self performSelector:@selector(_goTextfieldFocus) withObject:nil afterDelay:0.33];
+	[self performSelector:@selector(_goTextfieldFocus) withObject:nil afterDelay:0.25];
 }
 
 
 #pragma mark - UI Presentation
 - (void)_goTextfieldFocus {
-	[_usernameTextField becomeFirstResponder];
+	if (![_usernameTextField isFirstResponder]) {
+		[_usernameTextField becomeFirstResponder];
+		
+		_submitButton.hidden = NO;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
+		}];
+	}
 }
 
 - (void)_presentCamera {
@@ -555,11 +575,9 @@
 		[self _showOverlay];
 		
 	} else {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 		
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
-			
 			if ([HONAppDelegate isFUEInviteEnabled])
 				[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 		}];
@@ -601,10 +619,19 @@
 	
 	//[textField resignFirstResponder];
 	//[self _goNext];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+	}];
 }
 
 - (void)_onTxtDoneEditing:(id)sender {
 	[_usernameTextField resignFirstResponder];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+	}];
+	
 	[self _goNext];
 }
 
@@ -626,10 +653,7 @@
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
-		
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		
 		if ([HONAppDelegate isFUEInviteEnabled])
 			[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];

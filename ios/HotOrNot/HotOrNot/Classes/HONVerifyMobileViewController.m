@@ -17,6 +17,7 @@
 @interface HONVerifyMobileViewController () <MFMessageComposeViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, retain) UITextField *mobileTextField;
 @property (nonatomic, retain) NSString *phoneNumber;
+@property (nonatomic, retain) UIButton *submitButton;
 @end
 
 @implementation HONVerifyMobileViewController 
@@ -50,9 +51,9 @@
 	
 	self.view.backgroundColor = [HONAppDelegate honGreenColor];
 	
-	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 94.0)];
-	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:1]] placeholderImage:nil];
-	[self.view addSubview:promoteImageView];
+//	UIImageView *promoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 94.0)];
+//	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:1]] placeholderImage:nil];
+//	[self.view addSubview:promoteImageView];
 	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	skipButton.frame = CGRectMake(253.0, 3.0, 64.0, 44.0);
@@ -61,20 +62,24 @@
 	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:skipButton];
 	
-	UIView *whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 116.0, 320.0, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 116.0))];
-	whiteBGView.backgroundColor = [UIColor whiteColor];
-	[self.view addSubview:whiteBGView];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 35.0, 320.0, 110.0)];
+	captionImageView.image = [UIImage imageNamed:@"mobile1Copy_username"];
+	[self.view addSubview:captionImageView];
 	
-	UIImageView *mobileImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 116.0, 320.0, 320.0)];
-	mobileImageView.image = [UIImage imageNamed:@"mobileNumberHack"];
-	[self.view addSubview:mobileImageView];
+	UIButton *inputBGButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inputBGButton.frame = CGRectMake(38.0, 220.0, 244.0, 44.0);
+	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"mobileInput_nonActive"] forState:UIControlStateNormal];
+	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"mobileInput_Active"] forState:UIControlStateHighlighted];
+	[inputBGButton addTarget:self action:@selector(_goTextfieldFocus) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:inputBGButton];
 	
-	UIButton *smsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	smsButton.frame = CGRectMake(61.0, 220.0, 230.0, 30.0);
-	[smsButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
-	[smsButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
-	[smsButton addTarget:self action:@selector(_goSMS) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:smsButton];
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	_submitButton.hidden = YES;
+	[self.view addSubview:_submitButton];
 	
 //	_mobileTextField = [[UITextField alloc] initWithFrame:CGRectMake(61.0, 220.0, 230.0, 30.0)];
 //	//[_mobileTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -136,6 +141,17 @@
 															otherButtonTitles:@"Yes, I'm Sure", nil];
 	[alertView setTag:0];
 	[alertView show];
+}
+
+- (void)_goTextfieldFocus {
+	if (![_mobileTextField isFirstResponder]) {
+		[_mobileTextField becomeFirstResponder];
+		
+		_submitButton.hidden = NO;
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
+		}];
+	}
 }
 
 - (void)_goNext {
@@ -200,6 +216,10 @@
 
 - (void)_onTxtDoneEditing:(id)sender {
 	[_mobileTextField resignFirstResponder];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+	}];
 	[self _goNext];
 }
 

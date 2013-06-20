@@ -114,14 +114,14 @@
 	[self addSubview:shareButton];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(12.0, 151.0, 144.0, 44.0);
+	snapButton.frame = CGRectMake(12.0, 151.0, 137.0, 40.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"profileCameraButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:(isUser) ? @selector(_goNewChallenge) : @selector(_goNewUserChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:snapButton];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(165.0, 151.0, 144.0, 44.0);
+	settingsButton.frame = CGRectMake(165.0, 151.0, 137.0, 40.0);
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_nonActive"] forState:UIControlStateNormal];
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"profileSettingsButton_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];

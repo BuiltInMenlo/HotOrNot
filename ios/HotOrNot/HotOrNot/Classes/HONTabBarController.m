@@ -138,11 +138,11 @@
 }
 
 -(void)_addCustomTabs {
-	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, 44.0)];
+	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
 	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
 	[self.view addSubview:_tabHolderView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
 	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
 	bgImageView.userInteractionEnabled = YES;
 	[_tabHolderView addSubview:bgImageView];

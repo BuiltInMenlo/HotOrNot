@@ -39,7 +39,7 @@
 		_headerLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
 		_headerLabel.textColor = [UIColor whiteColor];
 		_headerLabel.text = NSLocalizedString(@"header_register2", nil);
-		[self addSubview:_headerLabel];
+		//[self addSubview:_headerLabel];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		skipButton.frame = CGRectMake(270.0, 5.0, 44.0, 44.0);
@@ -48,32 +48,38 @@
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:skipButton];
 		
-		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([HONAppDelegate isRetina5]) ? 477.0 : 397.0, 640.0, 80.0)];
+		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
 		[self addSubview:_controlsHolderView];
 		
-		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
-		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:cameraRollButton];
+		UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (self.frame.size.height - 12.0) * 0.5, 320.0, 24.0)];
+		captionImageView.image = [UIImage imageNamed:@"takePhotoOverlay"];
+		[_controlsHolderView addSubview:captionImageView];
+		
+		float offset = ([HONAppDelegate isRetina5]) ? 469.0 : 389.0;
+		
+//		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
+//		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
+//		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
+//		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
+//		[_controlsHolderView addSubview:cameraRollButton];
 		
 		UIButton *captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		captureButton.frame = CGRectMake(115.0, 0.0, 90.0, 80.0);
+		captureButton.frame = CGRectMake(128.0, offset, 64.0, 64.0);
 		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];
 		[_controlsHolderView addSubview:captureButton];
 		
 		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		retakeButton.frame = CGRectMake(340.0, 16.0, 121.0, 53.0);
+		retakeButton.frame = CGRectMake(340.0, offset + 24.0, 128.0, 49.0);
 		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_nonActive"] forState:UIControlStateNormal];
 		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_Active"] forState:UIControlStateHighlighted];
 		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
 		[_controlsHolderView addSubview:retakeButton];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(496.0, 16.0, 121.0, 53.0);
+		submitButton.frame = CGRectMake(496.0, offset + 24.0, 128.0, 49.0);
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_nonActive"] forState:UIControlStateNormal];
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

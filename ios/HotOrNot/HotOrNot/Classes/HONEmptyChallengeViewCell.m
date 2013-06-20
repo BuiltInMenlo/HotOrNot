@@ -17,16 +17,13 @@
 }
 
 - (id)init {
-	if ((self = [super init])) {
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 18.0, 240.0, 20.0)];
-		label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
-		label.textColor = [HONAppDelegate honGrey455Color];
-		label.textAlignment = NSTextAlignmentCenter;
-		label.text = @"You have no older messages";
-		[self addSubview:label];
+	if ((self = [super init])) {		
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 63.0)];
+		imageView.image = [UIImage imageNamed:@"nonMessaages"];
+		[self addSubview:imageView];
 		
 		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		findFriendsButton.frame = CGRectMake(35.0, 60.0, 249.0, 49.0);
+		findFriendsButton.frame = CGRectMake(0.0, 60.0, 320.0, 63.0);
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findVolleyFriends_nonActive"] forState:UIControlStateNormal];
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findVolleyFriends_Active"] forState:UIControlStateHighlighted];
 		[findFriendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
