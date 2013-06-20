@@ -2,6 +2,18 @@
 
 class BIM_DAO_Mysql_Growth_Askfm extends BIM_DAO_Mysql_Growth{
 	
+	public function getQuestion( $questionId ){
+		$sql = "
+			select * 
+			from growth.askfm_answer_log
+			where qid = ?
+		";
+		$params = array($questionId);
+		$stmt = $this->prepareAndExecute($sql, $params);
+		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+		return $data;
+	}
+    
 	public function getLastContact( $userId ){
 		$sql = "
 			select last_contact 
@@ -28,6 +40,16 @@ class BIM_DAO_Mysql_Growth_Askfm extends BIM_DAO_Mysql_Growth{
 		$params = array( $userId, $time, $time );
 		$this->prepareAndExecute($sql, $params);
 	}
+
+    public function logAnswerSuccess( $qId, $text, $answer, $userId, $username, $name ){
+		$sql = "
+			insert into growth.askfm_answer_log
+			( `time`, `qid`, `qtext`, `qanswer`, `user_id`, `username`, `network`, `name` ) values (?,?,?,?,?,?,?,?)
+		";
+		$params = array( time(), $qId, $text, $answer, $userId, $username, 'askfm', $name );
+		
+		$this->prepareAndExecute( $sql, $params );
+    }
 	
     public function logSuccess( $id, $comment, $name ){
 		$sql = "

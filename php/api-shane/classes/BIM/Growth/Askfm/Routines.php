@@ -79,11 +79,11 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
             foreach( $questions as $question ){
                 $this->answerQuestion( $question );
                 $sleep = $this->persona->getBrowseTagsCommentWait();
-                echo "submitted comment for $name - sleeping for $sleep seconds\n";
+                echo "submitted answer for $name - sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
             $sleep = $this->persona->getBrowseTagsTagWait();
-            echo "completed asking questions for $name - sleeping for $sleep seconds\n";
+            echo "completed answering questions for $name - sleeping for $sleep seconds\n";
             sleep($sleep);
         }
     }
@@ -99,7 +99,9 @@ question[submit_stream]	1
 question[submit_twitter]	0
 question[submit_facebook]	0
      */
-    public function answerQuestion( $questionId ){
+    public function answerQuestion( $question ){
+        $questionId = $question->id;
+        
         $name = $this->persona->askfm->username;
         $url = "http://ask.fm/$name/questions/$questionId/reply";
         $response = $this->get( $url );
@@ -128,26 +130,59 @@ question[submit_facebook]	0
         
         $response = $this->post( $formActionUrl, $params, true );
         
-        print_r( array($response, $params, $formActionUrl) ); exit;
+        $this->logAnswerSuccess( $questionId, $question->text, $answer, $question->userId, $question->name );
         
+        print_r( array( $params ) );
+        
+    }
+    
+    public function logAnswerSuccess( $qId, $text, $answer, $userId, $username ){
+        $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
+        $dao->logAnswerSuccess( $qId, $text, $answer, $userId, $username, $this->persona->name );
     }
     
     public function getQuestions(){
         $url = 'http://ask.fm/account/questions';
         $response = $this->get( $url );
-        // <div class="question" dir="ltr">
-        //<span class="text-bold"><span dir="ltr">Do you already have Ask.fm app for iPhone?</span></span>
-        $pattern = '/<div class="questionBox" id="inbox_question_(.*?)">/i';
-        // $pattern = '@<div class="question" dir="ltr">\s*<span class="text-bold"><span dir="ltr">(.*?)</span>@';
-        preg_match_all($pattern, $response, $matches);
-        $questions = isset( $matches[1] ) ? $matches[1] : array();
         
-        $idsPerTag = $this->persona->idsPerTagInsta();
+        // <span class="author nowrap">&nbsp;&nbsp;<a href="/selenagomezsfan" class="link-blue" dir="ltr">Selena Gomez</a></span>
+        
+        $pattern = '@<div class="questionBox" id="inbox_question_(.*?)">\s*<div class="question" dir="ltr">\s*<span class="text-bold"><span dir="ltr">(.*?)</span>(?:.+?<span class="author nowrap">.*?<a href="(.*?)" class="link-blue" dir="ltr">(.*?)</a></span>)?@is';
+        preg_match_all($pattern, $response, $matches);
+        
+        //print_r( array( $response, $matches ) ); exit;
+        
+        $questions = array();
+        foreach( $matches[1] as $idx => $questionId ){
+            $text = '';
+            $userId = '';
+            $name = '';
+            
+            if( isset( $matches[2][$idx] ) ){
+                $text = $matches[2][$idx];
+            }
+            if( isset( $matches[3][$idx] ) ){
+                $userId = trim( $matches[3][$idx], '/' );
+            }
+            if( isset( $matches[4][$idx] ) ){
+                $name = $matches[4][$idx];
+            }
+            $questions[] = (object) array(
+    			'id' => $questionId,
+                'text' => $text,
+                'userId' => $userId,
+                'name' => $name
+            );
+        }
         
         $goodQ = array();
-        foreach( $questions as $questionId ){
-            if( count( $goodQ ) < $idsPerTag && $this->canAnswer( $questionId ) ){
-                $goodQ[] = $questionId;
+        if( $questions ){
+            $idsPerTag = $this->persona->idsPerTagInsta();
+            
+            foreach( $questions as $question ){
+                if( count( $goodQ ) < $idsPerTag && $this->canAnswer( $question->id ) ){
+                    $goodQ[] = $question;
+                }
             }
         }
         return $goodQ;
@@ -155,6 +190,15 @@ question[submit_facebook]	0
     
     public function canAnswer( $questionId ){
         return true;
+        $canAnswer = false;
+        $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
+        $timeSpan = 86400 * 7;
+        $currentTime = time();
+        $question = $dao->getQuestion( $questionId );
+        if( $question ){
+            $canAnswer = true;
+        }
+        return $canAnswer;
     }
     
     /**
