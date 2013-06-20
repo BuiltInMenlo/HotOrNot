@@ -10,14 +10,10 @@ $report = $r->getReportData();
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 		<title>Growth Reports</title>
-		
-		<link rel="shortcut icon" type="image/ico" href="http://www.datatables.net/media/images/favicon.ico">
-		<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.datatables.net/rss.xml">
-		
 		<style type="text/css" media="screen">
-			@import "http://www.datatables.net/media/css/site_jui.ccss";
-			@import "http://www.datatables.net/release-datatables/media/css/demo_table_jui.css";
-			@import "http://www.datatables.net/media/css/jui_themes/smoothness/jquery-ui-1.7.2.custom.css";
+			@import "assets/css/site_jui.ccss";
+			@import "assets/css/demo_table_jui.css";
+			@import "assets/css/jquery-ui-1.7.2.custom.css";
 			
 			/*
 			 * Override styles needed due to the mix of three different CSS sources! For proper examples
@@ -37,8 +33,8 @@ $report = $r->getReportData();
 			#example thead th:last-child { border-right: 1px solid #AAA; }
 		</style>
 		
-		<script type="text/javascript" src="http://www.datatables.net/media/javascript/complete.min.js"></script>
-		<script type="text/javascript" src="http://www.datatables.net//release-datatables/media/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="assets/js/complete.min.js"></script>
+		<script type="text/javascript" src="assets/js/jquery.dataTables.min.js"></script>
 		<script type="text/javascript">
 			function fnFeaturesInit ()
 			{
