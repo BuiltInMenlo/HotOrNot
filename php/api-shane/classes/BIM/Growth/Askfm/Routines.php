@@ -59,7 +59,6 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
             //print_r( $popIds );exit;
             
             foreach( $popIds as $id ){
-                $id = 'bouncyxoxo';
                 $this->askQuestion( $id );
                 $sleep = $this->persona->getBrowseTagsCommentWait();
                 echo "submitted comment - sleeping for $sleep seconds\n";
