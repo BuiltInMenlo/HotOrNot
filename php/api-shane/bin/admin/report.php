@@ -1,8 +1,12 @@
 <pre>
 <?php
+$persona = '';
+if( isset( $_REQUEST['persona'] ) ){
+    $persona = $_REQUEST['persona'];
+}
 require_once 'vendor/autoload.php';
 $r = new BIM_Growth_Reports();
-$report = $r->getReportData();
+$report = $r->getReportData( $persona );
 ?>
 </pre>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -73,21 +77,47 @@ $report = $r->getReportData();
 		</script>
 		
 	</head>
-	<body id="index" class="grid_2_3">
-		<div id="fw_container">
-			
-			
-<script type="text/javascript">
+<body id="index" class="grid_2_3">
 
-(function(){
-  var bsa = document.createElement('script');
-     bsa.type = 'text/javascript';
-     bsa.async = true;
-     bsa.src = '//s3.buysellads.com/ac/bsa.js';
-  (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(bsa);
-})();
-
-</script>
+<div id="fw_container">
+<div class="fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix">
+	<div class="dataTables_length">
+		<label>
+			&nbsp; &nbsp;Select Persona:  
+			<select size="1" id="persona_picker" onChange='location.href = "?persona=" + $("#persona_picker").val();'>
+			<?php 
+			//print_r( $report->personaTotals ); exit;
+			$personas = $r->getPersonaNames();
+			sort( $personas );
+			foreach( $personas as $personaName ){
+			    $selected = "";
+			    if( $personaName == $persona ){
+			        $selected = "selected='selected'";
+			    }
+			    echo("<option value='$personaName' $selected >$personaName</option>");
+			} 
+			?>
+			</select> 
+		</label>
+	</div>
+	<div class="dataTables_filter">
+		<label>
+			Search: <input type="text"">
+		</label>
+	</div>
+</div>
+<hr>
+<?php if( $persona ){?>
+<div class="fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix">
+	<div class="dataTables_length">
+		Showing report for <?php echo $persona; ?>
+	</div>		
+</div>
+<?php }?>
+<div>
+This is where te user details will be going
+</div>
+<hr>
 <div id="fw_content">
     <h3>Totals</h3>
     <div class="full_width">

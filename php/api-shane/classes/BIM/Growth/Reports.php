@@ -21,9 +21,9 @@ class BIM_Growth_Reports{
      * 		persona network totals By Month, 
      * 		persona network totals By Day
      */
-    public function getReportData(){
+    public function getReportData( $persona ){
         $dao = new BIM_DAO_Mysql_Growth_Reports( BIM_Config::db());
-        $logs = $dao->getTotalsByPersonaAndNetwork();
+        $logs = $dao->getTotalsByPersonaAndNetwork( $persona );
         foreach( $logs as $log ){
             $this->updateTotals($log);
             $this->updatePersonaTotals($log);
@@ -76,5 +76,10 @@ class BIM_Growth_Reports{
         }
         $totals->byDay->$day->total += $log->total;
         $totals->byDay->$day->byNetwork->$network += $log->total;
+    }
+    
+    public function getPersonaNames(){
+        $dao = new BIM_DAO_Mysql_Growth_Reports( BIM_Config::db());
+        return array_map( function( $el ){ return $el->name; },  $dao->getPersonaNames());
     }
 }
