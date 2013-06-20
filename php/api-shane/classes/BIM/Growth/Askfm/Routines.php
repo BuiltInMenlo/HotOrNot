@@ -336,4 +336,34 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
         $dao->updateLastContact( $id, time() );
         $dao->logSuccess($id, $message, $this->persona->name );
     }
+    
+    public function updateUserStats(){
+        $this->handleLogin();
+
+        $name = $this->persona->name;
+        $profileUrl = "http://ask.fm/$name/";
+        $response = $this->get( $profileUrl );
+
+        // @<span class="stasis-digit" id="profile_gifts_counter">0</span>(?:.*?<span class="stasis-digit" id="profile_liked_counter">0</span>)?(?:.*?<span class="stasis-digit" id="profile_answer_counter">5</span>)?@is
+        $ptrn = '@<span class="stasis-digit" id="profile_gifts_counter">(.*?)</span>(?:.*?<span class="stasis-digit" id="profile_liked_counter">(.*?)</span>)?(?:.*?<span class="stasis-digit" id="profile_answer_counter">(.*?)</span>)?@is';
+        $matches = array();
+        preg_match( $ptrn, $response, $matches );
+        
+        $gifts = isset( $matches[1] ) ? $matches[1] : 0;
+        $likes = isset( $matches[2] ) ? $matches[2] : 0;
+
+        $userStats = (object) array(
+            'name' => $this->persona->name,
+            'gifts' => $gifts,
+            'likes' => $likes,
+            'network' => 'askfm',
+        );
+
+        print_r( $userStats );
+        
+        $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
+        $dao->updateUserStats( $userStats );
+        
+    }
+    
 }

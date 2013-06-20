@@ -60,4 +60,13 @@ class BIM_DAO_Mysql_Growth_Askfm extends BIM_DAO_Mysql_Growth{
 		
 		$this->prepareAndExecute( $sql, $params );
     }
+    
+	public function updateUserStats( $data ){
+		$sql = "
+			insert into growth.askfm_persona_stats_log
+			(time,name,network,gifts,likes) values (?,?,?,?,?)
+		";
+		$params = array( time(), $data->name, $data->network, $data->gifts, $data->likes );
+		$this->prepareAndExecute( $sql, $params );
+	}
 }
