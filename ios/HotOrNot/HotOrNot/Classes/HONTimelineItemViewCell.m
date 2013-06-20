@@ -25,10 +25,10 @@
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UILabel *lScoreLabel;
 @property (nonatomic, strong) UILabel *rScoreLabel;
-@property (nonatomic, strong) UIImageView *upvoteImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
+@property (nonatomic, strong) UILabel *likesLabel;
+@property (nonatomic, strong) UIImageView *upvoteImageView;
 @property (nonatomic, strong) UIView *tappedOverlayView;
-@property (nonatomic, strong) UIButton *votesButton;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasChallenger;
 @property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
@@ -207,6 +207,23 @@
 		[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 		[_rHolderView addSubview:challengerNameButton];
 		
+		UIImageView *likeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(85.0, 254.0, 24.0, 24.0)];
+		likeImageView.image = [UIImage imageNamed:@"heartIcon_nonActive"];
+		[self addSubview:likeImageView];
+		
+		_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 253.0, 150.0, 24.0)];
+		_likesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:11];
+		_likesLabel.textColor = [HONAppDelegate honBlueTxtColor];
+		_likesLabel.backgroundColor = [UIColor clearColor];
+		_likesLabel.text = (_challengeVO.creatorScore + _challengeVO.challengerScore > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+		[self addSubview:_likesLabel];
+		
+		UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		likesButton.frame = CGRectMake(13.0, 256.0, 190.0, 24.0);
+		[likesButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+		[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:likesButton];
+		
 		UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(442.0, 0.0, 210.0, 210.0)];
 		joinHolderView.backgroundColor = [UIColor colorWithWhite:0.894 alpha:1.0];
 		[scrollView addSubview:joinHolderView];
@@ -291,11 +308,11 @@
 	commentsImageView.image = [UIImage imageNamed:@"commentBubble"];
 	[self addSubview:commentsImageView];
 	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 273.0, 150.0, 22.0)];
+	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(48.0, 273.0, 40.0, 22.0)];
 	_commentsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:17];
 	_commentsLabel.textColor = [HONAppDelegate honGrey518Color];
 	_commentsLabel.backgroundColor = [UIColor clearColor];
-	_commentsLabel.text = (_challengeVO.commentTotal == 0) ? NSLocalizedString(@"timeline_0comments", nil) : (_challengeVO.commentTotal > 99) ? NSLocalizedString(@"timeline_99comments", nil) : [NSString stringWithFormat:(_challengeVO.commentTotal == 1) ? NSLocalizedString(@"timeline_1comment", nil) : NSLocalizedString(@"timeline_comments", nil), _challengeVO.commentTotal];
+	_commentsLabel.text = (_challengeVO.commentTotal >= 99) ? @"99+" : [NSString stringWithFormat:@"%d", _challengeVO.commentTotal];
 	[self addSubview:_commentsLabel];
 	
 	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
