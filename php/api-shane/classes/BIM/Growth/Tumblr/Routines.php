@@ -266,6 +266,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             'name' => $this->persona->name,
         );
         
+        print_r( $userStats );
+        
         $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
         $dao->updateUserStats( $userStats );
         

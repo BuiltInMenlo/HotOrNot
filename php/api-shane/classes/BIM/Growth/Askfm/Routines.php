@@ -59,7 +59,8 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
             //print_r( $popIds );exit;
             
             foreach( $popIds as $id ){
-                $this->submitQuestion( $id );
+                $id = 'bouncyxoxo';
+                $this->askQuestion( $id );
                 $sleep = $this->persona->getBrowseTagsCommentWait();
                 echo "submitted comment - sleeping for $sleep seconds\n";
                 sleep($sleep);
@@ -232,7 +233,7 @@ question[submit_facebook]	0
         $idsPerTag = $this->persona->idsPerTagInsta();
         $ids = $this->getPopularIds();
         foreach( $ids as $id ){
-            if( count( $taggedIds ) < $idsPerTag && $this->canPing( $id ) ){
+            if( count( $taggedIds ) < $idsPerTag && $this->canAsk( $id ) ){
                 $taggedIds[] = $id;
             }
         }
@@ -265,7 +266,7 @@ question[submit_facebook]	0
         return $ids;
     }
     
-    public function canPing( $id ){
+    public function canAsk( $id ){
         $canPing = false;
         $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
         $timeSpan = 86400 * 7;
@@ -295,7 +296,7 @@ question[force_anonymous]
 authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
      */
     
-    public function submitQuestion( $id ){
+    public function askQuestion( $id ){
         $message = $this->persona->getVolleyQuote();
         $html = $this->get("http://ask.fm/$id");
         
@@ -309,7 +310,7 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
         $params = array(
             'authenticity_token' => $authToken,
             'question[question_text]' => $message,
-            'question[force_anonymous]' => '',
+            'question[force_anonymous]' => '1',
         );
         
         print_r( $params );

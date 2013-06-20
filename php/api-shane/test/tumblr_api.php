@@ -1,7 +1,7 @@
 <?php
 require_once 'vendor/autoload.php';
 
-$sql = "select * from growth.persona where network = 'tumblr' and name='sarahfelder'";
+$sql = "select * from growth.persona where network = 'tumblr'";
 
 $db = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
 
@@ -19,7 +19,8 @@ foreach( $personas as $persona ){
             //$routines->login();
             try{
                 $routines->updateUserStats();
-                echo "logged in and browsed for : $persona->name\n";
+                $sleep = 1;
+                echo "logged in and browsed for : $persona->name.  sleeping for $sleep secs.\n";
             } catch( Exception $e ){
                 echo "exception for: $persona->name - ".$e->getMessage()."\n";
             }

@@ -309,7 +309,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
     public function updateUserStats(){
         $this->handleLogin();
 
-        $name = 'jennybartenxoxo';// $this->persona->name;
+        $name = $this->persona->name;
         $profileUrl = "http://web.stagram.com/n/$name/";
         $response = $this->get( $profileUrl );
 
@@ -337,6 +337,8 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             'network' => 'webstagram',
         );
 
+        print_r( $userStats );
+        
         $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
         $dao->updateUserStats( $userStats );
         
