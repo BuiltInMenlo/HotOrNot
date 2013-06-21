@@ -119,13 +119,13 @@ $socialStats = $r->getSocialStats( '', $persona );
 		Showing report for <?php echo $persona; ?>
 	</div>		
 </div>
-<?php }?>
 <div>
 This is where te user details will be going
 </div>
 <hr>
+<?php }?>
 <div id="fw_content">
-<?php if( isset( $persona ) && isset( $socialStats->$persona->tumblr ) && $socialStats->$persona->tumblr ) { ?>
+<?php if( $persona && isset( $socialStats->$persona->tumblr ) && $socialStats->$persona->tumblr ) { ?>
     <?php 
     
         $fields = get_object_vars( $socialStats->$persona->tumblr[0] );
@@ -163,7 +163,7 @@ This is where te user details will be going
     </div>
 <?php } ?>
 
-<?php if( isset( $persona ) && isset( $socialStats->$persona->webstagram ) && $socialStats->$persona->webstagram ) { ?>
+<?php if( $persona && isset( $socialStats->$persona->webstagram ) && $socialStats->$persona->webstagram ) { ?>
     <?php 
     
         $fields = get_object_vars( $socialStats->$persona->webstagram[0] );
@@ -201,7 +201,7 @@ This is where te user details will be going
     </div>
 <?php } ?>
 
-<?php if( isset( $persona ) && isset( $socialStats->$persona->askfm ) && $socialStats->$persona->askfm ) { ?>
+<?php if( $persona && isset( $socialStats->$persona->askfm ) && $socialStats->$persona->askfm ) { ?>
     <?php 
     
         $fields = get_object_vars( $socialStats->$persona->askfm[0] );
