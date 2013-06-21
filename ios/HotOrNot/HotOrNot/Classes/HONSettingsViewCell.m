@@ -90,9 +90,9 @@
 	if ((self = [self init])) {
 		_caption = caption;
 		
-		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 24.0, 250.0, 16.0)];
-		_captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
-		_captionLabel.textColor = [HONAppDelegate honGrey518Color];
+		_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 24.0, 200.0, 20.0)];
+		_captionLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+		_captionLabel.textColor =  [HONAppDelegate honBlueTextColor];
 		_captionLabel.backgroundColor = [UIColor clearColor];
 		_captionLabel.text = _caption;
 		[self addSubview:_captionLabel];

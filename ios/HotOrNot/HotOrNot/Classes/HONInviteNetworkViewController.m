@@ -332,9 +332,9 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 0.0, 310.0, 29.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
-	label.textColor = [HONAppDelegate honBlueTxtColor];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = @"Promote Volley";
 	[headerImageView addSubview:label];

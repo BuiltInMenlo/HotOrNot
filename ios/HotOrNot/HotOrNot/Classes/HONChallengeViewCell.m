@@ -47,7 +47,7 @@
 	[self hideChevron];
 	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID;
 	
-	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
+	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(12.0, 12.0, kSnapThumbDim, kSnapThumbDim)];
 	challengeImgHolderView.clipsToBounds = YES;
 	[self addSubview:challengeImgHolderView];
 	
@@ -56,9 +56,9 @@
 	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[challengeImgHolderView addSubview:challengeImageView];
 	
-	UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 16.0, 180.0, 20.0)];
-	challengerLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:16];
-	challengerLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 15.0, 180.0, 20.0)];
+	challengerLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	challengerLabel.textColor = [HONAppDelegate honBlueTextColor];
 	challengerLabel.backgroundColor = [UIColor clearColor];
 	challengerLabel.text = ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
 	[self addSubview:challengerLabel];
@@ -67,14 +67,14 @@
 	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
 	[dateFormatter setDateFormat:@"h:mma"];
 		
-	UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(70.0, 35.0, 200.0, 18.0)];
-	subjectTimeLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:15];
+	UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 31.0, 200.0, 18.0)];
+	subjectTimeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	subjectTimeLabel.textColor = [HONAppDelegate honGrey455Color];
 	subjectTimeLabel.backgroundColor = [UIColor clearColor];
 	subjectTimeLabel.text = [NSString stringWithFormat:@"%@ at %@", _challengeVO.subjectName, [[dateFormatter stringFromDate:_challengeVO.updatedDate] lowercaseString]];
 	[self addSubview:subjectTimeLabel];
 	
-	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(270.0, 10.0, 44.0, 44.0)];
+	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(265.0, 9.0, 44.0, 44.0)];
 	_hasSeenImageView.image = [UIImage imageNamed:(_challengeVO.hasViewed) ? @"viewedSnapCheck" : @"newSnapDot"];
 	[self addSubview:_hasSeenImageView];
 	

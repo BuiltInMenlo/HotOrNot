@@ -118,6 +118,7 @@
 				_progressHUD = nil;
 				
 				[_usernameTextField becomeFirstResponder];
+				
 			}
 		}
 		
@@ -270,11 +271,11 @@
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 60.0, 320.0, 110.0)];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 49.0, 320.0, 110.0)];
 	captionImageView.image = [UIImage imageNamed:@"firstRunCopy_username"];
 	[_usernameHolderView addSubview:captionImageView];
 	
-	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, 140.0, 244.0, 44.0)];
+	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, 192.0, 244.0, 44.0)];
 	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
 	[_usernameHolderView addSubview:inputBGImageView];
 	
@@ -285,29 +286,21 @@
 //	[inputBGButton addTarget:self action:@selector(_goTextfieldFocus) forControlEvents:UIControlEventTouchUpInside];
 //	[self.view addSubview:inputBGButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(68.0, 150.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(44.0, 200.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[HONAppDelegate honGreenTxtColor]];
-	//[_usernameTextField addTarget:self action:@selector(_onTextEditingDone:) forControlEvents:UIControlEventEditingDidEnd];
-	_usernameTextField.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
+	[_usernameTextField setTextColor:[HONAppDelegate honGrey710Color]];
+	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_usernameTextField.placeholder = @"@username";
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
 	[_usernameHolderView addSubview:_usernameTextField];
-	
-	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	_submitButton.hidden = YES;
-	[_usernameHolderView addSubview:_submitButton];
-	
-	
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_tutorialHolderView];
@@ -317,7 +310,6 @@
 	_tutorialScrollView.pagingEnabled = YES;
 	_tutorialScrollView.showsHorizontalScrollIndicator = NO;
 	_tutorialScrollView.delegate = self;
-	//_tutorialScrollView.backgroundColor = [HONAppDelegate honGreenColor];
 	[_tutorialHolderView addSubview:_tutorialScrollView];
 	
 	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
@@ -333,13 +325,21 @@
 	[_tutorialScrollView addSubview:page3ImageView];
 	
 	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = CGRectMake(681.0, _tutorialScrollView.frame.size.height - 160.0, 237.0, 67.0);
+	closeTutorialButton.frame = CGRectMake(682.0, _tutorialScrollView.frame.size.height - 135.0, 237.0, 67.0);
 	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
 	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
 	[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
 	[_tutorialScrollView addSubview:closeTutorialButton];
 	
-	_pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(60.0, [UIScreen mainScreen].bounds.size.height - 77.0, 200.0, 10.0)];
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	_submitButton.hidden = YES;
+	[self.view addSubview:_submitButton];
+	
+	_pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(60.0, [UIScreen mainScreen].bounds.size.height - 48.0, 200.0, 10.0)];
 	_pageControl.currentPage = 0;
 	_pageControl.userInteractionEnabled = NO;
 	_pageControl.pageIndicatorTintColor = [UIColor whiteColor];
@@ -361,13 +361,13 @@
 - (void)_goNext {
 	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-											 message:@"You need to enter a usersname to start snapping"
+											 message:@"You need to enter a username to start snapping"
 										   delegate:nil
 								cancelButtonTitle:@"OK"
 								otherButtonTitles:nil] show];
-	}
-	
-	else
+	[_usernameTextField becomeFirstResponder];
+		
+	} else
 		[self _submitUsername];
 }
 
@@ -383,7 +383,7 @@
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
-	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - ((int)!([HONAppDelegate isRetina5]) * 45.0));
 	[UIView commitAnimations];
 	
 	[self performSelector:@selector(_goTextfieldFocus) withObject:nil afterDelay:0.25];
@@ -392,14 +392,7 @@
 
 #pragma mark - UI Presentation
 - (void)_goTextfieldFocus {
-	if (![_usernameTextField isFirstResponder]) {
-		[_usernameTextField becomeFirstResponder];
-		
-		_submitButton.hidden = NO;
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
-		}];
-	}
+	[_usernameTextField becomeFirstResponder];
 }
 
 - (void)_presentCamera {
@@ -591,6 +584,11 @@
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	textField.text = @"@";
+	
+	_submitButton.hidden = NO;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
+	}];
 }
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -610,27 +608,20 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	_username = ([[textField.text substringToIndex:1] isEqualToString:@"@"]) ? [textField.text substringFromIndex:1] : textField.text;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+	} completion:^(BOOL finished) {
+		_submitButton.hidden = YES;
+	}];
+}
+
+- (void)_onTextEditingDidEnd:(id)sender {
+	_username = ([[_usernameTextField.text substringToIndex:1] isEqualToString:@"@"]) ? [_usernameTextField.text substringFromIndex:1] : _usernameTextField.text;
 	
 	[[Mixpanel sharedInstance] track:@"Register - Change Username"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 _username, @"username", nil]];
-	
-	//[textField resignFirstResponder];
-	//[self _goNext];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
-	}];
-}
-
-- (void)_onTxtDoneEditing:(id)sender {
-	[_usernameTextField resignFirstResponder];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
-	}];
 	
 	[self _goNext];
 }

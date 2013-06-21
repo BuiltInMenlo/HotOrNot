@@ -495,12 +495,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
-	headerView.image = [UIImage imageNamed:@"tableHeaderBackground"];
+	UIImageView *headerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 310.0, 31.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
-	label.textColor = [HONAppDelegate honBlueTxtColor];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	label.text = (section == 0) ? @"Recent" : @"Older";
 	[headerView addSubview:label];

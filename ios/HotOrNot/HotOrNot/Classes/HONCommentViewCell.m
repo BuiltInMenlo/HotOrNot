@@ -45,7 +45,7 @@
 	CGSize size = [_commentVO.content sizeWithFont:[[HONAppDelegate helveticaNeueFontBold] fontWithSize:14] constrainedToSize:CGSizeMake(200.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(61.0, 30.0, 200.0, size.height)];
 	contentLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-	contentLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	contentLabel.textColor = [HONAppDelegate honBlueTextColor];
 	contentLabel.backgroundColor = [UIColor clearColor];
 	//contentLabel.numberOfLines = 0;
 	contentLabel.text = _commentVO.content;

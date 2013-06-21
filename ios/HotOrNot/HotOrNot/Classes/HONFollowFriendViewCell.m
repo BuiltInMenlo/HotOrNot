@@ -31,7 +31,7 @@
 		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(258.0, 9.0, 44.0, 44.0);
+		_checkButton.frame = CGRectMake(266.0, 9.0, 44.0, 44.0);
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateNormal];
 		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
@@ -56,9 +56,9 @@
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 24.0, 180.0, 18.0)];
-	nameLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	nameLabel.textColor = [HONAppDelegate honBlueTxtColor];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 24.0, 200.0, 20.0)];
+	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
 	[self addSubview:nameLabel];

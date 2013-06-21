@@ -61,7 +61,7 @@ const CGFloat kSnapJPEGCompress = 0.875f;
 const CGFloat kHUDTime = 2.33f;
 
 // image sizes
-const CGFloat kSnapThumbDim = 63.0f;
+const CGFloat kSnapThumbDim = 37.0f;
 const CGFloat kSnapMediumDim = 73.0f;
 const CGFloat kSnapLargeDim = 210.0f;
 const CGFloat kAvatarDim = 200.0;
@@ -87,7 +87,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 
 
 + (NSString *)apiServerPath {
-	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	return (@"http://50.17.142.22/hotornot/api-shane");
 	
 	//return (@"http://discover.getassembly.com/hotornot/api-shane");
@@ -384,6 +384,14 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 }
 
 
++ (UIFont *)helveticaNeueFontRegular {
+	return ([UIFont fontWithName:@"HelveticaNeue" size:18.0]);
+}
+
++ (UIFont *)helveticaNeueFontLight {
+	return ([UIFont fontWithName:@"HelveticaNeue-Light" size:18.0]);
+}
+
 + (UIFont *)helveticaNeueFontBold {
 	return ([UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0]);
 }
@@ -412,8 +420,20 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
 }
 
-+ (UIColor *)honBlueTxtColor {
++ (UIColor *)honBlueTextColor {
 	return ([UIColor colorWithRed:0.161 green:0.498 blue:1.0 alpha:1.0]);
+}
+
++ (UIColor *)honOffGreyLightColor {
+	return ([UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0]);
+}
+
++ (UIColor *)honProfileStatsTextColor {
+	return ([UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]);
+}
+
++ (UIColor *)honGrey710Color {
+	return ([UIColor colorWithWhite:0.710 alpha:1.0]);
 }
 
 + (UIColor *)honGrey635Color {
@@ -428,11 +448,11 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	return ([UIColor colorWithWhite:0.455 alpha:1.0]);
 }
 
-+ (UIColor *)honGrey0245Color {
++ (UIColor *)honGrey245Color {
 	return ([UIColor colorWithWhite:0.245 alpha:1.0]);
 }
 
-+ (UIColor *)honGreenColor {
++ (UIColor *)honOrthodoxGreenColor {
 	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
 }
 
@@ -440,8 +460,22 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	return ([UIColor colorWithRed:0.204 green:0.373 blue:0.337 alpha:1.0]);
 }
 
-+ (UIColor *)honGreenTxtColor {
-	return ([UIColor colorWithRed:0.337 green:0.545 blue:0.506 alpha:1.0]);
++ (UIColor *)honGreenTextColor {
+	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
+}
+
+
+
++(UIColor *)honDebugRedColor {
+	return ([UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.33]);
+}
+
++(UIColor *)honDebugGreenColor {
+	return ([UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.33]);
+}
+
++(UIColor *)honDebugBlueColor {
+	return ([UIColor colorWithRed:0.0 green:0.0 blue:1.0 alpha:0.33]);
 }
 
 
@@ -572,9 +606,10 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_sendToInstagram:) name:@"SEND_TO_INSTAGRAM" object:nil];
-	
-	//[self _testParseCloudCode];
-	//[self _showFonts];
+
+#ifdef FONTS
+	[self _showFonts];
+#endif
 	
 	if ([ASIdentifierManager sharedManager].isAdvertisingTrackingEnabled)
 		NSLog(@"advertisingIdentifier:[%@]", [[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
@@ -977,23 +1012,23 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	
 	UIViewController *challengesViewController, *voteViewController, *discoveryViewController, *profileViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
-	voteViewController = [[HONTimelineViewController alloc] init];//[[HONVoteSubjectsViewController alloc] init];//
+	voteViewController = [[HONTimelineViewController alloc] init];
 	discoveryViewController = [[HONDiscoveryViewController alloc] init];
 	profileViewController = [[HONProfileViewController alloc] init];
 	
-	UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
-	UINavigationController *navController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
-	UINavigationController *navController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-	UINavigationController *navController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];
+	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
+	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
+	UINavigationController *navigationController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
+	UINavigationController *navigationController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];
 	
-	[navController1 setNavigationBarHidden:YES];
-	[navController2 setNavigationBarHidden:YES];
-	[navController3 setNavigationBarHidden:YES];
-	[navController4 setNavigationBarHidden:YES];
+	[navigationController1 setNavigationBarHidden:YES];
+	[navigationController2 setNavigationBarHidden:YES];
+	[navigationController3 setNavigationBarHidden:YES];
+	[navigationController4 setNavigationBarHidden:YES];
 	
-	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navController1, navController2, navController3, navController4, nil];
+	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navigationController1, navigationController2, navigationController3, navigationController4, nil];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 	//[self performSelector:@selector(_dropTabs) withObject:nil afterDelay:2.0];
 }
 

@@ -38,8 +38,8 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_DISCOVERY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectLeftDiscoveryChallenge:) name:@"SELECT_LEFT_DISCOVERY_CHALLENGE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectRightDiscoveryChallenge:) name:@"SELECT_RIGHT_DISCOVERY_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
+//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
@@ -136,7 +136,7 @@
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 260.0;
@@ -198,7 +198,7 @@
 
 #pragma mark - Notifications
 - (void)_refreshDiscoveryTab:(NSNotification *)notification {
-	[_searchHeaderView backgroundingReset];
+	//[_searchHeaderView backgroundingReset];
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
 	[self _goRefresh];
@@ -226,24 +226,28 @@
 }
 
 - (void)_showSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, -kNavBarHeaderHeight, self.view.frame.size.width, self.view.frame.size.height);
-	}];
+	if (self.view.frame.origin.y >= 0) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			self.view.frame = CGRectOffset(self.view.frame, 0.0, -kNavBarHeaderHeight);//CGRectMake(self.view.frame.origin.x, -kNavBarHeaderHeight, self.view.frame.size.width, self.view.frame.size.height);
+		}];
+	}
 }
 
 - (void)_hideSearchTable:(NSNotification *)notification {
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
-	}];
+	if (self.view.frame.origin.y < 0) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			self.view.frame = CGRectOffset(self.view.frame, 0.0, kNavBarHeaderHeight);//self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
+		}];
+	}
 }
 
-- (void)_tabsDropped:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
-}
-
-- (void)_tabsRaised:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
-}
+//- (void)_tabsDropped:(NSNotification *)notification {
+//	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
+//}
+//
+//- (void)_tabsRaised:(NSNotification *)notification {
+//	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
+//}
 
 - (void)_resignSearchBarFocus:(NSNotification *)notification {
 	if (_searchHeaderView != nil)
@@ -291,18 +295,13 @@
 	return (kSearchHeaderHeight);
 }
 
-//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	return (nil);
-//}
-//
-//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 //	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
-//	//[(HONDiscoveryViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
-//}
-
-
-#pragma mark - ScrollView Delegates
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 }
+
+
+//#pragma mark - ScrollView Delegates
+//- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+//	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+//}
 @end

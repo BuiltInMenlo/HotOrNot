@@ -196,6 +196,8 @@
 		4C5C714C1773803D00FA6F51 /* searchToggleB@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71481773803D00FA6F51 /* searchToggleB@2x.png */; };
 		4C5C714F1773814000FA6F51 /* timelineRowBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C714D1773813F00FA6F51 /* timelineRowBackground.png */; };
 		4C5C71501773814000FA6F51 /* timelineRowBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C714E1773813F00FA6F51 /* timelineRowBackground@2x.png */; };
+		4C5C71531773EC4500FA6F51 /* heartIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71511773EC4500FA6F51 /* heartIcon.png */; };
+		4C5C71541773EC4500FA6F51 /* heartIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71521773EC4500FA6F51 /* heartIcon@2x.png */; };
 		4C6257F71753E52B006AD1F7 /* HONInviteCelebViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6257F61753E52B006AD1F7 /* HONInviteCelebViewCell.m */; };
 		4C6257FA1753F68C006AD1F7 /* HONInviteCelebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6257F91753F68B006AD1F7 /* HONInviteCelebViewController.m */; };
 		4C62652A15F96C7100AA7FCE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62652915F96C7100AA7FCE /* UIKit.framework */; };
@@ -881,6 +883,8 @@
 		4C5C71481773803D00FA6F51 /* searchToggleB@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "searchToggleB@2x.png"; sourceTree = "<group>"; };
 		4C5C714D1773813F00FA6F51 /* timelineRowBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = timelineRowBackground.png; sourceTree = "<group>"; };
 		4C5C714E1773813F00FA6F51 /* timelineRowBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "timelineRowBackground@2x.png"; sourceTree = "<group>"; };
+		4C5C71511773EC4500FA6F51 /* heartIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heartIcon.png; sourceTree = "<group>"; };
+		4C5C71521773EC4500FA6F51 /* heartIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "heartIcon@2x.png"; sourceTree = "<group>"; };
 		4C6257F51753E52B006AD1F7 /* HONInviteCelebViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteCelebViewCell.h; sourceTree = "<group>"; };
 		4C6257F61753E52B006AD1F7 /* HONInviteCelebViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteCelebViewCell.m; sourceTree = "<group>"; };
 		4C6257F81753F68B006AD1F7 /* HONInviteCelebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteCelebViewController.h; sourceTree = "<group>"; };
@@ -2604,6 +2608,8 @@
 		4CA8DA9816140F4A00B7B13C /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
+				4C5C71511773EC4500FA6F51 /* heartIcon.png */,
+				4C5C71521773EC4500FA6F51 /* heartIcon@2x.png */,
 				4CD112961724CA510049DFBF /* Profile */,
 				4CB75CD016FEBCCC001A8738 /* Vote / Comment */,
 				4CB75CCF16FEBC3D001A8738 /* Details */,
@@ -3383,6 +3389,8 @@
 				4C5C714C1773803D00FA6F51 /* searchToggleB@2x.png in Resources */,
 				4C5C714F1773814000FA6F51 /* timelineRowBackground.png in Resources */,
 				4C5C71501773814000FA6F51 /* timelineRowBackground@2x.png in Resources */,
+				4C5C71531773EC4500FA6F51 /* heartIcon.png in Resources */,
+				4C5C71541773EC4500FA6F51 /* heartIcon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

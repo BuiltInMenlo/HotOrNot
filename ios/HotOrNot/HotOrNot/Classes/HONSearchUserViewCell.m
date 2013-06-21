@@ -25,14 +25,11 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		UIImageView *selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
-		selectedImageView.image = [UIImage imageNamed:@"rowGray_nonActive"];
-		
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchDiscoverBackground"]];
 		
-		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
-		chevronImageView.image = [UIImage imageNamed:@"chevron"];
-		[self addSubview:chevronImageView];
+		UIImageView *plusImageView = [[UIImageView alloc] initWithFrame:CGRectMake(266.0, 10.0, 44.0, 44.0)];
+		plusImageView.image = [UIImage imageNamed:@"plusButton_nonActive"];
+		[self addSubview:plusImageView];
 	}
 	
 	return (self);
@@ -41,14 +38,14 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 13.0, 38.0, 38.0)];
+	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0, 38.0, 38.0)];
 	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:userImageView];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 24.0, 200.0, 20.0)];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 24.0, 200.0, 20.0)];
 	usernameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
-	usernameLabel.textColor = [HONAppDelegate honGrey635Color];
+	usernameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
 	[self addSubview:usernameLabel];

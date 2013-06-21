@@ -100,6 +100,9 @@ const NSUInteger kFollowingUsersDisplayTotal;
 
 + (NSString *)timeSinceDate:(NSDate *)date;
 
+
++ (UIFont *)helveticaNeueFontRegular;
++ (UIFont *)helveticaNeueFontLight;
 + (UIFont *)helveticaNeueFontBold;
 + (UIFont *)helveticaNeueFontBoldItalic;
 + (UIFont *)helveticaNeueFontMedium;
@@ -109,14 +112,22 @@ const NSUInteger kFollowingUsersDisplayTotal;
 + (UIFont *)cartoGothicBook;
 + (UIFont *)cartoGothicItalic;
 
-+ (UIColor *)honBlueTxtColor;
++ (UIColor *)honGrey710Color;
 + (UIColor *)honGrey635Color;
 + (UIColor *)honGrey518Color;
 + (UIColor *)honGrey455Color;
-+ (UIColor *)honGrey0245Color;
-+ (UIColor *)honGreenColor;
++ (UIColor *)honGrey245Color;
++ (UIColor *)honOffGreyLightColor;
++ (UIColor *)honProfileStatsTextColor;
++ (UIColor *)honOrthodoxGreenColor;
 + (UIColor *)honDarkGreenColor;
-+ (UIColor *)honGreenTxtColor;
+
++ (UIColor *)honBlueTextColor;
++ (UIColor *)honGreenTextColor;
+
++(UIColor *)honDebugRedColor;
++(UIColor *)honDebugGreenColor;
++(UIColor *)honDebugBlueColor;
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;

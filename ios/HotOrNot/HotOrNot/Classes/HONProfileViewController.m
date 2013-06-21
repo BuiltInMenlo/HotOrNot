@@ -117,15 +117,15 @@
 					break;
 			}
 			
-			[_pastUsers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																				  [NSString stringWithFormat:@"%d", 0], @"id",
-																				  [NSString stringWithFormat:@"%d", 0], @"points",
-																				  [NSString stringWithFormat:@"%d", 0], @"votes",
-																				  [NSString stringWithFormat:@"%d", 0], @"pokes",
-																				  [NSString stringWithFormat:@"%d", 0], @"pics",
-																				  @"Send a random match", @"username",
-																				  @"", @"fb_id",
-																				  @"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png", @"avatar_url", nil]]];
+//			[_pastUsers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+//																				  [NSString stringWithFormat:@"%d", 0], @"id",
+//																				  [NSString stringWithFormat:@"%d", 0], @"points",
+//																				  [NSString stringWithFormat:@"%d", 0], @"votes",
+//																				  [NSString stringWithFormat:@"%d", 0], @"pokes",
+//																				  [NSString stringWithFormat:@"%d", 0], @"pics",
+//																				  @"Send a random match", @"username",
+//																				  @"", @"fb_id",
+//																				  @"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png", @"avatar_url", nil]]];
 			
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
@@ -276,7 +276,7 @@
 	[self.view addSubview:bgImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	[_tableView setBackgroundColor:[UIColor colorWithWhite:0.900 alpha:1.0]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
 	_tableView.delegate = self;
@@ -645,9 +645,9 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	UIImageView *headerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 2.0, 310.0, 29.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
-	label.textColor = [HONAppDelegate honBlueTxtColor];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
 	[headerImageView addSubview:label];
 	
@@ -694,7 +694,7 @@
 		HONPastChallengerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:indexPath.row == [_pastUsers count] - 1];
+			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:NO];//]indexPath.row == [_pastUsers count] - 1];
 		
 		cell.userVO = (HONUserVO *)[_pastUsers objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -814,24 +814,32 @@
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
 	if (indexPath.section == 3) {
-		if (indexPath.row == 0) {
-			[self _goContacts];
-			
-		} else if (indexPath.row == 1) {
-			[self _goInstagram];
-			
-		} else if (indexPath.row == 2) {
-			[self _goFacebook];
-			
-		} else if (indexPath.row == 3) {
-			[self _goTumblr];
-			
-		} else if (indexPath.row == 4) {
-			[self _goTwitter];
-			
-		} else if (indexPath.row == 3) {
-			[self _goKik];
-		}
+//		if (indexPath.row == 0) {
+//			[self _goContacts];
+//			
+//		} else if (indexPath.row == 1) {
+//			[self _goInstagram];
+//			
+//		} else if (indexPath.row == 2) {
+//			[self _goFacebook];
+//			
+//		} else if (indexPath.row == 3) {
+//			[self _goTumblr];
+//			
+//		} else if (indexPath.row == 4) {
+//			[self _goTwitter];
+//			
+//		} else if (indexPath.row == 3) {
+//			[self _goKik];
+//		}
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Social Networks Off"
+																			 message:@"Social Networks are turned off during beta"
+																			delegate:nil
+																cancelButtonTitle:@"OK"
+																otherButtonTitles:nil];
+		[alertView show];
+		
 	} else {
 		
 		HONUserVO *vo = (HONUserVO *)[_pastUsers objectAtIndex:indexPath.row];

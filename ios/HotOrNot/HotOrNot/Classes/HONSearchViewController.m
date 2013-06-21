@@ -347,15 +347,14 @@
 	_whiteBGView.alpha = 0.0;
 	[self.view addSubview:_whiteBGView];
 	
-	_toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 301.0, 50.0)];
+	_toggleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
 	_toggleImageView.image = [UIImage imageNamed:@"searchToggleB"];
 	_toggleImageView.alpha = 0.0;
 	[self.view addSubview:_toggleImageView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 52.0, 320.0, [UIScreen mainScreen].bounds.size.height - 332.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 44.0, 320.0, [UIScreen mainScreen].bounds.size.height - 324.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.rowHeight = 70.0;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.userInteractionEnabled = YES;
@@ -412,14 +411,13 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 31.0)];
-	headerView.image = [UIImage imageNamed:@"searchDiscoverHeader"];
+	UIImageView *headerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, 310.0, 31.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:12];
-	label.textColor = [HONAppDelegate honBlueTxtColor];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
+	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Official accounts" : @"People you have snapped with";
+	label.text = @"Cool people who Volley";//@"Official accounts" : @"People you have snapped with";
 	[headerView addSubview:label];
 	
 	return (headerView);

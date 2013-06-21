@@ -16,6 +16,8 @@
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 
+#define STATS_TXT_COLOR [UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]
+
 @interface HONUserProfileViewCell() <UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *snapsLabel;
@@ -43,8 +45,8 @@
 	_userVO = userVO;
 	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(114.0, 17.0, 93.0, 93.0)];
-	_avatarImageView.backgroundColor = [HONAppDelegate honGrey0245Color];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, 17.0, 93.0, 93.0)];
+	_avatarImageView.backgroundColor = [UIColor colorWithWhite:0.870 alpha:1.0];//[UIColor colorWithWhite:0.875 alpha:1.0];
 	
 	if (isUser)
 		_avatarImageView.image = [HONAppDelegate avatarImage];
@@ -65,48 +67,50 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 127.0, 80.0, 16.0)];
-	_votesLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_votesLabel.textColor = [UIColor whiteColor];
+	float yPos = 124.0;
+	
+	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, yPos, 80.0, 16.0)];
+	_votesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	_votesLabel.textColor = STATS_TXT_COLOR;
 	_votesLabel.backgroundColor = [UIColor clearColor];
 	_votesLabel.textAlignment = NSTextAlignmentCenter;
 	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:_votesLabel];
 	
-	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(105.0, 127.0, 20.0, 20.0)];
-	dots1Label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:17];
-	dots1Label.textColor = [UIColor whiteColor];
+	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(105.0, yPos - 2.0, 20.0, 20.0)];
+	dots1Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:14];
+	dots1Label.textColor = STATS_TXT_COLOR;
 	dots1Label.backgroundColor = [UIColor clearColor];
 	dots1Label.textAlignment = NSTextAlignmentCenter;
 	dots1Label.text = @"•";
 	[self addSubview:dots1Label];
 	
-	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, 127.0, 80.0, 16.0)];
-	_snapsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_snapsLabel.textColor = [UIColor whiteColor];
+	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, yPos, 80.0, 16.0)];
+	_snapsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	_snapsLabel.textColor = STATS_TXT_COLOR;
 	_snapsLabel.backgroundColor = [UIColor clearColor];
 	_snapsLabel.textAlignment = NSTextAlignmentCenter;
 	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:_snapsLabel];
 	
-	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(195.0, 127.0, 20.0, 20.0)];
-	dots2Label.font = [[HONAppDelegate cartoGothicBold] fontWithSize:17];
-	dots2Label.textColor = [UIColor whiteColor];
+	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(195.0, yPos - 2.0, 20.0, 20.0)];
+	dots2Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:14];
+	dots2Label.textColor = STATS_TXT_COLOR;
 	dots2Label.backgroundColor = [UIColor clearColor];
 	dots2Label.textAlignment = NSTextAlignmentCenter;
 	dots2Label.text = @"•";
 	[self addSubview:dots2Label];
 	
-	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(211.0, 127.0, 80.0, 16.0)];
-	_ptsLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:14];
-	_ptsLabel.textColor = [UIColor whiteColor];
+	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(211.0, yPos, 80.0, 16.0)];
+	_ptsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	_ptsLabel.textColor = STATS_TXT_COLOR;
 	_ptsLabel.backgroundColor = [UIColor clearColor];
 	_ptsLabel.textAlignment = NSTextAlignmentCenter;
 	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:_ptsLabel];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(20.0, 151.0, 279.0, 44.0);
+	snapButton.frame = CGRectMake(19.0, 152.0, 279.0, 44.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessage_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessage_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goNewUserChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -114,7 +118,7 @@
 	[self addSubview:snapButton];
 	
 	UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	settingsButton.frame = CGRectMake(20, 151.0, 279.0, 44.0);
+	settingsButton.frame = CGRectMake(19.0, 152.0, 279.0, 44.0);
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"privacySettings_nonActive"] forState:UIControlStateNormal];
 	[settingsButton setBackgroundImage:[UIImage imageNamed:@"privacySettings_Active"] forState:UIControlStateHighlighted];
 	[settingsButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
