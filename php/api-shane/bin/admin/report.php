@@ -76,6 +76,8 @@ $socialStats = $r->getSocialStats( '', $persona );
 				$('#example3').dataTable( params );
 				$('#example4').dataTable( params );
 				$('#example5').dataTable( params );
+				$('#example6').dataTable( params );
+				$('#example7').dataTable( params );
 				
 				SyntaxHighlighter.config.clipboardSwf = 'media/javascript/syntax/clipboard.swf';
 				SyntaxHighlighter.all();
@@ -177,7 +179,7 @@ This is where te user details will be going
 	<br><br>
     <h3>Webstagram Social Stats</h3>
     <div class="full_width">
-        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example5" style="width:980px">
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example6" style="width:980px">
         	<thead>
         		<tr>
         			<th>Day</th>
@@ -215,7 +217,7 @@ This is where te user details will be going
 	<br><br>
     <h3>Ask.fm Social Stats</h3>
     <div class="full_width">
-        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example5" style="width:980px">
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example7" style="width:980px">
         	<thead>
         		<tr>
         			<th>Day</th>
