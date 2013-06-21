@@ -1,15 +1,21 @@
-#-- no .DS_Store files
+#-- mac os --#
 .DS_Store
+
+#-- aws assets --#
 aws/
+
+#-- api --#
+php/api-shane/bin/admin/.htaccess
 php/api-shane/bin/gearman/admin/config.php
 php/api-shane/classes/BIM/Config/Dynamic.php
-*.xcuserdata*
+php/api-shane/test/quotes.sql
 
+#-- bash --#
+bash/purge.log
+
+#-- xcode --#
+*.xcuserdata*
 *.xcuserstate
 
-ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata/Gullinbursti.xcuserdatad/UserInterfaceState.xcuserstate
-
-bash/purge.log
-
-bash/purge.log
 ios/HotOrNot/Obj-C Notes
+ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata/Gullinbursti.xcuserdatad/UserInterfaceState.xcuserstate

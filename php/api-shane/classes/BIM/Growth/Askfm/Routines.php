@@ -309,15 +309,15 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
         $params = array(
             'authenticity_token' => $authToken,
             'question[question_text]' => $message,
-            'question[force_anonymous]' => '1',
+            'question[force_anonymous]' => '',
         );
         
-        print_r( $params );
+        print_r( array("http://ask.fm/$id/questions/create", $params) );
         
         $response = $this->post( "http://ask.fm/$id/questions/create", $params );
         
         if( !preg_match('/your question has been sent/i', $response ) ){
-            $this->disablePersona( "disabling ".$this->persona->name." in (class :: function) ".__CLASS__.' :: '.__FUNCTION__ );
+            //$this->disablePersona( "disabling ".$this->persona->name." in (class :: function) ".__CLASS__.' :: '.__FUNCTION__ );
             //$this->reLoginWithWait();
         } else {
             $this->logSuccess( $id, $message );
