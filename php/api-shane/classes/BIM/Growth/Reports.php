@@ -83,23 +83,53 @@ class BIM_Growth_Reports{
         return array_map( function( $el ){ return $el->name; },  $dao->getPersonaNames());
     }
     
-    public function getSocialStatsForTumblr( $persona = '' ){
+    public function getSocialStats( $network = '', $persona = '' ){
         $dao = new BIM_DAO_Mysql_Growth_Reports( BIM_Config::db());
         // the data returned here is sorted by time asc
-        $ss = $dao->getSocialStatsForTumblr();
+        $ss = $dao->getSocialStats( $network, $persona );
         $statDiffs = array();
         foreach( $ss as $socialStats ){
-            if(!isset( $statDiffs[ $socialStats->persona ] ) ){
-                $statDiffs[ $socialStats->persona ] = array($socialStats);
+            if(!isset( $statDiffs[ $socialStats->persona ][ $socialStats->network ] ) ){
+                $statDiffs[ $socialStats->persona ][ $socialStats->network ] = array($socialStats);
             }
-            $latest = end( $statDiffs[ $socialStats->persona ] );
+            $latest = end( $statDiffs[ $socialStats->persona ][ $socialStats->network ] );
 
             $socialStats->followers_diff = $socialStats->followers - $latest->followers;
             $socialStats->following_diff = $socialStats->following - $latest->following;
             $socialStats->likes_diff = $socialStats->likes - $latest->likes;
-                
-            $statDiffs[ $socialStats->persona ][] = $socialStats;
+            if( $latest !== $socialStats ){
+                $statDiffs[ $socialStats->persona ][ $socialStats->network ][] = $socialStats;
+            }
         }
-        print_r( $ss ); exit;
+        
+        $askfmStats = $this->getSocialStatsForAskfm( $persona );
+        
+        foreach( $askfmStats as $persona => $networkStats ){
+            foreach( $networkStats as $network => $networkData ){
+                $statDiffs[$persona][$network] = $networkData;
+            }
+        }
+        
+        print_r( $statDiffs ); exit;
+    }
+    
+    public function getSocialStatsForAskfm( $persona = '' ){
+        $dao = new BIM_DAO_Mysql_Growth_Reports( BIM_Config::db());
+        // the data returned here is sorted by time asc
+        $ss = $dao->getSocialStatsForAskfm( $persona );
+        $statDiffs = array();
+        foreach( $ss as $socialStats ){
+            if(!isset( $statDiffs[ $socialStats->persona ][ $socialStats->network ] ) ){
+                $statDiffs[ $socialStats->persona ][ $socialStats->network ] = array($socialStats);
+            }
+            $latest = end( $statDiffs[ $socialStats->persona ][ $socialStats->network ] );
+
+            $socialStats->gifts_diff = $socialStats->gifts - $latest->gifts;
+            $socialStats->likes_diff = $socialStats->likes - $latest->likes;
+            if( $latest !== $socialStats ){
+                $statDiffs[ $socialStats->persona ][ $socialStats->network ][] = $socialStats;
+            }
+        }
+        return $statDiffs;
     }
 }

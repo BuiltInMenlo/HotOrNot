@@ -2,12 +2,14 @@
 
 class BIM_DAO_Mysql_Growth_Reports extends BIM_DAO_Mysql_Growth{
 	
-	public function getSocialStatsForTumblr( $persona = '' ){
+	public function getSocialStats( $network = '', $persona = '' ){
 	    $where = array();
         $params = array();
         
-        $where[] = ' network = ? ';
-        $params[] = 'tumblr';
+        if( $network ){
+            $where[] = ' network = ? ';
+            $params[] = 'tumblr';
+        }
         
         if( $persona ){
     	  $where[] = ' name = ? ';
@@ -39,6 +41,39 @@ class BIM_DAO_Mysql_Growth_Reports extends BIM_DAO_Mysql_Growth{
         return $counts;		
 	}
     
+	public function getSocialStatsForAskfm( $persona = '' ){
+	    $where = array();
+        $params = array();
+        
+        if( $persona ){
+    	  $where[] = ' name = ? ';
+    	  $params[] = $persona;
+	    }
+	    
+	    if( $where ){
+	        $where = ' where '.join( ' and ', $where );
+	    }
+	    
+		$sql = "
+    	  select
+              name as persona, 
+              network, 
+              MONTH( from_unixtime(time) ) as month,      
+              DAYOFMONTH( from_unixtime(time) ) as day,
+              YEAR( from_unixtime(time) ) as year,
+              max(gifts) as gifts,
+              max(likes) as likes
+          from      
+    	      growth.askfm_persona_stats_log
+    	  $where
+          group by name, day
+          order by year, month, day
+          ";
+		$stmt = $this->prepareAndExecute($sql, $params);
+		$counts = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        return $counts;		
+	}
+	
 	public function getTotalsByPersonaAndNetwork(  $persona = '' ){
 	    $where = '';
         $params = array();
