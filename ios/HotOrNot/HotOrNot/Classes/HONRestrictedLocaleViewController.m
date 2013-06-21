@@ -62,7 +62,7 @@
 	[_textField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_textField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_textField setReturnKeyType:UIReturnKeyDone];
-	[_textField setTextColor:[HONAppDelegate honGrey518Color]];
+	[_textField setTextColor:[HONAppDelegate honBlueTextColor]];
 	[_textField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_textField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:13];
 	_textField.keyboardType = UIKeyboardTypeDefault;

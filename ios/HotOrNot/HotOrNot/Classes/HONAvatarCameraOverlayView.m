@@ -56,7 +56,6 @@
 		[_controlsHolderView addSubview:captionImageView];
 		
 		float offset = ([HONAppDelegate isRetina5]) ? 469.0 : 389.0;
-		
 //		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
 //		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];

@@ -74,10 +74,6 @@
 		4C3BD5F01725FC6B00C4A840 /* skipButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD5F21725FC6B00C4A840 /* skipButton_Active@2x.png */; };
 		4C3BD5F31725FC6F00C4A840 /* skipButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD5F51725FC6F00C4A840 /* skipButton_nonActive.png */; };
 		4C3BD5F61725FC7300C4A840 /* skipButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD5F81725FC7300C4A840 /* skipButton_nonActive@2x.png */; };
-		4C3BD61D17260D1500C4A840 /* searchCancelButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD61F17260D1500C4A840 /* searchCancelButton_Active.png */; };
-		4C3BD62017260D1900C4A840 /* searchCancelButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD62217260D1900C4A840 /* searchCancelButton_Active@2x.png */; };
-		4C3BD62317260D1C00C4A840 /* searchCancelButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD62517260D1C00C4A840 /* searchCancelButton_nonActive.png */; };
-		4C3BD62617260D1F00C4A840 /* searchCancelButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD62817260D1F00C4A840 /* searchCancelButton_nonActive@2x.png */; };
 		4C3BD6451726244100C4A840 /* inviteButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD6471726244100C4A840 /* inviteButton_Active.png */; };
 		4C3BD6481726244700C4A840 /* inviteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD64A1726244700C4A840 /* inviteButton_Active@2x.png */; };
 		4C3BD64B1726244B00C4A840 /* inviteButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD64D1726244B00C4A840 /* inviteButton_nonActive.png */; };
@@ -682,30 +678,6 @@
 		4C3BD60A1725FC8C00C4A840 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/skipButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C3BD60B1725FC8C00C4A840 /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/skipButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C3BD60C1725FC8D00C4A840 /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/skipButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C3BD61E17260D1500C4A840 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/searchCancelButton_Active.png; sourceTree = "<group>"; };
-		4C3BD62117260D1900C4A840 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/searchCancelButton_Active@2x.png"; sourceTree = "<group>"; };
-		4C3BD62417260D1C00C4A840 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/searchCancelButton_nonActive.png; sourceTree = "<group>"; };
-		4C3BD62717260D1F00C4A840 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/searchCancelButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C3BD62917260D2200C4A840 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = ja.lproj/searchCancelButton_Active.png; sourceTree = "<group>"; };
-		4C3BD62A17260D2500C4A840 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = ko.lproj/searchCancelButton_Active.png; sourceTree = "<group>"; };
-		4C3BD62B17260D2800C4A840 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/searchCancelButton_Active.png"; sourceTree = "<group>"; };
-		4C3BD62C17260D2B00C4A840 /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = id.lproj/searchCancelButton_Active.png; sourceTree = "<group>"; };
-		4C3BD62D17260D2E00C4A840 /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = vi.lproj/searchCancelButton_Active.png; sourceTree = "<group>"; };
-		4C3BD62E17260D3200C4A840 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/searchCancelButton_Active@2x.png"; sourceTree = "<group>"; };
-		4C3BD62F17260D3700C4A840 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchCancelButton_Active@2x.png"; sourceTree = "<group>"; };
-		4C3BD63017260D3A00C4A840 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/searchCancelButton_Active@2x.png"; sourceTree = "<group>"; };
-		4C3BD63117260D3D00C4A840 /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/searchCancelButton_Active@2x.png"; sourceTree = "<group>"; };
-		4C3BD63217260D4000C4A840 /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/searchCancelButton_Active@2x.png"; sourceTree = "<group>"; };
-		4C3BD63317260D4E00C4A840 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = ja.lproj/searchCancelButton_nonActive.png; sourceTree = "<group>"; };
-		4C3BD63417260D5200C4A840 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = ko.lproj/searchCancelButton_nonActive.png; sourceTree = "<group>"; };
-		4C3BD63517260D5400C4A840 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/searchCancelButton_nonActive.png"; sourceTree = "<group>"; };
-		4C3BD63617260D5600C4A840 /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = id.lproj/searchCancelButton_nonActive.png; sourceTree = "<group>"; };
-		4C3BD63717260D5900C4A840 /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = vi.lproj/searchCancelButton_nonActive.png; sourceTree = "<group>"; };
-		4C3BD63817260D5C00C4A840 /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/searchCancelButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C3BD63917260D6000C4A840 /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/searchCancelButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C3BD63A17260D6200C4A840 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/searchCancelButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C3BD63B17260D6500C4A840 /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/searchCancelButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C3BD63C17260D6700C4A840 /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/searchCancelButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C3BD6461726244100C4A840 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/inviteButton_Active.png; sourceTree = "<group>"; };
 		4C3BD6491726244700C4A840 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/inviteButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C3BD64C1726244B00C4A840 /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = en.lproj/inviteButton_nonActive.png; sourceTree = "<group>"; };
@@ -1613,10 +1585,6 @@
 				4CABCE9C172DE33B00AF5863 /* searchDiscoverHeader@2x.png */,
 				4CABCE97172DE26A00AF5863 /* searchDiscoverBackground.png */,
 				4CABCE98172DE26A00AF5863 /* searchDiscoverBackground@2x.png */,
-				4C3BD61F17260D1500C4A840 /* searchCancelButton_Active.png */,
-				4C3BD62217260D1900C4A840 /* searchCancelButton_Active@2x.png */,
-				4C3BD62517260D1C00C4A840 /* searchCancelButton_nonActive.png */,
-				4C3BD62817260D1F00C4A840 /* searchCancelButton_nonActive@2x.png */,
 			);
 			name = Search;
 			sourceTree = "<group>";
@@ -3154,10 +3122,6 @@
 				4CD112E41725D6E90049DFBF /* randomButton_Active@2x.png in Resources */,
 				4CD112E71725D6ED0049DFBF /* randomButton_nonActive.png in Resources */,
 				4CD112EA1725D6F20049DFBF /* randomButton_nonActive@2x.png in Resources */,
-				4C3BD61D17260D1500C4A840 /* searchCancelButton_Active.png in Resources */,
-				4C3BD62017260D1900C4A840 /* searchCancelButton_Active@2x.png in Resources */,
-				4C3BD62317260D1C00C4A840 /* searchCancelButton_nonActive.png in Resources */,
-				4C3BD62617260D1F00C4A840 /* searchCancelButton_nonActive@2x.png in Resources */,
 				4C3BD6451726244100C4A840 /* inviteButton_Active.png in Resources */,
 				4C3BD6481726244700C4A840 /* inviteButton_Active@2x.png in Resources */,
 				4C3BD64B1726244B00C4A840 /* inviteButton_nonActive.png in Resources */,
@@ -3608,58 +3572,6 @@
 				4C3BD60C1725FC8D00C4A840 /* vi */,
 			);
 			name = "skipButton_nonActive@2x.png";
-			sourceTree = "<group>";
-		};
-		4C3BD61F17260D1500C4A840 /* searchCancelButton_Active.png */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C3BD61E17260D1500C4A840 /* en */,
-				4C3BD62917260D2200C4A840 /* ja */,
-				4C3BD62A17260D2500C4A840 /* ko */,
-				4C3BD62B17260D2800C4A840 /* zh-Hant */,
-				4C3BD62C17260D2B00C4A840 /* id */,
-				4C3BD62D17260D2E00C4A840 /* vi */,
-			);
-			name = searchCancelButton_Active.png;
-			sourceTree = "<group>";
-		};
-		4C3BD62217260D1900C4A840 /* searchCancelButton_Active@2x.png */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C3BD62117260D1900C4A840 /* en */,
-				4C3BD62E17260D3200C4A840 /* ja */,
-				4C3BD62F17260D3700C4A840 /* ko */,
-				4C3BD63017260D3A00C4A840 /* zh-Hant */,
-				4C3BD63117260D3D00C4A840 /* id */,
-				4C3BD63217260D4000C4A840 /* vi */,
-			);
-			name = "searchCancelButton_Active@2x.png";
-			sourceTree = "<group>";
-		};
-		4C3BD62517260D1C00C4A840 /* searchCancelButton_nonActive.png */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C3BD62417260D1C00C4A840 /* en */,
-				4C3BD63317260D4E00C4A840 /* ja */,
-				4C3BD63417260D5200C4A840 /* ko */,
-				4C3BD63517260D5400C4A840 /* zh-Hant */,
-				4C3BD63617260D5600C4A840 /* id */,
-				4C3BD63717260D5900C4A840 /* vi */,
-			);
-			name = searchCancelButton_nonActive.png;
-			sourceTree = "<group>";
-		};
-		4C3BD62817260D1F00C4A840 /* searchCancelButton_nonActive@2x.png */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4C3BD62717260D1F00C4A840 /* en */,
-				4C3BD63817260D5C00C4A840 /* ja */,
-				4C3BD63917260D6000C4A840 /* ko */,
-				4C3BD63A17260D6200C4A840 /* zh-Hant */,
-				4C3BD63B17260D6500C4A840 /* id */,
-				4C3BD63C17260D6700C4A840 /* vi */,
-			);
-			name = "searchCancelButton_nonActive@2x.png";
 			sourceTree = "<group>";
 		};
 		4C3BD6471726244100C4A840 /* inviteButton_Active.png */ = {

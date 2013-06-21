@@ -187,6 +187,7 @@
 	[super loadView];
 	
 	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	BOOL isFUE = ([UIScreen mainScreen].bounds.size.height == self.view.frame.size.height);
 	
 	_selectedContacts = [NSMutableArray array];
 	_selectedFollowing = [NSMutableArray array];
@@ -198,12 +199,14 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Find friends"];
 	[self.view addSubview:headerView];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(5.0, 0.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:backButton];
+	if (isFUE) {
+		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		backButton.frame = CGRectMake(5.0, 0.0, 44.0, 44.0);
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
+		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+		[self.view addSubview:backButton];
+	}
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
@@ -279,6 +282,8 @@
 	[[Mixpanel sharedInstance] track:@"Add Friends - Back"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 //- (void)_goFollowFriends {

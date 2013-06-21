@@ -85,9 +85,9 @@
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
+		cameraRollButton.frame = CGRectMake(260.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 		[_controlsHolderView addSubview:cameraRollButton];
 //
@@ -108,7 +108,7 @@
 		[_controlsHolderView addSubview:_captureButton];
 		
 		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_optionsButton.frame = CGRectMake(15.0, [UIScreen mainScreen].bounds.size.height - 60, 44.0, 44.0);
+		_optionsButton.frame = CGRectMake(15.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_nonActive"] forState:UIControlStateNormal];
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_Active"] forState:UIControlStateHighlighted];
 		[_optionsButton addTarget:self action:@selector(_goOptions) forControlEvents:UIControlEventTouchUpInside];

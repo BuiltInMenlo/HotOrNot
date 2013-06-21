@@ -379,6 +379,9 @@
 - (void)loadView {
 	[super loadView];
 	
+	NSLog(@"API END PT:[%@]", [HONAppDelegate apiServerPath]);
+	
+	
 	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
@@ -389,8 +392,6 @@
 	
 	} else
 		_headerView = [[HONHeaderView alloc] initAsVoteWall];
-	
-	//[_headerView toggleRefresh:NO];
 	
 	if (_isPushView) {
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -447,14 +448,11 @@
 	}
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
-		///if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
 		
-	} else {
+	} else
 		[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
-	}
-	
-	NSLog(@"API END PT:[%@]", [HONAppDelegate apiServerPath]);
 }
 
 - (void)viewDidLoad {

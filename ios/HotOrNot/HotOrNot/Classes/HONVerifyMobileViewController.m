@@ -20,13 +20,14 @@
 @property (nonatomic, retain) UITextField *mobileTextField3;
 @property (nonatomic, retain) NSString *phoneNumber;
 @property (nonatomic, retain) UIButton *submitButton;
+@property (nonatomic) float submitButtonOriginY;
 @end
 
 @implementation HONVerifyMobileViewController 
 
 - (id)init {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Find Friends - Open"
+		[[Mixpanel sharedInstance] track:@"Mobile Verification - Open"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	}
@@ -73,13 +74,13 @@
 	[self.view addSubview:inputBGButton];
 	
 	_mobileTextField1 = [[UITextField alloc] initWithFrame:CGRectMake(45.0, 200.0, 35.0, 30.0)];
-	//_mobileTextField1.backgroundColor = [HONAppDelegate honDebugRedColor];
 	[_mobileTextField1 setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_mobileTextField1 setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_mobileTextField1.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_mobileTextField1 setReturnKeyType:UIReturnKeyGo];
-	[_mobileTextField1 setTextColor:[HONAppDelegate honGrey710Color]];
+	[_mobileTextField1 setTextColor:[HONAppDelegate honBlueTextColor]];
 	[_mobileTextField1 addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_mobileTextField1 addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_mobileTextField1.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
 	_mobileTextField1.keyboardType = UIKeyboardTypePhonePad;
 	_mobileTextField1.text = @"";
@@ -87,40 +88,40 @@
 	[_mobileTextField1 setTag:0];
 	[self.view addSubview:_mobileTextField1];
 	
-	_mobileTextField2 = [[UITextField alloc] initWithFrame:CGRectMake(110.0, 200.0, 35.0, 30.0)];
-	//_mobileTextField2.backgroundColor = [HONAppDelegate honDarkGreenColor];
-	[_mobileTextField2 setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_mobileTextField2 setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_mobileTextField2.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_mobileTextField2 setReturnKeyType:UIReturnKeyGo];
-	[_mobileTextField2 setTextColor:[HONAppDelegate honGrey710Color]];
-	[_mobileTextField2 addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	_mobileTextField2.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
-	_mobileTextField2.keyboardType = UIKeyboardTypePhonePad;
-	_mobileTextField2.text = @"";
-	_mobileTextField2.delegate = self;
-	[_mobileTextField2 setTag:1];
-	[self.view addSubview:_mobileTextField2];
+//	_mobileTextField2 = [[UITextField alloc] initWithFrame:CGRectMake(110.0, 200.0, 35.0, 30.0)];
+//	[_mobileTextField2 setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+//	[_mobileTextField2 setAutocorrectionType:UITextAutocorrectionTypeNo];
+//	_mobileTextField2.keyboardAppearance = UIKeyboardAppearanceDefault;
+//	[_mobileTextField2 setReturnKeyType:UIReturnKeyGo];
+//	[_mobileTextField2 setTextColor:[HONAppDelegate honBlueTextColor]];
+//	[_mobileTextField2 addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+//	[_mobileTextField2 addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+//	_mobileTextField2.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
+//	_mobileTextField2.keyboardType = UIKeyboardTypePhonePad;
+//	_mobileTextField2.text = @"";
+//	_mobileTextField2.delegate = self;
+//	[_mobileTextField2 setTag:1];
+//	[self.view addSubview:_mobileTextField2];
+//	
+//	_mobileTextField3 = [[UITextField alloc] initWithFrame:CGRectMake(175.0, 200.0, 90.0, 30.0)];
+//	[_mobileTextField3 setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+//	[_mobileTextField3 setAutocorrectionType:UITextAutocorrectionTypeNo];
+//	_mobileTextField3.keyboardAppearance = UIKeyboardAppearanceDefault;
+//	[_mobileTextField3 setReturnKeyType:UIReturnKeyGo];
+//	[_mobileTextField3 setTextColor:[HONAppDelegate honBlueTextColor]];
+//	[_mobileTextField3 addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+//	[_mobileTextField3 addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+//	_mobileTextField3.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
+//	_mobileTextField3.keyboardType = UIKeyboardTypePhonePad;
+//	_mobileTextField3.text = @"";
+//	_mobileTextField3.delegate = self;
+//	[_mobileTextField1 setTag:2];
+//	[self.view addSubview:_mobileTextField3];
 	
-	_mobileTextField3 = [[UITextField alloc] initWithFrame:CGRectMake(175.0, 200.0, 90.0, 30.0)];
-	//_mobileTextField3.backgroundColor = [HONAppDelegate honDebugRedColor];
-	[_mobileTextField3 setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-	[_mobileTextField3 setAutocorrectionType:UITextAutocorrectionTypeNo];
-	_mobileTextField3.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_mobileTextField3 setReturnKeyType:UIReturnKeyGo];
-	[_mobileTextField3 setTextColor:[HONAppDelegate honGrey710Color]];
-	[_mobileTextField3 addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
-	_mobileTextField3.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
-	_mobileTextField3.keyboardType = UIKeyboardTypePhonePad;
-	_mobileTextField3.text = @"";
-	_mobileTextField3.delegate = self;
-	[_mobileTextField1 setTag:2];
-	[self.view addSubview:_mobileTextField3];
-	
-	float yPos = ([UIScreen mainScreen].bounds.size.height == self.view.frame.size.height) ? [UIScreen mainScreen].bounds.size.height - 53.0 : [UIScreen mainScreen].bounds.size.height - 73.0;
+	_submitButtonOriginY = ([UIScreen mainScreen].bounds.size.height == self.view.frame.size.height) ? [UIScreen mainScreen].bounds.size.height - 53.0 : [UIScreen mainScreen].bounds.size.height - 73.0;
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(0.0, yPos, 320.0, 53.0);
+	_submitButton.frame = CGRectMake(0.0, _submitButtonOriginY, 320.0, 53.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
@@ -130,6 +131,18 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	
+	//[_mobileTextField1 becomeFirstResponder];
+//
+//	_submitButton.hidden = NO;
+//	[UIView animateWithDuration:0.25 animations:^(void) {
+//		//_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
+//		_submitButton.frame = CGRectMake(_submitButton.frame.origin.x, _submitButtonOriginY - 216.0, _submitButton.frame.size.width, _submitButton.frame.size.height);
+//	}];
 }
 
 
@@ -162,7 +175,7 @@
 
 
 - (void)_goSkip {
-	[[Mixpanel sharedInstance] track:@"Find Friends - Skip"
+	[[Mixpanel sharedInstance] track:@"Mobile Verification - Skip"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -180,6 +193,14 @@
 }
 
 - (void)_goNext {
+	[_mobileTextField1 resignFirstResponder];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectMake(_submitButton.frame.origin.x, _submitButtonOriginY + 216.0, _submitButton.frame.size.width, _submitButton.frame.size.height);//_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+	} completion:^(BOOL finished) {
+		//_submitButton.hidden = YES;
+	}];
+
 	//[[[UIAlertView alloc] initWithTitle:@"Feature Disabled" message:@"This feature is turned off during testing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 	[self.navigationController pushViewController:[[HONAddFriendsViewController alloc] init] animated:YES];
 }
@@ -190,17 +211,18 @@
 	if (alertView.tag == 0) {
 		switch(buttonIndex) {
 			case 0:
-				[[Mixpanel sharedInstance] track:@"Find Friends - Skip Cancel"
+				[[Mixpanel sharedInstance] track:@"Mobile Verification - Skip Cancel"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
 				break;
 				
 			case 1:
-				[[Mixpanel sharedInstance] track:@"Find Friends - Skip Confirm"
+				[[Mixpanel sharedInstance] track:@"Mobile Verification - Skip Confirm"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				break;
 		}
@@ -214,7 +236,7 @@
 	
 	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
+		_submitButton.frame = CGRectMake(_submitButton.frame.origin.x, _submitButtonOriginY - 216.0, _submitButton.frame.size.width, _submitButton.frame.size.height);//_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
 	}];
 }
 
@@ -229,25 +251,42 @@
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+		_submitButton.frame = CGRectMake(_submitButton.frame.origin.x, _submitButtonOriginY + 216.0, _submitButton.frame.size.width, _submitButton.frame.size.height);//_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
 	} completion:^(BOOL finished) {
-		_submitButton.hidden = YES;
+		//_submitButton.hidden = YES;
 	}];
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
+//	if ([_mobileTextField1.text length] > 0) {
+//		_phoneNumber = _mobileTextField1.text;
+//		
+//		[[Mixpanel sharedInstance] track:@"Mobile Verification - Entered Mobile Number"
+//									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+//													 _phoneNumber, @"mobile", nil]];
+//		
+//		[self _goNext];
+//		
+//	} else
+//		_mobileTextField1.text = @"";
+}
+
+- (void)_onTextEditingDidEndOnExit:(id)sender {
 	if ([_mobileTextField1.text length] > 0) {
 		_phoneNumber = _mobileTextField1.text;
 		
-		[[Mixpanel sharedInstance] track:@"Find Friends - Entered Mobile Number"
+		[[Mixpanel sharedInstance] track:@"Mobile Verification - Entered Mobile Number"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 													 _phoneNumber, @"mobile", nil]];
 		
-		[self _goNext];
+		//[self _goNext];
 		
 	} else
 		_mobileTextField1.text = @"";
+	
+	
 }
 
 

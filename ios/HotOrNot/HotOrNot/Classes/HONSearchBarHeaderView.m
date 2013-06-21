@@ -46,9 +46,9 @@
 		[staticBGImageView addSubview:_searchTextField];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(246.0, 0.0, 74.0, 44.0);
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"searchCancelButton_nonActive"] forState:UIControlStateNormal];
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"searchCancelButton_Active"] forState:UIControlStateHighlighted];
+		_cancelButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[_greenBGImageView addSubview:_cancelButton];
 	}

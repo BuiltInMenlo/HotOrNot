@@ -88,16 +88,16 @@
 		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[HONAppDelegate honGrey518Color]];
+		[_subjectTextField setTextColor:[UIColor whiteColor]];
 		[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_subjectTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
+		_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:18];
 		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 		_subjectTextField.text = _subjectName;
 		_subjectTextField.delegate = self;
 		[_subjectBGView addSubview:_subjectTextField];
 		
 		UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		sendButton.frame = CGRectMake(260.0, 0.0, 64.0, 44.0);
+		sendButton.frame = CGRectMake(255.0, 0.0, 64.0, 44.0);
 		[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
 		[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
 		[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

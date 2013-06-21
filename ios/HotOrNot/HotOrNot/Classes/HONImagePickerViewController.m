@@ -114,7 +114,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
 		_submitAction = 4;
-		_challengerName = _challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;;
+		_challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;;
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -372,13 +372,10 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_showOverlay {
-	if (_imagePicker.cameraOverlayView != nil) {
-		_imagePicker.cameraOverlayView = nil;
-		_cameraOverlayView = nil;
+	if (_imagePicker.cameraOverlayView == nil) {
+		_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
+		_cameraOverlayView.delegate = self;
 	}
-	
-	_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
-	_cameraOverlayView.delegate = self;
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
 }
@@ -419,6 +416,9 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)_previewStarted:(NSNotification *)notification {
 	NSLog(@"_previewStarted");
 	//[self _removeIris];
+	
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+		[self _removeIris];
 	
 	[self _showOverlay];
 	
@@ -615,6 +615,8 @@ const CGFloat kFocusInterval = 0.5f;
 
 #pragma mark - AddFriends Delegate
 - (void)addChallengers:(HONAddChallengersViewController *)viewController selectFollowing:(NSArray *)following forAppending:(BOOL)isAppend {
+	NSLog(@"addChallengers: selectFollowing:[%@] forAppending:[%d]", following, isAppend);
+	
 	if (isAppend) {
 		[_addFollowing addObjectsFromArray:following];
 	
@@ -643,17 +645,18 @@ const CGFloat kFocusInterval = 0.5f;
 		[usernames addObject:vo.fullName];
 	
 	
-	if ([_addFollowing count] > 0)
-		_challengerName = [_addFollowing objectAtIndex:0];
-	
-	
 	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil))
 		_submitAction = 1;
+	
+	if ([_addFollowing count] > 0)
+		_challengerName = ((HONUserVO *)[_addFollowing objectAtIndex:0]).username;
 	
 	[_cameraOverlayView updateChallengers:[usernames copy]];
 }
 
 - (void)addChallengers:(HONAddChallengersViewController *)viewController selectContacts:(NSArray *)contacts forAppending:(BOOL)isAppend {
+	NSLog(@"addChallengers: selectContacts:[%@] forAppending:[%d]", contacts, isAppend);
+	
 	if (isAppend)
 		[_addContacts addObjectsFromArray:contacts];
 	
