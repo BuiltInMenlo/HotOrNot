@@ -7,6 +7,8 @@ if( isset( $_REQUEST['persona'] ) ){
 require_once 'vendor/autoload.php';
 $r = new BIM_Growth_Reports();
 $report = $r->getReportData( $persona );
+
+$tumblrStats = $r->getSocialStatsForTumblr();
 ?>
 </pre>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">

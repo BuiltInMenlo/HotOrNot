@@ -82,4 +82,24 @@ class BIM_Growth_Reports{
         $dao = new BIM_DAO_Mysql_Growth_Reports( BIM_Config::db());
         return array_map( function( $el ){ return $el->name; },  $dao->getPersonaNames());
     }
+    
+    public function getSocialStatsForTumblr( $persona = '' ){
+        $dao = new BIM_DAO_Mysql_Growth_Reports( BIM_Config::db());
+        // the data returned here is sorted by time asc
+        $ss = $dao->getSocialStatsForTumblr();
+        $statDiffs = array();
+        foreach( $ss as $socialStats ){
+            if(!isset( $statDiffs[ $socialStats->persona ] ) ){
+                $statDiffs[ $socialStats->persona ] = array($socialStats);
+            }
+            $latest = end( $statDiffs[ $socialStats->persona ] );
+
+            $socialStats->followers_diff = $socialStats->followers - $latest->followers;
+            $socialStats->following_diff = $socialStats->following - $latest->following;
+            $socialStats->likes_diff = $socialStats->likes - $latest->likes;
+                
+            $statDiffs[ $socialStats->persona ][] = $socialStats;
+        }
+        print_r( $ss ); exit;
+    }
 }
