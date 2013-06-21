@@ -116,7 +116,7 @@ class BIM_DAO_Mysql_Growth_Reports extends BIM_DAO_Mysql_Growth{
 	}
 	
 	public function getPersonaNames(){
-	    $sql = "select name from growth.persona where enabled != 0";
+	    $sql = "select distinct(name) from growth.persona where enabled != 0";
 		$stmt = $this->prepareAndExecute($sql);
 		return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
 	}
