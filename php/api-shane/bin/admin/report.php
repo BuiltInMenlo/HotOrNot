@@ -10,6 +10,8 @@ $report = $r->getReportData( $persona );
 
 $socialStats = $r->getSocialStats( '', $persona );
 
+// print_r( $socialStats ); exit;
+
 ?>
 </pre>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -73,6 +75,7 @@ $socialStats = $r->getSocialStats( '', $persona );
 				$('#example2').dataTable( params );
 				$('#example3').dataTable( params );
 				$('#example4').dataTable( params );
+				$('#example5').dataTable( params );
 				
 				SyntaxHighlighter.config.clipboardSwf = 'media/javascript/syntax/clipboard.swf';
 				SyntaxHighlighter.all();
@@ -122,6 +125,122 @@ This is where te user details will be going
 </div>
 <hr>
 <div id="fw_content">
+<?php if( isset( $persona ) && isset( $socialStats->$persona->tumblr ) && $socialStats->$persona->tumblr ) { ?>
+    <?php 
+    
+        $fields = get_object_vars( $socialStats->$persona->tumblr[0] );
+        unset( $fields['network'] );
+        unset( $fields['persona'] );
+        unset( $fields['month'] );
+        unset( $fields['day'] );
+        unset( $fields['year'] );
+        
+    ?>
+	<br><br>
+    <h3>Tumblr Social Stats</h3>
+    <div class="full_width">
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example5" style="width:980px">
+        	<thead>
+        		<tr>
+        			<th>Day</th>
+        			<?php foreach( $fields as $field => $data ) {  ?>
+        					<th class="center"><?php echo $field;?></th>
+        			<?php }?>
+        		</tr>
+        	</thead>
+        	<tbody>
+    			<?php foreach( $socialStats->$persona->tumblr as $dayData ) {?>
+	        		<tr class="gradeA">
+            			<?php $day = "$dayData->month-$dayData->day-$dayData->year"; ?>
+            			<td><?php echo $day; ?></td>
+            			<?php foreach( $fields as $field => $data ) { ?>
+            				<td class="center"><?php echo $dayData->$field; ?></td>
+            			<?php }?>
+	        		</tr>
+    			<?php }?>
+        	</tbody>
+        </table>
+    </div>
+<?php } ?>
+
+<?php if( isset( $persona ) && isset( $socialStats->$persona->webstagram ) && $socialStats->$persona->webstagram ) { ?>
+    <?php 
+    
+        $fields = get_object_vars( $socialStats->$persona->webstagram[0] );
+        unset( $fields['network'] );
+        unset( $fields['persona'] );
+        unset( $fields['month'] );
+        unset( $fields['day'] );
+        unset( $fields['year'] );
+        
+    ?>
+	<br><br>
+    <h3>Webstagram Social Stats</h3>
+    <div class="full_width">
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example5" style="width:980px">
+        	<thead>
+        		<tr>
+        			<th>Day</th>
+        			<?php foreach( $fields as $field => $data ) {  ?>
+        					<th class="center"><?php echo $field;?></th>
+        			<?php }?>
+        		</tr>
+        	</thead>
+        	<tbody>
+    			<?php foreach( $socialStats->$persona->webstagram as $dayData ) {?>
+	        		<tr class="gradeA">
+            			<?php $day = "$dayData->month-$dayData->day-$dayData->year"; ?>
+            			<td><?php echo $day; ?></td>
+            			<?php foreach( $fields as $field => $data ) { ?>
+            				<td class="center"><?php echo $dayData->$field; ?></td>
+            			<?php }?>
+	        		</tr>
+    			<?php }?>
+        	</tbody>
+        </table>
+    </div>
+<?php } ?>
+
+<?php if( isset( $persona ) && isset( $socialStats->$persona->askfm ) && $socialStats->$persona->askfm ) { ?>
+    <?php 
+    
+        $fields = get_object_vars( $socialStats->$persona->askfm[0] );
+        unset( $fields['network'] );
+        unset( $fields['persona'] );
+        unset( $fields['month'] );
+        unset( $fields['day'] );
+        unset( $fields['year'] );
+        
+    ?>
+	<br><br>
+    <h3>Ask.fm Social Stats</h3>
+    <div class="full_width">
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example5" style="width:980px">
+        	<thead>
+        		<tr>
+        			<th>Day</th>
+        			<?php foreach( $fields as $field => $data ) {  ?>
+        					<th class="center"><?php echo $field;?></th>
+        			<?php }?>
+        		</tr>
+        	</thead>
+        	<tbody>
+    			<?php foreach( $socialStats->$persona->askfm as $dayData ) {?>
+	        		<tr class="gradeA">
+            			<?php $day = "$dayData->month-$dayData->day-$dayData->year"; ?>
+            			<td><?php echo $day; ?></td>
+            			<?php foreach( $fields as $field => $data ) { ?>
+            				<td class="center"><?php echo $dayData->$field; ?></td>
+            			<?php }?>
+	        		</tr>
+    			<?php }?>
+        	</tbody>
+        </table>
+    </div>
+<?php } ?>
+
+<?php if( isset(  $report->totals ) ) { ?>
+<br><br>
     <h3>Totals</h3>
     <div class="full_width">
         <table cellpadding="0" cellspacing="0" border="0" class="display" id="example" style="width:980px">
@@ -243,7 +362,7 @@ This is where te user details will be going
         	</tbody>
         </table>
     </div>
-
+    <?php } ?>
 </div>
 </body>
 </html>
