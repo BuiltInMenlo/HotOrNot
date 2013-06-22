@@ -2,26 +2,34 @@
 
 class BIM_Controller_G extends BIM_Controller_Base {
     
-    public function handleReq(){
-        $this->growth = $growth = new BIM_App_G;
-        
-        $input = null;
-        if ( isset( $_POST['action'] ) ) {
-            $input = $_POST;
-        } else if( isset( $_GET['action'] ) ){
-            $input = $_GET;
-        }
-        
-        if ( $input ) {
-            if( $input['action'] == 0 ){
-                return $growth->volleyUserPhotoComment( $input );
-            } else if( $input['action'] == 1 ){
-                return $growth->emailInvites( $input );
-            } else if( $input['action'] == 2 ){
-                return $growth->smsInvites( $input );
-            } else if( $input['action'] == 3 ){
-                return $growth->trackClick( $input );
+    public function init(){
+        $this->growth = new BIM_App_G();
+    }
+    
+    public function trackClick( ){
+        if( isset( $this->input['click'] ) ){
+            $parts = explode('/',$this->input['click'] );
+            $ct = count($parts);
+            if( $ct > 1 ){
+                $idx = $ct - 2;
+                $this->input['network_id'] = $parts[$idx];
+                
+                $idx = $ct - 1;
+                $this->input['persona_name'] = $parts[$idx];
             }
         }
+        return $this->growth->trackClick( $this->input );
+    }
+    
+    public function smsInvites( ){
+        return $this->growth->smsInvites( $this->input );
+    }
+
+    public function emailInvites( ){
+        return $this->growth->emailInvites( $this->input );
+    }
+    
+    public function volleyUserPhotoComment( ){
+        return $this->growth->volleyUserPhotoComment( $this->input );
     }
 }

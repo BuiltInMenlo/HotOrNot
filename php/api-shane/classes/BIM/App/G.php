@@ -24,20 +24,13 @@ class BIM_App_G extends BIM_App_Base{
     }
     
     public function trackClick( $params ){
-        $data = $_GET['click'];
-        $parts = explode('/',$data );
-        //$parts = explode('/',$_SERVER['REQUEST_URI'] );
-        $ct = count($parts);
-        if( $ct > 1 ){
-            $idx = $ct - 2;
-            $networkId = $parts[$idx];
-            $idx = $ct - 1;
-            $personaName = $parts[$idx];
-            $persona = new BIM_Growth_Persona( $personaName );
-            if( $persona->isExtant() ){
-                $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-                $persona->trackInboundClick($networkId, $referer);
-            }
+        $networkId = $params['network_id'];
+        $personaName = $params['persona_name'];
+        $persona = new BIM_Growth_Persona( $personaName );
+        if( $persona->isExtant() ){
+            $referer = isset($params['referer']) ? $params['referer'] : '';
+            $persona->trackInboundClick($networkId, $referer);
         }
+        return true;
     }
 }

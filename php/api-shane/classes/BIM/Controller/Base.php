@@ -5,11 +5,19 @@ class BIM_Controller_Base{
     public function __construct(){
         $this->staticFuncs = BIM_Config::staticFuncs();
         $this->queueFuncs = BIM_Config::queueFuncs();
+        $this->init();
     }
     
+    public function init(){}
+    
     public function handleReq(){
-	    return array();
-	}
+        $res = false;
+        if( isset( $this->method ) ){
+            $method = $this->method;
+            $res = $this->$method();
+        }
+        return $res;
+    }
 	
     protected function useQueue( $params ){
         $class = $params[0];

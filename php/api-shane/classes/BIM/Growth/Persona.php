@@ -141,6 +141,7 @@ class BIM_Growth_Persona{
     public function trackInboundClick( $networkId, $referer = '' ){
         $dao = new BIM_DAO_Mysql_Persona( BIM_Config::db() );
         $dao->trackInboundClick($this->name, $networkId, $referer);
+        return true;
     }
     
     public function isExtant(){
