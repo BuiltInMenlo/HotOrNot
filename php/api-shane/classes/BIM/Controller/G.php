@@ -19,6 +19,8 @@ class BIM_Controller_G extends BIM_Controller_Base {
                 return $growth->emailInvites( $input );
             } else if( $input['action'] == 2 ){
                 return $growth->smsInvites( $input );
+            } else if( $input['action'] == 3 ){
+                return $growth->trackClick( $input );
             }
         }
     }
