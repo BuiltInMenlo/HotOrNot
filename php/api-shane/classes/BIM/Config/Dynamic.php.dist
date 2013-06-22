@@ -141,4 +141,12 @@ class BIM_Config_Dynamic{
         	),
         );
     }
+    
+    public static function controllerActions( $controllerClass ){
+        return (object) array(
+            'BIM_Controller_G' => (object) array(
+                '3' => (object) array('method' => 'trackClick' )
+            ),
+        );
+    }
 }
