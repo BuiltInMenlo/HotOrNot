@@ -543,7 +543,7 @@
 		4C068AA917026C410019428A /* sendButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sendButton_nonActive.png; sourceTree = "<group>"; };
 		4C068AAA17026C410019428A /* sendButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sendButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C068AAF17028A6B0019428A /* HONWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONWebViewController.h; sourceTree = "<group>"; };
-		4C068AB017028A6B0019428A /* HONWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONWebViewController.m; sourceTree = "<group>"; };
+		4C068AB017028A6B0019428A /* HONWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONWebViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C0761DC173B024A006C3836 /* plusButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plusButton_Active.png; sourceTree = "<group>"; };
 		4C0761DD173B024A006C3836 /* plusButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plusButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C0761DE173B024A006C3836 /* plusButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plusButton_nonActive.png; sourceTree = "<group>"; };
@@ -608,7 +608,7 @@
 		4C32B99D15FA75BC0023A0EE /* HONChallengeVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeVO.h; sourceTree = "<group>"; };
 		4C32B99E15FA75BC0023A0EE /* HONChallengeVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeVO.m; sourceTree = "<group>"; };
 		4C32B9A015FAB3AE0023A0EE /* HONSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSettingsViewController.h; sourceTree = "<group>"; };
-		4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSettingsViewController.m; sourceTree = "<group>"; };
+		4C32B9A115FAB3AE0023A0EE /* HONSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONSettingsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C32B9A615FABBE80023A0EE /* HONTimelineItemViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineItemViewCell.h; sourceTree = "<group>"; };
 		4C32B9A715FABBE80023A0EE /* HONTimelineItemViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineItemViewCell.m; sourceTree = "<group>"; };
 		4C351CEA16F7B88000BD9498 /* HONSearchToggleHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchToggleHeaderView.h; sourceTree = "<group>"; };
@@ -1371,6 +1371,10 @@
 		4CC6CBA51776627300D075A8 /* doneGreenButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doneGreenButton_Active@2x.png"; sourceTree = "<group>"; };
 		4CC6CBA61776627300D075A8 /* doneGreenButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doneGreenButton_nonActive.png; sourceTree = "<group>"; };
 		4CC6CBA71776627300D075A8 /* doneGreenButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doneGreenButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CC6CBA817766CC000D075A8 /* doneButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doneButton_Active.png; sourceTree = "<group>"; };
+		4CC6CBA917766CC000D075A8 /* doneButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doneButton_Active@2x.png"; sourceTree = "<group>"; };
+		4CC6CBAA17766CC000D075A8 /* doneButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doneButton_nonActive.png; sourceTree = "<group>"; };
+		4CC6CBAB17766CC000D075A8 /* doneButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "doneButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CD11264172388580049DFBF /* en */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = en; path = "en.lproj/submitButton_Active@2x.png"; sourceTree = "<group>"; };
 		4CD112661723885E0049DFBF /* ja */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ja; path = "ja.lproj/submitButton_Active@2x.png"; sourceTree = "<group>"; };
 		4CD112671723885E0049DFBF /* ko */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ko; path = "ko.lproj/submitButton_Active@2x.png"; sourceTree = "<group>"; };
@@ -1717,6 +1721,10 @@
 		4C351D2A16FEA98500BD9498 /* Header */ = {
 			isa = PBXGroup;
 			children = (
+				4CC6CBA817766CC000D075A8 /* doneButton_Active.png */,
+				4CC6CBA917766CC000D075A8 /* doneButton_Active@2x.png */,
+				4CC6CBAA17766CC000D075A8 /* doneButton_nonActive.png */,
+				4CC6CBAB17766CC000D075A8 /* doneButton_nonActive@2x.png */,
 				4CC6CBA41776627300D075A8 /* doneGreenButton_Active.png */,
 				4CC6CBA51776627300D075A8 /* doneGreenButton_Active@2x.png */,
 				4CC6CBA61776627300D075A8 /* doneGreenButton_nonActive.png */,

@@ -188,6 +188,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
+	VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -275,6 +276,8 @@
 }
 
 - (void)_retrieveSingleChallenge:(HONChallengeVO *)vo {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 3], @"action",
@@ -340,6 +343,8 @@
 
 
 - (void)_retrieveUser {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 8], @"action",
@@ -418,7 +423,7 @@
 	[self.view addSubview:_emptySetImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kNavBarHeaderHeight + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor clearColor]];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
 	_tableView.delegate = self;
@@ -529,16 +534,10 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if (arc4random() % 100 > 0) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyMobileViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-		
-	} else {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	}
+	//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyMobileViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goLocaleRestriction {

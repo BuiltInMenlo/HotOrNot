@@ -95,7 +95,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	
-	//return (@"http://50.17.142.22/hotornot/api-shane");
+	return (@"http://50.17.142.22/hotornot/api-shane");
 	return (@"http://discover.getassembly.com/hotornot/api-shane");
 }
 
@@ -527,6 +527,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
 	
+	VolleyJSONLog(@"AFNetworking [-] HONAppDelegate --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 6], @"action",
@@ -539,7 +540,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil)
-			VolleyJSONLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 		
 		else {
 			VolleyJSONLog(@"AFNetworking HONAppDelegate: %@", result);
@@ -854,6 +855,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 - (void)_retrieveConfigJSON {
 	VolleyJSONLog(@"CONFIG_JSON:[%@]", kConfigURL);
 	
+	VolleyJSONLog(@"AFNetworking [-] HONAppDelegate --> (%@/%@)", kConfigURL, @"boot-dev.json");
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
 	[httpClient postPath:@"boot-dev.json" parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -962,11 +964,14 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		_progressHUD = nil;
 	}];
 	
+	
 	[self _registerUser];
 	
 }
 
-- (void)_registerUser {		
+- (void)_registerUser {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONAppDelegate --> (%@/%@)", kConfigURL, kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",

@@ -11,8 +11,8 @@
 #import "HONChallengeVO.h"
 
 
-#define __ALWAYS_REGISTER__ 0
 #define __DEV_CFG_JSON___ 1
+#define __ALWAYS_REGISTER__ 0
 
 
 // api endpts
