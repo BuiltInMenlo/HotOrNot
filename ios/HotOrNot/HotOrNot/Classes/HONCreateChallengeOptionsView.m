@@ -118,7 +118,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[_cancelButton setSelected:YES];
-	[self _goClose];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"CLOSE_OPTIONS" object:nil];
 }
 
 

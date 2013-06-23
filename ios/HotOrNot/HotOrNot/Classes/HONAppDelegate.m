@@ -34,9 +34,15 @@
 #import "HONImagingDepictor.h"
 
 
-// api endpts
-//NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";//@"http://50.17.142.22/hotornot";
+// json config url
+#if __DEV_CFG_JSON___ == 1
 NSString * const kConfigURL = @"http://50.17.142.22/hotornot";
+#else
+NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";
+#endif
+
+
+//api endpts
 NSString * const kAPIChallenges = @"Challenges.php";
 NSString * const kAPIComments = @"Comments.php";
 NSString * const kAPIDiscover = @"Discover.php";
@@ -88,10 +94,9 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
-	return (@"http://50.17.142.22/hotornot/api-shane");
 	
-	//return (@"http://discover.getassembly.com/hotornot/api-shane");
 	//return (@"http://50.17.142.22/hotornot/api-shane");
+	return (@"http://discover.getassembly.com/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -617,8 +622,10 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	
 	NSLog(@"identifierForVendor:[%@]", [[UIDevice currentDevice].identifierForVendor UUIDString]);
 	
+#ifndef __IPHONE_6_0
 	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
+#endif
 	
 	if ([HONAppDelegate hasNetwork]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
@@ -943,20 +950,23 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"HONAppDelegate AFNetworking %@", [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
 	}];
 	
-
+	[self _registerUser];
+	
 }
 
-- (void)_registerUser {
-	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"user"]) {
-	
-//	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://api.parse.com/1/functions/"]];
-//	[httpClient setDefaultHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
-//	[httpClient setDefaultHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
-//	[httpClient setDefaultHeader:@"Content-Type" value:@"application/json"];
-//	[httpClient registerHTTPOperationClass:[AFJSONRequestOperation class]];
-		
+- (void)_registerUser {		
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",
@@ -1027,59 +1037,10 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	[navigationController4 setNavigationBarHidden:YES];
 	
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navigationController1, navigationController2, navigationController3, navigationController4, nil];
-	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
-	//[self performSelector:@selector(_dropTabs) withObject:nil afterDelay:2.0];
 }
 
 
 #pragma mark - Debug Calls
-- (void)_testParseCloudCode {
-	// http://stackoverflow.com/questions/10795710/converting-a-curl-request-with-data-urlencode-into-afnetworking-get-request
-	/*
-	NSDictionary *jsonDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:@"app_name", @"PicChallenge", nil];
-	 
-	NSError *error = nil;
-	NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDictionary options:0 error:&error];
-	 
-	if (!jsonData) {
-		VolleyJSONLog(@"NSJSONSerialization failed %@", error);
-	}
-	 
-	NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-	NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:json, @"where", nil];
-	*/
-	// ////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
-	
-	NSDictionary *parameters = [[NSDictionary alloc] initWithObjectsAndKeys:
-										 //@"PicChallenge", @"app_name",
-										 [NSString stringWithFormat:@"%d", 2], @"user_id",
-										 nil];
-	
-	AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"https://api.parse.com/1/functions/"]];
-//	[client setDefaultHeader:@"X-Parse-Application-Id" value:@"Gi7eI4v6r9pEZmSQ0wchKKelOgg2PIG9pKE160uV"];
-//	[client setDefaultHeader:@"X-Parse-REST-API-Key" value:@"Lf7cT3m2EC8JsXzubpfhD28phm2gA7Y86kiTnAb6"];
-	[client setDefaultHeader:@"X-Parse-Application-Id" value:@"avNXwB6BSTKdSeD5lDRVM71Bglq3mY78ORBQvV2i"];
-	[client setDefaultHeader:@"X-Parse-REST-API-Key" value:@"yNUthh5WRYuAoKMv2Gyv6vwmg7D0YnvJ83RZWmXr"];
-	[client setDefaultHeader:@"Content-Type" value:@"application/json"];
-	[client registerHTTPOperationClass:[AFJSONRequestOperation class]];
-	
-	VolleyJSONLog(@"%@", parameters);
-	
-	//[client postPath:@"duration"
-	[client postPath:@"getUser"
-			parameters:parameters
-			  success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				  NSError *error = nil;
-				  NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				  VolleyJSONLog(@"SUCCESS\n%@", result);
-				  
-			  } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				  VolleyJSONLog(@"FAILED\n%@", error);
-			  }
-	 ];
-}
-
 - (void)_showFonts {
 	for (NSString *familyName in [UIFont familyNames]) {
 		NSLog(@"Font Family Name = %@", familyName);

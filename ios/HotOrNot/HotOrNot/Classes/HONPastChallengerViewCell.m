@@ -27,9 +27,13 @@
 		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
 		_isRandom = isAnonymous;
 		
-		UIImageView *plusImageView = [[UIImageView alloc] initWithFrame:CGRectMake(266.0, 10.0, 44.0, 44.0)];
-		plusImageView.image = [UIImage imageNamed:@"plusButton_nonActive"];
-		[self addSubview:plusImageView];
+//		UIImageView *plusImageView = [[UIImageView alloc] initWithFrame:CGRectMake(266.0, 10.0, 44.0, 44.0)];
+//		plusImageView.image = [UIImage imageNamed:@"plusButton_nonActive"];
+//		[self addSubview:plusImageView];
+		
+		UIImageView *chevronImageView = [[UIImageView alloc] initWithFrame:CGRectMake(285.0, 20.0, 24.0, 24.0)];
+		chevronImageView.image = [UIImage imageNamed:@"chevron"];
+		[self addSubview:chevronImageView];
 	}
 	
 	return (self);

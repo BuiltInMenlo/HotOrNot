@@ -37,7 +37,7 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username {
 	if ((self = [super initWithFrame:frame])) {
 		_usernames = [NSArray arrayWithObject:username];
-		_username = username;//[_usernames objectAtIndex:0];
+		_username = username;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closeOptions:) name:@"CLOSE_OPTIONS" object:nil];
 		

@@ -338,45 +338,41 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)_showCamera {
 	NSLog(@"_showCamera");
 	
+	_imagePicker = [[UIImagePickerController alloc] init];
+	//_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
+	_imagePicker.delegate = self;
+	_imagePicker.navigationBarHidden = YES;
+	_imagePicker.toolbarHidden = YES;
+	_imagePicker.allowsEditing = NO;
+	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		_imagePicker = [[UIImagePickerController alloc] init];
-		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
-		_imagePicker.delegate = self;
-		_imagePicker.allowsEditing = NO;
-		_imagePicker.cameraOverlayView = nil;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = NO;
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+		
+		NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", _subjectName, _challengerName);
+		
+		if (_cameraOverlayView == nil) {
+			_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
+			_cameraOverlayView.delegate = self;
+		}
+		
+		// these two are fucked in ios7 right now!!
+		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		_imagePicker.showsCameraControls = NO;
+		// ---------------------------------------------------------------------------
+		
+		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
 		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-			//[self _showOverlay];
-		}];
-		
-	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-		_imagePicker = [[UIImagePickerController alloc] init];
+	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-		_imagePicker.delegate = self;
-		_imagePicker.allowsEditing = NO;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = NO;
-//		_imagePicker.navigationBar.tintColor = [UIColor colorWithRed:0.039 green:0.396 blue:0.647 alpha:1.0];
-		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
-		}];
-	}
+	
+	
+	[self presentViewController:_imagePicker animated:NO completion:^(void) {
+	}];
 }
 
 - (void)_showOverlay {
-	if (_imagePicker.cameraOverlayView == nil) {
-		_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
-		_cameraOverlayView.delegate = self;
-	}
-	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
 }
 
@@ -415,12 +411,12 @@ const CGFloat kFocusInterval = 0.5f;
 
 - (void)_previewStarted:(NSNotification *)notification {
 	NSLog(@"_previewStarted");
-	//[self _removeIris];
 	
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
-		[self _removeIris];
+//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+//		[self _removeIris];
 	
 	[self _showOverlay];
+	
 	
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
 }
@@ -538,14 +534,18 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	NSLog(@"imagePickerControllerDidCancel");
 	
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-		//[self _showOverlay];
-		
-	} else {
+//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+//		
+//	} else {
+//		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+//	}
+	
+	[self dismissViewControllerAnimated:YES completion:^(void) {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-	}
+	}];
 }
 
 

@@ -59,6 +59,8 @@
 	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:1]] placeholderImage:nil];
 	[self.view addSubview:promoteImageView];
 	
+	NSLog(@"URL:[%@]", [HONAppDelegate promoteInviteImageForType:1]);
+	
 	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	skipButton.frame = CGRectMake(252.0, 4.0, 64.0, 44.0);
 	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];

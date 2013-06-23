@@ -6,7 +6,6 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <AVFoundation/AVFoundation.h>
 #import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
@@ -20,9 +19,11 @@
 #import "HONUserVO.h"
 
 
-@interface HONTimelineItemViewCell() <AVAudioPlayerDelegate, UIActionSheetDelegate, UIAlertViewDelegate>
+@interface HONTimelineItemViewCell() <UIActionSheetDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
+@property (nonatomic, strong) UIImageView *lChallengeImageView;
+@property (nonatomic, strong) UIImageView *rChallengeImageView;
 @property (nonatomic, strong) UILabel *lScoreLabel;
 @property (nonatomic, strong) UILabel *rScoreLabel;
 @property (nonatomic, strong) UILabel *commentsLabel;
@@ -31,7 +32,6 @@
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasOponentRetorted;
-@property (nonatomic, strong) AVAudioPlayer *sfxPlayer;
 @property (nonatomic, strong) HONImageLoadingView *lImageLoading;
 @property (nonatomic, strong) HONImageLoadingView *rImageLoading;
 
@@ -71,6 +71,7 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
+	__weak typeof(self) weakSelf = self;
 	//NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasOponentRetorted);
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 18.0, 200.0, 28.0)];
@@ -108,20 +109,21 @@
 	_lImageLoading = [[HONImageLoadingView alloc] initAtPos:CGPointMake(93.0, 93.0)];
 	[_lHolderView addSubview:_lImageLoading];
 	
-	UIImageView *lImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
-	lImgView.userInteractionEnabled = YES;
+	_lChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
+	_lChallengeImageView.userInteractionEnabled = YES;
+	_lChallengeImageView.alpha = 0.0;
+	[_lHolderView addSubview:_lChallengeImageView];
 	
-	if (kIsImageCacheEnabled)
-		[lImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] placeholderImage:[UIImage imageNamed:@"timeline_image_background"]];
+	[_lChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]]
+																  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+									weakSelf.lChallengeImageView.image = image;
+									[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.lChallengeImageView.alpha = 1.0; } completion:nil];
+								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 	
-	else
-		[lImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:[UIImage imageNamed:@"timeline_image_background"] success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-	
-	
-	[_lHolderView addSubview:lImgView];
 	
 	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	leftButton.frame = lImgView.frame;
+	leftButton.frame = _lChallengeImageView.frame;
 	[leftButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 	[leftButton addTarget:self action:@selector(_goSingleTapLeft) forControlEvents:UIControlEventTouchUpInside];
 	[_lHolderView addSubview:leftButton];
@@ -157,27 +159,31 @@
 	[_rHolderView addSubview:_rImageLoading];
 	
 	if (_hasOponentRetorted) {
-		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
-		rImgView.userInteractionEnabled = YES;
+		_rChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
+		_rChallengeImageView.alpha = 0.0;
+		_rChallengeImageView.userInteractionEnabled = YES;
+		[_rHolderView addSubview:_rChallengeImageView];
 		
-		if (kIsImageCacheEnabled)
-			[rImgView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] placeholderImage:[UIImage imageNamed:@"timeline_image_background"]];
+		[_rChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]]
+																	  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+									placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+										weakSelf.rChallengeImageView.image = image;
+										[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallengeImageView.alpha = 1.0; } completion:nil];
+									} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 		
-		else
-			[rImgView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:[UIImage imageNamed:@"timeline_image_background"] success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 		
-		[_rHolderView addSubview:rImgView];
 		
-		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
-		lScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
-		//[_lHolderView addSubview:lScoreImageView];
 		
-		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
-		rScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
-		//[_rHolderView addSubview:rScoreImageView];
+//		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
+//		lScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
+//		[_lHolderView addSubview:lScoreImageView];
+//		
+//		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
+//		rScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
+//		[_rHolderView addSubview:rScoreImageView];
 		
 		UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		rightButton.frame = lImgView.frame;
+		rightButton.frame = _lChallengeImageView.frame;
 		[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 		[rightButton addTarget:self action:@selector(_goSingleTapRight) forControlEvents:UIControlEventTouchUpInside];
 		[_rHolderView addSubview:rightButton];
@@ -246,7 +252,7 @@
 		
 		if (_challengeVO.challengerID != 0) {
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			rightButton.frame = lImgView.frame;
+			rightButton.frame = _lChallengeImageView.frame;
 			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 			[rightButton addTarget:self action:@selector(_goSingleTapRight) forControlEvents:UIControlEventTouchUpInside];
 			[_rHolderView addSubview:rightButton];
@@ -327,83 +333,13 @@
 	[commentsLabelButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:commentsLabelButton];
 	
-	
-//	UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
-//	lScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
-//	[_lHolderView addSubview:lScoreImageView];
-//	
-//	UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
-//	rScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
-//	[_rHolderView addSubview:rScoreImageView];
-	
-	
-	
-	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	moreButton.frame = CGRectMake(264.0, 270.0, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:moreButton];
 }
-
-/*
-#pragma mark - Touch Interactions
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	UITouch *touch = [touches anyObject];
-	
-	if (touch.tapCount == 1) {
-		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
-			_tapOverlayImageView.frame = _lHolderView.frame;
-			
-		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
-			_tapOverlayImageView.frame = _rHolderView.frame;
-		}
-		
-		[self addSubview:_tapOverlayImageView];
-			
-	} else if (touch.tapCount == 2) {
-		[NSObject cancelPreviousPerformRequestsWithTarget:self];
-	}
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-	//UITouch *touch = [touches anyObject];
-	[_tapOverlayImageView removeFromSuperview];
-}
-
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-	//UITouch *touch = [touches anyObject];
-	[_tapOverlayImageView removeFromSuperview];
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-	UITouch *touch = [touches anyObject];
-	[_tapOverlayImageView removeFromSuperview];
-	
-	// this is the single tap action
-	if (touch.tapCount == 1) {
-		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
-			[self performSelector:@selector(_goSingleTapLeft) withObject:nil afterDelay:0.2];
-		
-		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
-			[self performSelector:@selector(_goSingleTapRight) withObject:nil afterDelay:0.2];
-			
-		} else {
-		}
-		
-	// this is the double tap action
-	} else if (touch.tapCount == 2) {
-		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
-			[self _goDoubleTapLeft];
-		
-		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
-			[self _goDoubleTapRight];
-			
-		} else {
-		}
-	}
-}
-*/
 
 
 #pragma mark - Navigation
@@ -685,14 +621,6 @@
 }
 
 
-#pragma mark - Behaviors
-- (void)_playVoteSFX {
-	_sfxPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@"fpo_upvote" withExtension:@"mp3"] error:NULL];
-	_sfxPlayer.delegate = self;
-	[_sfxPlayer play];
-}
-
-
 #pragma mark - ActionSheet Delegates
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	if (actionSheet.tag == 0) {
@@ -795,3 +723,62 @@
 @end
 
 
+
+
+
+//#pragma mark - Touch Interactions
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//	UITouch *touch = [touches anyObject];
+//	
+//	if (touch.tapCount == 1) {
+//		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
+//			_tapOverlayImageView.frame = _lHolderView.frame;
+//			
+//		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
+//			_tapOverlayImageView.frame = _rHolderView.frame;
+//		}
+//		
+//		[self addSubview:_tapOverlayImageView];
+//		
+//	} else if (touch.tapCount == 2) {
+//		[NSObject cancelPreviousPerformRequestsWithTarget:self];
+//	}
+//}
+//
+//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+//	//UITouch *touch = [touches anyObject];
+//	[_tapOverlayImageView removeFromSuperview];
+//}
+//
+//- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+//	//UITouch *touch = [touches anyObject];
+//	[_tapOverlayImageView removeFromSuperview];
+//}
+//
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+//	UITouch *touch = [touches anyObject];
+//	[_tapOverlayImageView removeFromSuperview];
+//	
+//	// this is the single tap action
+//	if (touch.tapCount == 1) {
+//		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
+//			[self performSelector:@selector(_goSingleTapLeft) withObject:nil afterDelay:0.2];
+//			
+//		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
+//			[self performSelector:@selector(_goSingleTapRight) withObject:nil afterDelay:0.2];
+//			
+//		} else {
+//		}
+//		
+//		// this is the double tap action
+//	} else if (touch.tapCount == 2) {
+//		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
+//			[self _goDoubleTapLeft];
+//			
+//		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
+//			[self _goDoubleTapRight];
+//			
+//		} else {
+//		}
+//	}
+//}

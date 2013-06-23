@@ -279,13 +279,6 @@
 	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
 	[_usernameHolderView addSubview:inputBGImageView];
 	
-//	UIButton *inputBGButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	inputBGButton.frame = CGRectMake(198.0, 220.0, 244.0, 44.0);
-//	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"fue_inputField_nonActive"] forState:UIControlStateNormal];
-//	[inputBGButton setBackgroundImage:[UIImage imageNamed:@"fue_inputField_Active"] forState:UIControlStateHighlighted];
-//	[inputBGButton addTarget:self action:@selector(_goTextfieldFocus) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:inputBGButton];
-	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(44.0, 200.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -376,25 +369,24 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	
+	[_usernameTextField becomeFirstResponder];
+	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
+	[UIView setAnimationDelay:0.33];
 	_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 	[UIView commitAnimations];
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
+	[UIView setAnimationDelay:0.33];
 	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - ((int)!([HONAppDelegate isRetina5]) * 45.0));
 	[UIView commitAnimations];
-	
-	[self performSelector:@selector(_goTextfieldFocus) withObject:nil afterDelay:0.25];
 }
 
 
 #pragma mark - UI Presentation
-- (void)_goTextfieldFocus {
-	[_usernameTextField becomeFirstResponder];
-}
-
 - (void)_presentCamera {
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker = [[UIImagePickerController alloc] init];

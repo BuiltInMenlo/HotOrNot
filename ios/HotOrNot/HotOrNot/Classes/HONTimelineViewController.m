@@ -448,6 +448,9 @@
 	}
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
+#if __ALWAYS_REGISTER__ == 1
+		[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
+#endif
 		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
 			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
 		

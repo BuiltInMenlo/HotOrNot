@@ -11,6 +11,10 @@
 #import "HONChallengeVO.h"
 
 
+#define __ALWAYS_REGISTER__ 0
+#define __DEV_CFG_JSON___ 1
+
+
 // api endpts
 extern NSString * const kConfigURL;
 extern NSString * const kAPIChallenges;
