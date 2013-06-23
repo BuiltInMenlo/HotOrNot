@@ -32,6 +32,8 @@
 @property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasOponentRetorted;
+@property (nonatomic) BOOL isChallengeCreator;
+@property (nonatomic) BOOL isChallengeOpponent;
 @property (nonatomic, strong) HONImageLoadingView *lImageLoading;
 @property (nonatomic, strong) HONImageLoadingView *rImageLoading;
 
@@ -70,6 +72,10 @@
 
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
+	
+	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID);
+	_isChallengeOpponent = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.challengerID);
+	
 	
 	__weak typeof(self) weakSelf = self;
 	//NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasOponentRetorted);
@@ -172,16 +178,6 @@
 									} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 		
 		
-		
-		
-//		UIImageView *lScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
-//		lScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
-//		[_lHolderView addSubview:lScoreImageView];
-//		
-//		UIImageView *rScoreImageView = [[UIImageView alloc] initWithFrame:CGRectMake(5.0, 0.0, 24.0, 24.0)];
-//		rScoreImageView.image = [UIImage imageNamed:@"smallHeart"];
-//		[_rHolderView addSubview:rScoreImageView];
-		
 		UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		rightButton.frame = _lChallengeImageView.frame;
 		[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
@@ -232,23 +228,31 @@
 		[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:likesLabelButton];
 		
-		UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(442.0, 0.0, 210.0, 210.0)];
-		joinHolderView.backgroundColor = [UIColor colorWithWhite:0.894 alpha:1.0];
+		UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(30.0 + (kSnapLargeDim * 2), 0.0, kSnapLargeDim, kSnapLargeDim)];
+		joinHolderView.backgroundColor = [UIColor colorWithWhite:0.957 alpha:1.0];
 		[scrollView addSubview:joinHolderView];
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		joinButton.frame = CGRectMake(48.0, 73.0, 114.0, 64.0);
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-		[joinButton addTarget:self action:@selector(_goNewSubjectChallenge) forControlEvents:UIControlEventTouchUpInside];
+		[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 		[joinHolderView addSubview:joinButton];
 		
+	// no challengers have responded yet
 	} else {
 		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
-		rImgView.image = [UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID) ? @"pokeThumb" : @"thumbCameraAction"];
+		rImgView.image = [UIImage imageNamed:@"thumbCameraAction"];
 		rImgView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:rImgView];
 		
+		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		joinButton.frame = CGRectMake(48.0, 73.0, 114.0, 64.0);
+		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
+		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
+		[_rHolderView addSubview:joinButton];
+		
+		// awaiting challenger response
 		if (_challengeVO.challengerID != 0) {
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			rightButton.frame = _lChallengeImageView.frame;
@@ -280,15 +284,21 @@
 			[challengerNameButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
 			[challengerNameButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
 			[_rHolderView addSubview:challengerNameButton];
-		}
+			
+			SEL joinSelector = @selector(_goJoinChallenge);
+			
+			if (_isChallengeCreator)
+				joinSelector = @selector(_goChallengerChallenge);
+			
+			if (_isChallengeOpponent)
+				joinSelector = @selector(_goCreatorChallenge);
+			
+			
+			[joinButton addTarget:self action:joinSelector forControlEvents:UIControlEventTouchUpInside];
 		
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
-			UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			joinButton.frame = CGRectMake(48.0, 73.0, 114.0, 64.0);
-			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
-			[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-			[joinButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-			[_rHolderView addSubview:joinButton];
+		// no challengers
+		} else {
+			[joinButton addTarget:self action:(_isChallengeCreator) ? @selector(_goNewSubjectChallenge) : @selector(_goCreatorChallenge) forControlEvents:UIControlEventTouchUpInside];
 		}
 	}
 	
@@ -331,7 +341,7 @@
 	[commentsLabelButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:commentsLabelButton];
 	
-		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	moreButton.frame = CGRectMake(264.0, 270.0, 44.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
@@ -353,7 +363,7 @@
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CREATOR" object:_challengeVO];
 		
 		else {
-			if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+			if (!_isChallengeCreator) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 				
 			} else {
@@ -375,7 +385,7 @@
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CHALLENGER" object:_challengeVO];
 		
 		else {
-			if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+			if (!_isChallengeCreator) {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 				
 			} else {
@@ -419,7 +429,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:_challengeVO];
 	
 	else {
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+		if (!_isChallengeCreator) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 			
 		} else {
@@ -442,12 +452,16 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
 }
 
-- (void)_goCreateChallenge {
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-		
-	} else
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+- (void)_goCreatorChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+}
+
+- (void)_goChallengerChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+}
+
+- (void)_goJoinChallenge {
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"JOIN_ACTIVE_CHALLENGE" object:_challengeVO];
 }
 
 - (void)_goComments {

@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "HotOrNot/Classes/HONTimelineItemViewCell.m"
-            timestampString = "393632241.812656"
+            timestampString = "393718285.629216"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
             landmarkName = "-setChallengeVO:"
             landmarkType = "5">
          </BreakpointContent>

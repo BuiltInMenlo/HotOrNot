@@ -251,7 +251,7 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Select Friends"];
 	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
 	

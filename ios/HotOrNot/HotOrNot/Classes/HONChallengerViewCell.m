@@ -41,9 +41,9 @@
 	userImageView.hidden = _isRandom;
 	[self addSubview:userImageView];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isRandom) ? 14.0 : 62.0, 22.0, 200.0, 18.0)];
-	usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
-	usernameLabel.textColor = [HONAppDelegate honGrey518Color];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 24.0, 200.0, 20.0)];//[[UILabel alloc] initWithFrame:CGRectMake((_isRandom) ? 14.0 : 62.0, 22.0, 200.0, 18.0)];
+	usernameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	usernameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:(_isRandom) ? @"%@" : @"@%@", _userVO.username];
 	[self addSubview:usernameLabel];

@@ -68,6 +68,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithUser:(HONUserVO *)userVO {
+	NSLog(@"HONImagePickerViewController - initWithUser:[%d/%@]", userVO.userID, userVO.username);
 	if ((self = [super init])) {
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
@@ -82,6 +83,8 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithSubject:(NSString *)subject {
+	NSLog(@"HONImagePickerViewController - initWithSubject:[%@]", subject);
+	
 	if ((self = [super init])) {
 		_subjectName = subject;
 		_submitAction = 1;
@@ -95,6 +98,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject {
+	NSLog(@"HONImagePickerViewController - initWithUser:[%d/%@] subject:[%@]", userVO.userID, userVO.username, subject);
 	if ((self = [super init])) {
 		_subjectName = subject;
 		_userVO = userVO;
@@ -109,12 +113,29 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
+	NSLog(@"HONImagePickerViewController - initWithChallenge:[%d]", vo.challengeID);
 	if ((self = [super init])) {
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
 		_submitAction = 4;
 		_challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;;
+		_isFirstAppearance = YES;
+		
+		[self _registerNotifications];
+	}
+	
+	return (self);
+}
+
+- (id)initWithJoinChallenge:(HONChallengeVO *)vo {
+	NSLog(@"HONImagePickerViewController - initWithJoinChallenge:[%d]", vo.challengeID);
+	if ((self = [super init])) {
+		_challengeVO = vo;
+		_fbID = vo.creatorFB;
+		_subjectName = vo.subjectName;
+		_submitAction = 14;
+		_challengerName = @"";
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -232,7 +253,7 @@ const CGFloat kFocusInterval = 0.5f;
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-]  HONImagePickerViewController %@", challengeResult);
+			VolleyJSONLog(@"AFNetworking [-]  HONImagePickerViewController %@", challengeResult);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -354,6 +375,29 @@ const CGFloat kFocusInterval = 0.5f;
 		if (_cameraOverlayView == nil) {
 			_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
 			_cameraOverlayView.delegate = self;
+			
+			if (_submitAction == 14) {
+				[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[NSString stringWithFormat:@"%d", _challengeVO.creatorID], @"id",
+																		[NSString stringWithFormat:@"%d", 0], @"points",
+																		[NSString stringWithFormat:@"%d", 0], @"votes",
+																		[NSString stringWithFormat:@"%d", 0], @"pokes",
+																		[NSString stringWithFormat:@"%d", 0], @"pics",
+																		_challengeVO.creatorName, @"username",
+																		_challengeVO.creatorFB, @"fb_id",
+																		_challengeVO.creatorAvatar, @"avatar_url", nil]]];
+				[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"id",
+																		[NSString stringWithFormat:@"%d", 0], @"points",
+																		[NSString stringWithFormat:@"%d", 0], @"votes",
+																		[NSString stringWithFormat:@"%d", 0], @"pokes",
+																		[NSString stringWithFormat:@"%d", 0], @"pics",
+																		_challengeVO.challengerName, @"username",
+																		_challengeVO.challengerFB, @"fb_id",
+																		_challengeVO.challengerAvatar, @"avatar_url", nil]]];
+				
+				[_cameraOverlayView updateChallengers:[NSArray arrayWithObjects:_challengeVO.creatorName, _challengeVO.challengerName, nil]];
+			}
 		}
 		
 		// these two are fucked in ios7 right now!!
@@ -640,7 +684,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	NSMutableArray *usernames = [NSMutableArray array];
 	for (HONUserVO *vo in _addFollowing)
-		[usernames addObject:[NSString stringWithFormat:@"@%@", vo.username]];
+		[usernames addObject:vo.username];//[usernames addObject:[NSString stringWithFormat:@"@%@", vo.username]];
 	
 	for (HONContactUserVO *vo in _addContacts)
 		[usernames addObject:vo.fullName];
@@ -679,7 +723,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	NSMutableArray *usernames = [NSMutableArray array];
 	for (HONUserVO *vo in _addFollowing)
-		[usernames addObject:[NSString stringWithFormat:@"@%@", vo.username]];
+		[usernames addObject:vo.username];//[usernames addObject:[NSString stringWithFormat:@"@%@", vo.username]];
 	
 	for (HONContactUserVO *vo in _addContacts)
 		[usernames addObject:vo.fullName];
@@ -729,6 +773,17 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	if (_fbID != nil)
 		[params setObject:_fbID forKey:@"fbID"];
+	
+	if ([_addFollowing count] > 1) {
+		_submitAction = 14;
+		
+		NSString *usernames = @"";
+		for (HONUserVO *vo in _addFollowing)
+			usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
+		
+		[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
+	}
+	
 	
 	NSLog(@"PARAMS:[%@]", params);
 	[self _submitChallenge:params];

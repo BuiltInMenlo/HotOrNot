@@ -24,9 +24,11 @@ typedef enum {
 	HONChallengeTypePrivateUserTargeted,
 } HONChallengeType;
 
+
 @interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 - (id)initWithUser:(HONUserVO *)userVO;
 - (id)initWithSubject:(NSString *)subject;
 - (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject;
 - (id)initWithChallenge:(HONChallengeVO *)vo;
+- (id)initWithJoinChallenge:(HONChallengeVO *)vo;
 @end

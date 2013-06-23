@@ -221,10 +221,10 @@
 		// denied permission
 	} else {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Contacts Permissions"
-																			 message:@"We need your OK to access the the address book."
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
+															message:@"We need your OK to access the the address book."
+														   delegate:nil
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
 		[alertView show];
 	}
 }

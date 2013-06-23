@@ -72,7 +72,6 @@
 		_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
 		_usernamesLabel.textColor = [UIColor whiteColor];
 		_usernamesLabel.backgroundColor = [UIColor clearColor];
-		_usernamesLabel.text = [usernames substringToIndex:[usernames length] - 2];
 		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:_usernamesLabel];
 		
@@ -125,14 +124,10 @@
 	
 	NSString *usernames = @"";
 	for (NSString *username in _usernames)
-		usernames = [usernames stringByAppendingFormat:@"%@, ", username];
+		usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
 	
-	
-	if ([usernames length] == 0)
-		_usernamesLabel.text = @"";
-		
-	else
-		_usernamesLabel.text = [usernames substringToIndex:[usernames length] - 2];
+	NSLog(@"updateChallengers:[%@]\nusernames:[%@]", _usernames, usernames);
+	_usernamesLabel.text = ([usernames length] == 0) ? @"" : [usernames substringToIndex:[usernames length] - 2];
 }
 
 
