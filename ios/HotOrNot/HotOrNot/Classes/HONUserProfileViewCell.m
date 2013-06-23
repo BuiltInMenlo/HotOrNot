@@ -46,7 +46,6 @@
 	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, 17.0, 93.0, 93.0)];
-	_avatarImageView.backgroundColor = [UIColor colorWithWhite:0.870 alpha:1.0];//[UIColor colorWithWhite:0.875 alpha:1.0];
 	
 	if (isUser)
 		_avatarImageView.image = [HONAppDelegate avatarImage];
@@ -276,6 +275,7 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
+				VolleyJSONLog(@"AFNetworking [-] HONUserProfileViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 10], @"action",
@@ -285,11 +285,11 @@
 				[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-]  HONVoteItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONUserProfileViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//VolleyJSONLog(@"AFNetworking [-]  HONVoteItemViewCell: %@", flagResult);
+						//VolleyJSONLog(@"AFNetworking [-]  HONUserProfileViewCell: %@", flagResult);
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

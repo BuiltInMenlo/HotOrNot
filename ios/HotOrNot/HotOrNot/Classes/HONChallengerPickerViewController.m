@@ -84,6 +84,8 @@
 
 #pragma mark - Data Calls
 - (void)_retrievePastUsers {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action",
@@ -175,6 +177,7 @@
 	
 	NSLog(@"PARAMS:[%@]", params);
 	
+	VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;

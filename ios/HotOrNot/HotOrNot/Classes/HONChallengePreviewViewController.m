@@ -133,6 +133,7 @@
 		[acceptButton addTarget:self action:@selector(_goAccept) forControlEvents:UIControlEventTouchUpInside];
 		[self.view addSubview:acceptButton];
 		
+		VolleyJSONLog(@"AFNetworking [-] HONChallengePreviewViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 										[NSString stringWithFormat:@"%d", 6], @"action",
@@ -144,7 +145,7 @@
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
 			if (error != nil)
-				NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				NSLog(@"AFNetworking [-] HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			else {
 				NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
@@ -253,6 +254,7 @@
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
 			
+			VolleyJSONLog(@"AFNetworking [-] HONChallengePreviewViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 											[NSString stringWithFormat:@"%d", 6], @"action",
@@ -265,7 +267,7 @@
 				NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 				
 				if (error != nil)
-					NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"AFNetworking [-] HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 				else {
 					NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
@@ -295,6 +297,7 @@
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 														 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
 			
+			VolleyJSONLog(@"AFNetworking [-] HONChallengePreviewViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 											[NSString stringWithFormat:@"%d", 6], @"action",
@@ -307,7 +310,7 @@
 				//NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 				
 				if (error != nil)
-					NSLog(@"AFNetworking HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					NSLog(@"AFNetworking [-] HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 				else {
 					//NSLog(@"AFNetworking HONChallengePreviewViewController: %@", result);
@@ -343,6 +346,7 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"user", nil]];
 				
+				VolleyJSONLog(@"AFNetworking [-] HONChallengePreviewViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 11], @"action",
@@ -353,7 +357,7 @@
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-]  HONChallengePreviewViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -361,7 +365,7 @@
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemDetailsViewController %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-]  HONChallengePreviewViewController %@", [error localizedDescription]);
 				}];
 				
 				break;}
@@ -372,6 +376,7 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", self.challengeVO.challengeID, self.challengeVO.subjectName], @"challenge", nil]];
 				
+				VolleyJSONLog(@"AFNetworking [-] HONChallengePreviewViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 6], @"action",

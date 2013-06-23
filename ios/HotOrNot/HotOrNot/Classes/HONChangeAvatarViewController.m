@@ -94,6 +94,8 @@
 }
 
 - (void)_finalizeUser {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONChangeAvatarViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:

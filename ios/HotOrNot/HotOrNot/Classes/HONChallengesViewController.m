@@ -84,6 +84,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 - (void)_retrieveUser {
 	if ([HONAppDelegate infoForUser]) {
 		
+		VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 										[NSString stringWithFormat:@"%d", 5], @"action",
@@ -133,6 +134,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_retrieveChallenges {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", (_isPrivate) ? 8 : 2], @"action",
@@ -207,6 +210,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	//NSLog(@"NEXT\n%@\n%@", [prevIDs substringToIndex:[prevIDs length] - 1], _lastDate);
 	
+	VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 12], @"action",
@@ -272,6 +276,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_updateChallengeAsSeen {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 6], @"action",
@@ -655,6 +661,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[_recentChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
+				VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 11], @"action",
@@ -693,6 +700,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[_recentChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
+				VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 10], @"action",
@@ -733,6 +741,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[_olderChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
+				VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 11], @"action",
@@ -771,6 +780,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[_olderChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
+				VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 10], @"action",

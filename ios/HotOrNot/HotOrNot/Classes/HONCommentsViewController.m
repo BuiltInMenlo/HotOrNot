@@ -64,6 +64,8 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveComments {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",
@@ -111,6 +113,7 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 2], @"action",
@@ -427,6 +430,7 @@
 				[_comments removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
+				VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 8], @"action",

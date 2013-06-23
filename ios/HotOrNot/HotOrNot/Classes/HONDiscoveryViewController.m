@@ -65,6 +65,7 @@
 - (void)_retrieveChallenges {
 	[_headerView toggleRefresh:YES];
 	
+	VolleyJSONLog(@"AFNetworking [-] HONDiscoverViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIDiscover);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];

@@ -365,6 +365,7 @@
 													[NSNumber numberWithInt:0], @"comments", nil];
 	
 	
+	VolleyJSONLog(@"AFNetworking [-] HONTabBarViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 3], @"action",

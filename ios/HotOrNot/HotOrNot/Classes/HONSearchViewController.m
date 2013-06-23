@@ -64,6 +64,7 @@
 	
 	usernames = [usernames substringFromIndex:1];
 	
+	VolleyJSONLog(@"AFNetworking [-] HONSearchViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 3], @"action",
@@ -113,7 +114,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  SearchViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONSearchViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -126,6 +127,8 @@
 }
 
 - (void)_retrievePastUsers {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONSearchViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action",
@@ -135,7 +138,7 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONSearchViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -145,7 +148,7 @@
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES]]]];
-			//VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController: %@", parsedUsers);
+			//VolleyJSONLog(@"AFNetworking [-]  HONSearchViewController: %@", parsedUsers);
 			
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
@@ -174,7 +177,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONSearchViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -199,6 +202,7 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
+	VolleyJSONLog(@"AFNetworking [-] HONSearchViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",
@@ -249,7 +253,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  SearchViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONSearchViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -272,6 +276,7 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
+	VolleyJSONLog(@"AFNetworking [-] HONSearchViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 2], @"action",
@@ -322,7 +327,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONSearchViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -543,6 +548,7 @@
 	
 	usernames = [usernames substringFromIndex:1];
 	
+	VolleyJSONLog(@"AFNetworking [-] HONSearchViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 3], @"action",
@@ -609,6 +615,7 @@
 - (void)_retrievePastUsers {
 	_isDefaultSearch = YES;
 	
+	VolleyJSONLog(@"AFNetworking [-] HONSearchViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action",
@@ -684,6 +691,7 @@
 	_progressHUD.taskInProgress = YES;
 	
 	
+	VolleyJSONLog(@"AFNetworking [-] HONSearchViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",
@@ -759,7 +767,8 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	
+ 
+	VolleyJSONLog(@"AFNetworking [-] HONSearchViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 2], @"action",

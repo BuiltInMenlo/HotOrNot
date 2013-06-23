@@ -61,6 +61,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUsers {
+	VolleyJSONLog(@"AFNetworking [-] HONVotersViewControler --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",

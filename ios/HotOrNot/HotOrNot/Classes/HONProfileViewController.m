@@ -83,6 +83,8 @@
 
 #pragma mark - Data Calls
 - (void)_retrievePastUsers {
+	
+	VolleyJSONLog(@"AFNetworking [-] HONProfileViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action",
@@ -92,7 +94,7 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -103,7 +105,7 @@
 			
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			//VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController: %@", parsedUsers);
+			//VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController: %@", parsedUsers);
 			
 			int cnt = 0;
 			for (NSDictionary *serverList in unsortedUsers) {
@@ -154,7 +156,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -436,6 +438,7 @@
 - (void)_refreshProfileTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	
+	VolleyJSONLog(@"AFNetworking [-] HONProfileViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",
