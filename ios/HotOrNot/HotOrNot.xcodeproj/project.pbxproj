@@ -798,6 +798,8 @@
 		4C442EF01730D47E003DED81 /* pokeThumb@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pokeThumb@2x.png"; sourceTree = "<group>"; };
 		4C45FF4716DECE95002F1080 /* HONUserProfileViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileViewCell.h; sourceTree = "<group>"; };
 		4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileViewCell.m; sourceTree = "<group>"; };
+		4C4805B3177817F800F11868 /* OverlayCoverCamera.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = OverlayCoverCamera.jpg; sourceTree = "<group>"; };
+		4C4805B4177817F800F11868 /* OverlayCoverCamera@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "OverlayCoverCamera@2x.jpg"; sourceTree = "<group>"; };
 		4C48745616BF0E36007D901B /* HONSearchBarHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchBarHeaderView.h; sourceTree = "<group>"; };
 		4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchBarHeaderView.m; sourceTree = "<group>"; };
 		4C48745916C05698007D901B /* HONSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchViewController.h; sourceTree = "<group>"; };
@@ -2398,6 +2400,8 @@
 		4C824FBF16124D7D00C34FD9 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				4C4805B3177817F800F11868 /* OverlayCoverCamera.jpg */,
+				4C4805B4177817F800F11868 /* OverlayCoverCamera@2x.jpg */,
 				4C837D791778124B007F636F /* OverlayCoverCamera-568h@2x.jpg */,
 				4C5C710F177373F400FA6F51 /* cameraInputFieldBackground.png */,
 				4C5C7110177373F400FA6F51 /* cameraInputFieldBackground@2x.png */,
