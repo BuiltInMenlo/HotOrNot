@@ -39,12 +39,16 @@
 		_usernames = [NSArray arrayWithObject:username];
 		_username = username;
 		
+		NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", subject, username);
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closeOptions:) name:@"CLOSE_OPTIONS" object:nil];
 		
 		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, ([_username length] > 0) ? kNavBarHeaderHeight + 33.0 : kNavBarHeaderHeight + 10.0, 307.0, 306.0)];
 		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
 		_irisImageView.alpha = 0.0;
 		//[self addSubview:_irisImageView];
+		
+		//[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera-568h@2x"]]];
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
 		
 		_controlsHolderView = [[UIView alloc] initWithFrame:self.frame];
 		_controlsHolderView.userInteractionEnabled = YES;
@@ -83,12 +87,6 @@
 //		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
-		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(260.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
-		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:cameraRollButton];
 //
 //		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 //			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -98,6 +96,13 @@
 //			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
 //			[_controlsHolderView addSubview:changeCameraButton];
 //		}
+		
+		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cameraRollButton.frame = CGRectMake(260.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
+		[_controlsHolderView addSubview:cameraRollButton];
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_captureButton.frame = CGRectMake(128.0, ([HONAppDelegate isRetina5]) ? 471 : 382, 64.0, 64.0);

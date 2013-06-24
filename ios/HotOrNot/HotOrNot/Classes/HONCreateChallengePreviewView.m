@@ -16,6 +16,7 @@
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) UIView *subjectBGView;
 @property (nonatomic, strong) UITextField *subjectTextField;
+@property (nonatomic, strong) UIImageView *captionImageView;
 @property (nonatomic) BOOL isEnabled;
 @end
 
@@ -26,6 +27,7 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
+		NSLog(@"FRAME:[%@]", NSStringFromCGRect(self.frame));
 		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
@@ -37,7 +39,7 @@
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
 		[self addSubview:previewImageView];
-		
+
 		[self _makeUI];
 	}
 	
@@ -47,6 +49,7 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
+		NSLog(@"FRAME:[%@]", NSStringFromCGRect(self.frame));
 		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
@@ -61,47 +64,7 @@
 		previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 		[self addSubview:previewImageView];
 		
-		UIImageView *addFriendsButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addButton_nonActive"]];
-		addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 5.0, 5.0);
-		[self addSubview:addFriendsButtonImageView];
-		
-		UIImageView *closeButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"closeButton_nonActive"]];
-		closeButtonImageView.frame = CGRectOffset(closeButtonImageView.frame, 270.0, 5.0);
-		[self addSubview:closeButtonImageView];
-		
-		UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
-		overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
-		[self addSubview:overlayView];
-		
-		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = self.frame;
-		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:backButton];
-		
-		_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
-		_subjectBGView.backgroundColor = [UIColor blackColor];
-		_subjectBGView.hidden = YES;
-		[self addSubview:_subjectBGView];
-		
-		_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 12.0, 320.0, 24.0)];
-		[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-		[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
-		_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-		[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-		[_subjectTextField setTextColor:[UIColor whiteColor]];
-		[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-		_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:18];
-		_subjectTextField.keyboardType = UIKeyboardTypeDefault;
-		_subjectTextField.text = _subjectName;
-		_subjectTextField.delegate = self;
-		[_subjectBGView addSubview:_subjectTextField];
-		
-		UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		sendButton.frame = CGRectMake(255.0, 0.0, 64.0, 44.0);
-		[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
-		[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
-		[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-		[_subjectBGView addSubview:sendButton];
+		[self _makeUI];
 	}
 	
 	return (self);
@@ -117,47 +80,61 @@
 
 #pragma mark - UI Presentation
 - (void)_makeUI {
+	//self.frame = CGRectOffset(self.frame, 0.0, -[[UIApplication sharedApplication] statusBarFrame].size.height);
+	self.alpha = 0.0;
+	
 	UIImageView *addFriendsButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addButton_nonActive"]];
-	addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 5.0, 5.0);
+	addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 12.0, 12.0);
 	[self addSubview:addFriendsButtonImageView];
 	
 	UIImageView *closeButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"closeButton_nonActive"]];
-	closeButtonImageView.frame = CGRectOffset(closeButtonImageView.frame, 270.0, 5.0);
+	closeButtonImageView.frame = CGRectOffset(closeButtonImageView.frame, 263.0, 12.0);
 	[self addSubview:closeButtonImageView];
 	
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
 	[self addSubview:overlayView];
 	
+	_captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ((self.frame.size.height - 230.0) - 44.0) * 0.5, 320.0, 44.0)];//[UIImage imageNamed:@"tapToReTake"]];
+	//_captionImageView.frame = CGRectOffset(_captionImageView.frame, 0.0, ((self.frame.size.height - 260.0) - 44.0) * 0.5);
+	_captionImageView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.125];
+	_captionImageView.alpha = 0.0;
+	[self addSubview:_captionImageView];
+	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = self.frame;
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:backButton];
 	
-	_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
-	_subjectBGView.backgroundColor = [UIColor blackColor];
+	_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 47.0, 320.0, 47.0)];
+	_subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.93];
 	_subjectBGView.hidden = YES;
 	[self addSubview:_subjectBGView];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 12.0, 320.0, 24.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 8.0, 298.0, 30.0)];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[HONAppDelegate honGrey518Color]];
+	[_subjectTextField setTextColor:[UIColor colorWithRed:0.376 green:0.365 blue:0.365 alpha:1.0]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:15];
+	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = _subjectName;
 	_subjectTextField.delegate = self;
 	[_subjectBGView addSubview:_subjectTextField];
 	
 	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	sendButton.frame = CGRectMake(260.0, 0.0, 64.0, 44.0);
+	sendButton.frame = CGRectMake(255.0, 2.0, 64.0, 44.0);
 	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
 	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
+	[sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_subjectBGView addSubview:sendButton];
+	
+	[UIView animateWithDuration:0.5 animations:^(void) {
+		self.alpha = 1.0;
+	}];
 }
 
 
@@ -198,6 +175,7 @@
 	_subjectBGView.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
+		_captionImageView.alpha = 1.0;
 	}];
 }
 
@@ -206,6 +184,7 @@
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
+		_captionImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		if (isRemoved)
 			[self removeFromSuperview];

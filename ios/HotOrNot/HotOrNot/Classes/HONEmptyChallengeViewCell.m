@@ -22,7 +22,7 @@
 		[self addSubview:imageView];
 		
 		UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		findFriendsButton.frame = CGRectMake(0.0, 60.0, 320.0, 63.0);
+		findFriendsButton.frame = CGRectMake(0.0, 60.0, 320.0, 64.0);
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findVolleyFriends_nonActive"] forState:UIControlStateNormal];
 		[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"findVolleyFriends_Active"] forState:UIControlStateHighlighted];
 		[findFriendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];

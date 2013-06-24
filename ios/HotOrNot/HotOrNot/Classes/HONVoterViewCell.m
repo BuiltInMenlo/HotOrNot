@@ -34,25 +34,24 @@
 	_voterVO = voterVO;
 	
 	//NSLog(@"IMG:[%@]", _voterVO.imageURL);
-	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(14.0, 12.0, 38.0, 38.0)];
-	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
+	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 13.0, 38.0, 38.0)];
 	[userImageView setImageWithURL:[NSURL URLWithString:_voterVO.imageURL] placeholderImage:nil];
 	[self addSubview:userImageView];
 	
-	UILabel *voteLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 23.0, 220.0, 16.0)];
-	voteLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
-	voteLabel.textColor = [HONAppDelegate honGrey635Color];
-	voteLabel.backgroundColor = [UIColor clearColor];
-	voteLabel.text = [NSString stringWithFormat:NSLocalizedString(@"voters_caption", nil), _voterVO.username, _voterVO.challengerName];
-	[self addSubview:voteLabel];
-	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 23.0, 60.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:11];
-	timeLabel.textColor = [HONAppDelegate honGrey635Color];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 24.0, 60.0, 16.0)];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_voterVO.addedDate];
 	[self addSubview:timeLabel];
+	
+	UILabel *voterLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 23.0, 220.0, 16.0)];
+	voterLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	voterLabel.textColor = [HONAppDelegate honGrey455Color];
+	voterLabel.backgroundColor = [UIColor clearColor];
+	voterLabel.text = [NSString stringWithFormat:NSLocalizedString(@"voters_caption", nil), _voterVO.username];
+	[self addSubview:voterLabel];
 }
 
 @end

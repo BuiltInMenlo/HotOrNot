@@ -13,6 +13,7 @@
 
 #import "HONAddChallengersViewController.h"
 #import "HONAppDelegate.h"
+#import "HONHeaderView.h"
 #import "HONFollowFriendViewCell.h"
 #import "HONAddContactViewCell.h"
 
@@ -184,7 +185,8 @@
 	
 	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	
-	//_cellDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSMutableArray array], @"followers", [NSMutableArray array], @"contacts", nil];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Select friends"];
+	[self.view addSubview:headerView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);

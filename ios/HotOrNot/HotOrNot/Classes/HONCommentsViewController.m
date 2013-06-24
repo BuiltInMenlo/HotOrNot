@@ -167,14 +167,14 @@
 	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
 	[self.view addSubview:bgImgView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:_challengeVO.subjectName];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Comments"];
 	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+	backButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
+	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:backButton];
 	
@@ -189,21 +189,19 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 42.0, 320.0, 42.0)];
-	_bgTextImageView.backgroundColor = [UIColor redColor];
-	_bgTextImageView.image = [UIImage imageNamed:@"commentsInputField_nonActive.jpg"];
+	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0)];
+	_bgTextImageView.backgroundColor = [UIColor colorWithWhite:0.922 alpha:1.0];
 	_bgTextImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_bgTextImageView];
 	
-	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(10.0, 13.0, 300.0, 26.0)];
-	//[_commentTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	_commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 11.0, 300.0, 32.0)];
 	[_commentTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_commentTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_commentTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_commentTextField setReturnKeyType:UIReturnKeySend];
-	[_commentTextField setTextColor:[HONAppDelegate honGrey518Color]];
+	[_commentTextField setTextColor:[HONAppDelegate honGrey455Color]];
 	[_commentTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_commentTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
+	_commentTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:23];
 	_commentTextField.keyboardType = UIKeyboardTypeDefault;
 	_commentTextField.text = @"";
 	_commentTextField.delegate = self;
@@ -211,9 +209,9 @@
 	[_bgTextImageView addSubview:_commentTextField];
 	
 	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	sendButton.frame = CGRectMake(256.0, -1.0, 64.0, 44.0);
+	sendButton.frame = CGRectMake(248.0, 3.0, 64.0, 44.0);
 	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
-	[sendButton setBackgroundImage:[UIImage imageNamed:@"shareButton_Active"] forState:UIControlStateHighlighted];
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
 	[sendButton addTarget:self action:@selector(_goSend) forControlEvents:UIControlEventTouchUpInside];
 	[_bgTextImageView addSubview:sendButton];
 	
@@ -369,7 +367,7 @@
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - 278.0, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - (236.0 + 53.0), _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 	//} completion:^(BOOL finished) {
 	//}];
 }

@@ -62,7 +62,7 @@
 "timeline_99comments" = "99+ Comments";
 "timeline_trade" = "tap here to trade pics";
 
-"voters_caption" = "@%@ liked @%@ snap";
+"voters_caption" = "@%@ liked this";
 
 "activity_waiting" = "You are waiting…";
 "activity_waiting_f" = "You are waiting… (F)";

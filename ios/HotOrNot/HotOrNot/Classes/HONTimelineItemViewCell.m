@@ -19,7 +19,7 @@
 #import "HONUserVO.h"
 
 
-@interface HONTimelineItemViewCell() <UIActionSheetDelegate, UIAlertViewDelegate>
+@interface HONTimelineItemViewCell() <UIActionSheetDelegate>
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UIImageView *lChallengeImageView;
@@ -60,9 +60,6 @@
 	if ((self = [super init])) {
 		_hasOponentRetorted = YES;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteCreator:) name:@"UPVOTE_CREATOR" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_upvoteChallenger:) name:@"UPVOTE_CHALLENGER" object:nil];
-		
 		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
 		[self addSubview:bgImgView];
 	}
@@ -95,7 +92,7 @@
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 20.0, 60.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	timeLabel.textColor = [HONAppDelegate honOffGreyLightColor];
+	timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
@@ -131,7 +128,7 @@
 	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	leftButton.frame = _lChallengeImageView.frame;
 	[leftButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-	[leftButton addTarget:self action:@selector(_goSingleTapLeft) forControlEvents:UIControlEventTouchUpInside];
+	[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_lHolderView addSubview:leftButton];
 	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 162.0, 38.0, 38.0)];
@@ -181,7 +178,7 @@
 		UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		rightButton.frame = _lChallengeImageView.frame;
 		[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-		[rightButton addTarget:self action:@selector(_goSingleTapRight) forControlEvents:UIControlEventTouchUpInside];
+		[rightButton addTarget:self action:@selector(_goTapOpponent) forControlEvents:UIControlEventTouchUpInside];
 		[_rHolderView addSubview:rightButton];
 		
 		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 162.0, 38.0, 38.0)];
@@ -257,7 +254,7 @@
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			rightButton.frame = _lChallengeImageView.frame;
 			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			[rightButton addTarget:self action:@selector(_goSingleTapRight) forControlEvents:UIControlEventTouchUpInside];
+			[rightButton addTarget:self action:@selector(_goTapOpponent) forControlEvents:UIControlEventTouchUpInside];
 			[_rHolderView addSubview:rightButton];
 			
 			UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 162.0, 38.0, 38.0)];
@@ -351,102 +348,32 @@
 
 
 #pragma mark - Navigation
-- (void)_goSingleTapLeft {
-	[[Mixpanel sharedInstance] track:@"Timeline - Single Tap Creator"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
-	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-		
-		if (_hasOponentRetorted)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CREATOR" object:_challengeVO];
-		
-		else {
-			if (!_isChallengeCreator) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-				
-			} else {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
-			}
-		}
-	}
-}
-
-- (void)_goSingleTapRight {
-	[[Mixpanel sharedInstance] track:@"Timeline - Single Tap Challenger"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
-	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-		
-		if (_hasOponentRetorted)
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"UPVOTE_CHALLENGER" object:_challengeVO];
-		
-		else {
-			if (!_isChallengeCreator) {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-				
-			} else {
-				HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																					[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"id",
-																					[NSString stringWithFormat:@"%d", 0], @"points",
-																					[NSString stringWithFormat:@"%d", 0], @"votes",
-																					[NSString stringWithFormat:@"%d", 0], @"pokes",
-																					[NSString stringWithFormat:@"%d", 0], @"pics",
-																					_challengeVO.challengerName, @"username",
-																					_challengeVO.challengerFB, @"fb_id",
-																					_challengeVO.challengerAvatar, @"avatar_url", nil]];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];
-			}
-		}
-	}
-}
-
-- (void)_goDoubleTapLeft {
-	[[Mixpanel sharedInstance] track:@"Timeline - Double Tap Creator"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
-	if (_hasOponentRetorted) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:_challengeVO];
-		
-	} else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_NOT_IN_SESSION_DETAILS" object:_challengeVO];
-	}
-}
-
-- (void)_goDoubleTapRight {
-	[[Mixpanel sharedInstance] track:@"Timeline - Double Tap Challenger"
+- (void)_goTapCreator {
+	[[Mixpanel sharedInstance] track:@"Timeline - Tap Creator"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
 	if (_hasOponentRetorted)
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:_challengeVO];
+		[self _goUpvoteCreator];
 	
-	else {
-		if (!_isChallengeCreator) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
-			
-		} else {
-			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																				[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"id",
-																				[NSString stringWithFormat:@"%d", 0], @"points",
-																				[NSString stringWithFormat:@"%d", 0], @"votes",
-																				[NSString stringWithFormat:@"%d", 0], @"pokes",
-																				[NSString stringWithFormat:@"%d", 0], @"pics",
-																				_challengeVO.challengerName, @"username",
-																				_challengeVO.challengerFB, @"fb_id",
-																				_challengeVO.challengerAvatar, @"avatar_url", nil]];
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"POKE_USER" object:userVO];
-		}
-	}
+	else
+		[[NSNotificationCenter defaultCenter] postNotificationName:(_isChallengeCreator) ? @"NEW_SUBJECT_CHALLENGE" : @"NEW_CREATOR_CHALLENGE" object:_challengeVO];
 }
+
+- (void)_goTapOpponent {
+	[[Mixpanel sharedInstance] track:@"Timeline - Tap Challenger"
+								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	if (_hasOponentRetorted)
+		[self _goUpvoteChallenger];
+	
+	else
+		[[NSNotificationCenter defaultCenter] postNotificationName:(_isChallengeCreator) ? @"NEW_CHALLENGER_CHALLENGE" : @"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+}
+
 
 - (void)_goNewSubjectChallenge {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
@@ -512,7 +439,116 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_challengeVO.challengerName];
 }
 
+- (void)_goUpvoteCreator {
+	_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
+	_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
+	[_lHolderView addSubview:_upvoteImageView];
+	
+	UIImageView *heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 17.0, 94.0, 94.0)];
+	heartImageView.image = [UIImage imageNamed:@"largeHeart"];
+	[_upvoteImageView addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		_upvoteImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_upvoteImageView removeFromSuperview];
+		_upvoteImageView = nil;
+	}];
+	
+	_challengeVO.creatorScore++;
+	
+	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
+		[[Mixpanel sharedInstance] track:@"Timeline - Upvote Creator"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+		
+		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
+		
+		VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+								[NSString stringWithFormat:@"%d", 6], @"action",
+								[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+								[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+								@"Y", @"creator",
+								nil];
+		
+		[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			if (error != nil) {
+				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				
+			} else {
+				NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell: %@", voteResult);
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			VolleyJSONLog(@"AFNetworking [-]  VoteItemViewCell %@", [error localizedDescription]);
+		}];
+		
+	} else
+		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+}
 
+- (void)_goUpvoteChallenger {
+	_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
+	_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
+	[_rHolderView addSubview:_upvoteImageView];
+	
+	UIImageView *heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 17.0, 94.0, 94.0)];
+	heartImageView.image = [UIImage imageNamed:@"largeHeart"];
+	[_upvoteImageView addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		_upvoteImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_upvoteImageView removeFromSuperview];
+		_upvoteImageView = nil;
+	}];
+	
+	_challengeVO.challengerScore++;
+	
+	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
+		[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenger"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+		
+		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
+		
+		VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+								[NSString stringWithFormat:@"%d", 6], @"action",
+								[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+								[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+								@"N", @"creator",
+								nil];
+		
+		[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+			NSError *error = nil;
+			if (error != nil) {
+				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				
+			} else {
+				NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell: %@", voteResult);
+			}
+			
+		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+			VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell %@", [error localizedDescription]);
+		}];
+		
+	} else
+		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+
+}
+
+/*
 #pragma mark - Notifications
 - (void)_upvoteCreator:(NSNotification *)notification {
 	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
@@ -633,6 +669,7 @@
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 	}
 }
+*/
 
 
 #pragma mark - ActionSheet Delegates
@@ -722,79 +759,5 @@
 }
 
 
-#pragma mark - AlertView Delegates
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		switch(buttonIndex) {
-			case 0:
-				break;
-				
-			case 1:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
-				break;
-		}
-	}
-}
-
 @end
 
-
-
-
-
-//#pragma mark - Touch Interactions
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	UITouch *touch = [touches anyObject];
-//	
-//	if (touch.tapCount == 1) {
-//		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
-//			_tapOverlayImageView.frame = _lHolderView.frame;
-//			
-//		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
-//			_tapOverlayImageView.frame = _rHolderView.frame;
-//		}
-//		
-//		[self addSubview:_tapOverlayImageView];
-//		
-//	} else if (touch.tapCount == 2) {
-//		[NSObject cancelPreviousPerformRequestsWithTarget:self];
-//	}
-//}
-//
-//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-//	//UITouch *touch = [touches anyObject];
-//	[_tapOverlayImageView removeFromSuperview];
-//}
-//
-//- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-//	//UITouch *touch = [touches anyObject];
-//	[_tapOverlayImageView removeFromSuperview];
-//}
-//
-//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-//	UITouch *touch = [touches anyObject];
-//	[_tapOverlayImageView removeFromSuperview];
-//	
-//	// this is the single tap action
-//	if (touch.tapCount == 1) {
-//		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
-//			[self performSelector:@selector(_goSingleTapLeft) withObject:nil afterDelay:0.2];
-//			
-//		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
-//			[self performSelector:@selector(_goSingleTapRight) withObject:nil afterDelay:0.2];
-//			
-//		} else {
-//		}
-//		
-//		// this is the double tap action
-//	} else if (touch.tapCount == 2) {
-//		if (CGRectContainsPoint(_lHolderView.frame, [touch locationInView:self])) {
-//			[self _goDoubleTapLeft];
-//			
-//		} else if (CGRectContainsPoint(_rHolderView.frame, [touch locationInView:self])) {
-//			[self _goDoubleTapRight];
-//			
-//		} else {
-//		}
-//	}
-//}

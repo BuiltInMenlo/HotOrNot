@@ -253,7 +253,7 @@ const CGFloat kFocusInterval = 0.5f;
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-]  HONImagePickerViewController %@", challengeResult);
+			//VolleyJSONLog(@"AFNetworking [-]  HONImagePickerViewController %@", challengeResult);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -361,7 +361,6 @@ const CGFloat kFocusInterval = 0.5f;
 	NSLog(@"_showCamera");
 	
 	_imagePicker = [[UIImagePickerController alloc] init];
-	//_imagePicker.modalPresentationStyle = UIModalPresentationCurrentContext;
 	_imagePicker.delegate = self;
 	_imagePicker.navigationBarHidden = YES;
 	_imagePicker.toolbarHidden = YES;
@@ -370,7 +369,13 @@ const CGFloat kFocusInterval = 0.5f;
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
 		
-		NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", _subjectName, _challengerName);
+		// these two fuckers don't work in ios7 right now!!
+		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		_imagePicker.showsCameraControls = NO;
+		// ---------------------------------------------------------------------------
+		
+		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
 		
 		if (_cameraOverlayView == nil) {
 			_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
@@ -400,18 +405,10 @@ const CGFloat kFocusInterval = 0.5f;
 			}
 		}
 		
-		// these two are fucked in ios7 right now!!
-		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-		_imagePicker.showsCameraControls = NO;
-		// ---------------------------------------------------------------------------
-		
-		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
-		
-	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
+	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-	
+	}
 	
 	[self presentViewController:_imagePicker animated:NO completion:^(void) {
 	}];
@@ -551,7 +548,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withImage:_challangeImage];
+			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_challangeImage];
 			_previewView.delegate = self;
 			[self.view addSubview:_previewView];
 		}];
@@ -559,10 +556,10 @@ const CGFloat kFocusInterval = 0.5f;
 	} else {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
 			if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withMirroredImage:rawImage];
+				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:rawImage];
 			
 			else
-				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:self.view.frame withSubject:_subjectName withImage:rawImage];
+				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:rawImage];
 			
 			_previewView.delegate = self;
 			[self.view addSubview:_previewView];
@@ -579,18 +576,15 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	NSLog(@"imagePickerControllerDidCancel");
 	
-//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-//		
-//	} else {
-//		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-//	}
-	
-	[self dismissViewControllerAnimated:YES completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-	}];
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+
+	else {
+		[self dismissViewControllerAnimated:YES completion:^(void) {
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+		}];
+	}
 }
 
 
@@ -690,7 +684,7 @@ const CGFloat kFocusInterval = 0.5f;
 		[usernames addObject:vo.fullName];
 	
 	
-	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil))
+	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil) && _submitAction != 14)
 		_submitAction = 1;
 	
 	if ([_addFollowing count] > 0)
@@ -751,9 +745,8 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	// accepting, now submit new against username w/ subject
 	if (_submitAction == 4 && (_challengeVO != nil && ![_subjectName isEqualToString:_challengeVO.subjectName])) {
-		_submitAction = 7;
 		_challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;
-		//_challengeVO = nil;
+		_submitAction = 7;
 	}
 }
 

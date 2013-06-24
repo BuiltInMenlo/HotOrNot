@@ -230,7 +230,6 @@
 		4C667187176CF8E30012770E /* addButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667183176CF8E30012770E /* addButton_Active@2x.png */; };
 		4C667188176CF8E30012770E /* addButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667184176CF8E30012770E /* addButton_nonActive.png */; };
 		4C667189176CF8E30012770E /* addButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667185176CF8E30012770E /* addButton_nonActive@2x.png */; };
-		4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C673F7C1693AA23008B2CA4 /* HONChallengePreviewViewController.m */; };
 		4C687DC316D9445C001A1B22 /* HONAlertPopOverView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C687DC216D9445C001A1B22 /* HONAlertPopOverView.m */; };
 		4C6893691719EF88005F8D0A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4C68936B1719EF88005F8D0A /* Localizable.strings */; };
 		4C68936D1719F361005F8D0A /* submitButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C68936F1719F361005F8D0A /* submitButton_Active.png */; };
@@ -733,6 +732,20 @@
 		4C3E884A16A3B2BD003301AF /* pokeButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pokeButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONImagePickerViewController.h; sourceTree = "<group>"; };
 		4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONImagePickerViewController.m; sourceTree = "<group>"; };
+		4C42AC9E1777B86D006CF406 /* tapToReTake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tapToReTake.png; sourceTree = "<group>"; };
+		4C42AC9F1777B86D006CF406 /* tapToReTake@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tapToReTake@2x.png"; sourceTree = "<group>"; };
+		4C42ACA01777D3C4006CF406 /* sendChallengeButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sendChallengeButton_Active.png; sourceTree = "<group>"; };
+		4C42ACA11777D3C4006CF406 /* sendChallengeButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sendChallengeButton_Active@2x.png"; sourceTree = "<group>"; };
+		4C42ACA21777D3C4006CF406 /* sendChallengeButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sendChallengeButton_nonActive.png; sourceTree = "<group>"; };
+		4C42ACA31777D3C4006CF406 /* sendChallengeButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sendChallengeButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4C42ACA41777D7C5006CF406 /* 10minIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 10minIcon.png; sourceTree = "<group>"; };
+		4C42ACA51777D7C5006CF406 /* 10minIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "10minIcon@2x.png"; sourceTree = "<group>"; };
+		4C42ACA61777D7C5006CF406 /* 24hoursIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 24hoursIcon.png; sourceTree = "<group>"; };
+		4C42ACA71777D7C5006CF406 /* 24hoursIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "24hoursIcon@2x.png"; sourceTree = "<group>"; };
+		4C42ACA81777D7C5006CF406 /* privateIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = privateIcon.png; sourceTree = "<group>"; };
+		4C42ACA91777D7C5006CF406 /* privateIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "privateIcon@2x.png"; sourceTree = "<group>"; };
+		4C42ACAA1777D7F1006CF406 /* 3048__starpause__k9dhhpulseeffect.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = 3048__starpause__k9dhhpulseeffect.wav; sourceTree = "<group>"; };
+		4C42AD201777D7F1006CF406 /* error@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "error@2x.png"; sourceTree = "<group>"; };
 		4C43C8D21772127800983BE8 /* HONAvatarCameraOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAvatarCameraOverlayView.h; sourceTree = "<group>"; };
 		4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAvatarCameraOverlayView.m; sourceTree = "<group>"; };
 		4C43C8D617725CF400983BE8 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
@@ -980,8 +993,6 @@
 		4C667183176CF8E30012770E /* addButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C667184176CF8E30012770E /* addButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addButton_nonActive.png; sourceTree = "<group>"; };
 		4C667185176CF8E30012770E /* addButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C673F7B1693AA23008B2CA4 /* HONChallengePreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengePreviewViewController.h; sourceTree = "<group>"; };
-		4C673F7C1693AA23008B2CA4 /* HONChallengePreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONChallengePreviewViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C687DC116D9445C001A1B22 /* HONAlertPopOverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAlertPopOverView.h; sourceTree = "<group>"; };
 		4C687DC216D9445C001A1B22 /* HONAlertPopOverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONAlertPopOverView.m; sourceTree = "<group>"; };
 		4C6893681719EEFD005F8D0A /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1209,6 +1220,7 @@
 		4C81A013163337C100AB188B /* UIImage+fixOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+fixOrientation.h"; sourceTree = "<group>"; };
 		4C81A014163337C200AB188B /* UIImage+fixOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+fixOrientation.m"; sourceTree = "<group>"; };
 		4C81A016163367F300AB188B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		4C837D791778124B007F636F /* OverlayCoverCamera-568h@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "OverlayCoverCamera-568h@2x.jpg"; sourceTree = "<group>"; };
 		4C93B25017697267002FABFF /* HONAddChallengersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAddChallengersViewController.h; sourceTree = "<group>"; };
 		4C93B25117697267002FABFF /* HONAddChallengersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAddChallengersViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C9872F116F11B8200E865C0 /* cameraFrontBack_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraFrontBack_Active.png; sourceTree = "<group>"; };
@@ -1606,8 +1618,6 @@
 				4C32B99A15FA6F720023A0EE /* HONChallengeViewCell.m */,
 				4C62673C15F96E5600AA7FCE /* HONChallengesViewController.h */,
 				4C62673D15F96E5600AA7FCE /* HONChallengesViewController.m */,
-				4C673F7B1693AA23008B2CA4 /* HONChallengePreviewViewController.h */,
-				4C673F7C1693AA23008B2CA4 /* HONChallengePreviewViewController.m */,
 			);
 			name = Activity;
 			sourceTree = "<group>";
@@ -1905,6 +1915,12 @@
 		4C5C710E177373C900FA6F51 /* Preview */ = {
 			isa = PBXGroup;
 			children = (
+				4C42ACA01777D3C4006CF406 /* sendChallengeButton_Active.png */,
+				4C42ACA11777D3C4006CF406 /* sendChallengeButton_Active@2x.png */,
+				4C42ACA21777D3C4006CF406 /* sendChallengeButton_nonActive.png */,
+				4C42ACA31777D3C4006CF406 /* sendChallengeButton_nonActive@2x.png */,
+				4C42AC9E1777B86D006CF406 /* tapToReTake.png */,
+				4C42AC9F1777B86D006CF406 /* tapToReTake@2x.png */,
 			);
 			name = Preview;
 			sourceTree = "<group>";
@@ -2382,6 +2398,7 @@
 		4C824FBF16124D7D00C34FD9 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				4C837D791778124B007F636F /* OverlayCoverCamera-568h@2x.jpg */,
 				4C5C710F177373F400FA6F51 /* cameraInputFieldBackground.png */,
 				4C5C7110177373F400FA6F51 /* cameraInputFieldBackground@2x.png */,
 				4C0077A3176E3C5900E263D1 /* selectedRowCheck.png */,
@@ -2415,6 +2432,7 @@
 				4CE61E221696733900F260C9 /* checkIcon.png */,
 				4CE61E231696733900F260C9 /* checkIcon@2x.png */,
 				4C5164391680082800EB3C09 /* error.png */,
+				4C42AD201777D7F1006CF406 /* error@2x.png */,
 				4C19BF0B168E811E006D241E /* chevron.png */,
 				4C19BF0C168E811E006D241E /* chevron@2x.png */,
 				4C31AFAD1638745100358022 /* mainBG.png */,
@@ -2772,6 +2790,12 @@
 		4CB75CC416FEACDF001A8738 /* Nav */ = {
 			isa = PBXGroup;
 			children = (
+				4C42ACA41777D7C5006CF406 /* 10minIcon.png */,
+				4C42ACA51777D7C5006CF406 /* 10minIcon@2x.png */,
+				4C42ACA61777D7C5006CF406 /* 24hoursIcon.png */,
+				4C42ACA71777D7C5006CF406 /* 24hoursIcon@2x.png */,
+				4C42ACA81777D7C5006CF406 /* privateIcon.png */,
+				4C42ACA91777D7C5006CF406 /* privateIcon@2x.png */,
 				4C5C71061773715500FA6F51 /* moreWhiteButton_Active.png */,
 				4C5C71071773715500FA6F51 /* moreWhiteButton_Active@2x.png */,
 				4C5C71081773715500FA6F51 /* moreWhiteButton_nonActive.png */,
@@ -2860,6 +2884,7 @@
 		4CF07C11168672D900E0FBC1 /* SFX */ = {
 			isa = PBXGroup;
 			children = (
+				4C42ACAA1777D7F1006CF406 /* 3048__starpause__k9dhhpulseeffect.wav */,
 				4CF07C131686756C00E0FBC1 /* fpo_upvote.mp3 */,
 				4CC4D14016390BA400E2B217 /* push_02.caf */,
 			);
@@ -3388,7 +3413,6 @@
 				4CAF960D167D68B40036E849 /* HONVoterVO.m in Sources */,
 				4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */,
 				4CB472F5168C176D007153DF /* HONInviteNetworkViewController.m in Sources */,
-				4C673F7D1693AA23008B2CA4 /* HONChallengePreviewViewController.m in Sources */,
 				4CA944AD169A0D2F00507A08 /* HONAlternatingRowsViewCell.m in Sources */,
 				4CA0852916A12FD900673F3A /* AFHTTPClient.m in Sources */,
 				4CA0852A16A12FD900673F3A /* AFHTTPRequestOperation.m in Sources */,
@@ -4218,8 +4242,8 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
-					MIXPANEL_LOG,
 					VOLLEY_JSON_LOG,
+					MIXPANEL_LOG,
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;

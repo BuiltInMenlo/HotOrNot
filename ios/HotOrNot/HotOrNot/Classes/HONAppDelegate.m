@@ -95,8 +95,8 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	
-	return (@"http://50.17.142.22/hotornot/api-shane");
 	return (@"http://discover.getassembly.com/hotornot/api-shane");
+	return (@"http://50.17.142.22/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -425,16 +425,13 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	return ([UIFont fontWithName:@"CartoGothicStd-Italic" size:24.0]);
 }
 
-+ (UIColor *)honBlueTextColor {
-	return ([UIColor colorWithRed:0.161 green:0.498 blue:1.0 alpha:1.0]);
+
++ (UIColor *)honOrthodoxGreenColor {
+	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
 }
 
-+ (UIColor *)honOffGreyLightColor {
-	return ([UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0]);
-}
-
-+ (UIColor *)honProfileStatsTextColor {
-	return ([UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]);
++ (UIColor *)honDarkGreenColor {
+	return ([UIColor colorWithRed:0.204 green:0.373 blue:0.337 alpha:1.0]);
 }
 
 + (UIColor *)honGrey710Color {
@@ -457,18 +454,21 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	return ([UIColor colorWithWhite:0.245 alpha:1.0]);
 }
 
-+ (UIColor *)honOrthodoxGreenColor {
-	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
++ (UIColor *)honBlueTextColor {
+	return ([UIColor colorWithRed:0.161 green:0.498 blue:1.0 alpha:1.0]);
 }
 
-+ (UIColor *)honDarkGreenColor {
-	return ([UIColor colorWithRed:0.204 green:0.373 blue:0.337 alpha:1.0]);
++ (UIColor *)honGreyTimeColor {
+	return ([UIColor colorWithRed:0.549 green:0.565 blue:0.565 alpha:1.0]);
 }
 
 + (UIColor *)honGreenTextColor {
 	return ([UIColor colorWithRed:0.451 green:0.757 blue:0.694 alpha:1.0]);
 }
 
++ (UIColor *)honProfileStatsColor {
+	return ([UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]);
+}
 
 
 +(UIColor *)honDebugRedColor {

@@ -116,18 +116,19 @@ const NSUInteger kFollowingUsersDisplayTotal;
 + (UIFont *)cartoGothicBook;
 + (UIFont *)cartoGothicItalic;
 
++ (UIColor *)honOrthodoxGreenColor;
++ (UIColor *)honDarkGreenColor;
+
 + (UIColor *)honGrey710Color;
 + (UIColor *)honGrey635Color;
 + (UIColor *)honGrey518Color;
 + (UIColor *)honGrey455Color;
 + (UIColor *)honGrey245Color;
-+ (UIColor *)honOffGreyLightColor;
-+ (UIColor *)honProfileStatsTextColor;
-+ (UIColor *)honOrthodoxGreenColor;
-+ (UIColor *)honDarkGreenColor;
 
 + (UIColor *)honBlueTextColor;
 + (UIColor *)honGreenTextColor;
++ (UIColor *)honGreyTimeColor;
++ (UIColor *)honProfileStatsColor;
 
 +(UIColor *)honDebugRedColor;
 +(UIColor *)honDebugGreenColor;
