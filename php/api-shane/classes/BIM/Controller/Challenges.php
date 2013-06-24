@@ -169,7 +169,8 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL']) && isset($_POST['usernames'])){
             $usernames = explode('|', $_POST['usernames'] );
             foreach( $usernames as $username ){
-    		    $isPrivate = isset( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N' ;
+                $uv = null;
+                $isPrivate = isset( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N' ;
     		    $func = array( __CLASS__, 'submitChallengeWithUsername' );
     	        if( $this->useQueue( $func ) ){
         			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $_POST['userID'], $_POST['subject'], $_POST['imgURL'], $username, $isPrivate );
