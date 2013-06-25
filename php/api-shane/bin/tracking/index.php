@@ -16,9 +16,7 @@ if( $ct > 1 ){
     $app = new BIM_App_G();
     $app->trackClick($params);
     
-    if( $params['network_id'] == 'a' ){
-        header('Location: http://letsvolley.com');
-    }
+    header('Location: http://letsvolley.com');
 
 }
 
