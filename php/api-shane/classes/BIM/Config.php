@@ -4,6 +4,9 @@ class BIM_Config{
     
     static protected $defaultNetwork = 'instagram';
 
+    static protected $bootConfLive = array();
+    static protected $bootConfDev = array();
+    
     static protected $lastTagFetch = 0;
     static protected $authenticTags = array();
     static protected $adTags = array();
@@ -128,5 +131,32 @@ class BIM_Config{
         }
         return self::$adQuotes[ $network ];
         
+    }
+    
+    protected static function bootConfCacheKey( $type = 'live' ){
+        return "volley_boot_conf_$type";
+    }
+    
+    public static function getBootConf( $type = 'live' ){
+        $bootConf = null;
+        $cackeKey = self::bootConfCacheKey( $type );
+        $cache = new BIM_Cache_Memcache( self::memcached() );
+        $data = $cache->get( $cackeKey );
+        if( !$data ){
+            $dao = new BIM_DAO_Mysql_Config( self::db() );
+            $data = $dao->getBootConf( $type );
+            $data =  $data[0]->data;
+            $cache->set( $cackeKey, $data );
+        }
+        return $data;
+    }
+    
+    public static function saveBootConf( $data, $type = 'live' ){
+        $dao = new BIM_DAO_Mysql_Config( self::db() );
+        $dao->saveBootConf( $data, $type );
+        
+        $cackeKey = self::bootConfCacheKey( $type );
+        $cache = new BIM_Cache_Memcache( self::memcached() );
+        $cache->set( $cackeKey, $data );
     }
 }
