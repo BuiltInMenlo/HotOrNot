@@ -19,7 +19,6 @@
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 #import "HONHeaderView.h"
-#import "HONInviteNetworkViewController.h"
 #import "HONVerifyMobileViewController.h"
 
 @interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
@@ -67,7 +66,7 @@
 	if ([[_username substringToIndex:1] isEqualToString:@"@"])
 		_username = [_username substringFromIndex:1];
 	
-	VolleyJSONLog(@"AFNetworking [-] HONRegisterViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONRegisterViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 7], @"action",
@@ -84,7 +83,7 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONRegisterViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -98,7 +97,7 @@
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController: %@", userResult);
+			VolleyJSONLog(@"AFNetworking [-] HONRegisterViewController: %@", userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];
@@ -124,7 +123,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONRegisterViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -182,7 +181,7 @@
 
 - (void)_finalizeUser {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONRegisterViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONRegisterViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -203,7 +202,7 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONRegisterViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -217,7 +216,7 @@
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController: %@", userResult);
+			VolleyJSONLog(@"AFNetworking [-] HONRegisterViewController: %@", userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];
@@ -229,12 +228,17 @@
 				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 					[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 					
-					if ([HONAppDelegate isFUEInviteEnabled])
-						[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
+					// normal
+//					if ([HONAppDelegate isFUEInviteEnabled])
+//						[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
+					
+					// apple review fix
+					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				}];
 				
-				if (![HONAppDelegate isFUEInviteEnabled])
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//				if (![HONAppDelegate isFUEInviteEnabled])
+//					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				
 			} else {
 				if (_progressHUD == nil)
@@ -250,7 +254,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONRegisterViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONRegisterViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -269,6 +273,7 @@
 - (void)loadView {
 	[super loadView];
 	
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]]];
 	
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
@@ -394,17 +399,20 @@
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
 		_imagePicker.delegate = self;
 		_imagePicker.allowsEditing = NO;
 		_imagePicker.cameraOverlayView = nil;
 		_imagePicker.navigationBarHidden = YES;
 		_imagePicker.toolbarHidden = YES;
 		_imagePicker.wantsFullScreenLayout = NO;
-		_imagePicker.showsCameraControls = NO;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+		
+		// these two fuckers don't work in ios7 right now!!
+		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		_imagePicker.showsCameraControls = NO;
+		// ---------------------------------------------------------------------------
 		
 		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
 			[self _showOverlay];
@@ -566,12 +574,19 @@
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 		
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
-			if ([HONAppDelegate isFUEInviteEnabled])
-				[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
+			
+			// normal
+//			if ([HONAppDelegate isFUEInviteEnabled])
+//				[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
+			
+			// apple review fix
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 		}];
 		
-		if (![HONAppDelegate isFUEInviteEnabled])
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+		// normal
+//		if (![HONAppDelegate isFUEInviteEnabled])
+//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 
@@ -638,13 +653,19 @@
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	NSLog(@"cameraOverlayViewCloseCamera:[%@] cameraOverlayView", [cameraOverlayView description]);
+	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 		
-		if ([HONAppDelegate isFUEInviteEnabled])
-			[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
+		//- apple fix
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		
-		else
+		// normal
+//		if ([HONAppDelegate isFUEInviteEnabled])
+//			[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
+//		
+//		else
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
 }

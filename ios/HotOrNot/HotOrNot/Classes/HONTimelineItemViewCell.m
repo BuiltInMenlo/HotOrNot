@@ -49,8 +49,8 @@
 	if ((self = [super init])) {
 		_hasOponentRetorted = NO;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
-		[self addSubview:bgImgView];
+		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
+		[self addSubview:bgImageView];
 	}
 	
 	return (self);
@@ -60,8 +60,8 @@
 	if ((self = [super init])) {
 		_hasOponentRetorted = YES;
 		
-		UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
-		[self addSubview:bgImgView];
+		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
+		[self addSubview:bgImageView];
 	}
 	
 	return (self);
@@ -109,7 +109,7 @@
 	_lHolderView.clipsToBounds = YES;
 	[scrollView addSubview:_lHolderView];
 	
-	_lImageLoading = [[HONImageLoadingView alloc] initAtPos:CGPointMake(93.0, 93.0)];
+	_lImageLoading = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
 	[_lHolderView addSubview:_lImageLoading];
 	
 	_lChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
@@ -466,7 +466,7 @@
 		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
 		
-		VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+		VolleyJSONLog(@"HONTimelineItemViewCell —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 								[NSString stringWithFormat:@"%d", 6], @"action",
@@ -478,15 +478,15 @@
 		[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			if (error != nil) {
-				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 			} else {
 				NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell: %@", voteResult);
+				VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell: %@", voteResult);
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			VolleyJSONLog(@"AFNetworking [-]  VoteItemViewCell %@", [error localizedDescription]);
+			VolleyJSONLog(@"AFNetworking [-] VoteItemViewCell %@", [error localizedDescription]);
 		}];
 		
 	} else
@@ -520,7 +520,7 @@
 		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
 		
-		VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+		VolleyJSONLog(@"HONTimelineItemViewCell —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 								[NSString stringWithFormat:@"%d", 6], @"action",
@@ -532,15 +532,15 @@
 		[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			if (error != nil) {
-				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 				
 			} else {
 				NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell: %@", voteResult);
+				VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell: %@", voteResult);
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell %@", [error localizedDescription]);
+			VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell %@", [error localizedDescription]);
 		}];
 		
 	} else
@@ -582,7 +582,7 @@
 			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
 			
-			VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+			VolleyJSONLog(@"HONTimelineItemViewCell —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 											[NSString stringWithFormat:@"%d", 6], @"action",
@@ -594,15 +594,15 @@
 			[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					
 				} else {
 					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell: %@", voteResult);
+					VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell: %@", voteResult);
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				VolleyJSONLog(@"AFNetworking [-]  VoteItemViewCell %@", [error localizedDescription]);
+				VolleyJSONLog(@"AFNetworking [-] VoteItemViewCell %@", [error localizedDescription]);
 			}];
 		
 		} else
@@ -642,7 +642,7 @@
 			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
 			
-			VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+			VolleyJSONLog(@"HONTimelineItemViewCell —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 											[NSString stringWithFormat:@"%d", 6], @"action",
@@ -654,15 +654,15 @@
 			[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
-					VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+					VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 					
 				} else {
 					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell: %@", voteResult);
+					VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell: %@", voteResult);
 				}
 				
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell %@", [error localizedDescription]);
+				VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell %@", [error localizedDescription]);
 			}];
 			
 		} else
@@ -682,7 +682,7 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 				
-				VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
+				VolleyJSONLog(@"HONTimelineItemViewCell —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 11], @"action",
@@ -693,17 +693,17 @@
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell: %@", flagResult);
+						//VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell: %@", flagResult);
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 						
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-]  VoteItemViewCell %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-] VoteItemViewCell %@", [error localizedDescription]);
 				}];
 				
 			break;}
@@ -726,7 +726,7 @@
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 				
-				VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
+				VolleyJSONLog(@"HONTimelineItemViewCell —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 11], @"action",
@@ -737,16 +737,16 @@
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						//NSDictionary *flagResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//VolleyJSONLog(@"AFNetworking [-]  HONTimelineItemViewCell: %@", flagResult);
+						//VolleyJSONLog(@"AFNetworking [-] HONTimelineItemViewCell: %@", flagResult);
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-]  VoteItemViewCell %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-] VoteItemViewCell %@", [error localizedDescription]);
 				}];
 				
 				break;}

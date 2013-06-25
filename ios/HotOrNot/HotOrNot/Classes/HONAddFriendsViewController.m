@@ -62,7 +62,7 @@
 #pragma mark - Data Calls
 - (void)_retreiveFollowing {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONAddFriendsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -73,12 +73,12 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																				sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController: %@", parsedUsers);
+			VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController: %@", parsedUsers);
 			
 			_following = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
@@ -93,14 +93,14 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController %@", [error localizedDescription]);
 		
 	}];
 }
 
 - (void)_sendContactsSMS {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONAddFriendsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -112,17 +112,17 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSDictionary *sendResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController: %@", sendResult);
+			VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController: %@", sendResult);
 			
 			[self _goDone];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONAddFriendsViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController %@", [error localizedDescription]);
 	}];
 }
 
@@ -213,7 +213,7 @@
 	}
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake((isFUE) ? 250.0 : 0.0, 0.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
@@ -278,7 +278,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 

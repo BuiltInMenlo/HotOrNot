@@ -79,7 +79,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
-@property (nonatomic, strong) UIImageView *bgImgView;
+@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONSearchViewController *searchViewController;
 @end
@@ -363,7 +363,6 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	int days = hours / 24;
 	
 	//NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit fromDate:date];
-	
 	//NSLog(@"[%d][%d][%d][%d]", days, hours, mins, secs);
 	
 	if (days > 0) {
@@ -527,7 +526,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
 	
-	VolleyJSONLog(@"AFNetworking [-] HONAppDelegate --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONAppDelegate —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 6], @"action",
@@ -695,9 +694,9 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		self.tabBarController = [[HONTabBarController alloc] init];
 		self.tabBarController.delegate = self;
 		
-		_bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 20.0, 320.0, ([HONAppDelegate isRetina5]) ? 548.0 : 470.0)];
-		_bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-		[self.tabBarController.view addSubview:_bgImgView];
+		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
+		_bgImageView.frame = CGRectMake(0.0, [[UIApplication sharedApplication] statusBarFrame].size.height, 320.0, [UIScreen mainScreen].bounds.size.height);
+		[self.tabBarController.view addSubview:_bgImageView];
 		
 		self.window.rootViewController = self.tabBarController;
 		[self.window makeKeyAndVisible];
@@ -855,7 +854,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 - (void)_retrieveConfigJSON {
 	VolleyJSONLog(@"CONFIG_JSON:[%@]", kConfigURL);
 	
-	VolleyJSONLog(@"AFNetworking [-] HONAppDelegate --> (%@/%@)", kConfigURL, @"boot-dev.json");
+	VolleyJSONLog(@"HONAppDelegate —/> (%@/%@)", kConfigURL, @"boot-dev.json");
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
 	[httpClient postPath:@"boot-dev.json" parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -971,7 +970,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 
 - (void)_registerUser {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONAppDelegate --> (%@/%@)", kConfigURL, kAPIUsers);
+	VolleyJSONLog(@"HONAppDelegate —/> (%@/%@)", kConfigURL, kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",
@@ -1023,7 +1022,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 
 
 - (void)_initTabs {
-	[_bgImgView removeFromSuperview];
+	[_bgImageView removeFromSuperview];
 	
 	UIViewController *challengesViewController, *voteViewController, *discoveryViewController, *profileViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];

@@ -32,7 +32,9 @@
 		_irisImageView = [[UIImageView alloc] initWithFrame:self.frame];
 		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
 		_irisImageView.alpha = 0.0;
-		[self addSubview:_irisImageView];
+		//[self addSubview:_irisImageView];
+		
+		//hide overlay - [self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
 		
 		_headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 18.0, 200.0, 24.0)];
 		_headerLabel.backgroundColor = [UIColor clearColor];
@@ -40,13 +42,6 @@
 		_headerLabel.textColor = [UIColor whiteColor];
 		_headerLabel.text = NSLocalizedString(@"header_register2", nil);
 		//[self addSubview:_headerLabel];
-		
-		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(270.0, 5.0, 44.0, 44.0);
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:skipButton];
 		
 		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
 		[self addSubview:_controlsHolderView];
@@ -83,6 +78,13 @@
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 		[_controlsHolderView addSubview:submitButton];
+		
+		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		skipButton.frame = CGRectMake(270.0, 5.0, 44.0, 44.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:skipButton];
 	}
 	
 	return (self);

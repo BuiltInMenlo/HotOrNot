@@ -12,6 +12,7 @@
 @interface HONCreateChallengePreviewView : UIView
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image;
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image;
+- (void)setUsernames:(NSArray *)usernameList;
 - (void)showKeyboard;
 
 @property(nonatomic, assign) id <HONCreateChallengePreviewViewDelegate> delegate;

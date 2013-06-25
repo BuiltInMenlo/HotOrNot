@@ -65,7 +65,7 @@
 - (void)_retrieveChallenges {
 	[_headerView toggleRefresh:YES];
 	
-	VolleyJSONLog(@"AFNetworking [-] HONDiscoverViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIDiscover);
+	VolleyJSONLog(@"HONDiscoverViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIDiscover);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
@@ -73,11 +73,11 @@
 	[httpClient postPath:kAPIDiscover parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONDiscoverViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONDiscoverViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-]  HONDiscoverViewController: %@", parsedLists);
+			//VolleyJSONLog(@"AFNetworking [-] HONDiscoverViewController: %@", parsedLists);
 			
 			_allChallenges = [NSMutableDictionary dictionary];
 			NSMutableArray *retrievedChallenges = [NSMutableArray array];
@@ -103,7 +103,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONDiscoverViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONDiscoverViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;

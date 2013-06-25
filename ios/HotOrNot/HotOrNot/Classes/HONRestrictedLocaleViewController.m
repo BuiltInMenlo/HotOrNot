@@ -42,8 +42,9 @@
 - (void)loadView {
 	[super loadView];
 	
-	_bgImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
+	//_bgImageView = [[UIImageView alloc] initWithFrame:self.view.bounds];
+	//_bgImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
+	_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 	_bgImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_bgImageView];
 	

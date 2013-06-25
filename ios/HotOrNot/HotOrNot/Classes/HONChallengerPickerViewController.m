@@ -85,7 +85,7 @@
 #pragma mark - Data Calls
 - (void)_retrievePastUsers {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
+	VolleyJSONLog(@"HONChallengerPickerViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action",
@@ -95,7 +95,7 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -105,7 +105,7 @@
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			//VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController: %@", parsedUsers);
+			//VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController: %@", parsedUsers);
 			
 			
 			int cnt = 0;
@@ -139,7 +139,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -177,12 +177,12 @@
 	
 	NSLog(@"PARAMS:[%@]", params);
 	
-	VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
+	VolleyJSONLog(@"HONChallengerPickerViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -193,7 +193,7 @@
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", challengeResult);
+			VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController %@", challengeResult);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -226,7 +226,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONChallengerPickerViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONChallengerPickerViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -247,9 +247,7 @@
 	_isPrivate = NO;
 	
 	_challengers = [NSMutableArray array];
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Select Friends"];
 	[_headerView hideRefreshing];

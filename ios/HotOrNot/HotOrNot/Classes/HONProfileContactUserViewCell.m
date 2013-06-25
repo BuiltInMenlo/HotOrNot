@@ -36,13 +36,19 @@
 - (void)setContactUserVO:(HONContactUserVO *)contactUserVO {
 	_contactUserVO = contactUserVO;
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 22.0, 180.0, 16.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12];
-	nameLabel.textColor = [HONAppDelegate honGrey635Color];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 15.0, 180.0, 20.0)];
+	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	nameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
-	//nameLabel.text = [NSString stringWithFormat:@"%@ (%@)", _contactUserVO.fullName, (_contactUserVO.isSMSAvailable) ? @"SMS" : @"EMAIL"];
-	nameLabel.text = [NSString stringWithFormat:@"%@", _contactUserVO.fullName];
+	nameLabel.text = _contactUserVO.fullName;
 	[self addSubview:nameLabel];
+	
+	UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 31.0, 180.0, 18.0)];
+	contactLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	contactLabel.textColor = [HONAppDelegate honGrey455Color];
+	contactLabel.backgroundColor = [UIColor clearColor];
+	contactLabel.text = (_contactUserVO.isSMSAvailable) ? _contactUserVO.mobileNumber : _contactUserVO.email;
+	[self addSubview:contactLabel];
 }
 
 

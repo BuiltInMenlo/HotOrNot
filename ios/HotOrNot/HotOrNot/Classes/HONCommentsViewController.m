@@ -65,7 +65,7 @@
 #pragma mark - Data Calls
 - (void)_retrieveComments {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
+	VolleyJSONLog(@"HONCommentsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",
@@ -75,12 +75,12 @@
 	[httpClient postPath:kAPIComments parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONCommentsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
-			//VolleyJSONLog(@"AFNetworking [-]  HONCommentsViewController: %@", parsedLists);
+			//VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController: %@", parsedLists);
 			_comments = [NSMutableArray new];
 			for (NSDictionary *serverList in parsedLists) {
 				HONCommentVO *vo = [HONCommentVO commentWithDictionary:serverList];
@@ -96,7 +96,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONCommentsViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController %@", [error localizedDescription]);
 	}];
 }
 
@@ -113,7 +113,7 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
+	VolleyJSONLog(@"HONCommentsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 2], @"action",
@@ -125,7 +125,7 @@
 	[httpClient postPath:kAPIComments parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONCommentsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -144,7 +144,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONCommentsViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -162,10 +162,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Comments"];
 	[_headerView hideRefreshing];
@@ -428,7 +425,7 @@
 				[_comments removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
-				VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
+				VolleyJSONLog(@"HONCommentsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIComments);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 8], @"action",
@@ -438,14 +435,14 @@
 				[httpClient postPath:kAPIComments parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-]  HONCommentsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						[self _retrieveComments];
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-]  HONCommentsViewController %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-] HONCommentsViewController %@", [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;

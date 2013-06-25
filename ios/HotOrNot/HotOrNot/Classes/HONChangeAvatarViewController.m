@@ -95,7 +95,7 @@
 
 - (void)_finalizeUser {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONChangeAvatarViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONChangeAvatarViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -116,7 +116,7 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONChangeAvatarViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONChangeAvatarViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -130,7 +130,7 @@
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-]  HONChangeAvatarViewController: %@", userResult);
+			VolleyJSONLog(@"AFNetworking [-] HONChangeAvatarViewController: %@", userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];
@@ -156,7 +156,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONChangeAvatarViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONChangeAvatarViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -174,9 +174,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	[self.view addSubview:bgImgView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 }
 
 - (void)viewDidLoad {
@@ -195,18 +193,21 @@
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
 		_imagePicker.delegate = self;
 		_imagePicker.allowsEditing = NO;
 		_imagePicker.cameraOverlayView = nil;
 		_imagePicker.navigationBarHidden = YES;
 		_imagePicker.toolbarHidden = YES;
 		_imagePicker.wantsFullScreenLayout = NO;
-		_imagePicker.showsCameraControls = NO;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;		
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 		
+		// these two fuckers don't work in ios7 right now!!
+		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		_imagePicker.showsCameraControls = NO;
+		// ---------------------------------------------------------------------------
+		
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
 		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
 			[self _showOverlay];
 		}];

@@ -12,11 +12,12 @@
 #import "HONImagingDepictor.h"
 
 @interface HONCreateChallengePreviewView () <UITextFieldDelegate>
+@property (nonatomic, strong) UILabel *usernamesLabel;
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) UIView *subjectBGView;
 @property (nonatomic, strong) UITextField *subjectTextField;
-@property (nonatomic, strong) UIImageView *captionImageView;
+@property (nonatomic, strong) UILabel *captionLabel;
 @property (nonatomic) BOOL isEnabled;
 @end
 
@@ -72,6 +73,14 @@
 
 
 #pragma mark - Puplic APIs
+- (void)setUsernames:(NSArray *)usernameList {
+	NSString *usernames = @"";
+	for (NSString *username in usernameList)
+		usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
+	
+	_usernamesLabel.text = ([usernames length] == 0) ? @"" : [usernames substringToIndex:[usernames length] - 2];
+}
+
 - (void)showKeyboard {
 	[_subjectTextField becomeFirstResponder];
 	[self _raiseKeyboard];
@@ -84,22 +93,32 @@
 	self.alpha = 0.0;
 	
 	UIImageView *addFriendsButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addButton_nonActive"]];
-	addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 12.0, 12.0);
+	addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 12.0, 11.0);
 	[self addSubview:addFriendsButtonImageView];
 	
 	UIImageView *closeButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"closeButton_nonActive"]];
-	closeButtonImageView.frame = CGRectOffset(closeButtonImageView.frame, 263.0, 12.0);
+	closeButtonImageView.frame = CGRectOffset(closeButtonImageView.frame, 263.0, 11.0);
 	[self addSubview:closeButtonImageView];
+	
+	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 21.0, 210.0, 24.0)];
+	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+	_usernamesLabel.textColor = [UIColor whiteColor];
+	_usernamesLabel.backgroundColor = [UIColor clearColor];
+	_usernamesLabel.text = @"";
+	[self addSubview:_usernamesLabel];
 	
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
 	[self addSubview:overlayView];
 	
-	_captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ((self.frame.size.height - 230.0) - 44.0) * 0.5, 320.0, 44.0)];//[UIImage imageNamed:@"tapToReTake"]];
-	//_captionImageView.frame = CGRectOffset(_captionImageView.frame, 0.0, ((self.frame.size.height - 260.0) - 44.0) * 0.5);
-	_captionImageView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.125];
-	_captionImageView.alpha = 0.0;
-	[self addSubview:_captionImageView];
+	_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, ((self.frame.size.height - 230.0) - 44.0) * 0.5, 320.0, 44.0)];
+	_captionLabel.backgroundColor = [UIColor clearColor];
+	_captionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:22];
+	_captionLabel.textColor = [UIColor whiteColor];
+	_captionLabel.textAlignment = NSTextAlignmentCenter;
+	_captionLabel.text = @"Tap to retake photo";
+	_captionLabel.alpha = 0.0;
+	[self addSubview:_captionLabel];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	backButton.frame = self.frame;
@@ -111,7 +130,7 @@
 	_subjectBGView.hidden = YES;
 	[self addSubview:_subjectBGView];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 8.0, 298.0, 30.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 7.0, 298.0, 30.0)];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -175,7 +194,7 @@
 	_subjectBGView.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
-		_captionImageView.alpha = 1.0;
+		_captionLabel.alpha = 0.875;
 	}];
 }
 
@@ -184,7 +203,7 @@
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
-		_captionImageView.alpha = 0.0;
+		_captionLabel.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		if (isRemoved)
 			[self removeFromSuperview];

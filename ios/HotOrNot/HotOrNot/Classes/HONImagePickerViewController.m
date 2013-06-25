@@ -21,7 +21,6 @@
 #import "HONImagingDepictor.h"
 #import "HONSnapCameraOverlayView.h"
 #import "HONAddChallengersViewController.h"
-#import "HONChallengerPickerViewController.h"
 #import "HONCreateChallengePreviewView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
@@ -237,12 +236,12 @@ const CGFloat kFocusInterval = 0.5f;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	VolleyJSONLog(@"AFNetworking [-] HONImagePickerViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
+	VolleyJSONLog(@"HONImagePickerViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONImagePickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONImagePickerViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -253,7 +252,7 @@ const CGFloat kFocusInterval = 0.5f;
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-]  HONImagePickerViewController %@", challengeResult);
+			//VolleyJSONLog(@"AFNetworking [-] HONImagePickerViewController %@", challengeResult);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -284,7 +283,7 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONImagePickerViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONImagePickerViewController %@", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -549,6 +548,15 @@ const CGFloat kFocusInterval = 0.5f;
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
 			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_challangeImage];
+			
+			NSMutableArray *usernames = [NSMutableArray array];
+			for (HONUserVO *vo in _addFollowing)
+				[usernames addObject:vo.username];
+			
+			for (HONContactUserVO *vo in _addContacts)
+				[usernames addObject:vo.fullName];
+			
+			[_previewView setUsernames:[usernames copy]];
 			_previewView.delegate = self;
 			[self.view addSubview:_previewView];
 		}];
@@ -561,6 +569,14 @@ const CGFloat kFocusInterval = 0.5f;
 			else
 				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:rawImage];
 			
+			NSMutableArray *usernames = [NSMutableArray array];
+			for (HONUserVO *vo in _addFollowing)
+				[usernames addObject:vo.username];
+			
+			for (HONContactUserVO *vo in _addContacts)
+				[usernames addObject:vo.fullName];
+			
+			[_previewView setUsernames:[usernames copy]];
 			_previewView.delegate = self;
 			[self.view addSubview:_previewView];
 		}];
@@ -568,9 +584,6 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	[self _uploadPhoto:_challangeImage];
-	
-	
-	//	[self.navigationController pushViewController:[[HONChallengerPickerViewController alloc] initWithSubject:_subjectName imagePrefix:_filename previewImage:_challangeImage userVO:_userVO challengeVO:_challengeVO] animated:NO];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {

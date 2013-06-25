@@ -43,10 +43,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_inviteCelebs", nil)];
 	[headerView hideRefreshing];

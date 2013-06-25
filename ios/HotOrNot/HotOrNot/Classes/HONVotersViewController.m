@@ -61,7 +61,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUsers {
-	VolleyJSONLog(@"AFNetworking [-] HONVotersViewControler --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+	VolleyJSONLog(@"HONVotersViewControler —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",
@@ -71,14 +71,14 @@
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONVotersViewControler - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONVotersViewControler - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [unsortedList sortedArrayUsingDescriptors:
 											[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
 			
-			//VolleyJSONLog(@"AFNetworking [-]  HONVotersViewControler: %@", unsortedList);
+			//VolleyJSONLog(@"AFNetworking [-] HONVotersViewControler: %@", unsortedList);
 			_voters = [NSMutableArray new];
 			for (NSDictionary *serverList in parsedLists) {
 				HONVoterVO *vo = [HONVoterVO voterWithDictionary:serverList];
@@ -91,7 +91,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  VotersViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] VotersViewController %@", [error localizedDescription]);
 	}];
 }
 
@@ -99,10 +99,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Likes"];
 	[_headerView hideRefreshing];

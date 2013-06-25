@@ -51,9 +51,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	[self.view addSubview:bgImgView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_username", nil)];
 	[headerView hideRefreshing];
@@ -128,7 +126,7 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	VolleyJSONLog(@"AFNetworking [-] HONUsernameViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONUsernameViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 7], @"action",
@@ -139,7 +137,7 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONUsernameViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONUsernameViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -150,7 +148,7 @@
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-]  HONUsernameViewController: %@", userResult);
+			//VolleyJSONLog(@"AFNetworking [-] HONUsernameViewController: %@", userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				[_progressHUD hide:YES];
@@ -175,7 +173,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  UsernameViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] UsernameViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;

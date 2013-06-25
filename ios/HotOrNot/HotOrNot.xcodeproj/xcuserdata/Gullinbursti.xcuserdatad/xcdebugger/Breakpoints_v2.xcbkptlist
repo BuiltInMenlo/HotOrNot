@@ -25,13 +25,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "HotOrNot/Classes/HONUserProfileViewCell.m"
-            timestampString = "393490594.13314"
+            filePath = "HotOrNot/Classes/HONChangeAvatarViewController.m"
+            timestampString = "393801172.419964"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "47"
-            endingLineNumber = "47"
-            landmarkName = "-setUserVO:"
+            startingLineNumber = "205"
+            endingLineNumber = "205"
+            landmarkName = "-_presentCamera"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,13 +41,29 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "HotOrNot/Classes/HONTimelineItemViewCell.m"
-            timestampString = "393720907.255192"
+            filePath = "HotOrNot/Classes/HONRegisterViewController.m"
+            timestampString = "393809258.133465"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "120"
-            endingLineNumber = "120"
-            landmarkName = "-setChallengeVO:"
+            startingLineNumber = "412"
+            endingLineNumber = "412"
+            landmarkName = "-_presentCamera"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "HotOrNot/Classes/HONImagePickerViewController.m"
+            timestampString = "393809288.771882"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "371"
+            endingLineNumber = "371"
+            landmarkName = "-_showCamera"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

@@ -8,7 +8,6 @@
 
 #import "HONImageLoadingView.h"
 
-const CGFloat kDotDimensions = 24.0f;
 
 @interface HONImageLoadingView ()
 @property (nonatomic, strong) UIImageView *animationImageView;
@@ -17,11 +16,11 @@ const CGFloat kDotDimensions = 24.0f;
 @implementation HONImageLoadingView
 
 - (id)initAtPos:(CGPoint)pos {
-	if ((self = [super initWithFrame:CGRectMake(pos.x, pos.y, kDotDimensions, kDotDimensions)])) {
-		_animationImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0.0, 0.0, kDotDimensions, kDotDimensions)];
-		_animationImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"loadingDot_01"],
-											   [UIImage imageNamed:@"loadingDot_02"],
-											   [UIImage imageNamed:@"loadingDot_03"], nil];
+	if ((self = [super initWithFrame:CGRectMake(pos.x, pos.y, 64.0, 64.0)])) {
+		_animationImageView = [[UIImageView alloc]initWithFrame:CGRectMake(0.0, 0.0, 64.0, 64.0)];
+		_animationImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"loader_001"],
+											   [UIImage imageNamed:@"loader_002"],
+											   [UIImage imageNamed:@"loader_003"], nil];
 		_animationImageView.animationDuration = 0.5f;
 		_animationImageView.animationRepeatCount = 0;
 		[self addSubview:_animationImageView];

@@ -78,10 +78,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_settings", nil)];
 	[_headerView hideRefreshing];
@@ -159,7 +156,7 @@
 	
 	[_headerView toggleRefresh:YES];
 	
-	VolleyJSONLog(@"AFNetworking [-] HONSettingsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONSettingsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",
@@ -169,11 +166,11 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONSettingsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONSettingsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-]  HONSettingsViewController: %@", userResult);
+			//VolleyJSONLog(@"AFNetworking [-] HONSettingsViewController: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
@@ -191,7 +188,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  SettingsViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] SettingsViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		
@@ -433,7 +430,7 @@
 															 [NSString stringWithFormat:@"%d", _notificationSwitch.on], @"switch", nil]];
 				
 				
-				VolleyJSONLog(@"AFNetworking [-] HONSettingsViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+				VolleyJSONLog(@"HONSettingsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 4], @"action",
@@ -444,11 +441,11 @@
 				[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-]  HONSettingsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-] HONSettingsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 						
 					} else {
 						NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-						//VolleyJSONLog(@"AFNetworking [-]  HONSettingsViewController: %@", userResult);
+						//VolleyJSONLog(@"AFNetworking [-] HONSettingsViewController: %@", userResult);
 						
 						if ([userResult objectForKey:@"id"] != [NSNull null])
 							[HONAppDelegate writeUserInfo:userResult];
@@ -466,7 +463,7 @@
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-]  SettingsViewController %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-] SettingsViewController %@", [error localizedDescription]);
 					
 					[_headerView toggleRefresh:NO];
 					_progressHUD.minShowTime = kHUDTime;

@@ -85,7 +85,7 @@
 	_following = [NSMutableArray array];
 	_followingCells = [NSMutableArray array];
 	
-	VolleyJSONLog(@"AFNetworking [-] HONAddChallengersViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
+	VolleyJSONLog(@"HONAddChallengersViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action", // 11 on Users.php actual following // 4 on Search is past challengers
@@ -95,12 +95,12 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONAddChallengersViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONAddChallengersViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																					sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			VolleyJSONLog(@"AFNetworking [-]  HONAddChallengersViewController: %@", parsedUsers);
+			VolleyJSONLog(@"AFNetworking [-] HONAddChallengersViewController: %@", parsedUsers);
 			
 			
 			for (NSDictionary *serverList in parsedUsers) {
@@ -115,7 +115,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONAddChallengersViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONAddChallengersViewController %@", [error localizedDescription]);
 	}];
 }
 

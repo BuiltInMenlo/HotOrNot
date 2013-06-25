@@ -41,28 +41,26 @@
 		
 		NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", subject, username);
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closeOptions:) name:@"CLOSE_OPTIONS" object:nil];
+		//hide overlay - [self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
 		
 		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, ([_username length] > 0) ? kNavBarHeaderHeight + 33.0 : kNavBarHeaderHeight + 10.0, 307.0, 306.0)];
 		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
 		_irisImageView.alpha = 0.0;
 		//[self addSubview:_irisImageView];
 		
-		//[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera-568h@2x"]]];
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
-		
 		_controlsHolderView = [[UIView alloc] initWithFrame:self.frame];
 		_controlsHolderView.userInteractionEnabled = YES;
 		[self addSubview:_controlsHolderView];
 		
 		_addFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_addFriendsButton.frame = CGRectMake(5.0, 5.0, 44.0, 44.0);
+		_addFriendsButton.frame = CGRectMake(12.0, 11.0, 44.0, 44.0);
 		[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_nonActive"] forState:UIControlStateNormal];
 		[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_Active"] forState:UIControlStateHighlighted];
 		[_addFriendsButton addTarget:self action:@selector(_goAddFriends) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_addFriendsButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(270.0, 5.0, 44.0, 44.0);
+		_cancelButton.frame = CGRectMake(263.0, 11.0, 44.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -72,8 +70,8 @@
 		for (NSString *username in _usernames)
 			usernames = [usernames stringByAppendingFormat:@"%@, ", _username];
 		
-		_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 18.0, 210.0, 20.0)];
-		_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:14];
+		_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 21.0, 210.0, 24.0)];
+		_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		_usernamesLabel.textColor = [UIColor whiteColor];
 		_usernamesLabel.backgroundColor = [UIColor clearColor];
 		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
@@ -98,7 +96,7 @@
 //		}
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(260.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
+		cameraRollButton.frame = CGRectMake(258.0, [UIScreen mainScreen].bounds.size.height - 51.0, 44.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
@@ -112,7 +110,7 @@
 		[_controlsHolderView addSubview:_captureButton];
 		
 		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_optionsButton.frame = CGRectMake(15.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
+		_optionsButton.frame = CGRectMake(16.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_nonActive"] forState:UIControlStateNormal];
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_Active"] forState:UIControlStateHighlighted];
 		[_optionsButton addTarget:self action:@selector(_goOptions) forControlEvents:UIControlEventTouchUpInside];

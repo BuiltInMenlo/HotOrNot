@@ -39,7 +39,7 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0, 38.0, 38.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	avatarImageView.backgroundColor = [UIColor colorWithWhite:0.950 alpha:1.0];
 	avatarImageView.hidden = _isRandom;
@@ -51,13 +51,6 @@
 	usernameLabel.backgroundColor = [UIColor clearColor];
 	usernameLabel.text = [NSString stringWithFormat:@"@%@", _userVO.username];
 	[self addSubview:usernameLabel];
-	
-//	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isRandom) ? 11.0 : 56.0, 27.0, 180.0, 20.0)];
-//	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
-//	nameLabel.textColor = [HONAppDelegate honGrey635Color];
-//	nameLabel.backgroundColor = [UIColor clearColor];
-//	nameLabel.text = [NSString stringWithFormat:(_isRandom) ? @"%@" : @"@%@", _userVO.username];
-//	[self addSubview:nameLabel];
 }
 
 

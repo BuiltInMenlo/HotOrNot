@@ -14,7 +14,7 @@
 #import "HONAppDelegate.h"
 
 @interface HONSettingsViewCell()
-@property (nonatomic, strong) UIImageView *bgImgView;
+@property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) NSString *caption;
 @property (nonatomic, strong) UILabel *scoreLabel;
 @property (nonatomic, strong) UILabel *ptsLabel;
@@ -29,8 +29,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_bgImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
-		[self addSubview:_bgImgView];
+		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 70.0)];
+		[self addSubview:_bgImageView];
 	}
 	
 	return (self);
@@ -38,8 +38,8 @@
 
 - (id)initAsTopCell {
 	if ((self = [self init])) {
-		_bgImgView.frame = CGRectMake(0.0, 0.0, 320.0, 163.0);
-		_bgImgView.image = [UIImage imageNamed:@"profileBackground"];
+		_bgImageView.frame = CGRectMake(0.0, 0.0, 320.0, 163.0);
+		_bgImageView.image = [UIImage imageNamed:@"profileBackground"];
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 97.0, 97.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];

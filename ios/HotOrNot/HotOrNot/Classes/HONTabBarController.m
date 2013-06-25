@@ -365,7 +365,7 @@
 													[NSNumber numberWithInt:0], @"comments", nil];
 	
 	
-	VolleyJSONLog(@"AFNetworking [-] HONTabBarViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
+	VolleyJSONLog(@"HONTabBarViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 3], @"action",
@@ -375,11 +375,11 @@
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONTabBarViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONTabBarViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-]  HONTabBarViewController %@", unsortedChallenges);
+			//VolleyJSONLog(@"AFNetworking [-] HONTabBarViewController %@", unsortedChallenges);
 			
 			int statusChanges = 0;
 			int voteChanges = 0;
@@ -441,7 +441,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  ChallengesViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
 	}];
 }
 

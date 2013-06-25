@@ -84,7 +84,7 @@
 #pragma mark - Data Calls
 - (void)_retrievePastUsers {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONProfileViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
+	VolleyJSONLog(@"HONProfileViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action",
@@ -94,7 +94,7 @@
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONProfileViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -105,7 +105,7 @@
 			
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			//VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController: %@", parsedUsers);
+			//VolleyJSONLog(@"AFNetworking [-] HONProfileViewController: %@", parsedUsers);
 			
 			int cnt = 0;
 			for (NSDictionary *serverList in unsortedUsers) {
@@ -156,7 +156,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONProfileViewController %@", [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -273,9 +273,7 @@
 	[super loadView];
 	
 	_hasRefreshed = NO;
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor colorWithWhite:0.900 alpha:1.0]];
@@ -438,7 +436,7 @@
 - (void)_refreshProfileTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	
-	VolleyJSONLog(@"AFNetworking [-] HONProfileViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONProfileViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",
@@ -448,11 +446,11 @@
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONProfileViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			 
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-]  HONProfileViewController: %@", userResult);
+			//VolleyJSONLog(@"AFNetworking [-] HONProfileViewController: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null])
 				[HONAppDelegate writeUserInfo:userResult];
@@ -486,7 +484,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  SettingsViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] SettingsViewController %@", [error localizedDescription]);
 		
 		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;

@@ -27,7 +27,6 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
-#import "HONInviteNetworkViewController.h"
 #import "HONInviteCelebViewController.h"
 #import "HONAddFriendsViewController.h"
 
@@ -188,7 +187,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+	VolleyJSONLog(@"HONHONTimelineViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
@@ -222,14 +221,14 @@
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONHONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			//NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			
-			//VolleyJSONLog(@"AFNetworking [-]  HONHONTimelineViewController: %@", parsedLists);
+			//VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController: %@", parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;
@@ -260,7 +259,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		if (_progressHUD == nil)
@@ -277,7 +276,7 @@
 
 - (void)_retrieveSingleChallenge:(HONChallengeVO *)vo {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
+	VolleyJSONLog(@"HONHONTimelineViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 3], @"action",
@@ -288,11 +287,11 @@
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONHONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-]  HONHONTimelineViewController: %@", parsedLists);
+			//VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController: %@", parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;
@@ -325,7 +324,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController %@", [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		
@@ -344,7 +343,7 @@
 
 - (void)_retrieveUser {
 	
-	VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController --> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
+	VolleyJSONLog(@"HONHONTimelineViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 8], @"action",
@@ -356,10 +355,10 @@
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
 			
 		} else {
-			//VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController: %@", userResult);
+			//VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController: %@", userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				_userVO = [HONUserVO userWithDictionary:userResult];
@@ -376,20 +375,17 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-]  HONTimelineViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController %@", [error localizedDescription]);
 	}];
 }
 
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
 	
 	NSLog(@"API END PT:[%@]", [HONAppDelegate apiServerPath]);
 	
-	
-	UIImageView *bgImgView = [[UIImageView alloc] initWithFrame:self.view.bounds];
-	bgImgView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"];
-	[self.view addSubview:bgImgView];
 	
 	if (_isPushView) {
 		_headerView = [[HONHeaderView alloc] initWithTitle:(_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName];
@@ -457,7 +453,7 @@
 		[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
 #endif
 		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
-			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
+			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
 		
 	} else
 		[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
@@ -533,11 +529,11 @@
 	[[Mixpanel sharedInstance] track:@"Timeline - Banner"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyMobileViewController alloc] init]];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+
+	//- apple fix
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goLocaleRestriction {
@@ -566,7 +562,7 @@
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+	//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:^(void) {
