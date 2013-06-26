@@ -38,3 +38,4 @@ function growth( $job, &$config ){ any_job($job, $config); }
 function webstagram( $job, &$config ){ any_job($job, $config); }
 function askfm( $job, &$config ){ any_job($job, $config); }
 function update_user_stats( $job, &$config ){ any_job($job, $config); }
+function match_push( $job, &$config ){ any_job($job, $config); }

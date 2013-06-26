@@ -83,4 +83,10 @@ class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
 		$params = array( time(), $data->name, $data->network, $data->followers, $data->following, $data->likes );
 		$this->prepareAndExecute( $sql, $params );
 	}
+	
+	public function matchNumbers( $numbers ){
+	    $placeHolders = join( ',', array_fill(0, count( $numbers ), '?') );
+	    $sql = "select * from hotornot-dev.mobile_numbers where number IN( $placeHolders )";
+		return $this->prepareAndExecute( $sql, $numbers )->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+	}
 }
