@@ -12,7 +12,7 @@ contact_lists
 return array(
     'settings' => array(
         'number_of_shards' => 10,
-        'number_of_replicas' => 2,
+        'number_of_replicas' => 1,
         'analysis' => array(
             'analyzer' => array(
                 'indexAnalyzer' => array(

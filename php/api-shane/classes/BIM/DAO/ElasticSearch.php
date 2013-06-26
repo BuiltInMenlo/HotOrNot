@@ -2,68 +2,6 @@
 class BIM_DAO_ElasticSearch
 {
     
-/*
-{
-  "from": 0,
-  "size": 2,
-  "query": {
-    "match_all": {}
-  },
-  "sort": [
-    {
-      "_geo_distance": {
-        "coords": {
-          "lat": 33.109948,
-          "lon": -114.662247
-        },
-        "order": "asc",
-        "unit": "mi"
-      }
-    }
-  ],
-  "filter": {
-    "geo_distance_range": {
-      "from": "0mi",
-      "to": "3000mi",
-      "coords": {
-        "lat": 33.109948,
-        "lon": -114.662247
-      }
-    }
-  }
-}
-
-{
-  "from": 0,
-  "size": 1,
-  "query": {
-    "match_all": []
-  },
-  "sort": [
-    {
-      "_geo_distance": {
-        "coords": {
-          "lat": "37.7790775",
-          "lon": "-122.4146372"
-        },
-        "order": "asc",
-        "unit": "mi"
-      }
-    }
-  ],
-  "filter": {
-    "geo_distance_range": {
-      "from": "0mi",
-      "to": "3000mi",
-      "coords": {
-        "lat": "37.7790775",
-        "lon": "-122.4146372"
-      }
-    }
-  }
-}
-*/
-    
     /**
      * 
      * @var search
@@ -91,9 +29,9 @@ class BIM_DAO_ElasticSearch
     * @param   string      app_key
     */
     function __construct( $params = null ){
-    if(!isset($params->api_root)){
-        throw new Exception("no api root passed to the constructior!!");
-    }
+        if(!isset($params->api_root)){
+            throw new Exception("no api root passed to the constructior!!");
+        }
         $this->api_root = $params->api_root;
     }
     
@@ -139,12 +77,7 @@ class BIM_DAO_ElasticSearch
         if( $args ){
             $options[ CURLOPT_POSTFIELDS ] = json_encode( $args );
         }
-        
-        // open the handle and execute the call to sendstream
-        if(!isset( $this->curl ) ){
-            $this->curl = curl_init();
-        }
-        $ch = $this->curl;
+        $ch = curl_init();
         curl_setopt_array($ch,$options);
         $responseStr = curl_exec($ch);
         
@@ -216,86 +149,4 @@ class BIM_DAO_ElasticSearch
     
         return array("status" => $responseCode, "headers" => $responseHeaderArray, "body" => $responseBody);
     }
-    
-	public function getSearch( $subClass = '' ){
-		if( !isset( $this->search[$subClass] ) ){
-		    $searchConf = $this->getSearchConfig();
-		    // commented out to test the class auto loading feature of kohana 
-			// require_once 'TN/Cache/Memcache.php';
-			$classFile = 'TN/Search/ElasticSearch';
-			if( $subClass ){
-			    $classFile .= "/$subClass";
-			}
-			$className = preg_replace('#/#', '_', $classFile);
-			$classFile .= '.php';
-			require_once $classFile;
-			$this->search[$subClass] = new $className( $searchConf );
-		}
-		return  $this->search[$subClass];
-	}
-
-	public function getSearchConfig(){
-		if( !$this->searchConfig ){
-			$this->searchConfig = require('config/elastic_search.php');
-		}
-		return $this->searchConfig;
-	}
-    
-    /*
-    public function getEventsByTime( $min, $max, $params, $from = 0, $size = 10 ){
-        // make the term queries for any regions that were passed in
-        $should = array();
-        if( isset( $params->outpic_regions ) && is_array( $params->outpic_regions ) ){
-            foreach( $params->outpic_regions as $region_name ){
-                $q = array(
-                    "term" => array(
-                        'outpic_region' => $region_name
-                    )
-                );
-                $should[] = $q;
-            }
-        }
-        
-        // make the range query
-        $must = array();
-        if( isset(  $params->total_media_items ) ){
-            $must[] = array(
-                "range" => array(
-                    "total_media_items" => array( 
-                        "gte" =>  $params->total_media_items,
-                    )
-                )
-            );
-        }
-        
-        $must[] = array(
-            "range" => array(
-                "media_collection.start_time" => array( 
-                    "gte" => $min,
-                    "lte" => $max, 
-                )
-            )
-        );
-        
-        $q = array(
-            "from" => $from,
-            "size" => $size,
-            "query" => array(
-                "bool" => array(
-                    "must" => $must,
-                )
-            )
-        );
-        
-        if( $should ){
-            $q["query"]['bool']["should"] = $should;
-            $q["query"]['bool']["minimum_number_should_match"] = 1;
-        }
-        
-        $urlSuffix = "events/event/_search";
-        
-        $res = $this->call( 'GET', $urlSuffix, $q );
-        return $res;
-    }
-    */
 }

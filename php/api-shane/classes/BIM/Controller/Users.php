@@ -7,7 +7,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     
     public function handleReq(){
 
-        $users = new BIM_App_Users;
+        $this->users = $users = new BIM_App_Users;
         ////$users->test();
         
         // action was specified
@@ -78,8 +78,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         				return $users->flagUser($_POST['userID']);
         			break;
         		case "11":
-        			if ( isset( $_POST['userID'] ) )
-        				return $users->findFriends( $_POST );
+        		    return $this->findFriends();
         			break;
         			
         		default:
@@ -88,5 +87,18 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         } else {
             return array();
         }
+    }
+    
+    public function findFriends(){
+	    $friends = '[]';
+		if ( isset( $_POST['userID'] ) && isset( $_POST['phone'] ) ){
+		    $hashedList = explode('|', $_POST['phone'] );
+		    $params = (object) array(
+		        'user_id' => $_POST['userID'],
+		        'hashed_list' => $hashedList,
+		    );
+			$friends = $this->users->findFriends( $params );
+		}
+		return $friends;
     }
 }
