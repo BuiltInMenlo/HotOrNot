@@ -479,12 +479,65 @@ class BIM_App_Users extends BIM_App_Base{
 	
 	/**
 	 * 
-	 * this is the function that allows us to find friends
-	 * @param unknown_type $params
+	 * This is the function that allows us to find friends
+	 * 
+	 * first we look to see if we have a contact list for this user
+	 * if we do, then we update the current list by merging the hashed_list together
+	 * if we do not, then we add a document to the contact_lists index
+	 * 
+	 * Then we execute a search with the passed hashed list and the hashed number of we have it 
+	 * and process the results for return to the client
+	 * this might also include a bit of user data from memcache.
+	 * 
+	 * @param stdClass $params with properties as follows
+	 * 		hashed_number => the hasjed phone n umber of the volley user
+	 * 		hashed_list => the list of hashed phone numbers from the volley user's contact list
+	 * 		user_id - the id of the volley user
 	 */
 	
-	public function findfriends( $params ){
+	public function matchFriends( $params ){
+	    $list = $this->addPhoneList($params);
+	    return $this->findfriends($list);
+	}
+	
+	public function findfriends( $list ){
+	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+	    $matches = $dao->findFriends( $list );
+	    $matches = json_decode($matches);
+	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
+	        $matches = $matches->hits->hits;
+	    }
 	    
+	    return $matches;
+	}
+	
+	public function addPhoneList( $params ){
+	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+	    
+        $hashedNumber = isset( $params->hashed_number ) ? $params->hashed_number : '';
+        $hashedList = isset( $params->hashed_list ) ? $params->hashed_list : array();
+        $userId = isset( $params->user_id ) ? $params->user_id : '';
+	    
+	    $doc = (object) array(
+	        'user_id' => $userId,
+	        'hashed_number' => $hashedNumber,
+	        'hashed_list' => $hashedList,
+	    );
+
+	    $added = $dao->addPhoneList( $doc );
+	    if( !$added ){
+	        // if we do not add the list
+	        // then this means the list already existed
+	        // so we update the list with the data we have been passed
+	        $dao->updatePhoneList( $doc );
+	    }
+	    
+	    $list = $dao->getPhoneList( $params );
+	    $list = json_decode( $list );
+	    if( isset( $list->exists ) && $list->exists ){
+	        $list = $list->_source;
+	    }
+	    return $list;
 	}
 	
 	
