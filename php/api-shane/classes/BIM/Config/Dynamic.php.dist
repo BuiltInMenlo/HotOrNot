@@ -160,4 +160,20 @@ class BIM_Config_Dynamic{
             ),
         );
     }
+    
+    public static function urbanAirship(){
+        return (object) array(
+            'api' => (object) array(
+                // 'pass_key' => "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ", // dev
+                'pass_key' => "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw", // live
+                'push_url' => 'https://go.urbanairship.com/api/push/',
+            ),
+        );
+    }
+
+    public static function elasticSearch(){
+        return (object) array(
+            'api_root' => 'http://127.0.0.1:9200'
+        );
+    }
 }

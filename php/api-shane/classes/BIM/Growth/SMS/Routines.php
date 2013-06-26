@@ -27,4 +27,12 @@ class BIM_Growth_SMS_Routines extends BIM_Growth_SMS{
     public function getTxtMsg(){
         return $this->persona->sms->inviteMsg;
     }
+    
+    // we take the list of phone numbers and
+    // return all matches to numbers in our db
+    public function matchNumbers( $numbers ){
+        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+        return $dao->matchNumbers( $numbers );
+    }
+    
 }

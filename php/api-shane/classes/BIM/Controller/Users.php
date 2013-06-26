@@ -77,6 +77,10 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         			if (isset($_POST['userID']))
         				return $users->flagUser($_POST['userID']);
         			break;
+        		case "11":
+        			if ( isset( $_POST['userID'] ) )
+        				return $users->findFriends( $_POST );
+        			break;
         			
         		default:
         		    return array();

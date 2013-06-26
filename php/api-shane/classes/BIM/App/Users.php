@@ -477,6 +477,16 @@ class BIM_App_Users extends BIM_App_Base{
 		);
 	}
 	
+	/**
+	 * 
+	 * this is the function that allows us to find friends
+	 * @param unknown_type $params
+	 */
+	
+	public function findfriends( $params ){
+	    
+	}
+	
 	
 	/**
 	 * Debugging function
