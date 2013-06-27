@@ -520,35 +520,30 @@ class BIM_App_Users extends BIM_App_Base{
 	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
 	        $matches = &$matches->hits->hits;
 	        foreach( $matches as &$match ){
-	            $match = $match->_source;
+	            $match = $match->fields->_source;
 	        }
 	    }
 	    return $matches;
 	}
 	
-	public function addPhoneList( $params ){
+	public function addPhoneList( $list ){
 	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
 	    
-        $hashedNumber = isset( $params->hashed_number ) ? $params->hashed_number : '';
-        $hashedList = isset( $params->hashed_list ) ? $params->hashed_list : array();
-        $userId = isset( $params->user_id ) ? $params->user_id : '';
-	    
-	    $list = (object) array(
-	        'user_id' => $userId,
-	        'hashed_number' => $hashedNumber,
-	        'hashed_list' => $hashedList,
-	    );
-
-        // if we do not add the list
-        // then this means the list already existed
-        // so we update the list with the data we have been passed
-	    $added = $dao->addPhoneList( $list );
-	    if( !$added ){
-	        $dao->updatePhoneList( $list );
-    	    $list = $dao->getPhoneList( $params );
-    	    $list = json_decode( $list );
-    	    if( isset( $list->exists ) && $list->exists ){
-    	        $list = $list->_source;
+	    if( isset( $list->id ) && $list->id ){
+            if(! isset( $list->hashed_number ) ) $list->hashed_number = '';
+            if(! isset( $list->hashed_list ) ) $list->hashed_list = array();
+    	    
+            // if we do not add the list
+            // then this means the list already existed
+            // so we update the list with the data we have been passed
+    	    $added = $dao->addPhoneList( $list );
+    	    if( !$added ){
+    	        $dao->updatePhoneList( $list );
+        	    $list = $dao->getPhoneList( $list );
+        	    $list = json_decode( $list );
+        	    if( isset( $list->exists ) && $list->exists ){
+        	        $list = $list->_source;
+        	    }
     	    }
 	    }
 	    
@@ -607,10 +602,13 @@ class BIM_App_Users extends BIM_App_Base{
 	        $userId = BIM_Utils::getIdForSMSCode($code);
 	        $user = new BIM_User( $userId );
     	    if( $user->isExtant() ){
+    	        $avatarUrl = $this->avatarURLForUser( $user );
     	        $list = (object) array(
     	            'hashed_number' => BIM_Utils::hashMobileNumber( $params->From ),
     	            'hashed_list' => array(),
-    	            'user_id' => $user->id
+    	            'id' => $user->id,
+    	            'avatar_url' => $avatarUrl,
+    	            'username' => $user->username,
     	        );
     	        $linked = $this->addPhoneList( $list );
     	    }

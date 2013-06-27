@@ -74,8 +74,8 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         	'class' => 'BIM_Jobs_Growth',
         	'method' => 'matchPush',
         	'data' => (object) array( 
-                'user_id' => $user->user_id,
-                'friend_id' => $friend->user_id,
+                'user_id' => $user->id,
+                'friend_id' => $friend->id,
             ),
         );
         return $this->enqueueBackground( $job, 'match_push' );

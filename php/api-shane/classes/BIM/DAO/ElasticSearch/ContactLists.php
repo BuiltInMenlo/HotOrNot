@@ -34,6 +34,11 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
                     "should" => $should,
                     "minimum_number_should_match" => 1
                 )
+            ),
+            "partial_fields" => array(
+                "_source" => array(
+                    "exclude" => "hashed_list"
+                )
             )
         );
         
@@ -45,12 +50,12 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
     
     public function addPhoneList( $doc ){
         $added = false;
-        if( isset( $doc->user_id ) ){
+        if( isset( $doc->id ) ){
             $hashed_list = isset( $doc->hashed_list ) && $doc->hashed_list ? $doc->hashed_list : array();
             if( ! isset( $doc->hashed_list ) || ! is_array($doc->hashed_list)  ){
                 $doc->hashed_list = array();
             }
-            $urlSuffix = "contact_lists/phone/$doc->user_id/_create";
+            $urlSuffix = "contact_lists/phone/$doc->id/_create";
             $added = $this->call('PUT', $urlSuffix, $doc);
             $added = json_decode( $added );
             if( isset( $added->ok ) && $added->ok ){
@@ -65,7 +70,7 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
     public function updatePhoneList( $params ){
         $hashedNumber = isset( $params->hashed_number ) ? $params->hashed_number : '';
         $hashedList = isset( $params->hashed_list ) ? $params->hashed_list : array();
-        $userId = isset( $params->user_id ) ? $params->user_id : '';
+        $userId = isset( $params->id ) ? $params->id : '';
         
         $update = array(
             'script' => "
@@ -105,7 +110,7 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
     }
     
     public function getPhoneList( $params ){
-        $userId = isset( $params->user_id ) ? $params->user_id : '';
+        $userId = isset( $params->id ) ? $params->id : '';
         $urlSuffix = "contact_lists/phone/$userId";
         return $this->call('GET', $urlSuffix);
     }
