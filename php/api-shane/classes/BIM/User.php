@@ -3,22 +3,27 @@
 class BIM_User{
     
     public function __construct( $params = null ){
-        if( is_object($params) ){
+        $this->dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        
+        if( !is_object($params) ){
+            $params = $this->dao->getData( $params );
+        }
+        
+        if( $params ){
             foreach( $params as $prop => $value ){
                 $this->$prop = $value;
             }
-        } else {
-            $this->loadData( $params );
         }
+        
     }
     
-    protected function loadData( $id ){
-        $this->dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $data = $this->dao->getData( $id );
-        if( $data ){
-            foreach( $data as $prop => $value ){
-                $this->$prop = $value;
-            }
-        }
+    public function isExtant(){
+        return ( isset( $this->id ) && $this->id ); 
+    }
+    
+    public static function getByCode( $code ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $data = $dao->getUserDataByCode( $code );
+        return new self( $data );
     }
 }

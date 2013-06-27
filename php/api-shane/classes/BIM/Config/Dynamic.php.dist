@@ -159,14 +159,6 @@ class BIM_Config_Dynamic{
         );
     }
     
-    public static function controllerActions( $controllerClass ){
-        return (object) array(
-            'BIM_Controller_G' => array(
-                '3' => (object) array('method' => 'trackClick' )
-            ),
-        );
-    }
-    
     public static function urbanAirship(){
         return (object) array(
             'api' => (object) array(
@@ -180,6 +172,12 @@ class BIM_Config_Dynamic{
     public static function elasticSearch(){
         return (object) array(
             'api_root' => 'http://127.0.0.1:9200'
+        );
+    }
+    
+    public static function sms(){
+        return (object) array(
+            'code_pattern' => '@\b(c\d+\w{13})\b@i'
         );
     }
 }
