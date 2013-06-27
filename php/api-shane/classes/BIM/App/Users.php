@@ -532,7 +532,7 @@ class BIM_App_Users extends BIM_App_Base{
         $hashedList = isset( $params->hashed_list ) ? $params->hashed_list : array();
         $userId = isset( $params->user_id ) ? $params->user_id : '';
 	    
-	    $doc = (object) array(
+	    $list = (object) array(
 	        'user_id' => $userId,
 	        'hashed_number' => $hashedNumber,
 	        'hashed_list' => $hashedList,
@@ -541,19 +541,78 @@ class BIM_App_Users extends BIM_App_Base{
         // if we do not add the list
         // then this means the list already existed
         // so we update the list with the data we have been passed
-	    $added = $dao->addPhoneList( $doc );
+	    $added = $dao->addPhoneList( $list );
 	    if( !$added ){
-	        $dao->updatePhoneList( $doc );
+	        $dao->updatePhoneList( $list );
+    	    $list = $dao->getPhoneList( $params );
+    	    $list = json_decode( $list );
+    	    if( isset( $list->exists ) && $list->exists ){
+    	        $list = $list->_source;
+    	    }
 	    }
 	    
-	    $list = $dao->getPhoneList( $params );
-	    $list = json_decode( $list );
-	    if( isset( $list->exists ) && $list->exists ){
-	        $list = $list->_source;
-	    }
 	    return $list;
 	}
 	
+	
+	/**
+	 * 
+	 * we receive an object structure similar to that of twili's callback structure
+	 * and we link our volley user with the mobile number if possible
+	 * and we also add a phone document to our contact_lists search index 
+	 * 
+           [AccountSid] => ACb76dc4d9482a77306bc7170a47f2ea47
+            [Body] => 23ru3tyu25
+            [ToZip] => 34109
+            [FromState] => CA
+            [ToCity] => NAPLES
+            [SmsSid] => SM99ff3fe1a4c5e8f17d57abb813f587c0
+            [ToState] => FL
+            [To] => +12394313268
+            [ToCountry] => US
+            [FromCountry] => US
+            [SmsMessageSid] => SM99ff3fe1a4c5e8f17d57abb813f587c0
+            [ApiVersion] => 2010-04-01
+            [FromCity] => SAN FRANCISCO
+            [SmsStatus] => received
+            [From] => +14152549391
+            [FromZip] => 94930
+	 * 
+	 * 
+	 * first we get the code sent with the message.  
+	 * our code will always be prefixed with an upper case or lowercase 'c', followed by some digits. followed by a unique string of 6 chars
+	 * 
+	 * for example: c1251cc4c72b4ee8
+	 * 
+	 * once we successfully have the code, we get the user associated with it
+	 * 
+	 * if we siccessfully retrieve the user
+	 * 		we hash the number 
+	 * 		add a contact list for the user, including the unhashed number
+	 * 		mark the user as sms verified in the db
+	 * 
+	 * @param array $params
+	 */
+	public function linkMobileNumber( $params ){
+	    $linked = false;
+	    $c = BIM_Config::sms();
+	    
+	    $matches = array();
+	    preg_match( $c->code_pattern, $params->Body, $matches );
+	    $code = isset( $matches[1] ) ? $matches[1] : null;
+	    if( $code ){
+    	    $user = BIM_User::getByCode( $code );
+    	    if( $user->isExtant() ){
+    	        $list = (object) array(
+    	            'hashed_number' => BIM_Utils::hashMobileNumber( $params->From ),
+    	            'hashed_list' => array(),
+    	            'user_id' => $user->id
+    	        );
+    	        $linked = $this->addPhoneList( $list );
+    	    }
+	    }
+	    return $linked;
+	}
 	
 	/**
 	 * Debugging function
