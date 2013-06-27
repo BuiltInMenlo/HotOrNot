@@ -513,7 +513,6 @@ class BIM_App_Users extends BIM_App_Base{
 	}
 	
 	public function findfriends( $list ){
-	    
 	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
 	    $matches = $dao->findFriends( $list );
 	    $matches = json_decode($matches);
@@ -524,7 +523,6 @@ class BIM_App_Users extends BIM_App_Base{
 	        }
 	    }
 	    return $matches;
-
 	}
 	
 	public function addPhoneList( $params ){
@@ -540,11 +538,11 @@ class BIM_App_Users extends BIM_App_Base{
 	        'hashed_list' => $hashedList,
 	    );
 
+        // if we do not add the list
+        // then this means the list already existed
+        // so we update the list with the data we have been passed
 	    $added = $dao->addPhoneList( $doc );
 	    if( !$added ){
-	        // if we do not add the list
-	        // then this means the list already existed
-	        // so we update the list with the data we have been passed
 	        $dao->updatePhoneList( $doc );
 	    }
 	    

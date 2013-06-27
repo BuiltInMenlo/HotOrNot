@@ -9,76 +9,62 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 
         $this->users = $users = new BIM_App_Users;
         ////$users->test();
-        
-        // action was specified
+        $input = null;
         if (isset($_POST['action'])) {
+            $input = $_POST;
+        } else if( isset($_GET['action'] ) ){
+            $input = $_GET;
+        }
+        // action was specified
+        if (isset($input['action'])) {
         	
         	// depending on action, call function
-        	switch ($_POST['action']) {	
+        	switch ($input['action']) {	
         		case "0":
         			return $users->test();
         		
         		// add a new user
         		case "1":
-        			if (isset($_POST['token']))
-        				return $users->submitNewUser($_POST['token']);
-        			break;
+    				return $this->submitNewUser();
         		
         		// update user's facebook creds
         		case "2":
-        			if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']) && isset($_POST['gender']))
-        				return $users->updateFB($_POST['userID'], $_POST['username'], $_POST['fbID'], $_POST['gender']);
-        			break;
+    				return $this->updateFB();
         		
         		// update user's account type
         		case "3":
-        			if (isset($_POST['userID']) && isset($_POST['isPaid']))
-        				return $users->updatePaid($_POST['userID'], $_POST['isPaid']);
-        			break;
+    				return $this->updatePaid();
         		
         		// update a user's push notification prefs
         		case "4":
-        			if (isset($_POST['userID']) && isset($_POST['isNotifications']))
-        				return $users->updateNotifications($_POST['userID'], $_POST['isNotifications']);
-        			break;
+    				return $this->updateNotifications();
         		
         		// get a user's info
         		case "5":
-        			if (isset($_POST['userID']))
-        				return $users->getUser($_POST['userID']);
-        			break;
-        		
+    				return $this->getUser();
+        				        		
         		// poke a user
         		case "6":
-        			if (isset($_POST['pokerID']) && isset($_POST['pokeeID']))
-        				return $users->pokeUser($_POST['pokerID'], $_POST['pokeeID']);
-        			break;
+    				return $this->pokeUser();
         		
         		// change a user's name
         		case "7":
-        			if (isset($_POST['userID']) && isset($_POST['username']))
-        				return $users->updateName($_POST['userID'], $_POST['username']);
-        			break;
+    				return $this->updateName();
         			
         		// get a user's info
         		case "8":
-        			if (isset($_POST['username']))
-        				return $users->getUserFromName($_POST['username']);
-        			break;
+    				return $this->getUserFromName();
         			
         		// updates a user's name and avatar image
         		case "9":
-        			if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['imgURL']))
-        				return $users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['imgURL']);
-        			break;
+    				return $this->updateUsernameAvatar();
         			
         		// flag a user
         		case "10":
-        			if (isset($_POST['userID']))
-        				return $users->flagUser($_POST['userID']);
-        			break;
+    				return $this->flagUser();
+    				
         		case "11":
-        		    return $this->findFriends();
+        		    return $this->matchFriends( $input );
         			break;
         			
         		default:
@@ -89,15 +75,75 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         }
     }
     
-    public function findFriends(){
+    public function flagUser(){
+		if (isset($_POST['userID'])){
+			return $this->users->flagUser($_POST['userID']);
+		}
+    }
+    
+    public function updateUsernameAvatar(){
+		if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['imgURL'])){
+			return $this->users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['imgURL']);
+		}
+    }
+    
+    public function getUserFromName(){
+		if (isset($_POST['username'])){
+			return $this->users->getUserFromName($_POST['username']);
+		}
+    }
+    
+    public function updateName(){
+		if (isset($_POST['userID']) && isset($_POST['username'])){
+			return $this->users->updateName($_POST['userID'], $_POST['username']);
+		}
+    }
+    
+    public function pokeUser(){
+		if (isset($_POST['pokerID']) && isset($_POST['pokeeID'])){
+			return $this->users->pokeUser($_POST['pokerID'], $_POST['pokeeID']);
+		}
+    }
+    
+    public function getUser(){
+		if (isset($_POST['userID'])){
+			return $this->users->getUser($_POST['userID']);
+        }
+    }
+    
+    public function updateNotifications(){
+		if (isset($_POST['userID']) && isset($_POST['isNotifications'])){
+			return $this->users->updateNotifications($_POST['userID'], $_POST['isNotifications']);
+		}
+    }
+    
+    public function updatePaid(){
+		if (isset($_POST['userID']) && isset($_POST['isPaid'])){
+			return $this->users->updatePaid($_POST['userID'], $_POST['isPaid']);
+        }
+    }
+    
+    public function updateFB(){
+		if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']) && isset($_POST['gender'])){
+			return $this->users->updateFB($_POST['userID'], $_POST['username'], $_POST['fbID'], $_POST['gender']);
+		}
+    }
+    
+    public function submitNewUser(){
+    	if (isset($_POST['token'])){
+    		return $this->users->submitNewUser($_POST['token']);
+    	}
+    }
+    
+    public function matchFriends( $input ){
 	    $friends = '[]';
-		if ( isset( $_POST['userID'] ) && isset( $_POST['phone'] ) ){
-		    $hashedList = explode('|', $_POST['phone'] );
+		if ( isset( $input['userID'] ) && isset( $input['phone'] ) ){
+		    $hashedList = explode('|', $input['phone'] );
 		    $params = (object) array(
-		        'user_id' => $_POST['userID'],
+		        'user_id' => $input['userID'],
 		        'hashed_list' => $hashedList,
 		    );
-			$friends = $this->users->findFriends( $params );
+			$friends = $this->users->matchFriends( $params );
 		}
 		return $friends;
     }
