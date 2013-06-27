@@ -21,9 +21,4 @@ class BIM_User{
         return ( isset( $this->id ) && $this->id ); 
     }
     
-    public static function getByCode( $code ){
-        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $data = $dao->getUserDataByCode( $code );
-        return new self( $data );
-    }
 }

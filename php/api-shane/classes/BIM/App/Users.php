@@ -78,7 +78,8 @@ class BIM_App_Users extends BIM_App_Base{
 			'pokes' => $pokes, 
 			'pics' => $pics,
 			'notifications' => $row->notifications, 
-			'meta' => $meta
+			'meta' => $meta,
+		    'sms_code' => BIM_Utils::getSMSCodeForId($row->id )
 		));
 	}
 	
@@ -580,7 +581,8 @@ class BIM_App_Users extends BIM_App_Base{
 	 * 
 	 * 
 	 * first we get the code sent with the message.  
-	 * our code will always be prefixed with an upper case or lowercase 'c', followed by some digits. followed by a unique string of 6 chars
+	 * our code will always be prefixed with an upper case or lowercase 'c', 
+	 * followed by some digits. followed by a unique string of 13 chars
 	 * 
 	 * for example: c1251cc4c72b4ee8
 	 * 
@@ -600,8 +602,10 @@ class BIM_App_Users extends BIM_App_Base{
 	    $matches = array();
 	    preg_match( $c->code_pattern, $params->Body, $matches );
 	    $code = isset( $matches[1] ) ? $matches[1] : null;
+	    
 	    if( $code ){
-    	    $user = BIM_User::getByCode( $code );
+	        $userId = BIM_Utils::getIdForSMSCode($code);
+	        $user = new BIM_User( $userId );
     	    if( $user->isExtant() ){
     	        $list = (object) array(
     	            'hashed_number' => BIM_Utils::hashMobileNumber( $params->From ),

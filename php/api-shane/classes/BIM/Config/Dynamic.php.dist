@@ -177,7 +177,8 @@ class BIM_Config_Dynamic{
     
     public static function sms(){
         return (object) array(
-            'code_pattern' => '@\b(c\d+\w{13})\b@i'
+            'code_pattern' => '@\b(c1.+?1c)\b@i',
+            'secret' => 'our secret yo',
         );
     }
 }

@@ -21,16 +21,16 @@ $friends = $users->matchFriends( $params );
 print_r( $friends );
 
 */
+$id = '881';
+
+print_r( $smsCode = BIM_Utils::getSMSCodeForId( $id ) );
+print_r("\n");
+print_r( BIM_Utils::getIdForSMSCode( $smsCode ) );
+print_r("\n");
 
 $params = array(
     'AccountSid' => 'ACb76dc4d9482a77306bc7170a47f2ea47',
-    'Body' => 
-    "
-    Sign me up bitches
-    
-    c1251cc4c72b4ee8
-    
-    ",
+    'Body' => "$smsCode",
     'ToZip' => '34109',
     'FromState' => 'CA',
     'ToCity' => 'NAPLES',
