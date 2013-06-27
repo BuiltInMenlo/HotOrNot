@@ -6,14 +6,11 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 		$params = array( $id );
 		$stmt = $this->prepareAndExecute( $sql, $params );
 		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
-		return $data[0];
-	}
-	
-	public function getUserDataByCode( $code ){
-		$sql = "select * from `hotornot-dev`.tblUsers where code = ?";
-		$params = array( $code );
-		$stmt = $this->prepareAndExecute( $sql, $params );
-		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
-		return $data[0];
+		if( ! isset($data[0]) ){
+		    $data = (object) array();
+		} else {
+		    $data = $data[0];
+		}
+		return $data;
 	}
 }
