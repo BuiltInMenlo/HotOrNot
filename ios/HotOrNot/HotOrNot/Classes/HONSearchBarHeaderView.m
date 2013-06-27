@@ -7,7 +7,7 @@
 //
 
 #import "HONSearchBarHeaderView.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONSearchBarHeaderView() <UITextFieldDelegate>
 @property (nonatomic, strong) UIImageView *greenBGImageView;

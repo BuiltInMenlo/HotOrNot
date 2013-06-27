@@ -7,7 +7,7 @@
 //
 
 #import "HONHeaderView.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONHeaderView()
 @property (nonatomic, strong) UILabel *titleLabel;

@@ -16,7 +16,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONInviteNetworkViewController.h"
-#import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONContactUserVO.h"
 #import "HONInviteNetworkViewCell.h"

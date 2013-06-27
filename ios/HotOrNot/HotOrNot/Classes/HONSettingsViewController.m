@@ -15,7 +15,6 @@
 
 #import "HONSettingsViewController.h"
 #import "HONSettingsViewCell.h"
-#import "HONAppDelegate.h"
 #import "HONPrivacyViewController.h"
 #import "HONSupportViewController.h"
 #import "HONHeaderView.h"

@@ -6,7 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -16,7 +15,7 @@
 #import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 
-#define STATS_TXT_COLOR [UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]
+#define kStatsColor [UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]
 
 @interface HONUserProfileViewCell() <UIAlertViewDelegate, UIActionSheetDelegate>
 @property (nonatomic, strong) UIImageView *avatarImageView;
@@ -70,7 +69,7 @@
 	
 	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, yPos, 80.0, 16.0)];
 	_votesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	_votesLabel.textColor = STATS_TXT_COLOR;
+	_votesLabel.textColor = kStatsColor;
 	_votesLabel.backgroundColor = [UIColor clearColor];
 	_votesLabel.textAlignment = NSTextAlignmentCenter;
 	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
@@ -78,7 +77,7 @@
 	
 	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(105.0, yPos - 2.0, 20.0, 20.0)];
 	dots1Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:14];
-	dots1Label.textColor = STATS_TXT_COLOR;
+	dots1Label.textColor = kStatsColor;
 	dots1Label.backgroundColor = [UIColor clearColor];
 	dots1Label.textAlignment = NSTextAlignmentCenter;
 	dots1Label.text = @"•";
@@ -86,7 +85,7 @@
 	
 	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, yPos, 80.0, 16.0)];
 	_snapsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	_snapsLabel.textColor = STATS_TXT_COLOR;
+	_snapsLabel.textColor = kStatsColor;
 	_snapsLabel.backgroundColor = [UIColor clearColor];
 	_snapsLabel.textAlignment = NSTextAlignmentCenter;
 	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
@@ -94,7 +93,7 @@
 	
 	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(195.0, yPos - 2.0, 20.0, 20.0)];
 	dots2Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:14];
-	dots2Label.textColor = STATS_TXT_COLOR;
+	dots2Label.textColor = kStatsColor;
 	dots2Label.backgroundColor = [UIColor clearColor];
 	dots2Label.textAlignment = NSTextAlignmentCenter;
 	dots2Label.text = @"•";
@@ -102,7 +101,7 @@
 	
 	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(211.0, yPos, 80.0, 16.0)];
 	_ptsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	_ptsLabel.textColor = STATS_TXT_COLOR;
+	_ptsLabel.textColor = kStatsColor;
 	_ptsLabel.backgroundColor = [UIColor clearColor];
 	_ptsLabel.textAlignment = NSTextAlignmentCenter;
 	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];

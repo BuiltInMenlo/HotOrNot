@@ -12,7 +12,6 @@
 #import "AFHTTPRequestOperation.h"
 
 #import "HONAddChallengersViewController.h"
-#import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONFollowFriendViewCell.h"
 #import "HONAddContactViewCell.h"

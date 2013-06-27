@@ -7,7 +7,7 @@
 //
 
 #import "HONVoterVO.h"
-#import "HONAppDelegate.h"
+
 
 @implementation HONVoterVO
 @synthesize dictionary;

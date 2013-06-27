@@ -7,7 +7,7 @@
 //
 
 #import "HONProfileContactUserViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @implementation HONProfileContactUserViewCell
 @synthesize contactUserVO = _contactUserVO;

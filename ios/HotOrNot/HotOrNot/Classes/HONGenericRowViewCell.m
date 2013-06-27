@@ -7,7 +7,7 @@
 //
 
 #import "HONGenericRowViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONGenericRowViewCell()
 @property (nonatomic, strong) UIImageView *bgImageView;

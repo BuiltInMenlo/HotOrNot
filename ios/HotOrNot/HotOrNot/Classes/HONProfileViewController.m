@@ -21,7 +21,6 @@
 #import "HONUserProfileViewCell.h"
 #import "HONPastChallengerViewCell.h"
 #import "HONProfileContactUserViewCell.h"
-#import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONSearchBarHeaderView.h"

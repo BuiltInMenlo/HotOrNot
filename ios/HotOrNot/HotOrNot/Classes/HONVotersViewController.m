@@ -10,7 +10,6 @@
 #import "AFHTTPRequestOperation.h"
 
 #import "HONVotersViewController.h"
-#import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONGenericRowViewCell.h"
 #import "HONVoterViewCell.h"

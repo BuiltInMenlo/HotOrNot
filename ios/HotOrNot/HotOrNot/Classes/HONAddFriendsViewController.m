@@ -13,7 +13,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAddFriendsViewController.h"
-#import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"

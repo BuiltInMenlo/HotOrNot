@@ -6,14 +6,11 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <MessageUI/MFMessageComposeViewController.h>
-#import <MessageUI/MFMailComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 
-#import "HONAppDelegate.h"
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
 #import "HONEmptyChallengeViewCell.h"

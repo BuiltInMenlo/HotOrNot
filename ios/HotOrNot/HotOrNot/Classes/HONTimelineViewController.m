@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+
 #import <MessageUI/MFMessageComposeViewController.h>
-#import <MessageUI/MFMailComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -18,7 +18,6 @@
 #import "HONTimelineItemViewCell.h"
 #import "HONVerifyMobileViewController.h"
 #import "HONUserProfileViewCell.h"
-#import "HONAppDelegate.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONRegisterViewController.h"
@@ -29,14 +28,15 @@
 #import "HONRestrictedLocaleViewController.h"
 #import "HONInviteCelebViewController.h"
 #import "HONAddFriendsViewController.h"
+#import "HONEmptyTimelineView.h"
 
 
-@interface HONTimelineViewController()
+@interface HONTimelineViewController() <MFMessageComposeViewControllerDelegate>
 @property(nonatomic) int subjectID;
 @property(nonatomic, strong) NSString *subjectName;
 @property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) NSDictionary *challengerDict;
-@property(nonatomic, strong) UIImageView *tutorialOverlayImgView;
+@property(nonatomic, strong) HONEmptyTimelineView *emptyTimelineView;
 @property(nonatomic, strong) UIImageView *toggleImgView;
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *challenges;
@@ -156,9 +156,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showRegistration:) name:@"SHOW_REGISTRATION" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showNotInSessionDetails:) name:@"SHOW_NOT_IN_SESSION_DETAILS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionCreatorDetails:) name:@"SHOW_IN_SESSION_CREATOR_DETAILS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showInSessionChallengerDetails:) name:@"SHOW_IN_SESSION_CHALLENGER_DETAILS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallenge:) name:@"NEW_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newCreatorChallenge:) name:@"NEW_CREATOR_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_newChallengerChallenge:) name:@"NEW_CHALLENGER_CHALLENGE" object:nil];
@@ -167,7 +164,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_joinActiveChallenge:) name:@"JOIN_ACTIVE_CHALLENGE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showComments:) name:@"SHOW_COMMENTS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserShare:) name:@"SHOW_USER_SHARE" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSMSVerify:) name:@"SHOW_SMS_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 }
@@ -369,8 +366,6 @@
 				
 				else
 					[self _retrieveSingleChallenge:_challengeVO];
-				
-				
 			}
 		}
 		
@@ -447,6 +442,8 @@
 		else
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
+	
+	[self _goMobileSignup];
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
 #if __ALWAYS_REGISTER__ == 1
@@ -569,28 +566,40 @@
 	}];
 }
 
-- (void)_goTutorial {
-	_tutorialOverlayImgView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	_tutorialOverlayImgView.userInteractionEnabled = YES;
-	[self.view addSubview:_tutorialOverlayImgView];
-	
-	UIButton *shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	shareButton.frame = _tutorialOverlayImgView.frame;
-	[shareButton addTarget:self action:@selector(_goTutorialClose) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialOverlayImgView addSubview:shareButton];
+- (void)_goMobileSignup {
+	_emptyTimelineView = [[HONEmptyTimelineView alloc] initWithFrame:self.view.bounds];
+	[self.view addSubview:_emptyTimelineView];
 }
 
-- (void)_goTutorialClose {
-	[[Mixpanel sharedInstance] track:@"Close Tutorial"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	_tutorialOverlayImgView.hidden = YES;
-	[_tutorialOverlayImgView removeFromSuperview];
+- (void)_goMobileSignupClose {
+	_emptyTimelineView.hidden = YES;
+	[_emptyTimelineView removeFromSuperview];
 }
 
 
 #pragma mark - Notifications
+- (void)_showSMSVerify:(NSNotification *)notification {
+	[[Mixpanel sharedInstance] track:@"Verify Mobile - SMS"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	if ([MFMessageComposeViewController canSendText]) {
+		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+		messageComposeViewController.messageComposeDelegate = self;
+		messageComposeViewController.recipients = [NSArray arrayWithObject:@"2394313268"];
+		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+		
+	} else {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
+															message:@"Cannot send SMS from this device!"
+														   delegate:nil
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView show];
+	}
+}
+
 - (void)_refreshVoteTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
@@ -836,6 +845,31 @@
 #pragma mark - ScrollView Delegates
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+}
+
+
+#pragma mark - MessageCompose Delegates
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	
+	switch (result) {
+		case MessageComposeResultCancelled:
+			NSLog(@"SMS: canceled");
+			break;
+			
+		case MessageComposeResultSent:
+			NSLog(@"SMS: sent");
+			break;
+			
+		case MessageComposeResultFailed:
+			NSLog(@"SMS: failed");
+			break;
+			
+		default:
+			NSLog(@"SMS: not sent");
+			break;
+	}
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
 

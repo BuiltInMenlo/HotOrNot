@@ -7,7 +7,7 @@
 //
 
 #import "HONUserVO.h"
-#import "HONAppDelegate.h"
+
 
 @implementation HONUserVO
 

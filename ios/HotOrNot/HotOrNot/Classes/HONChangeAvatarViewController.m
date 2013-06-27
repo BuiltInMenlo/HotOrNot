@@ -14,7 +14,6 @@
 #import "UIImage+fixOrientation.h"
 
 #import "HONChangeAvatarViewController.h"
-#import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 
@@ -289,8 +288,8 @@
 	[_cameraIrisImageView removeFromSuperview];
 	[_plCameraIrisAnimationView removeFromSuperview];
 	
-	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
+//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
 }
 
 - (void)_irisAnimationEnded:(NSNotification *)notification {

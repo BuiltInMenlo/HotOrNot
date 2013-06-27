@@ -7,7 +7,6 @@
 //
 
 #import "HONEmptyChallengeViewCell.h"
-#import "HONAppDelegate.h"
 
 
 @implementation HONEmptyChallengeViewCell

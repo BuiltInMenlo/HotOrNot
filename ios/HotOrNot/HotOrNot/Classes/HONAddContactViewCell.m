@@ -7,7 +7,6 @@
 //
 
 #import "HONAddContactViewCell.h"
-#import "HONAppDelegate.h"
 
 @interface HONAddContactViewCell ()
 @property (nonatomic, strong) UIButton *checkButton;

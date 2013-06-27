@@ -6,14 +6,12 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONTimelineItemViewCell.h"
-#import "HONAppDelegate.h"
 #import "HONImageLoadingView.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"

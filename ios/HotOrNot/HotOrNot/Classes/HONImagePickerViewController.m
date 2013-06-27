@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
+
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
@@ -17,7 +17,6 @@
 #import "UIImage+fixOrientation.h"
 
 #import "HONImagePickerViewController.h"
-#import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 #import "HONSnapCameraOverlayView.h"
 #import "HONAddChallengersViewController.h"

@@ -9,7 +9,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONWebViewController.h"
-#import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 
 @interface HONWebViewController () <UIWebViewDelegate>

@@ -8,7 +8,7 @@
 
 
 #import "HONRestrictedLocaleViewController.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONRestrictedLocaleViewController () <UITextFieldDelegate>
 @property (nonatomic, strong) UIImageView *bgImageView;

@@ -10,9 +10,9 @@
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 
-#import "HONAppDelegate.h"
-#import "HONHeaderView.h"
 #import "HONUsernameViewController.h"
+#import "HONHeaderView.h"
+
 
 @interface HONUsernameViewController () <UITextFieldDelegate>
 @property(nonatomic, strong) NSString *username;
@@ -83,7 +83,8 @@
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDefault];
 	[_usernameTextField setTextColor:[HONAppDelegate honGrey518Color]];
-	[_usernameTextField addTarget:self action:@selector(_onTxtDoneEditing:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.textAlignment = NSTextAlignmentCenter;
@@ -183,6 +184,13 @@
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
+}
+
+
+- (void)_onTextEditingDidEnd:(id)sender {
+}
+
+- (void)_onTextEditingDidEndOnExit:(id)sender {
 }
 
 #pragma mark - TextField Delegates

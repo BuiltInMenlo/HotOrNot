@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSearchUserViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONSearchUserViewCell()
 @property (nonatomic, strong) UILabel *usernameLabel;

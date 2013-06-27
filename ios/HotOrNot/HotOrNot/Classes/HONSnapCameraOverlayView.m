@@ -11,7 +11,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONSnapCameraOverlayView.h"
-#import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 #import "HONCreateChallengeOptionsView.h"
 #import "HONUserVO.h"
@@ -114,7 +113,8 @@
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_nonActive"] forState:UIControlStateNormal];
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_Active"] forState:UIControlStateHighlighted];
 		[_optionsButton addTarget:self action:@selector(_goOptions) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:_optionsButton];
+		//- apple fix
+		//[_controlsHolderView addSubview:_optionsButton];
 	}
 	
 	return (self);

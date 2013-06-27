@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONAlternatingRowsViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONAlternatingRowsViewCell()
 @property (nonatomic, strong) UIImageView *bgImageView;

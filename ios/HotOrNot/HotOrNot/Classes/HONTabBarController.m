@@ -10,7 +10,6 @@
 #import "AFHTTPRequestOperation.h"
 
 #import "HONTabBarController.h"
-#import "HONAppDelegate.h"
 #import "HONAlertPopOverView.h"
 
 @interface HONTabBarController ()
@@ -191,11 +190,11 @@
 	
 	[self _toggleTabsEnabled:YES];
 	
-	UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	toggleButton.frame = CGRectMake(130.0, 0.0, 60.0, 58.0);
-	toggleButton.backgroundColor = [UIColor redColor];
-	[toggleButton addTarget:self action:@selector(_goExpand:) forControlEvents:UIControlEventTouchUpInside];
-	//[_bgImageView addSubview:toggleButton];
+//	UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	toggleButton.frame = CGRectMake(130.0, 0.0, 60.0, 58.0);
+//	toggleButton.backgroundColor = [UIColor redColor];
+//	[toggleButton addTarget:self action:@selector(_goExpand:) forControlEvents:UIControlEventTouchUpInside];
+//	[_bgImageView addSubview:toggleButton];
 }
 
 /*

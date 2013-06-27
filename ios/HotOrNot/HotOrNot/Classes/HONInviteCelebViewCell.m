@@ -7,7 +7,7 @@
 //
 
 #import "HONInviteCelebViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @implementation HONInviteCelebViewCell
 

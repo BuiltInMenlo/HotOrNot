@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONPastChallengerViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONPastChallengerViewCell()
 @property (nonatomic) BOOL isRandom;

@@ -11,8 +11,8 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVerifyMobileViewController.h"
-#import "HONAppDelegate.h"
 #import "HONAddFriendsViewController.h"
+
 
 @interface HONVerifyMobileViewController () <MFMessageComposeViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, retain) UITextField *mobileTextField1;

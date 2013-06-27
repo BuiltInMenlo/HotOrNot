@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONChallengeViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONChallengeViewCell()
 @property (nonatomic, strong) UIButton *loadMoreButton;

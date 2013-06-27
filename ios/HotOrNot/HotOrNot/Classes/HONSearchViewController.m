@@ -11,7 +11,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONSearchViewController.h"
-#import "HONAppDelegate.h"
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONSubjectVO.h"

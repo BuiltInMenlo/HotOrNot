@@ -81,8 +81,6 @@
 		4C3BD6741726536F00C4A840 /* nextButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD6761726536F00C4A840 /* nextButton_Active@2x.png */; };
 		4C3BD6771726537300C4A840 /* nextButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD6791726537300C4A840 /* nextButton_nonActive.png */; };
 		4C3BD67A1726537700C4A840 /* nextButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3BD67C1726537700C4A840 /* nextButton_nonActive@2x.png */; };
-		4C3BD699172703F900C4A840 /* HONChallengerPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3BD698172703F900C4A840 /* HONChallengerPickerViewController.m */; };
-		4C3BD69C1727063700C4A840 /* HONChallengerViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3BD69B1727063700C4A840 /* HONChallengerViewCell.m */; };
 		4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */; };
 		4C3DA1BC16BA4D3400261651 /* HONVoteSubjectVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3DA1BB16BA4D3400261651 /* HONVoteSubjectVO.m */; };
 		4C3E884B16A3B2BD003301AF /* pokeButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E884716A3B2BD003301AF /* pokeButton_Active.png */; };
@@ -163,6 +161,7 @@
 		4C5117411623A20D00370D3A /* Mixpanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51173C1623A20D00370D3A /* Mixpanel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4C51643A1680082800EB3C09 /* error.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5164391680082800EB3C09 /* error.png */; };
 		4C51643D1681894700EB3C09 /* HONUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C51643C1681894600EB3C09 /* HONUsernameViewController.m */; };
+		4C56864C177A2A59004E570F /* HONEmptyTimelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C56864B177A2A59004E570F /* HONEmptyTimelineView.m */; };
 		4C5C710A1773715500FA6F51 /* moreWhiteButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71061773715500FA6F51 /* moreWhiteButton_Active.png */; };
 		4C5C710B1773715500FA6F51 /* moreWhiteButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71071773715500FA6F51 /* moreWhiteButton_Active@2x.png */; };
 		4C5C710C1773715500FA6F51 /* moreWhiteButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C5C71081773715500FA6F51 /* moreWhiteButton_nonActive.png */; };
@@ -235,6 +234,8 @@
 		4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675115F96FA800AA7FCE /* Security.framework */; };
 		4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675215F96FA800AA7FCE /* StoreKit.framework */; };
 		4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */; };
+		4C6422F1177939730035C1F6 /* HONInstagramLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE5757F17793810006B7D41 /* HONInstagramLoginViewController.m */; };
+		4C6422F6177940300035C1F6 /* HONInstagramInviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6422F5177940300035C1F6 /* HONInstagramInviteViewController.m */; };
 		4C667186176CF8E30012770E /* addButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667182176CF8E30012770E /* addButton_Active.png */; };
 		4C667187176CF8E30012770E /* addButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667183176CF8E30012770E /* addButton_Active@2x.png */; };
 		4C667188176CF8E30012770E /* addButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C667184176CF8E30012770E /* addButton_nonActive.png */; };
@@ -724,10 +725,6 @@
 		4C3BD68E1726539900C4A840 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "zh-Hant"; path = "zh-Hant.lproj/nextButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C3BD68F1726539B00C4A840 /* id */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = id; path = "id.lproj/nextButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C3BD6901726539C00C4A840 /* vi */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vi; path = "vi.lproj/nextButton_nonActive@2x.png"; sourceTree = "<group>"; };
-		4C3BD697172703F900C4A840 /* HONChallengerPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengerPickerViewController.h; sourceTree = "<group>"; };
-		4C3BD698172703F900C4A840 /* HONChallengerPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONChallengerPickerViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		4C3BD69A1727063700C4A840 /* HONChallengerViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengerViewCell.h; sourceTree = "<group>"; };
-		4C3BD69B1727063700C4A840 /* HONChallengerViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengerViewCell.m; sourceTree = "<group>"; };
 		4C3D7E90176D3B8400AE07B3 /* HONCreateChallengePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateChallengePreviewView.h; sourceTree = "<group>"; };
 		4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateChallengePreviewView.m; sourceTree = "<group>"; };
 		4C3DA1BA16BA4D3400261651 /* HONVoteSubjectVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONVoteSubjectVO.h; sourceTree = "<group>"; };
@@ -839,6 +836,8 @@
 		4C5164391680082800EB3C09 /* error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = error.png; sourceTree = "<group>"; };
 		4C51643B1681894500EB3C09 /* HONUsernameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUsernameViewController.h; sourceTree = "<group>"; };
 		4C51643C1681894600EB3C09 /* HONUsernameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONUsernameViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4C56864A177A2A59004E570F /* HONEmptyTimelineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONEmptyTimelineView.h; sourceTree = "<group>"; };
+		4C56864B177A2A59004E570F /* HONEmptyTimelineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONEmptyTimelineView.m; sourceTree = "<group>"; };
 		4C5C71061773715500FA6F51 /* moreWhiteButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = moreWhiteButton_Active.png; sourceTree = "<group>"; };
 		4C5C71071773715500FA6F51 /* moreWhiteButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "moreWhiteButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C5C71081773715500FA6F51 /* moreWhiteButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = moreWhiteButton_nonActive.png; sourceTree = "<group>"; };
@@ -1004,6 +1003,8 @@
 		4C62675115F96FA800AA7FCE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		4C62675215F96FA800AA7FCE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		4C62675315F96FA800AA7FCE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		4C6422F4177940300035C1F6 /* HONInstagramInviteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInstagramInviteViewController.h; sourceTree = "<group>"; };
+		4C6422F5177940300035C1F6 /* HONInstagramInviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInstagramInviteViewController.m; sourceTree = "<group>"; };
 		4C667182176CF8E30012770E /* addButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addButton_Active.png; sourceTree = "<group>"; };
 		4C667183176CF8E30012770E /* addButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "addButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C667184176CF8E30012770E /* addButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addButton_nonActive.png; sourceTree = "<group>"; };
@@ -1513,6 +1514,8 @@
 		4CD938B817610E6C000FCC16 /* submitUsernameButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = submitUsernameButton_nonActive.png; sourceTree = "<group>"; };
 		4CD938B917610E6C000FCC16 /* submitUsernameButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submitUsernameButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4CE52261160D254B005F2ADC /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		4CE5757E17793810006B7D41 /* HONInstagramLoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HONInstagramLoginViewController.h; sourceTree = "<group>"; };
+		4CE5757F17793810006B7D41 /* HONInstagramLoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HONInstagramLoginViewController.m; sourceTree = "<group>"; };
 		4CE61E221696733900F260C9 /* checkIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkIcon.png; sourceTree = "<group>"; };
 		4CE61E231696733900F260C9 /* checkIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checkIcon@2x.png"; sourceTree = "<group>"; };
 		4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRegisterViewController.h; sourceTree = "<group>"; };
@@ -1604,6 +1607,8 @@
 		4C0CA3F5175151FA00DD0652 /* Invite */ = {
 			isa = PBXGroup;
 			children = (
+				4C6422F3177940010035C1F6 /* SMS */,
+				4C6422F217793FF80035C1F6 /* Instagram */,
 				4C0CA3F61751521D00DD0652 /* HONInviteNetworkViewCell.h */,
 				4C0CA3F71751521D00DD0652 /* HONInviteNetworkViewCell.m */,
 				4CB472F3168C176D007153DF /* HONInviteNetworkViewController.h */,
@@ -1657,6 +1662,7 @@
 		4C32B9A315FAB5F00023A0EE /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
+				4C568647177A28C1004E570F /* Subscribe */,
 				4C45FF4A16DED015002F1080 /* Comments */,
 				4C45FF4B16DED0B6002F1080 /* Voters */,
 				4C45FF4716DECE95002F1080 /* HONUserProfileViewCell.h */,
@@ -1693,10 +1699,6 @@
 				4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */,
 				4C93B25017697267002FABFF /* HONAddChallengersViewController.h */,
 				4C93B25117697267002FABFF /* HONAddChallengersViewController.m */,
-				4C3BD69A1727063700C4A840 /* HONChallengerViewCell.h */,
-				4C3BD69B1727063700C4A840 /* HONChallengerViewCell.m */,
-				4C3BD697172703F900C4A840 /* HONChallengerPickerViewController.h */,
-				4C3BD698172703F900C4A840 /* HONChallengerPickerViewController.m */,
 			);
 			name = "Create Challenge";
 			sourceTree = "<group>";
@@ -1921,6 +1923,15 @@
 				4C51173A1623A20D00370D3A /* NSData+MPBase64.m */,
 			);
 			path = NSData_Base64;
+			sourceTree = "<group>";
+		};
+		4C568647177A28C1004E570F /* Subscribe */ = {
+			isa = PBXGroup;
+			children = (
+				4C56864A177A2A59004E570F /* HONEmptyTimelineView.h */,
+				4C56864B177A2A59004E570F /* HONEmptyTimelineView.m */,
+			);
+			name = Subscribe;
 			sourceTree = "<group>";
 		};
 		4C5C710E177373C900FA6F51 /* Preview */ = {
@@ -2325,6 +2336,24 @@
 				4C068AB017028A6B0019428A /* HONWebViewController.m */,
 			);
 			name = Root;
+			sourceTree = "<group>";
+		};
+		4C6422F217793FF80035C1F6 /* Instagram */ = {
+			isa = PBXGroup;
+			children = (
+				4CE5757E17793810006B7D41 /* HONInstagramLoginViewController.h */,
+				4CE5757F17793810006B7D41 /* HONInstagramLoginViewController.m */,
+				4C6422F4177940300035C1F6 /* HONInstagramInviteViewController.h */,
+				4C6422F5177940300035C1F6 /* HONInstagramInviteViewController.m */,
+			);
+			name = Instagram;
+			sourceTree = "<group>";
+		};
+		4C6422F3177940010035C1F6 /* SMS */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = SMS;
 			sourceTree = "<group>";
 		};
 		4C7AD0FA17629ACE0035A62A /* Invite */ = {
@@ -2943,7 +2972,7 @@
 		4C62651C15F96C7100AA7FCE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Built in Menlo, LLC";
 			};
 			buildConfigurationList = 4C62651F15F96C7100AA7FCE /* Build configuration list for PBXProject "HotOrNot" */;
@@ -3403,6 +3432,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C6422F1177939730035C1F6 /* HONInstagramLoginViewController.m in Sources */,
 				4C62653615F96C7100AA7FCE /* main.m in Sources */,
 				4C62672915F96E2900AA7FCE /* EGORefreshTableHeaderView.m in Sources */,
 				4C62672E15F96E2900AA7FCE /* MBProgressHUD.m in Sources */,
@@ -3429,6 +3459,7 @@
 				4C5117411623A20D00370D3A /* Mixpanel.m in Sources */,
 				4C0C40D2162BD2E5007F0DA3 /* HONHeaderView.m in Sources */,
 				4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */,
+				4C6422F6177940300035C1F6 /* HONInstagramInviteViewController.m in Sources */,
 				4CBE874C16371D24004084DF /* HONSupportViewController.m in Sources */,
 				4CAF9606167D4F3E0036E849 /* HONVotersViewController.m in Sources */,
 				4CAF960A167D676C0036E849 /* HONVoterViewCell.m in Sources */,
@@ -3442,6 +3473,7 @@
 				4CA0852C16A12FD900673F3A /* AFJSONRequestOperation.m in Sources */,
 				4CA0852D16A12FD900673F3A /* AFNetworkActivityIndicatorManager.m in Sources */,
 				4CA0852E16A12FD900673F3A /* AFPropertyListRequestOperation.m in Sources */,
+				4C56864C177A2A59004E570F /* HONEmptyTimelineView.m in Sources */,
 				4CA0852F16A12FD900673F3A /* AFURLConnectionOperation.m in Sources */,
 				4CA0853016A12FD900673F3A /* AFXMLRequestOperation.m in Sources */,
 				4CA0853116A12FD900673F3A /* UIImageView+AFNetworking.m in Sources */,
@@ -3462,8 +3494,6 @@
 				4C351CEC16F7B88000BD9498 /* HONSearchToggleHeaderView.m in Sources */,
 				4C068AB117028A6B0019428A /* HONWebViewController.m in Sources */,
 				4C68937B171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m in Sources */,
-				4C3BD699172703F900C4A840 /* HONChallengerPickerViewController.m in Sources */,
-				4C3BD69C1727063700C4A840 /* HONChallengerViewCell.m in Sources */,
 				4C026012172AF7B2001CC476 /* HONProfileViewController.m in Sources */,
 				4C026015172AF87D001CC476 /* HONPastChallengerViewCell.m in Sources */,
 				4C026018172B092B001CC476 /* HONProfileContactUserViewCell.m in Sources */,
@@ -4251,9 +4281,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -4272,9 +4303,12 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F5601835-1C88-4060-A13A-082A78FCCA0F";
 				SDKROOT = iphoneos;
@@ -4287,9 +4321,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -4300,7 +4335,9 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";

@@ -8,7 +8,6 @@
 
 #import "HONInviteNetworkViewCell.h"
 
-#import "HONAppDelegate.h"
 
 @implementation HONInviteNetworkViewCell
 

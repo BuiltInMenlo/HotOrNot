@@ -8,7 +8,6 @@
 
 
 #import "HONAvatarCameraOverlayView.h"
-#import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 
 @interface HONAvatarCameraOverlayView () <UIAlertViewDelegate>

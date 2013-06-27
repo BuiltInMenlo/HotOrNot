@@ -7,7 +7,7 @@
 //
 
 #import "HONCommentVO.h"
-#import "HONAppDelegate.h"
+
 
 @implementation HONCommentVO
 

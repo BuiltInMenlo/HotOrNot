@@ -8,8 +8,8 @@
 
 
 #import "HONCreateChallengePreviewView.h"
-#import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
+
 
 @interface HONCreateChallengePreviewView () <UITextFieldDelegate>
 @property (nonatomic, strong) UILabel *usernamesLabel;

@@ -7,7 +7,6 @@
 //
 
 #import "HONAlertPopOverView.h"
-#import "HONAppDelegate.h"
 
 @interface HONAlertPopOverView()
 @property (nonatomic, strong) UILabel *statusLabel;

@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONDiscoveryViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONDiscoveryViewCell()
 @property (nonatomic, strong) UIImageView *bgImageView;

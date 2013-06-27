@@ -7,7 +7,7 @@
 //
 
 #import "HONSearchSubjectViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @implementation HONSearchSubjectViewCell
 

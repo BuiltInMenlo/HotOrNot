@@ -15,7 +15,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONRegisterViewController.h"
-#import "HONAppDelegate.h"
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 #import "HONHeaderView.h"
@@ -636,6 +635,8 @@
 	[self _goNext];
 }
 
+- (void)_onTextEditingDidEndOnExit:(id)sender {
+}
 
 #pragma mark - ScrollView Delegates
 - (void)scrollViewDidScroll:(UIScrollView *)sender {

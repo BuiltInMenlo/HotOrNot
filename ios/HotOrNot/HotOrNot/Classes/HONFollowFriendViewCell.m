@@ -9,7 +9,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONFollowFriendViewCell.h"
-#import "HONAppDelegate.h"
 #import "HONUserVO.h"
 
 @interface HONFollowFriendViewCell ()

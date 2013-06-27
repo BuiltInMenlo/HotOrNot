@@ -6,12 +6,11 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
 
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCommentViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @implementation HONCommentViewCell
 

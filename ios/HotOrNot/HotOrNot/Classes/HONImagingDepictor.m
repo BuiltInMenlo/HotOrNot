@@ -10,7 +10,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONImagingDepictor.h"
-#import "HONAppDelegate.h"
+
 
 @implementation HONImagingDepictor
 

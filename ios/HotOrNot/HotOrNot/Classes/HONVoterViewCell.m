@@ -6,12 +6,11 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <QuartzCore/QuartzCore.h>
 
 #import "UIImageView+AFNetworking.h"
 
 #import "HONVoterViewCell.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONVoterViewCell()
 @end

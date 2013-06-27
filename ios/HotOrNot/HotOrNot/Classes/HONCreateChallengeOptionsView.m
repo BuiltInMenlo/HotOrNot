@@ -7,7 +7,7 @@
 //
 
 #import "HONCreateChallengeOptionsView.h"
-#import "HONAppDelegate.h"
+
 
 @interface HONCreateChallengeOptionsView()
 @property (nonatomic, strong) UIButton *publicButton;
