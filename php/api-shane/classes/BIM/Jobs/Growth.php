@@ -69,12 +69,13 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         }
     }
     
-    public function queueMatchPush( $data ){
+    public function queueMatchPush( $friend, $user ){
         $job = array(
         	'class' => 'BIM_Jobs_Growth',
         	'method' => 'matchPush',
         	'data' => (object) array( 
-                'user_id' => $data->user_id,
+                'user_id' => $user->user_id,
+                'friend_id' => $friend->user_id,
             ),
         );
         return $this->enqueueBackground( $job, 'match_push' );
@@ -91,7 +92,8 @@ class BIM_Jobs_Growth extends BIM_Jobs{
      */
     public function matchPush( $workload ){
         $user = new BIM_User( $workload->data->user_id );
-        $msg = "Jason u getitng these?";
-            BIM_Push_UrbanAirship_Iphone::send( $user->device_token, $msg );
-        }
+        $friend = new BIM_User( $workload->data->friend_id );
+        $msg = "Your friend $user->username joined Volley!";
+        BIM_Push_UrbanAirship_Iphone::send( $friend->device_token, $msg );
+    }
 }
