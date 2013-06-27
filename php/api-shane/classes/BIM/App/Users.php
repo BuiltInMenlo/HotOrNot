@@ -497,18 +497,34 @@ class BIM_App_Users extends BIM_App_Base{
 	
 	public function matchFriends( $params ){
 	    $list = $this->addPhoneList($params);
-	    return $this->findfriends($list);
+	    $matches = $this->findfriends($list);
+	    
+	    // now that we have matches
+	    // we need to send out push notificatons 
+	    // to each user to tell them their 
+	    // friend has joined volley
+	    
+	    $j = new BIM_Jobs_Growth();
+	    foreach( $matches as $match ){
+	        $j->queueMatchPush( $match, $list );
+	    }
+	    
+	    return $matches;
 	}
 	
 	public function findfriends( $list ){
+	    
 	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
 	    $matches = $dao->findFriends( $list );
 	    $matches = json_decode($matches);
 	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
-	        $matches = $matches->hits->hits;
+	        $matches = &$matches->hits->hits;
+	        foreach( $matches as &$match ){
+	            $match = $match->_source;
+	        }
 	    }
-	    
 	    return $matches;
+
 	}
 	
 	public function addPhoneList( $params ){
