@@ -149,7 +149,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		if ( isset( $_POST['userID'] ) && isset( $_POST['phone'] ) ){
 		    $hashedList = explode('|', $_POST['phone'] );
 		    $params = (object) array(
-		        'user_id' => $_POST['userID'],
+		        'id' => $_POST['userID'],
 		        'hashed_list' => $hashedList,
 		    );
 			$friends = $this->users->matchFriends( $params );

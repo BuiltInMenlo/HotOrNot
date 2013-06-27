@@ -33,9 +33,11 @@ return array(
             "_source" => array( "compress" => true),
             "_timestamp" => array( "enabled" => true ),
 			'properties' => array(
-                'user_id' => array('type' => 'integer', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                'id' => array('type' => 'integer', 'include_in_all' => false, 'index' => 'not_analyzed'),
     			'hashed_number' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
                 'hashed_list' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                'avatar_url' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                'username' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
             )
         )
     )
