@@ -8,13 +8,12 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public $votes = null;
     public $jobs = null;
     
-    public function __construct(){
-        parent::__construct();
+    public function init(){
         $this->jobs = new BIM_Jobs_Votes();
+        $this->votes = $votes = new BIM_App_Votes;
     }
     
     public function handleReq(){
-        $this->votes = $votes = new BIM_App_Votes;
         
         // action was specified
         $action = isset($_POST['action']) ? $_POST['action'] : null;
@@ -25,8 +24,7 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
         if ( $action ) {
         	switch ( $action ) {
         		case "0":
-        			return $votes->test();
-        			break;
+        			return $this->test();
         		
         		// get list of challenges by votes
         		case "1":
@@ -34,51 +32,79 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
         		
         		// get challenges for a subject
         		case "2":
-        			if (isset($_POST['subjectID']))
-        				return $votes->getChallengesForSubjectID($_POST['subjectID']);
-        			break;
+    				return $this->getChallengesForSubjectID();
         			
         		// get specific challenge				
         		case "3":
-        			if (isset($_POST['challengeID']))
-        				return $votes->getChallengeForChallengeID($_POST['challengeID']);
-        			break;
+    				return $this->getChallengeForChallengeID();
         			
         		// get a list of challenges by date
         		case "4":
         		    return $this->getChallengesByDate();
         		// get the voters for a challenge
         		case "5":
-        			if (isset($_POST['challengeID']))
-        				return $votes->getVotersForChallenge($_POST['challengeID']);
-        			break;
-        			
+    				return $this->getVotersForChallenge();
         		// upvote a challenge	
         		case "6":
-		            //if ( isset( $_POST['challengeID'] ) && isset( $_POST['userID'] ) && isset( $_POST['creator'] ) )
-        		        //return $this->votes->upvoteChallenge( $_POST['challengeID'], $_POST['userID'], $_POST['creator'] );
         		    return $this->upvoteChallenge();
-                    break;
         		// get a list of challenges between two users
         		case "7":
-        			if (isset($_POST['userID']) && isset($_POST['challengerID']))
-        				return $votes->getChallengesWithChallenger($_POST['userID'], $_POST['challengerID']);
-        			break;
+    				return $this->getChallengesWithChallenger();
         			
         		// challenges by a subject name
         		case "8":
-        			if (isset($_POST['subjectName']))
-        				return $votes->getChallengesForSubjectName($_POST['subjectName']);
-        			break;
-        		
+    				return $this->getChallengesForSubjectName();
         		case "9":
-        			if (isset($_POST['username']))
-        				return $votes->getChallengesForUsername($_POST['username']);
-        			break;
+    				return $this->getChallengesForUsername();
         	}
         }
     }
     
+    public function test(){
+		return $this->votes->test();
+    }
+    
+    public function getChallengesForSubjectID(){
+		if (isset($_POST['subjectID'])){
+			return $this->votes->getChallengesForSubjectID($_POST['subjectID']);
+		}
+		return array();
+    }
+    
+    public function getChallengeForChallengeID(){
+		if (isset($_POST['challengeID'])){
+			return $this->votes->getChallengeForChallengeID($_POST['challengeID']);
+		}
+		return array();
+    }
+    
+    public function getVotersForChallenge(){
+		if (isset($_POST['challengeID'])){
+			return $this->votes->getVotersForChallenge($_POST['challengeID']);
+		}
+		return array();
+    }
+    
+    public function getChallengesWithChallenger(){
+		if (isset($_POST['userID']) && isset($_POST['challengerID'])){
+			return $this->votes->getChallengesWithChallenger($_POST['userID'], $_POST['challengerID']);
+		}
+		return array();
+    }
+    
+    public function getChallengesForSubjectName(){
+		if (isset($_POST['subjectName'])){
+			return $this->votes->getChallengesForSubjectName($_POST['subjectName']);
+		}
+		return array();
+    }
+    
+    public function foo(){
+		if (isset($_POST['username'])){
+			return $this->votes->getChallengesForUsername($_POST['username']);
+		}
+		return array();
+    }
     /**
      * 
      * this functions submits a single vote for a challenge pic

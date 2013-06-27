@@ -3,45 +3,31 @@
 class BIM_Controller{
     
     public function handleReq(){
+        $c = BIM_Config::app();
+        $cdata = trim(str_replace( $c->base_path, '', $_SERVER['SCRIPT_URL'] ),'/');
         
-        $url = explode( '/',$_SERVER['SCRIPT_URL'] );
-        $controller = end( $url );
+        $cdata = explode( '/', $cdata );
+        
+        $controller = ucfirst( trim($cdata[0],'/') );
         $controller = str_replace('.php', '', $controller);
+        $method = isset( $cdata[1] ) ? trim( $cdata[1], '/' ) : '';
         
         $controllerClass = "BIM_Controller_$controller";
-        $controllerFile = str_replace('_', '/', $controllerClass).'.php';
         
-        require_once $controllerFile;
         $r = new $controllerClass();
-        self::setAction( $r );
+        if( $method && method_exists( $r, $method ) ){
+            $res = $r->$method();
+        } else {
+            $res = $r->handleReq();
+        }
         
-        $res = $r->handleReq();
         if( is_bool( $res ) ){
             $res = array( 'result' => $res );
         }
         $code = 200;
         
-        setcookie( 'foo','poo', time() + 7200, '/','discover.getassembly.com' );
+        //setcookie( 'foo','poo', time() + 7200, '/','discover.getassembly.com' );
         $this->sendResponse( $code, $res );
-    }
-    
-    protected static function setAction( $controller ){
-        $input = null;
-        if ( isset( $_POST['action'] ) ) {
-            $input = $_POST;
-        } else if( isset( $_GET['action'] ) ){
-            $input = $_GET;
-        }
-        if( $input ){
-            $funcs = BIM_Config::controllerActions();
-            $action = (string) $input['action'];
-            $controllerClass = get_class($controller);
-            $actions = $funcs->$controllerClass;
-            if( isset( $actions[$action] ) ){
-                $controller->method = $actions[$action]->method;
-                $controller->input = $input;
-            }
-        }
     }
     
 	public function getStatusCodeMessage($status) {			
