@@ -2,6 +2,12 @@
 
 class BIM_Config_Dynamic{
     
+    public static function app(){
+        return (object) array(
+            'base_path' => '/hotornot/api-shane'
+        );
+    }
+
     public static function growthEmailInvites(){
         return (object) array(
         	'to_email' => 'shane@shanehill.com',

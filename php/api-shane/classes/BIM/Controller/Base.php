@@ -9,15 +9,6 @@ class BIM_Controller_Base{
     }
     
     public function init(){}
-    
-    public function handleReq(){
-        $res = false;
-        if( isset( $this->method ) ){
-            $method = $this->method;
-            $res = $this->$method();
-        }
-        return $res;
-    }
 	
     protected function useQueue( $params ){
         $class = $params[0];

@@ -5,23 +5,18 @@ require_once 'BIM/Controller/Base.php';
 
 class BIM_Controller_Users extends BIM_Controller_Base {
     
+    public function init(){
+        $this->users = new BIM_App_Users;
+    }
+    
     public function handleReq(){
 
-        $this->users = $users = new BIM_App_Users;
-        ////$users->test();
-        $input = null;
         if (isset($_POST['action'])) {
-            $input = $_POST;
-        } else if( isset($_GET['action'] ) ){
-            $input = $_GET;
-        }
-        // action was specified
-        if (isset($input['action'])) {
         	
         	// depending on action, call function
-        	switch ($input['action']) {	
+        	switch ($_POST['action']) {	
         		case "0":
-        			return $users->test();
+        			return $this->test();
         		
         		// add a new user
         		case "1":
@@ -64,7 +59,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     				return $this->flagUser();
     				
         		case "11":
-        		    return $this->matchFriends( $input );
+        		    return $this->matchFriends();
         			break;
         			
         		default:
@@ -73,6 +68,10 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         } else {
             return array();
         }
+    }
+    
+    public function test(){
+		return $this->users->test();
     }
     
     public function flagUser(){
@@ -135,12 +134,12 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     	}
     }
     
-    public function matchFriends( $input ){
-	    $friends = '[]';
-		if ( isset( $input['userID'] ) && isset( $input['phone'] ) ){
-		    $hashedList = explode('|', $input['phone'] );
+    public function matchFriends(){
+	    $friends = array();
+		if ( isset( $_POST['userID'] ) && isset( $_POST['phone'] ) ){
+		    $hashedList = explode('|', $_POST['phone'] );
 		    $params = (object) array(
-		        'user_id' => $input['userID'],
+		        'user_id' => $_POST['userID'],
 		        'hashed_list' => $hashedList,
 		    );
 			$friends = $this->users->matchFriends( $params );
