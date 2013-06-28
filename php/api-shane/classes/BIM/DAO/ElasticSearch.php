@@ -149,4 +149,8 @@ class BIM_DAO_ElasticSearch
     
         return array("status" => $responseCode, "headers" => $responseHeaderArray, "body" => $responseBody);
     }
+    
+    public function flush(){
+        $this->call('GET','_flush');
+    }
 }

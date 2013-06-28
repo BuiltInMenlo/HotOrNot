@@ -12,7 +12,7 @@ class BIM_App_Social extends BIM_App_Base{
                 //self::sendFriendNotification( $params );
             }
         }
-        return $added;
+        return self::getFriends($params);
     }
     
     protected static function _addFriend( $params ){
@@ -49,8 +49,9 @@ class BIM_App_Social extends BIM_App_Base{
             );
             
             $added = $dao->addFriend( $relation );
+            $dao->flush();
         }
-        return self::getFriends($params);
+        return $added;
     }
     
 
