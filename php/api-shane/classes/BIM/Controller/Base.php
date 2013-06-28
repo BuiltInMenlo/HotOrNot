@@ -9,7 +9,8 @@ class BIM_Controller_Base{
     }
     
     public function init(){}
-	
+    public function handleReq(){}
+    
     protected function useQueue( $params ){
         $class = $params[0];
         $method = $params[1];
