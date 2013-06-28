@@ -50,7 +50,7 @@ class BIM_App_Social extends BIM_App_Base{
             
             $added = $dao->addFriend( $relation );
         }
-        return $added;
+        return self::getFriends($params);
     }
     
 
