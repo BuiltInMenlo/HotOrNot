@@ -8,13 +8,18 @@ class BIM_App_Social extends BIM_App_Base{
         foreach( $targets as $target ){
             $params->target = $target;
             $added = self::_addFriend($params);
+            if( $added ){
+                //self::sendFriendNotification( $params );
+            }
         }
         return $added;
     }
     
     protected static function _addFriend( $params ){
         $added = false;
-        if( self::userExists( $params->userID ) ){
+        $targetUser = self::getUser( $params->target );
+        if( $targetUser ){
+            $sourceUser = self::getUser( $params->userID );
             $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
             $time = time();
             $defaultState = 0;
@@ -30,6 +35,17 @@ class BIM_App_Social extends BIM_App_Base{
                 'state' => $defaultState,
                 'init_time' => $time,
                 'accept_time' => $acceptTime,
+                'source_data' => (object) array(
+                    'username' => $sourceUser->username,
+                    'id' => $sourceUser->id,
+                    'avatar_url' => $sourceUser->getAvatarUrl()
+                ),
+                'target_data' => (object) array(
+                    'username' => $targetUser->username,
+                    'id' => $targetUser->id,
+                    'avatar_url' => $targetUser->getAvatarUrl()
+                ),
+                
             );
             
             $added = $dao->addFriend( $relation );
@@ -37,9 +53,13 @@ class BIM_App_Social extends BIM_App_Base{
         return $added;
     }
     
-    protected static function userExists( $userId ){
+
+    protected static function getUser( $userId ){
         $user = new BIM_User( $userId );
-        return ( $user && $user->isExtant() );
+        if ( !$user || ! $user->isExtant() ){
+            $user = false;
+        }
+        return $user;
     }
     
     public static function acceptFriend( $params ){
@@ -99,6 +119,13 @@ class BIM_App_Social extends BIM_App_Base{
         $friends = json_decode($friends);
         if( !empty( $friends->hits->hits ) && is_array( $friends->hits->hits ) ){
             foreach( $friends->hits->hits as $hit ){
+                if( $hit->_source->source_data->id == $params->userID ){
+                    $hit->_source->user = $hit->_source->target_data;
+                } else {
+                    $hit->_source->user = $hit->_source->source_data;
+                }
+                unset( $hit->_source->source_data );
+                unset( $hit->_source->target_data );
                 $friendList[] = $hit->_source;
             }
         }

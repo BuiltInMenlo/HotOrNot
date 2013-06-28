@@ -21,4 +21,21 @@ class BIM_User{
         return ( isset( $this->id ) && $this->id ); 
     }
     
+	public function getAvatarUrl() {
+		
+		// no custom url
+		if ($this->img_url == "") {
+			
+			// has fb login
+			if ($this->fb_id != "")
+				return ("https://graph.facebook.com/". $this->fb_id ."/picture?type=square");
+			
+			// has nothing, default
+			else
+				return ("https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png");
+		}
+		
+		// use custom
+		return ($this->img_url);
+	}
 }
