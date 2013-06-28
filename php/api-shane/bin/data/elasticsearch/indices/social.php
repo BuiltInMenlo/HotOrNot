@@ -38,6 +38,20 @@ return array(
                 'init_time' => array('type' => 'integer', 'include_in_all' => false, 'index' => 'not_analyzed'),
                 'accept_time' => array('type' => 'integer', 'include_in_all' => false, 'index' => 'not_analyzed'),
                 'state' => array('type' => 'integer', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                'source_data' => array(
+                    'properties' => array(
+                		'id' => array('type' => 'integer', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                		'avatar_url' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                		'username' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                    )
+                ),
+                'target_data' => array(
+                    'properties' => array(
+                		'id' => array('type' => 'integer', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                		'avatar_url' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                		'username' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                    )
+                )
             )
         )
     )
