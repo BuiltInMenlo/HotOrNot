@@ -56,12 +56,12 @@ class BIM_App_Social extends BIM_App_Base{
         
         $relation = (object) array(
             'id' => $params->userID,
-            'from' => isset($params->from) ? (int) $params->from : 0,
-            'size' => isset($params->size) ? (int) $params->size : 100,
+            'from' => !empty($params->from) ? (int) $params->from : 0,
+            'size' => !empty($params->size) ? (int) $params->size : 100,
         );
         $friends = $dao->getFriends( $relation );
         $friends = json_decode($friends);
-        if( isset( $friends->hits->hits ) && is_array( $friends->hits->hits ) ){
+        if( !empty( $friends->hits->hits ) && is_array( $friends->hits->hits ) ){
             foreach( $friends->hits->hits as $hit ){
                 $friendList[] = $hit->_source;
             }

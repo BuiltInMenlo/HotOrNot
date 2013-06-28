@@ -39,7 +39,7 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
     
     public function addFriend( $doc ){
         $added = false;
-        if( isset( $doc->source ) && $doc->source ){
+        if( ! $this->friendshipExists( $doc ) ){
             $id = self::makeFriendkey($doc);
             $urlSuffix = "social/friends/$id/_create";
             $added = $this->call('PUT', $urlSuffix, $doc);
@@ -52,6 +52,31 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
             }
         }
         return $added;
+    }
+    
+    /**
+     * 
+     * we receive a frinedships doc and make sure that the
+     * there is not a record for this pair already
+     * 
+     * @param object $doc
+     */
+    protected function friendshipExists( $doc ){
+        $exists = true;
+        if( !empty( $doc->source ) && !empty( $doc->target ) ){
+            $tempDoc = (object) array(
+                'target' => $doc->source,
+                'source' => $doc->target
+            );
+            $id = self::makeFriendkey($tempDoc);
+            $urlSuffix = "social/friends/$id";
+            $exists = $this->call('GET', $urlSuffix);
+            $exists = json_decode( $exists );
+            if( empty($exists->exists) ){
+                $exists = false;
+            }
+        }
+        return $exists;
     }
     
     public function acceptFriend( $doc ){
