@@ -6,14 +6,20 @@ class BIM_App_Social extends BIM_App_Base{
         $added = false;
         $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
         
-        $defaultState = ( isset( $params->auto ) && $params->auto ) ? 1 : 0;
+        $time = time();
+        $defaultState = 0;
+        $acceptTime = -1;
+        if( !empty( $params->auto ) ){
+            $defaultState = 1;
+            $acceptTime = $time;
+        }
         
         $relation = (object) array(
             'source' => $params->userID,
             'target' => $params->target,
-            'state' => $defaultState ,
-            'init_time' => time(),
-            'accept_time' => -1,
+            'state' => $defaultState,
+            'init_time' => $time,
+            'accept_time' => $acceptTime,
         );
         
         $added = $dao->addFriend( $relation );
