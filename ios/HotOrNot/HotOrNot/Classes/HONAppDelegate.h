@@ -12,11 +12,13 @@
 
 
 #define __DEV_CFG_JSON___ 1
+#define __ALWAYS_INVITE__ 0
 #define __ALWAYS_REGISTER__ 0
 
 
 // api endpts
 extern NSString * const kConfigURL;
+extern NSString * const kConfigJSON;
 extern NSString * const kAPIChallenges;
 extern NSString * const kAPIComments;
 extern NSString * const kAPIDiscover;

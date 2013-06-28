@@ -13,8 +13,6 @@
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
-#import "NBPhoneNumber.h"
-#import "NBPhoneNumberUtil.h"
 
 #import "HONAddContactsViewController.h"
 #import "HONHeaderView.h"
@@ -170,8 +168,6 @@
 
 #pragma mark - Device Functions
 - (void)_retrieveContacts {
-	NBPhoneNumberUtil *phoneUtil = [NBPhoneNumberUtil sharedInstance];
-	
 	_nonAppContacts = [NSMutableArray array];
 	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
 	
@@ -226,16 +222,6 @@
 			
 			
 			if (vo.isSMSAvailable) {
-				NSError *aError = nil;
-				NSError *anError = nil;
-				
-				NBPhoneNumber *myNumber = [phoneUtil parse:vo.mobileNumber defaultRegion:@"ZZ" error:&aError];
-				if (aError == nil)
-					NSLog(@"E164:[%@]", [phoneUtil format:myNumber numberFormat:NBEPhoneNumberFormatE164 error:&anError]);
-				
-				else
-					NSLog(@"Error : %@", [aError localizedDescription]);
-				
 				NSString *formattedNumber = [[vo.mobileNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"().- "]] componentsJoinedByString:@""];
 				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"+1%@|", formattedNumber];
 			}

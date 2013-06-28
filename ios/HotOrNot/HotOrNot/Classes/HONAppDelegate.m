@@ -36,9 +36,12 @@
 
 // json config url
 #if __DEV_CFG_JSON___ == 1
-NSString * const kConfigURL = @"http://107.20.161.159/hotornot";//NSString * const kConfigURL = @"http://50.17.142.22/hotornot";
+//NSString * const kConfigURL = @"http://50.17.142.22/hotornot";
+NSString * const kConfigURL = @"http://107.20.161.159/hotornot";
+NSString * const kConfigJSON = @"boot-dev.json";
 #else
 NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";
+NSString * const kConfigJSON = @"boot.json";
 #endif
 
 
@@ -102,10 +105,11 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 
 
 + (NSString *)apiServerPath {
-	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	
-	//return (@"http://discover.getassembly.com/hotornot/api-shane");
-	return (@"http://107.20.161.159/hotornot/api-shane");//return (@"http://50.17.142.22/hotornot/api-shane");
+//	return (@"http://discover.getassembly.com/hotornot/api-shane");
+//	return (@"http://107.20.161.159/hotornot/api-shane");
+//	return (@"http://50.17.142.22/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -844,11 +848,11 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 
 #pragma mark - Startup Operations
 - (void)_retrieveConfigJSON {
-	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@]", kConfigURL);
+	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@/%@]", kConfigURL, kConfigJSON);
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, @"boot-dev.json");
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, kConfigJSON);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
-	[httpClient postPath:@"boot-dev.json" parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kConfigJSON parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		
 		if (error != nil)
@@ -943,7 +947,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], kConfigURL, @"boot-dev.json", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], kConfigURL, kConfigJSON, [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

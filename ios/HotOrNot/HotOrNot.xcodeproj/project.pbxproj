@@ -518,7 +518,6 @@
 		4CED1C06177D463C00A32F2B /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CED1C02177D463C00A32F2B /* libTestFlight.a */; };
 		4CED1C07177D463C00A32F2B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4CED1C03177D463C00A32F2B /* README.md */; };
 		4CED1C08177D463C00A32F2B /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = 4CED1C04177D463C00A32F2B /* release_notes.md */; };
-		4CED1C18177D46C100A32F2B /* libPhoneNumberiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CED1C0A177D46C100A32F2B /* libPhoneNumberiOS.a */; };
 		4CED1C19177D46C100A32F2B /* NBNumberFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C0C177D46C100A32F2B /* NBNumberFormat.m */; };
 		4CED1C1A177D46C100A32F2B /* NBPhoneMetaData.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C0E177D46C100A32F2B /* NBPhoneMetaData.m */; };
 		4CED1C1B177D46C100A32F2B /* NBPhoneMetaDataGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C10177D46C100A32F2B /* NBPhoneMetaDataGenerator.m */; };
@@ -1528,7 +1527,6 @@
 		4CED1C03177D463C00A32F2B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		4CED1C04177D463C00A32F2B /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
 		4CED1C05177D463C00A32F2B /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
-		4CED1C0A177D46C100A32F2B /* libPhoneNumberiOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPhoneNumberiOS.a; sourceTree = "<group>"; };
 		4CED1C0B177D46C100A32F2B /* NBNumberFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBNumberFormat.h; sourceTree = "<group>"; };
 		4CED1C0C177D46C100A32F2B /* NBNumberFormat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBNumberFormat.m; sourceTree = "<group>"; };
 		4CED1C0D177D46C100A32F2B /* NBPhoneMetaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBPhoneMetaData.h; sourceTree = "<group>"; };
@@ -1542,8 +1540,6 @@
 		4CED1C15177D46C100A32F2B /* NBPhoneNumberDesc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBPhoneNumberDesc.m; sourceTree = "<group>"; };
 		4CED1C16177D46C100A32F2B /* NBPhoneNumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NBPhoneNumberUtil.h; sourceTree = "<group>"; };
 		4CED1C17177D46C100A32F2B /* NBPhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBPhoneNumberUtil.m; sourceTree = "<group>"; };
-		4CED1C20177D518500A32F2B /* NBPhoneNumberMetadata.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = NBPhoneNumberMetadata.plist; sourceTree = "<group>"; };
-		4CED1C21177D518500A32F2B /* NBPhoneNumberMetadataForTesting.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = NBPhoneNumberMetadataForTesting.plist; sourceTree = "<group>"; };
 		4CEE1C95161A238C00C54FBF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		4CEE1C9F161A311E00C54FBF /* HotOrNotModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HotOrNotModel.xcdatamodel; sourceTree = "<group>"; };
 		4CF07C131686756C00E0FBC1 /* fpo_upvote.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fpo_upvote.mp3; sourceTree = "<group>"; };
@@ -1566,7 +1562,6 @@
 				4C62675415F96FA800AA7FCE /* AudioToolbox.framework in Frameworks */,
 				4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */,
 				4C6BBC881615466200145996 /* AssetsLibrary.framework in Frameworks */,
-				4CED1C18177D46C100A32F2B /* libPhoneNumberiOS.a in Frameworks */,
 				4CA8DA521613CD4A00B7B13C /* QuartzCore.framework in Frameworks */,
 				4CA8D9F61613933600B7B13C /* Accounts.framework in Frameworks */,
 				4CA8D9F41613932500B7B13C /* AdSupport.framework in Frameworks */,
@@ -2320,7 +2315,6 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				4CED1C1F177D517100A32F2B /* PhoneNumber Metadata */,
 				4C7AD0FA17629ACE0035A62A /* Invite */,
 				4C0AAAEA170C94F400BB32BD /* Search */,
 				4CB75CB116FEAB07001A8738 /* Tabs */,
@@ -2949,7 +2943,6 @@
 		4CED1C09177D46C100A32F2B /* libPhoneNumber */ = {
 			isa = PBXGroup;
 			children = (
-				4CED1C0A177D46C100A32F2B /* libPhoneNumberiOS.a */,
 				4CED1C0B177D46C100A32F2B /* NBNumberFormat.h */,
 				4CED1C0C177D46C100A32F2B /* NBNumberFormat.m */,
 				4CED1C0D177D46C100A32F2B /* NBPhoneMetaData.h */,
@@ -2965,15 +2958,6 @@
 				4CED1C17177D46C100A32F2B /* NBPhoneNumberUtil.m */,
 			);
 			path = libPhoneNumber;
-			sourceTree = "<group>";
-		};
-		4CED1C1F177D517100A32F2B /* PhoneNumber Metadata */ = {
-			isa = PBXGroup;
-			children = (
-				4CED1C20177D518500A32F2B /* NBPhoneNumberMetadata.plist */,
-				4CED1C21177D518500A32F2B /* NBPhoneNumberMetadataForTesting.plist */,
-			);
-			name = "PhoneNumber Metadata";
 			sourceTree = "<group>";
 		};
 		4CF07C11168672D900E0FBC1 /* SFX */ = {

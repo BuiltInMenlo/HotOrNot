@@ -25,7 +25,7 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
-#import "HONInviteCelebViewController.h"
+#import "HONInstagramLoginViewController.h"
 #import "HONAddFriendsViewController.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
@@ -436,11 +436,11 @@
 		else
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
-	
-	// ////////////////////////////////////////////////////////////
+
+#if __ALWAYS_INVITE__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:@"N" forKey:@"sms_verified"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
+#endif
 	
 	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"sms_verified"] isEqualToString:@"Y"] && !_isPushView)
 		[self _goMobileSignup];
@@ -520,10 +520,9 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 
-	//- apple fix
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInstagramLoginViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_goLocaleRestriction {
@@ -847,11 +846,11 @@
 	//NSLog(@"messageComposeViewController:didFinishWithResult:[%d]", result);
 	
 	[self dismissViewControllerAnimated:YES completion:^(void) {
-		//if (result == MessageComposeResultSent) {
+		if (result == MessageComposeResultSent) {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
-		//}
+		}
 	}];
 }
 
