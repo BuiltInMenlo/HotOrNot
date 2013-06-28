@@ -1,7 +1,24 @@
 <?php
 require_once 'vendor/autoload.php';
 
-testFriendmatching();
+testFindFriendsQ();
+
+function testFindFriendsQ(){
+
+    $job = array(
+    	'class' => 'BIM_Jobs_Users',
+    	'method' => 'findFriends',
+    	'data' => (object) array(
+            'hashed_number' => '+14152549391',
+            'id' => 881
+        ),
+    );
+    
+    $u = new BIM_Jobs_Users();
+    
+    $u->findFriends( (object) $job );
+    
+}
 
 function testFriendmatching(){
     /*
