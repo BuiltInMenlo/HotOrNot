@@ -17,7 +17,7 @@ class BIM_Jobs_Users extends BIM_Jobs{
         return self::queueBackground( $job, 'find_friends' );
     }
 	
-    public static function findFriends( $workload ){
+    public function findFriends( $workload ){
         // now we perform a search and send out push notification
         $list = $workload->data;
         $users = new BIM_App_Users;
