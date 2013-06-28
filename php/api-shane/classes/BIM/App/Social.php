@@ -49,8 +49,8 @@ class BIM_App_Social extends BIM_App_Base{
             );
             
             $added = $dao->addFriend( $relation );
-            $dao->flush();
         }
+        $dao->flush();
         return $added;
     }
     
@@ -70,7 +70,7 @@ class BIM_App_Social extends BIM_App_Base{
             $params->source = $source;
             $accepted = self::_acceptFriend($params);
         }
-        return $accepted;
+        return self::getFriends($params);
     }
     
     protected static function _acceptFriend( $params ){
@@ -82,6 +82,7 @@ class BIM_App_Social extends BIM_App_Base{
             'source' => $params->source,
         );
         $accepted = $dao->acceptFriend( $relation );
+        $dao->flush();
         return $accepted;
     }
     
@@ -92,7 +93,7 @@ class BIM_App_Social extends BIM_App_Base{
             $params->target = $target;
             $removed = self::_removeFriend($params);
         }
-        return $removed;
+        return self::getFriends($params);
     }
     
     protected static function _removeFriend( $params ){
@@ -104,6 +105,7 @@ class BIM_App_Social extends BIM_App_Base{
             'target' => $params->target,
         );
         $removed = $dao->removeFriend( $relation );
+        $dao->flush();
         return $removed;
     }
     
