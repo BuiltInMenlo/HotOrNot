@@ -4,26 +4,32 @@ class BIM_App_Social extends BIM_App_Base{
 
     public static function addFriend( $params ){
         $added = false;
-        $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
-        
-        $time = time();
-        $defaultState = 0;
-        $acceptTime = -1;
-        if( !empty( $params->auto ) ){
-            $defaultState = 1;
-            $acceptTime = $time;
+        if( self::userExists( $params->userID ) ){
+            $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
+            $time = time();
+            $defaultState = 0;
+            $acceptTime = -1;
+            if( !empty( $params->auto ) ){
+                $defaultState = 1;
+                $acceptTime = $time;
+            }
+            
+            $relation = (object) array(
+                'source' => $params->userID,
+                'target' => $params->target,
+                'state' => $defaultState,
+                'init_time' => $time,
+                'accept_time' => $acceptTime,
+            );
+            
+            $added = $dao->addFriend( $relation );
         }
-        
-        $relation = (object) array(
-            'source' => $params->userID,
-            'target' => $params->target,
-            'state' => $defaultState,
-            'init_time' => $time,
-            'accept_time' => $acceptTime,
-        );
-        
-        $added = $dao->addFriend( $relation );
         return $added;
+    }
+    
+    protected static function userExists( $userId ){
+        $user = new BIM_User( $userId );
+        return ( $user && $user->isExtant() );
     }
     
     public static function acceptFriend( $params ){
