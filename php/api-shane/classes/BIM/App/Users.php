@@ -60,7 +60,6 @@ class BIM_App_Users extends BIM_App_Base{
 		// find the avatar image
 		$avatar_url = $this->avatarURLForUser($row);
 		
-		$users = new BIM_App_Social();
 		// return
 		return(array(
 			'id' => $row->id, 
@@ -80,7 +79,7 @@ class BIM_App_Users extends BIM_App_Base{
 			'notifications' => $row->notifications, 
 			'meta' => $meta,
 		    'sms_code' => BIM_Utils::getSMSCodeForId($row->id ),
-		    'friends' => $users->getFriends( (object) array( 'userID' => $row->id ) ),
+		    'friends' => BIM_App_Social::getFriends( (object) array( 'userID' => $row->id ) ),
 		));
 	}
 	
