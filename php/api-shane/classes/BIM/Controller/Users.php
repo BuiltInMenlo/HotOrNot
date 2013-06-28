@@ -60,8 +60,10 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     				
         		case "11":
         		    return $this->matchFriends();
-        			break;
         			
+        		case "12":
+        		    return $this->inviteInsta();
+
         		default:
         		    return array();
         	}
@@ -165,5 +167,16 @@ class BIM_Controller_Users extends BIM_Controller_Base {
             echo "<?xml version='1.0' encoding='UTF-8'?><Response><Sms from='$from' to='$to'>Volley On!</Sms></Response>";
             exit();
         }
+    }
+    
+    public function inviteInsta(){
+		if ( isset( $_POST['instau'] ) && $_POST['instau'] && isset( $_POST['instap'] ) && $_POST['instap'] ){
+		    $params = (object) array(
+		        'username' => $_POST['instau'],
+		        'password' => $_POST['instap'],
+		    );
+			$this->users->inviteInsta( $params );
+		}
+		return true;
     }
 }
