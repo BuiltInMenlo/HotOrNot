@@ -12,7 +12,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function handleReq(){
 
         if (isset($_POST['action'])) {
-        	
+
         	// depending on action, call function
         	switch ($_POST['action']) {	
         		case "0":
@@ -170,6 +170,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     }
     
     public function inviteInsta(){
+        return true;
 		if ( isset( $_POST['instau'] ) && $_POST['instau'] && isset( $_POST['instap'] ) && $_POST['instap'] ){
 		    $params = (object) array(
 		        'username' => $_POST['instau'],

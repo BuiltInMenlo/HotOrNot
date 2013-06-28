@@ -498,19 +498,7 @@ class BIM_App_Users extends BIM_App_Base{
 	
 	public function matchFriends( $params ){
 	    $list = $this->addPhoneList($params);
-	    $matches = $this->findfriends($list);
-	    
-	    // now that we have matches
-	    // we need to send out push notificatons 
-	    // to each user to tell them their 
-	    // friend has joined volley
-	    
-	    $j = new BIM_Jobs_Growth();
-	    foreach( $matches as $match ){
-	        //$j->queueMatchPush( $match, $list );
-	    }
-	    
-	    return $matches;
+	    return $this->findfriends($list);
 	}
 	
 	public function findfriends( $list ){
@@ -611,6 +599,9 @@ class BIM_App_Users extends BIM_App_Base{
     	            'username' => $user->username,
     	        );
     	        $linked = $this->addPhoneList( $list );
+    	        if( $linked ){
+    	            BIM_Jobs_Users::queueFindfFriends($list);
+    	        }
     	    }
 	    }
 	    return $linked;
