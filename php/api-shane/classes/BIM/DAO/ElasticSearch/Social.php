@@ -34,22 +34,22 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
     }
     
     public static function makeFriendkey( $doc ){
-        return "{$doc->source}_{$doc->target}";
+        $key = array( $doc->source, $doc->target );
+        sort( $key );
+        return join('_', $key );
     }
     
     public function addFriend( $doc ){
         $added = false;
-        if( ! $this->friendshipExists( $doc ) ){
-            $id = self::makeFriendkey($doc);
-            $urlSuffix = "social/friends/$id/_create";
-            $added = $this->call('PUT', $urlSuffix, $doc);
-            
-            $added = json_decode( $added );
-            if( isset( $added->ok ) && $added->ok ){
-                $added = true;
-            } else {
-                $added = false;
-            }
+        $id = self::makeFriendkey($doc);
+        $urlSuffix = "social/friends/$id/_create";
+        $added = $this->call('PUT', $urlSuffix, $doc);
+        
+        $added = json_decode( $added );
+        if( isset( $added->ok ) && $added->ok ){
+            $added = true;
+        } else {
+            $added = false;
         }
         return $added;
     }
@@ -61,14 +61,10 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
      * 
      * @param object $doc
      */
-    protected function friendshipExists( $doc ){
+    public function friendshipExists( $doc ){
         $exists = true;
         if( !empty( $doc->source ) && !empty( $doc->target ) ){
-            $tempDoc = (object) array(
-                'target' => $doc->source,
-                'source' => $doc->target
-            );
-            $id = self::makeFriendkey($tempDoc);
+            $id = self::makeFriendkey($doc);
             $urlSuffix = "social/friends/$id";
             $exists = $this->call('GET', $urlSuffix);
             $exists = json_decode( $exists );
@@ -84,14 +80,15 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
         if( isset( $doc->source ) && $doc->source ){
             $update = array(
                 'script' => "
-                    if(ctx._source.state == 0){
+                    if(target == ctx._source.target && ctx._source.state == 0){
                     	ctx._source.state = 1;
                     	ctx._source.accept_time = timestamp;
                     }
                     ;
                 ",
                 'params' => array(
-                    'timestamp' => time()
+                    'timestamp' => time(),
+                    'target' => $doc->target,
                 )
             );
             $id = self::makeFriendkey($doc);
