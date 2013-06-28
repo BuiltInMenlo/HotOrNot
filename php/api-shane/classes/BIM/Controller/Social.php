@@ -5,7 +5,7 @@ class BIM_Controller_Social extends BIM_Controller_Base {
     public function addFriend( ){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if( ( !empty($input->target ) && !empty( $input->userID ) ) && ( $input->target != $input->userID ) ){
-            return BIM_App_Social::addfriend( $input );
+            return BIM_App_Social::addFriend( $input );
         }
         return array();
     }
