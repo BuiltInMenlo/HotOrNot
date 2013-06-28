@@ -507,7 +507,7 @@ class BIM_App_Users extends BIM_App_Base{
 	    
 	    $j = new BIM_Jobs_Growth();
 	    foreach( $matches as $match ){
-	        $j->queueMatchPush( $match, $list );
+	        //$j->queueMatchPush( $match, $list );
 	    }
 	    
 	    return $matches;

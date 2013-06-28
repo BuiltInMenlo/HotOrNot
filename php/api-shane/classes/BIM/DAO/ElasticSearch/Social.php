@@ -24,7 +24,7 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
                     "should" => $should,
                     "minimum_number_should_match" => 1
                 )
-            )
+            ),
         );
         
         $urlSuffix = "social/friends/_search";
