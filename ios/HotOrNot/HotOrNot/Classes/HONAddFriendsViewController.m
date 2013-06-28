@@ -60,24 +60,22 @@
 
 #pragma mark - Data Calls
 - (void)_retreiveFollowing {
-	
-	VolleyJSONLog(@"HONAddFriendsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action", // 11 on Users.php actual following // 4 on Search is past challengers
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																				sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController: %@", parsedUsers);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedUsers);
 			
 			_following = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
@@ -92,36 +90,34 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [error localizedDescription]);
 		
 	}];
 }
 
 - (void)_sendContactsSMS {
-	
-	VolleyJSONLog(@"HONAddFriendsViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 12], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							_smsRecipients, @"sms_recipients",
 							nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
 			NSDictionary *sendResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController: %@", sendResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], sendResult);
 			
 			[self _goDone];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] HONAddFriendsViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 	}];
 }
 

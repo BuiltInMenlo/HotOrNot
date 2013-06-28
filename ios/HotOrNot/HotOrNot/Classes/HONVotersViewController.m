@@ -60,24 +60,24 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveUsers {
-	VolleyJSONLog(@"HONVotersViewControler —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 5], @"action",
 									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 									nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONVotersViewControler - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
 			NSArray *unsortedList = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [unsortedList sortedArrayUsingDescriptors:
 											[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"score" ascending:NO]]];
 			
-			//VolleyJSONLog(@"AFNetworking [-] HONVotersViewControler: %@", unsortedList);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedList);
 			_voters = [NSMutableArray new];
 			for (NSDictionary *serverList in parsedLists) {
 				HONVoterVO *vo = [HONVoterVO voterWithDictionary:serverList];
@@ -90,7 +90,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] VotersViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
 	}];
 }
 

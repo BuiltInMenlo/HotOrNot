@@ -36,7 +36,7 @@
 
 // json config url
 #if __DEV_CFG_JSON___ == 1
-NSString * const kConfigURL = @"http://50.17.142.22/hotornot";
+NSString * const kConfigURL = @"http://107.20.161.159/hotornot";//NSString * const kConfigURL = @"http://50.17.142.22/hotornot";
 #else
 NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";
 #endif
@@ -92,11 +92,20 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 @synthesize managedObjectModel = _managedObjectModel;
 
 
++ (NSString *)advertisingIdentifier {
+	return ([[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
+}
+
++ (NSString *)identifierForVendor {
+	return ([[UIDevice currentDevice].identifierForVendor UUIDString]);
+}
+
+
 + (NSString *)apiServerPath {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
+	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	
-	return (@"http://discover.getassembly.com/hotornot/api-shane");
-	return (@"http://50.17.142.22/hotornot/api-shane");
+	//return (@"http://discover.getassembly.com/hotornot/api-shane");
+	return (@"http://107.20.161.159/hotornot/api-shane");//return (@"http://50.17.142.22/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -306,11 +315,6 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 }
 
 + (BOOL)hasNetwork {
-	//Reachability *wifiReachability = [Reachability reachabilityForLocalWiFi];
-	//[[Reachability reachabilityForLocalWiFi] startNotifier];
-	
-	//return ([wifiReachability currentReachabilityStatus] == kReachableViaWiFi);
-	
 	[[Reachability reachabilityForInternetConnection] startNotifier];
 	NetworkStatus networkStatus = [[Reachability reachabilityForInternetConnection] currentReachabilityStatus];
 	
@@ -321,9 +325,6 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	return (!([[Reachability reachabilityWithHostName:[[[HONAppDelegate apiServerPath] componentsSeparatedByString: @"/"] objectAtIndex:2]] currentReachabilityStatus] == NotReachable));
 }
 
-//+ (BOOL)canPingParseServer {
-//	return (!([[Reachability reachabilityWithHostName:@"api.parse.com"] currentReachabilityStatus] == NotReachable));
-//}
 
 + (BOOL)canPingConfigServer {
 //	struct sockaddr_in address;
@@ -526,27 +527,26 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
 	
-	VolleyJSONLog(@"HONAppDelegate —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 6], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
 									[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
 									nil];
-	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil)
-			VolleyJSONLog(@"AFNetworking [-] HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 		
 		else {
-			VolleyJSONLog(@"AFNetworking HONAppDelegate: %@", result);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking HONAppDelegate %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -616,16 +616,8 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	[self _showFonts];
 #endif
 	
-	if ([ASIdentifierManager sharedManager].isAdvertisingTrackingEnabled)
-		NSLog(@"advertisingIdentifier:[%@]", [[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
-	
-	
-	NSLog(@"identifierForVendor:[%@]", [[UIDevice currentDevice].identifierForVendor UUIDString]);
-	
-#ifndef __IPHONE_6_0
-	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
-	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
-#endif
+//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
 	if ([HONAppDelegate hasNetwork]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
@@ -852,19 +844,19 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 
 #pragma mark - Startup Operations
 - (void)_retrieveConfigJSON {
-	VolleyJSONLog(@"CONFIG_JSON:[%@]", kConfigURL);
+	VolleyJSONLog(@"\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]\nCONFIG_JSON:[%@]", kConfigURL);
 	
-	VolleyJSONLog(@"HONAppDelegate —/> (%@/%@)", kConfigURL, @"boot-dev.json");
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], kConfigURL, @"boot-dev.json");
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kConfigURL]];
 	[httpClient postPath:@"boot-dev.json" parameters:[NSDictionary dictionary] success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		
 		if (error != nil)
-			VolleyJSONLog(@"AFNetworking HONAppDelegate - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 		
 		else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSLog(@"AFNetworking HONAppDelegate: %@", result);
+			//NSLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			NSMutableArray *locales = [NSMutableArray array];
 			for (NSString *locale in [result objectForKey:@"enabled_locales"])
@@ -946,11 +938,12 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 			[[NSUserDefaults standardUserDefaults] setObject:[followings copy] forKey:@"default_following"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
+			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
 			[self _registerUser];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"HONAppDelegate AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], kConfigURL, @"boot-dev.json", [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -962,27 +955,21 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
-	
-	
-	[self _registerUser];
-	
 }
 
 - (void)_registerUser {
-	
-	VolleyJSONLog(@"HONAppDelegate —/> (%@/%@)", kConfigURL, kAPIUsers);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 1], @"action",
 									[HONAppDelegate deviceToken], @"token",
 									nil];
-	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
-			VolleyJSONLog(@"AppDelegate AFNetworking - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 		
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -995,18 +982,18 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 			_progressHUD = nil;
 		
 		} else {
-			VolleyJSONLog(@"HONAppDelegate AFNetworking: %@", userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				[HONAppDelegate writeUserInfo:userResult];
-				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_image"] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
+				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 			}
 			
 			[self _initTabs];
 		}
 				
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AppDelegate AFNetworking %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 		
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];

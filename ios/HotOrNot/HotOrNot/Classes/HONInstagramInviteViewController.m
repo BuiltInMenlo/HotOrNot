@@ -10,7 +10,7 @@
 #import "HONInstagramInviteViewController.h"
 
 
-@interface HONInstagramInviteViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface HONInstagramInviteViewController () //<UITableViewDataSource, UITableViewDelegate>
 @end
 
 

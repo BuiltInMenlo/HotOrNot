@@ -84,22 +84,22 @@
 	_following = [NSMutableArray array];
 	_followingCells = [NSMutableArray array];
 	
-	VolleyJSONLog(@"HONAddChallengersViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPISearch);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action", // 11 on Users.php actual following // 4 on Search is past challengers
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPISearch parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONAddChallengersViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																					sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			VolleyJSONLog(@"AFNetworking [-] HONAddChallengersViewController: %@", parsedUsers);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedUsers);
 			
 			
 			for (NSDictionary *serverList in parsedUsers) {
@@ -114,7 +114,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] HONAddChallengersViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [error localizedDescription]);
 	}];
 }
 

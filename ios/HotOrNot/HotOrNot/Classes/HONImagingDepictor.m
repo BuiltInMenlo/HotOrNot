@@ -25,18 +25,20 @@
 }
 
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {
+	VolleyJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		[[NSUserDefaults standardUserDefaults] setObject:UIImagePNGRepresentation(image) forKey:key];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: Failed Request - %@", [[self class] description], [error localizedDescription]);
 	}];
 	
 	[operation start];
 }
 
 + (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key {
+	VolleyJSONLog(@"%@ —/> (%@)", [[self class] description], url);
 	AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]] imageProcessingBlock:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, size.width, size.height)];
 		imageView.image = image;
@@ -45,7 +47,7 @@
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 	} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-		NSLog(@"%@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@) Failed Request - %@", [[self class] description], url, [error localizedDescription]);
 	}];
 	
 	[operation start];

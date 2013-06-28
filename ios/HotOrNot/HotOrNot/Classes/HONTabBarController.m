@@ -115,7 +115,7 @@
 		else
 			[view setFrame:[UIScreen mainScreen].bounds];//[view setFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
 		
-		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
+		//NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
 	}
 
 //	for (UIViewController *viewController in self.viewControllers)
@@ -364,21 +364,21 @@
 													[NSNumber numberWithInt:0], @"comments", nil];
 	
 	
-	VolleyJSONLog(@"HONTabBarViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 3], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONTabBarViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] HONTabBarViewController %@", unsortedChallenges);
+			//VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], unsortedChallenges);
 			
 			int statusChanges = 0;
 			int voteChanges = 0;
@@ -440,7 +440,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 	}];
 }
 

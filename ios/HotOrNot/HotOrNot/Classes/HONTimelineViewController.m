@@ -16,7 +16,6 @@
 
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
-#import "HONVerifyMobileViewController.h"
 #import "HONUserProfileViewCell.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
@@ -29,6 +28,7 @@
 #import "HONInviteCelebViewController.h"
 #import "HONAddFriendsViewController.h"
 #import "HONEmptyTimelineView.h"
+#import "HONAddContactsViewController.h"
 
 
 @interface HONTimelineViewController() <MFMessageComposeViewControllerDelegate>
@@ -165,6 +165,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showVoters:) name:@"SHOW_VOTERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showComments:) name:@"SHOW_COMMENTS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSMSVerify:) name:@"SHOW_SMS_VERIFY" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeSMSVerify:) name:@"REMOVE_SMS_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 }
@@ -184,8 +185,6 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	VolleyJSONLog(@"HONHONTimelineViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
@@ -215,21 +214,22 @@
 		[params setObject:[NSString stringWithFormat:@"%d", _subjectID] forKey:@"subjectID"];
 	}
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			//NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			
-			//VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController: %@", parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;
-			for (NSDictionary *serverList in parsedLists) {
+			for (NSDictionary *serverList in unsortedChallenges) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
 				if (vo != nil) {
@@ -256,7 +256,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		if (_progressHUD == nil)
@@ -272,23 +272,22 @@
 }
 
 - (void)_retrieveSingleChallenge:(HONChallengeVO *)vo {
-	
-	VolleyJSONLog(@"HONHONTimelineViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIVotes);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 3], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
 							nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] HONHONTimelineViewController: %@", parsedLists);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			_challenges = [NSMutableArray new];
 			
 			int cnt = 0;
@@ -321,7 +320,7 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		
@@ -337,25 +336,23 @@
 	}];
 }
 
-
 - (void)_retrieveUser {
-	
-	VolleyJSONLog(@"HONHONTimelineViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 8], @"action",
 									_username, @"username",
 									nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			//VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController: %@", userResult);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				_userVO = [HONUserVO userWithDictionary:userResult];
@@ -370,17 +367,14 @@
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] HONTimelineViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 	}];
 }
 
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
-	
-	NSLog(@"API END PT:[%@]", [HONAppDelegate apiServerPath]);
-	
+	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];	
 	
 	if (_isPushView) {
 		_headerView = [[HONHeaderView alloc] initWithTitle:(_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName];
@@ -443,7 +437,13 @@
 			[self _retrieveSingleChallenge:_challengeVO];
 	}
 	
-	[self _goMobileSignup];
+	// ////////////////////////////////////////////////////////////
+	[[NSUserDefaults standardUserDefaults] setObject:@"N" forKey:@"sms_verified"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"sms_verified"] isEqualToString:@"Y"] && !_isPushView)
+		[self _goMobileSignup];
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
 #if __ALWAYS_REGISTER__ == 1
@@ -475,14 +475,7 @@
 }
 
 - (void)_goRefresh {
-	[_headerView toggleRefresh:YES];
-	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_refresh", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
+	[_headerView toggleRefresh:YES];	
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -548,8 +541,6 @@
 }
 
 - (void)_goRegistration {
-	//[self _goTutorial];
-	
 	[[Mixpanel sharedInstance] track:@"Register User"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -557,7 +548,6 @@
 	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
-	
 	
 	//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
@@ -587,7 +577,7 @@
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 		messageComposeViewController.messageComposeDelegate = self;
 		messageComposeViewController.recipients = [NSArray arrayWithObject:@"2394313268"];
-		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		messageComposeViewController.body = [[HONAppDelegate infoForUser] objectForKey:@"sms_code"];
 		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		
 	} else {
@@ -598,6 +588,10 @@
 												  otherButtonTitles:nil];
 		[alertView show];
 	}
+}
+
+- (void)_removeSMSVerify:(NSNotification *)notification {
+	[self _goMobileSignupClose];
 }
 
 - (void)_refreshVoteTab:(NSNotification *)notification {
@@ -850,26 +844,15 @@
 
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	//NSLog(@"messageComposeViewController:didFinishWithResult:[%d]", result);
 	
-	switch (result) {
-		case MessageComposeResultCancelled:
-			NSLog(@"SMS: canceled");
-			break;
-			
-		case MessageComposeResultSent:
-			NSLog(@"SMS: sent");
-			break;
-			
-		case MessageComposeResultFailed:
-			NSLog(@"SMS: failed");
-			break;
-			
-		default:
-			NSLog(@"SMS: not sent");
-			break;
-	}
-	
-	[self dismissViewControllerAnimated:YES completion:nil];
+	[self dismissViewControllerAnimated:YES completion:^(void) {
+		//if (result == MessageComposeResultSent) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		//}
+	}];
 }
 
 

@@ -25,7 +25,8 @@
 	vo.score = (vo.points * [HONAppDelegate createPointMultiplier]) + (vo.votes * [HONAppDelegate votePointMultiplier]) + (vo.pokes * [HONAppDelegate pokePointMultiplier]);
 	vo.challenges = [[dictionary objectForKey:@"challenges"] intValue];
 	vo.username = [dictionary objectForKey:@"username"];
-	vo.imageURL = ([dictionary objectForKey:@"fb_id"] == [NSNull null]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [dictionary objectForKey:@"img_url"];
+//	vo.imageURL = ([dictionary objectForKey:@"fb_id"] == [NSNull null]) ? @"https://s3.amazonaws.com/picchallenge/default_user.jpg" : [dictionary objectForKey:@"img_url"];
+	vo.imageURL = [dictionary objectForKey:@"img_url"];
 	vo.challengerName = [dictionary objectForKey:@"challenger_name"];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];

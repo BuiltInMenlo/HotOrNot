@@ -51,6 +51,9 @@ const NSUInteger kFollowingUsersDisplayTotal;
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
++ (NSString *)advertisingIdentifier;
++ (NSString *)identifierForVendor;
+
 + (NSString *)apiServerPath;
 + (NSString *)customerServiceURL;
 + (NSDictionary *)s3Credentials;

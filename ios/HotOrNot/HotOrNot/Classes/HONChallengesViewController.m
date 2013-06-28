@@ -80,18 +80,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 #pragma mark - Data Calls
 - (void)_retrieveUser {
 	if ([HONAppDelegate infoForUser]) {
-		
-		VolleyJSONLog(@"HONChallengesViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIUsers);
-		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 										[NSString stringWithFormat:@"%d", 5], @"action",
 										[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 										nil];
 		
+		VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 		[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 			NSError *error = nil;
 			if (error != nil) {
-				VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 				
 				[_headerView toggleRefresh:NO];
 				if (_progressHUD != nil) {
@@ -101,7 +100,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				
 			} else {
 				NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				//VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController: %@", userResult);
+				//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 				
 				if ([userResult objectForKey:@"id"] != [NSNull null])
 					[HONAppDelegate writeUserInfo:userResult];
@@ -116,7 +115,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
+			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 			
 			[_headerView toggleRefresh:NO];
 			_progressHUD.minShowTime = kHUDTime;
@@ -131,18 +130,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_retrieveChallenges {
-	
-	VolleyJSONLog(@"HONChallengesViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", (_isPrivate) ? 8 : 2], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 			[_headerView toggleRefresh:NO];
 			if (_progressHUD != nil) {
@@ -153,7 +151,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController: %@", unsortedChallenges);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedChallenges);
 			
 			_recentChallenges = [NSMutableArray array];
 			_olderChallenges = [NSMutableArray array];
@@ -180,7 +178,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		if (_progressHUD == nil)
@@ -207,8 +205,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	//NSLog(@"NEXT\n%@\n%@", [prevIDs substringToIndex:[prevIDs length] - 1], _lastDate);
 	
-	VolleyJSONLog(@"HONChallengesViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 12], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -216,10 +212,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 									_lastDate, @"datetime",
 									nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 			[_headerView toggleRefresh:NO];
 			if (_progressHUD != nil) {
@@ -230,7 +228,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController: %@", unsortedChallenges);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedChallenges);
 			
 			//[_challenges removeLastObject];
 			for (NSDictionary *serverList in parsedLists) {
@@ -259,7 +257,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 		
 		[_headerView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;
@@ -273,27 +271,26 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_updateChallengeAsSeen {
-	
-	VolleyJSONLog(@"HONChallengesViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 6], @"action",
 									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 									nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil)
-			NSLog(@"AFNetworking HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+			NSLog(@"AFNetworking HONChallengesViewController - Failed to parse JSON: %@", [error localizedFailureReason]);
 		
 		else {
 			NSLog(@"AFNetworking HONChallengesViewController: %@", result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] ChallengePreviewViewController %@", [error localizedDescription]);
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 		
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -371,7 +368,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[super viewDidAppear:animated];
 	
 	[self _retrieveChallenges];
-	[self _retrieveUser];
+//	[self _retrieveUser];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -401,7 +398,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	[_headerView toggleRefresh:YES];
 	[self _retrieveChallenges];
-	[self _retrieveUser];
+//	[self _retrieveUser];
 }
 
 - (void)_goPublicChallenges {
@@ -460,7 +457,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
 	[self _retrieveChallenges];
-	[self _retrieveUser];
+//	[self _retrieveUser];
 }
 
 - (void)_showFindFriends:(NSNotification *)notification {
@@ -650,25 +647,25 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[_recentChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
-				VolleyJSONLog(@"HONChallengesViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
-				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 11], @"action",
 												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
 												nil];
 				
+				VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 						
 					} else {
 						[self _goRefresh];
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -689,23 +686,23 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[_recentChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
-				VolleyJSONLog(@"HONChallengesViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
-				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 10], @"action",
 												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
 												nil];
 				
+				VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 						
 					} else {
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -730,25 +727,25 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[_olderChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
-				VolleyJSONLog(@"HONChallengesViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
-				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 11], @"action",
 												[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
 												nil];
 				
+				VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 						
 					} else {
 						[self _goRefresh];
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
@@ -769,23 +766,23 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				[_olderChallenges removeObjectAtIndex:_idxPath.row];
 				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
 				
-				VolleyJSONLog(@"HONChallengesViewController —/> (%@/%@)", [HONAppDelegate apiServerPath], kAPIChallenges);
-				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 												[NSString stringWithFormat:@"%d", 10], @"action",
 												[NSString stringWithFormat:@"%d", vo.challengeID], @"challengeID",
 												nil];
 				
+				VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 				[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 					NSError *error = nil;
 					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-] HONChallengesViewController - Failed to parse job list JSON: %@", [error localizedFailureReason]);
+						VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 						
 					} else {
 					}
 					
 				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-] ChallengesViewController %@", [error localizedDescription]);
+					VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
 					
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
