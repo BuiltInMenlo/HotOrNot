@@ -4,6 +4,16 @@ class BIM_App_Social extends BIM_App_Base{
 
     public static function addFriend( $params ){
         $added = false;
+        $targets = explode('|',$params->target);
+        foreach( $targets as $target ){
+            $params->target = $target;
+            $added = self::_addFriend($params);
+        }
+        return $added;
+    }
+    
+    protected static function _addFriend( $params ){
+        $added = false;
         if( self::userExists( $params->userID ) ){
             $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
             $time = time();
@@ -34,6 +44,16 @@ class BIM_App_Social extends BIM_App_Base{
     
     public static function acceptFriend( $params ){
         $accepted = false;
+        $sources = explode('|',$params->source);
+        foreach( $sources as $source ){
+            $params->source = $source;
+            $accepted = self::_acceptFriend($params);
+        }
+        return $accepted;
+    }
+    
+    protected static function _acceptFriend( $params ){
+        $accepted = false;
         $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
         
         $relation = (object) array(
@@ -45,6 +65,16 @@ class BIM_App_Social extends BIM_App_Base{
     }
     
     public static function removeFriend( $params ){
+        $removed = false;
+        $targets = explode('|',$params->target);
+        foreach( $targets as $target ){
+            $params->target = $target;
+            $removed = self::_removeFriend($params);
+        }
+        return $removed;
+    }
+    
+    protected static function _removeFriend( $params ){
         $removed = false;
         $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
         
