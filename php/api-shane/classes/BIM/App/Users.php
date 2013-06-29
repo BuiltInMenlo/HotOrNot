@@ -600,7 +600,7 @@ class BIM_App_Users extends BIM_App_Base{
     	        );
     	        $linked = $this->addPhoneList( $list );
     	        if( $linked ){
-    	            BIM_Jobs_Users::queueFindfFriends($list);
+    	            BIM_Jobs_Users::queueFindFriends($list);
     	        }
     	    }
 	    }

@@ -9,7 +9,7 @@ class BIM_App_Social extends BIM_App_Base{
             $params->target = $target;
             $added = self::_addFriend($params);
             if( $added ){
-                //self::sendFriendNotification( $params );
+                BIM_Jobs_Users::queueFriendNotification( $params->userID, $params->target );
             }
         }
         return self::getFriends($params);
@@ -54,21 +54,15 @@ class BIM_App_Social extends BIM_App_Base{
         return $added;
     }
     
-
-    protected static function getUser( $userId ){
-        $user = new BIM_User( $userId );
-        if ( !$user || ! $user->isExtant() ){
-            $user = false;
-        }
-        return $user;
-    }
-    
     public static function acceptFriend( $params ){
         $accepted = false;
         $sources = explode('|',$params->source);
         foreach( $sources as $source ){
             $params->source = $source;
             $accepted = self::_acceptFriend($params);
+            if( $accepted ){
+                BIM_Jobs_Users::queueFriendAcceptedNotification( $params->userID, $params->source );
+            }
         }
         return self::getFriends($params);
     }
@@ -81,8 +75,11 @@ class BIM_App_Social extends BIM_App_Base{
             'target' => $params->userID,
             'source' => $params->source,
         );
-        $accepted = $dao->acceptFriend( $relation );
-        $dao->flush();
+        $doc = $dao->getRelation( $relation );
+        if( $doc && $doc->state == 0 ){
+            $accepted = $dao->acceptFriend( $relation );
+            $dao->flush();
+        }
         return $accepted;
     }
     

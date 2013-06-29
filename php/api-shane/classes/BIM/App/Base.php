@@ -3,6 +3,7 @@
 class BIM_App_Base{
     
 	protected $db_conn;
+	protected static $users = array();
 	
 	public function dbConnect(){
 	    if( !$this->db_conn ){
@@ -17,4 +18,16 @@ class BIM_App_Base{
 			$this->db_conn = null;
 		}
 	}
+	
+    public static function getUser( $userId ){
+        if( empty( self::$users[$userId] ) ){
+            $user = new BIM_User( $userId );
+            if ( !$user || ! $user->isExtant() ){
+                self::$users[$userId] = false;
+            } else {
+                self::$users[$userId] = $user;
+            }
+        }
+        return self::$users[$userId];
+    }
 }
