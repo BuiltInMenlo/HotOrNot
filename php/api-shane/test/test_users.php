@@ -1,7 +1,23 @@
 <?php
 require_once 'vendor/autoload.php';
 
-testFindFriendsQ();
+testnotes();
+
+function testnotes(){
+
+    $job = array(
+    	'class' => 'BIM_Jobs_Users',
+    	'method' => 'friendAcceptedNotification',
+    	'data' => (object) array(
+            'user_id' => 882,
+            'friend_id' => 881,
+        ),
+    );
+    
+    $u = new BIM_Jobs_Users();
+    $u->friendAcceptedNotification( (object) $job );
+    
+}
 
 function testFindFriendsQ(){
 

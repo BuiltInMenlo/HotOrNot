@@ -119,4 +119,20 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
         }
         return $removed;
     }
+    
+    public function getRelation( $doc ){
+        $relation = null;
+        if( isset( $doc->source ) && $doc->source ){
+            $id = self::makeFriendkey($doc);
+            $urlSuffix = "social/friends/$id";
+            $relation = $this->call('GET', $urlSuffix);
+            $relation = json_decode( $relation );
+            if( isset( $relation->exists ) && $relation->exists ){
+                $relation = $relation = $relation->_source;
+            } else {
+                $relation = null;
+            }
+        }
+        return $relation;
+    }
 }
