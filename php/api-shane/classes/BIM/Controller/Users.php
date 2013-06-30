@@ -10,11 +10,11 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     }
     
     public function handleReq(){
-
-        if (isset($_POST['action'])) {
+        $input = ($_POST ? $_POST :$_GET);
+        if (isset($input['action'])) {
 
         	// depending on action, call function
-        	switch ($_POST['action']) {	
+        	switch ($input['action']) {	
         		case "0":
         			return $this->test();
         		
@@ -112,8 +112,9 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     }
     
     public function getUser(){
-		if (isset($_POST['userID'])){
-			return $this->users->getUser($_POST['userID']);
+        $input = ($_POST ? $_POST : $_GET);
+		if (isset($input['userID'])){
+			return $this->users->getUserObj($input['userID']);
         }
 		return array();
     }

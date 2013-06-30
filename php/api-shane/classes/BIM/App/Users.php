@@ -363,7 +363,7 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @param $user_id The ID for the user (integer)
 	 * @return An associative object representing a user (array)
 	**/
-	public function getUser($user_id) {
+	public function getUserObj($user_id) {
 		
 		// get user & return
 		$user_arr = $this->userObject($user_id);			
