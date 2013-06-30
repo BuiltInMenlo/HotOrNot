@@ -36,8 +36,8 @@
 
 // json config url
 #if __DEV_CFG_JSON___ == 1
-//NSString * const kConfigURL = @"http://50.17.142.22/hotornot";
 NSString * const kConfigURL = @"http://107.20.161.159/hotornot";
+//NSString * const kConfigURL = @"http://54.243.163.24/hotornot";
 NSString * const kConfigJSON = @"boot-dev.json";
 #else
 NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";
@@ -53,6 +53,8 @@ NSString * const kAPIPopular = @"Popular.php";
 NSString * const kAPISearch = @"Search.php";
 NSString * const kAPIUsers = @"Users.php";
 NSString * const kAPIVotes = @"Votes.php";
+NSString * const kAPIGetFriends = @"social/getfriends";
+NSString * const kAPIAddFriends = @"social/addfriend";
 
 // view heights
 const CGFloat kNavBarHeaderHeight = 44.0f;
@@ -232,6 +234,35 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
 }
+
++ (NSArray *)friendsList {
+	//return ([[HONAppDelegate infoForUser] objectForKey:@"friends"]);
+	
+	NSMutableArray *friends = [NSMutableArray array];
+	for (NSDictionary *dict in [[HONAppDelegate infoForUser] objectForKey:@"friends"]) {
+		[friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+														  [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
+														  [NSString stringWithFormat:@"%d", 0], @"points",
+														  [NSString stringWithFormat:@"%d", 0], @"votes",
+														  [NSString stringWithFormat:@"%d", 0], @"pokes",
+														  [NSString stringWithFormat:@"%d", 0], @"pics",
+														  [[dict objectForKey:@"user"] objectForKey:@"username"], @"username",
+														  @"", @"fb_id",
+														  [[dict objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];
+	}
+	
+	return ([NSArray arrayWithArray:[friends sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
+}
+
++ (void)writeFriendsList:(NSArray *)friends {
+	NSMutableDictionary *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
+	[userInfo setObject:friends forKey:@"friends"];
+	[HONAppDelegate writeUserInfo:[userInfo copy]];
+	
+	//[[NSUserDefaults standardUserDefaults] setObject:friends forKey:@"friends_list"];
+	//[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 
 + (void)setAllowsFBPosting:(BOOL)canPost {
 	[[NSUserDefaults standardUserDefaults] setObject:(canPost) ? @"YES" : @"NO" forKey:@"fb_posting"];	
@@ -511,7 +542,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	[_searchViewController.view removeFromSuperview];
 	
 	UINavigationController *navigationController = (UINavigationController *)[self.tabBarController selectedViewController];
-	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubjectName:[notification object]] animated:YES];
+	[navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:[notification object]] animated:YES];
 }
 
 - (void)_showUserSearchTimeline:(NSNotification *)notification {
@@ -555,7 +586,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -1004,13 +1035,12 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
 	}];
 }
-
 
 - (void)_initTabs {
 	[_bgImageView removeFromSuperview];

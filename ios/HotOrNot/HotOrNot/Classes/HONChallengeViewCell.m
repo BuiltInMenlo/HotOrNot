@@ -104,7 +104,7 @@
 }
 
 - (void)updateHasSeen {
-	_hasSeenImageView.hidden = YES;
+	_hasSeenImageView.image = [UIImage imageNamed:@"viewedSnapCheck"];
 }
 
 

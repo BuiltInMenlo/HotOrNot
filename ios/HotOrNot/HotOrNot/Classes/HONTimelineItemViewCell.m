@@ -337,7 +337,7 @@
 	[self addSubview:commentsLabelButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(264.0, 270.0, 44.0, 44.0);
+	moreButton.frame = CGRectMake(244.0, 270.0, 64.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
@@ -545,129 +545,6 @@
 		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 
 }
-
-/*
-#pragma mark - Notifications
-- (void)_upvoteCreator:(NSNotification *)notification {
-	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
-	
-	if ([vo isEqual:_challengeVO]) {
-		//[self _playVoteSFX];
-		
-		_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
-		_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
-		[_lHolderView addSubview:_upvoteImageView];
-		
-		UIImageView *heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 17.0, 94.0, 94.0)];
-		heartImageView.image = [UIImage imageNamed:@"largeHeart"];
-		[_upvoteImageView addSubview:heartImageView];
-		
-		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_upvoteImageView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_upvoteImageView removeFromSuperview];
-			_upvoteImageView = nil;
-		}];
-		
-		_challengeVO.creatorScore++;
-		
-		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-			[[Mixpanel sharedInstance] track:@"Timeline - Upvote Creator"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-			
-			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
-			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
-			
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-											[NSString stringWithFormat:@"%d", 6], @"action",
-											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-											@"Y", @"creator",
-											nil];
-	
- VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
- AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-					
-				} else {
-					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
-			}];
-		
-		} else
-			_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
-	}
-}
-
-- (void)_upvoteChallenger:(NSNotification *)notification {
-	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
-	
-	if ([vo isEqual:_challengeVO]) {
-		//[self _playVoteSFX];
-		
-		_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
-		_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
-		[_rHolderView addSubview:_upvoteImageView];
-		
-		UIImageView *heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 17.0, 94.0, 94.0)];
-		heartImageView.image = [UIImage imageNamed:@"largeHeart"];
-		[_upvoteImageView addSubview:heartImageView];
-		
-		[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-			_upvoteImageView.alpha = 0.0;
-		} completion:^(BOOL finished) {
-			[_upvoteImageView removeFromSuperview];
-			_upvoteImageView = nil;
-		}];
-		
-		_challengeVO.challengerScore++;
-		
-		if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-			[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenger"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-														 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-			
-			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
-			[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
-			
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-											[NSString stringWithFormat:@"%d", 6], @"action",
-											[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-											[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-											@"N", @"creator",
-											nil];
-	
- VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
- AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-					
-				} else {
-					NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-					VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
-			}];
-			
-		} else
-			_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
-	}
-}
-*/
 
 
 #pragma mark - ActionSheet Delegates

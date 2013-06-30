@@ -21,9 +21,9 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.33];
-		float offset = 64.0 + ((int)[HONAppDelegate isRetina5] * 50.0);
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"typeOverlay"]]];
 		
+		float offset = 64.0 + ((int)[HONAppDelegate isRetina5] * 50.0);
 		_publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_publicButton.frame = CGRectMake(28.0, offset, 264.0, 64.0);
 		[_publicButton setBackgroundImage:[UIImage imageNamed:@"publicButton_nonActive"] forState:UIControlStateNormal];

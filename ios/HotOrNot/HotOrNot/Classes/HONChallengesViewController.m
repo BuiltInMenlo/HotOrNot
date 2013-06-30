@@ -121,7 +121,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-			_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:1.5];
 			_progressHUD = nil;
@@ -186,7 +186,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -263,7 +263,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -295,7 +295,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -570,28 +570,33 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
-	//[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	
 	HONChallengeVO *vo = (indexPath.section == 0) ? [_recentChallenges objectAtIndex:indexPath.row] : [_olderChallenges objectAtIndex:indexPath.row];
 	_challengeVO = vo;
 	
+	[self _updateChallengeAsSeen];
+	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
+	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID andOpponentID:_challengeVO.challengerID] animated:YES];
+	
 	//NSLog(@"STATUS:[%@]", vo.status);
-	if ([vo.status isEqualToString:@"Created"]) {
-		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithChallenge:vo] animated:YES];
-		
-	} else if ([vo.status isEqualToString:@"Waiting"]) {
-		[self _updateChallengeAsSeen];
-		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
-		
-	} else if ([vo.status isEqualToString:@"Accept"]) {
-		[self _updateChallengeAsSeen];
-		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.challengerID challengerID:_challengeVO.creatorID] animated:YES];
-			
-	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
-		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
-	}
+//	if ([vo.status isEqualToString:@"Created"]) {
+//		[self _updateChallengeAsSeen];
+//		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
+//		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
+//		
+//	} else if ([vo.status isEqualToString:@"Waiting"]) {
+//		[self _updateChallengeAsSeen];
+//		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
+//		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
+//		
+//	} else if ([vo.status isEqualToString:@"Accept"]) {
+//		[self _updateChallengeAsSeen];
+//		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
+//		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.challengerID challengerID:_challengeVO.creatorID] animated:YES];
+//			
+//	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
+//		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
+//	}
 }
 
 
@@ -670,7 +675,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;
@@ -707,7 +712,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;
@@ -750,7 +755,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;
@@ -787,7 +792,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;

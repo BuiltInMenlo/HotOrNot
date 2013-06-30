@@ -108,7 +108,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -211,7 +211,7 @@
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
 	
-	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubjectName:vo.subjectName] animated:YES];
+	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:vo.subjectName] animated:YES];
 }
 
 - (void)_selectRightDiscoveryChallenge:(NSNotification *)notification {
@@ -221,7 +221,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
-	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubjectName:vo.subjectName] animated:YES];
+	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:vo.subjectName] animated:YES];
 }
 
 - (void)_showSearchTable:(NSNotification *)notification {

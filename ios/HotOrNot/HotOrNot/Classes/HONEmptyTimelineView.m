@@ -19,10 +19,12 @@
 	if ((self = [super initWithFrame:CGRectOffset(frame, 0.0, kNavBarHeaderHeight)])) {
 		self.backgroundColor = [UIColor whiteColor];
 		
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mobile_verification-568h@2x" : @"mobile_verification"]]];
+		
 		UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		ctaButton.frame = CGRectMake(0.0, 150.0, 320.0, 53.0);
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
-		[ctaButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+		ctaButton.frame = CGRectMake(0.0, 185.0, 320.0, 53.0);
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"sendVerificationButton_nonActive"] forState:UIControlStateNormal];
+		[ctaButton setBackgroundImage:[UIImage imageNamed:@"sendVerificationButton_Active"] forState:UIControlStateHighlighted];
 		[ctaButton addTarget:self action:@selector(_goSMS) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:ctaButton];
 	}

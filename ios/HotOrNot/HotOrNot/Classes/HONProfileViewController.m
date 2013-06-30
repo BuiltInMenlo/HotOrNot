@@ -28,12 +28,13 @@
 #import "HONImagePickerViewController.h"
 #import "HONChangeAvatarViewController.h"
 #import "HONInviteNetworkViewCell.h"
+#import "HONAddContactViewCell.h"
 #import "HONTimelineViewController.h"
 
 @interface HONProfileViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
-@property (nonatomic, strong) NSMutableArray *pastUsers;
-@property (nonatomic, strong) NSMutableArray *allPastUsers;
-@property (nonatomic, strong) NSMutableArray *contactUsers;
+@property (nonatomic, strong) NSMutableArray *recentOpponents;
+@property (nonatomic, strong) NSArray *friends;
+@property (nonatomic, strong) NSMutableArray *contacts;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -48,10 +49,10 @@
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor whiteColor];
 		
-		_pastUsers = [NSMutableArray array];
-		_allPastUsers = [NSMutableArray array];
-		_contactUsers = [NSMutableArray array];
-		_isContactsViewed = NO;
+		_recentOpponents = [NSMutableArray array];
+		_friends = [NSMutableArray array];
+		_contacts = [NSMutableArray array];
+		_isContactsViewed = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_PROFILE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_ALL_TABS" object:nil];
@@ -102,7 +103,6 @@
 		} else {
 			
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedUsers);
 			
 			int cnt = 0;
@@ -110,34 +110,17 @@
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
-					[_pastUsers addObject:vo];
+					[_recentOpponents addObject:vo];
 				
 				cnt++;
 				if (cnt == 3)
 					break;
 			}
-			
-//			[_pastUsers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//																				  [NSString stringWithFormat:@"%d", 0], @"id",
-//																				  [NSString stringWithFormat:@"%d", 0], @"points",
-//																				  [NSString stringWithFormat:@"%d", 0], @"votes",
-//																				  [NSString stringWithFormat:@"%d", 0], @"pokes",
-//																				  [NSString stringWithFormat:@"%d", 0], @"pics",
-//																				  @"Send a random match", @"username",
-//																				  @"", @"fb_id",
-//																				  @"https://hotornot-avatars.s3.amazonaws.com/waitingAvatar.png", @"avatar_url", nil]]];
-			
-			for (NSDictionary *serverList in parsedUsers) {
-				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
-				
-				if (vo != nil)
-					[_allPastUsers addObject:vo];
-			}
-			
+						
 			[_tableView reloadData];
 			
 			if (_progressHUD != nil) {
-				if ([_pastUsers count] == 0) {
+				if ([_recentOpponents count] == 0) {
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -159,7 +142,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -254,7 +237,7 @@
 		CFRelease(emailProperties);
 		
 		if ([phoneNumber length] > 0 || [email length] > 0) {
-			[_contactUsers addObject:[HONContactUserVO contactWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+			[_contacts addObject:[HONContactUserVO contactWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																									fName, @"f_name",
 																									lName, @"l_name",
 																									phoneNumber, @"phone",
@@ -345,90 +328,6 @@
 	}
 }
 
-- (void)_goInstagram {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Instagram"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UITextField *textField;
-	UITextField *textField2;
-	UIAlertView *prompt = [[UIAlertView alloc] initWithTitle:@"Instagram Login"
-																	 message:@"\n\n\n"
-																	delegate:nil
-														cancelButtonTitle:@"Cancel"
-														otherButtonTitles:@"OK", nil];
-	
-	textField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 50.0, 260.0, 25.0)];
-	[textField setBackgroundColor:[UIColor whiteColor]];
-	[textField setPlaceholder:@"username"];
-	[prompt addSubview:textField];
-	
-	textField2 = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 85.0, 260.0, 25.0)];
-	[textField2 setBackgroundColor:[UIColor whiteColor]];
-	[textField2 setPlaceholder:@"password"];
-	[textField2 setSecureTextEntry:YES];
-	[prompt addSubview:textField2];
-	
-	[prompt show];
-}
-
-- (void)_goKik {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Kik"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
-	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
-	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
-	
-	KikAPIMessage *myMessage = [KikAPIMessage message];
-	myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	myMessage.description = @"";
-	myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
-	myMessage.filePath = savePath;
-	myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
-	myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
-	
-	[KikAPIClient sendMessage:myMessage];
-	
-}
-
-- (void)_goFacebook {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Facebook"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if (FBSession.activeSession.isOpen)
-		[self _callFB];
-	
-	else {
-		[FBSession openActiveSessionWithReadPermissions:nil allowLoginUI:YES completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
-			if (error) {
-				UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error"
-																				message:error.localizedDescription
-																			  delegate:nil
-																  cancelButtonTitle:@"OK"
-																  otherButtonTitles:nil];
-				[alert show];
-				
-			} else if (FB_ISSESSIONOPENWITHSTATE(status))
-				[self _callFB];
-		}];
-	}
-}
-
-- (void)_goTumblr {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Tumblr"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-}
-
-- (void)_goTwitter {
-	[[Mixpanel sharedInstance] track:@"Invite Friends - Twitter"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-}
-
 
 #pragma mark - Notifications
 - (void)_refreshProfileTab:(NSNotification *)notification {
@@ -456,11 +355,13 @@
 			[(HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] updateCell];
 			[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
 			
-			_pastUsers = [NSMutableArray array];
-			_allPastUsers = [NSMutableArray array];
-			_contactUsers = [NSMutableArray array];
+			_recentOpponents = [NSMutableArray array];
+			_friends = [NSMutableArray array];
+			_contacts = [NSMutableArray array];
 			
 			[self _retrievePastUsers];
+			_friends = [HONAppDelegate friendsList];
+			
 			
 			ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
 			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
@@ -488,7 +389,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -626,18 +527,17 @@
 		return (1);
 		
 	} else if (section == 1) {
-		return ([_pastUsers count]);
+		return ([_recentOpponents count]);
 		
 	} else if (section == 2) {
-		return ([_allPastUsers count]);
+		return ([_friends count]);
 		
 	} else {
-		return (6);//(_isContactsViewed) ? [_contactUsers count] : 1);
+		return ((_isContactsViewed) ? [_contacts count] : 1);
 	}
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	//return (3 + (int)(ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized));
 	return (4);
 }
 
@@ -657,10 +557,10 @@
 		label.text = @"Recent";
 		
 	} else if (section == 2) {
-		label.text = @"All";
+		label.text = [NSString stringWithFormat:@"Friends (%d)", [_friends count]];
 		
 	} else {
-		label.text = @"Invite";//[NSString stringWithFormat:@"Contact List (%d)", [_contactUsers count]];
+		label.text = @"Invite";
 	}
 	
 	return (headerImageView);
@@ -695,7 +595,7 @@
 		if (cell == nil)
 			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:NO];//]indexPath.row == [_pastUsers count] - 1];
 		
-		cell.userVO = (HONUserVO *)[_pastUsers objectAtIndex:indexPath.row];
+		cell.userVO = (HONUserVO *)[_recentOpponents objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
 		return (cell);
@@ -706,62 +606,19 @@
 		if (cell == nil)
 			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:NO];
 		
-		cell.userVO = (HONUserVO *)[_allPastUsers objectAtIndex:indexPath.row];
+		cell.userVO = (HONUserVO *)[_friends objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
 		return (cell);
 		
 	} else {
-		HONInviteNetworkViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-		NSDictionary *dict;
-		
-		if (cell == nil)
-			cell = [[HONInviteNetworkViewCell alloc] init];
-		
-		if (indexPath.row == 0) {
-			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"icon_SMS", @"image",
-					  @"SMS Contacts", @"name", nil];
-			
-		} else if (indexPath.row == 1) {
-			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"icon_Instagram", @"image",
-					  @"Instagram", @"name", nil];
-			
-		} else if (indexPath.row == 2) {
-			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"icon_Facebook", @"image",
-					  @"Facebook", @"name", nil];
-			
-		} else if (indexPath.row == 3) {
-			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"icon_Tumblr", @"image",
-					  @"Tumblr", @"name", nil];
-			
-		} else if (indexPath.row == 4) {
-			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"icon_Twitter", @"image",
-					  @"Twitter", @"name", nil];
-			
-		} else if (indexPath.row == 5) {
-			dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					  @"icon_Kik", @"image",
-					  @"Kik", @"name", nil];
-		}
-		
-		[cell setContents:dict];
-		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-		
-		return (cell);
-		
-		/*
 		if (_isContactsViewed) {
-			HONInviteUserViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+			HONAddContactViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 			
 			if (cell == nil)
-				cell = [[HONInviteUserViewCell alloc] init];
+				cell = [[HONAddContactViewCell alloc] init];
 			
-			cell.contactUserVO = (HONContactUserVO *)[_contactUsers objectAtIndex:indexPath.row];
+			cell.userVO = (HONContactUserVO *)[_contacts objectAtIndex:indexPath.row];
 			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 			
 			return (cell);
@@ -787,7 +644,6 @@
 			
 			return (cell);
 		}
-		*/
 	}
 }
 
@@ -812,49 +668,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	if (indexPath.section == 3) {
-//		if (indexPath.row == 0) {
-//			[self _goContacts];
-//			
-//		} else if (indexPath.row == 1) {
-//			[self _goInstagram];
-//			
-//		} else if (indexPath.row == 2) {
-//			[self _goFacebook];
-//			
-//		} else if (indexPath.row == 3) {
-//			[self _goTumblr];
-//			
-//		} else if (indexPath.row == 4) {
-//			[self _goTwitter];
-//			
-//		} else if (indexPath.row == 3) {
-//			[self _goKik];
-//		}
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Social Networks Off"
-																			 message:@"Social Networks are turned off during beta"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
-		
-	} else {
-		
-		HONUserVO *vo = (HONUserVO *)[_pastUsers objectAtIndex:indexPath.row];
+	if (indexPath.section == 1 || indexPath.section == 2) {
+		HONUserVO *vo = (HONUserVO *)[_recentOpponents objectAtIndex:indexPath.row];
 		[[Mixpanel sharedInstance] track:@"Profile - Follower Timeline"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 													 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"follower", nil]];
 		
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:vo.username] animated:YES];
+	
+	} else {
+		
 	}
-}
-
-
-#pragma mark - ScrollView Delegates
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 }
 
 

@@ -17,6 +17,7 @@
 @interface HONInstagramLoginViewController () <UITextFieldDelegate>
 @property (nonatomic, retain) UITextField *usernameTextField;
 @property (nonatomic, retain) UITextField *passwordTextField;
+@property (nonatomic, retain) UIButton *submitButton;
 @end
 
 
@@ -45,7 +46,27 @@
 
 #pragma mark - Data Calls
 - (void)_submitLogin {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 12], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							_usernameTextField.text, @"instau",
+							_passwordTextField.text, @"instap", nil];
 	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
 }
 
 
@@ -68,7 +89,7 @@
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyNext];
 	[_usernameTextField setTextColor:[UIColor whiteColor]];
-	_usernameTextField.backgroundColor = [HONAppDelegate honDebugBlueColor];
+	_usernameTextField.backgroundColor = [HONAppDelegate honDebugGreenColor];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
@@ -94,6 +115,22 @@
 	_passwordTextField.delegate = self;
 	[_passwordTextField setTag:1];
 	[self.view addSubview:_passwordTextField];
+	
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 73.0, 320.0, 53.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	_submitButton.hidden = YES;
+	[self.view addSubview:_submitButton];
+	
+	
+	_submitButton.hidden = NO;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
+	}];
+	
+	[_usernameTextField becomeFirstResponder];
 }
 
 - (void)viewDidLoad {
@@ -132,7 +169,22 @@
 }
 
 - (void)_goNext {
-	NSLog(@"NEXT");
+	if ([_usernameTextField.text length] > 0 && [_passwordTextField.text length] > 0) {
+		[[Mixpanel sharedInstance] track:@"Instagram Login - Submit"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  _usernameTextField.text, @"mobile", nil]];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+		} completion:^(BOOL finished) {
+			_submitButton.hidden = YES;
+		}];
+		
+		[self _submitLogin];
+		
+	} else
+		NSLog(@"CANT LOGIN");
 }
 
 
@@ -152,25 +204,18 @@
 
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	NSLog(@"textFieldDidEndEditing");
+	
+	
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
 	NSLog(@"_onTextEditingDidEnd");
+	
+	
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
 	NSLog(@"_onTextEditingDidEndOnExit");
-	
-	if ([_usernameTextField.text length] > 0 && [_passwordTextField.text length] > 0) {
-		[[Mixpanel sharedInstance] track:@"Instagram Login - Submit"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  _usernameTextField.text, @"mobile", nil]];
-			
-		[self _goNext];
-		
-	} else
-		NSLog(@"CANT LOGIN");
 }
 
 @end

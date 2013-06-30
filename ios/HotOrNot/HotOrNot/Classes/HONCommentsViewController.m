@@ -149,7 +149,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -185,7 +185,7 @@
 	[self.view addSubview:_tableView];
 	
 	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0)];
-	_bgTextImageView.backgroundColor = [UIColor colorWithWhite:0.922 alpha:1.0];
+	_bgTextImageView.image = [UIImage imageNamed:@""];
 	_bgTextImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_bgTextImageView];
 	
@@ -205,8 +205,8 @@
 	
 	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	sendButton.frame = CGRectMake(248.0, 3.0, 64.0, 44.0);
-	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
-	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButtonComments_nonActive"] forState:UIControlStateNormal];
+	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButtonComments_Active"] forState:UIControlStateHighlighted];
 	[sendButton addTarget:self action:@selector(_goSend) forControlEvents:UIControlEventTouchUpInside];
 	[_bgTextImageView addSubview:sendButton];
 	
@@ -445,7 +445,7 @@
 					_progressHUD.minShowTime = kHUDTime;
 					_progressHUD.mode = MBProgressHUDModeCustomView;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
 					[_progressHUD hide:YES afterDelay:1.5];
 					_progressHUD = nil;

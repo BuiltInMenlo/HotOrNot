@@ -66,7 +66,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithUser:(HONUserVO *)userVO {
-	NSLog(@"HONImagePickerViewController - initWithUser:[%d/%@]", userVO.userID, userVO.username);
+	NSLog(@"%@ - initWithUser:[%d/%@]", [self description], userVO.userID, userVO.username);
 	if ((self = [super init])) {
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
@@ -81,7 +81,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithSubject:(NSString *)subject {
-	NSLog(@"HONImagePickerViewController - initWithSubject:[%@]", subject);
+	NSLog(@"%@ - initWithSubject:[%@]", [self description], subject);
 	
 	if ((self = [super init])) {
 		_subjectName = subject;
@@ -96,7 +96,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject {
-	NSLog(@"HONImagePickerViewController - initWithUser:[%d/%@] subject:[%@]", userVO.userID, userVO.username, subject);
+	NSLog(@"%@ - initWithUser:[%d/%@] subject:[%@]", [self description], userVO.userID, userVO.username, subject);
 	if ((self = [super init])) {
 		_subjectName = subject;
 		_userVO = userVO;
@@ -111,7 +111,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
-	NSLog(@"HONImagePickerViewController - initWithChallenge:[%d]", vo.challengeID);
+	NSLog(@"%@ - initWithChallenge:[%d]", [self description], vo.challengeID);
 	if ((self = [super init])) {
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
@@ -127,7 +127,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithJoinChallenge:(HONChallengeVO *)vo {
-	NSLog(@"HONImagePickerViewController - initWithJoinChallenge:[%d]", vo.challengeID);
+	NSLog(@"%@ - initWithJoinChallenge:[%d]", [self description], vo.challengeID);
 	if ((self = [super init])) {
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
@@ -289,7 +289,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;

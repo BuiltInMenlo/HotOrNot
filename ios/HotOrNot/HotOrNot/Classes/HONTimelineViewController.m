@@ -17,7 +17,6 @@
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
 #import "HONUserProfileViewCell.h"
-#import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
@@ -32,33 +31,28 @@
 
 
 @interface HONTimelineViewController() <MFMessageComposeViewControllerDelegate>
-@property(nonatomic) int subjectID;
-@property(nonatomic, strong) NSString *subjectName;
-@property(nonatomic, strong) NSString *username;
-@property(nonatomic, strong) NSDictionary *challengerDict;
-@property(nonatomic, strong) HONEmptyTimelineView *emptyTimelineView;
-@property(nonatomic, strong) UIImageView *toggleImgView;
-@property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) NSMutableArray *challenges;
-@property(nonatomic) BOOL isPushView;
-@property(nonatomic, strong) HONChallengeVO *challengeVO;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic) int submitAction;
-@property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) UIImageView *emptySetImgView;
-@property(nonatomic, strong) HONUserVO *userVO;
+@property (readonly, nonatomic, assign) HONTimelineSubmitType timelineSubmitType;@property (nonatomic) int submitAction;
+@property (nonatomic, strong) NSString *subjectName;
+@property (nonatomic, strong) NSString *username;
+@property (nonatomic, strong) NSDictionary *challengerDict;
+@property (nonatomic, strong) HONEmptyTimelineView *emptyTimelineView;
+@property (nonatomic, strong) UIImageView *toggleImgView;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic) BOOL isPushView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) UIImageView *emptySetImgView;
+@property (nonatomic, strong) HONUserVO *userVO;
 @end
 
 @implementation HONTimelineViewController
 
 - (id)init {
+	NSLog(@"%@ - init", [[self class] description]);
 	if ((self = [super init])) {
-		_subjectID = 0;
-		_submitAction = 4;
 		_isPushView = NO;
-		
-		self.view.backgroundColor = [UIColor whiteColor];
-		_challenges = [NSMutableArray new];
+		_submitAction = 10;
 		
 		[self _registerNotifications];
 	}
@@ -66,14 +60,11 @@
 	return (self);
 }
 
-- (id)initWithSubjectID:(int)subjectID {
+- (id)initWithPublic {
+	NSLog(@"%@ - init", [[self class] description]);
 	if ((self = [super init])) {
-		_isPushView = YES;
-		
-		_subjectID = subjectID;
-		
-		self.view.backgroundColor = [UIColor whiteColor];
-		_challenges = [NSMutableArray new];
+		_isPushView = NO;
+		_submitAction = 4;
 		
 		[self _registerNotifications];
 	}
@@ -81,13 +72,12 @@
 	return (self);
 }
 
-- (id)initWithSubjectName:(NSString *)subjectName {
+- (id)initWithSubject:(NSString *)subjectName {
+	NSLog(@"%@ - initWithSubject:[%@]", [[self class] description], subjectName);
 	if ((self = [super init])) {
 		_isPushView = YES;
 		_subjectName = subjectName;
-		
-		self.view.backgroundColor = [UIColor whiteColor];
-		_challenges = [NSMutableArray new];
+		_submitAction = 8;
 		
 		[self _registerNotifications];
 	}
@@ -97,54 +87,26 @@
 
 
 - (id)initWithUsername:(NSString *)username {
+	NSLog(@"%@ - initWithUsername:[%@]", [[self class] description], username);
 	if ((self = [super init])) {
 		_isPushView = YES;
-		
-		_subjectID = 0;
-		_challengeVO = nil;
-		_subjectName = nil;
+		_submitAction = 9;
 		_username = username;
 		
-		self.view.backgroundColor = [UIColor whiteColor];
-		_challenges = [NSMutableArray new];
-		
 		[self _registerNotifications];
 	}
 	
 	return (self);
 }
 
-- (id)initWithChallenge:(HONChallengeVO *)vo {
+- (id)initWithUserID:(int)userID andOpponentID:(int)opponentID {
+	NSLog(@"%@ - initWithUserID:[%d] andOpponentID:[%d]", [[self class] description], userID, opponentID);
 	if ((self = [super init])) {
 		_isPushView = YES;
-		
-		_subjectID = 0;
-		_challengeVO = vo;
-		_subjectName = _challengeVO.subjectName;
-		
-		self.view.backgroundColor = [UIColor whiteColor];
-		_challenges = [NSMutableArray new];
-		
-		[self _registerNotifications];
-	}
-	
-	return (self);
-}
-
-- (id)initWithUserID:(int)userID challengerID:(int)challengerID {
-	if ((self = [super init])) {
-		_isPushView = YES;
-		_subjectID = 0;
-		_challengeVO = nil;
-		_subjectName = nil;
-		_username = nil;
-		
+		_submitAction = 7;
 		_challengerDict = [NSDictionary dictionaryWithObjectsAndKeys:
 								 [NSNumber numberWithInt:userID], @"user1",
-								 [NSNumber numberWithInt:challengerID], @"user2", nil];
-		
-		self.view.backgroundColor = [UIColor whiteColor];
-		_challenges = [NSMutableArray new];
+								 [NSNumber numberWithInt:opponentID], @"user2", nil];
 		
 		[self _registerNotifications];
 	}
@@ -188,30 +150,27 @@
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
 	
-	if (_subjectID == 0) {
-		if (_subjectName != nil) {
-			[params setObject:[NSString stringWithFormat:@"%d", 8] forKey:@"action"];
-			[params setObject:_subjectName forKey:@"subjectName"];
-			
-		} else {
-			if (_username != nil) {
-				[params setObject:_username forKey:@"username"];
-				[params setObject:[NSString stringWithFormat:@"%d", 9] forKey:@"action"];
-				
-			} else {
-				if (_challengerDict != 0) {
-					[params setObject:[_challengerDict objectForKey:@"user1"] forKey:@"userID"];
-					[params setObject:[_challengerDict objectForKey:@"user2"] forKey:@"challengerID"];
-					[params setObject:[NSString stringWithFormat:@"%d", 7] forKey:@"action"];
-					
-				} else
-					[params setObject:[NSString stringWithFormat:@"%d", _submitAction] forKey:@"action"];
-			}
-		}
-	} else {
-		[params setObject:[NSString stringWithFormat:@"%d", 2] forKey:@"action"];
-		[params setObject:[NSString stringWithFormat:@"%d", _subjectID] forKey:@"subjectID"];
+	// all public
+	if (_submitAction == 4) {
+		
+	// between two users
+	} else if (_submitAction == 7) {
+		[params setObject:[_challengerDict objectForKey:@"user1"] forKey:@"userID"];
+		[params setObject:[_challengerDict objectForKey:@"user2"] forKey:@"challengerID"];
+	
+	// with hashtag
+	} else if (_submitAction == 8) {
+		[params setObject:_subjectName forKey:@"subjectName"];
+	
+	// a user's
+	} else if (_submitAction == 9) {
+		[params setObject:_username forKey:@"username"];
+	
+	// a user's friends
+	} else if (_submitAction == 10) {
+		
 	}
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
@@ -222,29 +181,24 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
 			
 			_challenges = [NSMutableArray new];
 			
-			int cnt = 0;
-			for (NSDictionary *serverList in unsortedChallenges) {
+			for (NSDictionary *serverList in challengesResult) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
 				if (vo != nil) {
-					//NSLog(@"%d)--> ADDING CHALLENGE[%@]", cnt, vo.dictionary);
 					[_challenges addObject:vo];
-					
-					if (_challengerDict != nil) {
-						if (vo.challengerID == [[_challengerDict objectForKey:@"user2"] intValue] || vo.creatorID == [[_challengerDict objectForKey:@"user2"] intValue])
-							[_headerView setTitle:[NSString stringWithFormat:@"@%@", (vo.challengerID == [[_challengerDict objectForKey:@"user2"] intValue]) ? vo.challengerName : vo.creatorName]];
-					}
-						
-					cnt++;
 				}
 			}
 			
+			if (_submitAction == 7) {
+				HONChallengeVO *vo = (HONChallengeVO *)[_challenges lastObject];
+				[_headerView setTitle:[NSString stringWithFormat:@"@%@", (vo.creatorID == [[_challengerDict objectForKey:@"user1"] intValue] && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorName : vo.challengerName]];
+			}
+						
 			_emptySetImgView.hidden = ([_challenges count] > 0);
 			[_tableView reloadData];
 		}
@@ -264,7 +218,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -290,14 +244,11 @@
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			_challenges = [NSMutableArray new];
 			
-			int cnt = 0;
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
 				if (vo != nil) {
-					//NSLog(@"%d)--> ADDING CHALLENGE[%@]", cnt, vo.dictionary);
 					[_challenges addObject:vo];
-					cnt++;
 				}
 			}
 			
@@ -329,7 +280,7 @@
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_connectionError", nil);
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:1.5];
 		_progressHUD = nil;
@@ -354,36 +305,47 @@
 		} else {
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
-			if ([userResult objectForKey:@"id"] != [NSNull null]) {
-				_userVO = [HONUserVO userWithDictionary:userResult];
-				[_tableView reloadData];
-				
-				if (_challengeVO == nil)
-					[self _retrieveChallenges];
-				
-				else
-					[self _retrieveSingleChallenge:_challengeVO];
-			}
+			_userVO = [HONUserVO userWithDictionary:userResult];
+			[_tableView reloadData];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:1.5];
+		_progressHUD = nil;
 	}];
 }
 
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
+	self.view.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];	
 	
+	_userVO = nil;
+	_challenges = [NSMutableArray array];
+		
 	if (_isPushView) {
-		_headerView = [[HONHeaderView alloc] initWithTitle:(_username != nil) ? [NSString stringWithFormat:@"@%@", _username] : _subjectName];
+		
+		NSString *title = @"";
+		if (_submitAction == 8)
+			title = _subjectName;
+		
+		else if (_submitAction == 9)
+			title = [NSString stringWithFormat:@"@%@", _username];
+		
+		
+		_headerView = [[HONHeaderView alloc] initWithTitle:title];
 		[_headerView hideRefreshing];
-	
-	} else
-		_headerView = [[HONHeaderView alloc] initAsVoteWall];
-	
-	if (_isPushView) {
+		
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
@@ -392,6 +354,7 @@
 		[_headerView addSubview:backButton];
 	
 	} else {
+		_headerView = [[HONHeaderView alloc] initAsVoteWall];
 		[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	}
 	
@@ -426,23 +389,17 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	if ([_username length] > 0) {
+	if (_submitAction == 9)
 		[self _retrieveUser];
-	
-	} else {
-		if (_challengeVO == nil)
-			[self _retrieveChallenges];
 		
-		else
-			[self _retrieveSingleChallenge:_challengeVO];
-	}
+	[self _retrieveChallenges];
 
+	
 #if __ALWAYS_INVITE__ == 1
-	[[NSUserDefaults standardUserDefaults] setObject:@"N" forKey:@"sms_verified"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[HONAppDelegate writeFriendsList:[NSArray array]];
 #endif
 	
-	if (![[[NSUserDefaults standardUserDefaults] objectForKey:@"sms_verified"] isEqualToString:@"Y"] && !_isPushView)
+	if ([[HONAppDelegate friendsList] count] == 0 && !_isPushView)
 		[self _goMobileSignup];
 	
 	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
@@ -480,16 +437,10 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if ([_username length] > 0) {
+	if (_submitAction == 9)
 		[self _retrieveUser];
-		
-	} else {
-		if (_challengeVO == nil)
-			[self _retrieveChallenges];
-		
-		else
-			[self _retrieveSingleChallenge:_challengeVO];
-	}
+	
+	[self _retrieveChallenges];
 }
 
 - (void)_goCreateChallenge {
@@ -548,7 +499,6 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
-	//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:^(void) {
@@ -597,22 +547,10 @@
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
 	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_refresh", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
-	if ([_username length] > 0) {
+	if (_submitAction == 9)
 		[self _retrieveUser];
-		
-	} else {
-		if (_challengeVO == nil)
-			[self _retrieveChallenges];
-		
-		else
-			[self _retrieveSingleChallenge:_challengeVO];
-	}
+	
+	[self _retrieveChallenges];
 }
 
 - (void)_newChallenge:(NSNotification *)notification {
@@ -741,7 +679,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (([_username length] > 0) ? [_challenges count] + 1 : [_challenges count]);
+	return ([_challenges count] + (int)(_userVO != nil && _submitAction == 9));
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -749,7 +687,7 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	if ([_username length] > 0)
+	if (_submitAction == 9)
 		return (nil);
 	
 	else {
@@ -772,8 +710,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-	if ([_username length] > 0) {
+	if (_submitAction == 9 && _userVO != nil) {
 		if (indexPath.row == 0) {
 			HONUserProfileViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 			
@@ -816,14 +753,14 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return (([_username length] > 0) ? 210.0 : 320.0);
+		return ((_submitAction == 9) ? 210.0 : 320.0);
 		
 	} else
 		return (320.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (([[HONAppDelegate timelineBannerURL] length] > 0) ? ((int)![_username length] > 0) * 50.0 : 0.0);
+	return (([[HONAppDelegate timelineBannerURL] length] > 0) ? (int)!(_submitAction == 9) * 50.0 : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -832,12 +769,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-}
-
-
-#pragma mark - ScrollView Delegates
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 }
 
 

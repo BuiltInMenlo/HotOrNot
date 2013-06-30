@@ -18,12 +18,19 @@ typedef enum {
 	HONChallengeEngageTypeJoin,          /** New challenges are created against a challenge's creator & opponent */
 } HONChallengeEngageType;
 
+typedef enum {
+	HONTimelineSubmitTypePublic			= 4,	/** All public challenges */
+	HONTimelineSubmitTypeFriends		= 10,	/** Challenges involving all friends */
+	HONTimelineSubmitTypeSubject		= 8,	/** Challenges using same hashtag */
+	HONTimelineSubmitTypeSingleUser		= 9,	/** Challenges of a single user */
+	HONTimelineSubmitTypeOpponents		= 7,	/** Challenges between two users */
+} HONTimelineSubmitType;
+
 
 @interface HONTimelineViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-- (id)initWithSubjectID:(int)subjectID;
-- (id)initWithSubjectName:(NSString *)subjectName;
-- (id)initWithChallenge:(HONChallengeVO *)vo;
+- (id)initWithPublic;
+- (id)initWithSubject:(NSString *)subjectName;
 - (id)initWithUsername:(NSString *)username;
-- (id)initWithUserID:(int)userID challengerID:(int)challengerID;
+- (id)initWithUserID:(int)userID andOpponentID:(int)opponentID;
 @end

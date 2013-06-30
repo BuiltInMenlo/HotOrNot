@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "MBProgressHUD.h"
 #import "HONChallengeVO.h"
 
 
@@ -26,6 +27,8 @@ extern NSString * const kAPIPopular;
 extern NSString * const kAPISearch;
 extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
+extern NSString * const kAPIGetFriends;
+extern NSString * const kAPIAddFriends;
 
 // view heights
 const CGFloat kNavBarHeaderHeight;
@@ -88,6 +91,9 @@ const NSUInteger kFollowingUsersDisplayTotal;
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
 + (UIImage *)avatarImage;
+
++ (NSArray *)friendsList;
++ (void)writeFriendsList:(NSArray *)friends;
 
 + (void)setAllowsFBPosting:(BOOL)canPost;
 + (BOOL)allowsFBPosting;

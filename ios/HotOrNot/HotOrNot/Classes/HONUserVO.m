@@ -12,7 +12,7 @@
 @implementation HONUserVO
 
 @synthesize dictionary;
-@synthesize userID, fbID, username, points, votes, pokes, score, pics, imageURL;
+@synthesize userID, fbID, username, points, votes, pokes, score, pics, imageURL, friends;
 
 + (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONUserVO *vo = [[HONUserVO alloc] init];
@@ -28,6 +28,19 @@
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
 	vo.imageURL = [dictionary objectForKey:@"avatar_url"];
 	
+	vo.friends = [NSMutableArray array];
+	for (NSDictionary *dict in [dictionary objectForKey:@"friends"]) {
+		[vo.friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+															 [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
+															 [NSString stringWithFormat:@"%d", 0], @"points",
+															 [NSString stringWithFormat:@"%d", 0], @"votes",
+															 [NSString stringWithFormat:@"%d", 0], @"pokes",
+															 [NSString stringWithFormat:@"%d", 0], @"pics",
+															 @"", @"fb_id",
+															 [[dict objectForKey:@"user"] objectForKey:@"username"], @"username",
+															 [[dict objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];
+	}
+	
 	return (vo);
 }
 
@@ -36,6 +49,7 @@
 	self.username = nil;
 	self.imageURL = nil;
 	self.fbID = nil;
+	self.friends = nil;
 }
 
 @end

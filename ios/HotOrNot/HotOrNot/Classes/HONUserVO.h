@@ -22,5 +22,6 @@
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *fbID;
 @property (nonatomic, retain) NSString *imageURL;
+@property (nonatomic, retain) NSMutableArray *friends;
 
 @end
