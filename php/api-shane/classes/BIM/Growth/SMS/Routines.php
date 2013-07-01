@@ -21,6 +21,8 @@ class BIM_Growth_SMS_Routines extends BIM_Growth_SMS{
         $number = "+$number";
      
         $msg = $this->getTxtMsg();
+        $user = new BIM_User( $this->persona->sms->userId );
+        $msg = preg_replace('@\[\[USERNAME\]\]@', $user->username, $msg);
         $sms = $client->account->sms_messages->create( $conf->api->number, $number, $msg );
     }
     
