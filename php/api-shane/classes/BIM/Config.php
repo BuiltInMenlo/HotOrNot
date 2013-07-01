@@ -159,4 +159,83 @@ class BIM_Config{
         $cache = new BIM_Cache_Memcache( self::memcached() );
         $cache->set( $cackeKey, $data );
     }
+    
+    public static function actionMethods(){
+        return array(
+            'BIM_Controller_Search' => array(
+        		'0' => 'test',
+        		'1' => 'getUsersLikeUsername',
+        		'2' => 'getSubjectsLikeSubject',
+        		'3' => 'getDefaultUsers',
+        		'4' => 'getSnappedUsers',
+            ),
+            'BIM_Controller_Users' => array(
+                '0' => 'test',
+        		'1' => 'submitNewUser',
+        		'2' => 'updateFB',
+        		'3' => 'updatePaid',
+        		'4' => 'updateNotifications',
+        		'5' => 'getUser',
+        		'6' => 'pokeUser',
+        		'7' => 'updateName',
+        		'8' => 'getUserFromName',
+        		'9' => 'updateUsernameAvatar',
+        		'10' => 'flagUser',
+        		'11' => 'matchFriends',
+        		'12' => 'inviteInsta',
+            ),
+            'BIM_Controller_Discover' => array(
+        		'0' => 'test',
+        		'1' => 'getTopChallengesByVotes',
+        		'2' => 'getTopChallengesByLocation',
+        	),
+            'BIM_Controller_Comments' => array(
+                '0' => 'test',
+        		'1' => 'getCommentsForChallenge',
+        		'2' => 'submitCommentForChallenge',
+        		'3' => 'submitCommentForSubject',        			
+        		'4' => 'getComment',
+        		'5' => 'getCommentsForUser',
+        		'6' => 'getCommentsForSubject',
+        		'7' => 'flagComment',
+        		'8' => 'deleteComment',
+        	),
+            'BIM_Controller_Challenges' => array(
+        		'0' => 'test',
+        		'1' => 'submitMatchingChallenge',
+        		'2' => 'getChallengesForUser',        			
+        		'3' => 'getAllChallengesForUser',
+        		'4' => 'acceptChallenge',        		
+        		'5' => 'getPreviewForSubject',        		
+        		'6' => 'updatePreviewed',
+        		'7' => 'submitChallengeWithUsername',
+        		'8' => 'getPrivateChallengesForUser',
+        		'9' => 'submitChallengeWithChallenger',
+        		'10' => 'cancelChallenge',
+        		'11' => 'flagChallenge',
+        		'12' => 'getChallengesForUserBeforeDate',
+    			'13' => 'getPrivateChallengesForUserBeforeDate',
+    			'14' => 'submitChallengeWithUsernames',
+        	),
+    		'BIM_Controller_G' => array( 
+        		'1' => 'smsInvites',
+        		'2' => 'emailInvites',
+        		'3' => 'trackClick',
+        		'4' => 'volleyUserPhotoComment',
+            ),        
+    		'BIM_Controller_Votes' => array( 
+        		'0' => 'test',
+        		'1' => 'getChallengesByActivity',
+        		'2' => 'getChallengesForSubjectID',
+        		'3' => 'getChallengeForChallengeID',
+        		'4' => 'getChallengesByDate',
+        		'5' => 'getVotersForChallenge',
+        		'6' => 'upvoteChallenge',
+        		'7' => 'getChallengesWithChallenger',
+        		'8' => 'getChallengesForSubjectName',
+        		'9' => 'getChallengesForUsername',
+        		'10' => 'getChallengesWithFriends',
+            )
+        );        
+    }
 }

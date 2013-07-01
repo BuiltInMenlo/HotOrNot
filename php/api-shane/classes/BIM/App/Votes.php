@@ -345,7 +345,7 @@ class BIM_App_Votes extends BIM_App_Base{
 			$user_id = mysql_fetch_object($user_result)->id;
 			
 			// get latest 10 challenges for user
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 2 AND `status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50;';
+			$query = 'SELECT * FROM `tblChallenges` WHERE ( status_id IN (1,2,4) ) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50;';
 			$challenge_result = mysql_query($query);
 		
 			// loop thru the rows
@@ -376,6 +376,52 @@ class BIM_App_Votes extends BIM_App_Base{
 			// return
 		    return $challenge_arr;
 		}
+	}
+	
+	public function getChallengesWithFriends($userId, $friendIds) {
+		$this->dbConnect();
+	    $challenge_arr = array();
+		
+	    $fIdct = count( $friendIds );
+		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
+		
+        $query = "
+        	SELECT tc.*, tcs.title as subject 
+        	FROM `hotornot-dev`.`tblChallenges` as tc 
+        	JOIN `hotornot-dev`.tblChallengeSubjects as tcs 
+        		ON tc.subject_id = tcs.id 
+        		WHERE tc.status_id IN (1,2,4) 
+        		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
+        	ORDER BY tc.`updated` DESC LIMIT 50 
+        ";
+		$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        
+        $params = $friendIds;
+        foreach( $friendIds as $friendId ){
+            $params[] = $friendId;
+        }
+        
+        $stmt = $dao->prepareAndExecute( $query, $params );
+        
+        // loop thru the rows
+		while ( $challenge_row = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
+		    //print_r( $challenge_row );
+			// push challenge into list
+			array_push($challenge_arr, array(
+				'id' => $challenge_row['id'], 
+				'status' => $challenge_row['status_id'], 					
+				'subject' => $challenge_row['subject'], 
+				'has_viewed' => $challenge_row['hasPreviewed'], 
+				'started' => $challenge_row['started'], 
+				'added' => $challenge_row['added'],
+				'updated' => $challenge_row['updated'],
+				'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
+				'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
+			));
+		}
+	
+		// return
+		return $challenge_arr;
 	}
 	
 	/** 
