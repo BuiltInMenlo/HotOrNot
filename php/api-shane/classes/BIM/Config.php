@@ -4,6 +4,9 @@ class BIM_Config{
     
     static protected $defaultNetwork = 'instagram';
 
+    static protected $lastInviteMsgFetch = 0;
+    static protected $inviteMsgs = array();
+    
     static protected $bootConfLive = array();
     static protected $bootConfDev = array();
     
@@ -158,6 +161,28 @@ class BIM_Config{
         $cackeKey = self::bootConfCacheKey( $type );
         $cache = new BIM_Cache_Memcache( self::memcached() );
         $cache->set( $cackeKey, $data );
+    }
+    
+    public static function inviteMsgs(){
+        if( empty( self::$inviteMsgs ) || ( time() - self::$lastInviteMsgFetch >= 300 ) ){
+            self::getInviteMsgs();
+            self::$lastInviteMsgFetch = time();
+        }
+        return self::$inviteMsgs;
+        
+    }
+    
+    public static function saveInviteMsgs( $data ){
+        $dao = new BIM_DAO_Mysql_Growth( self::db() );
+        $dao->saveInviteMsgs( $data );
+    }
+    
+    protected static function getInviteMsgs(){
+        $dao = new BIM_DAO_Mysql_Growth( self::db() );
+        $msgArray = $dao->getInviteMsgs();
+        foreach( $msgArray as $msgData ){
+            self::$inviteMsgs[ $msgData->type ] = $msgData->message;
+        }
     }
     
     public static function actionMethods(){

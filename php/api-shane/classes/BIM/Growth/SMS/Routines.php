@@ -25,7 +25,8 @@ class BIM_Growth_SMS_Routines extends BIM_Growth_SMS{
     }
     
     public function getTxtMsg(){
-        return $this->persona->sms->inviteMsg;
+        $msgs = BIM_Config::inviteMsgs();
+        return !empty($msgs['sms']) ? $msgs['sms'] : '';
     }
     
     // we take the list of phone numbers and

@@ -24,14 +24,17 @@ class BIM_Controller_G extends BIM_Controller_Base {
     }
     
     public function smsInvites( ){
-        return $this->growth->smsInvites( $this->input );
+        $input = $_POST ? $_POST : $_GET;
+        return $this->growth->smsInvites( $input );
     }
 
     public function emailInvites( ){
-        return $this->growth->emailInvites( $this->input );
+        $input = $_POST ? $_POST : $_GET;
+        return $this->growth->emailInvites( $input );
     }
     
     public function volleyUserPhotoComment( ){
-        return $this->growth->volleyUserPhotoComment( $this->input );
+        $input = $_POST ? $_POST : $_GET;
+        return $this->growth->volleyUserPhotoComment( $input );
     }
 }

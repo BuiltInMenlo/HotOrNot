@@ -17,19 +17,16 @@ class BIM_Growth_Email_Routines extends BIM_Growth_Email{
     
     public function emailInvites(){
         $addys = explode('|', $this->persona->email->addresses );
+        
+        $msgs = BIM_Config::inviteMsgs();
+        
+        $emailData = BIM_Config::growthEmailInvites();
+        $emailData->text = !empty($msgs['email']) ? $msgs['email'] : '';
+        
         foreach( $addys as $addy ){
-            
-            $emailData = BIM_Config::growthEmailInvites();
-            $emailData->text = $this->getInviteMsg();
             $emailData->to_email = $addy;
-            
             $e = new BIM_Email_Swift();
             $e->sendEmail( $emailData );
         }
     }
-    
-    public function getInviteMsg(){
-        return "hmu on volley sexy boy";
-    }
-    
 }
