@@ -397,7 +397,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [[utcDate dateByAddingTimeInterval:0] timeIntervalSinceDate:date];
+	int secs = [[utcDate dateByAddingTimeInterval:1] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;

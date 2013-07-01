@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol HONEmptyChallengeViewCellDelegate;
 @interface HONEmptyChallengeViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
+
+
 @end

@@ -77,16 +77,6 @@
 		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:_usernamesLabel];
 				
-//
-//		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
-//			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			changeCameraButton.frame = CGRectMake(233.0, 267.0 + opsOffset, 74.0, 44.0);
-//			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_nonActive"] forState:UIControlStateNormal];
-//			[changeCameraButton setBackgroundImage:[UIImage imageNamed:@"cameraFrontBack_Active"] forState:UIControlStateHighlighted];
-//			[changeCameraButton addTarget:self action:@selector(_goChangeCamera) forControlEvents:UIControlEventTouchUpInside];
-//			[_controlsHolderView addSubview:changeCameraButton];
-//		}
-		
 		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_optionsButton.frame = CGRectMake(16.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_nonActive"] forState:UIControlStateNormal];
@@ -102,7 +92,7 @@
 		[_controlsHolderView addSubview:_captureButton];
 		
 		UIButton *cameraOptionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraOptionsButton.frame = CGRectMake(238.0, [UIScreen mainScreen].bounds.size.height - 51.0, 64.0, 44.0);
+		cameraOptionsButton.frame = CGRectMake(248.0, [UIScreen mainScreen].bounds.size.height - 51.0, 64.0, 44.0);
 		[cameraOptionsButton setBackgroundImage:[UIImage imageNamed:@"moreWhiteButton_nonActive"] forState:UIControlStateNormal];
 		[cameraOptionsButton setBackgroundImage:[UIImage imageNamed:@"moreWhiteButton_Active"] forState:UIControlStateHighlighted];
 		[cameraOptionsButton addTarget:self action:@selector(_goCameraOptions) forControlEvents:UIControlEventTouchUpInside];
@@ -186,14 +176,6 @@
 	[self.delegate cameraOverlayViewChangeFlash:self];
 }
 
-- (void)_goChangeCamera {
-	[self.delegate cameraOverlayViewChangeCamera:self];
-}
-
-- (void)_goCameraRoll {
-	[self.delegate cameraOverlayViewShowCameraRoll:self];
-}
-
 - (void)_goCloseCamera {
 	[self.delegate cameraOverlayViewCloseCamera:self];
 }
@@ -224,14 +206,20 @@
 
 #pragma mark - CameraOptionsView Delegates
 - (void)cameraOptionsViewCameraRoll:(HONSnapCameraOptionsView *)cameraOptionsView {
-	[self _goCameraRoll];
+	[self.delegate cameraOverlayViewShowCameraRoll:self];
 }
 
 - (void)cameraOptionsViewFlipCamera:(HONSnapCameraOptionsView *)cameraOptionsView {
-	[self _goChangeCamera];
+	[self.delegate cameraOverlayViewChangeCamera:self];
 }
 
 - (void)cameraOptionsViewClose:(HONSnapCameraOptionsView *)cameraOptionsView {
+	[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
+		_cameraOptionsView.frame = CGRectOffset(_cameraOptionsView.frame, 0.0, self.frame.size.height);
+	} completion:^(BOOL finished) {
+		[_cameraOptionsView removeFromSuperview];
+		_cameraOptionsView = nil;
+	}];
 }
 
 @end

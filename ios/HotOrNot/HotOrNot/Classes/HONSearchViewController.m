@@ -16,7 +16,6 @@
 #import "HONSubjectVO.h"
 #import "HONSearchSubjectViewCell.h"
 #import "HONSearchUserViewCell.h"
-#import "HONSearchToggleHeaderView.h"
 
 @interface HONSearchViewController () <UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;
@@ -503,7 +502,6 @@
 #import "HONSubjectVO.h"
 #import "HONSearchSubjectViewCell.h"
 #import "HONSearchUserViewCell.h"
-#import "HONSearchToggleHeaderView.h"
 
 @interface HONSearchViewController () <UITableViewDataSource, UITableViewDelegate>
 @property(nonatomic, strong) UITableView *tableView;

@@ -281,27 +281,6 @@
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
-//- (void)_goFollowFriends {
-//	[[Mixpanel sharedInstance] track:@"Add Friends - Follow All"
-//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//}
-//
-//- (void)_goInviteAllContacts {
-//	[[Mixpanel sharedInstance] track:@"Add Friends - Invite All"
-//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	_smsRecipients = @"";
-//	for (HONContactUserVO *contactUserVO in _contacts) {
-//		if (contactUserVO.isSMSAvailable)
-//			[_smsRecipients stringByAppendingString:[NSString stringWithFormat:@"%@|", contactUserVO.mobileNumber]];
-//	}
-//	
-//	_smsRecipients = [_smsRecipients substringToIndex:[_smsRecipients length] - 1];
-//	[self _sendContactsSMS];
-//}
-
 - (void)_goSelectAllToggle {
 	if ([_selectedContacts count] == [_contacts count] && [_selectedFollowing count] == [_following count]) {
 		[[Mixpanel sharedInstance] track:@"Add Friends - Deselect All"

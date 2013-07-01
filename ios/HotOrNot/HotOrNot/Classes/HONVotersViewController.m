@@ -201,14 +201,13 @@
 	//[(HONVoterViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	
-	
 	_voterVO = (HONVoterVO *)[_voters objectAtIndex:indexPath.row];
-//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-//																		 message:[NSString stringWithFormat:@"Want to %@ challenge %@?", _challengeVO.subjectName, _voterVO.username]
-//																		delegate:self
-//															cancelButtonTitle:@"Yes"
-//															otherButtonTitles:@"No", nil];
-//	[alertView show];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline Votes - Select Voter"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _voterVO.userID, _voterVO.username], @"voter", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_voterVO.username];
 }

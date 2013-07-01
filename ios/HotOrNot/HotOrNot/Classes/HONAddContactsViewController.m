@@ -272,7 +272,7 @@
 	_selectedNonAppContacts = [NSMutableArray array];
 	_selectedInAppContacts = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Mobile #"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Find Friends"];
 	[self.view addSubview:headerView];
 	
 	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];

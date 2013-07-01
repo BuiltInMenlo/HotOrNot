@@ -659,13 +659,14 @@
 		
 		//- apple fix
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 		
 		// normal
 //		if ([HONAppDelegate isFUEInviteEnabled])
 //			[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 //		
 //		else
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}];
 }
 

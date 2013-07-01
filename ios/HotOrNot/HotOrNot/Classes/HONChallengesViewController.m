@@ -20,7 +20,7 @@
 #import "HONHeaderView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONInviteNetworkViewController.h"
-#import "HONAddFriendsViewController.h"
+#import "HONAddContactsViewController.h"
 
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
@@ -460,10 +460,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 - (void)_showFindFriends:(NSNotification *)notification {
 	
-	//- apple fix
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
+	//- apple fix -//
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -563,30 +563,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	HONChallengeVO *vo = (indexPath.section == 0) ? [_recentChallenges objectAtIndex:indexPath.row] : [_olderChallenges objectAtIndex:indexPath.row];
 	_challengeVO = vo;
+	//NSLog(@"STATUS:[%@]", vo.status);
+	
+	[[Mixpanel sharedInstance] track:@"Activity - Select Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
 	
 	[self _updateChallengeAsSeen];
 	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
 	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID andOpponentID:_challengeVO.challengerID] animated:YES];
 	
-	//NSLog(@"STATUS:[%@]", vo.status);
-//	if ([vo.status isEqualToString:@"Created"]) {
-//		[self _updateChallengeAsSeen];
-//		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-//		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
-//		
-//	} else if ([vo.status isEqualToString:@"Waiting"]) {
-//		[self _updateChallengeAsSeen];
-//		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-//		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
-//		
-//	} else if ([vo.status isEqualToString:@"Accept"]) {
-//		[self _updateChallengeAsSeen];
-//		[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-//		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.challengerID challengerID:_challengeVO.creatorID] animated:YES];
-//			
-//	} else if ([vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"]) {
-//		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID challengerID:_challengeVO.challengerID] animated:YES];
-//	}
 }
 
 

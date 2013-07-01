@@ -25,7 +25,6 @@
 #import "HONCommentsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
 #import "HONInstagramLoginViewController.h"
-#import "HONAddFriendsViewController.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
 

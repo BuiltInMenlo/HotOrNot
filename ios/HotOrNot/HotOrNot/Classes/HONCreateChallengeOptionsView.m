@@ -54,7 +54,6 @@
 		_cancelButton.frame = CGRectMake(28.0, offset + 270.0, 264.0, 64.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancel_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancel_Active"] forState:UIControlStateHighlighted];
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancel_Tapped"] forState:UIControlStateSelected];
 		[_cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[bgImageView addSubview:_cancelButton];
 
