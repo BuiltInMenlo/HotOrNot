@@ -1,9 +1,5 @@
 <?php
 
-require_once 'BIM/App/Votes.php';
-require_once 'BIM/Jobs/Votes.php';
-require_once 'BIM/Controller/Base.php';
-
 class BIM_Controller_Votes extends BIM_Controller_Base {
     public $votes = null;
     public $jobs = null;
@@ -11,53 +7,6 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function init(){
         $this->jobs = new BIM_Jobs_Votes();
         $this->votes = $votes = new BIM_App_Votes;
-    }
-    
-    public function handleReq(){
-        
-        // action was specified
-        $action = isset($_POST['action']) ? $_POST['action'] : null;
-        if( !$action ){
-        	$action = isset($_GET['action']) ? $_GET['action'] : null;
-        }
-        
-        if ( $action ) {
-        	switch ( $action ) {
-        		case "0":
-        			return $this->test();
-        		
-        		// get list of challenges by votes
-        		case "1":
-        			return $this->getChallengesByActivity();
-        		
-        		// get challenges for a subject
-        		case "2":
-    				return $this->getChallengesForSubjectID();
-        			
-        		// get specific challenge				
-        		case "3":
-    				return $this->getChallengeForChallengeID();
-        			
-        		// get a list of challenges by date
-        		case "4":
-        		    return $this->getChallengesByDate();
-        		// get the voters for a challenge
-        		case "5":
-    				return $this->getVotersForChallenge();
-        		// upvote a challenge	
-        		case "6":
-        		    return $this->upvoteChallenge();
-        		// get a list of challenges between two users
-        		case "7":
-    				return $this->getChallengesWithChallenger();
-        			
-        		// challenges by a subject name
-        		case "8":
-    				return $this->getChallengesForSubjectName();
-        		case "9":
-    				return $this->getChallengesForUsername();
-        	}
-        }
     }
     
     public function test(){
@@ -100,8 +49,9 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     }
     
     public function getChallengesForUsername(){
-		if (isset($_POST['username'])){
-			return $this->votes->getChallengesForUsername($_POST['username']);
+        $input = $_POST ? $_POST : $_GET;
+		if (isset($input['username'])){
+			return $this->votes->getChallengesForUsername($input['username']);
 		}
 		return array();
     }
@@ -155,5 +105,14 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
 			$data = $this->votes->getChallengesByActivity();
 		    return $data;
 	    }
+    }
+    
+    public function getChallengesWithFriends(){
+        $input = (object) ( $_POST ? $_POST : $_GET );
+        if( !empty( $input->userID ) ){
+            $friends = BIM_App_Social::getFriends($input);
+            $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
+            return $this->votes->getChallengesWithFriends( $input->userID, $friendIds );
+        }
     }
 }
