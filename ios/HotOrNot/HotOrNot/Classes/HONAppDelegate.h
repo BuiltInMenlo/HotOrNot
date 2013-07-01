@@ -43,6 +43,7 @@ const CGFloat kSnapJPEGCompress;
 
 // animation params
 const CGFloat kHUDTime;
+const CGFloat kHUDErrorTime;
 
 // image sizes
 const CGFloat kSnapThumbDim;

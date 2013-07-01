@@ -57,8 +57,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFindFriends:) name:@"SHOW_FIND_FRIENDS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 	}
 	
 	return (self);
@@ -123,7 +121,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 		}];
 	}
@@ -188,7 +186,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -265,7 +263,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -297,7 +295,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -466,14 +464,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 //	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddFriendsViewController alloc] init]];
 //	[navigationController setNavigationBarHidden:YES];
 //	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_tabsDropped:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
-}
-
-- (void)_tabsRaised:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
 }
 
 
@@ -677,7 +667,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:1.5];
+					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 					_progressHUD = nil;
 				}];
 				break;}
@@ -714,7 +704,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:1.5];
+					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 					_progressHUD = nil;
 				}];
 				break;
@@ -757,7 +747,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:1.5];
+					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 					_progressHUD = nil;
 				}];
 				break;}
@@ -794,7 +784,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:1.5];
+					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 					_progressHUD = nil;
 				}];
 				break;

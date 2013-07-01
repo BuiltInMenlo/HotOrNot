@@ -8,6 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol HONCreateChallengeOptionsViewDelegate;
 @interface HONCreateChallengeOptionsView : UIView
+@property(nonatomic, assign) id <HONCreateChallengeOptionsViewDelegate> delegate;
+@end
 
+
+@protocol HONCreateChallengeOptionsViewDelegate
+- (void)challengeOptionsViewMakePublic:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
+- (void)challengeOptionsViewMakeRandom:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
+- (void)challengeOptionsViewMakePrivate:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
+- (void)challengeOptionsViewClose:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
 @end

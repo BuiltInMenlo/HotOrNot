@@ -17,7 +17,7 @@
 @interface HONInstagramLoginViewController () <UITextFieldDelegate>
 @property (nonatomic, retain) UITextField *usernameTextField;
 @property (nonatomic, retain) UITextField *passwordTextField;
-@property (nonatomic, retain) UIButton *submitButton;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 
@@ -25,7 +25,9 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		
+		[[Mixpanel sharedInstance] track:@"Instagram Login - Open"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	}
 	
 	return (self);
@@ -46,6 +48,12 @@
 
 #pragma mark - Data Calls
 - (void)_submitLogin {
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 12], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -62,10 +70,28 @@
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -75,21 +101,27 @@
 	[super loadView];
 	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina5]) ? 54.0 : 19.0, 231.0, ([HONAppDelegate isRetina5]) ? 99.0 : 89.0)];
+	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"instagramText-568h@2x" : @"instagramText"];
+	[self.view addSubview:captionImageView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:doneButton];
+	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipButton.frame = CGRectMake(248.0, 4.0, 64.0, 44.0);
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
+	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
+	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:skipButton];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(60.0, 100.0, 200.0, 30.0)];
+	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 134.0, 244.0, 44.0)];
+	usernameBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
+	[self.view addSubview:usernameBGImageView];
+	
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(55.0, ([HONAppDelegate isRetina5]) ? 201.0 : 142.0, 200.0, 30.0)];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyNext];
-	[_usernameTextField setTextColor:[UIColor whiteColor]];
-	_usernameTextField.backgroundColor = [HONAppDelegate honDebugGreenColor];
+	[_usernameTextField setTextColor:[HONAppDelegate honGrey710Color]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
@@ -99,13 +131,17 @@
 	[_usernameTextField setTag:0];
 	[self.view addSubview:_usernameTextField];
 	
-	_passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(60.0, 150.0, 200.0, 30.0)];
+	
+	UIImageView *passwordBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 267.0 : 195.0, 244.0, 44.0)];
+	passwordBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
+	[self.view addSubview:passwordBGImageView];
+	
+	_passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(55.0, ([HONAppDelegate isRetina5]) ? 274.0 : 202.0, 200.0, 30.0)];
 	[_passwordTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_passwordTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_passwordTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_passwordTextField setReturnKeyType:UIReturnKeyGo];
-	[_passwordTextField setTextColor:[UIColor whiteColor]];
-	_passwordTextField.backgroundColor = [HONAppDelegate honDebugRedColor];
+	[_passwordTextField setTextColor:[HONAppDelegate honGrey710Color]];
 	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_passwordTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
@@ -115,21 +151,7 @@
 	_passwordTextField.delegate = self;
 	[_passwordTextField setTag:1];
 	[self.view addSubview:_passwordTextField];
-	
-	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 73.0, 320.0, 53.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
-	_submitButton.hidden = YES;
-	[self.view addSubview:_submitButton];
-	
-	
-	_submitButton.hidden = NO;
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
-	}];
-	
+		
 	[_usernameTextField becomeFirstResponder];
 }
 
@@ -159,32 +181,13 @@
 
 
 #pragma mark - Navigation
-- (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Instagram Login - Done"
+- (void)_goSkip {
+	[[Mixpanel sharedInstance] track:@"Instagram Login - Skip"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)_goNext {
-	if ([_usernameTextField.text length] > 0 && [_passwordTextField.text length] > 0) {
-		[[Mixpanel sharedInstance] track:@"Instagram Login - Submit"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  _usernameTextField.text, @"mobile", nil]];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
-		} completion:^(BOOL finished) {
-			_submitButton.hidden = YES;
-		}];
-		
-		[self _submitLogin];
-		
-	} else
-		NSLog(@"CANT LOGIN");
 }
 
 
@@ -205,7 +208,22 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	NSLog(@"textFieldDidEndEditing");
 	
+	if ([_usernameTextField.text length] == 0)
+		[_usernameTextField becomeFirstResponder];
 	
+	else {
+		if ([_passwordTextField.text length] == 0)
+			[_passwordTextField becomeFirstResponder];
+		
+		else {
+			[[Mixpanel sharedInstance] track:@"Instagram Login - Submit"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  _usernameTextField.text, @"username", nil]];
+			
+			[self _submitLogin];
+		}
+	}
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {

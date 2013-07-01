@@ -91,7 +91,7 @@
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_updateFail", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
@@ -113,7 +113,7 @@
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 				_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", nil);
 				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
 				
 				[_usernameTextField becomeFirstResponder];
@@ -131,7 +131,7 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -173,7 +173,7 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}
 }
@@ -208,7 +208,7 @@
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_updateFail", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
@@ -245,7 +245,7 @@
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 				_progressHUD.labelText = NSLocalizedString(@"hud_submitFailed", nil);
 				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
 			}
 		}
@@ -260,7 +260,7 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -280,11 +280,11 @@
 	captionImageView.image = [UIImage imageNamed:@"firstRunCopy_username"];
 	[_usernameHolderView addSubview:captionImageView];
 	
-	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, 192.0, 244.0, 44.0)];
+	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 163.0, 244.0, 44.0)];
 	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
 	[_usernameHolderView addSubview:inputBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(44.0, 200.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina5]) ? 200.0 : 171.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -386,7 +386,7 @@
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
 	[UIView setAnimationDelay:0.33];
-	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - ((int)!([HONAppDelegate isRetina5]) * 45.0));
+	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - ((int)!([HONAppDelegate isRetina5]) * 25.0));
 	[UIView commitAnimations];
 }
 
@@ -470,7 +470,7 @@
 
 #pragma mark - NavigationController Delegates
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	NSLog(@"navigationController:[%@] willShowViewController:[%@]", [navigationController description], [viewController description]);
+	//NSLog(@"navigationController:[%@] willShowViewController:[%@]", [navigationController description], [viewController description]);
 	
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 	
@@ -481,7 +481,7 @@
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-	NSLog(@"navigationController:[%@] didShowViewController:[%@]", [navigationController description], [viewController description]);
+	//NSLog(@"navigationController:[%@] didShowViewController:[%@]", [navigationController description], [viewController description]);
 	
 	[self _removeIris];
 }

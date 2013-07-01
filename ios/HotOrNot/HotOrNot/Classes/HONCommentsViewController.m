@@ -19,14 +19,13 @@
 
 @interface HONCommentsViewController () <UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) HONCommentVO *commentVO;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *comments;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *bgTextImageView;
 @property (nonatomic, strong) UITextField *commentTextField;
-@property (nonatomic, strong) NSIndexPath *idxPath;
+@property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic) BOOL isGoingBack;
 @end
 
@@ -39,10 +38,6 @@
 		
 		self.view.backgroundColor = [UIColor whiteColor];
 		self.comments = [NSMutableArray new];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_userChallenge:) name:@"USER_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 	}
 	
 	return (self);
@@ -77,8 +72,8 @@
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			
 			_comments = [NSMutableArray new];
 			for (NSDictionary *serverList in parsedLists) {
 				HONCommentVO *vo = [HONCommentVO commentWithDictionary:serverList];
@@ -110,6 +105,7 @@
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
+	_progressHUD.yOffset = -75.0;
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 2], @"action",
@@ -129,11 +125,12 @@
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_dlFailed", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
-			//NSDictionary *commentResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -151,7 +148,40 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_deleteComment:(int)commentID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 8], @"action",
+							[NSString stringWithFormat:@"%d", commentID], @"commentID",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIComments parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			//NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			[self _retrieveComments];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, [error localizedDescription]);
+		
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -173,7 +203,7 @@
 	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:backButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 236.0 + 53.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -185,7 +215,7 @@
 	[self.view addSubview:_tableView];
 	
 	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0)];
-	_bgTextImageView.image = [UIImage imageNamed:@""];
+	_bgTextImageView.image = [UIImage imageNamed:@"commentsInput"];
 	_bgTextImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_bgTextImageView];
 	
@@ -251,13 +281,8 @@
 	[_commentTextField resignFirstResponder];  // <---- Only edit this line
 	[UIView commitAnimations];
 	
-	//[UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void){
-	//	_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - _bgTextImageView.frame.size.height, _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
-	//
-	//} completion:^(BOOL finished) {
-		_commentTextField.text = @"";
-		[self.navigationController popViewControllerAnimated:YES];
-	//}];
+	_commentTextField.text = @"";
+	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goSend {
@@ -265,28 +290,6 @@
 		[self _submitComment];
 		_commentTextField.text = @"";
 	}
-}
-
-
-#pragma mark - Notifications
-- (void)_userChallenge:(NSNotification *)notification {
-	NSLog(@"USER_CHALLENGE");
-	_commentVO = (HONCommentVO *)[notification object];
-	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-																		 message:[NSString stringWithFormat:@"Want to %@ challenge %@?", _challengeVO.subjectName, _commentVO.username]
-																		delegate:self
-															cancelButtonTitle:@"Yes"
-															otherButtonTitles:@"No", nil];
-	[alertView show];
-}
-
-- (void)_tabsDropped:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
-}
-
-- (void)_tabsRaised:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
 }
 
 
@@ -314,57 +317,59 @@
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	_commentVO = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
-	
-	if (_commentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
-		return (nil);
-	
-	else
-		return (indexPath);
+	HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
+	return ((vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? nil : indexPath);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	//[(HONVoterViewCell *)[tableView cellForRowAtIndexPath:indexPath] didSelect];
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
 	
+	HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
 	
-	_commentVO = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-																		 message:[NSString stringWithFormat:@"Want to %@ challenge %@?", _challengeVO.subjectName, _commentVO.username]
-																		delegate:self
-															cancelButtonTitle:@"Yes"
-															otherButtonTitles:@"No", nil];
-	[alertView setTag:1];
-	[alertView show];
+	[[Mixpanel sharedInstance] track:@"Timeline Comments - Create Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"opponent", nil]];
+	
+	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+													   [NSString stringWithFormat:@"%d", vo.userID], @"id",
+													   [NSString stringWithFormat:@"%d", 0], @"points",
+													   [NSString stringWithFormat:@"%d", 0], @"votes",
+													   [NSString stringWithFormat:@"%d", 0], @"pokes",
+													   [NSString stringWithFormat:@"%d", 0], @"pics",
+													   vo.username, @"username",
+													   vo.fbID, @"fb_id",
+													   vo.avatarURL, @"avatar_url", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:_challengeVO.subjectName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-	_commentVO = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
-	return (_commentVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+	HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:indexPath.row];
+	return (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 }
 
-// Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		_idxPath = indexPath;
-		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete Comment"
-																			 message:@"Do you want to remove this comment?"
-																			delegate:self
-																cancelButtonTitle:@"Yes"
-																otherButtonTitles:@"No", nil];
+															message:@"Do you want to remove this comment?"
+														   delegate:self
+												  cancelButtonTitle:@"Yes"
+												  otherButtonTitles:@"No", nil];
 		[alertView setTag:0];
 		[alertView show];
+		
+		_indexPath = indexPath;
 	}
 }
 
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - (236.0 + 53.0), _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
-	//} completion:^(BOOL finished) {
-	//}];
+	_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - (236.0 + 53.0), _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
@@ -410,77 +415,23 @@
 
 #pragma mark - AlerView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	UINavigationController *navigationController;
-	
-	if (alertView.tag == 0) {
-		switch(buttonIndex) {
-			case 0: {
-				[[Mixpanel sharedInstance] track:@"Challenge Wall - Delete"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _commentVO.commentID, _commentVO.content], @"comment", nil]];
-				
-				[_comments removeObjectAtIndex:_idxPath.row];
-				[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
-				
-				NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-												[NSString stringWithFormat:@"%d", 8], @"action",
-												[NSString stringWithFormat:@"%d", _commentVO.commentID], @"commentID",
-												nil];
-				
-				VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, [params objectForKey:@"action"]);
-				AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-				[httpClient postPath:kAPIComments parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-					NSError *error = nil;
-					if (error != nil) {
-						VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-						
-					} else {
-						[self _retrieveComments];
-					}
-					
-				} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-					VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIComments, [error localizedDescription]);
-					
-					_progressHUD.minShowTime = kHUDTime;
-					_progressHUD.mode = MBProgressHUDModeCustomView;
-					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-					_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:1.5];
-					_progressHUD = nil;
-				}];
-				break;}
-				
-			case 1:
-				break;
-		}
-	
-	} else if (alertView.tag == 1) {
-		switch(buttonIndex) {
-			case 0: {
-				[[Mixpanel sharedInstance] track:@"Challenge Comments - Create Challenge"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				
-				HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																					[NSString stringWithFormat:@"%d", _commentVO.userID], @"id",
-																					[NSString stringWithFormat:@"%d", 0], @"points",
-																					[NSString stringWithFormat:@"%d", 0], @"votes",
-																					[NSString stringWithFormat:@"%d", 0], @"pokes",
-																					[NSString stringWithFormat:@"%d", 0], @"pics",
-																					_commentVO.username, @"username",
-																					_commentVO.fbID, @"fb_id",
-																					_commentVO.avatarURL, @"avatar_url", nil]];
-				
-				navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:_challengeVO.subjectName]];
-				[navigationController setNavigationBarHidden:YES];
-				[self presentViewController:navigationController animated:YES completion:nil];
-				break;}
-				
-			case 1:
-				break;
-		}
+	switch(buttonIndex) {
+		case 0: {
+			HONCommentVO *vo = (HONCommentVO *)[_comments objectAtIndex:_indexPath.row];			
+			
+			[[Mixpanel sharedInstance] track:@"Timeline Comments - Delete"
+										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+														 [NSString stringWithFormat:@"%d - %@", vo.commentID, vo.content], @"comment", nil]];
+			
+			[_comments removeObjectAtIndex:_indexPath.row];
+			[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_indexPath] withRowAnimation:UITableViewRowAnimationFade];
+			
+			[self _deleteComment:vo.commentID];
+			break;}
+			
+		case 1:
+			break;
 	}
 }
 

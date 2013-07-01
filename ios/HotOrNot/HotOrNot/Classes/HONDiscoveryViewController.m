@@ -17,7 +17,7 @@
 #import "HONTimelineViewController.h"
 #import "HONDiscoveryViewCell.h"
 
-@interface HONDiscoveryViewController ()<UITableViewDataSource, UITableViewDelegate>
+@interface HONDiscoveryViewController ()<UITableViewDataSource, UITableViewDelegate, HONDiscoveryViewCellDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONHeaderView *headerView;
@@ -35,10 +35,6 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_DISCOVERY_TAB" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectLeftDiscoveryChallenge:) name:@"SELECT_LEFT_DISCOVERY_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectRightDiscoveryChallenge:) name:@"SELECT_RIGHT_DISCOVERY_CHALLENGE" object:nil];
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_resignSearchBarFocus:) name:@"RESIGN_SEARCH_BAR_FOCUS" object:nil];
@@ -110,7 +106,7 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -170,12 +166,6 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_refresh", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
 	_currChallenges = [NSMutableArray array];
 	for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
 		[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
@@ -197,37 +187,15 @@
 
 #pragma mark - Notifications
 - (void)_refreshDiscoveryTab:(NSNotification *)notification {
-	//[_searchHeaderView backgroundingReset];
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
 	[self _goRefresh];
 }
 
-- (void)_selectLeftDiscoveryChallenge:(NSNotification *)notification {
-	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
-	[[Mixpanel sharedInstance] track:@"Discover - Select"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
-	
-	
-	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:vo.subjectName] animated:YES];
-}
-
-- (void)_selectRightDiscoveryChallenge:(NSNotification *)notification {
-	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
-	[[Mixpanel sharedInstance] track:@"Discover - Select"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
-	
-	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:vo.subjectName] animated:YES];
-}
-
 - (void)_showSearchTable:(NSNotification *)notification {
 	if (self.view.frame.origin.y >= 0) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
-			self.view.frame = CGRectOffset(self.view.frame, 0.0, -kNavBarHeaderHeight);//CGRectMake(self.view.frame.origin.x, -kNavBarHeaderHeight, self.view.frame.size.width, self.view.frame.size.height);
+			self.view.frame = CGRectOffset(self.view.frame, 0.0, -kNavBarHeaderHeight);
 		}];
 	}
 }
@@ -235,24 +203,36 @@
 - (void)_hideSearchTable:(NSNotification *)notification {
 	if (self.view.frame.origin.y < 0) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
-			self.view.frame = CGRectOffset(self.view.frame, 0.0, kNavBarHeaderHeight);//self.view.frame = CGRectMake(self.view.frame.origin.x, 0.0, self.view.frame.size.width, self.view.frame.size.height);
+			self.view.frame = CGRectOffset(self.view.frame, 0.0, kNavBarHeaderHeight);
 		}];
 	}
 }
-
-//- (void)_tabsDropped:(NSNotification *)notification {
-//	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
-//}
-//
-//- (void)_tabsRaised:(NSNotification *)notification {
-//	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
-//}
 
 - (void)_resignSearchBarFocus:(NSNotification *)notification {
 	if (_searchHeaderView != nil)
 		[_searchHeaderView toggleFocus:NO];
 }
 
+
+#pragma mark - DiscoveryViewCell Delegates
+- (void)discoveryViewCell:(HONDiscoveryViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Discover - Select"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	
+	
+	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:challengeVO.subjectName] animated:YES];
+}
+
+- (void)discoveryViewCell:(HONDiscoveryViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Discover - Select"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	
+	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:challengeVO.subjectName] animated:YES];
+}
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -280,6 +260,7 @@
 	if ((indexPath.row * 2) + 1 < [_currChallenges count])
 		cell.rChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2) + 1];
 	
+	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);
 }
@@ -294,13 +275,8 @@
 	return (kSearchHeaderHeight);
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (nil);
 }
 
-
-//#pragma mark - ScrollView Delegates
-//- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-//}
 @end

@@ -10,11 +10,20 @@
 
 #import "HONChallengeVO.h"
 
+
+@protocol HONDiscoveryViewCellDelegate;
 @interface HONDiscoveryViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)didSelectLeftChallenge;
 - (void)didSelectRightChallenge;
+
 @property (nonatomic, retain) HONChallengeVO *lChallengeVO;
 @property (nonatomic, retain) HONChallengeVO *rChallengeVO;
 
+@property (nonatomic, assign) id <HONDiscoveryViewCellDelegate> delegate;
+@end
+
+@protocol HONDiscoveryViewCellDelegate
+- (void)discoveryViewCell:(HONDiscoveryViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO;
+- (void)discoveryViewCell:(HONDiscoveryViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO;
 @end

@@ -23,9 +23,9 @@
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONVoterVO *voterVO;
-@property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) NSMutableArray *voters;
-@property(nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *voters;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @end
 
 @implementation HONVotersViewController
@@ -38,8 +38,6 @@
 		self.voters = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voterChallenge:) name:@"VOTER_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 	}
 	
 	return (self);
@@ -150,54 +148,25 @@
 
 #pragma mark - Notifications
 - (void)_voterChallenge:(NSNotification *)notification {
-	NSLog(@"VOTER_CHALLENGE");
 	_voterVO = (HONVoterVO *)[notification object];
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Challenge User"
-																		 message:[NSString stringWithFormat:@"Want to %@ challenge %@?", _challengeVO.subjectName, _voterVO.username]
-																		delegate:self
-															cancelButtonTitle:@"Yes"
-															otherButtonTitles:@"No", nil];
-	[alertView show];
-}
-
-- (void)_tabsDropped:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
-}
-
-- (void)_tabsRaised:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
-}
-
-
-#pragma mark - AlerView Delegates
--(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	UINavigationController *navigationController;
+	[[Mixpanel sharedInstance] track:@"Challenge Voters - Create Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	switch(buttonIndex) {
-		case 0: {
-			[[Mixpanel sharedInstance] track:@"Challenge Voters - Create Challenge"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-			
-			HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																		  [NSString stringWithFormat:@"%d", _voterVO.userID], @"id",
-																		  [NSString stringWithFormat:@"%d", _voterVO.points], @"points",
-																		  [NSString stringWithFormat:@"%d", _voterVO.votes], @"votes",
-																		  [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
-																		  [NSString stringWithFormat:@"%d", 0], @"pics",
-																		  _voterVO.username, @"username",
-																		  _voterVO.fbID, @"fb_id",
-																		  _voterVO.imageURL, @"avatar_url", nil]];
-			
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo withSubject:_challengeVO.subjectName]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-			break;}
-			
-		case 1:
-			break;
-	}
+	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+												   [NSString stringWithFormat:@"%d", _voterVO.userID], @"id",
+												   [NSString stringWithFormat:@"%d", _voterVO.points], @"points",
+												   [NSString stringWithFormat:@"%d", _voterVO.votes], @"votes",
+												   [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
+												   [NSString stringWithFormat:@"%d", 0], @"pics",
+												   _voterVO.username, @"username",
+												   _voterVO.fbID, @"fb_id",
+												   _voterVO.imageURL, @"avatar_url", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo withSubject:_challengeVO.subjectName]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

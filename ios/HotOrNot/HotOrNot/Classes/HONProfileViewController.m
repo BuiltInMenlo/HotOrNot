@@ -6,10 +6,10 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <AddressBook/AddressBook.h>
 #import <FacebookSDK/FacebookSDK.h>
-#import <MessageUI/MFMessageComposeViewController.h>
-#import <MessageUI/MFMailComposeViewController.h>
+//#import <AddressBook/AddressBook.h>
+//#import <MessageUI/MFMessageComposeViewController.h>
+//#import <MessageUI/MFMailComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -20,18 +20,17 @@
 #import "HONSettingsViewController.h"
 #import "HONUserProfileViewCell.h"
 #import "HONPastChallengerViewCell.h"
-#import "HONProfileContactUserViewCell.h"
 #import "HONHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONContactUserVO.h"
 #import "HONImagePickerViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONInviteNetworkViewCell.h"
+#import "HONAddContactsViewController.h"
 #import "HONAddContactViewCell.h"
 #import "HONTimelineViewController.h"
 
-@interface HONProfileViewController () <MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface HONProfileViewController () <UITableViewDataSource, UITableViewDelegate, HONUserProfileViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *recentOpponents;
 @property (nonatomic, strong) NSArray *friends;
 @property (nonatomic, strong) NSMutableArray *contacts;
@@ -39,7 +38,7 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (strong, nonatomic) FBRequestConnection *requestConnection;
-@property (nonatomic) BOOL isContactsViewed;
+//@property (nonatomic) BOOL isContactsViewed;
 @property (nonatomic) BOOL hasRefreshed;
 @end
 
@@ -52,17 +51,12 @@
 		_recentOpponents = [NSMutableArray array];
 		_friends = [NSMutableArray array];
 		_contacts = [NSMutableArray array];
-		_isContactsViewed = (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized);
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_PROFILE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsDropped:) name:@"TABS_DROPPED" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_tabsRaised:) name:@"TABS_RAISED" object:nil];
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteContact:) name:@"INVITE_CONTACT" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareSMS:) name:@"SHARE_SMS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareEmail:) name:@"SHARE_EMAIL" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_takeNewAvatar:) name:@"TAKE_NEW_AVATAR" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSettings:) name:@"SHOW_SETTINGS" object:nil];
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareSMS:) name:@"SHARE_SMS" object:nil];
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareEmail:) name:@"SHARE_EMAIL" object:nil];
 	}
 	
 	return (self);
@@ -126,7 +120,7 @@
 					_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 					_progressHUD.labelText = NSLocalizedString(@"hud_noResults", nil);
 					[_progressHUD show:NO];
-					[_progressHUD hide:YES afterDelay:1.5];
+					[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 					_progressHUD = nil;
 					
 				} else {
@@ -144,7 +138,7 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -192,61 +186,61 @@
 }
 
 
-#pragma mark - Device Functions
-- (void)_retrieveContacts {
-	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-	
-	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-	CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
-	
-	for (int i=0; i<nPeople; i++) {
-		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
-		
-		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
-		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
-		
-		if ([fName length] == 0 || [lName length] == 0)
-			continue;
-		
-		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
-		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
-		
-		NSString *phoneNumber = @"";
-		for(CFIndex j=0; j<phoneCount; j++) {
-			NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
-			if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel]) {
-				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-			
-			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
-				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-				break ;
-			}
-		}
-		CFRelease(phoneProperties);
-		
-		
-		NSString *email = @"";
-		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
-		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
-		
-		if (emailCount > 0) {
-			for (CFIndex j=0; j<emailCount; j++) {
-				email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, j);
-			}
-		}
-		CFRelease(emailProperties);
-		
-		if ([phoneNumber length] > 0 || [email length] > 0) {
-			[_contacts addObject:[HONContactUserVO contactWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																									fName, @"f_name",
-																									lName, @"l_name",
-																									phoneNumber, @"phone",
-																									email, @"email", nil]]];
-		}
-	}
-	
-	[_tableView reloadData];
-}
+//#pragma mark - Device Functions
+//- (void)_retrieveContacts {
+//	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
+//	
+//	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+//	CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
+//	
+//	for (int i=0; i<nPeople; i++) {
+//		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
+//		
+//		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
+//		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
+//		
+//		if ([fName length] == 0 || [lName length] == 0)
+//			continue;
+//		
+//		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+//		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
+//		
+//		NSString *phoneNumber = @"";
+//		for(CFIndex j=0; j<phoneCount; j++) {
+//			NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
+//			if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel]) {
+//				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+//			
+//			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
+//				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+//				break ;
+//			}
+//		}
+//		CFRelease(phoneProperties);
+//		
+//		
+//		NSString *email = @"";
+//		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
+//		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
+//		
+//		if (emailCount > 0) {
+//			for (CFIndex j=0; j<emailCount; j++) {
+//				email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, j);
+//			}
+//		}
+//		CFRelease(emailProperties);
+//		
+//		if ([phoneNumber length] > 0 || [email length] > 0) {
+//			[_contacts addObject:[HONContactUserVO contactWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+//																									fName, @"f_name",
+//																									lName, @"l_name",
+//																									phoneNumber, @"phone",
+//																									email, @"email", nil]]];
+//		}
+//	}
+//	
+//	[_tableView reloadData];
+//}
 
 
 #pragma mark - View lifecycle
@@ -309,24 +303,24 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
-- (void)_goContacts {
-	[[Mixpanel sharedInstance] track:@"Profile - Contacts"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-			[self _retrieveContacts];
-		});
-		
-	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-		[self _retrieveContacts];
-		
-	} else {
-		// denied access
-	}
-}
+//- (void)_goContacts {
+//	[[Mixpanel sharedInstance] track:@"Profile - Contacts"
+//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+//	
+//	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+//	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+//		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+//			[self _retrieveContacts];
+//		});
+//		
+//	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+//		[self _retrieveContacts];
+//		
+//	} else {
+//		// denied access
+//	}
+//}
 
 
 #pragma mark - Notifications
@@ -363,18 +357,18 @@
 			_friends = [HONAppDelegate friendsList];
 			
 			
-			ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-				ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-					[self _retrieveContacts];
-				});
-				
-			} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-				[self _retrieveContacts];
-				
-			} else {
-				// denied access
-			}
+//			ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
+//			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
+//				ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
+//					[self _retrieveContacts];
+//				});
+//				
+//			} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+//				[self _retrieveContacts];
+//				
+//			} else {
+//				// denied access
+//			}
 		}
 		
 		if (_progressHUD != nil) {
@@ -391,31 +385,13 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
 
 
-- (void)_showSettings:(NSNotification *)notification {
-	[[Mixpanel sharedInstance] track:@"Profile - Settings"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-
-- (void)_tabsDropped:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 29.0));
-}
-
-- (void)_tabsRaised:(NSNotification *)notification {
-	_tableView.frame = CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0));
-}
-
+/*
 - (void)_inviteContact:(NSNotification *)notification {
 	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
 	
@@ -509,11 +485,24 @@
 		[alertView show];
 	}
 }
+*/
 
-- (void)_takeNewAvatar:(NSNotification *)notification {
+
+#pragma mark - UserProfileCell Delegates
+- (void)userProfileViewCellShowSettings:(HONUserProfileViewCell *)cell {
+	[[Mixpanel sharedInstance] track:@"Profile - Settings"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)userProfileViewCellTakeNewAvatar:(HONUserProfileViewCell *)cell {
 	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -533,7 +522,7 @@
 		return ([_friends count]);
 		
 	} else {
-		return ((_isContactsViewed) ? [_contacts count] : 1);
+		return (1);//(_isContactsViewed) ? [_contacts count] : 1);
 	}
 }
 
@@ -583,7 +572,7 @@
 																			[[HONAppDelegate infoForUser] objectForKey:@"fb_id"], @"fb_id",
 																			[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"], @"avatar_url", nil]];
 		
-		
+		cell.delegate = self;
 		[cell setUserVO:userVO];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		
@@ -593,7 +582,7 @@
 		HONPastChallengerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil)
-			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:NO];//]indexPath.row == [_pastUsers count] - 1];
+			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:NO];
 		
 		cell.userVO = (HONUserVO *)[_recentOpponents objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -612,38 +601,25 @@
 		return (cell);
 		
 	} else {
-		if (_isContactsViewed) {
-			HONAddContactViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONPastChallengerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		
+		if (cell == nil)
+			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:YES];
+		
+		HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
+														   @"Find friends who volley", @"username",
+														   @"", @"fb_id",
+														   @"", @"avatar_url", nil]];
+		
+		cell.userVO = userVO;
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 			
-			if (cell == nil)
-				cell = [[HONAddContactViewCell alloc] init];
-			
-			cell.userVO = (HONContactUserVO *)[_contacts objectAtIndex:indexPath.row];
-			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-			
-			return (cell);
-			
-		} else {
-			HONPastChallengerViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-			
-			if (cell == nil)
-				cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:YES];
-			
-			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
-																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
-																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
-																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
-																				[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
-																				@"Load My Contact List", @"username",
-																				@"", @"fb_id",
-																				@"", @"avatar_url", nil]];
-			
-			cell.userVO = userVO;
-			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-			
-			return (cell);
-		}
+		return (cell);
 	}
 }
 
@@ -668,21 +644,36 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
 	
-	if (indexPath.section == 1 || indexPath.section == 2) {
+	if (indexPath.section == 1) {
 		HONUserVO *vo = (HONUserVO *)[_recentOpponents objectAtIndex:indexPath.row];
-		[[Mixpanel sharedInstance] track:@"Profile - Follower Timeline"
+		[[Mixpanel sharedInstance] track:@"Profile - Recent Opponent Timeline"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"opponent", nil]];
+		
+		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:vo.username] animated:YES];
+		
+	} else if (indexPath.section == 2) {
+		HONUserVO *vo = (HONUserVO *)[_friends objectAtIndex:indexPath.row];
+		[[Mixpanel sharedInstance] track:@"Profile - Friend Timeline"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"follower", nil]];
+												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"friend", nil]];
 		
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:vo.username] animated:YES];
 	
-	} else {
-		
+	} else if (indexPath.section == 3) {
+		[[Mixpanel sharedInstance] track:@"Profile - Add Contacts"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+										  
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
-
+/*
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
 	
@@ -734,5 +725,5 @@
 	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
-
+*/
 @end

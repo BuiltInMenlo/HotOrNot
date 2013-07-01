@@ -13,12 +13,14 @@
 #import "HONSnapCameraOverlayView.h"
 #import "HONImagingDepictor.h"
 #import "HONCreateChallengeOptionsView.h"
+#import "HONSnapCameraOptionsView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
 
-@interface HONSnapCameraOverlayView()
+@interface HONSnapCameraOverlayView() <HONCreateChallengeOptionsViewDelegate, HONSnapCameraOptionsViewDelegate>
 @property (nonatomic, strong) UIImageView *irisImageView;
-@property (nonatomic, strong) HONCreateChallengeOptionsView *optionsView;
+@property (nonatomic, strong) HONCreateChallengeOptionsView *challengeOptionsView;
+@property (nonatomic, strong) HONSnapCameraOptionsView *cameraOptionsView;
 @property (nonatomic, strong) UIView *controlsHolderView;
 @property (nonatomic, strong) UIButton *addFriendsButton;
 @property (nonatomic, strong) UILabel *usernamesLabel;
@@ -39,7 +41,6 @@
 		_username = username;
 		
 		NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", subject, username);
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_closeOptions:) name:@"CLOSE_OPTIONS" object:nil];
 		//hide overlay - [self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
 		
 		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, ([_username length] > 0) ? kNavBarHeaderHeight + 33.0 : kNavBarHeaderHeight + 10.0, 307.0, 306.0)];
@@ -75,15 +76,7 @@
 		_usernamesLabel.backgroundColor = [UIColor clearColor];
 		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:_usernamesLabel];
-		
-//		int opsOffset = ([_username length] > 0) ? 40 : ([HONAppDelegate isRetina5]) ? 55 : 0;
-//		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		cameraRollButton.frame = CGRectMake(15.0, 267.0 + opsOffset, 64.0, 44.0);
-//		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
-//		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
-//		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
-//		[_controlsHolderView addSubview:cameraRollButton];
-		
+				
 //
 //		if ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) {
 //			UIButton *changeCameraButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -94,26 +87,26 @@
 //			[_controlsHolderView addSubview:changeCameraButton];
 //		}
 		
-		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraRollButton.frame = CGRectMake(258.0, [UIScreen mainScreen].bounds.size.height - 51.0, 44.0, 44.0);
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
-		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:cameraRollButton];
+		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_optionsButton.frame = CGRectMake(16.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
+		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_nonActive"] forState:UIControlStateNormal];
+		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_Active"] forState:UIControlStateHighlighted];
+		[_optionsButton addTarget:self action:@selector(_goChallengeOptions) forControlEvents:UIControlEventTouchUpInside];
+		[_controlsHolderView addSubview:_optionsButton];
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_captureButton.frame = CGRectMake(128.0, ([HONAppDelegate isRetina5]) ? 471 : 382, 64.0, 64.0);
+		_captureButton.frame = CGRectMake(128.0, [UIScreen mainScreen].bounds.size.height - 74.0, 64.0, 44.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
 		[_controlsHolderView addSubview:_captureButton];
 		
-		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_optionsButton.frame = CGRectMake(16.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
-		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_nonActive"] forState:UIControlStateNormal];
-		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_Active"] forState:UIControlStateHighlighted];
-		[_optionsButton addTarget:self action:@selector(_goOptions) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:_optionsButton];
+		UIButton *cameraOptionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		cameraOptionsButton.frame = CGRectMake(238.0, [UIScreen mainScreen].bounds.size.height - 51.0, 64.0, 44.0);
+		[cameraOptionsButton setBackgroundImage:[UIImage imageNamed:@"moreWhiteButton_nonActive"] forState:UIControlStateNormal];
+		[cameraOptionsButton setBackgroundImage:[UIImage imageNamed:@"moreWhiteButton_Active"] forState:UIControlStateHighlighted];
+		[cameraOptionsButton addTarget:self action:@selector(_goCameraOptions) forControlEvents:UIControlEventTouchUpInside];
+		[_controlsHolderView addSubview:cameraOptionsButton];
 	}
 	
 	return (self);
@@ -148,20 +141,39 @@
 	[self.delegate cameraOverlayViewAddChallengers:self];
 }
 
-- (void)_goOptions {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Options"
+- (void)_goChallengeOptions {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Challenge Options"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_optionsView = [[HONCreateChallengeOptionsView alloc] initWithFrame:self.frame];
-	_optionsView.frame = CGRectOffset(_optionsView.frame, 0.0, self.frame.size.height);
-	[self addSubview:_optionsView];
+	_challengeOptionsView = [[HONCreateChallengeOptionsView alloc] initWithFrame:self.frame];
+	_challengeOptionsView.frame = CGRectOffset(_challengeOptionsView.frame, 0.0, self.frame.size.height);
+	_challengeOptionsView.delegate = self;
+	[self addSubview:_challengeOptionsView];
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.25];
 	[UIView setAnimationDelay:0.0];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
-	_optionsView.frame = self.frame;
+	_challengeOptionsView.frame = CGRectOffset(_challengeOptionsView.frame, 0.0, -self.frame.size.height);
+	[UIView commitAnimations];
+}
+
+- (void)_goCameraOptions {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Camera Options"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_cameraOptionsView = [[HONSnapCameraOptionsView alloc] initWithFrame:self.frame];
+	_cameraOptionsView.frame = CGRectOffset(_cameraOptionsView.frame, 0.0, self.frame.size.height);
+	_cameraOptionsView.delegate = self;
+	[self addSubview:_cameraOptionsView];
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:0.25];
+	[UIView setAnimationDelay:0.0];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+	_cameraOptionsView.frame = CGRectOffset(_cameraOptionsView.frame, 0.0, -self.frame.size.height);
 	[UIView commitAnimations];
 }
 
@@ -187,15 +199,39 @@
 }
 
 
-#pragma mark - Notifications
-- (void)_closeOptions:(NSNotification *)notification {
+#pragma mark - ChallengeOptionsView Delegates
+- (void)challengeOptionsViewMakePublic:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	[self.delegate cameraOverlayView:self challengeIsPublic:YES];
+}
+
+- (void)challengeOptionsViewMakeRandom:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	[self.delegate cameraOverlayViewMakeChallengeRandom:self];
+}
+
+- (void)challengeOptionsViewMakePrivate:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	[self.delegate cameraOverlayView:self challengeIsPublic:NO];
+}
+
+- (void)challengeOptionsViewClose:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
 	[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
-		_optionsView.frame = CGRectOffset(_optionsView.frame, 0.0, self.frame.size.height);
+		_challengeOptionsView.frame = CGRectOffset(_challengeOptionsView.frame, 0.0, self.frame.size.height);
 	} completion:^(BOOL finished) {
-		[_optionsView removeFromSuperview];
-		_optionsView = nil;
+		[_challengeOptionsView removeFromSuperview];
+		_challengeOptionsView = nil;
 	}];
 }
 
+
+#pragma mark - CameraOptionsView Delegates
+- (void)cameraOptionsViewCameraRoll:(HONSnapCameraOptionsView *)cameraOptionsView {
+	[self _goCameraRoll];
+}
+
+- (void)cameraOptionsViewFlipCamera:(HONSnapCameraOptionsView *)cameraOptionsView {
+	[self _goChangeCamera];
+}
+
+- (void)cameraOptionsViewClose:(HONSnapCameraOptionsView *)cameraOptionsView {
+}
 
 @end

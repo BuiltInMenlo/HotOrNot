@@ -9,14 +9,14 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONDiscoveryViewCell.h"
-
+#import "HONImageLoadingView.h"
 
 @interface HONDiscoveryViewCell()
 @property (nonatomic, strong) UIImageView *bgImageView;
 @end
 
 @implementation HONDiscoveryViewCell
-
+@synthesize delegate = _delegate;
 @synthesize lChallengeVO = _lChallengeVO;
 @synthesize rChallengeVO = _rChallengeVO;
 
@@ -36,23 +36,21 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
-	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, kSnapMediumDim, kSnapMediumDim)];
-	lHolderView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-	lHolderView.clipsToBounds = YES;
-	[self addSubview:lHolderView];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
+	holderView.clipsToBounds = YES;
+	[self addSubview:holderView];
+	
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(41.0, 4.0)];
+	[holderView addSubview:imageLoadingView];
 	
 	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorImgPrefix]] placeholderImage:nil];
-	[lHolderView addSubview:lImageView];
+	[holderView addSubview:lImageView];
 	
-	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(83.0, 10.0, kSnapMediumDim, kSnapMediumDim)];
-	rHolderView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-	rHolderView.clipsToBounds = YES;
-	[self addSubview:rHolderView];
-	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix]] placeholderImage:nil];
-	[rHolderView addSubview:rImageView];
+	[holderView addSubview:rImageView];
+	
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 94.0, 140.0, 20.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
@@ -61,13 +59,14 @@
 	subjectLabel.text = _lChallengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
+	
 	UIButton *txtSelectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	txtSelectButton.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 10.0, subjectLabel.frame.size.width, subjectLabel.frame.size.height + 20.0);
 	[txtSelectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:txtSelectButton];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(16.0, 15.0, 129.0, 72.0);
+	selectButton.frame = holderView.frame;
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
@@ -76,24 +75,20 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	UIView *lHolderView = [[UIView alloc] initWithFrame:CGRectMake(164.0, 10.0, kSnapMediumDim, kSnapMediumDim)];
-	lHolderView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-	lHolderView.clipsToBounds = YES;
-	[self addSubview:lHolderView];
-	
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(164.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
+	holderView.clipsToBounds = YES;
+	[self addSubview:holderView];
+		
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(41.0, 4.0)];
+	[holderView addSubview:imageLoadingView];
+
 	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorImgPrefix]] placeholderImage:nil];
-	[lHolderView addSubview:lImageView];
+	[holderView addSubview:lImageView];
 	
-	
-	UIView *rHolderView = [[UIView alloc] initWithFrame:CGRectMake(237.0, 10.0, kSnapMediumDim, kSnapMediumDim)];
-	rHolderView.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-	rHolderView.clipsToBounds = YES;
-	[self addSubview:rHolderView];
-	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix]] placeholderImage:nil];
-	[rHolderView addSubview:rImageView];
+	[holderView addSubview:rImageView];
 	
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(164.0, 94.0, 140.0, 20.0)];
@@ -103,13 +98,14 @@
 	subjectLabel.text = _rChallengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
+	
 	UIButton *txtSelectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	txtSelectButton.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 10.0, subjectLabel.frame.size.width, subjectLabel.frame.size.height + 20.0);
 	[txtSelectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:txtSelectButton];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = CGRectMake(172.0, 15.0, 129.0, 72.0);
+	selectButton.frame = holderView.frame;
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
@@ -118,30 +114,26 @@
 
 #pragma mark - Navigation
 - (void)_goSelectLeft {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SELECT_LEFT_DISCOVERY_CHALLENGE" object:_lChallengeVO];
+	[self.delegate discoveryViewCell:self selectLeftChallenge:_lChallengeVO];
 }
 
 - (void)_goSelectRight {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SELECT_RIGHT_DISCOVERY_CHALLENGE" object:_rChallengeVO];
+	[self.delegate discoveryViewCell:self selectRightChallenge:_rChallengeVO];
 }
 
 #pragma mark - UI Presentation
 - (void)didSelectLeftChallenge {
-	//_bgImageView.image = (_isGrey) ? [UIImage imageNamed:@"rowGray_Active"] : [UIImage imageNamed:@"rowWhite_Active"];
 	[self performSelector:@selector(_resetBGLeft) withObject:nil afterDelay:0.33];
 }
 
 - (void)didSelectRightChallenge {
-	//_bgImageView.image = (_isGrey) ? [UIImage imageNamed:@"rowGray_Active"] : [UIImage imageNamed:@"rowWhite_Active"];
 	[self performSelector:@selector(_resetBGRight) withObject:nil afterDelay:0.33];
 }
 
 - (void)_resetBGLeft {
-	//_bgImageView.image = (_isGrey) ? [UIImage imageNamed:@"rowGray_nonActive"] : [UIImage imageNamed:@"rowWhite_nonActive"];
 }
 
 - (void)_resetBGRight {
-	//_bgImageView.image = (_isGrey) ? [UIImage imageNamed:@"rowGray_nonActive"] : [UIImage imageNamed:@"rowWhite_nonActive"];
 }
 
 @end

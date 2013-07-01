@@ -45,6 +45,12 @@ NSString * const kConfigJSON = @"boot.json";
 #endif
 
 
+NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
+//NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
+//NSString * const kMixPanelToken = @"d93069ad5b368c367c3adc020cce8021"; // Focus Group I
+
+
+
 //api endpts
 NSString * const kAPIChallenges = @"Challenges.php";
 NSString * const kAPIComments = @"Comments.php";
@@ -70,6 +76,7 @@ const CGFloat kSnapJPEGCompress = 0.875f;
 
 // animation params
 const CGFloat kHUDTime = 2.33f;
+const CGFloat kHUDErrorTime = 1.5f;
 
 // image sizes
 const CGFloat kSnapThumbDim = 37.0f;
@@ -258,9 +265,6 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	NSMutableDictionary *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
 	[userInfo setObject:friends forKey:@"friends"];
 	[HONAppDelegate writeUserInfo:[userInfo copy]];
-	
-	//[[NSUserDefaults standardUserDefaults] setObject:friends forKey:@"friends_list"];
-	//[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 
@@ -393,7 +397,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
 	NSDate *utcDate = [dateFormatter dateFromString:[utcFormatter stringFromDate:[NSDate new]]];
 	
-	int secs = [[utcDate dateByAddingTimeInterval:30] timeIntervalSinceDate:date];
+	int secs = [[utcDate dateByAddingTimeInterval:0] timeIntervalSinceDate:date];
 	int mins = secs / 60;
 	int hours = mins / 60;
 	int days = hours / 24;
@@ -588,7 +592,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -706,13 +710,8 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 			[HONAppDelegate setAllowsFBPosting:NO];
 				
 		//[self _retrieveConfigJSON];
-				[[NSUserDefaults standardUserDefaults] synchronize];
 
-		// Live App
-		[Mixpanel sharedInstanceWithToken:@"c7bf64584c01bca092e204d95414985f"];
-		
-		// Focus Group
-		//[Mixpanel sharedInstanceWithToken:@"d93069ad5b368c367c3adc020cce8021"];
+		[Mixpanel sharedInstanceWithToken:kMixPanelToken];
 		[[Mixpanel sharedInstance] track:@"App Boot"
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -987,7 +986,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -1013,7 +1012,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 		
 		} else {
@@ -1037,7 +1036,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -1047,7 +1046,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	
 	UIViewController *challengesViewController, *voteViewController, *discoveryViewController, *profileViewController;
 	challengesViewController = [[HONChallengesViewController alloc] init];
-	voteViewController = [[HONTimelineViewController alloc] init];
+	voteViewController = [[HONTimelineViewController alloc] initWithFriends];
 	discoveryViewController = [[HONDiscoveryViewController alloc] init];
 	profileViewController = [[HONProfileViewController alloc] init];
 	

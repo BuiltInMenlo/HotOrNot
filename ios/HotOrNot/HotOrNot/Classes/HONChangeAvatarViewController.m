@@ -87,7 +87,7 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}
 }
@@ -124,7 +124,7 @@
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_updateFail", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
@@ -149,7 +149,7 @@
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 				_progressHUD.labelText = NSLocalizedString(@"hud_submitFailed", nil);
 				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
 			}
 		}
@@ -164,7 +164,7 @@
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }

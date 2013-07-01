@@ -38,28 +38,16 @@
 @end
 
 @implementation HONTimelineItemViewCell
+@synthesize delegate = _delegate;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
 }
 
-- (id)initAsWaitingCell {
+- (id)initAsStartedCell:(BOOL)hasStarted {
 	if ((self = [super init])) {
-		_hasOponentRetorted = NO;
-		
-		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
-		[self addSubview:bgImageView];
-	}
-	
-	return (self);
-}
-
-- (id)initAsStartedCell {
-	if ((self = [super init])) {
-		_hasOponentRetorted = YES;
-		
-		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]];
-		[self addSubview:bgImageView];
+		_hasOponentRetorted = hasStarted;
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]]];
 	}
 	
 	return (self);
@@ -345,6 +333,33 @@
 }
 
 
+#pragma mark - Data Calls
+- (void)_upvoteChallengeCreator:(BOOL)isCreator {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 6], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+							(isCreator) ? @"Y" : @"N", @"creator",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
+	}];
+}
+
+
 #pragma mark - Navigation
 - (void)_goTapCreator {
 	[[Mixpanel sharedInstance] track:@"Timeline - Tap Creator"
@@ -355,8 +370,10 @@
 	if (_hasOponentRetorted)
 		[self _goUpvoteCreator];
 	
-	else
-		[[NSNotificationCenter defaultCenter] postNotificationName:(_isChallengeCreator) ? @"NEW_SUBJECT_CHALLENGE" : @"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+	else {
+		if (!_isChallengeCreator)
+			[self _goCreatorChallenge];
+	}
 }
 
 - (void)_goTapOpponent {
@@ -368,73 +385,47 @@
 	if (_hasOponentRetorted)
 		[self _goUpvoteChallenger];
 	
-	else
-		[[NSNotificationCenter defaultCenter] postNotificationName:(_isChallengeCreator) ? @"NEW_CHALLENGER_CHALLENGE" : @"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+	else {
+		if (!_isChallengeOpponent)
+			[self _goChallengerChallenge];
+	}
 }
 
 
 - (void)_goNewSubjectChallenge {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+	[self.delegate timelineItemViewCell:self snapWithSubject:_challengeVO.subjectName];
 }
 
 - (void)_goCreatorChallenge {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CREATOR_CHALLENGE" object:_challengeVO];
+	[self.delegate timelineItemViewCell:self snapAtCreator:_challengeVO];
 }
 
 - (void)_goChallengerChallenge {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_CHALLENGER_CHALLENGE" object:_challengeVO];
+	[self.delegate timelineItemViewCell:self snapAtChallenger:_challengeVO];
 }
 
 - (void)_goJoinChallenge {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"JOIN_ACTIVE_CHALLENGE" object:_challengeVO];
+	[self.delegate timelineItemViewCell:self joinChallenge:_challengeVO];
 }
 
 - (void)_goComments {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_COMMENTS" object:_challengeVO];
+	[self.delegate timelineItemViewCell:self showComments:_challengeVO];
 }
 
 - (void)_goScore {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
-}
-
-- (void)_goMore {
-	[[Mixpanel sharedInstance] track:@"Timeline - More Shelf"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-
-	if (_hasOponentRetorted) {
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																					delegate:self
-																		cancelButtonTitle:@"Cancel"
-																 destructiveButtonTitle:@"Report Abuse"
-																		otherButtonTitles:@"View Likes", @"Join Volley", nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:0];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-	
-	} else {
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																					delegate:self
-																		cancelButtonTitle:@"Cancel"
-																 destructiveButtonTitle:@"Report Abuse"
-																		otherButtonTitles:@"Join Volley", nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:1];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-	}
+	[self.delegate timelineItemViewCell:self showVoters:_challengeVO];
 }
 
 - (void)_goSubjectTimeline {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:_challengeVO.subjectName];
+	[self.delegate timelineItemViewCell:self showSubjectChallenges:_challengeVO.subjectName];
 }
 
 - (void)_goCreatorTimeline {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_challengeVO.creatorName];
+	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.creatorName];
 }
 
 - (void)_goChallengerTimeline {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_challengeVO.challengerName];
+	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.challengerName];
 }
 
 - (void)_goUpvoteCreator {
@@ -464,28 +455,7 @@
 		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
 		
-		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-								[NSString stringWithFormat:@"%d", 6], @"action",
-								[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-								[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-								@"Y", @"creator",
-								nil];
-		
-		VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
-		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-		[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			NSError *error = nil;
-			if (error != nil) {
-				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-				
-			} else {
-				NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
-			}
-			
-		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
-		}];
+		[self _upvoteChallengeCreator:YES];
 		
 	} else
 		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
@@ -518,32 +488,39 @@
 		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
 		
-		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-								[NSString stringWithFormat:@"%d", 6], @"action",
-								[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-								[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-								@"N", @"creator",
-								nil];
-		
-		VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
-		AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-		[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			NSError *error = nil;
-			if (error != nil) {
-				VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-				
-			} else {
-				NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-				VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
-			}
-			
-		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
-		}];
+		[self _upvoteChallengeCreator:NO];
 		
 	} else
 		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 
+}
+
+- (void)_goMore {
+	[[Mixpanel sharedInstance] track:@"Timeline - More Shelf"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	if (_hasOponentRetorted) {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																 delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:@"Report Abuse"
+														otherButtonTitles:@"View Likes", @"Join Volley", nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:0];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+		
+	} else {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																 delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:@"Report Abuse"
+														otherButtonTitles:@"Join Volley", nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:1];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	}
 }
 
 
@@ -584,11 +561,11 @@
 			break;}
 				
 			case 1:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_VOTERS" object:_challengeVO];
+				[self.delegate timelineItemViewCell:self showVoters:_challengeVO];
 				break;
 				
 			case 2:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+				[self.delegate timelineItemViewCell:self snapWithSubject:_challengeVO.subjectName];
 				break;
 		}
 	}
@@ -627,7 +604,7 @@
 				break;}
 				
 			case 1:
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"NEW_SUBJECT_CHALLENGE" object:_challengeVO];
+				[self.delegate timelineItemViewCell:self snapWithSubject:_challengeVO.subjectName];
 				break;
 		}
 	}

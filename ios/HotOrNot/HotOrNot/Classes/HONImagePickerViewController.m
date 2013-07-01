@@ -36,7 +36,8 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *fbID;
-@property (nonatomic) int submitAction;
+@property (readonly, nonatomic, assign) HONChallengeSubmitType challengeSubmitType;
+@property (nonatomic) BOOL isPrivate;
 @property (nonatomic) HONUserVO *userVO;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
@@ -55,7 +56,7 @@ const CGFloat kFocusInterval = 0.5f;
 	if ((self = [super init])) {
 		self.view.backgroundColor = [UIColor blackColor];
 		_subjectName = [HONAppDelegate rndDefaultSubject];
-		_submitAction = 1;
+		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 		_challengerName = @"";
 		_isFirstAppearance = YES;
 		
@@ -71,7 +72,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
 		_challengerName = userVO.username;
-		_submitAction = 9;
+		_challengeSubmitType = HONChallengeSubmitTypeOpponentID;
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -85,7 +86,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	if ((self = [super init])) {
 		_subjectName = subject;
-		_submitAction = 1;
+		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 		_challengerName = @"";
 		_isFirstAppearance = YES;
 		
@@ -101,7 +102,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_subjectName = subject;
 		_userVO = userVO;
 		_challengerName = userVO.username;
-		_submitAction = 9;
+		_challengeSubmitType = HONChallengeSubmitTypeOpponentID;
 		_isFirstAppearance = YES;
 		
 		[self _registerNotifications];
@@ -116,7 +117,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
-		_submitAction = 4;
+		_challengeSubmitType = HONChallengeSubmitTypeAccept;
 		_challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;;
 		_isFirstAppearance = YES;
 		
@@ -132,7 +133,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
-		_submitAction = 14;
+		_challengeSubmitType = HONChallengeSubmitTypeJoin;
 		_challengerName = @"";
 		_isFirstAppearance = YES;
 		
@@ -222,7 +223,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_uploadFail", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}
 }
@@ -246,7 +247,7 @@ const CGFloat kFocusInterval = 0.5f;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 			_progressHUD.labelText = NSLocalizedString(@"hud_dlFailed", nil);
 			[_progressHUD show:NO];
-			[_progressHUD hide:YES afterDelay:1.5];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
 			
 		} else {
@@ -264,7 +265,7 @@ const CGFloat kFocusInterval = 0.5f;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 				_progressHUD.labelText = NSLocalizedString(@"hud_usernameNotFound", nil);
 				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
 				
 			} else {
@@ -291,7 +292,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
 		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:1.5];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 	}];
 }
@@ -301,6 +302,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)loadView {
 	[super loadView];
 	
+	_isPrivate = NO;
 	_addContacts = [NSMutableArray array];
 	_addFollowing = [NSMutableArray array];
 }
@@ -379,7 +381,7 @@ const CGFloat kFocusInterval = 0.5f;
 			_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
 			_cameraOverlayView.delegate = self;
 			
-			if (_submitAction == 14) {
+			if (_challengeSubmitType == HONChallengeSubmitTypeJoin) {
 				[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																		[NSString stringWithFormat:@"%d", _challengeVO.creatorID], @"id",
 																		[NSString stringWithFormat:@"%d", 0], @"points",
@@ -663,6 +665,13 @@ const CGFloat kFocusInterval = 0.5f;
 	[_imagePicker presentViewController:addChallengersViewController animated:YES completion:nil];
 }
 
+- (void)cameraOverlayView:(HONSnapCameraOverlayView *)cameraOverlayView challengeIsPublic:(BOOL)isPublic {
+	_isPrivate = !isPublic;
+}
+
+- (void)cameraOverlayViewMakeChallengeRandom:(HONSnapCameraOverlayView *)cameraOverlayView {
+	_challengeSubmitType = HONChallengeSubmitTypeMatch;
+}
 
 #pragma mark - AddFriends Delegate
 - (void)addChallengers:(HONAddChallengersViewController *)viewController selectFollowing:(NSArray *)following forAppending:(BOOL)isAppend {
@@ -690,14 +699,14 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	NSMutableArray *usernames = [NSMutableArray array];
 	for (HONUserVO *vo in _addFollowing)
-		[usernames addObject:vo.username];//[usernames addObject:[NSString stringWithFormat:@"@%@", vo.username]];
+		[usernames addObject:vo.username];
 	
 	for (HONContactUserVO *vo in _addContacts)
 		[usernames addObject:vo.fullName];
 	
 	
-	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil) && _submitAction != 14)
-		_submitAction = 1;
+	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil) && _challengeSubmitType != HONChallengeSubmitTypeJoin)
+		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 	
 	if ([_addFollowing count] > 0)
 		_challengerName = ((HONUserVO *)[_addFollowing objectAtIndex:0]).username;
@@ -756,19 +765,29 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	
 	// accepting, now submit new against username w/ subject
-	if (_submitAction == 4 && (_challengeVO != nil && ![_subjectName isEqualToString:_challengeVO.subjectName])) {
+	if (_challengeSubmitType == HONChallengeSubmitTypeAccept && (_challengeVO != nil && ![_subjectName isEqualToString:_challengeVO.subjectName])) {
 		_challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;
-		_submitAction = 7;
+		_challengeSubmitType = HONChallengeSubmitTypeOpponentName;
 	}
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-											 [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-											 [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
-											 [NSString stringWithFormat:@"%d", _submitAction], @"action",
-											 _subjectName, @"subject",
-											 _challengerName, @"username", nil];
+								   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+								   [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+								   _subjectName, @"subject",
+								   _challengerName, @"username",
+								   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
+	
+	if ([_addFollowing count] > 1) {
+		_challengeSubmitType = HONChallengeSubmitTypeJoin;
+		
+		NSString *usernames = @"";
+		for (HONUserVO *vo in _addFollowing)
+			usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
+		
+		[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
+	}
 	
 	if (_challengeVO != nil)
 		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
@@ -779,16 +798,7 @@ const CGFloat kFocusInterval = 0.5f;
 	if (_fbID != nil)
 		[params setObject:_fbID forKey:@"fbID"];
 	
-	if ([_addFollowing count] > 1) {
-		_submitAction = 14;
-		
-		NSString *usernames = @"";
-		for (HONUserVO *vo in _addFollowing)
-			usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
-		
-		[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
-	}
-	
+	[params setObject:[NSString stringWithFormat:@"%d", _challengeSubmitType] forKey:@"action"];
 	
 	NSLog(@"PARAMS:[%@]", params);
 	[self _submitChallenge:params];
