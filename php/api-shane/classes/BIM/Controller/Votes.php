@@ -110,9 +110,7 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function getChallengesWithFriends(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if( !empty( $input->userID ) ){
-            $friends = BIM_App_Social::getFriends($input);
-            $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
-            return $this->votes->getChallengesWithFriends( $input->userID, $friendIds );
+            return $this->votes->getChallengesWithFriends( $input );
         }
     }
 }

@@ -155,10 +155,10 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         if( $loggedIn ){
             $taggedIds = $this->getTaggedIds( );
             $lastTag =& end( $taggedIds );
-            foreach( $taggedIds as $tag => &$ids ){
-                $lastId =& end( $ids );
-                foreach( $ids as &$id ){
-                    $this->submitComment( $id );
+            foreach( $taggedIds as $tag => $ids ){
+                foreach( $ids as $id ){
+                    $message = $this->persona->getVolleyQuote();
+                    $this->submitComment( $id, $message );
                     $sleep = $this->persona->getBrowseTagsCommentWait();
                     echo "submitted comment - sleeping for $sleep seconds\n";
                     sleep($sleep);
@@ -183,7 +183,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $response = $this->get( $url );
         if( !$this->isLoggedIn($response) ){
             $name = $this->persona->name;
-            echo "user $name not logged in!  loging in!\n";
+            echo "user $name not logged in!  logging in!\n";
             $this->loginAndAuthorizeApp();
             $response = $this->get( $url );
             if( !$this->isLoggedIn($response) ){
@@ -271,8 +271,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         return preg_match($ptrn, $html);
     }
     
-    public function submitComment( $id ){
-        $message = $this->persona->getVolleyQuote();
+    public function submitComment( $id, $message ){
         $params = array(
             'message' => $message,
             'messageid' => $id,
@@ -342,5 +341,78 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
         $dao->updateUserStats( $userStats );
         
+    }
+    
+	/**
+	 * we receive the username and password of the insta user
+	 * login as the user
+	 * get a list of their friends
+	 * then for each friend we get the latest photo
+	 * and drop a volley comment
+	 */
+    public function instaInvite(){
+        $this->handleLogin();
+        $friends = $this->getFriends( 10 );
+        foreach( $friends as $name => $url ){
+            // if( $name != 'typeoh' ) continue;
+            $url = trim( $url, '/' );
+            $pageUrl = "http://web.stagram.com/$url";
+            $this->commentOnLatestPhoto( $pageUrl );
+        }
+    }
+    
+    public function commentOnLatestPhoto( $pageUrl ){
+        $ids = array();
+        $response = $this->get( $pageUrl );
+        
+        // type="image" name="comment__166595034299642639_37459491"
+        $ptrn = '/type="image" name="comment__(.+?)"/';
+        preg_match($ptrn, $response, $matches);
+        if( isset( $matches[1] ) ){
+            $id = $matches[1];
+            $message = "nice one!";
+            echo "submitting comment to $pageUrl\n";
+            $this->submitComment($id, $message);
+        }
+    }
+    
+    
+    /**
+		<div class="firstinfo clearfix">.*?<strong><a href="(.*?)">(.*?)</a></strong>
+    */
+    public function getFriends( $iterations = 1 ){
+        $feedUrl = 'feed/';
+        
+        $friendData = array();
+        $n = 0;
+        while( $n < $iterations && $feedUrl ){
+            
+            $feedUrl = "http://web.stagram.com/$feedUrl";
+            echo "getting page $feedUrl\n";
+            $page = $this->get($feedUrl);
+            
+            $ptrn = '@<div class="firstinfo clearfix">.*?<strong><a href="(.*?)">(.*?)</a></strong>@is';
+            $matches = array();
+            preg_match_all( $ptrn, $page, $matches);
+            if( !empty($matches[2]) ){
+                foreach( $matches[2] as $idx => $friendName ){
+                    $friendData[ $friendName ] = $matches[1][$idx];
+                }
+            }
+            
+            // now we get the link for the next page of images
+            $feedUrl = false; // set to false, so if we do not 
+                              // find the url we will break out of the while loop
+            $ptrn = '@<a href="(.*?)" rel="next">Earlier</a>@i';
+            preg_match($ptrn, $page, $matches);
+            if( !empty( $matches[1] ) ){
+                $feedUrl = $matches[1];
+                $sleep = 3;
+                echo "sleeping for $sleep seconds before getting more usernames\n";
+                sleep( $sleep );
+            }
+            $n++;
+        }
+        return $friendData;
     }
 }
