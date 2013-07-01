@@ -35,8 +35,9 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     }
     
     public function getChallengesWithChallenger(){
-		if (isset($_POST['userID']) && isset($_POST['challengerID'])){
-			return $this->votes->getChallengesWithChallenger($_POST['userID'], $_POST['challengerID']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID']) && isset($input['challengerID'])){
+			return $this->votes->getChallengesWithChallenger($input['userID'], $input['challengerID']);
 		}
 		return array();
     }

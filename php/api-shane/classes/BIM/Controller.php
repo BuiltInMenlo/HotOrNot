@@ -77,7 +77,7 @@ class BIM_Controller{
 		return ((isset($codes[$status])) ? $codes[$status] : '');
 	}
 			
-	public function sendResponse($status=200, $body=null, $content_type='text/json') {			
+	public function sendResponse($status=200, $body=null, $content_type='application/json') {			
 		$status_header = "HTTP/1.1 ". $status ." ". $this->getStatusCodeMessage($status);
 		
 		header($status_header);
