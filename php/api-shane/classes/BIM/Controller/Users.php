@@ -97,21 +97,22 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function twilioCallback(){
         $linked = $this->users->linkMobileNumber( (object) $_POST );
         if( $linked ){
-            $to = $_POST['From']; // we switch the meanin of to and from so we can send an sms back
-            $from = $_POST['To']; // we switch the meanin of to and from so we can send an sms back
+            $to = $_POST['From']; // we switch the meaning of to and from so we can send an sms back
+            $from = $_POST['To']; // we switch the meaning of to and from so we can send an sms back
             echo "<?xml version='1.0' encoding='UTF-8'?><Response><Sms from='$from' to='$to'>Volley On!</Sms></Response>";
             exit();
         }
     }
     
     public function inviteInsta(){
-        return true;
-		if ( isset( $_POST['instau'] ) && $_POST['instau'] && isset( $_POST['instap'] ) && $_POST['instap'] ){
+        $input = $_POST ? $_POST : $_GET;
+		if ( !empty( $input['instau'] ) && !empty( $input['instap'] ) ){
 		    $params = (object) array(
-		        'username' => $_POST['instau'],
-		        'password' => $_POST['instap'],
+		        'username' => $input['instau'],
+		        'password' => $input['instap'],
 		    );
-			$this->users->inviteInsta( $params );
+		    $users = new BIM_App_Users();
+			$users->inviteInsta( $params );
 		}
 		return true;
     }

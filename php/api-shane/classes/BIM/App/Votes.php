@@ -378,10 +378,13 @@ class BIM_App_Votes extends BIM_App_Base{
 		}
 	}
 	
-	public function getChallengesWithFriends($userId, $friendIds) {
+	public function getChallengesWithFriends($input) {
 		$this->dbConnect();
 	    $challenge_arr = array();
-		
+	    
+        $friends = BIM_App_Social::getFriends($input);
+        $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
+	    
 	    $fIdct = count( $friendIds );
 		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
 		
