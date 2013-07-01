@@ -75,6 +75,25 @@ class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
 		$this->prepareAndExecute( $sql, $params );
 	}
 	
+	public function saveInviteMsgs( $data ){
+	    foreach( $data as $type => $message ){
+    	    $sql = "
+    			insert into `hotornot-dev`.invite_messages
+    			(type, message) values (?,?)
+    			on duplicate key update message = ?
+    		";
+    		$params = array( $type, $message, $message );
+    		$this->prepareAndExecute( $sql, $params );
+	    }
+	}
+	
+	public function getInviteMsgs(){
+		$sql = "select * from `hotornot-dev`.invite_messages";
+		$stmt = $this->prepareAndExecute($sql);
+		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+		return $data;
+	}
+		
 	public function updateUserStats( $data ){
 		$sql = "
 			insert into growth.persona_stats_log
