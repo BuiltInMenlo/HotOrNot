@@ -505,6 +505,9 @@ class BIM_App_Challenges extends BIM_App_Base{
 		// get the newly created challenge
 		$challenge_arr = $this->getChallengeObj($challenge_id);
 		
+		// auto-accept if sent to default user
+		$this->acceptChallengeAsDefaultUser($challenge_id);
+		
 		/// return
 		return $challenge_arr;
 	}

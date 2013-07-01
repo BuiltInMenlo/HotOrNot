@@ -299,7 +299,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * @param $username The username of the user (string)
 	 * @return The list of challenges (array)
 	**/
-	public function getChallengesForUsername($username) {
+	public function getChallengesForUsername($username, $private = false ) {
 		$this->dbConnect();
 	    $challenge_arr = array();
 		
@@ -313,7 +313,18 @@ class BIM_App_Votes extends BIM_App_Base{
 			$user_id = mysql_fetch_object($user_result)->id;
 			
 			// get latest 10 challenges for user
-			$query = 'SELECT * FROM `tblChallenges` WHERE ( status_id IN (1,2,4) ) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50;';
+    	    $privateSql = ' AND `is_private` != "Y" ';
+    	    if( $private ){
+    	        $privateSql = ' AND `is_private` = "Y" ';
+    	    }
+			
+	        $query = "
+				SELECT * 
+				FROM `tblChallenges` 
+				WHERE ( status_id IN (1,2,4) ) 
+					$privateSql
+					AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') 
+				ORDER BY `updated` DESC LIMIT 50;";
 			$challenge_result = mysql_query($query);
 		
 			// loop thru the rows
