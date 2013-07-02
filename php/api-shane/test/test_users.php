@@ -1,7 +1,7 @@
 <?php
 require_once 'vendor/autoload.php';
 
-testnotes();
+testTwilioCallback();
 
 function testnotes(){
 
@@ -67,7 +67,9 @@ function testTwilioCallback(){
     
     $params = array(
         'AccountSid' => 'ACb76dc4d9482a77306bc7170a47f2ea47',
-        'Body' => "$smsCode",
+        'Body' => "
+    
+     this is a message $smsCode",
         'ToZip' => '34109',
         'FromState' => 'CA',
         'ToCity' => 'NAPLES',
@@ -80,7 +82,7 @@ function testTwilioCallback(){
         'ApiVersion' => '2010-04-01',
         'FromCity' => 'SAN FRANCISCO',
         'SmsStatus' => 'received',
-        'From' => '+14152549392',
+        'From' => '+14152549391',
         'FromZip' => '94930',
     );
     

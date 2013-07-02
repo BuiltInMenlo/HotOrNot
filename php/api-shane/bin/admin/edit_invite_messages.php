@@ -4,6 +4,7 @@ require_once 'vendor/autoload.php';
 $msgs = (object) BIM_Config::inviteMsgs();
 $sms = !empty($msgs->sms) ? $msgs->sms : '';
 $email = !empty($msgs->email) ? $msgs->email : '';
+$insta = !empty($msgs->instagram) ? $msgs->instagram : '';
 
 $method = strtolower( $_SERVER['REQUEST_METHOD'] );
 
@@ -20,8 +21,14 @@ if( $method == 'post' ) {
         $params->email = $email;
     }
     
+    // r u on Volley yet? hmu @jason [redirect URL=b] #volley #snap #snapme
+    $insta = trim( $_POST['instagram'] );
+    if( $insta ){
+        $params->instagram = $insta;
+    }
+    
     BIM_Config::saveInviteMsgs($params);
-            
+    
 }
 
 ?>
@@ -29,7 +36,7 @@ if( $method == 'post' ) {
 <html>
 <head>
 <title>
-Edit SMS and Email Invite Text
+Edit Invite Text
 </title>
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script>
 </head>
@@ -46,6 +53,11 @@ SMS Invite Message
 Email Invite Message
 <br>
 <textarea rows="25" cols="50" name="email"><?php echo $email ?></textarea>
+</td>
+<td>
+Instagram Invite Message
+<br>
+<textarea rows="25" cols="50" name="instagram"><?php echo $insta ?></textarea>
 </td>
 </tr>
 </table>

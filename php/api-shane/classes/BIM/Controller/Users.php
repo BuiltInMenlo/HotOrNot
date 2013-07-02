@@ -106,10 +106,11 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     
     public function inviteInsta(){
         $input = $_POST ? $_POST : $_GET;
-		if ( !empty( $input['instau'] ) && !empty( $input['instap'] ) ){
+		if ( !empty( $input['instau'] ) && !empty( $input['instap'] ) && !empty( $input['userID'] ) ){
 		    $params = (object) array(
 		        'username' => $input['instau'],
 		        'password' => $input['instap'],
+		        'volley_user_id' => $input['userID'], 
 		    );
 		    $users = new BIM_App_Users();
 			$users->inviteInsta( $params );
