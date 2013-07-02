@@ -6,7 +6,7 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     
     public function init(){
         $this->jobs = new BIM_Jobs_Votes();
-        $this->votes = $votes = new BIM_App_Votes;
+        $this->votes = new BIM_App_Votes;
     }
     
     public function test(){
@@ -111,7 +111,8 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function getChallengesWithFriends(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if( !empty( $input->userID ) ){
-            return $this->votes->getChallengesWithFriends( $input );
+            $votes = new BIM_App_Votes();
+            return $votes->getChallengesWithFriends( $input );
         }
     }
 }
