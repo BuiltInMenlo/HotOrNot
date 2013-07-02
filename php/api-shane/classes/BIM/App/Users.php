@@ -80,6 +80,7 @@ class BIM_App_Users extends BIM_App_Base{
 			'meta' => $meta,
 		    'sms_code' => BIM_Utils::getSMSCodeForId($row->id ),
 		    'friends' => BIM_App_Social::getFriends( (object) array( 'userID' => $row->id ) ),
+		    'sms_verified' => BIM_User::isVerified( $user_id )
 		));
 	}
 	
