@@ -33,10 +33,10 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         	'class' => 'BIM_Jobs_Growth',
         	'method' => 'smsInvites',
         	'data' => array( 
-        				'userId' => $userId, 
-        				'numbers' => $numbers,
-        				'inviteMsg' => "Thanks for signing up for Volley! (iOS app) You have been chosen to be apart of our test group. Sign up here: http://bit.ly/letsvolley"
-                      ),
+    		    'userId' => $userId, 
+    		    'numbers' => $numbers,
+    		    'inviteMsg' => "Thanks for signing up for Volley! (iOS app) You have been chosen to be apart of our test group. Sign up here: http://bit.ly/letsvolley"
+            ),
         );
         
         return $this->enqueueBackground( $job, 'growth' );
@@ -67,5 +67,33 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         } else {
             echo "problem when executing tumblr routines it appears the the routine does not exist or was not defined in the workload:\n\n".print_r($workload,1);
         }
-    }    
+    }
+    
+    public function queueMatchPush( $friend, $user ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Growth',
+        	'method' => 'matchPush',
+        	'data' => (object) array( 
+                'user_id' => $user->id,
+                'friend_id' => $friend->id,
+            ),
+        );
+        return $this->enqueueBackground( $job, 'match_push' );
+    }
+    
+    /**
+        $msg = "@$creator_obj->username has sent you a $private Volley!";
+    	$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
+    	
+    	we get the users data
+    	get the device token
+    	send the push
+    	
+     */
+    public function matchPush( $workload ){
+        $user = new BIM_User( $workload->data->user_id );
+        $friend = new BIM_User( $workload->data->friend_id );
+        $msg = "Your friend $user->username joined Volley!";
+        BIM_Push_UrbanAirship_Iphone::send( $friend->device_token, $msg );
+    }
 }

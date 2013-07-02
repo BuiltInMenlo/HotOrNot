@@ -1,88 +1,119 @@
 <?php
 
-require_once 'BIM/App/Users.php';
-require_once 'BIM/Controller/Base.php';
-
 class BIM_Controller_Users extends BIM_Controller_Base {
     
-    public function handleReq(){
-
-        $users = new BIM_App_Users;
-        ////$users->test();
-        
-        // action was specified
-        if (isset($_POST['action'])) {
-        	
-        	// depending on action, call function
-        	switch ($_POST['action']) {	
-        		case "0":
-        			return $users->test();
-        		
-        		// add a new user
-        		case "1":
-        			if (isset($_POST['token']))
-        				return $users->submitNewUser($_POST['token']);
-        			break;
-        		
-        		// update user's facebook creds
-        		case "2":
-        			if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']) && isset($_POST['gender']))
-        				return $users->updateFB($_POST['userID'], $_POST['username'], $_POST['fbID'], $_POST['gender']);
-        			break;
-        		
-        		// update user's account type
-        		case "3":
-        			if (isset($_POST['userID']) && isset($_POST['isPaid']))
-        				return $users->updatePaid($_POST['userID'], $_POST['isPaid']);
-        			break;
-        		
-        		// update a user's push notification prefs
-        		case "4":
-        			if (isset($_POST['userID']) && isset($_POST['isNotifications']))
-        				return $users->updateNotifications($_POST['userID'], $_POST['isNotifications']);
-        			break;
-        		
-        		// get a user's info
-        		case "5":
-        			if (isset($_POST['userID']))
-        				return $users->getUser($_POST['userID']);
-        			break;
-        		
-        		// poke a user
-        		case "6":
-        			if (isset($_POST['pokerID']) && isset($_POST['pokeeID']))
-        				return $users->pokeUser($_POST['pokerID'], $_POST['pokeeID']);
-        			break;
-        		
-        		// change a user's name
-        		case "7":
-        			if (isset($_POST['userID']) && isset($_POST['username']))
-        				return $users->updateName($_POST['userID'], $_POST['username']);
-        			break;
-        			
-        		// get a user's info
-        		case "8":
-        			if (isset($_POST['username']))
-        				return $users->getUserFromName($_POST['username']);
-        			break;
-        			
-        		// updates a user's name and avatar image
-        		case "9":
-        			if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['imgURL']))
-        				return $users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['imgURL']);
-        			break;
-        			
-        		// flag a user
-        		case "10":
-        			if (isset($_POST['userID']))
-        				return $users->flagUser($_POST['userID']);
-        			break;
-        			
-        		default:
-        		    return array();
-        	}
-        } else {
-            return array();
+    public function init(){
+        $this->users = new BIM_App_Users;
+    }
+    
+    public function test(){
+		return $this->users->test();
+    }
+    
+    public function flagUser(){
+		if (isset($_POST['userID'])){
+			return $this->users->flagUser($_POST['userID']);
+		}
+		return array();
+    }
+    
+    public function updateUsernameAvatar(){
+		if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['imgURL'])){
+			return $this->users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['imgURL']);
+		}
+		return array();
+    }
+    
+    public function getUserFromName(){
+		if (isset($_POST['username'])){
+			return $this->users->getUserFromName($_POST['username']);
+		}
+		return array();
+    }
+    
+    public function updateName(){
+		if (isset($_POST['userID']) && isset($_POST['username'])){
+			return $this->users->updateName($_POST['userID'], $_POST['username']);
+		}
+		return array();
+    }
+    
+    public function pokeUser(){
+		if (isset($_POST['pokerID']) && isset($_POST['pokeeID'])){
+			return $this->users->pokeUser($_POST['pokerID'], $_POST['pokeeID']);
+		}
+		return array();
+    }
+    
+    public function getUser(){
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID'])){
+			return $this->users->getUserObj($input['userID']);
         }
+		return array();
+    }
+    
+    public function updateNotifications(){
+		if (isset($_POST['userID']) && isset($_POST['isNotifications'])){
+			return $this->users->updateNotifications($_POST['userID'], $_POST['isNotifications']);
+		}
+		return array();
+    }
+    
+    public function updatePaid(){
+		if (isset($_POST['userID']) && isset($_POST['isPaid'])){
+			return $this->users->updatePaid($_POST['userID'], $_POST['isPaid']);
+        }
+		return array();
+    }
+    
+    public function updateFB(){
+		if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']) && isset($_POST['gender'])){
+			return $this->users->updateFB($_POST['userID'], $_POST['username'], $_POST['fbID'], $_POST['gender']);
+		}
+		return array();
+    }
+    
+    public function submitNewUser(){
+    	if (isset($_POST['token'])){
+    		return $this->users->submitNewUser($_POST['token']);
+    	}
+		return array();
+    }
+    
+    public function matchFriends(){
+	    $friends = array();
+		if ( isset( $_POST['userID'] ) && isset( $_POST['phone'] ) ){
+		    $hashedList = explode('|', $_POST['phone'] );
+		    $params = (object) array(
+		        'id' => $_POST['userID'],
+		        'hashed_list' => $hashedList,
+		    );
+			$friends = $this->users->matchFriends( $params );
+		}
+		return $friends;
+    }
+    
+    public function twilioCallback(){
+        $linked = $this->users->linkMobileNumber( (object) $_POST );
+        if( $linked ){
+            $to = $_POST['From']; // we switch the meaning of to and from so we can send an sms back
+            $from = $_POST['To']; // we switch the meaning of to and from so we can send an sms back
+            echo "<?xml version='1.0' encoding='UTF-8'?><Response><Sms from='$from' to='$to'>Volley On!</Sms></Response>";
+            exit();
+        }
+    }
+    
+    public function inviteInsta(){
+        $input = $_POST ? $_POST : $_GET;
+		if ( !empty( $input['instau'] ) && !empty( $input['instap'] ) ){
+		    $params = (object) array(
+		        'username' => $input['instau'],
+		        'password' => $input['instap'],
+		    );
+		    $users = new BIM_App_Users();
+			$users->inviteInsta( $params );
+		}
+		return true;
     }
 }

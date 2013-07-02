@@ -1,0 +1,830 @@
+{"index":{"_index":"geo","_type":"timezone","_id":"+4230+00131"}}
+{"code":"AD","tz_id":"Europe\/Andorra","coords":{"lat":42.5,"lon":1.5166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2518+05518"}}
+{"code":"AE","tz_id":"Asia\/Dubai","coords":{"lat":25.3,"lon":55.3},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3431+06912"}}
+{"code":"AF","tz_id":"Asia\/Kabul","coords":{"lat":34.516666666667,"lon":69.2},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1703-06148"}}
+{"code":"AG","tz_id":"America\/Antigua","coords":{"lat":17.05,"lon":-61.8},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1812-06304"}}
+{"code":"AI","tz_id":"America\/Anguilla","coords":{"lat":18.2,"lon":-63.066666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4120+01950"}}
+{"code":"AL","tz_id":"Europe\/Tirane","coords":{"lat":41.333333333333,"lon":19.833333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4011+04430"}}
+{"code":"AM","tz_id":"Asia\/Yerevan","coords":{"lat":40.183333333333,"lon":44.5},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0848+01314"}}
+{"code":"AO","tz_id":"Africa\/Luanda","coords":{"lat":-8.8,"lon":13.233333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-7750+16636"}}
+{"code":"AQ","tz_id":"Antarctica\/McMurdo","coords":{"lat":-77.833333333333,"lon":166.6},"comment":"McMurdo Station, Ross Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-9000+00000"}}
+{"code":"AQ","tz_id":"Antarctica\/South_Pole","coords":{"lat":-90,"lon":0},"comment":"Amundsen-Scott Station, South Pole"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-6734-06808"}}
+{"code":"AQ","tz_id":"Antarctica\/Rothera","coords":{"lat":-67.566666666667,"lon":-68.133333333333},"comment":"Rothera Station, Adelaide Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-6448-06406"}}
+{"code":"AQ","tz_id":"Antarctica\/Palmer","coords":{"lat":-64.8,"lon":-64.1},"comment":"Palmer Station, Anvers Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-6736+06253"}}
+{"code":"AQ","tz_id":"Antarctica\/Mawson","coords":{"lat":-67.6,"lon":62.883333333333},"comment":"Mawson Station, Holme Bay"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-6835+07758"}}
+{"code":"AQ","tz_id":"Antarctica\/Davis","coords":{"lat":-68.583333333333,"lon":77.966666666667},"comment":"Davis Station, Vestfold Hills"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-6617+11031"}}
+{"code":"AQ","tz_id":"Antarctica\/Casey","coords":{"lat":-66.283333333333,"lon":110.51666666667},"comment":"Casey Station, Bailey Peninsula"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-7824+10654"}}
+{"code":"AQ","tz_id":"Antarctica\/Vostok","coords":{"lat":-78.4,"lon":106.9},"comment":"Vostok Station, Lake Vostok"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-6640+14001"}}
+{"code":"AQ","tz_id":"Antarctica\/DumontDUrville","coords":{"lat":-66.666666666667,"lon":140.01666666667},"comment":"Dumont-d'Urville Station, Terre Adelie"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-690022+0393524"}}
+{"code":"AQ","tz_id":"Antarctica\/Syowa","coords":{"lat":-69.006111111111,"lon":39.59},"comment":"Syowa Station, E Ongul I"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-5430+15857"}}
+{"code":"AQ","tz_id":"Antarctica\/Macquarie","coords":{"lat":-54.5,"lon":158.95},"comment":"Macquarie Island Station, Macquarie Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3436-05827"}}
+{"code":"AR","tz_id":"America\/Argentina\/Buenos_Aires","coords":{"lat":-34.6,"lon":-58.45},"comment":"Buenos Aires (BA, CF)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3124-06411"}}
+{"code":"AR","tz_id":"America\/Argentina\/Cordoba","coords":{"lat":-31.4,"lon":-64.183333333333},"comment":"most locations (CB, CC, CN, ER, FM, MN, SE, SF)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2447-06525"}}
+{"code":"AR","tz_id":"America\/Argentina\/Salta","coords":{"lat":-24.783333333333,"lon":-65.416666666667},"comment":"(SA, LP, NQ, RN)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2411-06518"}}
+{"code":"AR","tz_id":"America\/Argentina\/Jujuy","coords":{"lat":-24.183333333333,"lon":-65.3},"comment":"Jujuy (JY)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2649-06513"}}
+{"code":"AR","tz_id":"America\/Argentina\/Tucuman","coords":{"lat":-26.816666666667,"lon":-65.216666666667},"comment":"Tucuman (TM)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2828-06547"}}
+{"code":"AR","tz_id":"America\/Argentina\/Catamarca","coords":{"lat":-28.466666666667,"lon":-65.783333333333},"comment":"Catamarca (CT), Chubut (CH)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2926-06651"}}
+{"code":"AR","tz_id":"America\/Argentina\/La_Rioja","coords":{"lat":-29.433333333333,"lon":-66.85},"comment":"La Rioja (LR)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3132-06831"}}
+{"code":"AR","tz_id":"America\/Argentina\/San_Juan","coords":{"lat":-31.533333333333,"lon":-68.516666666667},"comment":"San Juan (SJ)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3253-06849"}}
+{"code":"AR","tz_id":"America\/Argentina\/Mendoza","coords":{"lat":-32.883333333333,"lon":-68.816666666667},"comment":"Mendoza (MZ)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3319-06621"}}
+{"code":"AR","tz_id":"America\/Argentina\/San_Luis","coords":{"lat":-33.316666666667,"lon":-66.35},"comment":"San Luis (SL)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-5138-06913"}}
+{"code":"AR","tz_id":"America\/Argentina\/Rio_Gallegos","coords":{"lat":-51.633333333333,"lon":-69.216666666667},"comment":"Santa Cruz (SC)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-5448-06818"}}
+{"code":"AR","tz_id":"America\/Argentina\/Ushuaia","coords":{"lat":-54.8,"lon":-68.3},"comment":"Tierra del Fuego (TF)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1416-17042"}}
+{"code":"AS","tz_id":"Pacific\/Pago_Pago","coords":{"lat":-14.266666666667,"lon":-170.7},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4813+01620"}}
+{"code":"AT","tz_id":"Europe\/Vienna","coords":{"lat":48.216666666667,"lon":16.333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3133+15905"}}
+{"code":"AU","tz_id":"Australia\/Lord_Howe","coords":{"lat":-31.55,"lon":159.08333333333},"comment":"Lord Howe Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-4253+14719"}}
+{"code":"AU","tz_id":"Australia\/Hobart","coords":{"lat":-42.883333333333,"lon":147.31666666667},"comment":"Tasmania - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3956+14352"}}
+{"code":"AU","tz_id":"Australia\/Currie","coords":{"lat":-39.933333333333,"lon":143.86666666667},"comment":"Tasmania - King Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3749+14458"}}
+{"code":"AU","tz_id":"Australia\/Melbourne","coords":{"lat":-37.816666666667,"lon":144.96666666667},"comment":"Victoria"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3352+15113"}}
+{"code":"AU","tz_id":"Australia\/Sydney","coords":{"lat":-33.866666666667,"lon":151.21666666667},"comment":"New South Wales - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3157+14127"}}
+{"code":"AU","tz_id":"Australia\/Broken_Hill","coords":{"lat":-31.95,"lon":141.45},"comment":"New South Wales - Yancowinna"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2728+15302"}}
+{"code":"AU","tz_id":"Australia\/Brisbane","coords":{"lat":-27.466666666667,"lon":153.03333333333},"comment":"Queensland - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2016+14900"}}
+{"code":"AU","tz_id":"Australia\/Lindeman","coords":{"lat":-20.266666666667,"lon":149},"comment":"Queensland - Holiday Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3455+13835"}}
+{"code":"AU","tz_id":"Australia\/Adelaide","coords":{"lat":-34.916666666667,"lon":138.58333333333},"comment":"South Australia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1228+13050"}}
+{"code":"AU","tz_id":"Australia\/Darwin","coords":{"lat":-12.466666666667,"lon":130.83333333333},"comment":"Northern Territory"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3157+11551"}}
+{"code":"AU","tz_id":"Australia\/Perth","coords":{"lat":-31.95,"lon":115.85},"comment":"Western Australia - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3143+12852"}}
+{"code":"AU","tz_id":"Australia\/Eucla","coords":{"lat":-31.716666666667,"lon":128.86666666667},"comment":"Western Australia - Eucla area"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1230-06958"}}
+{"code":"AW","tz_id":"America\/Aruba","coords":{"lat":12.5,"lon":-69.966666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6006+01957"}}
+{"code":"AX","tz_id":"Europe\/Mariehamn","coords":{"lat":60.1,"lon":19.95},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4023+04951"}}
+{"code":"AZ","tz_id":"Asia\/Baku","coords":{"lat":40.383333333333,"lon":49.85},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4352+01825"}}
+{"code":"BA","tz_id":"Europe\/Sarajevo","coords":{"lat":43.866666666667,"lon":18.416666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1306-05937"}}
+{"code":"BB","tz_id":"America\/Barbados","coords":{"lat":13.1,"lon":-59.616666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2343+09025"}}
+{"code":"BD","tz_id":"Asia\/Dhaka","coords":{"lat":23.716666666667,"lon":90.416666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5050+00420"}}
+{"code":"BE","tz_id":"Europe\/Brussels","coords":{"lat":50.833333333333,"lon":4.3333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1222-00131"}}
+{"code":"BF","tz_id":"Africa\/Ouagadougou","coords":{"lat":12.366666666667,"lon":-1.5166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4241+02319"}}
+{"code":"BG","tz_id":"Europe\/Sofia","coords":{"lat":42.683333333333,"lon":23.316666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2623+05035"}}
+{"code":"BH","tz_id":"Asia\/Bahrain","coords":{"lat":26.383333333333,"lon":50.583333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0323+02922"}}
+{"code":"BI","tz_id":"Africa\/Bujumbura","coords":{"lat":-3.3833333333333,"lon":29.366666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0629+00237"}}
+{"code":"BJ","tz_id":"Africa\/Porto-Novo","coords":{"lat":6.4833333333333,"lon":2.6166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1753-06251"}}
+{"code":"BL","tz_id":"America\/St_Barthelemy","coords":{"lat":17.883333333333,"lon":-62.85},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3217-06446"}}
+{"code":"BM","tz_id":"Atlantic\/Bermuda","coords":{"lat":32.283333333333,"lon":-64.766666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0456+11455"}}
+{"code":"BN","tz_id":"Asia\/Brunei","coords":{"lat":4.9333333333333,"lon":114.91666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1630-06809"}}
+{"code":"BO","tz_id":"America\/La_Paz","coords":{"lat":-16.5,"lon":-68.15},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+120903-0681636"}}
+{"code":"BQ","tz_id":"America\/Kralendijk","coords":{"lat":12.150833333333,"lon":-68.276666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0351-03225"}}
+{"code":"BR","tz_id":"America\/Noronha","coords":{"lat":-3.85,"lon":-32.416666666667},"comment":"Atlantic islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0127-04829"}}
+{"code":"BR","tz_id":"America\/Belem","coords":{"lat":-1.45,"lon":-48.483333333333},"comment":"Amapa, E Para"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0343-03830"}}
+{"code":"BR","tz_id":"America\/Fortaleza","coords":{"lat":-3.7166666666667,"lon":-38.5},"comment":"NE Brazil (MA, PI, CE, RN, PB)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0803-03454"}}
+{"code":"BR","tz_id":"America\/Recife","coords":{"lat":-8.05,"lon":-34.9},"comment":"Pernambuco"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0712-04812"}}
+{"code":"BR","tz_id":"America\/Araguaina","coords":{"lat":-7.2,"lon":-48.2},"comment":"Tocantins"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0940-03543"}}
+{"code":"BR","tz_id":"America\/Maceio","coords":{"lat":-9.6666666666667,"lon":-35.716666666667},"comment":"Alagoas, Sergipe"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1259-03831"}}
+{"code":"BR","tz_id":"America\/Bahia","coords":{"lat":-12.983333333333,"lon":-38.516666666667},"comment":"Bahia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2332-04637"}}
+{"code":"BR","tz_id":"America\/Sao_Paulo","coords":{"lat":-23.533333333333,"lon":-46.616666666667},"comment":"S & SE Brazil (GO, DF, MG, ES, RJ, SP, PR, SC, RS)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2027-05437"}}
+{"code":"BR","tz_id":"America\/Campo_Grande","coords":{"lat":-20.45,"lon":-54.616666666667},"comment":"Mato Grosso do Sul"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1535-05605"}}
+{"code":"BR","tz_id":"America\/Cuiaba","coords":{"lat":-15.583333333333,"lon":-56.083333333333},"comment":"Mato Grosso"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0226-05452"}}
+{"code":"BR","tz_id":"America\/Santarem","coords":{"lat":-2.4333333333333,"lon":-54.866666666667},"comment":"W Para"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0846-06354"}}
+{"code":"BR","tz_id":"America\/Porto_Velho","coords":{"lat":-8.7666666666667,"lon":-63.9},"comment":"Rondonia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0249-06040"}}
+{"code":"BR","tz_id":"America\/Boa_Vista","coords":{"lat":2.8166666666667,"lon":-60.666666666667},"comment":"Roraima"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0308-06001"}}
+{"code":"BR","tz_id":"America\/Manaus","coords":{"lat":-3.1333333333333,"lon":-60.016666666667},"comment":"E Amazonas"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0640-06952"}}
+{"code":"BR","tz_id":"America\/Eirunepe","coords":{"lat":-6.6666666666667,"lon":-69.866666666667},"comment":"W Amazonas"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0958-06748"}}
+{"code":"BR","tz_id":"America\/Rio_Branco","coords":{"lat":-9.9666666666667,"lon":-67.8},"comment":"Acre"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2505-07721"}}
+{"code":"BS","tz_id":"America\/Nassau","coords":{"lat":25.083333333333,"lon":-77.35},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2728+08939"}}
+{"code":"BT","tz_id":"Asia\/Thimphu","coords":{"lat":27.466666666667,"lon":89.65},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2439+02555"}}
+{"code":"BW","tz_id":"Africa\/Gaborone","coords":{"lat":-24.65,"lon":25.916666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5354+02734"}}
+{"code":"BY","tz_id":"Europe\/Minsk","coords":{"lat":53.9,"lon":27.566666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1730-08812"}}
+{"code":"BZ","tz_id":"America\/Belize","coords":{"lat":17.5,"lon":-88.2},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4734-05243"}}
+{"code":"CA","tz_id":"America\/St_Johns","coords":{"lat":47.566666666667,"lon":-52.716666666667},"comment":"Newfoundland Time, including SE Labrador"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4439-06336"}}
+{"code":"CA","tz_id":"America\/Halifax","coords":{"lat":44.65,"lon":-63.6},"comment":"Atlantic Time - Nova Scotia (most places), PEI"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4612-05957"}}
+{"code":"CA","tz_id":"America\/Glace_Bay","coords":{"lat":46.2,"lon":-59.95},"comment":"Atlantic Time - Nova Scotia - places that did not observe DST 1966-1971"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4606-06447"}}
+{"code":"CA","tz_id":"America\/Moncton","coords":{"lat":46.1,"lon":-64.783333333333},"comment":"Atlantic Time - New Brunswick"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5320-06025"}}
+{"code":"CA","tz_id":"America\/Goose_Bay","coords":{"lat":53.333333333333,"lon":-60.416666666667},"comment":"Atlantic Time - Labrador - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5125-05707"}}
+{"code":"CA","tz_id":"America\/Blanc-Sablon","coords":{"lat":51.416666666667,"lon":-57.116666666667},"comment":"Atlantic Standard Time - Quebec - Lower North Shore"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4531-07334"}}
+{"code":"CA","tz_id":"America\/Montreal","coords":{"lat":45.516666666667,"lon":-73.566666666667},"comment":"Eastern Time - Quebec - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4339-07923"}}
+{"code":"CA","tz_id":"America\/Toronto","coords":{"lat":43.65,"lon":-79.383333333333},"comment":"Eastern Time - Ontario - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4901-08816"}}
+{"code":"CA","tz_id":"America\/Nipigon","coords":{"lat":49.016666666667,"lon":-88.266666666667},"comment":"Eastern Time - Ontario & Quebec - places that did not observe DST 1967-1973"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4823-08915"}}
+{"code":"CA","tz_id":"America\/Thunder_Bay","coords":{"lat":48.383333333333,"lon":-89.25},"comment":"Eastern Time - Thunder Bay, Ontario"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6344-06828"}}
+{"code":"CA","tz_id":"America\/Iqaluit","coords":{"lat":63.733333333333,"lon":-68.466666666667},"comment":"Eastern Time - east Nunavut - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6608-06544"}}
+{"code":"CA","tz_id":"America\/Pangnirtung","coords":{"lat":66.133333333333,"lon":-65.733333333333},"comment":"Eastern Time - Pangnirtung, Nunavut"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+744144-0944945"}}
+{"code":"CA","tz_id":"America\/Resolute","coords":{"lat":74.695555555556,"lon":-94.829166666667},"comment":"Central Standard Time - Resolute, Nunavut"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+484531-0913718"}}
+{"code":"CA","tz_id":"America\/Atikokan","coords":{"lat":48.758611111111,"lon":-91.621666666667},"comment":"Eastern Standard Time - Atikokan, Ontario and Southampton I, Nunavut"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+624900-0920459"}}
+{"code":"CA","tz_id":"America\/Rankin_Inlet","coords":{"lat":62.816666666667,"lon":-92.083055555556},"comment":"Central Time - central Nunavut"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4953-09709"}}
+{"code":"CA","tz_id":"America\/Winnipeg","coords":{"lat":49.883333333333,"lon":-97.15},"comment":"Central Time - Manitoba & west Ontario"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4843-09434"}}
+{"code":"CA","tz_id":"America\/Rainy_River","coords":{"lat":48.716666666667,"lon":-94.566666666667},"comment":"Central Time - Rainy River & Fort Frances, Ontario"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5024-10439"}}
+{"code":"CA","tz_id":"America\/Regina","coords":{"lat":50.4,"lon":-104.65},"comment":"Central Standard Time - Saskatchewan - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5017-10750"}}
+{"code":"CA","tz_id":"America\/Swift_Current","coords":{"lat":50.283333333333,"lon":-107.83333333333},"comment":"Central Standard Time - Saskatchewan - midwest"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5333-11328"}}
+{"code":"CA","tz_id":"America\/Edmonton","coords":{"lat":53.55,"lon":-113.46666666667},"comment":"Mountain Time - Alberta, east British Columbia & west Saskatchewan"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+690650-1050310"}}
+{"code":"CA","tz_id":"America\/Cambridge_Bay","coords":{"lat":69.113888888889,"lon":-105.05277777778},"comment":"Mountain Time - west Nunavut"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6227-11421"}}
+{"code":"CA","tz_id":"America\/Yellowknife","coords":{"lat":62.45,"lon":-114.35},"comment":"Mountain Time - central Northwest Territories"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+682059-1334300"}}
+{"code":"CA","tz_id":"America\/Inuvik","coords":{"lat":68.349722222222,"lon":-133.71666666667},"comment":"Mountain Time - west Northwest Territories"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4906-11631"}}
+{"code":"CA","tz_id":"America\/Creston","coords":{"lat":49.1,"lon":-116.51666666667},"comment":"Mountain Standard Time - Creston, British Columbia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5946-12014"}}
+{"code":"CA","tz_id":"America\/Dawson_Creek","coords":{"lat":59.766666666667,"lon":-120.23333333333},"comment":"Mountain Standard Time - Dawson Creek & Fort Saint John, British Columbia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4916-12307"}}
+{"code":"CA","tz_id":"America\/Vancouver","coords":{"lat":49.266666666667,"lon":-123.11666666667},"comment":"Pacific Time - west British Columbia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6043-13503"}}
+{"code":"CA","tz_id":"America\/Whitehorse","coords":{"lat":60.716666666667,"lon":-135.05},"comment":"Pacific Time - south Yukon"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6404-13925"}}
+{"code":"CA","tz_id":"America\/Dawson","coords":{"lat":64.066666666667,"lon":-139.41666666667},"comment":"Pacific Time - north Yukon"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1210+09655"}}
+{"code":"CC","tz_id":"Indian\/Cocos","coords":{"lat":-12.166666666667,"lon":96.916666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0418+01518"}}
+{"code":"CD","tz_id":"Africa\/Kinshasa","coords":{"lat":-4.3,"lon":15.3},"comment":"west Dem. Rep. of Congo"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1140+02728"}}
+{"code":"CD","tz_id":"Africa\/Lubumbashi","coords":{"lat":-11.666666666667,"lon":27.466666666667},"comment":"east Dem. Rep. of Congo"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0422+01835"}}
+{"code":"CF","tz_id":"Africa\/Bangui","coords":{"lat":4.3666666666667,"lon":18.583333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0416+01517"}}
+{"code":"CG","tz_id":"Africa\/Brazzaville","coords":{"lat":-4.2666666666667,"lon":15.283333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4723+00832"}}
+{"code":"CH","tz_id":"Europe\/Zurich","coords":{"lat":47.383333333333,"lon":8.5333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0519-00402"}}
+{"code":"CI","tz_id":"Africa\/Abidjan","coords":{"lat":5.3166666666667,"lon":-4.0333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2114-15946"}}
+{"code":"CK","tz_id":"Pacific\/Rarotonga","coords":{"lat":-21.233333333333,"lon":-159.76666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3327-07040"}}
+{"code":"CL","tz_id":"America\/Santiago","coords":{"lat":-33.45,"lon":-70.666666666667},"comment":"most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2709-10926"}}
+{"code":"CL","tz_id":"Pacific\/Easter","coords":{"lat":-27.15,"lon":-109.43333333333},"comment":"Easter Island & Sala y Gomez"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0403+00942"}}
+{"code":"CM","tz_id":"Africa\/Douala","coords":{"lat":4.05,"lon":9.7},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3114+12128"}}
+{"code":"CN","tz_id":"Asia\/Shanghai","coords":{"lat":31.233333333333,"lon":121.46666666667},"comment":"east China - Beijing, Guangdong, Shanghai, etc."}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4545+12641"}}
+{"code":"CN","tz_id":"Asia\/Harbin","coords":{"lat":45.75,"lon":126.68333333333},"comment":"Heilongjiang (except Mohe), Jilin"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2934+10635"}}
+{"code":"CN","tz_id":"Asia\/Chongqing","coords":{"lat":29.566666666667,"lon":106.58333333333},"comment":"central China - Sichuan, Yunnan, Guangxi, Shaanxi, Guizhou, etc."}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4348+08735"}}
+{"code":"CN","tz_id":"Asia\/Urumqi","coords":{"lat":43.8,"lon":87.583333333333},"comment":"most of Tibet & Xinjiang"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3929+07559"}}
+{"code":"CN","tz_id":"Asia\/Kashgar","coords":{"lat":39.483333333333,"lon":75.983333333333},"comment":"west Tibet & Xinjiang"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0436-07405"}}
+{"code":"CO","tz_id":"America\/Bogota","coords":{"lat":4.6,"lon":-74.083333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0956-08405"}}
+{"code":"CR","tz_id":"America\/Costa_Rica","coords":{"lat":9.9333333333333,"lon":-84.083333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2308-08222"}}
+{"code":"CU","tz_id":"America\/Havana","coords":{"lat":23.133333333333,"lon":-82.366666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1455-02331"}}
+{"code":"CV","tz_id":"Atlantic\/Cape_Verde","coords":{"lat":14.916666666667,"lon":-23.516666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1211-06900"}}
+{"code":"CW","tz_id":"America\/Curacao","coords":{"lat":12.183333333333,"lon":-69},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1025+10543"}}
+{"code":"CX","tz_id":"Indian\/Christmas","coords":{"lat":-10.416666666667,"lon":105.71666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3510+03322"}}
+{"code":"CY","tz_id":"Asia\/Nicosia","coords":{"lat":35.166666666667,"lon":33.366666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5005+01426"}}
+{"code":"CZ","tz_id":"Europe\/Prague","coords":{"lat":50.083333333333,"lon":14.433333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5230+01322"}}
+{"code":"DE","tz_id":"Europe\/Berlin","coords":{"lat":52.5,"lon":13.366666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1136+04309"}}
+{"code":"DJ","tz_id":"Africa\/Djibouti","coords":{"lat":11.6,"lon":43.15},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5540+01235"}}
+{"code":"DK","tz_id":"Europe\/Copenhagen","coords":{"lat":55.666666666667,"lon":12.583333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1518-06124"}}
+{"code":"DM","tz_id":"America\/Dominica","coords":{"lat":15.3,"lon":-61.4},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1828-06954"}}
+{"code":"DO","tz_id":"America\/Santo_Domingo","coords":{"lat":18.466666666667,"lon":-69.9},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3647+00303"}}
+{"code":"DZ","tz_id":"Africa\/Algiers","coords":{"lat":36.783333333333,"lon":3.05},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0210-07950"}}
+{"code":"EC","tz_id":"America\/Guayaquil","coords":{"lat":-2.1666666666667,"lon":-79.833333333333},"comment":"mainland"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0054-08936"}}
+{"code":"EC","tz_id":"Pacific\/Galapagos","coords":{"lat":-0.9,"lon":-89.6},"comment":"Galapagos Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5925+02445"}}
+{"code":"EE","tz_id":"Europe\/Tallinn","coords":{"lat":59.416666666667,"lon":24.75},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3003+03115"}}
+{"code":"EG","tz_id":"Africa\/Cairo","coords":{"lat":30.05,"lon":31.25},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2709-01312"}}
+{"code":"EH","tz_id":"Africa\/El_Aaiun","coords":{"lat":27.15,"lon":-13.2},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1520+03853"}}
+{"code":"ER","tz_id":"Africa\/Asmara","coords":{"lat":15.333333333333,"lon":38.883333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4024-00341"}}
+{"code":"ES","tz_id":"Europe\/Madrid","coords":{"lat":40.4,"lon":-3.6833333333333},"comment":"mainland"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3553-00519"}}
+{"code":"ES","tz_id":"Africa\/Ceuta","coords":{"lat":35.883333333333,"lon":-5.3166666666667},"comment":"Ceuta & Melilla"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2806-01524"}}
+{"code":"ES","tz_id":"Atlantic\/Canary","coords":{"lat":28.1,"lon":-15.4},"comment":"Canary Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0902+03842"}}
+{"code":"ET","tz_id":"Africa\/Addis_Ababa","coords":{"lat":9.0333333333333,"lon":38.7},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6010+02458"}}
+{"code":"FI","tz_id":"Europe\/Helsinki","coords":{"lat":60.166666666667,"lon":24.966666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1808+17825"}}
+{"code":"FJ","tz_id":"Pacific\/Fiji","coords":{"lat":-18.133333333333,"lon":178.41666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-5142-05751"}}
+{"code":"FK","tz_id":"Atlantic\/Stanley","coords":{"lat":-51.7,"lon":-57.85},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0725+15147"}}
+{"code":"FM","tz_id":"Pacific\/Chuuk","coords":{"lat":7.4166666666667,"lon":151.78333333333},"comment":"Chuuk (Truk) and Yap"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0658+15813"}}
+{"code":"FM","tz_id":"Pacific\/Pohnpei","coords":{"lat":6.9666666666667,"lon":158.21666666667},"comment":"Pohnpei (Ponape)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0519+16259"}}
+{"code":"FM","tz_id":"Pacific\/Kosrae","coords":{"lat":5.3166666666667,"lon":162.98333333333},"comment":"Kosrae"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6201-00646"}}
+{"code":"FO","tz_id":"Atlantic\/Faroe","coords":{"lat":62.016666666667,"lon":-6.7666666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4852+00220"}}
+{"code":"FR","tz_id":"Europe\/Paris","coords":{"lat":48.866666666667,"lon":2.3333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0023+00927"}}
+{"code":"GA","tz_id":"Africa\/Libreville","coords":{"lat":0.38333333333333,"lon":9.45},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+513030-0000731"}}
+{"code":"GB","tz_id":"Europe\/London","coords":{"lat":51.508333333333,"lon":-0.12527777777778},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1203-06145"}}
+{"code":"GD","tz_id":"America\/Grenada","coords":{"lat":12.05,"lon":-61.75},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4143+04449"}}
+{"code":"GE","tz_id":"Asia\/Tbilisi","coords":{"lat":41.716666666667,"lon":44.816666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0456-05220"}}
+{"code":"GF","tz_id":"America\/Cayenne","coords":{"lat":4.9333333333333,"lon":-52.333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4927-00232"}}
+{"code":"GG","tz_id":"Europe\/Guernsey","coords":{"lat":49.45,"lon":-2.5333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0533-00013"}}
+{"code":"GH","tz_id":"Africa\/Accra","coords":{"lat":5.55,"lon":-0.21666666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3608-00521"}}
+{"code":"GI","tz_id":"Europe\/Gibraltar","coords":{"lat":36.133333333333,"lon":-5.35},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6411-05144"}}
+{"code":"GL","tz_id":"America\/Godthab","coords":{"lat":64.183333333333,"lon":-51.733333333333},"comment":"most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+7646-01840"}}
+{"code":"GL","tz_id":"America\/Danmarkshavn","coords":{"lat":76.766666666667,"lon":-18.666666666667},"comment":"east coast, north of Scoresbysund"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+7029-02158"}}
+{"code":"GL","tz_id":"America\/Scoresbysund","coords":{"lat":70.483333333333,"lon":-21.966666666667},"comment":"Scoresbysund \/ Ittoqqortoormiit"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+7634-06847"}}
+{"code":"GL","tz_id":"America\/Thule","coords":{"lat":76.566666666667,"lon":-68.783333333333},"comment":"Thule \/ Pituffik"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1328-01639"}}
+{"code":"GM","tz_id":"Africa\/Banjul","coords":{"lat":13.466666666667,"lon":-16.65},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0931-01343"}}
+{"code":"GN","tz_id":"Africa\/Conakry","coords":{"lat":9.5166666666667,"lon":-13.716666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1614-06132"}}
+{"code":"GP","tz_id":"America\/Guadeloupe","coords":{"lat":16.233333333333,"lon":-61.533333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0345+00847"}}
+{"code":"GQ","tz_id":"Africa\/Malabo","coords":{"lat":3.75,"lon":8.7833333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3758+02343"}}
+{"code":"GR","tz_id":"Europe\/Athens","coords":{"lat":37.966666666667,"lon":23.716666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-5416-03632"}}
+{"code":"GS","tz_id":"Atlantic\/South_Georgia","coords":{"lat":-54.266666666667,"lon":-36.533333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1438-09031"}}
+{"code":"GT","tz_id":"America\/Guatemala","coords":{"lat":14.633333333333,"lon":-90.516666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1328+14445"}}
+{"code":"GU","tz_id":"Pacific\/Guam","coords":{"lat":13.466666666667,"lon":144.75},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1151-01535"}}
+{"code":"GW","tz_id":"Africa\/Bissau","coords":{"lat":11.85,"lon":-15.583333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0648-05810"}}
+{"code":"GY","tz_id":"America\/Guyana","coords":{"lat":6.8,"lon":-58.166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2217+11409"}}
+{"code":"HK","tz_id":"Asia\/Hong_Kong","coords":{"lat":22.283333333333,"lon":114.15},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1406-08713"}}
+{"code":"HN","tz_id":"America\/Tegucigalpa","coords":{"lat":14.1,"lon":-87.216666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4548+01558"}}
+{"code":"HR","tz_id":"Europe\/Zagreb","coords":{"lat":45.8,"lon":15.966666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1832-07220"}}
+{"code":"HT","tz_id":"America\/Port-au-Prince","coords":{"lat":18.533333333333,"lon":-72.333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4730+01905"}}
+{"code":"HU","tz_id":"Europe\/Budapest","coords":{"lat":47.5,"lon":19.083333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0610+10648"}}
+{"code":"ID","tz_id":"Asia\/Jakarta","coords":{"lat":-6.1666666666667,"lon":106.8},"comment":"Java & Sumatra"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0002+10920"}}
+{"code":"ID","tz_id":"Asia\/Pontianak","coords":{"lat":-0.033333333333333,"lon":109.33333333333},"comment":"west & central Borneo"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0507+11924"}}
+{"code":"ID","tz_id":"Asia\/Makassar","coords":{"lat":-5.1166666666667,"lon":119.4},"comment":"east & south Borneo, Sulawesi (Celebes), Bali, Nusa Tengarra, west Timor"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0232+14042"}}
+{"code":"ID","tz_id":"Asia\/Jayapura","coords":{"lat":-2.5333333333333,"lon":140.7},"comment":"west New Guinea (Irian Jaya) & Malukus (Moluccas)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5320-00615"}}
+{"code":"IE","tz_id":"Europe\/Dublin","coords":{"lat":53.333333333333,"lon":-6.25},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3146+03514"}}
+{"code":"IL","tz_id":"Asia\/Jerusalem","coords":{"lat":31.766666666667,"lon":35.233333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5409-00428"}}
+{"code":"IM","tz_id":"Europe\/Isle_of_Man","coords":{"lat":54.15,"lon":-4.4666666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2232+08822"}}
+{"code":"IN","tz_id":"Asia\/Kolkata","coords":{"lat":22.533333333333,"lon":88.366666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0720+07225"}}
+{"code":"IO","tz_id":"Indian\/Chagos","coords":{"lat":-7.3333333333333,"lon":72.416666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3321+04425"}}
+{"code":"IQ","tz_id":"Asia\/Baghdad","coords":{"lat":33.35,"lon":44.416666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3540+05126"}}
+{"code":"IR","tz_id":"Asia\/Tehran","coords":{"lat":35.666666666667,"lon":51.433333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6409-02151"}}
+{"code":"IS","tz_id":"Atlantic\/Reykjavik","coords":{"lat":64.15,"lon":-21.85},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4154+01229"}}
+{"code":"IT","tz_id":"Europe\/Rome","coords":{"lat":41.9,"lon":12.483333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4912-00207"}}
+{"code":"JE","tz_id":"Europe\/Jersey","coords":{"lat":49.2,"lon":-2.1166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1800-07648"}}
+{"code":"JM","tz_id":"America\/Jamaica","coords":{"lat":18,"lon":-76.8},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3157+03556"}}
+{"code":"JO","tz_id":"Asia\/Amman","coords":{"lat":31.95,"lon":35.933333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+353916+1394441"}}
+{"code":"JP","tz_id":"Asia\/Tokyo","coords":{"lat":35.654444444444,"lon":139.74472222222},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0117+03649"}}
+{"code":"KE","tz_id":"Africa\/Nairobi","coords":{"lat":-1.2833333333333,"lon":36.816666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4254+07436"}}
+{"code":"KG","tz_id":"Asia\/Bishkek","coords":{"lat":42.9,"lon":74.6},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1133+10455"}}
+{"code":"KH","tz_id":"Asia\/Phnom_Penh","coords":{"lat":11.55,"lon":104.91666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0125+17300"}}
+{"code":"KI","tz_id":"Pacific\/Tarawa","coords":{"lat":1.4166666666667,"lon":173},"comment":"Gilbert Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0308-17105"}}
+{"code":"KI","tz_id":"Pacific\/Enderbury","coords":{"lat":-3.1333333333333,"lon":-171.08333333333},"comment":"Phoenix Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0152-15720"}}
+{"code":"KI","tz_id":"Pacific\/Kiritimati","coords":{"lat":1.8666666666667,"lon":-157.33333333333},"comment":"Line Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1141+04316"}}
+{"code":"KM","tz_id":"Indian\/Comoro","coords":{"lat":-11.683333333333,"lon":43.266666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1718-06243"}}
+{"code":"KN","tz_id":"America\/St_Kitts","coords":{"lat":17.3,"lon":-62.716666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3901+12545"}}
+{"code":"KP","tz_id":"Asia\/Pyongyang","coords":{"lat":39.016666666667,"lon":125.75},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3733+12658"}}
+{"code":"KR","tz_id":"Asia\/Seoul","coords":{"lat":37.55,"lon":126.96666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2920+04759"}}
+{"code":"KW","tz_id":"Asia\/Kuwait","coords":{"lat":29.333333333333,"lon":47.983333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1918-08123"}}
+{"code":"KY","tz_id":"America\/Cayman","coords":{"lat":19.3,"lon":-81.383333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4315+07657"}}
+{"code":"KZ","tz_id":"Asia\/Almaty","coords":{"lat":43.25,"lon":76.95},"comment":"most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4448+06528"}}
+{"code":"KZ","tz_id":"Asia\/Qyzylorda","coords":{"lat":44.8,"lon":65.466666666667},"comment":"Qyzylorda (Kyzylorda, Kzyl-Orda)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5017+05710"}}
+{"code":"KZ","tz_id":"Asia\/Aqtobe","coords":{"lat":50.283333333333,"lon":57.166666666667},"comment":"Aqtobe (Aktobe)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4431+05016"}}
+{"code":"KZ","tz_id":"Asia\/Aqtau","coords":{"lat":44.516666666667,"lon":50.266666666667},"comment":"Atyrau (Atirau, Gur'yev), Mangghystau (Mankistau)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5113+05121"}}
+{"code":"KZ","tz_id":"Asia\/Oral","coords":{"lat":51.216666666667,"lon":51.35},"comment":"West Kazakhstan"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1758+10236"}}
+{"code":"LA","tz_id":"Asia\/Vientiane","coords":{"lat":17.966666666667,"lon":102.6},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3353+03530"}}
+{"code":"LB","tz_id":"Asia\/Beirut","coords":{"lat":33.883333333333,"lon":35.5},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1401-06100"}}
+{"code":"LC","tz_id":"America\/St_Lucia","coords":{"lat":14.016666666667,"lon":-61},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4709+00931"}}
+{"code":"LI","tz_id":"Europe\/Vaduz","coords":{"lat":47.15,"lon":9.5166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0656+07951"}}
+{"code":"LK","tz_id":"Asia\/Colombo","coords":{"lat":6.9333333333333,"lon":79.85},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0618-01047"}}
+{"code":"LR","tz_id":"Africa\/Monrovia","coords":{"lat":6.3,"lon":-10.783333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2928+02730"}}
+{"code":"LS","tz_id":"Africa\/Maseru","coords":{"lat":-29.466666666667,"lon":27.5},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5441+02519"}}
+{"code":"LT","tz_id":"Europe\/Vilnius","coords":{"lat":54.683333333333,"lon":25.316666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4936+00609"}}
+{"code":"LU","tz_id":"Europe\/Luxembourg","coords":{"lat":49.6,"lon":6.15},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5657+02406"}}
+{"code":"LV","tz_id":"Europe\/Riga","coords":{"lat":56.95,"lon":24.1},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3254+01311"}}
+{"code":"LY","tz_id":"Africa\/Tripoli","coords":{"lat":32.9,"lon":13.183333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3339-00735"}}
+{"code":"MA","tz_id":"Africa\/Casablanca","coords":{"lat":33.65,"lon":-7.5833333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4342+00723"}}
+{"code":"MC","tz_id":"Europe\/Monaco","coords":{"lat":43.7,"lon":7.3833333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4700+02850"}}
+{"code":"MD","tz_id":"Europe\/Chisinau","coords":{"lat":47,"lon":28.833333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4226+01916"}}
+{"code":"ME","tz_id":"Europe\/Podgorica","coords":{"lat":42.433333333333,"lon":19.266666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1804-06305"}}
+{"code":"MF","tz_id":"America\/Marigot","coords":{"lat":18.066666666667,"lon":-63.083333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1855+04731"}}
+{"code":"MG","tz_id":"Indian\/Antananarivo","coords":{"lat":-18.916666666667,"lon":47.516666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0709+17112"}}
+{"code":"MH","tz_id":"Pacific\/Majuro","coords":{"lat":7.15,"lon":171.2},"comment":"most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0905+16720"}}
+{"code":"MH","tz_id":"Pacific\/Kwajalein","coords":{"lat":9.0833333333333,"lon":167.33333333333},"comment":"Kwajalein"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4159+02126"}}
+{"code":"MK","tz_id":"Europe\/Skopje","coords":{"lat":41.983333333333,"lon":21.433333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1239-00800"}}
+{"code":"ML","tz_id":"Africa\/Bamako","coords":{"lat":12.65,"lon":-8},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1647+09610"}}
+{"code":"MM","tz_id":"Asia\/Rangoon","coords":{"lat":16.783333333333,"lon":96.166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4755+10653"}}
+{"code":"MN","tz_id":"Asia\/Ulaanbaatar","coords":{"lat":47.916666666667,"lon":106.88333333333},"comment":"most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4801+09139"}}
+{"code":"MN","tz_id":"Asia\/Hovd","coords":{"lat":48.016666666667,"lon":91.65},"comment":"Bayan-Olgiy, Govi-Altai, Hovd, Uvs, Zavkhan"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4804+11430"}}
+{"code":"MN","tz_id":"Asia\/Choibalsan","coords":{"lat":48.066666666667,"lon":114.5},"comment":"Dornod, Sukhbaatar"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2214+11335"}}
+{"code":"MO","tz_id":"Asia\/Macau","coords":{"lat":22.233333333333,"lon":113.58333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1512+14545"}}
+{"code":"MP","tz_id":"Pacific\/Saipan","coords":{"lat":15.2,"lon":145.75},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1436-06105"}}
+{"code":"MQ","tz_id":"America\/Martinique","coords":{"lat":14.6,"lon":-61.083333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1806-01557"}}
+{"code":"MR","tz_id":"Africa\/Nouakchott","coords":{"lat":18.1,"lon":-15.95},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1643-06213"}}
+{"code":"MS","tz_id":"America\/Montserrat","coords":{"lat":16.716666666667,"lon":-62.216666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3554+01431"}}
+{"code":"MT","tz_id":"Europe\/Malta","coords":{"lat":35.9,"lon":14.516666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2010+05730"}}
+{"code":"MU","tz_id":"Indian\/Mauritius","coords":{"lat":-20.166666666667,"lon":57.5},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0410+07330"}}
+{"code":"MV","tz_id":"Indian\/Maldives","coords":{"lat":4.1666666666667,"lon":73.5},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1547+03500"}}
+{"code":"MW","tz_id":"Africa\/Blantyre","coords":{"lat":-15.783333333333,"lon":35},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1924-09909"}}
+{"code":"MX","tz_id":"America\/Mexico_City","coords":{"lat":19.4,"lon":-99.15},"comment":"Central Time - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2105-08646"}}
+{"code":"MX","tz_id":"America\/Cancun","coords":{"lat":21.083333333333,"lon":-86.766666666667},"comment":"Central Time - Quintana Roo"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2058-08937"}}
+{"code":"MX","tz_id":"America\/Merida","coords":{"lat":20.966666666667,"lon":-89.616666666667},"comment":"Central Time - Campeche, Yucatan"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2540-10019"}}
+{"code":"MX","tz_id":"America\/Monterrey","coords":{"lat":25.666666666667,"lon":-100.31666666667},"comment":"Mexican Central Time - Coahuila, Durango, Nuevo Leon, Tamaulipas away from US border"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2550-09730"}}
+{"code":"MX","tz_id":"America\/Matamoros","coords":{"lat":25.833333333333,"lon":-97.5},"comment":"US Central Time - Coahuila, Durango, Nuevo Leon, Tamaulipas near US border"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2313-10625"}}
+{"code":"MX","tz_id":"America\/Mazatlan","coords":{"lat":23.216666666667,"lon":-106.41666666667},"comment":"Mountain Time - S Baja, Nayarit, Sinaloa"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2838-10605"}}
+{"code":"MX","tz_id":"America\/Chihuahua","coords":{"lat":28.633333333333,"lon":-106.08333333333},"comment":"Mexican Mountain Time - Chihuahua away from US border"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2934-10425"}}
+{"code":"MX","tz_id":"America\/Ojinaga","coords":{"lat":29.566666666667,"lon":-104.41666666667},"comment":"US Mountain Time - Chihuahua near US border"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2904-11058"}}
+{"code":"MX","tz_id":"America\/Hermosillo","coords":{"lat":29.066666666667,"lon":-110.96666666667},"comment":"Mountain Standard Time - Sonora"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3232-11701"}}
+{"code":"MX","tz_id":"America\/Tijuana","coords":{"lat":32.533333333333,"lon":-117.01666666667},"comment":"US Pacific Time - Baja California near US border"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3018-11452"}}
+{"code":"MX","tz_id":"America\/Santa_Isabel","coords":{"lat":30.3,"lon":-114.86666666667},"comment":"Mexican Pacific Time - Baja California away from US border"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2048-10515"}}
+{"code":"MX","tz_id":"America\/Bahia_Banderas","coords":{"lat":20.8,"lon":-105.25},"comment":"Mexican Central Time - Bahia de Banderas"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0310+10142"}}
+{"code":"MY","tz_id":"Asia\/Kuala_Lumpur","coords":{"lat":3.1666666666667,"lon":101.7},"comment":"peninsular Malaysia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0133+11020"}}
+{"code":"MY","tz_id":"Asia\/Kuching","coords":{"lat":1.55,"lon":110.33333333333},"comment":"Sabah & Sarawak"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2558+03235"}}
+{"code":"MZ","tz_id":"Africa\/Maputo","coords":{"lat":-25.966666666667,"lon":32.583333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2234+01706"}}
+{"code":"NA","tz_id":"Africa\/Windhoek","coords":{"lat":-22.566666666667,"lon":17.1},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2216+16627"}}
+{"code":"NC","tz_id":"Pacific\/Noumea","coords":{"lat":-22.266666666667,"lon":166.45},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1331+00207"}}
+{"code":"NE","tz_id":"Africa\/Niamey","coords":{"lat":13.516666666667,"lon":2.1166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2903+16758"}}
+{"code":"NF","tz_id":"Pacific\/Norfolk","coords":{"lat":-29.05,"lon":167.96666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0627+00324"}}
+{"code":"NG","tz_id":"Africa\/Lagos","coords":{"lat":6.45,"lon":3.4},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1209-08617"}}
+{"code":"NI","tz_id":"America\/Managua","coords":{"lat":12.15,"lon":-86.283333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5222+00454"}}
+{"code":"NL","tz_id":"Europe\/Amsterdam","coords":{"lat":52.366666666667,"lon":4.9},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5955+01045"}}
+{"code":"NO","tz_id":"Europe\/Oslo","coords":{"lat":59.916666666667,"lon":10.75},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2743+08519"}}
+{"code":"NP","tz_id":"Asia\/Kathmandu","coords":{"lat":27.716666666667,"lon":85.316666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0031+16655"}}
+{"code":"NR","tz_id":"Pacific\/Nauru","coords":{"lat":-0.51666666666667,"lon":166.91666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1901-16955"}}
+{"code":"NU","tz_id":"Pacific\/Niue","coords":{"lat":-19.016666666667,"lon":-169.91666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3652+17446"}}
+{"code":"NZ","tz_id":"Pacific\/Auckland","coords":{"lat":-36.866666666667,"lon":174.76666666667},"comment":"most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-4357-17633"}}
+{"code":"NZ","tz_id":"Pacific\/Chatham","coords":{"lat":-43.95,"lon":-176.55},"comment":"Chatham Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2336+05835"}}
+{"code":"OM","tz_id":"Asia\/Muscat","coords":{"lat":23.6,"lon":58.583333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0858-07932"}}
+{"code":"PA","tz_id":"America\/Panama","coords":{"lat":8.9666666666667,"lon":-79.533333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1203-07703"}}
+{"code":"PE","tz_id":"America\/Lima","coords":{"lat":-12.05,"lon":-77.05},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1732-14934"}}
+{"code":"PF","tz_id":"Pacific\/Tahiti","coords":{"lat":-17.533333333333,"lon":-149.56666666667},"comment":"Society Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0900-13930"}}
+{"code":"PF","tz_id":"Pacific\/Marquesas","coords":{"lat":-9,"lon":-139.5},"comment":"Marquesas Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2308-13457"}}
+{"code":"PF","tz_id":"Pacific\/Gambier","coords":{"lat":-23.133333333333,"lon":-134.95},"comment":"Gambier Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0930+14710"}}
+{"code":"PG","tz_id":"Pacific\/Port_Moresby","coords":{"lat":-9.5,"lon":147.16666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1435+12100"}}
+{"code":"PH","tz_id":"Asia\/Manila","coords":{"lat":14.583333333333,"lon":121},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2452+06703"}}
+{"code":"PK","tz_id":"Asia\/Karachi","coords":{"lat":24.866666666667,"lon":67.05},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5215+02100"}}
+{"code":"PL","tz_id":"Europe\/Warsaw","coords":{"lat":52.25,"lon":21},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4703-05620"}}
+{"code":"PM","tz_id":"America\/Miquelon","coords":{"lat":47.05,"lon":-56.333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2504-13005"}}
+{"code":"PN","tz_id":"Pacific\/Pitcairn","coords":{"lat":-25.066666666667,"lon":-130.08333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+182806-0660622"}}
+{"code":"PR","tz_id":"America\/Puerto_Rico","coords":{"lat":18.468333333333,"lon":-66.106111111111},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3130+03428"}}
+{"code":"PS","tz_id":"Asia\/Gaza","coords":{"lat":31.5,"lon":34.466666666667},"comment":"Gaza Strip"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+313200+0350542"}}
+{"code":"PS","tz_id":"Asia\/Hebron","coords":{"lat":31.533333333333,"lon":35.095},"comment":"West Bank"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3843-00908"}}
+{"code":"PT","tz_id":"Europe\/Lisbon","coords":{"lat":38.716666666667,"lon":-9.1333333333333},"comment":"mainland"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3238-01654"}}
+{"code":"PT","tz_id":"Atlantic\/Madeira","coords":{"lat":32.633333333333,"lon":-16.9},"comment":"Madeira Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3744-02540"}}
+{"code":"PT","tz_id":"Atlantic\/Azores","coords":{"lat":37.733333333333,"lon":-25.666666666667},"comment":"Azores"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0720+13429"}}
+{"code":"PW","tz_id":"Pacific\/Palau","coords":{"lat":7.3333333333333,"lon":134.48333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2516-05740"}}
+{"code":"PY","tz_id":"America\/Asuncion","coords":{"lat":-25.266666666667,"lon":-57.666666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2517+05132"}}
+{"code":"QA","tz_id":"Asia\/Qatar","coords":{"lat":25.283333333333,"lon":51.533333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2052+05528"}}
+{"code":"RE","tz_id":"Indian\/Reunion","coords":{"lat":-20.866666666667,"lon":55.466666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4426+02606"}}
+{"code":"RO","tz_id":"Europe\/Bucharest","coords":{"lat":44.433333333333,"lon":26.1},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4450+02030"}}
+{"code":"RS","tz_id":"Europe\/Belgrade","coords":{"lat":44.833333333333,"lon":20.5},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5443+02030"}}
+{"code":"RU","tz_id":"Europe\/Kaliningrad","coords":{"lat":54.716666666667,"lon":20.5},"comment":"Moscow-01 - Kaliningrad"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5545+03735"}}
+{"code":"RU","tz_id":"Europe\/Moscow","coords":{"lat":55.75,"lon":37.583333333333},"comment":"Moscow+00 - west Russia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4844+04425"}}
+{"code":"RU","tz_id":"Europe\/Volgograd","coords":{"lat":48.733333333333,"lon":44.416666666667},"comment":"Moscow+00 - Caspian Sea"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5312+05009"}}
+{"code":"RU","tz_id":"Europe\/Samara","coords":{"lat":53.2,"lon":50.15},"comment":"Moscow+00 - Samara, Udmurtia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5651+06036"}}
+{"code":"RU","tz_id":"Asia\/Yekaterinburg","coords":{"lat":56.85,"lon":60.6},"comment":"Moscow+02 - Urals"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5500+07324"}}
+{"code":"RU","tz_id":"Asia\/Omsk","coords":{"lat":55,"lon":73.4},"comment":"Moscow+03 - west Siberia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5502+08255"}}
+{"code":"RU","tz_id":"Asia\/Novosibirsk","coords":{"lat":55.033333333333,"lon":82.916666666667},"comment":"Moscow+03 - Novosibirsk"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5345+08707"}}
+{"code":"RU","tz_id":"Asia\/Novokuznetsk","coords":{"lat":53.75,"lon":87.116666666667},"comment":"Moscow+03 - Novokuznetsk"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5601+09250"}}
+{"code":"RU","tz_id":"Asia\/Krasnoyarsk","coords":{"lat":56.016666666667,"lon":92.833333333333},"comment":"Moscow+04 - Yenisei River"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5216+10420"}}
+{"code":"RU","tz_id":"Asia\/Irkutsk","coords":{"lat":52.266666666667,"lon":104.33333333333},"comment":"Moscow+05 - Lake Baikal"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6200+12940"}}
+{"code":"RU","tz_id":"Asia\/Yakutsk","coords":{"lat":62,"lon":129.66666666667},"comment":"Moscow+06 - Lena River"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4310+13156"}}
+{"code":"RU","tz_id":"Asia\/Vladivostok","coords":{"lat":43.166666666667,"lon":131.93333333333},"comment":"Moscow+07 - Amur River"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4658+14242"}}
+{"code":"RU","tz_id":"Asia\/Sakhalin","coords":{"lat":46.966666666667,"lon":142.7},"comment":"Moscow+07 - Sakhalin Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5934+15048"}}
+{"code":"RU","tz_id":"Asia\/Magadan","coords":{"lat":59.566666666667,"lon":150.8},"comment":"Moscow+08 - Magadan"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5301+15839"}}
+{"code":"RU","tz_id":"Asia\/Kamchatka","coords":{"lat":53.016666666667,"lon":158.65},"comment":"Moscow+08 - Kamchatka"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+6445+17729"}}
+{"code":"RU","tz_id":"Asia\/Anadyr","coords":{"lat":64.75,"lon":177.48333333333},"comment":"Moscow+08 - Bering Sea"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0157+03004"}}
+{"code":"RW","tz_id":"Africa\/Kigali","coords":{"lat":-1.95,"lon":30.066666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2438+04643"}}
+{"code":"SA","tz_id":"Asia\/Riyadh","coords":{"lat":24.633333333333,"lon":46.716666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0932+16012"}}
+{"code":"SB","tz_id":"Pacific\/Guadalcanal","coords":{"lat":-9.5333333333333,"lon":160.2},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0440+05528"}}
+{"code":"SC","tz_id":"Indian\/Mahe","coords":{"lat":-4.6666666666667,"lon":55.466666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1536+03232"}}
+{"code":"SD","tz_id":"Africa\/Khartoum","coords":{"lat":15.6,"lon":32.533333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5920+01803"}}
+{"code":"SE","tz_id":"Europe\/Stockholm","coords":{"lat":59.333333333333,"lon":18.05},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0117+10351"}}
+{"code":"SG","tz_id":"Asia\/Singapore","coords":{"lat":1.2833333333333,"lon":103.85},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1555-00542"}}
+{"code":"SH","tz_id":"Atlantic\/St_Helena","coords":{"lat":-15.916666666667,"lon":-5.7},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4603+01431"}}
+{"code":"SI","tz_id":"Europe\/Ljubljana","coords":{"lat":46.05,"lon":14.516666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+7800+01600"}}
+{"code":"SJ","tz_id":"Arctic\/Longyearbyen","coords":{"lat":78,"lon":16},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4809+01707"}}
+{"code":"SK","tz_id":"Europe\/Bratislava","coords":{"lat":48.15,"lon":17.116666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0830-01315"}}
+{"code":"SL","tz_id":"Africa\/Freetown","coords":{"lat":8.5,"lon":-13.25},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4355+01228"}}
+{"code":"SM","tz_id":"Europe\/San_Marino","coords":{"lat":43.916666666667,"lon":12.466666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1440-01726"}}
+{"code":"SN","tz_id":"Africa\/Dakar","coords":{"lat":14.666666666667,"lon":-17.433333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0204+04522"}}
+{"code":"SO","tz_id":"Africa\/Mogadishu","coords":{"lat":2.0666666666667,"lon":45.366666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0550-05510"}}
+{"code":"SR","tz_id":"America\/Paramaribo","coords":{"lat":5.8333333333333,"lon":-55.166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0451+03136"}}
+{"code":"SS","tz_id":"Africa\/Juba","coords":{"lat":4.85,"lon":31.6},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0020+00644"}}
+{"code":"ST","tz_id":"Africa\/Sao_Tome","coords":{"lat":0.33333333333333,"lon":6.7333333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1342-08912"}}
+{"code":"SV","tz_id":"America\/El_Salvador","coords":{"lat":13.7,"lon":-89.2},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+180305-0630250"}}
+{"code":"SX","tz_id":"America\/Lower_Princes","coords":{"lat":18.051388888889,"lon":-63.047222222222},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3330+03618"}}
+{"code":"SY","tz_id":"Asia\/Damascus","coords":{"lat":33.5,"lon":36.3},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2618+03106"}}
+{"code":"SZ","tz_id":"Africa\/Mbabane","coords":{"lat":-26.3,"lon":31.1},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2128-07108"}}
+{"code":"TC","tz_id":"America\/Grand_Turk","coords":{"lat":21.466666666667,"lon":-71.133333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1207+01503"}}
+{"code":"TD","tz_id":"Africa\/Ndjamena","coords":{"lat":12.116666666667,"lon":15.05},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-492110+0701303"}}
+{"code":"TF","tz_id":"Indian\/Kerguelen","coords":{"lat":-49.352777777778,"lon":70.2175},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0608+00113"}}
+{"code":"TG","tz_id":"Africa\/Lome","coords":{"lat":6.1333333333333,"lon":1.2166666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1345+10031"}}
+{"code":"TH","tz_id":"Asia\/Bangkok","coords":{"lat":13.75,"lon":100.51666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3835+06848"}}
+{"code":"TJ","tz_id":"Asia\/Dushanbe","coords":{"lat":38.583333333333,"lon":68.8},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0922-17114"}}
+{"code":"TK","tz_id":"Pacific\/Fakaofo","coords":{"lat":-9.3666666666667,"lon":-171.23333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0833+12535"}}
+{"code":"TL","tz_id":"Asia\/Dili","coords":{"lat":-8.55,"lon":125.58333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3757+05823"}}
+{"code":"TM","tz_id":"Asia\/Ashgabat","coords":{"lat":37.95,"lon":58.383333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3648+01011"}}
+{"code":"TN","tz_id":"Africa\/Tunis","coords":{"lat":36.8,"lon":10.183333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2110-17510"}}
+{"code":"TO","tz_id":"Pacific\/Tongatapu","coords":{"lat":-21.166666666667,"lon":-175.16666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4101+02858"}}
+{"code":"TR","tz_id":"Europe\/Istanbul","coords":{"lat":41.016666666667,"lon":28.966666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1039-06131"}}
+{"code":"TT","tz_id":"America\/Port_of_Spain","coords":{"lat":10.65,"lon":-61.516666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0831+17913"}}
+{"code":"TV","tz_id":"Pacific\/Funafuti","coords":{"lat":-8.5166666666667,"lon":179.21666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2503+12130"}}
+{"code":"TW","tz_id":"Asia\/Taipei","coords":{"lat":25.05,"lon":121.5},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-0648+03917"}}
+{"code":"TZ","tz_id":"Africa\/Dar_es_Salaam","coords":{"lat":-6.8,"lon":39.283333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+5026+03031"}}
+{"code":"UA","tz_id":"Europe\/Kiev","coords":{"lat":50.433333333333,"lon":30.516666666667},"comment":"most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4837+02218"}}
+{"code":"UA","tz_id":"Europe\/Uzhgorod","coords":{"lat":48.616666666667,"lon":22.3},"comment":"Ruthenia"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4750+03510"}}
+{"code":"UA","tz_id":"Europe\/Zaporozhye","coords":{"lat":47.833333333333,"lon":35.166666666667},"comment":"Zaporozh'ye, E Lugansk \/ Zaporizhia, E Luhansk"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4457+03406"}}
+{"code":"UA","tz_id":"Europe\/Simferopol","coords":{"lat":44.95,"lon":34.1},"comment":"central Crimea"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+0019+03225"}}
+{"code":"UG","tz_id":"Africa\/Kampala","coords":{"lat":0.31666666666667,"lon":32.416666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1645-16931"}}
+{"code":"UM","tz_id":"Pacific\/Johnston","coords":{"lat":16.75,"lon":-169.51666666667},"comment":"Johnston Atoll"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+2813-17722"}}
+{"code":"UM","tz_id":"Pacific\/Midway","coords":{"lat":28.216666666667,"lon":-177.36666666667},"comment":"Midway Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1917+16637"}}
+{"code":"UM","tz_id":"Pacific\/Wake","coords":{"lat":19.283333333333,"lon":166.61666666667},"comment":"Wake Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+404251-0740023"}}
+{"code":"US","tz_id":"America\/New_York","coords":{"lat":40.714166666667,"lon":-74.006388888889},"comment":"Eastern Time"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+421953-0830245"}}
+{"code":"US","tz_id":"America\/Detroit","coords":{"lat":42.331388888889,"lon":-83.045833333333},"comment":"Eastern Time - Michigan - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+381515-0854534"}}
+{"code":"US","tz_id":"America\/Kentucky\/Louisville","coords":{"lat":38.254166666667,"lon":-85.759444444444},"comment":"Eastern Time - Kentucky - Louisville area"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+364947-0845057"}}
+{"code":"US","tz_id":"America\/Kentucky\/Monticello","coords":{"lat":36.829722222222,"lon":-84.849166666667},"comment":"Eastern Time - Kentucky - Wayne County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+394606-0860929"}}
+{"code":"US","tz_id":"America\/Indiana\/Indianapolis","coords":{"lat":39.768333333333,"lon":-86.158055555556},"comment":"Eastern Time - Indiana - most locations"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+384038-0873143"}}
+{"code":"US","tz_id":"America\/Indiana\/Vincennes","coords":{"lat":38.677222222222,"lon":-87.528611111111},"comment":"Eastern Time - Indiana - Daviess, Dubois, Knox & Martin Counties"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+410305-0863611"}}
+{"code":"US","tz_id":"America\/Indiana\/Winamac","coords":{"lat":41.051388888889,"lon":-86.603055555556},"comment":"Eastern Time - Indiana - Pulaski County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+382232-0862041"}}
+{"code":"US","tz_id":"America\/Indiana\/Marengo","coords":{"lat":38.375555555556,"lon":-86.344722222222},"comment":"Eastern Time - Indiana - Crawford County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+382931-0871643"}}
+{"code":"US","tz_id":"America\/Indiana\/Petersburg","coords":{"lat":38.491944444444,"lon":-87.278611111111},"comment":"Eastern Time - Indiana - Pike County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+384452-0850402"}}
+{"code":"US","tz_id":"America\/Indiana\/Vevay","coords":{"lat":38.747777777778,"lon":-85.067222222222},"comment":"Eastern Time - Indiana - Switzerland County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+415100-0873900"}}
+{"code":"US","tz_id":"America\/Chicago","coords":{"lat":41.85,"lon":-87.65},"comment":"Central Time"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+375711-0864541"}}
+{"code":"US","tz_id":"America\/Indiana\/Tell_City","coords":{"lat":37.953055555556,"lon":-86.761388888889},"comment":"Central Time - Indiana - Perry County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+411745-0863730"}}
+{"code":"US","tz_id":"America\/Indiana\/Knox","coords":{"lat":41.295833333333,"lon":-86.625},"comment":"Central Time - Indiana - Starke County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+450628-0873651"}}
+{"code":"US","tz_id":"America\/Menominee","coords":{"lat":45.107777777778,"lon":-87.614166666667},"comment":"Central Time - Michigan - Dickinson, Gogebic, Iron & Menominee Counties"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+470659-1011757"}}
+{"code":"US","tz_id":"America\/North_Dakota\/Center","coords":{"lat":47.116388888889,"lon":-101.29916666667},"comment":"Central Time - North Dakota - Oliver County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+465042-1012439"}}
+{"code":"US","tz_id":"America\/North_Dakota\/New_Salem","coords":{"lat":46.845,"lon":-101.41083333333},"comment":"Central Time - North Dakota - Morton County (except Mandan area)"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+471551-1014640"}}
+{"code":"US","tz_id":"America\/North_Dakota\/Beulah","coords":{"lat":47.264166666667,"lon":-101.77777777778},"comment":"Central Time - North Dakota - Mercer County"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+394421-1045903"}}
+{"code":"US","tz_id":"America\/Denver","coords":{"lat":39.739166666667,"lon":-104.98416666667},"comment":"Mountain Time"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+433649-1161209"}}
+{"code":"US","tz_id":"America\/Boise","coords":{"lat":43.613611111111,"lon":-116.2025},"comment":"Mountain Time - south Idaho & east Oregon"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+364708-1084111"}}
+{"code":"US","tz_id":"America\/Shiprock","coords":{"lat":36.785555555556,"lon":-108.68638888889},"comment":"Mountain Time - Navajo"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+332654-1120424"}}
+{"code":"US","tz_id":"America\/Phoenix","coords":{"lat":33.448333333333,"lon":-112.07333333333},"comment":"Mountain Standard Time - Arizona"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+340308-1181434"}}
+{"code":"US","tz_id":"America\/Los_Angeles","coords":{"lat":34.052222222222,"lon":-118.24277777778},"comment":"Pacific Time"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+611305-1495401"}}
+{"code":"US","tz_id":"America\/Anchorage","coords":{"lat":61.218055555556,"lon":-149.90027777778},"comment":"Alaska Time"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+581807-1342511"}}
+{"code":"US","tz_id":"America\/Juneau","coords":{"lat":58.301944444444,"lon":-134.41972222222},"comment":"Alaska Time - Alaska panhandle"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+571035-1351807"}}
+{"code":"US","tz_id":"America\/Sitka","coords":{"lat":57.176388888889,"lon":-135.30194444444},"comment":"Alaska Time - southeast Alaska panhandle"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+593249-1394338"}}
+{"code":"US","tz_id":"America\/Yakutat","coords":{"lat":59.546944444444,"lon":-139.72722222222},"comment":"Alaska Time - Alaska panhandle neck"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+643004-1652423"}}
+{"code":"US","tz_id":"America\/Nome","coords":{"lat":64.501111111111,"lon":-165.40638888889},"comment":"Alaska Time - west Alaska"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+515248-1763929"}}
+{"code":"US","tz_id":"America\/Adak","coords":{"lat":51.88,"lon":-176.65805555556},"comment":"Aleutian Islands"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+550737-1313435"}}
+{"code":"US","tz_id":"America\/Metlakatla","coords":{"lat":55.126944444444,"lon":-131.57638888889},"comment":"Metlakatla Time - Annette Island"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+211825-1575130"}}
+{"code":"US","tz_id":"Pacific\/Honolulu","coords":{"lat":21.306944444444,"lon":-157.85833333333},"comment":"Hawaii"}
+{"index":{"_index":"geo","_type":"timezone","_id":"-3453-05611"}}
+{"code":"UY","tz_id":"America\/Montevideo","coords":{"lat":-34.883333333333,"lon":-56.183333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+3940+06648"}}
+{"code":"UZ","tz_id":"Asia\/Samarkand","coords":{"lat":39.666666666667,"lon":66.8},"comment":"west Uzbekistan"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+4120+06918"}}
+{"code":"UZ","tz_id":"Asia\/Tashkent","coords":{"lat":41.333333333333,"lon":69.3},"comment":"east Uzbekistan"}
+{"index":{"_index":"geo","_type":"timezone","_id":"+415408+0122711"}}
+{"code":"VA","tz_id":"Europe\/Vatican","coords":{"lat":41.902222222222,"lon":12.453055555556},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1309-06114"}}
+{"code":"VC","tz_id":"America\/St_Vincent","coords":{"lat":13.15,"lon":-61.233333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1030-06656"}}
+{"code":"VE","tz_id":"America\/Caracas","coords":{"lat":10.5,"lon":-66.933333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1827-06437"}}
+{"code":"VG","tz_id":"America\/Tortola","coords":{"lat":18.45,"lon":-64.616666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1821-06456"}}
+{"code":"VI","tz_id":"America\/St_Thomas","coords":{"lat":18.35,"lon":-64.933333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1045+10640"}}
+{"code":"VN","tz_id":"Asia\/Ho_Chi_Minh","coords":{"lat":10.75,"lon":106.66666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1740+16825"}}
+{"code":"VU","tz_id":"Pacific\/Efate","coords":{"lat":-17.666666666667,"lon":168.41666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1318-17610"}}
+{"code":"WF","tz_id":"Pacific\/Wallis","coords":{"lat":-13.3,"lon":-176.16666666667},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1350-17144"}}
+{"code":"WS","tz_id":"Pacific\/Apia","coords":{"lat":-13.833333333333,"lon":-171.73333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"+1245+04512"}}
+{"code":"YE","tz_id":"Asia\/Aden","coords":{"lat":12.75,"lon":45.2},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1247+04514"}}
+{"code":"YT","tz_id":"Indian\/Mayotte","coords":{"lat":-12.783333333333,"lon":45.233333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-2615+02800"}}
+{"code":"ZA","tz_id":"Africa\/Johannesburg","coords":{"lat":-26.25,"lon":28},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1525+02817"}}
+{"code":"ZM","tz_id":"Africa\/Lusaka","coords":{"lat":-15.416666666667,"lon":28.283333333333},"comment":""}
+{"index":{"_index":"geo","_type":"timezone","_id":"-1750+03103"}}
+{"code":"ZW","tz_id":"Africa\/Harare","coords":{"lat":-17.833333333333,"lon":31.05},"comment":""}

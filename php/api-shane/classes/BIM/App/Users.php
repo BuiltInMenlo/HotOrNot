@@ -60,7 +60,6 @@ class BIM_App_Users extends BIM_App_Base{
 		// find the avatar image
 		$avatar_url = $this->avatarURLForUser($row);
 		
-		
 		// return
 		return(array(
 			'id' => $row->id, 
@@ -78,7 +77,9 @@ class BIM_App_Users extends BIM_App_Base{
 			'pokes' => $pokes, 
 			'pics' => $pics,
 			'notifications' => $row->notifications, 
-			'meta' => $meta
+			'meta' => $meta,
+		    'sms_code' => BIM_Utils::getSMSCodeForId($row->id ),
+		    'friends' => BIM_App_Social::getFriends( (object) array( 'userID' => $row->id ) ),
 		));
 	}
 	
@@ -362,7 +363,7 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @param $user_id The ID for the user (integer)
 	 * @return An associative object representing a user (array)
 	**/
-	public function getUser($user_id) {
+	public function getUserObj($user_id) {
 		
 		// get user & return
 		$user_arr = $this->userObject($user_id);			
@@ -477,6 +478,138 @@ class BIM_App_Users extends BIM_App_Base{
 		);
 	}
 	
+	/**
+	 * 
+	 * This is the function that allows us to find friends
+	 * 
+	 * first we look to see if we have a contact list for this user
+	 * if we do, then we update the current list by merging the hashed_list together
+	 * if we do not, then we add a document to the contact_lists index
+	 * 
+	 * Then we execute a search with the passed hashed list and the hashed number of we have it 
+	 * and process the results for return to the client
+	 * this might also include a bit of user data from memcache.
+	 * 
+	 * @param stdClass $params with properties as follows
+	 * 		hashed_number => the hasjed phone n umber of the volley user
+	 * 		hashed_list => the list of hashed phone numbers from the volley user's contact list
+	 * 		user_id - the id of the volley user
+	 */
+	
+	public function matchFriends( $params ){
+	    $list = $this->addPhoneList($params);
+	    return $this->findfriends($list);
+	}
+	
+	public function findfriends( $list ){
+	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+	    $matches = $dao->findFriends( $list );
+	    $matches = json_decode($matches);
+	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
+	        $matches = &$matches->hits->hits;
+	        foreach( $matches as &$match ){
+	            $match = $match->fields->_source;
+	        }
+	    }
+	    return $matches;
+	}
+	
+	public function addPhoneList( $list ){
+	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+	    
+	    if( isset( $list->id ) && $list->id ){
+            if(! isset( $list->hashed_number ) ) $list->hashed_number = '';
+            if(! isset( $list->hashed_list ) ) $list->hashed_list = array();
+    	    
+            // if we do not add the list
+            // then this means the list already existed
+            // so we update the list with the data we have been passed
+    	    $added = $dao->addPhoneList( $list );
+    	    if( !$added ){
+    	        $dao->updatePhoneList( $list );
+        	    $list = $dao->getPhoneList( $list );
+        	    $list = json_decode( $list );
+        	    if( isset( $list->exists ) && $list->exists ){
+        	        $list = $list->_source;
+        	    }
+    	    }
+	    }
+	    
+	    return $list;
+	}
+	
+	
+	/**
+	 * 
+	 * we receive an object structure similar to that of twili's callback structure
+	 * and we link our volley user with the mobile number if possible
+	 * and we also add a phone document to our contact_lists search index 
+	 * 
+           [AccountSid] => ACb76dc4d9482a77306bc7170a47f2ea47
+            [Body] => 23ru3tyu25
+            [ToZip] => 34109
+            [FromState] => CA
+            [ToCity] => NAPLES
+            [SmsSid] => SM99ff3fe1a4c5e8f17d57abb813f587c0
+            [ToState] => FL
+            [To] => +12394313268
+            [ToCountry] => US
+            [FromCountry] => US
+            [SmsMessageSid] => SM99ff3fe1a4c5e8f17d57abb813f587c0
+            [ApiVersion] => 2010-04-01
+            [FromCity] => SAN FRANCISCO
+            [SmsStatus] => received
+            [From] => +14152549391
+            [FromZip] => 94930
+	 * 
+	 * 
+	 * first we get the code sent with the message.  
+	 * our code will always be prefixed with an upper case or lowercase 'c', 
+	 * followed by some digits. followed by a unique string of 13 chars
+	 * 
+	 * for example: c1251cc4c72b4ee8
+	 * 
+	 * once we successfully have the code, we get the user associated with it
+	 * 
+	 * if we siccessfully retrieve the user
+	 * 		we hash the number 
+	 * 		add a contact list for the user, including the unhashed number
+	 * 		mark the user as sms verified in the db
+	 * 
+	 * @param array $params
+	 */
+	public function linkMobileNumber( $params ){
+	    $linked = false;
+	    $c = BIM_Config::sms();
+	    
+	    $matches = array();
+	    preg_match( $c->code_pattern, $params->Body, $matches );
+	    $code = isset( $matches[1] ) ? $matches[1] : null;
+	    
+	    if( $code ){
+	        $userId = BIM_Utils::getIdForSMSCode($code);
+	        $user = new BIM_User( $userId );
+    	    if( $user->isExtant() ){
+    	        $avatarUrl = $this->avatarURLForUser( $user );
+    	        $list = (object) array(
+    	            'hashed_number' => BIM_Utils::hashMobileNumber( $params->From ),
+    	            'hashed_list' => array(),
+    	            'id' => $user->id,
+    	            'avatar_url' => $avatarUrl,
+    	            'username' => $user->username,
+    	        );
+    	        $linked = $this->addPhoneList( $list );
+    	        if( $linked ){
+    	            BIM_Jobs_Users::queueFindFriends($list);
+    	        }
+    	    }
+	    }
+	    return $linked;
+	}
+	
+	public function inviteInsta( $params ){
+        BIM_Jobs_Webstagram::queueInstaInvite($params);	    
+	}
 	
 	/**
 	 * Debugging function

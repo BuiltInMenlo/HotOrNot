@@ -47,38 +47,6 @@ class BIM_App_Votes extends BIM_App_Base{
 			$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_id .' AND `status_id` = 1;';
 			$comments = mysql_num_rows(mysql_query($query));
 			
-			// get rechallenges
-			$rechallenge_arr = array();
-			$query = 'SELECT `id`, `creator_id`, `added` FROM `tblChallenges` WHERE `subject_id` = '. $challenge_obj->subject_id .' AND `added` > "'. $challenge_obj->added .'" ORDER BY `added` ASC LIMIT 10;';
-			$rechallenge_result = mysql_query($query);
-			
-			// loop thru the rows
-			while ($rechallenge_row = mysql_fetch_assoc($rechallenge_result)) {
-				$query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $rechallenge_row['creator_id'] .';';
-				$user_obj = mysql_fetch_object(mysql_query($query));
-				
-				// find the avatar image
-				if ($user_obj->img_url == "") {
-					if ($user_obj->fb_id == "")
-						$avatar_url = "https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png";
-					
-					else
-						$avatar_url = "https://graph.facebook.com/". $user_obj->fb_id ."/picture?type=square";
-			
-				} else
-					$avatar_url = $user_obj->img_url;
-				
-				array_push($rechallenge_arr, array(
-					'id' => $rechallenge_row['id'],
-					'user_id' => $rechallenge_row['creator_id'],
-					'fb_id' => $user_obj->fb_id,
-					'img_url' => $avatar_url,
-					'username' => $user_obj->username,
-					'added' => $rechallenge_row['added']
-				));
-			}
-			
-			
 			// compose object
 			$challenge_arr = array(
 				'id' => $challenge_obj->id, 
@@ -331,7 +299,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * @param $username The username of the user (string)
 	 * @return The list of challenges (array)
 	**/
-	public function getChallengesForUsername($username) {
+	public function getChallengesForUsername($username, $private = false ) {
 		$this->dbConnect();
 	    $challenge_arr = array();
 		
@@ -345,7 +313,18 @@ class BIM_App_Votes extends BIM_App_Base{
 			$user_id = mysql_fetch_object($user_result)->id;
 			
 			// get latest 10 challenges for user
-			$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` != 2 AND `status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50;';
+    	    $privateSql = ' AND `is_private` != "Y" ';
+    	    if( $private ){
+    	        $privateSql = ' AND `is_private` = "Y" ';
+    	    }
+			
+	        $query = "
+				SELECT * 
+				FROM `tblChallenges` 
+				WHERE ( status_id IN (1,2,4) ) 
+					$privateSql
+					AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') 
+				ORDER BY `updated` DESC LIMIT 50;";
 			$challenge_result = mysql_query($query);
 		
 			// loop thru the rows
@@ -378,26 +357,83 @@ class BIM_App_Votes extends BIM_App_Base{
 		}
 	}
 	
+	public function getChallengesWithFriends($input) {
+		$this->dbConnect();
+	    $challenge_arr = array();
+	    
+        $friends = BIM_App_Social::getFriends($input);
+        $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
+	    
+	    $fIdct = count( $friendIds );
+		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
+		
+        $query = "
+        	SELECT tc.*, tcs.title as subject 
+        	FROM `hotornot-dev`.`tblChallenges` as tc 
+        	JOIN `hotornot-dev`.tblChallengeSubjects as tcs 
+        		ON tc.subject_id = tcs.id 
+        		WHERE tc.status_id IN (1,2,4) 
+        		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
+        	ORDER BY tc.`updated` DESC LIMIT 50 
+        ";
+		$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        
+        $params = $friendIds;
+        foreach( $friendIds as $friendId ){
+            $params[] = $friendId;
+        }
+        
+        $stmt = $dao->prepareAndExecute( $query, $params );
+        
+        // loop thru the rows
+		while ( $challenge_row = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
+		    //print_r( $challenge_row );
+			// push challenge into list
+			array_push($challenge_arr, array(
+				'id' => $challenge_row['id'], 
+				'status' => $challenge_row['status_id'], 					
+				'subject' => $challenge_row['subject'], 
+				'has_viewed' => $challenge_row['hasPreviewed'], 
+				'started' => $challenge_row['started'], 
+				'added' => $challenge_row['added'],
+				'updated' => $challenge_row['updated'],
+				'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
+				'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
+			));
+		}
+	
+		// return
+		return $challenge_arr;
+	}
+	
 	/** 
 	 * Gets a list of challenges between two users
 	 * @param $user_id The ID of the first user (integer)
 	 * @param $challenger_id The ID of the second user (integer)
 	 * @return The list of challenges (array)
 	**/
-	public function getChallengesWithChallenger($user_id, $challenger_id) {
+	public function getChallengesWithChallenger($user_id, $challenger_id, $private = false) {
 		$this->dbConnect();
 	    $challenge_arr = array();
 		
-		// get challenges with these two users
-		$query = 'SELECT `id` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' AND `challenger_id` = '. $challenger_id .') OR (`creator_id` = '. $challenger_id .' AND `challenger_id` = '. $user_id .') ORDER BY `updated` DESC LIMIT 50';
+	    $privateSql = ' AND `is_private` != "Y" ';
+	    if( $private ){
+	        $privateSql = ' AND `is_private` = "Y" ';
+	    }
+	    // get challenges with these two users
+		$query = "
+			SELECT `id` FROM `tblChallenges` 
+			WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) 
+				$privateSql
+				AND ( (`creator_id` = $user_id AND `challenger_id` = $challenger_id ) 
+					OR (`creator_id` = $challenger_id AND `challenger_id` = $user_id ) )
+			ORDER BY `updated` DESC LIMIT 50";
 		$result = mysql_query($query);
 		
 		// loop thru challenges
 		while ($row = mysql_fetch_assoc($result))
 			array_push($challenge_arr, $this->getChallengeObj($row['id']));	
 			
-		
-		// return
 		return $challenge_arr;
 	}
 	

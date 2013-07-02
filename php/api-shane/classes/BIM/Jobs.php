@@ -14,6 +14,10 @@ class BIM_Jobs{
      */
     
     public function enqueueBackground( $job, $name = 'any_job', $key = null ){
+        return self::queueBackground( $job, $name, $key );
+    }
+    
+    public static function queueBackground( $job, $name = 'any_job', $key = null ){
         $queued = false;
         $queue = BIM_Resource::getQueue();
         if( $queue ){

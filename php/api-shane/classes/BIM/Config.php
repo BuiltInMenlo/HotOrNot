@@ -4,6 +4,12 @@ class BIM_Config{
     
     static protected $defaultNetwork = 'instagram';
 
+    static protected $lastInviteMsgFetch = 0;
+    static protected $inviteMsgs = array();
+    
+    static protected $bootConfLive = array();
+    static protected $bootConfDev = array();
+    
     static protected $lastTagFetch = 0;
     static protected $authenticTags = array();
     static protected $adTags = array();
@@ -128,5 +134,133 @@ class BIM_Config{
         }
         return self::$adQuotes[ $network ];
         
+    }
+    
+    protected static function bootConfCacheKey( $type = 'live' ){
+        return "volley_boot_conf_$type";
+    }
+    
+    public static function getBootConf( $type = 'live' ){
+        $bootConf = null;
+        $cackeKey = self::bootConfCacheKey( $type );
+        $cache = new BIM_Cache_Memcache( self::memcached() );
+        $data = $cache->get( $cackeKey );
+        if( !$data ){
+            $dao = new BIM_DAO_Mysql_Config( self::db() );
+            $data = $dao->getBootConf( $type );
+            $data =  $data[0]->data;
+            $cache->set( $cackeKey, $data );
+        }
+        return $data;
+    }
+    
+    public static function saveBootConf( $data, $type = 'live' ){
+        $dao = new BIM_DAO_Mysql_Config( self::db() );
+        $dao->saveBootConf( $data, $type );
+        
+        $cackeKey = self::bootConfCacheKey( $type );
+        $cache = new BIM_Cache_Memcache( self::memcached() );
+        $cache->set( $cackeKey, $data );
+    }
+    
+    public static function inviteMsgs(){
+        if( empty( self::$inviteMsgs ) || ( time() - self::$lastInviteMsgFetch >= 300 ) ){
+            self::getInviteMsgs();
+            self::$lastInviteMsgFetch = time();
+        }
+        return self::$inviteMsgs;
+        
+    }
+    
+    public static function saveInviteMsgs( $data ){
+        $dao = new BIM_DAO_Mysql_Growth( self::db() );
+        $dao->saveInviteMsgs( $data );
+    }
+    
+    protected static function getInviteMsgs(){
+        $dao = new BIM_DAO_Mysql_Growth( self::db() );
+        $msgArray = $dao->getInviteMsgs();
+        foreach( $msgArray as $msgData ){
+            self::$inviteMsgs[ $msgData->type ] = $msgData->message;
+        }
+    }
+    
+    public static function actionMethods(){
+        return array(
+            'BIM_Controller_Search' => array(
+        		'0' => 'test',
+        		'1' => 'getUsersLikeUsername',
+        		'2' => 'getSubjectsLikeSubject',
+        		'3' => 'getDefaultUsers',
+        		'4' => 'getSnappedUsers',
+            ),
+            'BIM_Controller_Users' => array(
+                '0' => 'test',
+        		'1' => 'submitNewUser',
+        		'2' => 'updateFB',
+        		'3' => 'updatePaid',
+        		'4' => 'updateNotifications',
+        		'5' => 'getUser',
+        		'6' => 'pokeUser',
+        		'7' => 'updateName',
+        		'8' => 'getUserFromName',
+        		'9' => 'updateUsernameAvatar',
+        		'10' => 'flagUser',
+        		'11' => 'matchFriends',
+        		'12' => 'inviteInsta',
+            ),
+            'BIM_Controller_Discover' => array(
+        		'0' => 'test',
+        		'1' => 'getTopChallengesByVotes',
+        		'2' => 'getTopChallengesByLocation',
+        	),
+            'BIM_Controller_Comments' => array(
+                '0' => 'test',
+        		'1' => 'getCommentsForChallenge',
+        		'2' => 'submitCommentForChallenge',
+        		'3' => 'submitCommentForSubject',        			
+        		'4' => 'getComment',
+        		'5' => 'getCommentsForUser',
+        		'6' => 'getCommentsForSubject',
+        		'7' => 'flagComment',
+        		'8' => 'deleteComment',
+        	),
+            'BIM_Controller_Challenges' => array(
+        		'0' => 'test',
+        		'1' => 'submitMatchingChallenge',
+        		'2' => 'getChallengesForUser',        			
+        		'3' => 'getAllChallengesForUser',
+        		'4' => 'acceptChallenge',        		
+        		'5' => 'getPreviewForSubject',        		
+        		'6' => 'updatePreviewed',
+        		'7' => 'submitChallengeWithUsername',
+        		'8' => 'getPrivateChallengesForUser',
+        		'9' => 'submitChallengeWithChallenger',
+        		'10' => 'cancelChallenge',
+        		'11' => 'flagChallenge',
+        		'12' => 'getChallengesForUserBeforeDate',
+    			'13' => 'getPrivateChallengesForUserBeforeDate',
+    			'14' => 'submitChallengeWithUsernames',
+        	),
+    		'BIM_Controller_G' => array( 
+        		'1' => 'smsInvites',
+        		'2' => 'emailInvites',
+        		'3' => 'trackClick',
+        		'4' => 'volleyUserPhotoComment',
+            ),        
+    		'BIM_Controller_Votes' => array( 
+        		'0' => 'test',
+        		'1' => 'getChallengesByActivity',
+        		'2' => 'getChallengesForSubjectID',
+        		'3' => 'getChallengeForChallengeID',
+        		'4' => 'getChallengesByDate',
+        		'5' => 'getVotersForChallenge',
+        		'6' => 'upvoteChallenge',
+        		'7' => 'getChallengesWithChallenger',
+        		'8' => 'getChallengesForSubjectName',
+        		'9' => 'getChallengesForUsername',
+        		'10' => 'getChallengesWithFriends',
+            )
+        );        
     }
 }

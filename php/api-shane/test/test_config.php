@@ -1,5 +1,23 @@
 <?php
 require_once 'vendor/autoload.php';
+
+// testing the boot config stuff
+$data = json_encode( 
+    array(
+        "foo" => 'bar',
+        "bar" => "baz"
+    ) 
+);
+
+$params = array(
+    'data' => $data,
+    'type' => 'dev'
+);
+
+echo BIM_App_Config::saveBootConf($params)."\n";
+
+print_r( BIM_App_Config::getBootConf($params) )."\n";
+
 /*
 $tags = (object) array(
     'type' => 'ad',
@@ -8,8 +26,8 @@ $tags = (object) array(
 */
 // BIM_Config::saveQuotes($tags);
 
-print_r( BIM_Config::adQuotes() );
-print_r( BIM_Config::authenticQuotes() );
+//print_r( BIM_Config::adQuotes() );
+//print_r( BIM_Config::authenticQuotes() );
 
 function adQuotes(){
     return join(',',array(
