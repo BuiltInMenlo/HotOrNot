@@ -41,7 +41,7 @@
 @property (nonatomic) BOOL isPushView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) UIImageView *emptySetImgView;
+@property (nonatomic, strong) UIImageView *emptySetImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @end
 
@@ -109,7 +109,7 @@
 }
 
 - (void)_registerNotifications {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showRegistration:) name:@"SHOW_REGISTRATION" object:nil];
+	//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showRegistration:) name:@"SHOW_REGISTRATION" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSMSVerify:) name:@"SHOW_SMS_VERIFY" object:nil];
@@ -154,8 +154,9 @@
 	
 	// a user's friends
 	} else if (_timelineType == HONTimelineTypeFriends) {
-		
 	}
+	
+	//NSLog(@"PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -183,7 +184,6 @@
 				[_headerView setTitle:[NSString stringWithFormat:@"@%@", ([vo.challengerName length] == 0) ? vo.creatorName : (vo.creatorID == [[_challengerDict objectForKey:@"user1"] intValue] && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorName : vo.challengerName]];
 			}
 						
-			_emptySetImgView.hidden = ([_challenges count] > 0);
 			[_tableView reloadData];
 		}
 		
@@ -278,7 +278,10 @@
 - (void)loadView {
 	[super loadView];
 	self.view.backgroundColor = [UIColor whiteColor];
-	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];	
+	
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
+	bgImageView.frame = self.view.bounds;
+	[self.view addSubview:bgImageView];
 	
 	_userVO = nil;
 	_challenges = [NSMutableArray array];
@@ -313,12 +316,8 @@
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
+	createChallengeButton.hidden = _isPushView;
 	[_headerView addSubview:createChallengeButton];
-	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 285.0)];
-	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
-	_emptySetImgView.hidden = YES;
-	[self.view addSubview:_emptySetImgView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kNavBarHeaderHeight + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
@@ -330,6 +329,19 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	_emptySetImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
+	_emptySetImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"noFriends-568h@2x" : @"noFriends"];
+	_emptySetImageView.userInteractionEnabled = YES;
+	_emptySetImageView.hidden = YES;//([[HONAppDelegate friendsList] count] > 0 || _isPushView);
+	[self.view addSubview:_emptySetImageView];
+	
+	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	ctaButton.frame = CGRectMake(0.0, 192.0, 320.0, 53.0);
+//	[ctaButton setBackgroundImage:[UIImage imageNamed:@"sendVerificationButton_nonActive"] forState:UIControlStateNormal];
+//	[ctaButton setBackgroundImage:[UIImage imageNamed:@"sendVerificationButton_Active"] forState:UIControlStateHighlighted];
+	[ctaButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
+	[_emptySetImageView addSubview:ctaButton];
 	
 	[self.view addSubview:_headerView];
 	
@@ -345,22 +357,25 @@
 	[self _retrieveChallenges];
 
 	
-#if __ALWAYS_INVITE__ == 1
-	[HONAppDelegate writeFriendsList:[NSArray array]];
-#endif
 	
-	if ([[HONAppDelegate friendsList] count] == 0 && !_isPushView)
+	//if (!_isPushView) {
+#if __ALWAYS_VERIFY__ == 1
 		[self _goMobileSignup];
-	
-	if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
-#if __ALWAYS_REGISTER__ == 1
-		[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
 #endif
-		if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
-			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
+	
+//		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
+//			[self _goMobileSignup];
+			
+		if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
+#if __ALWAYS_REGISTER__ == 1
+			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
+#endif
+			if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+				[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
 		
-	} else
-		[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
+		} else
+			[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
+	//}
 }
 
 - (void)viewDidLoad {
@@ -461,19 +476,33 @@
 }
 
 - (void)_goMobileSignup {
-	_emptyTimelineView = [[HONEmptyTimelineView alloc] initWithFrame:self.view.bounds];
-	[self.view addSubview:_emptyTimelineView];
+	if (_emptyTimelineView == nil) {
+		_emptyTimelineView = [[HONEmptyTimelineView alloc] initWithFrame:self.view.bounds];
+		[self.view addSubview:_emptyTimelineView];
+	}
 }
 
 - (void)_goMobileSignupClose {
 	_emptyTimelineView.hidden = YES;
 	[_emptyTimelineView removeFromSuperview];
+	
+	_emptySetImageView.hidden = [[HONAppDelegate friendsList] count] > 0;
 }
 
+- (void)_goAddContacts {
+	[[Mixpanel sharedInstance] track:@"Add Friends - Open"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
 
 #pragma mark - Notifications
 - (void)_showSMSVerify:(NSNotification *)notification {
-	[[Mixpanel sharedInstance] track:@"Verify Mobile - SMS"
+	[[Mixpanel sharedInstance] track:@"Timeline - Verify Mobile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -481,7 +510,7 @@
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 		messageComposeViewController.messageComposeDelegate = self;
 		messageComposeViewController.recipients = [NSArray arrayWithObject:@"2394313268"];
-		messageComposeViewController.body = [[HONAppDelegate infoForUser] objectForKey:@"sms_code"];
+		messageComposeViewController.body = [NSString stringWithFormat:@"Verify my mobile phone # with my Volley account! verification code: %@", [[HONAppDelegate infoForUser] objectForKey:@"sms_code"]];
 		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		
 	} else {
@@ -508,9 +537,9 @@
 	[self _retrieveChallenges];
 }
 
-- (void)_showRegistration:(NSNotification *)notification {
-	[self _goRegistration];
-}
+//- (void)_showRegistration:(NSNotification *)notification {
+//	[self _goRegistration];
+//}
 
 
 #pragma mark - TimelineItemCell Delegates
@@ -735,14 +764,7 @@
 	
 	[self dismissViewControllerAnimated:YES completion:^(void) {
 		if (result == MessageComposeResultSent) {
-			[[Mixpanel sharedInstance] track:@"Add Friends - Open"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
+			[self _goAddContacts];
 		}
 	}];
 }

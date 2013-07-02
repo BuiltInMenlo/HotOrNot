@@ -61,6 +61,8 @@ NSString * const kAPIUsers = @"Users.php";
 NSString * const kAPIVotes = @"Votes.php";
 NSString * const kAPIGetFriends = @"social/getfriends";
 NSString * const kAPIAddFriends = @"social/addfriend";
+NSString * const kAPISMSInvites = @"g/smsinvites";
+NSString * const kAPIEmailInvites = @"g/emailinvites";
 
 // view heights
 const CGFloat kNavBarHeaderHeight = 44.0f;
@@ -763,6 +765,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
 		
 		} else {
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 			[self _retrieveConfigJSON];
 			
 			NSString *notificationName;

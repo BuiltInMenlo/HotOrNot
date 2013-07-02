@@ -402,6 +402,9 @@ const CGFloat kFocusInterval = 0.5f;
 																		_challengeVO.challengerAvatar, @"avatar_url", nil]]];
 				
 				[_cameraOverlayView updateChallengers:[NSArray arrayWithObjects:_challengeVO.creatorName, _challengeVO.challengerName, nil]];
+			
+			} else if (_challengeSubmitType == HONChallengeSubmitTypeOpponentID) {
+				[_addFollowing addObject:_userVO];
 			}
 		}
 		
@@ -666,6 +669,11 @@ const CGFloat kFocusInterval = 0.5f;
 
 - (void)cameraOverlayViewMakeChallengeRandom:(HONSnapCameraOverlayView *)cameraOverlayView {
 	_challengeSubmitType = HONChallengeSubmitTypeMatch;
+	
+	[_addFollowing removeAllObjects];
+	[_addContacts removeAllObjects];
+	
+	[_cameraOverlayView updateChallengers:[NSArray array]];
 }
 
 #pragma mark - AddFriends Delegate
@@ -733,7 +741,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	NSMutableArray *usernames = [NSMutableArray array];
 	for (HONUserVO *vo in _addFollowing)
-		[usernames addObject:vo.username];//[usernames addObject:[NSString stringWithFormat:@"@%@", vo.username]];
+		[usernames addObject:vo.username];
 	
 	for (HONContactUserVO *vo in _addContacts)
 		[usernames addObject:vo.fullName];

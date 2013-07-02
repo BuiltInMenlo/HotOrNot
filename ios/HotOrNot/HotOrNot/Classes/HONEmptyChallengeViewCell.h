@@ -12,5 +12,9 @@
 @interface HONEmptyChallengeViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+@property (nonatomic, assign) id <HONEmptyChallengeViewCellDelegate> delegate;
+@end
 
+@protocol HONEmptyChallengeViewCellDelegate
+- (void)emptyChallengeViewCellShowFrinds:(HONEmptyChallengeViewCell *)cell;
 @end

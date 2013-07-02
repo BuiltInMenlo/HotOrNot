@@ -10,6 +10,7 @@
 
 
 @implementation HONEmptyChallengeViewCell
+@synthesize delegate = _delegate;
 
 + (NSString *)cellReuseIdentifier {
 	return (NSStringFromClass(self));
@@ -34,7 +35,7 @@
 
 #pragma mark - Navigation
 - (void)_goFindFriends {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_FIND_FRIENDS" object:nil];
+	[self.delegate emptyChallengeViewCellShowFrinds:self];
 }
 
 @end

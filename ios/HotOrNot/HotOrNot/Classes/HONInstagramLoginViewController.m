@@ -18,6 +18,7 @@
 @property (nonatomic, retain) UITextField *usernameTextField;
 @property (nonatomic, retain) UITextField *passwordTextField;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic) BOOL isClosing;
 @end
 
 
@@ -76,6 +77,13 @@
 				_progressHUD = nil;
 			}
 			
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Success!"
+																message:@"We will let your Instagram friends know you're on Volley"
+															   delegate:nil
+													  cancelButtonTitle:@"OK"
+													  otherButtonTitles:nil];
+			[alertView show];
+			
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 		}
@@ -101,16 +109,17 @@
 	[super loadView];
 	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina5]) ? 54.0 : 19.0, 231.0, ([HONAppDelegate isRetina5]) ? 99.0 : 89.0)];
+	_isClosing = NO;
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 54.0 : 19.0, 244.0, ([HONAppDelegate isRetina5]) ? 99.0 : 87.0)];
 	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"instagramText-568h@2x" : @"instagramText"];
 	[self.view addSubview:captionImageView];
 	
-	UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	skipButton.frame = CGRectMake(248.0, 4.0, 64.0, 44.0);
-	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_nonActive"] forState:UIControlStateNormal];
-	[skipButton setBackgroundImage:[UIImage imageNamed:@"skipButton_Active"] forState:UIControlStateHighlighted];
-	[skipButton addTarget:self action:@selector(_goSkip) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:skipButton];
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(248.0, 4.0, 64.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:doneButton];
 	
 	UIImageView *usernameBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 134.0, 244.0, 44.0)];
 	usernameBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
@@ -181,10 +190,14 @@
 
 
 #pragma mark - Navigation
-- (void)_goSkip {
-	[[Mixpanel sharedInstance] track:@"Instagram Login - Skip"
+- (void)_goDone {
+	[[Mixpanel sharedInstance] track:@"Instagram Login - Done"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	_isClosing = YES;
+	[_usernameTextField resignFirstResponder];
+	[_passwordTextField resignFirstResponder];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
@@ -208,20 +221,22 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	NSLog(@"textFieldDidEndEditing");
 	
-	if ([_usernameTextField.text length] == 0)
-		[_usernameTextField becomeFirstResponder];
-	
-	else {
-		if ([_passwordTextField.text length] == 0)
-			[_passwordTextField becomeFirstResponder];
+	if (!_isClosing) {
+		if ([_usernameTextField.text length] == 0)
+			[_usernameTextField becomeFirstResponder];
 		
 		else {
-			[[Mixpanel sharedInstance] track:@"Instagram Login - Submit"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  _usernameTextField.text, @"username", nil]];
+			if ([_passwordTextField.text length] == 0)
+				[_passwordTextField becomeFirstResponder];
 			
-			[self _submitLogin];
+			else {
+				[[Mixpanel sharedInstance] track:@"Instagram Login - Submit"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  _usernameTextField.text, @"username", nil]];
+				
+				[self _submitLogin];
+			}
 		}
 	}
 }

@@ -7,9 +7,7 @@
 //
 
 #import <FacebookSDK/FacebookSDK.h>
-//#import <AddressBook/AddressBook.h>
-//#import <MessageUI/MFMessageComposeViewController.h>
-//#import <MessageUI/MFMailComposeViewController.h>
+#import <MessageUI/MFMessageComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -30,7 +28,7 @@
 #import "HONAddContactViewCell.h"
 #import "HONTimelineViewController.h"
 
-@interface HONProfileViewController () <UITableViewDataSource, UITableViewDelegate, HONUserProfileViewCellDelegate>
+@interface HONProfileViewController () <UITableViewDataSource, UITableViewDelegate, MFMessageComposeViewControllerDelegate, HONUserProfileViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *recentOpponents;
 @property (nonatomic, strong) NSArray *friends;
 @property (nonatomic, strong) NSMutableArray *contacts;
@@ -38,7 +36,6 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (strong, nonatomic) FBRequestConnection *requestConnection;
-//@property (nonatomic) BOOL isContactsViewed;
 @property (nonatomic) BOOL hasRefreshed;
 @end
 
@@ -54,9 +51,6 @@
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_PROFILE_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshProfileTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_inviteContact:) name:@"INVITE_CONTACT" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareSMS:) name:@"SHARE_SMS" object:nil];
-		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_shareEmail:) name:@"SHARE_EMAIL" object:nil];
 	}
 	
 	return (self);
@@ -96,11 +90,11 @@
 			
 		} else {
 			
-			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *parsedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedUsers);
 			
 			int cnt = 0;
-			for (NSDictionary *serverList in unsortedUsers) {
+			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				
 				if (vo != nil)
@@ -186,69 +180,15 @@
 }
 
 
-//#pragma mark - Device Functions
-//- (void)_retrieveContacts {
-//	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
-//	
-//	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-//	CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
-//	
-//	for (int i=0; i<nPeople; i++) {
-//		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
-//		
-//		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
-//		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
-//		
-//		if ([fName length] == 0 || [lName length] == 0)
-//			continue;
-//		
-//		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
-//		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
-//		
-//		NSString *phoneNumber = @"";
-//		for(CFIndex j=0; j<phoneCount; j++) {
-//			NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
-//			if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel]) {
-//				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-//			
-//			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
-//				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-//				break ;
-//			}
-//		}
-//		CFRelease(phoneProperties);
-//		
-//		
-//		NSString *email = @"";
-//		ABMultiValueRef emailProperties = ABRecordCopyValue(ref, kABPersonEmailProperty);
-//		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
-//		
-//		if (emailCount > 0) {
-//			for (CFIndex j=0; j<emailCount; j++) {
-//				email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, j);
-//			}
-//		}
-//		CFRelease(emailProperties);
-//		
-//		if ([phoneNumber length] > 0 || [email length] > 0) {
-//			[_contacts addObject:[HONContactUserVO contactWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-//																									fName, @"f_name",
-//																									lName, @"l_name",
-//																									phoneNumber, @"phone",
-//																									email, @"email", nil]]];
-//		}
-//	}
-//	
-//	[_tableView reloadData];
-//}
-
-
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
 	
 	_hasRefreshed = NO;
-	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
+	
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
+	bgImageView.frame = self.view.bounds;
+	[self.view addSubview:bgImageView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor colorWithWhite:0.900 alpha:1.0]];
@@ -303,25 +243,6 @@
 	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
-//- (void)_goContacts {
-//	[[Mixpanel sharedInstance] track:@"Profile - Contacts"
-//								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-//	if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-//		ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-//			[self _retrieveContacts];
-//		});
-//		
-//	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-//		[self _retrieveContacts];
-//		
-//	} else {
-//		// denied access
-//	}
-//}
-
 
 #pragma mark - Notifications
 - (void)_refreshProfileTab:(NSNotification *)notification {
@@ -355,20 +276,6 @@
 			
 			[self _retrievePastUsers];
 			_friends = [HONAppDelegate friendsList];
-			
-			
-//			ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-//			if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-//				ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-//					[self _retrieveContacts];
-//				});
-//				
-//			} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-//				[self _retrieveContacts];
-//				
-//			} else {
-//				// denied access
-//			}
 		}
 		
 		if (_progressHUD != nil) {
@@ -389,103 +296,6 @@
 		_progressHUD = nil;
 	}];
 }
-
-
-/*
-- (void)_inviteContact:(NSNotification *)notification {
-	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
-	
-	if (vo.isSMSAvailable) {
-		[[Mixpanel sharedInstance] track:@"Profile - Invite Contact"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 [NSString stringWithFormat:@"%@ - %@", vo.fullName, vo.mobileNumber], @"name", nil]];
-		
-		if ([MFMessageComposeViewController canSendText]) {
-			MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-			messageComposeViewController.messageComposeDelegate = self;
-			messageComposeViewController.recipients = [NSArray arrayWithObject:vo.mobileNumber];
-			messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-			[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-			
-		} else {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
-																				 message:@"Cannot send SMS from this device!"
-																				delegate:nil
-																	cancelButtonTitle:@"OK"
-																	otherButtonTitles:nil];
-			[alertView show];
-		}
-	
-	} else {
-		[[Mixpanel sharedInstance] track:@"Profile - Invite Contact"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 [NSString stringWithFormat:@"%@ - %@", vo.fullName, vo.email], @"name", nil]];
-		
-		if ([MFMailComposeViewController canSendMail]) {
-			MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-			mailComposeViewController.mailComposeDelegate = self;
-			[mailComposeViewController setToRecipients:[NSArray arrayWithObject:vo.email]];
-			[mailComposeViewController setSubject:NSLocalizedString(@"invite_email", nil)];
-			[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
-			[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-			
-		} else {
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
-																				 message:@"Cannot send email from this device!"
-																				delegate:nil
-																	cancelButtonTitle:@"OK"
-																	otherButtonTitles:nil];
-			[alertView show];
-		}
-	}
-}
-
-- (void)_shareSMS:(NSNotification *)notification {
-	if ([MFMessageComposeViewController canSendText]) {
-//		UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//		pasteboard.persistent = YES;
-//		pasteboard.image = [UIImage imageNamed:@"instagram_template-0001"];
-//		
-//		[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"sms:" stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding]]];
-		
-		
-		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-		messageComposeViewController.messageComposeDelegate = self;
-		//messageComposeViewController.recipients = [NSArray arrayWithObject:@"2393709811"];
-		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
-																			 message:@"Cannot send SMS from this device!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
-	}
-}
-
-- (void)_shareEmail:(NSNotification *)notification {
-	if ([MFMailComposeViewController canSendMail]) {
-		MFMailComposeViewController *mailComposeViewController = [[MFMailComposeViewController alloc] init];
-		mailComposeViewController.mailComposeDelegate = self;
-		[mailComposeViewController setSubject:NSLocalizedString(@"invite_email", nil)];
-//		[mailComposeViewController addAttachmentData:UIImagePNGRepresentation([UIImage imageNamed:@"instagram_template-0001"]) mimeType:@"image/png" fileName:@"MyImageName"];
-		[mailComposeViewController setMessageBody:[NSString stringWithFormat:[HONAppDelegate emailInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]] isHTML:NO];
-		[self presentViewController:mailComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Email Error"
-																			 message:@"Cannot send email from this device!"
-																			delegate:nil
-																cancelButtonTitle:@"OK"
-																otherButtonTitles:nil];
-		[alertView show];
-	}
-}
-*/
 
 
 #pragma mark - UserProfileCell Delegates
@@ -522,7 +332,7 @@
 		return ([_friends count]);
 		
 	} else {
-		return (1);//(_isContactsViewed) ? [_contacts count] : 1);
+		return (2);
 	}
 }
 
@@ -563,14 +373,14 @@
 			cell = [[HONUserProfileViewCell alloc] init];
 		
 		HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																			[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
-																			[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
-																			[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
-																			[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
-																			[NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
-																			[[HONAppDelegate infoForUser] objectForKey:@"username"], @"username",
-																			[[HONAppDelegate infoForUser] objectForKey:@"fb_id"], @"fb_id",
-																			[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"], @"avatar_url", nil]];
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
+														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
+														   [[HONAppDelegate infoForUser] objectForKey:@"username"], @"username",
+														   [[HONAppDelegate infoForUser] objectForKey:@"fb_id"], @"fb_id",
+														   [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"], @"avatar_url", nil]];
 		
 		cell.delegate = self;
 		[cell setUserVO:userVO];
@@ -606,17 +416,31 @@
 		if (cell == nil)
 			cell = [[HONPastChallengerViewCell alloc] initAsRandomUser:YES];
 		
-		HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
-														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
-														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
-														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
-														   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
-														   @"Find friends who volley", @"username",
-														   @"", @"fb_id",
-														   @"", @"avatar_url", nil]];
+		if (indexPath.row == 0) {
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
+															   @"Verify my Mobile #", @"username",
+															   @"", @"fb_id",
+															   @"", @"avatar_url", nil]];
+			cell.userVO = userVO;
 		
-		cell.userVO = userVO;
+		} else {
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
+															   @"Find friends who volley", @"username",
+															   @"", @"fb_id",
+															   @"", @"avatar_url", nil]];
+			cell.userVO = userVO;
+		}
+		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 			
 		return (cell);
@@ -663,67 +487,55 @@
 		[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:vo.username] animated:YES];
 	
 	} else if (indexPath.section == 3) {
-		[[Mixpanel sharedInstance] track:@"Profile - Add Contacts"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-										  
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+		if (indexPath.row == 0) {
+			[[Mixpanel sharedInstance] track:@"Profile - Verify Mobile"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			if ([MFMessageComposeViewController canSendText]) {
+				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
+				messageComposeViewController.messageComposeDelegate = self;
+				messageComposeViewController.recipients = [NSArray arrayWithObject:@"2394313268"];
+				messageComposeViewController.body = [NSString stringWithFormat:@"Verify my mobile phone # with my Volley account! verification code: %@", [[HONAppDelegate infoForUser] objectForKey:@"sms_code"]];
+				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
+				
+			} else {
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
+																	message:@"Cannot send SMS from this device!"
+																   delegate:nil
+														  cancelButtonTitle:@"OK"
+														  otherButtonTitles:nil];
+				[alertView show];
+			}
+		
+		} else {
+			[[Mixpanel sharedInstance] track:@"Profile - Add Contacts"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
 	}
 }
 
-/*
 #pragma mark - MessageCompose Delegates
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	//NSLog(@"messageComposeViewController:didFinishWithResult:[%d]", result);
 	
-	switch (result) {
-		case MessageComposeResultCancelled:
-			NSLog(@"SMS: canceled");
-			break;
-			
-		case MessageComposeResultSent:
-			NSLog(@"SMS: sent");
-			break;
-			
-		case MessageComposeResultFailed:
-			NSLog(@"SMS: failed");
-			break;
-			
-		default:
-			NSLog(@"SMS: not sent");
-			break;
-	}
-	
-	[self dismissViewControllerAnimated:YES completion:nil];
+	[self dismissViewControllerAnimated:YES completion:^(void) {
+//		if (result == MessageComposeResultSent) {
+//			[[Mixpanel sharedInstance] track:@"Add Friends - Open"
+//								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+//			
+//			
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
+//		}
+	}];
 }
 
-
-#pragma mark - MessageCompose Delegates
-- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
-	switch (result) {
-		case MFMailComposeResultCancelled:
-			NSLog(@"EMAIL: canceled");
-			break;
-			
-		case MFMailComposeResultFailed:
-			NSLog(@"EMAIL: failed");
-			break;
-			
-		case MFMailComposeResultSaved:
-			NSLog(@"EMAIL: saved");
-			break;
-			
-		case MFMailComposeResultSent:
-			NSLog(@"EMAIL: sent");
-			break;
-			
-		default:
-			NSLog(@"EMAIL: not sent");
-			break;
-	}
-	
-	[self dismissViewControllerAnimated:YES completion:nil];
-}
-*/
 @end

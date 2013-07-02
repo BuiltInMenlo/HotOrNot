@@ -51,11 +51,16 @@
 	[self addSubview:_avatarImageView];
 	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
-	if (isUser)
-		_avatarImageView.image = [HONAppDelegate avatarImage];
+	if (isUser) {
+		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
+																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 	
-	else
-		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+	} else {
+		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
+																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+	}
 	
 	
 	BOOL isFriend = NO;
@@ -80,7 +85,8 @@
 	
 	float yPos = 124.0;
 	
-	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, yPos, 80.0, 16.0)];
+	//_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, yPos, 80.0, 16.0)];
+	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, yPos, 80.0, 16.0)];
 	_votesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
 	_votesLabel.textColor = kStatsColor;
 	_votesLabel.backgroundColor = [UIColor clearColor];

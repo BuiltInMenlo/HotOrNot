@@ -19,6 +19,8 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
+				<string>icon_58x58</string>
+				<string>icon_29x29</string>
 				<string>icon_114x114</string>
 				<string>icon_57x57.png</string>
 				<string>icon_114x114.png</string>
@@ -63,7 +65,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>9210</string>
+	<string>9294</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>

@@ -18,19 +18,19 @@
 #import "HONSearchUserViewCell.h"
 
 @interface HONSearchViewController () <UITableViewDataSource, UITableViewDelegate>
-@property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) NSMutableArray *results;
-@property(nonatomic, strong) NSMutableArray *defaultUsers;
-@property(nonatomic, strong) NSMutableArray *pastUsers;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) UIImageView *emptySetImgView;
-@property(nonatomic, strong) UIView *whiteBGView;
-@property(nonatomic, strong) UIImageView *toggleImageView;
-@property(nonatomic, strong) NSString *username;
-@property(nonatomic, strong) NSString *subject;
-@property(nonatomic) BOOL isUser;
-@property(nonatomic) BOOL isResults;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *results;
+@property (nonatomic, strong) NSMutableArray *defaultUsers;
+@property (nonatomic, strong) NSMutableArray *pastUsers;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) UIImageView *emptySetImgView;
+@property (nonatomic, strong) UIView *whiteBGView;
+@property (nonatomic, strong) UIImageView *toggleImageView;
+@property (nonatomic, strong) NSString *username;
+@property (nonatomic, strong) NSString *subject;
+@property (nonatomic) BOOL isUser;
+@property (nonatomic) BOOL isResults;
 
 @end
 
@@ -344,7 +344,7 @@
 	_defaultUsers = [NSMutableArray array];
 	_pastUsers = [NSMutableArray array];
 	
-	_whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 200.0)];
+	_whiteBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 400.0)];
 	_whiteBGView.backgroundColor = [UIColor whiteColor];
 	_whiteBGView.alpha = 0.0;
 	[self.view addSubview:_whiteBGView];

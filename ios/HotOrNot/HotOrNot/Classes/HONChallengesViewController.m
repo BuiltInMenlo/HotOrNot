@@ -26,7 +26,7 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) NSMutableArray *recentChallenges;
 @property(nonatomic, strong) NSMutableArray *olderChallenges;
@@ -52,11 +52,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		_olderChallenges = [NSMutableArray array];
 		_blockCounter = 0;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_acceptChallenge:) name:@"ACCEPT_CHALLENGE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_nextChallengeBlock:) name:@"NEXT_CHALLENGE_BLOCK" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showFindFriends:) name:@"SHOW_FIND_FRIENDS" object:nil];
 	}
 	
 	return (self);
@@ -306,7 +303,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[super loadView];
 	
 	_isPrivate = NO;
-	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
+	bgImageView.frame = self.view.bounds;
+	[self.view addSubview:bgImageView];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_activity", nil)];
 	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
@@ -364,9 +363,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	
 	[self _retrieveChallenges];
-//	[self _retrieveUser];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -396,7 +393,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	[_headerView toggleRefresh:YES];
 	[self _retrieveChallenges];
-//	[self _retrieveUser];
 }
 
 - (void)_goPublicChallenges {
@@ -433,24 +429,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 
 #pragma mark - Notifications
-- (void)_acceptChallenge:(NSNotification *)notification {
-	HONChallengeVO *vo = (HONChallengeVO *)[notification object];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_nextChallengeBlock:(NSNotification *)notification {	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	[self _retrieveNextChallengeBlock];
-}
-
 - (void)_refreshChallengesTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
@@ -458,12 +436,24 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 //	[self _retrieveUser];
 }
 
-- (void)_showFindFriends:(NSNotification *)notification {
-	
-	//- apple fix -//
+
+#pragma mark - EmptyChallengeCell Delegates
+- (void)emptyChallengeViewCellShowFrinds:(HONEmptyChallengeViewCell *)cell {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+#pragma mark - ChallengeCell Delegates
+- (void)challengeViewCellLoadMore:(HONChallengeViewCell *)cell {
+	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+	_progressHUD.minShowTime = kHUDTime;
+	_progressHUD.taskInProgress = YES;
+	
+	[self _retrieveNextChallengeBlock];
 }
 
 
@@ -507,6 +497,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			if (cell == nil)
 				cell = [[HONEmptyChallengeViewCell alloc] init];
 			
+			cell.delegate = self;
 			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 			return (cell);
 		
@@ -603,12 +594,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		[alertView setTag:indexPath.section];
 		[alertView show];
 	}
-}
-
-
-#pragma mark - ScrollView Delegates
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 }
 
 

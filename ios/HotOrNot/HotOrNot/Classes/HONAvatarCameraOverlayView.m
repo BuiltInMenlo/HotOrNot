@@ -58,7 +58,8 @@
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
 		UIButton *captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		captureButton.frame = CGRectMake(128.0, offset, 64.0, 64.0);
+		captureButton.frame = CGRectMake(123.0, [UIScreen mainScreen].bounds.size.height - 100.0, 74.0, 74.0);
+		//captureButton.frame = CGRectMake(128.0, offset, 64.0, 64.0);
 		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];
@@ -156,7 +157,8 @@
 	
 	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
 	
-	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.83333f : 0.83333f];
+	//image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.83333f : 0.83333f];
+	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
 	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);

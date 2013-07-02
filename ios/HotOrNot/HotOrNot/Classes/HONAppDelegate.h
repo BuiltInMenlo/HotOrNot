@@ -13,7 +13,7 @@
 
 
 #define __DEV_CFG_JSON___ 1
-#define __ALWAYS_INVITE__ 0
+#define __ALWAYS_VERIFY__ 0
 #define __ALWAYS_REGISTER__ 0
 
 
@@ -29,6 +29,8 @@ extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
 extern NSString * const kAPIGetFriends;
 extern NSString * const kAPIAddFriends;
+extern NSString * const kAPISMSInvites;
+extern NSString * const kAPIEmailInvites;
 
 // view heights
 const CGFloat kNavBarHeaderHeight;

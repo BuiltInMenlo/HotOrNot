@@ -173,7 +173,10 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]]];
+	
+	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
+	bgImageView.frame = self.view.bounds;
+	[self.view addSubview:bgImageView];
 }
 
 - (void)viewDidLoad {

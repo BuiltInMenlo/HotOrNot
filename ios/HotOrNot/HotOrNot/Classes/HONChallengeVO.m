@@ -30,9 +30,9 @@
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
 	
 	vo.rechallengedUsers = @"";
-	for (NSDictionary *dict in [dictionary objectForKey:@"rechallenges"]) {
-		vo.rechallengedUsers = [vo.rechallengedUsers stringByAppendingFormat:@"%@, ", [dict objectForKey:@"username"]];
-	}
+//	for (NSDictionary *dict in [dictionary objectForKey:@"rechallenges"]) {
+//		vo.rechallengedUsers = [vo.rechallengedUsers stringByAppendingFormat:@"%@, ", [dict objectForKey:@"username"]];
+//	}
 	
 	if ([vo.rechallengedUsers length] > 0)
 		vo.rechallengedUsers = [vo.rechallengedUsers substringToIndex:[vo.rechallengedUsers length] - 2];

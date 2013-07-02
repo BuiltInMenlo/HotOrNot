@@ -276,8 +276,8 @@
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 49.0, 320.0, 110.0)];
-	captionImageView.image = [UIImage imageNamed:@"firstRunCopy_username"];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 49.0, 320.0, ([HONAppDelegate isRetina5]) ? 110.0 : 87.0)];
+	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunCopy_username-568h@2x" : @"firstRunCopy_username"];
 	[_usernameHolderView addSubview:captionImageView];
 	
 	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 163.0, 244.0, 44.0)];
@@ -411,7 +411,7 @@
 		_imagePicker.showsCameraControls = NO;
 		// ---------------------------------------------------------------------------
 		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+		[self presentViewController:_imagePicker animated:NO completion:^(void) {
 			[self _showOverlay];
 		}];
 		
@@ -425,7 +425,7 @@
 		_imagePicker.wantsFullScreenLayout = NO;
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 		
-		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
+		[self presentViewController:_imagePicker animated:NO completion:^(void) {
 		}];
 	}
 }

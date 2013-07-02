@@ -11,6 +11,8 @@
 #import "HONGenericRowViewCell.h"
 #import "HONChallengeVO.h"
 
+
+@protocol HONChallengeViewCellDelegate;
 @interface HONChallengeViewCell : HONGenericRowViewCell
 + (NSString *)cellReuseIdentifier;
 
@@ -19,4 +21,9 @@
 - (void)updateHasSeen;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, assign) id <HONChallengeViewCellDelegate> delegate;
+@end
+
+@protocol HONChallengeViewCellDelegate
+- (void)challengeViewCellLoadMore:(HONChallengeViewCell *)cell;
 @end

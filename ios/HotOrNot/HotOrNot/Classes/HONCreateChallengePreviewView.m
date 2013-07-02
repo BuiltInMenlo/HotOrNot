@@ -50,7 +50,7 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
-		NSLog(@"FRAME:[%@]", NSStringFromCGRect(self.frame));
+		NSLog(@"FRAME:[%@]\nBOUNDS:[%@]", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.bounds));
 		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
@@ -78,6 +78,7 @@
 	for (NSString *username in usernameList)
 		usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
 	
+	NSLog(@"USERNAMES:[%@][%@]", usernameList, usernames);
 	_usernamesLabel.text = ([usernames length] == 0) ? @"" : [usernames substringToIndex:[usernames length] - 2];
 }
 

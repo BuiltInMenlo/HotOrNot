@@ -23,13 +23,15 @@
 
 
 @interface HONAddContactsViewController ()<UITableViewDataSource, UITableViewDelegate>
-@property(nonatomic, strong) NSMutableArray *nonAppContacts;
-@property(nonatomic, strong) NSMutableArray *inAppContacts;
-@property(nonatomic, strong) NSMutableArray *selectedNonAppContacts;
-@property(nonatomic, strong) NSMutableArray *selectedInAppContacts;
-@property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) NSString *smsRecipients;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) NSMutableArray *nonAppContacts;
+@property (nonatomic, strong) NSMutableArray *inAppContacts;
+@property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
+@property (nonatomic, strong) NSMutableArray *selectedInAppContacts;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSString *smsRecipients;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic) int inviteTypeCounter;
+@property (nonatomic) int inviteTypeTotal;
 @end
 
 
@@ -95,7 +97,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																   sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			
@@ -194,6 +196,118 @@
 	}];
 }
 
+- (void)_sendInvites {
+	NSMutableArray *emails = [NSMutableArray array];
+	NSMutableArray *numbers = [NSMutableArray array];
+	for (HONContactUserVO *vo in _selectedNonAppContacts) {
+		if (vo.isSMSAvailable)
+			[numbers addObject:vo];
+		
+		else
+			[emails addObject:vo];
+	}
+	
+	_inviteTypeCounter = 0;
+	_inviteTypeTotal = ((int)[numbers count] > 0) + ((int)[emails count] > 0);
+	
+	if (_inviteTypeTotal > 0) {
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.taskInProgress = YES;
+	}
+	
+	if ([numbers count] > 0)
+		[self _sendSMSInvites:[numbers copy]];
+	
+	if ([emails count] > 0)
+		[self _sendEmailInvites:[emails copy]];
+}
+
+- (void)_sendSMSInvites:(NSArray *)numbers {	
+	NSString *phoneNumbers = @"";
+	for (HONContactUserVO *vo in numbers) {
+		if (vo.isSMSAvailable)
+			phoneNumbers = [phoneNumbers stringByAppendingFormat:@"%@|", vo.mobileNumber];
+	}
+	
+	NSLog(@"SELECTED CONTACTS:[%@]", [phoneNumbers substringToIndex:[phoneNumbers length] - 1]);
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[phoneNumbers substringToIndex:[phoneNumbers length] - 1], @"numbers", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISMSInvites);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPISMSInvites parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			_inviteTypeCounter++;
+			[self _checkInviteComplete];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_sendEmailInvites:(NSArray *)addresses {
+	NSString *emails = @"";
+	for (HONContactUserVO *vo in addresses) {
+		emails = [emails stringByAppendingFormat:@"%@|", vo.email];
+	}
+	
+	NSLog(@"SELECTED CONTACTS:[%@]", [emails substringToIndex:[emails length] - 1]);
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[emails substringToIndex:[emails length] - 1], @"addresses", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailInvites);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIEmailInvites parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			_inviteTypeCounter++;
+			[self _checkInviteComplete];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - Device Functions
 - (void)_retrieveContacts {
@@ -251,8 +365,9 @@
 			
 			
 			if (vo.isSMSAvailable) {
-				NSString *formattedNumber = [[vo.mobileNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"().- "]] componentsJoinedByString:@""];
-				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"+1%@|", formattedNumber];
+				//NSString *formattedNumber = [[vo.mobileNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"().- "]] componentsJoinedByString:@""];
+				//_smsRecipients = [_smsRecipients stringByAppendingFormat:@"+1%@|", formattedNumber];
+				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
 			}
 		}
 	}
@@ -274,13 +389,6 @@
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Find Friends"];
 	[self.view addSubview:headerView];
-	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(5.0, 0.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:backButton];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(250.0, 0.0, 64.0, 44.0);
@@ -304,7 +412,7 @@
 	selectToggleButton.frame = CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0);
 	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateNormal];
 	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_Active"] forState:UIControlStateHighlighted];
-	[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
+	//[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:selectToggleButton];
 	
 	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
@@ -318,10 +426,19 @@
 		
 		// already granted access
 	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+		[[Mixpanel sharedInstance] track:@"Address Book - Granted"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		
 		[self _retrieveContacts];
 		
 		// denied permission
 	} else {
+		[[Mixpanel sharedInstance] track:@"Address Book - Denied"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Contacts Permissions"
 															message:@"We need your OK to access the the address book."
 														   delegate:nil
@@ -370,13 +487,16 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if ([_selectedInAppContacts count] > 0 || [_selectedNonAppContacts count] > 0)
+	if ([_selectedInAppContacts count] > 0)
 		[self _sendFriendRequests];
+	
+	else if ([_selectedNonAppContacts count] > 0)
+		[self _sendInvites];
 	
 	else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+		[self dismissViewControllerAnimated:YES completion:nil];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 
@@ -485,6 +605,20 @@
 	removeVOs = nil;
 }
 
+
+#pragma mark - UI Presentation
+- (void)_checkInviteComplete {
+	if (_inviteTypeCounter == _inviteTypeTotal) {
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	}
+}
 
 
 #pragma mark - TableView DataSource Delegates

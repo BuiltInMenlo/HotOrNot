@@ -241,10 +241,18 @@
 		
 	// already granted access
 	} else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+		[[Mixpanel sharedInstance] track:@"Address Book - Granted"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		[self _retrieveContacts];
 	
 	// denied permission
 	} else {
+		[[Mixpanel sharedInstance] track:@"Address Book - Denied"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Contacts Permissions"
 															message:@"We need your OK to access the the address book."
 														   delegate:nil

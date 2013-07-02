@@ -17,6 +17,7 @@
 @end
 
 @implementation HONChallengeViewCell
+@synthesize delegate = _delegate;
 @synthesize challengeVO = _challengeVO;
 
 + (NSString *)cellReuseIdentifier {
@@ -110,7 +111,7 @@
 
 #pragma mark - Navigation
 - (void)_goLoadMore {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"NEXT_CHALLENGE_BLOCK" object:nil];
+	[self.delegate challengeViewCellLoadMore:self];
 }
 
 

@@ -77,7 +77,7 @@
 "profile_snap" = "%@ photo";
 "profile_snaps" = "%@ photos";
 "profile_vote" = "%@ vote";
-"profile_votes" = "%@ votes";
+"profile_votes" = "%@ likes";
 "profile_point" = "%@ rating";
 "profile_points" = "%@ rating";
 
