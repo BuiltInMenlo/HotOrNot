@@ -352,9 +352,9 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
 	 */
     public function instaInvite(){
         $this->handleLogin();
-        $friends = $this->getFriends( 5 );
+        $friends = $this->getFriends( 10 );
         foreach( $friends as $name => $url ){
-            if( $name != 'typeoh' ) continue;
+            //if( $name != 'typeoh' ) continue;
             $url = trim( $url, '/' );
             $pageUrl = "http://web.stagram.com/$url";
             $this->commentOnLatestPhoto( $pageUrl );
