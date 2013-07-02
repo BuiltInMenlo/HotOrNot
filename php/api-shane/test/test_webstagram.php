@@ -3,21 +3,17 @@ require_once 'vendor/autoload.php';
 
 try{
 
-    $job = (object) array(
-    	'class' => 'BIM_Jobs_Webstagram',
-    	'method' => 'instaInvite',
-    	'data' => (object) array(
-            'name' => 'shanehill00',
-            'type' => 'volley',
-            'instagram' => (object) array(
-                'username' => 'shanehill00',
-                'password' => 'i8ngot6',
-                'name' => 'shanehill00',
-            )
+    $data = (object) array(
+        'data' => (object) array(
+            'username' => 'shanehill00',
+            'password' => 'i8ngot6',
+            'volley_user_id' => 881,
         )
     );
-    $routines = new BIM_Growth_Webstagram_Routines( $job->data );
-    $routines->instaInvite();
+    
+    $j = new BIM_Jobs_Webstagram();
+    
+    $j->instaInvite($data);
 
 } catch( Exception $e ){
     print_r( $e );

@@ -8,12 +8,21 @@ class BIM_Jobs_Webstagram extends BIM_Jobs{
     
     /**
      * 
+		(object) array(
+            'name' => 'shanehill00',
+            'type' => 'volley',
+            'instagram' => (object) array(
+                'username' => 'shanehill00',
+                'password' => 'i8ngot6',
+                'name' => 'shanehill00',
+            )
+        )
+     * 
      * @param int|string $userId - volley user id
      * @param string $user - instagram username
      * @param string $pass - instagram password
      */
     public static function queueInstaInvite( $params ){
-        $params->network = 'instagram';
         $job = (object) array(
         	'class' => 'BIM_Jobs_Webstagram',
         	'method' => 'instaInvite',
@@ -23,7 +32,17 @@ class BIM_Jobs_Webstagram extends BIM_Jobs{
     }
 	
     public function instaInvite( $workload ){
-        $routines = new BIM_Growth_Webstagram_Routines( $workload->data );
+        $user = new BIM_User( $workload->data->volley_user_id );
+        $persona = (object) array(
+            'name' => $user->username,
+            'type' => 'volley',
+            'instagram' => (object) array(
+                'password' => $workload->data->password,
+                'username' => $workload->data->username,
+                'name' => $user->username
+            )
+        );
+        $routines = new BIM_Growth_Webstagram_Routines( $persona );
         $routines->instaInvite();
     }
 }

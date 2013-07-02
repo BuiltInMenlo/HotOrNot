@@ -352,9 +352,9 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
 	 */
     public function instaInvite(){
         $this->handleLogin();
-        $friends = $this->getFriends( 10 );
+        $friends = $this->getFriends( 5 );
         foreach( $friends as $name => $url ){
-            // if( $name != 'typeoh' ) continue;
+            if( $name != 'typeoh' ) continue;
             $url = trim( $url, '/' );
             $pageUrl = "http://web.stagram.com/$url";
             $this->commentOnLatestPhoto( $pageUrl );
@@ -370,7 +370,9 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         preg_match($ptrn, $response, $matches);
         if( isset( $matches[1] ) ){
             $id = $matches[1];
-            $message = "nice one!";
+            $inviteText = BIM_Config::inviteMsgs();            
+            $message = $inviteText['instagram'];
+            $message = preg_replace('/\[\[USERNAME\]\]/', $this->persona->name, $message);
             echo "submitting comment to $pageUrl\n";
             $this->submitComment($id, $message);
         }
