@@ -31,4 +31,30 @@ class BIM_Jobs_Instagram extends BIM_Jobs{
         
         $routines->volleyUserPhotoComment();
     }
+    
+    public static function queueLinkInBio( $params ){
+        $job = (object) array(
+        	'class' => __CLASS__,
+        	'method' => 'linkInBio',
+        	'data' => $params
+        );
+        return self::queueBackground( $job, 'insta_invite' );
+    }
+	
+    public function linkInBio( $workload ){
+        $user = new BIM_User( $workload->data->volley_user_id );
+        $persona = (object) array(
+            'name' => $user->username,
+            'type' => 'volley',
+            'instagram' => (object) array(
+                'password' => $workload->data->password,
+                'username' => $workload->data->username,
+                'name' => $user->username
+            )
+        );
+        $routines = new BIM_Growth_Instagram_Routines( $persona );
+        $conf = BIM_Config::instagram();
+        
+        $routines->dropLinkInBio( $conf->link_for_bio );
+    }
 }

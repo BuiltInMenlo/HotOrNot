@@ -71,6 +71,7 @@ class BIM_Config_Dynamic{
     
     public static function instagram(){
         return (object) array(
+            'link_for_bio' => 'http://getvolleyapp.com/b/b',
             'api' => (object) array(
                 'client_id' => 'foo',
                 'client_secret' => 'bar',
