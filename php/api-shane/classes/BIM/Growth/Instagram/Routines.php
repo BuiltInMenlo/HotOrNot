@@ -383,8 +383,6 @@ external_url	http://www.letsvolley.com
         preg_match($ptrn, $response, $matches);
         $args['external_url'] = !empty( $matches[1] ) ? $matches[1] : '';
         
-        $formActionUrl = $editUrl;
-        
         foreach( $data as $name => $value ){
             $args[ $name ] = $value;
         }
@@ -396,7 +394,7 @@ external_url	http://www.letsvolley.com
         );
 
         //print_r( array( $formActionUrl, $args, $headers  ) );
-        $response = $this->post( $formActionUrl, $args, true, $headers );
+        $response = $this->post( $editUrl, $args, true, $headers );
         //print_r( $response );
     }
 }

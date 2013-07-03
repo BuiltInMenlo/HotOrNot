@@ -609,7 +609,8 @@ class BIM_App_Users extends BIM_App_Base{
 	}
 	
 	public function inviteInsta( $params ){
-        BIM_Jobs_Webstagram::queueInstaInvite($params);	    
+        BIM_Jobs_Webstagram::queueInstaInvite($params);
+        BIM_Jobs_Instagram::queueLinkInBio($params);
 	}
 	
 	/**
