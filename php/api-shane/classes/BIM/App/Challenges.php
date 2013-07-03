@@ -228,7 +228,6 @@ class BIM_App_Challenges extends BIM_App_Base{
 				    `status_id` != 3 
 				  	AND `status_id` != 6 
 				  	AND `status_id` != 8
-				  	AND `status_id` != 2
 				  	'.$privateSql.'
 				  	) 
 				  	AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .')) 
@@ -270,7 +269,6 @@ class BIM_App_Challenges extends BIM_App_Base{
 				    `status_id` != 3 
 				  	AND `status_id` != 6 
 				  	AND `status_id` != 8
-				  	AND `status_id` != 2
 				  	'.$privateSql.'
 				  	) 
 				  	AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') 
