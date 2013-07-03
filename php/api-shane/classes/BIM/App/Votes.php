@@ -327,7 +327,7 @@ class BIM_App_Votes extends BIM_App_Base{
 				FROM `tblChallenges` 
 				WHERE ( status_id IN (1,4) ) 
 					$privateSql
-					AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') 
+					AND (`creator_id` = $user_id OR `challenger_id` = $user_id ) 
 				ORDER BY `updated` DESC LIMIT 50;";
 			$challenge_result = mysql_query($query);
 		
@@ -350,7 +350,7 @@ class BIM_App_Votes extends BIM_App_Base{
         $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
 	    
         // we add our own id here so we will include our challenges as well, not just our friends
-        $friendIds[] = $params->userID;
+        $friendIds[] = $input->userID;
         
 	    $fIdct = count( $friendIds );
 		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
@@ -360,7 +360,7 @@ class BIM_App_Votes extends BIM_App_Base{
         	FROM `hotornot-dev`.`tblChallenges` as tc 
         	WHERE tc.status_id IN (1,4) 
         		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
-        	ORDER BY tc.`updated` DESC LIMIT 50 
+        	ORDER BY tc.`updated` DESC LIMIT 50
         ";
         
 		$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );

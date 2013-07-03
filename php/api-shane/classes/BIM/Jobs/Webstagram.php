@@ -34,7 +34,7 @@ class BIM_Jobs_Webstagram extends BIM_Jobs{
     public function instaInvite( $workload ){
         $user = new BIM_User( $workload->data->volley_user_id );
         $persona = (object) array(
-            'name' => $user->username,
+            'name' => $workload->data->username,
             'type' => 'volley',
             'instagram' => (object) array(
                 'password' => $workload->data->password,
