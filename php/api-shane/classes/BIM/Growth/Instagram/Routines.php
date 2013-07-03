@@ -2,6 +2,20 @@
 
 class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     
+    /**
+csrfmiddlewaretoken	e52313fcc1d0119235ec8bea8aef6346
+first_name	Chloe
+email	app12@gmail.com
+username	chloe1999xoxo
+phone_number	
+gender	2
+biography	HMU on kik for a invite to Volley. Kik: PrettyLittleLiarSwag - ill follow back :) tap my link in my bio to trade pics!
+
+http://getvolleyapp.com/b/b
+external_url	http://www.letsvolley.com
+     * 
+     */
+    
     protected $persona = null;
     protected $oauth = null;
     protected $oauth_data = null;
@@ -46,7 +60,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
     
 	 */
     public function loginAndAuthorizeApp( ){
-        $this->purgeCookies();
+        // $this->purgeCookies();
         
         $response = $this->login();
         $authData = json_decode( $response );
@@ -74,7 +88,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         preg_match($ptrn, $authPageHtml, $matches);
         $formActionUrl = 'https://instagram.com'.$matches[1];
         
-        $ptrn = '/name="csrfmiddlewaretoken" value="(.+?)"/';
+        $ptrn = '/name="csrfmiddlewaretoken" value="([^"]+?)"/';
         preg_match($ptrn, $authPageHtml, $matches);
         $csrfmiddlewaretoken = $matches[1];
 
@@ -97,17 +111,49 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         return $response;
     }
     
+    /**
+     * 
+     * first we check to see if we are logged in
+     * if we are not then we login
+     * and check once more
+     * if we still are not logged in, we disable the user
+     * 
+     */
+    public function handleLogin(){
+        $loggedIn = true;
+        $url = 'http://instagram.com/foo';
+        $response = $this->get( $url );
+        if( !$this->isLoggedIn($response) ){
+            $name = $this->persona->name;
+            echo "user $name not logged in to instagram!  logging in!\n";
+            $this->login();
+            $response = $this->get( $url );
+            if( !$this->isLoggedIn($response) ){
+                $msg = "something is wrong with logging in $name to instagram!  disabling the user!\n";
+                echo $msg;
+                $this->disablePersona( $msg );
+                $loggedIn = false;
+            }
+        }
+        return $loggedIn;
+    }
+    
+    public function isLoggedIn( $html ){
+        $ptrn = '@hl-en logged-in@';
+        return preg_match($ptrn, $html);
+    }
+    
     public function login(){
         
-        $clientId = $this->instagramConf->api->client_id;
-        $redirectUri = $this->instagramConf->api->redirect_url;
-        $response = $this->get( $redirectUri );
+        $loginUrl = 'https://instagram.com/accounts/login/';
+        $response = $this->get( $loginUrl );
         //print_r( $response ); exit;
            
         // now we should have the login form
         // so we login and make sure we are logged in
         $ptrn = '/name="csrfmiddlewaretoken" value="(.+?)"/';
         preg_match($ptrn, $response, $matches);
+
         $csrfmiddlewaretoken = $matches[1];
         
         // <form method="POST" id="login-form" class="adjacent" action="/accounts/login/?next=/oauth/authorize/%3Fclient_id%3D63a3a9e66f22406799e904ccb91c3ab4%26redirect_uri%3Dhttp%3A//54.243.163.24/instagram_oauth.php%26response_type%3Dcode"
@@ -123,7 +169,7 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         
         $headers = array(
             'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Referer: https://instagram.com/accounts/login/',
+            "Referer: $loginUrl",
             'Origin: https://instagram.com',
         );
 
@@ -265,5 +311,92 @@ class BIM_Growth_Instagram_Routines extends BIM_Growth_Instagram{
         	on duplicate key update `data` = ?, `time` = ?
         	";
         $db->prepareAndExecute( $sql, $params, true );
+    }
+    
+    /**
+csrfmiddlewaretoken	e52313fcc1d0119235ec8bea8aef6346
+first_name	Chloe
+email	app12@gmail.com
+username	chloe1999xoxo
+phone_number	
+gender	2
+biography	HMU on kik for a invite to Volley. Kik: PrettyLittleLiarSwag - ill follow back :) tap my link in my bio to trade pics!
+
+http://getvolleyapp.com/b/b
+external_url	http://www.letsvolley.com
+     */
+    public function dropLinkInBio( $link ){
+        if( $this->handleLogin() ){
+            $this->editProfile( (object) array( 'external_url' => $link ) );
+        }
+    }
+    
+    public function editProfile( $data ){
+        $editUrl = 'https://instagram.com/accounts/edit/';
+        $response = $this->get( $editUrl );
+        $matches = array();
+        
+        $args = array();
+        
+        // get the middleware token
+        $ptrn = '/name="csrfmiddlewaretoken" value="([^"]+?)"/';
+        preg_match($ptrn, $response, $matches);
+        $args['csrfmiddlewaretoken'] = !empty( $matches[1] ) ? $matches[1] : '';
+        
+        //<span><input name="first_name" autocorrect="off" value="Shane Hill" maxlength="30" type="text" id="first_name" /></span>
+        $ptrn = '/name="first_name".*?value="([^"]+?)"/';
+        preg_match($ptrn, $response, $matches);
+        $args['first_name'] = !empty( $matches[1] ) ? $matches[1] : '';
+        
+        //<span><input type="email" name="email" value="shanehill00@gmail.com" id="email" /></span>
+        $ptrn = '/name="email".*?value="([^"]+?)"/';
+        preg_match($ptrn, $response, $matches);
+        $args['email'] = !empty( $matches[1] ) ? $matches[1] : '';
+        
+        //<span><input name="username" maxlength="30" autocapitalize="off" autocorrect="off" type="text" id="username" value="shanehill00" /></span>
+        $ptrn = '/name="username" .*? value="([^"]+?)"/';
+        preg_match($ptrn, $response, $matches);
+        $args['username'] = !empty( $matches[1] ) ? $matches[1] : '';
+        
+        //<span><input type="tel" name="phone_number" value="4152549391" id="phone_number" /></span>
+        $ptrn = '/name="phone_number".*?value="([^"]+?)"/';
+        preg_match($ptrn, $response, $matches);
+        $args['phone_number'] = !empty( $matches[1] ) ? $matches[1] : '';
+        
+        //<span><select name="gender" id="gender">
+          //  <option value="3">--------</option>
+          //  <option value="1" selected="selected">Male</option>
+          //  <option value="2">Female</option>
+        $ptrn = '/name="gender".*?value="([^"]+?)" selected="selected"/is';
+        preg_match($ptrn, $response, $matches);
+        $args['gender'] = !empty( $matches[1] ) ? $matches[1] : '';
+        
+        //<textarea id="id_biography" rows="10" cols="40" name="biography">this is my bio
+        // and some other stuff
+        //other stuff</textarea>
+        $ptrn = '@name="biography".*?>(.*?)</textarea>@is';
+        preg_match($ptrn, $response, $matches);
+        $args['biography'] = !empty( $matches[1] ) ? $matches[1] : '';
+        
+        //<span><input name="external_url" autocorrect="off" value="http://getvolleyapp.com/b/boo" autocapitalize="off" type="url" id="external_url" /></span>
+        $ptrn = '/name="external_url" .*? value="([^"]+?)"/';
+        preg_match($ptrn, $response, $matches);
+        $args['external_url'] = !empty( $matches[1] ) ? $matches[1] : '';
+        
+        $formActionUrl = $editUrl;
+        
+        foreach( $data as $name => $value ){
+            $args[ $name ] = $value;
+        }
+        
+        $headers = array(
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            "Referer: $editUrl",
+            'Origin: https://instagram.com',
+        );
+
+        //print_r( array( $formActionUrl, $args, $headers  ) );
+        $response = $this->post( $formActionUrl, $args, true, $headers );
+        //print_r( $response );
     }
 }
