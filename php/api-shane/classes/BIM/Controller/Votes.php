@@ -44,7 +44,9 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     
     public function getChallengesForSubjectName(){
 		if (isset($_POST['subjectName'])){
-			return $this->votes->getChallengesForSubjectName($_POST['subjectName']);
+		    $isPrivate = !empty( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N';
+		    $votes = new BIM_App_Votes();
+		    return $votes->getChallengesForSubjectName($_POST['subjectName'], $isPrivate);
 		}
 		return array();
     }

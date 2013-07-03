@@ -25,7 +25,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function submitChallengeWithChallenger(){
 		if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL']) && isset($_POST['challengerID'])){
-		    $isPrivate = isset( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N';
+		    $isPrivate = !empty( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N';
 			return $this->challenges->submitChallengeWithChallenger($_POST['userID'], $_POST['subject'], $_POST['imgURL'], $_POST['challengerID'], $isPrivate );
 		}
     }
@@ -132,7 +132,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
             $usernames = explode('|', $_POST['usernames'] );
             foreach( $usernames as $username ){
                 $uv = null;
-                $isPrivate = isset( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N' ;
+                $isPrivate = !empty( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N' ;
     		    $func = array( __CLASS__, 'submitChallengeWithUsername' );
     	        if( $this->useQueue( $func ) ){
         			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $_POST['userID'], $_POST['subject'], $_POST['imgURL'], $username, $isPrivate );
@@ -150,7 +150,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         $input = $_POST ? $_POST : $_GET;
         $uv = null;
         if (isset($input['userID']) && isset($input['subject']) && isset($input['imgURL']) && isset($input['username'])){
-		    $isPrivate = isset( $input['isPrivate'] ) ? $input['isPrivate'] : 'N' ;
+		    $isPrivate = !empty( $input['isPrivate'] ) ? $input['isPrivate'] : 'N' ;
 		    $thisFunc = array( __CLASS__, __FUNCTION__ );
 	        if( $this->useQueue( $thisFunc ) ){
     			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate );

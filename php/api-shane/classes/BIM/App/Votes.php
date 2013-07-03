@@ -271,16 +271,21 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * @param $subject_name The name of the subject (string)
 	 * @return The list of challenges (array)
 	**/
-	public function getChallengesForSubjectName($subject_name) {
+	public function getChallengesForSubjectName($subject_name, $private = 'N' ) {
 		$this->dbConnect();
 	    $challenge_arr = array();
-		
+	    
+	    $privateSql = ' AND `is_private` != "Y" ';
+	    if( $private == 'Y' ){
+	        $privateSql = ' AND `is_private` = "Y" ';
+	    }
+	    
 		// get the subject id
 		$query = 'SELECT `id` FROM `tblChallengeSubjects` WHERE `title` = "'. $subject_name .'";';
 		$subject_id = mysql_fetch_object(mysql_query($query))->id;
 		
 		// get challenges based on subject
-		$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `updated` DESC;';
+		$query = "SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) $privateSql AND `subject_id` = $subject_id  ORDER BY `updated` DESC;";
 		$result = mysql_query($query);
 		
 		// loop thru challenges
@@ -395,7 +400,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	    // get challenges with these two users
 		$query = "
 			SELECT `id` FROM `tblChallenges` 
-			WHERE (`status_id` NOT IN (3,6,8) ) 
+			WHERE (`status_id` IN (1,2,4) ) 
 				$privateSql
 				AND ( (`creator_id` = $user_id AND `challenger_id` = $challenger_id ) 
 					OR (`creator_id` = $challenger_id AND `challenger_id` = $user_id ) )
