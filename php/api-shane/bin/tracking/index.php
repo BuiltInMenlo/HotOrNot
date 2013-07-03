@@ -13,6 +13,8 @@ if( $ct > 1 ){
     $idx = $ct - 1;
     $params['persona_name'] = $parts[$idx];
     
+    $params['referer'] = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+    
     $app = new BIM_App_G();
     $app->trackClick($params);
     
