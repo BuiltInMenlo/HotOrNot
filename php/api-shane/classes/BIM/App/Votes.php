@@ -395,7 +395,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	    // get challenges with these two users
 		$query = "
 			SELECT `id` FROM `tblChallenges` 
-			WHERE (`status_id` NOT IN (2,3,6,8) ) 
+			WHERE (`status_id` NOT IN (3,6,8) ) 
 				$privateSql
 				AND ( (`creator_id` = $user_id AND `challenger_id` = $challenger_id ) 
 					OR (`creator_id` = $challenger_id AND `challenger_id` = $user_id ) )
