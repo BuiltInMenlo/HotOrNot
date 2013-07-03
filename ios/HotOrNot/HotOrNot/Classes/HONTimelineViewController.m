@@ -39,6 +39,7 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic) BOOL isPushView;
+@property (nonatomic) BOOL isPublic;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIImageView *emptySetImageView;
@@ -50,6 +51,7 @@
 - (id)initWithPublic {
 	if ((self = [super init])) {
 		_isPushView = NO;
+		_isPublic = YES;
 		_timelineType = HONTimelineTypePublic;
 		
 		[self _registerNotifications];
@@ -61,6 +63,7 @@
 - (id)initWithFriends {
 	if ((self = [super init])) {
 		_isPushView = NO;
+		_isPublic = YES;
 		_timelineType = HONTimelineTypeFriends;
 		
 		[self _registerNotifications];
@@ -72,6 +75,7 @@
 - (id)initWithSubject:(NSString *)subjectName {
 	if ((self = [super init])) {
 		_isPushView = YES;
+		_isPublic = YES;
 		_subjectName = subjectName;
 		_timelineType = HONTimelineTypeSubject;
 		
@@ -85,6 +89,7 @@
 - (id)initWithUsername:(NSString *)username {
 	if ((self = [super init])) {
 		_isPushView = YES;
+		_isPublic = YES;
 		_timelineType = HONTimelineTypeSingleUser;
 		_username = username;
 		
@@ -94,9 +99,10 @@
 	return (self);
 }
 
-- (id)initWithUserID:(int)userID andOpponentID:(int)opponentID {
+- (id)initWithUserID:(int)userID andOpponentID:(int)opponentID asPublic:(BOOL)isPublic {
 	if ((self = [super init])) {
 		_isPushView = YES;
+		_isPublic = isPublic;
 		_timelineType = HONTimelineTypeOpponents;
 		_challengerDict = [NSDictionary dictionaryWithObjectsAndKeys:
 								 [NSNumber numberWithInt:userID], @"user1",
@@ -135,6 +141,7 @@
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[params setObject:[NSString stringWithFormat:@"%d", _timelineType] forKey:@"action"];
+	[params setObject:(_isPublic) ? @"N" : @"Y" forKey:@"isPrivate"];
 	
 	// all public
 	if (_timelineType == HONTimelineTypePublic) {
@@ -156,7 +163,7 @@
 	} else if (_timelineType == HONTimelineTypeFriends) {
 	}
 	
-	//NSLog(@"PARAMS:[%@]", params);
+	NSLog(@"PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -262,11 +269,8 @@
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-			
-			NSMutableArray *friends = [[HONAppDelegate friendsList] mutableCopy];
-			[friends addObject:result];
-			[HONAppDelegate writeFriendsList:[friends copy]];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			[HONAppDelegate addFriendToList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -333,7 +337,7 @@
 	_emptySetImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
 	_emptySetImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"noFriends-568h@2x" : @"noFriends"];
 	_emptySetImageView.userInteractionEnabled = YES;
-	_emptySetImageView.hidden = YES;//([[HONAppDelegate friendsList] count] > 0 || _isPushView);
+	_emptySetImageView.hidden = ([[HONAppDelegate friendsList] count] > 0 || _isPushView);
 	[self.view addSubview:_emptySetImageView];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -358,13 +362,13 @@
 
 	
 	
-	//if (!_isPushView) {
+	if (!_isPushView) {
 #if __ALWAYS_VERIFY__ == 1
 		[self _goMobileSignup];
 #endif
 	
-//		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
-//			[self _goMobileSignup];
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
+			[self _goMobileSignup];
 			
 		if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
 #if __ALWAYS_REGISTER__ == 1
@@ -375,7 +379,7 @@
 		
 		} else
 			[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
-	//}
+	}
 }
 
 - (void)viewDidLoad {

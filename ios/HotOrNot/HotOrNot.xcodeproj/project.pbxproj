@@ -44,9 +44,6 @@
 		4C0C414E162C9761007F0DA3 /* icon_57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414D162C9761007F0DA3 /* icon_57x57.png */; };
 		4C0C4150162C9769007F0DA3 /* icon_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0C414F162C9769007F0DA3 /* icon_114x114.png */; };
 		4C0CA3F81751521D00DD0652 /* HONInviteNetworkViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C0CA3F71751521D00DD0652 /* HONInviteNetworkViewCell.m */; };
-		4C148F4A1781323F00EBD245 /* instagramText-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C148F471781323F00EBD245 /* instagramText-568h@2x.png */; };
-		4C148F4B1781323F00EBD245 /* instagramText.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C148F481781323F00EBD245 /* instagramText.png */; };
-		4C148F4C1781323F00EBD245 /* instagramText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C148F491781323F00EBD245 /* instagramText@2x.png */; };
 		4C148F511781401D00EBD245 /* privateVolley_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C148F4D1781401D00EBD245 /* privateVolley_Active.png */; };
 		4C148F521781401D00EBD245 /* privateVolley_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C148F4E1781401D00EBD245 /* privateVolley_Active@2x.png */; };
 		4C148F531781401D00EBD245 /* privateVolley_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C148F4F1781401D00EBD245 /* privateVolley_nonActive.png */; };
@@ -130,6 +127,11 @@
 		4C3C61F117828CAA00A7E983 /* noFriends@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3C61EE17828CAA00A7E983 /* noFriends@2x.png */; };
 		4C3C61F31782AF8A00A7E983 /* firstRunCopy_username-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3C61F21782AF8A00A7E983 /* firstRunCopy_username-568h@2x.png */; };
 		4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */; };
+		4C3E53C91783408C0065D1AA /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3E53C81783408C0065D1AA /* FacebookSDK.framework */; };
+		4C3E53CE17837F3B0065D1AA /* HONFriendViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C3E53CD17837F3B0065D1AA /* HONFriendViewCell.m */; };
+		4C3E53D2178407420065D1AA /* instagramLoginText-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E53CF178407420065D1AA /* instagramLoginText-568h@2x.png */; };
+		4C3E53D3178407420065D1AA /* instagramLoginText.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E53D0178407420065D1AA /* instagramLoginText.png */; };
+		4C3E53D4178407420065D1AA /* instagramLoginText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E53D1178407420065D1AA /* instagramLoginText@2x.png */; };
 		4C3E884B16A3B2BD003301AF /* pokeButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E884716A3B2BD003301AF /* pokeButton_Active.png */; };
 		4C3E884C16A3B2BD003301AF /* pokeButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E884816A3B2BD003301AF /* pokeButton_Active@2x.png */; };
 		4C3E884D16A3B2BD003301AF /* pokeButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C3E884916A3B2BD003301AF /* pokeButton_nonActive.png */; };
@@ -295,7 +297,7 @@
 		4C689382171A42CB005F8D0A /* inboundArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C689380171A42CB005F8D0A /* inboundArrow.png */; };
 		4C689383171A42CB005F8D0A /* inboundArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C689381171A42CB005F8D0A /* inboundArrow@2x.png */; };
 		4C6A3E1517669ADC00B6CD4D /* HONAddFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1417669ADC00B6CD4D /* HONAddFriendsViewController.m */; };
-		4C6A3E1817669D7400B6CD4D /* HONFollowFriendViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1717669D7400B6CD4D /* HONFollowFriendViewCell.m */; };
+		4C6A3E1817669D7400B6CD4D /* HONRecentOpponentViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1717669D7400B6CD4D /* HONRecentOpponentViewCell.m */; };
 		4C6A3E1B1766AD3600B6CD4D /* HONAddContactViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1A1766AD3500B6CD4D /* HONAddContactViewCell.m */; };
 		4C6A3E201766B46200B6CD4D /* inviteAll_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1C1766B46200B6CD4D /* inviteAll_Active.png */; };
 		4C6A3E211766B46200B6CD4D /* inviteAll_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C6A3E1D1766B46200B6CD4D /* inviteAll_Active@2x.png */; };
@@ -417,8 +419,6 @@
 		4CA485F716EE870000DE0F24 /* genericRowBackground_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485F316EE870000DE0F24 /* genericRowBackground_Active@2x.png */; };
 		4CA485F816EE870000DE0F24 /* genericRowBackground_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485F416EE870000DE0F24 /* genericRowBackground_nonActive.png */; };
 		4CA485F916EE870000DE0F24 /* genericRowBackground_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CA485F516EE870000DE0F24 /* genericRowBackground_nonActive@2x.png */; };
-		4CA6BE40174ACCD900C57CF2 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA6BE3F174ACCD900C57CF2 /* FacebookSDK.framework */; };
-		4CA6BE42174ACD2600C57CF2 /* FacebookSDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 4CA6BE41174ACD2600C57CF2 /* FacebookSDKResources.bundle */; };
 		4CA6BE46174AF81B00C57CF2 /* kikapilib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA6BE45174AF81B00C57CF2 /* kikapilib.a */; };
 		4CA8D9F2161392C600B7B13C /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA8D9F1161392C600B7B13C /* Social.framework */; };
 		4CA8D9F41613932500B7B13C /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CA8D9F31613932500B7B13C /* AdSupport.framework */; };
@@ -655,9 +655,6 @@
 		4C0C414F162C9769007F0DA3 /* icon_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_114x114.png; sourceTree = "<group>"; };
 		4C0CA3F61751521D00DD0652 /* HONInviteNetworkViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONInviteNetworkViewCell.h; sourceTree = "<group>"; };
 		4C0CA3F71751521D00DD0652 /* HONInviteNetworkViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONInviteNetworkViewCell.m; sourceTree = "<group>"; };
-		4C148F471781323F00EBD245 /* instagramText-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "instagramText-568h@2x.png"; sourceTree = "<group>"; };
-		4C148F481781323F00EBD245 /* instagramText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = instagramText.png; sourceTree = "<group>"; };
-		4C148F491781323F00EBD245 /* instagramText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "instagramText@2x.png"; sourceTree = "<group>"; };
 		4C148F4D1781401D00EBD245 /* privateVolley_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = privateVolley_Active.png; sourceTree = "<group>"; };
 		4C148F4E1781401D00EBD245 /* privateVolley_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "privateVolley_Active@2x.png"; sourceTree = "<group>"; };
 		4C148F4F1781401D00EBD245 /* privateVolley_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = privateVolley_nonActive.png; sourceTree = "<group>"; };
@@ -832,6 +829,12 @@
 		4C3C61F21782AF8A00A7E983 /* firstRunCopy_username-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "firstRunCopy_username-568h@2x.png"; sourceTree = "<group>"; };
 		4C3D7E90176D3B8400AE07B3 /* HONCreateChallengePreviewView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateChallengePreviewView.h; sourceTree = "<group>"; };
 		4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateChallengePreviewView.m; sourceTree = "<group>"; };
+		4C3E53C81783408C0065D1AA /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
+		4C3E53CC17837F3B0065D1AA /* HONFriendViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFriendViewCell.h; sourceTree = "<group>"; };
+		4C3E53CD17837F3B0065D1AA /* HONFriendViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFriendViewCell.m; sourceTree = "<group>"; };
+		4C3E53CF178407420065D1AA /* instagramLoginText-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "instagramLoginText-568h@2x.png"; sourceTree = "<group>"; };
+		4C3E53D0178407420065D1AA /* instagramLoginText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = instagramLoginText.png; sourceTree = "<group>"; };
+		4C3E53D1178407420065D1AA /* instagramLoginText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "instagramLoginText@2x.png"; sourceTree = "<group>"; };
 		4C3E884716A3B2BD003301AF /* pokeButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pokeButton_Active.png; sourceTree = "<group>"; };
 		4C3E884816A3B2BD003301AF /* pokeButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pokeButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C3E884916A3B2BD003301AF /* pokeButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pokeButton_nonActive.png; sourceTree = "<group>"; };
@@ -1131,8 +1134,8 @@
 		4C689381171A42CB005F8D0A /* inboundArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "inboundArrow@2x.png"; sourceTree = "<group>"; };
 		4C6A3E1317669ADC00B6CD4D /* HONAddFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAddFriendsViewController.h; sourceTree = "<group>"; };
 		4C6A3E1417669ADC00B6CD4D /* HONAddFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAddFriendsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		4C6A3E1617669D7400B6CD4D /* HONFollowFriendViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONFollowFriendViewCell.h; sourceTree = "<group>"; };
-		4C6A3E1717669D7400B6CD4D /* HONFollowFriendViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONFollowFriendViewCell.m; sourceTree = "<group>"; };
+		4C6A3E1617669D7400B6CD4D /* HONRecentOpponentViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRecentOpponentViewCell.h; sourceTree = "<group>"; };
+		4C6A3E1717669D7400B6CD4D /* HONRecentOpponentViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRecentOpponentViewCell.m; sourceTree = "<group>"; };
 		4C6A3E191766AD3500B6CD4D /* HONAddContactViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAddContactViewCell.h; sourceTree = "<group>"; };
 		4C6A3E1A1766AD3500B6CD4D /* HONAddContactViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAddContactViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C6A3E1C1766B46200B6CD4D /* inviteAll_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = inviteAll_Active.png; sourceTree = "<group>"; };
@@ -1391,8 +1394,6 @@
 		4CA485F316EE870000DE0F24 /* genericRowBackground_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "genericRowBackground_Active@2x.png"; sourceTree = "<group>"; };
 		4CA485F416EE870000DE0F24 /* genericRowBackground_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = genericRowBackground_nonActive.png; sourceTree = "<group>"; };
 		4CA485F516EE870000DE0F24 /* genericRowBackground_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "genericRowBackground_nonActive@2x.png"; sourceTree = "<group>"; };
-		4CA6BE3F174ACCD900C57CF2 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
-		4CA6BE41174ACD2600C57CF2 /* FacebookSDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = FacebookSDKResources.bundle; path = FacebookSDK.framework/Versions/A/Resources/FacebookSDKResources.bundle; sourceTree = "<group>"; };
 		4CA6BE44174AF81B00C57CF2 /* KikAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KikAPI.h; sourceTree = "<group>"; };
 		4CA6BE45174AF81B00C57CF2 /* kikapilib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = kikapilib.a; sourceTree = "<group>"; };
 		4CA8D9F1161392C600B7B13C /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
@@ -1669,6 +1670,7 @@
 				4C62675A15F96FA800AA7FCE /* MapKit.framework in Frameworks */,
 				4C62675B15F96FA800AA7FCE /* MessageUI.framework in Frameworks */,
 				4C62675C15F96FA800AA7FCE /* MobileCoreServices.framework in Frameworks */,
+				4C3E53C91783408C0065D1AA /* FacebookSDK.framework in Frameworks */,
 				4C62675D15F96FA800AA7FCE /* Security.framework in Frameworks */,
 				4C62675E15F96FA800AA7FCE /* StoreKit.framework in Frameworks */,
 				4C62675F15F96FA800AA7FCE /* SystemConfiguration.framework in Frameworks */,
@@ -1678,7 +1680,6 @@
 				4C6266B415F96E2900AA7FCE /* libUAirship-1.3.2.a in Frameworks */,
 				4C6266B515F96E2900AA7FCE /* libUAirshipPush-1.3.2.a in Frameworks */,
 				4C62673615F96E2900AA7FCE /* AWSiOSSDK.framework in Frameworks */,
-				4CA6BE40174ACCD900C57CF2 /* FacebookSDK.framework in Frameworks */,
 				4CA6BE46174AF81B00C57CF2 /* kikapilib.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1730,9 +1731,9 @@
 		4C148F461781322500EBD245 /* Instagram */ = {
 			isa = PBXGroup;
 			children = (
-				4C148F471781323F00EBD245 /* instagramText-568h@2x.png */,
-				4C148F481781323F00EBD245 /* instagramText.png */,
-				4C148F491781323F00EBD245 /* instagramText@2x.png */,
+				4C3E53CF178407420065D1AA /* instagramLoginText-568h@2x.png */,
+				4C3E53D0178407420065D1AA /* instagramLoginText.png */,
+				4C3E53D1178407420065D1AA /* instagramLoginText@2x.png */,
 			);
 			name = Instagram;
 			sourceTree = "<group>";
@@ -1992,8 +1993,10 @@
 		4C45FF4516DECE40002F1080 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				4C6A3E1617669D7400B6CD4D /* HONFollowFriendViewCell.h */,
-				4C6A3E1717669D7400B6CD4D /* HONFollowFriendViewCell.m */,
+				4C3E53CC17837F3B0065D1AA /* HONFriendViewCell.h */,
+				4C3E53CD17837F3B0065D1AA /* HONFriendViewCell.m */,
+				4C6A3E1617669D7400B6CD4D /* HONRecentOpponentViewCell.h */,
+				4C6A3E1717669D7400B6CD4D /* HONRecentOpponentViewCell.m */,
 				4C6A3E191766AD3500B6CD4D /* HONAddContactViewCell.h */,
 				4C6A3E1A1766AD3500B6CD4D /* HONAddContactViewCell.m */,
 				4C687DC116D9445C001A1B22 /* HONAlertPopOverView.h */,
@@ -2473,8 +2476,7 @@
 		4C6266AE15F96E2900AA7FCE /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				4CA6BE41174ACD2600C57CF2 /* FacebookSDKResources.bundle */,
-				4CA6BE3F174ACCD900C57CF2 /* FacebookSDK.framework */,
+				4C3E53C81783408C0065D1AA /* FacebookSDK.framework */,
 				4C6266AF15F96E2900AA7FCE /* AWSiOSSDK.framework */,
 			);
 			path = "Other Frameworks";
@@ -3255,6 +3257,7 @@
 				4C0C40CF162BD261007F0DA3 /* header@2x.png in Resources */,
 				4C3BD5A51725FB1D00C4A840 /* loadMoreButton_Active.png in Resources */,
 				4C3BD5A81725FB2900C4A840 /* loadMoreButton_Active@2x.png in Resources */,
+				4C3E53D3178407420065D1AA /* instagramLoginText.png in Resources */,
 				4C3BD5AB1725FB2E00C4A840 /* loadMoreButton_nonActive.png in Resources */,
 				4C3BD5AE1725FB3200C4A840 /* loadMoreButton_nonActive@2x.png in Resources */,
 				4C0C40FD162BEBAE007F0DA3 /* moreIcon_nonActive.png in Resources */,
@@ -3270,6 +3273,7 @@
 				4CF07C141686756C00E0FBC1 /* fpo_upvote.mp3 in Resources */,
 				4C19BF0D168E811E006D241E /* chevron.png in Resources */,
 				4C19BF0E168E811E006D241E /* chevron@2x.png in Resources */,
+				4C3E53D2178407420065D1AA /* instagramLoginText-568h@2x.png in Resources */,
 				4CE61E241696733900F260C9 /* checkIcon.png in Resources */,
 				4CE61E251696733900F260C9 /* checkIcon@2x.png in Resources */,
 				4CA944191698FA3300507A08 /* rowGray_Active.png in Resources */,
@@ -3351,7 +3355,6 @@
 				4C6C05F9171CDC5500B6E3C6 /* tabMenu_profileButton_Tapped@2x.png in Resources */,
 				4C351D0B16FE7D4000BD9498 /* cameraViewShutter.png in Resources */,
 				4C351D0C16FE7D4000BD9498 /* cameraViewShutter@2x.png in Resources */,
-				4C148F4A1781323F00EBD245 /* instagramText-568h@2x.png in Resources */,
 				4C351D1116FE8E4500BD9498 /* overlayMoreButton_Active.png in Resources */,
 				4C351D1216FE8E4500BD9498 /* overlayMoreButton_Active@2x.png in Resources */,
 				4C351D1316FE8E4500BD9498 /* overlayMoreButton_nonActive.png in Resources */,
@@ -3370,7 +3373,6 @@
 				4C068AA3170267850019428A /* commentsInputField_Active.jpg in Resources */,
 				4C068AA4170267850019428A /* commentsInputField_Active@2x.jpg in Resources */,
 				4C068AA5170267850019428A /* commentsInputField_nonActive.jpg in Resources */,
-				4C148F4C1781323F00EBD245 /* instagramText@2x.png in Resources */,
 				4C068AA6170267850019428A /* commentsInputField_nonActive@2x.jpg in Resources */,
 				4C068AAB17026C410019428A /* sendButton_Active.png in Resources */,
 				4C3C61EA1782261D00A7E983 /* cameraRoll_nonActive.png in Resources */,
@@ -3424,7 +3426,6 @@
 				4C0761E3173B024A006C3836 /* plusButton_nonActive@2x.png in Resources */,
 				4C7732D91741965100A86ED1 /* tableHeaderBackground.png in Resources */,
 				4C7732DA1741965100A86ED1 /* tableHeaderBackground@2x.png in Resources */,
-				4CA6BE42174ACD2600C57CF2 /* FacebookSDKResources.bundle in Resources */,
 				4CD9387017600B5A000FCC16 /* icon_Email.png in Resources */,
 				4CD9387117600B5A000FCC16 /* icon_Email@2x.png in Resources */,
 				4CD9387217600B5A000FCC16 /* icon_Facebook.png in Resources */,
@@ -3568,6 +3569,7 @@
 				4C43C8F4177295A800983BE8 /* modalHeaderBackground@2x.png in Resources */,
 				4C43C8F91772991200983BE8 /* backButtonArrow_Active.png in Resources */,
 				4C43C8FA1772991200983BE8 /* backButtonArrow_Active@2x.png in Resources */,
+				4C3E53D4178407420065D1AA /* instagramLoginText@2x.png in Resources */,
 				4C43C8FB1772991200983BE8 /* backButtonArrow_nonActive.png in Resources */,
 				4C43C8FC1772991200983BE8 /* backButtonArrow_nonActive@2x.png in Resources */,
 				4C43C901177299A000983BE8 /* publicButton_nonSelected_Active.png in Resources */,
@@ -3679,7 +3681,6 @@
 				4C15B901177FADC40037DCD7 /* addFriendPlus_Active.png in Resources */,
 				4C6AF89117821295002F97C7 /* doneGreenButton_Active.png in Resources */,
 				4C15B902177FADC40037DCD7 /* addFriendPlus_Active@2x.png in Resources */,
-				4C148F4B1781323F00EBD245 /* instagramText.png in Resources */,
 				4C15B903177FADC40037DCD7 /* addFriendPlus_nonActive.png in Resources */,
 				4C15B904177FADC40037DCD7 /* addFriendPlus_nonActive@2x.png in Resources */,
 				4C15B907177FAF150037DCD7 /* typeOverlay.png in Resources */,
@@ -3723,6 +3724,7 @@
 				4C32B99F15FA75BC0023A0EE /* HONChallengeVO.m in Sources */,
 				4C32B9A215FAB3AE0023A0EE /* HONSettingsViewController.m in Sources */,
 				4C32B9A815FABBE80023A0EE /* HONTimelineItemViewCell.m in Sources */,
+				4C3E53CE17837F3B0065D1AA /* HONFriendViewCell.m in Sources */,
 				4C41097B15FD7DD300E34F4E /* HONImagePickerViewController.m in Sources */,
 				B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */,
 				B3BE3EAE1608E43800E7E2B7 /* HONSubjectVO.m in Sources */,
@@ -3789,7 +3791,7 @@
 				4C6257F71753E52B006AD1F7 /* HONInviteCelebViewCell.m in Sources */,
 				4C6257FA1753F68C006AD1F7 /* HONInviteCelebViewController.m in Sources */,
 				4C6A3E1517669ADC00B6CD4D /* HONAddFriendsViewController.m in Sources */,
-				4C6A3E1817669D7400B6CD4D /* HONFollowFriendViewCell.m in Sources */,
+				4C6A3E1817669D7400B6CD4D /* HONRecentOpponentViewCell.m in Sources */,
 				4C6A3E1B1766AD3600B6CD4D /* HONAddContactViewCell.m in Sources */,
 				4CB30A501769067200D3E0C8 /* HONCreateChallengeOptionsView.m in Sources */,
 				4CB30A5317693F6200D3E0C8 /* HONEmptyChallengeViewCell.m in Sources */,

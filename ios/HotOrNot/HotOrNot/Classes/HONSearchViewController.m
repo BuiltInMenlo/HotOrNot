@@ -354,7 +354,7 @@
 	_toggleImageView.alpha = 0.0;
 	//[self.view addSubview:_toggleImageView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 380.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 215.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;

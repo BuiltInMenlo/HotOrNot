@@ -37,10 +37,9 @@
 // json config url
 #if __DEV_CFG_JSON___ == 1
 NSString * const kConfigURL = @"http://107.20.161.159/hotornot";
-//NSString * const kConfigURL = @"http://54.243.163.24/hotornot";
 NSString * const kConfigJSON = @"boot-dev.json";
 #else
-NSString * const kConfigURL = @"http://discover.getassembly.com/hotornot";
+NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
 NSString * const kConfigJSON = @"boot.json";
 #endif
 
@@ -49,7 +48,7 @@ NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 //NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
 //NSString * const kMixPanelToken = @"d93069ad5b368c367c3adc020cce8021"; // Focus Group I
 
-
+NSString * const kFacebookAppID = @"600550136636754";
 
 //api endpts
 NSString * const kAPIChallenges = @"Challenges.php";
@@ -127,7 +126,10 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"service_url"]);
 }
 + (NSDictionary *)s3Credentials {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"s3_creds"]);
+	return ([NSDictionary dictionaryWithObjectsAndKeys:@"AKIAJVS6Y36AQCMRWLQQ", @"key",
+			 @"48u0XmxUAYpt2KTkBRqiDniJXy+hnLwmZgYqUGNm", @"secret", nil]);
+	
+	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"s3_creds"]);
 }
 
 + (BOOL)isInviteCodeValid:(NSString *)code {
@@ -261,6 +263,16 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	}
 	
 	return ([NSArray arrayWithArray:[friends sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
+}
+
++ (void)addFriendToList:(NSDictionary *)friend {
+	NSMutableDictionary *dict = [[HONAppDelegate infoForUser] mutableCopy];
+	NSMutableArray *friends = [[dict objectForKey:@"friends"] mutableCopy];
+	
+	[friends addObject:friend];
+	[dict setObject:friends forKey:@"friends"];
+	
+	[HONAppDelegate writeUserInfo:[dict copy]];
 }
 
 + (void)writeFriendsList:(NSArray *)friends {
@@ -753,7 +765,9 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-	[FBAppCall handleDidBecomeActive];
+	[FBSettings publishInstall:@"600550136636754"];
+	
+//	[FBAppCall handleDidBecomeActive];
 	
 	if (_isFromBackground && [HONAppDelegate hasNetwork]) {
 		[[Mixpanel sharedInstance] track:@"App Leaving Background"
@@ -766,7 +780,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 		
 		} else {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
-			[self _retrieveConfigJSON];
+			//[self _retrieveConfigJSON];
 			
 			NSString *notificationName;
 			switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
@@ -787,6 +801,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 					break;
 			}
 			
+			NSLog(@"REFRESHING:[%@]", notificationName);
 			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
 		}
 	}
@@ -934,9 +949,9 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-																			  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
-																			  [[result objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
+//			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+//																			  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
+//																			  [[result objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],

@@ -14,7 +14,7 @@
 #import "HONInstagramLoginViewController.h"
 
 
-@interface HONInstagramLoginViewController () <UITextFieldDelegate>
+@interface HONInstagramLoginViewController () <UITextFieldDelegate, UIAlertViewDelegate>
 @property (nonatomic, retain) UITextField *usernameTextField;
 @property (nonatomic, retain) UITextField *passwordTextField;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -77,13 +77,6 @@
 				_progressHUD = nil;
 			}
 			
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Success!"
-																message:@"We will let your Instagram friends know you're on Volley"
-															   delegate:nil
-													  cancelButtonTitle:@"OK"
-													  otherButtonTitles:nil];
-			[alertView show];
-			
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 		}
@@ -104,14 +97,15 @@
 }
 
 
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
 	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	
 	_isClosing = NO;
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 54.0 : 19.0, 244.0, ([HONAppDelegate isRetina5]) ? 99.0 : 87.0)];
-	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"instagramText-568h@2x" : @"instagramText"];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina5]) ? 54.0 : 19.0, 231.0, ([HONAppDelegate isRetina5]) ? 99.0 : 89.0)];
+	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"instagramLoginText-568h@2x" : @"instagramLoginText"];
 	[self.view addSubview:captionImageView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -129,7 +123,7 @@
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_usernameTextField setReturnKeyType:UIReturnKeyNext];
+	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
 	[_usernameTextField setTextColor:[HONAppDelegate honGrey710Color]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
@@ -149,7 +143,7 @@
 	[_passwordTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_passwordTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_passwordTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-	[_passwordTextField setReturnKeyType:UIReturnKeyGo];
+	[_passwordTextField setReturnKeyType:UIReturnKeyDone];
 	[_passwordTextField setTextColor:[HONAppDelegate honGrey710Color]];
 	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
@@ -203,6 +197,15 @@
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)_goConfirm {
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Great!"
+														message:@"Do you wish to share Volley with your Instagram friends & change your link in bio so they can get the app?"
+													   delegate:self
+											  cancelButtonTitle:@"OK"
+											  otherButtonTitles:@"Cancel", nil];
+	[alertView show];
+}
+
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
@@ -235,7 +238,7 @@
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  _usernameTextField.text, @"username", nil]];
 				
-				[self _submitLogin];
+				[self _goConfirm];
 			}
 		}
 	}
@@ -249,6 +252,26 @@
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
 	NSLog(@"_onTextEditingDidEndOnExit");
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	switch(buttonIndex) {
+		case 0:
+			[[Mixpanel sharedInstance] track:@"Instagram Login - Confirm"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			[self _submitLogin];
+			break;
+			
+		case 1:
+			[[Mixpanel sharedInstance] track:@"Instagram Login - Cancel Confirm"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			break;
+	}
 }
 
 @end

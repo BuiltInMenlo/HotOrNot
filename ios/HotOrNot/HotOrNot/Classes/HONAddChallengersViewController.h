@@ -10,7 +10,7 @@
 
 @protocol HONAddChallengersDelegate;
 @interface HONAddChallengersViewController : UIViewController
-- (id)initWithFollowersSelected:(NSArray *)followers contactsSelected:(NSArray *)contacts;
+- (id)initRecentsSelected:(NSArray *)followers friendsSelected:(NSArray *)friends contactsSelected:(NSArray *)contacts;
 
 @property(nonatomic, assign) id <HONAddChallengersDelegate> delegate;
 @end

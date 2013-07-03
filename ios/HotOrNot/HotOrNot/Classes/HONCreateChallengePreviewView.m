@@ -28,14 +28,14 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
-		NSLog(@"FRAME:[%@]", NSStringFromCGRect(self.frame));
+		NSLog(@"NORMAL");
 		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
 		_previewImage = image;
 		_subjectName = subject;
 		
-		_previewImage = [HONImagingDepictor scaleImage:image byFactor:self.frame.size.width / image.size.width];
+		_previewImage = [HONImagingDepictor scaleImage:image byFactor:(([HONAppDelegate isRetina5]) ? 1.25f : 1.125f) * (self.frame.size.width / image.size.width)];
 		NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
@@ -50,7 +50,7 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
-		NSLog(@"FRAME:[%@]\nBOUNDS:[%@]", NSStringFromCGRect(self.frame), NSStringFromCGRect(self.bounds));
+		NSLog(@"MIRRORED");
 		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
@@ -80,6 +80,9 @@
 	
 	NSLog(@"USERNAMES:[%@][%@]", usernameList, usernames);
 	_usernamesLabel.text = ([usernames length] == 0) ? @"" : [usernames substringToIndex:[usernames length] - 2];
+	
+	if ([usernameList count] > 1)
+		self.frame = CGRectOffset(self.frame, 0.0, -[[UIApplication sharedApplication] statusBarFrame].size.height);
 }
 
 - (void)showKeyboard {

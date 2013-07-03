@@ -86,6 +86,8 @@
 				[_tableView reloadData];
 				[_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:[_comments count] - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
 			}
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

@@ -18,11 +18,11 @@
 #import "HONHeaderView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
-#import "HONFollowFriendViewCell.h"
+#import "HONRecentOpponentViewCell.h"
 #import "HONAddContactViewCell.h"
 
 
-@interface HONAddContactsViewController ()<UITableViewDataSource, UITableViewDelegate>
+@interface HONAddContactsViewController ()<UITableViewDataSource, UITableViewDelegate, HONRecentOpponentViewCellDelegate, HONAddContactViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
@@ -42,11 +42,6 @@
 		[[Mixpanel sharedInstance] track:@"Add Contacts - Open"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addFollowFriend:) name:@"ADD_FOLLOW_FRIEND" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dropFollowFriend:) name:@"DROP_FOLLOW_FRIEND" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addContactInvite:) name:@"ADD_CONTACT_INVITE" object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dropContactInvite:) name:@"DROP_CONTACT_INVITE" object:nil];
 	}
 	
 	return (self);
@@ -332,12 +327,21 @@
 		NSString *phoneNumber = @"";
 		for(CFIndex j=0; j<phoneCount; j++) {
 			NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
-			if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel]) {
+			
+			NSLog(@"PHONE:(%ld)[%@]", j, (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j));
+			
+			
+			if ([mobileLabel isEqualToString:(NSString *) kABPersonPhoneMobileLabel]) {
 				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+				break;
 				
 			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
 				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-				break ;
+				break;
+			
+			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMainLabel]) {
+				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+				break;
 			}
 		}
 		CFRelease(phoneProperties);
@@ -364,16 +368,15 @@
 			[_nonAppContacts addObject:vo];
 			
 			
-			if (vo.isSMSAvailable) {
-				//NSString *formattedNumber = [[vo.mobileNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"().- "]] componentsJoinedByString:@""];
-				//_smsRecipients = [_smsRecipients stringByAppendingFormat:@"+1%@|", formattedNumber];
+			if (vo.isSMSAvailable)
 				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
-			}
 		}
 	}
 	
-	NSLog(@"SMS CONTACTS:[%@]", [_smsRecipients substringToIndex:[_smsRecipients length] - 1]);
-	[self _sendSMSContacts];
+	if ([_smsRecipients length] > 0) {
+		NSLog(@"SMS CONTACTS:[%@]", [_smsRecipients substringToIndex:[_smsRecipients length] - 1]);
+		[self _sendSMSContacts];
+	}
 }
 
 
@@ -507,7 +510,7 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		for (int i=0; i<[_inAppContacts count]; i++) {
-			HONFollowFriendViewCell *cell = (HONFollowFriendViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+			HONRecentOpponentViewCell *cell = (HONRecentOpponentViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
 			[cell toggleSelected:NO];
 		}
 		
@@ -525,7 +528,7 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		for (int i=0; i<[_inAppContacts count]; i++) {
-			HONFollowFriendViewCell *cell = (HONFollowFriendViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+			HONRecentOpponentViewCell *cell = (HONRecentOpponentViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
 			[cell toggleSelected:YES];
 		}
 		
@@ -541,69 +544,6 @@
 
 
 #pragma mark - Notifications
-- (void)_addFollowFriend:(NSNotification *)notification {
-	HONUserVO *vo = (HONUserVO *)[notification object];
-	
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Select In App Contact"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"contact", nil]];
-	
-	[_selectedInAppContacts addObject:vo];
-}
-
-- (void)_addContactInvite:(NSNotification *)notification {
-	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
-	
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Select Non App Contact"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
-	
-	[_selectedNonAppContacts addObject:vo];
-}
-
-- (void)_dropFollowFriend:(NSNotification *)notification {
-	HONUserVO *vo = (HONUserVO *)[notification object];
-	
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect In App Contact"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"contact", nil]];
-	
-	NSMutableArray *removeVOs = [NSMutableArray array];
-	for (HONUserVO *vo in _selectedInAppContacts) {
-		for (HONUserVO *dropVO in _inAppContacts) {
-			if (vo.userID == dropVO.userID) {
-				[removeVOs addObject:vo];
-			}
-		}
-	}
-	
-	[_selectedInAppContacts removeObjectsInArray:removeVOs];
-	removeVOs = nil;
-}
-
-- (void)_dropContactInvite:(NSNotification *)notification {
-	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
-	
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect Non App Contact"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
-	
-	NSMutableArray *removeVOs = [NSMutableArray array];
-	for (HONContactUserVO *vo in _selectedNonAppContacts) {
-		for (HONContactUserVO *dropVO in _nonAppContacts) {
-			if ([vo.mobileNumber isEqualToString:dropVO.mobileNumber]) {
-				[removeVOs addObject:vo];
-			}
-		}
-	}
-	
-	[_selectedNonAppContacts removeObjectsInArray:removeVOs];
-	removeVOs = nil;
-}
 
 
 #pragma mark - UI Presentation
@@ -617,6 +557,67 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	}
+}
+
+
+#pragma mark - RecentOpponentViewCell Delegates
+- (void)recentOpponentViewCell:(HONRecentOpponentViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	if (isSelected){
+		[[Mixpanel sharedInstance] track:@"Add Contacts - Select In App Contact"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
+		
+		[_selectedInAppContacts addObject:userVO];
+	
+	} else {
+		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect In App Contact"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"contact", nil]];
+		
+		NSMutableArray *removeVOs = [NSMutableArray array];
+		for (HONUserVO *vo in _selectedInAppContacts) {
+			for (HONUserVO *dropVO in _inAppContacts) {
+				if (vo.userID == dropVO.userID) {
+					[removeVOs addObject:vo];
+				}
+			}
+		}
+		
+		[_selectedInAppContacts removeObjectsInArray:removeVOs];
+		removeVOs = nil;
+	}
+}
+
+
+#pragma mark - AddContactCell Delegates
+- (void)addContactViewCell:(HONAddContactViewCell *)cell user:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	if (isSelected) {
+		[[Mixpanel sharedInstance] track:@"Add Contacts - Select Non App Contact"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
+		
+		[_selectedNonAppContacts addObject:userVO];
+	} else {
+		[[Mixpanel sharedInstance] track:@"Add Contacts - Deselect Non App Contact"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
+		
+		NSMutableArray *removeVOs = [NSMutableArray array];
+		for (HONContactUserVO *vo in _selectedNonAppContacts) {
+			for (HONContactUserVO *dropVO in _nonAppContacts) {
+				if ([vo.mobileNumber isEqualToString:dropVO.mobileNumber]) {
+					[removeVOs addObject:vo];
+				}
+			}
+		}
+		
+		[_selectedNonAppContacts removeObjectsInArray:removeVOs];
+		removeVOs = nil;
 	}
 }
 
@@ -646,13 +647,14 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-		HONFollowFriendViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONRecentOpponentViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			cell = [[HONFollowFriendViewCell alloc] init];
+			cell = [[HONRecentOpponentViewCell alloc] init];
 			cell.userVO = (HONUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
+		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
 		
@@ -664,6 +666,7 @@
 			cell.userVO = (HONContactUserVO *)[_nonAppContacts objectAtIndex:indexPath.row];
 		}
 		
+		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
 	}

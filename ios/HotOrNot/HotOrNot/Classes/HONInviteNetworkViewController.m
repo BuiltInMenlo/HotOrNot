@@ -121,10 +121,15 @@
 			NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
 			if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel]) {
 				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+				break;
 				
 			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
 				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-				break ;
+				break;
+			
+			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMainLabel]) {
+				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+				break;
 			}
 		}
 		CFRelease(phoneProperties);

@@ -12,7 +12,7 @@
 #import "HONChallengeVO.h"
 
 
-#define __DEV_CFG_JSON___ 1
+#define __DEV_CFG_JSON___ 0
 #define __ALWAYS_VERIFY__ 0
 #define __ALWAYS_REGISTER__ 0
 
@@ -96,6 +96,7 @@ const NSUInteger kFollowingUsersDisplayTotal;
 + (UIImage *)avatarImage;
 
 + (NSArray *)friendsList;
++ (void)addFriendToList:(NSDictionary *)friend;
 + (void)writeFriendsList:(NSArray *)friends;
 
 + (void)setAllowsFBPosting:(BOOL)canPost;

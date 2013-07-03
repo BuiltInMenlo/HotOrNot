@@ -13,17 +13,20 @@
 
 #import "HONAddChallengersViewController.h"
 #import "HONHeaderView.h"
-#import "HONFollowFriendViewCell.h"
+#import "HONRecentOpponentViewCell.h"
+#import "HONFriendViewCell.h"
 #import "HONAddContactViewCell.h"
 
 
-@interface HONAddChallengersViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface HONAddChallengersViewController () <UITableViewDataSource, UITableViewDelegate, HONRecentOpponentViewCellDelegate, HONFriendViewCellDelegate, HONAddContactViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *contacts;
-@property (nonatomic, strong) NSMutableArray *following;
+@property (nonatomic, strong) NSMutableArray *recents;
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *selectedRecents;
+@property (nonatomic, strong) NSMutableArray *selectedFriends;
 @property (nonatomic, strong) NSMutableArray *selectedContacts;
-@property (nonatomic, strong) NSMutableArray *selectedFollowing;
-@property (nonatomic, strong) NSMutableArray *followingCells;
+@property (nonatomic, strong) NSMutableArray *recentOpponentCells;
+@property (nonatomic, strong) NSMutableArray *friendCells;
 @property (nonatomic, strong) NSMutableArray *contactCells;
 @property (nonatomic, strong) NSMutableArray *cellArray;
 @end
@@ -35,22 +38,32 @@
 	if ((self = [super init])) {
 		_cellArray = [[NSMutableArray alloc] init];
 		
-		
+		_selectedRecents = [NSMutableArray array];
+		_selectedFriends = [NSMutableArray array];
 		_selectedContacts = [NSMutableArray array];
-		_selectedFollowing = [NSMutableArray array];
-		
-		[self _registerNotifications];
 	}
 	
 	return (self);
 }
 
-- (id)initWithFollowersSelected:(NSArray *)followers contactsSelected:(NSArray *)contacts {
+- (id)initRecentsSelected:(NSArray *)followers friendsSelected:(NSArray *)friends contactsSelected:(NSArray *)contacts {
 	if ((self = [super init])) {
-		_selectedFollowing = [followers mutableCopy];
+		_selectedRecents = [followers mutableCopy];
+		_selectedFriends = [friends mutableCopy];
 		_selectedContacts = [contacts mutableCopy];
 		
-		[self _registerNotifications];
+		NSMutableArray *dropVO = [NSMutableArray array];
+		for (HONUserVO *vo in _selectedRecents) {
+			for (HONUserVO *friendVO in [HONAppDelegate friendsList]) {
+				if (vo.userID == friendVO.userID) {
+					[dropVO addObject:vo];
+					[_selectedFriends addObject:vo];
+				}
+			}
+		}
+		
+		[_selectedRecents removeObjectsInArray:dropVO];
+		dropVO = nil;
 	}
 	
 	return (self);
@@ -61,28 +74,17 @@
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"ADD_FOLLOW_FRIEND" object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"DROP_FOLLOW_FRIEND" object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"ADD_CONTACT_INVITE" object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"DROP_CONTACT_INVITE" object:nil];
 }
 
 - (BOOL)shouldAutorotate {
 	return (NO);
 }
 
-- (void)_registerNotifications {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addFollowFriend:) name:@"ADD_FOLLOW_FRIEND" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addContactInvite:) name:@"ADD_CONTACT_INVITE" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dropFollowFriend:) name:@"DROP_FOLLOW_FRIEND" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_dropContactInvite:) name:@"DROP_CONTACT_INVITE" object:nil];
-}
-
 
 #pragma mark - Data Calls
 - (void)_retreiveFollowing {
-	_following = [NSMutableArray array];
-	_followingCells = [NSMutableArray array];
+	_recents = [NSMutableArray array];
+	_recentOpponentCells = [NSMutableArray array];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 4], @"action", // 11 on Users.php actual following // 4 on Search is past challengers
@@ -97,16 +99,17 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
-																					sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedUsers);
+//			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
+//																					sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+			NSArray *parsedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedUsers);
 			
 			
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
-				[_following addObject:vo];
+				[_recents addObject:vo];
 				
-				if ([_following count] >= kFollowingUsersDisplayTotal)
+				if ([_recents count] >= kFollowingUsersDisplayTotal)
 					break;
 			}
 			
@@ -117,6 +120,83 @@
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPISearch, [error localizedDescription]);
 	}];
 }
+
+
+- (void)_sendInvites {
+	NSMutableArray *emails = [NSMutableArray array];
+	NSMutableArray *numbers = [NSMutableArray array];
+	for (HONContactUserVO *vo in _selectedContacts) {
+		if (vo.isSMSAvailable)
+			[numbers addObject:vo];
+		
+		else
+			[emails addObject:vo];
+	}
+		
+	if ([numbers count] > 0)
+		[self _sendSMSInvites:[numbers copy]];
+	
+	if ([emails count] > 0)
+		[self _sendEmailInvites:[emails copy]];
+}
+
+- (void)_sendSMSInvites:(NSArray *)numbers {
+	NSString *phoneNumbers = @"";
+	for (HONContactUserVO *vo in numbers) {
+		if (vo.isSMSAvailable)
+			phoneNumbers = [phoneNumbers stringByAppendingFormat:@"%@|", vo.mobileNumber];
+	}
+	
+	NSLog(@"SELECTED CONTACTS:[%@]", [phoneNumbers substringToIndex:[phoneNumbers length] - 1]);
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[phoneNumbers substringToIndex:[phoneNumbers length] - 1], @"numbers", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISMSInvites);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPISMSInvites parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
+- (void)_sendEmailInvites:(NSArray *)addresses {
+	NSString *emails = @"";
+	for (HONContactUserVO *vo in addresses) {
+		emails = [emails stringByAppendingFormat:@"%@|", vo.email];
+	}
+	
+	NSLog(@"SELECTED CONTACTS:[%@]", [emails substringToIndex:[emails length] - 1]);
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[emails substringToIndex:[emails length] - 1], @"addresses", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailInvites);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIEmailInvites parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
 
 
 #pragma mark - Device Functions
@@ -145,10 +225,15 @@
 			NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
 			if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMobileLabel]) {
 				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+				break;
 				
 			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
 				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-				break ;
+				break;
+				
+			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMainLabel]) {
+				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+				break;
 			}
 		}
 		CFRelease(phoneProperties);
@@ -206,6 +291,8 @@
 	[self.view addSubview:_tableView];
 	
 	[self _retreiveFollowing];
+	
+	_friendCells = [NSMutableArray array];
 	
 	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
 	
@@ -269,6 +356,9 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	if ([_selectedContacts count] > 0)
+		[self _sendInvites];
+	
 	[self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -278,14 +368,14 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	NSLog(@"[_selectedFollowing count] :: [_following count] :: [%d][%d]", [_selectedFollowing count], [_following count]);
-	BOOL isDeselecting = ([_selectedFollowing count] >= [_following count]);
+	NSLog(@"[_selectedRecents count] :: [_following count] :: [%d][%d]", [_selectedRecents count], [_recents count]);
+	BOOL isDeselecting = ([_selectedRecents count] >= [_recents count]);
 	
-	for (HONFollowFriendViewCell *cell in _followingCells)
+	for (HONRecentOpponentViewCell *cell in _recentOpponentCells)
 		[cell toggleSelected:!isDeselecting];
 	
-	_selectedFollowing = [_following mutableCopy];
-	[self.delegate addChallengers:self selectFollowing:[_selectedFollowing copy] forAppending:!isDeselecting];
+	_selectedRecents = [_recents mutableCopy];
+	[self.delegate addChallengers:self selectFollowing:[_selectedRecents copy] forAppending:!isDeselecting];
 }
 
 - (void)_goAllContacts {
@@ -294,7 +384,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	NSLog(@"[_selectedContacts count] :: [_contacts count] :: [%d][%d]", [_selectedContacts count], [_contacts count]);
-	BOOL isDeselecting = ([_selectedFollowing count] >= [_following count]);
+	BOOL isDeselecting = ([_selectedContacts count] >= [_contacts count]);
 	
 	for (HONAddContactViewCell *cell in _contactCells)
 		[cell toggleSelected:!isDeselecting];
@@ -305,58 +395,77 @@
 
 
 #pragma mark - Notifications
-- (void)_addFollowFriend:(NSNotification *)notification {
-	HONUserVO *vo = (HONUserVO *)[notification object];
-	[_selectedFollowing addObject:vo];
+
+
+#pragma mark - RecentOpponentCell Delegates
+- (void)recentOpponentViewCell:(HONRecentOpponentViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	if (isSelected) {
+		[[Mixpanel sharedInstance] track:@"Add Challengers - Select Recent"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"opponent", nil]];
+		[_selectedRecents addObject:userVO];
+		
+	} else {
+		[[Mixpanel sharedInstance] track:@"Add Challengers - Deselect Recent"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"opponent", nil]];
+		[_selectedRecents removeObject:userVO];
+	}
 	
-	[[Mixpanel sharedInstance] track:@"Add Challengers - Select Following"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"friend", nil]];
-	
-	[self.delegate addChallengers:self selectFollowing:[NSArray arrayWithObject:vo] forAppending:YES];
+	[self.delegate addChallengers:self selectFollowing:[NSArray arrayWithObject:userVO] forAppending:isSelected];
 }
 
-- (void)_addContactInvite:(NSNotification *)notification {
-	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
-	[_selectedContacts addObject:vo];
-	
-	[[Mixpanel sharedInstance] track:@"Add Challengers - Select Contact"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
-	
-	[self.delegate addChallengers:self selectFollowing:[NSArray arrayWithObject:vo] forAppending:YES];
+
+#pragma mark - FriendCell Delegates
+- (void)friendViewCell:(HONFriendViewCell *)cell user:(HONUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	if (isSelected) {
+		[[Mixpanel sharedInstance] track:@"Add Challengers - Select Friend"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
+		[_selectedFriends addObject:userVO];
+	} else {
+		[[Mixpanel sharedInstance] track:@"Add Challengers - Deselect Friend"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
+		[_selectedFriends removeObject:userVO];
+	}
 }
 
-- (void)_dropFollowFriend:(NSNotification *)notification {
-	HONUserVO *vo = (HONUserVO *)[notification object];
-	[_selectedFollowing removeObject:vo];
+#pragma mark - AddContactCell Delegates
+- (void)addContactViewCell:(HONAddContactViewCell *)cell user:(HONContactUserVO *)userVO toggleSelected:(BOOL)isSelected {
+	if (isSelected) {
+		[[Mixpanel sharedInstance] track:@"Add Challengers - Select Contact"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
+		[_selectedContacts addObject:userVO];
+		
+	} else {
+		[[Mixpanel sharedInstance] track:@"Add Challengers - Deselect Contact"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - %@", userVO.fullName, (userVO.isSMSAvailable) ? userVO.mobileNumber : userVO.email], @"contact", nil]];
+		[_selectedContacts removeObject:userVO];
+	}
 	
-	[[Mixpanel sharedInstance] track:@"Add Challengers - Deselect Following"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"friend", nil]];
-	
-	[self.delegate addChallengers:self selectFollowing:[NSArray arrayWithObject:vo] forAppending:NO];
-}
-
-- (void)_dropContactInvite:(NSNotification *)notification {
-	HONContactUserVO *vo = (HONContactUserVO *)[notification object];
-	[_selectedContacts removeObject:vo];
-	
-	[[Mixpanel sharedInstance] track:@"Add Challengers - Deselect Contact"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%@ - %@", vo.fullName, (vo.isSMSAvailable) ? vo.mobileNumber : vo.email], @"contact", nil]];
-	
-	[self.delegate addChallengers:self selectContacts:[NSArray arrayWithObject:vo] forAppending:NO];
+	[self.delegate addChallengers:self selectFollowing:[NSArray arrayWithObject:userVO] forAppending:isSelected];
 }
 
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_following count] : [_contacts count]);
+	if (section == 0)
+		return ([_recents count]);
+	
+//	else if (section == 1)
+//		return ([[HONAppDelegate friendsList] count]);
+	
+	else
+		return ([_contacts count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -371,40 +480,60 @@
 	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Friends on Volley" : @"Invite Friends from Contacts";
 	[headerImageView addSubview:label];
 	
-//	UIButton *inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	inviteButton.frame = CGRectMake(254.0, 3.0, 54.0, 24.0);
-//	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_nonActive"] forState:UIControlStateNormal];
-//	[inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteAll_Active"] forState:UIControlStateHighlighted];
-//	[inviteButton addTarget:self action:(section == 0) ? @selector(_goFollowFriends) : @selector(_goAllContacts) forControlEvents:UIControlEventTouchUpInside];
-//	inviteButton.hidden = ((section == 0 && [_following count] == 0) || (section == 1 && [_contacts count] == 0));
-//	[headerImageView addSubview:inviteButton];
+	if (section == 0)
+		label.text = @"Most Recent";
 	
+//	else if (section == 1)
+//		label.text = @"Friends";
+	
+	else
+		label.text = @"Invite Friends";
+		
 	return (headerImageView);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-		HONFollowFriendViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+		HONRecentOpponentViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			cell = [[HONFollowFriendViewCell alloc] init];
-			cell.userVO = (HONUserVO *)[_following objectAtIndex:indexPath.row];
+			cell = [[HONRecentOpponentViewCell alloc] init];
+			cell.userVO = (HONUserVO *)[_recents objectAtIndex:indexPath.row];
 			
-			for (HONUserVO *vo in _selectedFollowing) {
+			for (HONUserVO *vo in _selectedRecents) {
 				if (vo.userID == cell.userVO.userID) {
 					[cell toggleSelected:YES];
 					break;
 				}
 			}
-			 //NSDictionary *followCellsDict = [NSDictionary dictionaryWithObject:cellArray forKey:@"followers"];
 		}
 		
-		[_followingCells addObject:cell];
+		[_recentOpponentCells addObject:cell];
+		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
+		
+//	} else if (indexPath.section == 1) {
+//		HONFriendViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+//		
+//		if (cell == nil) {
+//			cell = [[HONFriendViewCell alloc] init];
+//			cell.userVO = (HONUserVO *)[[HONAppDelegate friendsList] objectAtIndex:indexPath.row];
+//			
+//			for (HONUserVO *vo in _selectedFriends) {
+//				if (vo.userID == cell.userVO.userID) {
+//					[cell toggleSelected:YES];
+//					break;
+//				}
+//			}
+//		}
+//		
+//		[_friendCells addObject:cell];
+//		cell.delegate = self;
+//		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+//		return (cell);
 		
 	} else {
 		HONAddContactViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
@@ -422,6 +551,7 @@
 		}
 		
 		[_contactCells addObject:cell];
+		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
 	}

@@ -452,13 +452,12 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
-		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
-		
 		[self _upvoteChallengeCreator:YES];
-		
-	} else
-		_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+	}
+	
+	_likesLabel.text = (_challengeVO.creatorScore + _challengeVO.challengerScore > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
 }
 
 - (void)_goUpvoteChallenger {
@@ -485,13 +484,12 @@
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
-		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
-		
 		[self _upvoteChallengeCreator:NO];
-		
-	} else
-		_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+	}
+	
+	_likesLabel.text = (_challengeVO.creatorScore + _challengeVO.challengerScore > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+	_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
 
 }
 

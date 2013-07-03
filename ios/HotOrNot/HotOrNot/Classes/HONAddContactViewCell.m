@@ -14,6 +14,7 @@
 @end
 
 @implementation HONAddContactViewCell
+@synthesize delegate = _delegate;
 @synthesize userVO = _userVO;
 
 + (NSString *)cellReuseIdentifier {
@@ -75,14 +76,14 @@
 	_checkButton.hidden = NO;
 	_inviteButton.hidden = YES;
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_CONTACT_INVITE" object:_userVO];
+	[self.delegate addContactViewCell:self user:_userVO toggleSelected:YES];
 }
 
 - (void)_goUninvite {
 	_checkButton.hidden = YES;
 	_inviteButton.hidden = NO;
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"DROP_CONTACT_INVITE" object:_userVO];
+	[self.delegate addContactViewCell:self user:_userVO toggleSelected:NO];
 }
 
 @end

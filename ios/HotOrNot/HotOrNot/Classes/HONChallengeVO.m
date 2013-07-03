@@ -25,17 +25,10 @@
 	
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
 	vo.statusID = [[dictionary objectForKey:@"status"] intValue];
-	vo.subjectName = [dictionary objectForKey:@"subject"];
+	vo.subjectName = ([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"#N/A";
 	vo.commentTotal = [[dictionary objectForKey:@"comments"] intValue];
-	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];
-	
+	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];	
 	vo.rechallengedUsers = @"";
-//	for (NSDictionary *dict in [dictionary objectForKey:@"rechallenges"]) {
-//		vo.rechallengedUsers = [vo.rechallengedUsers stringByAppendingFormat:@"%@, ", [dict objectForKey:@"username"]];
-//	}
-	
-	if ([vo.rechallengedUsers length] > 0)
-		vo.rechallengedUsers = [vo.rechallengedUsers substringToIndex:[vo.rechallengedUsers length] - 2];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];

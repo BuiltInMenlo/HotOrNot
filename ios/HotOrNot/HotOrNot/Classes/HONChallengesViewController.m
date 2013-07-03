@@ -275,13 +275,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
-		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		//NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
 		if (error != nil)
 			NSLog(@"AFNetworking HONChallengesViewController - Failed to parse JSON: %@", [error localizedFailureReason]);
 		
 		else {
-			NSLog(@"AFNetworking HONChallengesViewController: %@", result);
+			//NSLog(@"AFNetworking HONChallengesViewController: %@", result);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -485,7 +485,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		
 		if (cell == nil)
 			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
-	
+		
+		cell.delegate = self;
 		cell.challengeVO = [_recentChallenges objectAtIndex:indexPath.row];
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 		return (cell);
@@ -510,6 +511,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			if (indexPath.row < [_olderChallenges count])
 				cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
 			
+			cell.delegate = self;
 			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 			return (cell);
 		}
@@ -563,7 +565,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	[self _updateChallengeAsSeen];
 	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID andOpponentID:_challengeVO.challengerID] animated:YES];
+	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID andOpponentID:_challengeVO.challengerID asPublic:!_isPrivate] animated:YES];
 	
 }
 
