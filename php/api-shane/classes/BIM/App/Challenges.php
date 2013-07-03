@@ -228,6 +228,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 				    `status_id` != 3 
 				  	AND `status_id` != 6 
 				  	AND `status_id` != 8
+				  	AND `status_id` != 2
 				  	'.$privateSql.'
 				  	) 
 				  	AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .')) 
@@ -269,6 +270,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 				    `status_id` != 3 
 				  	AND `status_id` != 6 
 				  	AND `status_id` != 8
+				  	AND `status_id` != 2
 				  	'.$privateSql.'
 				  	) 
 				  	AND ((`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') 
@@ -590,7 +592,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 		$this->dbConnect();
 	    
 		// get challenges for user
-		$query = 'SELECT `id` FROM `tblChallenges` WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC;';
+		$query = 'SELECT `id` FROM `tblChallenges` WHERE (`status_id` != 2 AND `status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC;';
 		$result = mysql_query($query);
 		
 		// loop thru the rows
