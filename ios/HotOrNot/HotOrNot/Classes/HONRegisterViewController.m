@@ -42,6 +42,11 @@
 	if ((self = [super init])) {
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_didShowViewController:) name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
 		_username = [[HONAppDelegate infoForUser] objectForKey:@"name"];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(_previewStarted:)
+													 name:@"PLCameraControllerPreviewStartedNotification"
+												   object:nil];
 	}
 	
 	return (self);
@@ -113,11 +118,10 @@
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
 				_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", nil);
 				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				[_progressHUD hide:YES afterDelay:1.5];
 				_progressHUD = nil;
 				
 				[_usernameTextField becomeFirstResponder];
-				
 			}
 		}
 		
@@ -271,7 +275,10 @@
 	[super loadView];
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-	[self.view addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]]];
+	
+	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
+	bgImageView.frame = [UIScreen mainScreen].bounds;
+	[self.view addSubview:bgImageView];
 	
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
@@ -355,6 +362,21 @@
 }
 
 
+#pragma mark - Notifications
+- (void)_previewStarted:(NSNotification *)notification {
+	NSLog(@"_previewStarted");
+	
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+		[self _removeIris];
+	
+	//[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:2.5];
+	[self _showOverlay];
+	
+	
+	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
+}
+
+
 #pragma mark - Navigation
 - (void)_goNext {
 	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
@@ -365,8 +387,9 @@
 								otherButtonTitles:nil] show];
 	[_usernameTextField becomeFirstResponder];
 		
-	} else
-		[self _submitUsername];
+	} else {
+		[_usernameTextField resignFirstResponder];//[self _submitUsername];
+	}
 }
 
 - (void)_goCloseTutorial {
@@ -393,52 +416,40 @@
 
 #pragma mark - UI Presentation
 - (void)_presentCamera {
+	
+	_imagePicker = [[UIImagePickerController alloc] init];
+	_imagePicker.delegate = self;
+	_imagePicker.navigationBarHidden = YES;
+	_imagePicker.toolbarHidden = YES;
+	_imagePicker.allowsEditing = NO;
+	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		_imagePicker = [[UIImagePickerController alloc] init];
-		_imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.delegate = self;
-		_imagePicker.allowsEditing = NO;
-		_imagePicker.cameraOverlayView = nil;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = NO;
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+		
+		_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+		_cameraOverlayView.delegate = self;
 		
 		// these two fuckers don't work in ios7 right now!!
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		_imagePicker.showsCameraControls = NO;
 		// ---------------------------------------------------------------------------
 		
-		[self presentViewController:_imagePicker animated:NO completion:^(void) {
-			[self _showOverlay];
-		}];
+		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
 		
 	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-		_imagePicker = [[UIImagePickerController alloc] init];
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-		_imagePicker.delegate = self;
-		_imagePicker.allowsEditing = NO;
-		_imagePicker.navigationBarHidden = YES;
-		_imagePicker.toolbarHidden = YES;
-		_imagePicker.wantsFullScreenLayout = NO;
-		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
-		
-		[self presentViewController:_imagePicker animated:NO completion:^(void) {
-		}];
 	}
+	
+	[self presentViewController:_imagePicker animated:NO completion:^(void) {
+	}];
 }
 
 - (void)_showOverlay {
-	_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-	_cameraOverlayView.delegate = self;
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
 
-
-#pragma mark - UI Presentation
 - (void)_removeIris {
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
 		_cameraIrisImageView.hidden = YES;
@@ -483,55 +494,10 @@
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
 	//NSLog(@"navigationController:[%@] didShowViewController:[%@]", [navigationController description], [viewController description]);
 	
-	[self _removeIris];
+	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+		[self _removeIris];
 }
 
-//- (void)_didShowViewController:(NSNotification *)notification {
-//	UIView *view = _imagePicker.view;
-//	_plCameraIrisAnimationView = nil;
-//	_cameraIrisImageView = nil;
-//	
-//	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
-//		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
-//			for (UIView *subview in view.subviews) {
-//				if ([subview isKindOfClass:[UIImageView class]])
-//					_cameraIrisImageView = (UIImageView *)subview;
-//				
-//				else if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
-//					for (UIView *subsubview in subview.subviews) {
-//						if ([[[subsubview class] description] isEqualToString:@"PLCameraIrisAnimationView"])
-//							_plCameraIrisAnimationView = subsubview;
-//					}
-//				}
-//			}
-//		}
-//	}
-//	_cameraIrisImageView.hidden = YES;
-//	[_cameraIrisImageView removeFromSuperview];
-//	[_plCameraIrisAnimationView removeFromSuperview];
-//	
-//	//[[NSNotificationCenter defaultCenter] removeObserver:self name:@"UINavigationControllerDidShowViewControllerNotification" object:nil];
-//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_irisAnimationDidEnd:) name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
-//}
-
-//- (void)_irisAnimationEnded:(NSNotification *)notification {
-//	_cameraIrisImageView.hidden = NO;
-//	
-//	UIView *view = _imagePicker.view;
-//	while (view.subviews.count && (view = [view.subviews objectAtIndex:0])) {
-//		if ([[[view class] description] isEqualToString:@"PLCameraView"]) {
-//			for (UIView *subview in view.subviews) {
-//				if ([[[subview class] description] isEqualToString:@"PLCropOverlay"]) {
-//					[subview insertSubview:_plCameraIrisAnimationView atIndex:1];
-//					_plCameraIrisAnimationView = nil;
-//					break;
-//				}
-//			}
-//		}
-//	}
-//	
-//	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"PLCameraViewIrisAnimationDidEndNotification" object:nil];
-//}
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
@@ -569,6 +535,9 @@
 		
 	} else {
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
+		
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
 			
@@ -630,7 +599,8 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 _username, @"username", nil]];
 	
-	[self _goNext];
+	//[self _goNext];
+	[self _submitUsername];
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
@@ -653,6 +623,9 @@
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	NSLog(@"cameraOverlayViewCloseCamera:[%@] cameraOverlayView", [cameraOverlayView description]);
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
@@ -712,6 +685,9 @@
 	[[Mixpanel sharedInstance] track:@"Register - Submit"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[self _finalizeUser];
 }

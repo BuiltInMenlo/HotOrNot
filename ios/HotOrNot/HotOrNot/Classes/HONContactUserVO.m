@@ -10,25 +10,26 @@
 
 @implementation HONContactUserVO
 @synthesize dictionary;
-@synthesize firstName, lastName, fullName, mobileNumber, email, isSMSAvailable;
+@synthesize firstName, lastName, fullName, rawNumber, mobileNumber, email, isSMSAvailable;
 
 + (HONContactUserVO *)contactWithDictionary:(NSDictionary *)dictionary {
 	HONContactUserVO *vo = [[HONContactUserVO alloc] init];
 	vo.dictionary = dictionary;
 	
 	vo.firstName = [dictionary objectForKey:@"f_name"];
-	vo.lastName = [dictionary objectForKey:@"l_name"];
-	vo.fullName = [NSString stringWithFormat:@"%@ %@", vo.firstName, vo.lastName];
-	vo.mobileNumber = [dictionary objectForKey:@"phone"];
+	vo.lastName = ([[dictionary objectForKey:@"l_name"] length] > 0) ? [dictionary objectForKey:@"l_name"] : @"";
+	vo.fullName = [NSString stringWithFormat:([vo.lastName length] > 0) ? @"%@ %@" : @"%@%@", vo.firstName, vo.lastName];
 	vo.email = [dictionary objectForKey:@"email"];
+	vo.rawNumber = [dictionary objectForKey:@"phone"];
 	
-	if ([[dictionary objectForKey:@"phone"] length] > 0) {
-		NSString *formattedNumber = [[[dictionary objectForKey:@"phone"] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().- "]] componentsJoinedByString:@""];
+	if ([vo.rawNumber length] > 0) {
+		NSString *formattedNumber = [[vo.rawNumber componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"+().- "]] componentsJoinedByString:@""];
 		if (![[formattedNumber substringToIndex:1] isEqualToString:@"1"])
 			formattedNumber = [[NSString new] stringByAppendingFormat:@"1%@", formattedNumber];
 		
 		vo.mobileNumber = [[NSString new] stringByAppendingFormat:@"+%@", formattedNumber];
-	}
+	} else
+		vo.mobileNumber = @"";
 	
 	vo.isSMSAvailable = ([vo.mobileNumber length] > 0);
 	

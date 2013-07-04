@@ -13,8 +13,8 @@
 
 
 #define __DEV_CFG_JSON___ 0
-#define __ALWAYS_VERIFY__ 0
 #define __ALWAYS_REGISTER__ 0
+#define __ALWAYS_VERIFY__ 0
 
 
 // api endpts
@@ -55,7 +55,9 @@ const CGFloat kAvatarDim;
 
 
 const BOOL kIsImageCacheEnabled;
-const NSUInteger kFollowingUsersDisplayTotal;
+const NSUInteger kRecentOpponentsDisplayTotal;
+extern NSString * const kTwilioSMS;
+
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
@@ -65,6 +67,7 @@ const NSUInteger kFollowingUsersDisplayTotal;
 + (NSString *)apiServerPath;
 + (NSString *)customerServiceURL;
 + (NSDictionary *)s3Credentials;
++ (NSString *)twilioSMS;
 + (BOOL)isInviteCodeValid:(NSString *)code;
 + (BOOL)isLocaleEnabled;
 
@@ -138,6 +141,7 @@ const NSUInteger kFollowingUsersDisplayTotal;
 + (UIColor *)honGrey635Color;
 + (UIColor *)honGrey518Color;
 + (UIColor *)honGrey455Color;
++ (UIColor *)honGrey365Color;
 + (UIColor *)honGrey245Color;
 
 + (UIColor *)honBlueTextColor;

@@ -86,7 +86,8 @@ const CGFloat kSnapLargeDim = 210.0f;
 const CGFloat kAvatarDim = 200.0;
 
 const BOOL kIsImageCacheEnabled = YES;
-const NSUInteger kFollowingUsersDisplayTotal = 3;
+const NSUInteger kRecentOpponentsDisplayTotal = 10;
+NSString * const kTwilioSMS = @"6475577873";
 
 @interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
@@ -130,6 +131,10 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 			 @"48u0XmxUAYpt2KTkBRqiDniJXy+hnLwmZgYqUGNm", @"secret", nil]);
 	
 	//return ([[NSUserDefaults standardUserDefaults] objectForKey:@"s3_creds"]);
+}
+
++ (NSString *)twilioSMS {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"twilio_sms"]);
 }
 
 + (BOOL)isInviteCodeValid:(NSString *)code {
@@ -503,6 +508,10 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 	return ([UIColor colorWithWhite:0.455 alpha:1.0]);
 }
 
++ (UIColor *)honGrey365Color {
+	return ([UIColor colorWithWhite:0.365 alpha:1.0]);
+}
+
 + (UIColor *)honGrey245Color {
 	return ([UIColor colorWithWhite:0.245 alpha:1.0]);
 }
@@ -765,7 +774,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-	[FBSettings publishInstall:@"600550136636754"];
+	[FBSettings publishInstall:kFacebookAppID];
 	
 //	[FBAppCall handleDidBecomeActive];
 	
@@ -949,6 +958,7 @@ const NSUInteger kFollowingUsersDisplayTotal = 3;
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 //			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 //																			  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
 //																			  [[result objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];

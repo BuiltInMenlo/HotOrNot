@@ -74,7 +74,7 @@
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				[_following addObject:vo];
 				
-				if ([_following count] >= kFollowingUsersDisplayTotal)
+				if ([_following count] >= kRecentOpponentsDisplayTotal)
 					break;
 			}
 			

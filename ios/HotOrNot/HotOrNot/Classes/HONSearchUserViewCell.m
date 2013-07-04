@@ -40,7 +40,6 @@
 	_userVO = userVO;
 	
 	UIImageView *userImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 12.0, 38.0, 38.0)];
-	userImageView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:1.0];
 	[userImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:userImageView];
 	

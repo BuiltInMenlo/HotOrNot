@@ -25,13 +25,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "HotOrNot/Classes/HONRegisterViewController.m"
-            timestampString = "394071093.804661"
+            filePath = "HotOrNot/Classes/HONImagePickerViewController.m"
+            timestampString = "394602494.934516"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "409"
-            endingLineNumber = "409"
-            landmarkName = "-_presentCamera"
+            startingLineNumber = "377"
+            endingLineNumber = "377"
+            landmarkName = "-_showCamera"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,13 +41,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "HotOrNot/Classes/HONImagePickerViewController.m"
-            timestampString = "394348973.853568"
+            filePath = "HotOrNot/Classes/HONRegisterViewController.m"
+            timestampString = "394602041.689624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "372"
-            endingLineNumber = "372"
-            landmarkName = "-_showCamera"
+            startingLineNumber = "418"
+            endingLineNumber = "418"
+            landmarkName = "-_presentCamera"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

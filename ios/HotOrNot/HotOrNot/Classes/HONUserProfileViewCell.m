@@ -13,6 +13,7 @@
 
 #import "HONUserProfileViewCell.h"
 #import "HONAppDelegate.h"
+#import "HONImageLoadingView.h"
 #import "HONImagingDepictor.h"
 
 #define kStatsColor [UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]
@@ -45,6 +46,8 @@
 
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
+	
+	[self addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(127.0, 31.0)]];
 	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, 17.0, 93.0, 93.0)];
 	_avatarImageView.userInteractionEnabled = YES;
@@ -179,6 +182,8 @@
 
 - (void)_goFriendUser {
 	_addFriendButton.hidden = YES;
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
+	
 	[self.delegate userProfileViewCell:self addFriend:_userVO];
 }
 

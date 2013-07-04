@@ -146,7 +146,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedChallenges);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			
 			_recentChallenges = [NSMutableArray array];
 			_olderChallenges = [NSMutableArray array];

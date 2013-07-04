@@ -54,6 +54,7 @@ const CGFloat kFocusInterval = 0.5f;
 
 - (id)init {
 	if ((self = [super init])) {
+		NSLog(@"%@ - init", [self description]);
 		self.view.backgroundColor = [UIColor blackColor];
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_challengeSubmitType = HONChallengeSubmitTypeMatch;
@@ -67,8 +68,8 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithUser:(HONUserVO *)userVO {
-	NSLog(@"%@ - initWithUser:[%d/%@]", [self description], userVO.userID, userVO.username);
 	if ((self = [super init])) {
+		NSLog(@"%@ - initWithUser:[%d/%@]", [self description], userVO.userID, userVO.username);
 		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
 		_challengerName = userVO.username;
@@ -82,9 +83,8 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithSubject:(NSString *)subject {
-	NSLog(@"%@ - initWithSubject:[%@]", [self description], subject);
-	
 	if ((self = [super init])) {
+		NSLog(@"%@ - initWithSubject:[%@]", [self description], subject);
 		_subjectName = subject;
 		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 		_challengerName = @"";
@@ -97,8 +97,8 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject {
-	NSLog(@"%@ - initWithUser:[%d/%@] subject:[%@]", [self description], userVO.userID, userVO.username, subject);
 	if ((self = [super init])) {
+		NSLog(@"%@ - initWithUser:[%d/%@] subject:[%@]", [self description], userVO.userID, userVO.username, subject);
 		_subjectName = subject;
 		_userVO = userVO;
 		_challengerName = userVO.username;
@@ -112,8 +112,8 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithChallenge:(HONChallengeVO *)vo {
-	NSLog(@"%@ - initWithChallenge:[%d]", [self description], vo.challengeID);
 	if ((self = [super init])) {
+		NSLog(@"%@ - initWithChallenge:[%d]", [self description], vo.challengeID);
 		_challengeVO = vo;
 		_fbID = vo.creatorFB;
 		_subjectName = vo.subjectName;
@@ -158,19 +158,19 @@ const CGFloat kFocusInterval = 0.5f;
 
 - (void)_registerNotifications {
 	[[NSNotificationCenter defaultCenter] addObserver:self
-														  selector:@selector(_notificationReceived:)
-																name:nil
-															 object:nil];
+											 selector:@selector(_notificationReceived:)
+												 name:nil
+											   object:nil];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
-														  selector:@selector(_didShowViewController:)
-																name:@"UINavigationControllerDidShowViewControllerNotification"
-															 object:nil];
+											 selector:@selector(_didShowViewController:)
+												 name:@"UINavigationControllerDidShowViewControllerNotification"
+											   object:nil];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
-														  selector:@selector(_previewStarted:)
-																name:@"PLCameraControllerPreviewStartedNotification"
-															 object:nil];
+											 selector:@selector(_previewStarted:)
+												 name:@"PLCameraControllerPreviewStartedNotification"
+											   object:nil];
 }
 
 
@@ -331,11 +331,16 @@ const CGFloat kFocusInterval = 0.5f;
 #pragma mark - UI Presentation
 - (void)_removeIris {
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-		_cameraIrisImageView.hidden = YES;
-		[_cameraIrisImageView removeFromSuperview];
 		
-		_plCameraIrisAnimationView.hidden = YES;
-		[_plCameraIrisAnimationView removeFromSuperview];
+		if (_cameraIrisImageView != nil) {
+			_cameraIrisImageView.hidden = YES;
+			[_cameraIrisImageView removeFromSuperview];
+		}
+		
+		if (_plCameraIrisAnimationView != nil) {
+			_plCameraIrisAnimationView.hidden = YES;
+			[_plCameraIrisAnimationView removeFromSuperview];
+		}
 	}
 }
 
@@ -358,7 +363,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_showCamera {
-	NSLog(@"_showCamera");
+	//NSLog(@"_showCamera");
 	
 	_imagePicker = [[UIImagePickerController alloc] init];
 	_imagePicker.delegate = self;
@@ -402,7 +407,7 @@ const CGFloat kFocusInterval = 0.5f;
 																		_challengeVO.creatorName, @"username",
 																		_challengeVO.creatorFB, @"fb_id",
 																		_challengeVO.creatorAvatar, @"avatar_url", nil]]];
-				if ([_challengeVO.challengerName length] > 0) {
+				if (_challengeVO.statusID != 1) {
 					[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																			[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"id",
 																			[NSString stringWithFormat:@"%d", 0], @"points",
@@ -468,7 +473,7 @@ const CGFloat kFocusInterval = 0.5f;
 
 
 - (void)_previewStarted:(NSNotification *)notification {
-	NSLog(@"_previewStarted");
+	//NSLog(@"_previewStarted");
 	
 //	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
 //		[self _removeIris];
@@ -487,8 +492,11 @@ const CGFloat kFocusInterval = 0.5f;
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-		_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
-		_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
+		if ([[viewController.view subviews] objectAtIndex:1] != nil)
+			_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
+		
+		if ([[[viewController.view subviews] objectAtIndex:2] subviews] != nil)
+			_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
 		
 		
 //		NSLog(@"VC:view:subviews\n %@\n\n", [[viewController view] subviews]);
@@ -580,7 +588,7 @@ const CGFloat kFocusInterval = 0.5f;
 		
 	} else {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			if (rawImage.size.width > 1000)
+			if (rawImage.size.width >= 720)
 				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:rawImage];
 			
 			else
@@ -803,6 +811,11 @@ const CGFloat kFocusInterval = 0.5f;
 								   _subjectName, @"subject",
 								   _challengerName, @"username",
 								   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
+	
+	if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin) {
+		_challengeSubmitType = HONChallengeSubmitTypeAccept;
+		//[params setObject:((HONUserVO *)[_addFollowing firstObject]).username forKey:@"username"];
+	}
 	
 	if ([_addFollowing count] > 1) {
 		_challengeSubmitType = HONChallengeSubmitTypeJoin;

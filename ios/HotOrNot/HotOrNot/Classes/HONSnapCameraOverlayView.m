@@ -40,7 +40,7 @@
 		_usernames = [NSArray arrayWithObject:username];
 		_username = username;
 		
-		NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", subject, username);
+		//NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", subject, username);
 		//hide overlay - [self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
 		
 		_irisImageView = [[UIImageView alloc] initWithFrame:CGRectMake(6.0, ([_username length] > 0) ? kNavBarHeaderHeight + 33.0 : kNavBarHeaderHeight + 10.0, 307.0, 306.0)];
@@ -108,10 +108,12 @@
 	_usernames = challengers;
 	
 	NSString *usernames = @"";
-	for (NSString *username in _usernames)
-		usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
+	for (NSString *username in _usernames) {
+		if ([username length] > 0)
+			usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
+	}
 	
-	NSLog(@"updateChallengers:[%@]\nusernames:[%@]", _usernames, usernames);
+	//NSLog(@"updateChallengers:[%@]\nusernames:[%@]", _usernames, usernames);
 	_usernamesLabel.text = ([usernames length] == 0) ? @"" : [usernames substringToIndex:[usernames length] - 2];
 }
 

@@ -28,15 +28,15 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
-		NSLog(@"NORMAL");
-		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
+		//NSLog(@"NORMAL");
+		//NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
 		_previewImage = image;
 		_subjectName = subject;
 		
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:(([HONAppDelegate isRetina5]) ? 1.25f : 1.125f) * (self.frame.size.width / image.size.width)];
-		NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
+		//NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
 		[self addSubview:previewImageView];
@@ -50,15 +50,15 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image {
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
-		NSLog(@"MIRRORED");
-		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
+		//NSLog(@"MIRRORED");
+		//NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_isEnabled = NO;
 		_previewImage = image;
 		_subjectName = subject;
 		
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.83333f : 0.83333f];
-		NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
+		//NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
 		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
@@ -78,10 +78,10 @@
 	for (NSString *username in usernameList)
 		usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
 	
-	NSLog(@"USERNAMES:[%@][%@]", usernameList, usernames);
+	//NSLog(@"USERNAMES:[%@][%@]", usernameList, usernames);
 	_usernamesLabel.text = ([usernames length] == 0) ? @"" : [usernames substringToIndex:[usernames length] - 2];
 	
-	if ([usernameList count] > 1)
+	if ([usernameList count] > 0)
 		self.frame = CGRectOffset(self.frame, 0.0, -[[UIApplication sharedApplication] statusBarFrame].size.height);
 }
 
@@ -139,7 +139,7 @@
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[UIColor colorWithRed:0.376 green:0.365 blue:0.365 alpha:1.0]];
+	[_subjectTextField setTextColor:[UIColor whiteColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;

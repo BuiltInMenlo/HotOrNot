@@ -105,7 +105,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>919</integer>
+			<integer>912</integer>
 		</dict>
 		<key>php/api-dev/Search.php</key>
 		<dict>
@@ -149,7 +149,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>180</integer>
+			<integer>465</integer>
 		</dict>
 		<key>php/api-dev/Votes.php</key>
 		<dict>

@@ -160,14 +160,14 @@
 		
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 		messageComposeViewController.messageComposeDelegate = self;
-		messageComposeViewController.recipients = [NSArray arrayWithObject:@"2394313268"];
+		messageComposeViewController.recipients = [NSArray arrayWithObject:[HONAppDelegate twilioSMS]];
 		messageComposeViewController.body = [NSString stringWithFormat:[HONAppDelegate smsInviteFormat], [[HONAppDelegate infoForUser] objectForKey:@"name"]];
 		//messageComposeViewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
 		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
-															message:@"Cannot send SMS from this device!"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Not Avaiable"
+															message:@"We use SMS to verify Volley account and your device currently does not support this feature!"
 														   delegate:nil
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];

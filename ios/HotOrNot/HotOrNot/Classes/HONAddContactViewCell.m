@@ -60,7 +60,7 @@
 	contactLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	contactLabel.textColor = [HONAppDelegate honGrey455Color];
 	contactLabel.backgroundColor = [UIColor clearColor];
-	contactLabel.text = (_userVO.isSMSAvailable) ? _userVO.mobileNumber : _userVO.email;
+	contactLabel.text = (_userVO.isSMSAvailable) ? _userVO.rawNumber : _userVO.email;
 	[self addSubview:contactLabel];
 }
 

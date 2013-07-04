@@ -360,6 +360,10 @@
 		
 	[self _retrieveChallenges];
 
+#if __ALWAYS_REGISTER__ == 1
+	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+#endif
 	
 	
 	if (!_isPushView) {
@@ -370,11 +374,8 @@
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
 			[self _goMobileSignup];
 			
-		if ([HONAppDelegate isLocaleEnabled] || [[NSUserDefaults standardUserDefaults] objectForKey:@"passed_invite"] != nil) {
-#if __ALWAYS_REGISTER__ == 1
-			[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.5];
-#endif
-			if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue] == 0)
+		if ([HONAppDelegate isLocaleEnabled]) {
+			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 				[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
 		
 		} else
@@ -504,6 +505,13 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_goNewChallengeAtUser:(HONUserVO *)userVO {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
 #pragma mark - Notifications
 - (void)_showSMSVerify:(NSNotification *)notification {
 	[[Mixpanel sharedInstance] track:@"Timeline - Verify Mobile"
@@ -513,13 +521,13 @@
 	if ([MFMessageComposeViewController canSendText]) {
 		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
 		messageComposeViewController.messageComposeDelegate = self;
-		messageComposeViewController.recipients = [NSArray arrayWithObject:@"2394313268"];
+		messageComposeViewController.recipients = [NSArray arrayWithObject:[HONAppDelegate twilioSMS]];
 		messageComposeViewController.body = [NSString stringWithFormat:@"Verify my mobile phone # with my Volley account! verification code: %@", [[HONAppDelegate infoForUser] objectForKey:@"sms_code"]];
 		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 		
 	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
-															message:@"Cannot send SMS from this device!"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Not Avaiable"
+															message:@"We use SMS to verify Volley account and your device currently does not support this feature!"
 														   delegate:nil
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];
@@ -547,6 +555,17 @@
 
 
 #pragma mark - TimelineItemCell Delegates
+- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell acceptChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Timeline - Accept Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:challengeVO]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell joinChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Timeline - Join Challenge"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -621,9 +640,34 @@
 													   challengeVO.creatorFB, @"fb_id",
 													   challengeVO.creatorAvatar, @"avatar_url", nil]];
 	
-	UINavigationController *navigationController = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == challengeVO.creatorID) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:challengeVO.subjectName]] : (challengeVO.statusID == 1 || challengeVO.statusID == 2) ? [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:challengeVO]] : [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
+	UINavigationController *navigationController;
+	navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+	
+//	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == challengeVO.creatorID) {
+//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:challengeVO.subjectName]];
+//		[self presentViewController:navigationController animated:NO completion:nil];
+//		
+//	} else {
+//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
+//		[self presentViewController:navigationController animated:NO completion:nil];
+		
+//		if (challengeVO.statusID == 1) {
+//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
+//			[self presentViewController:navigationController animated:NO completion:nil];
+//		
+//		} else if (challengeVO.statusID == 2) {
+//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
+//			[self presentViewController:navigationController animated:NO completion:nil];
+//			
+//		} else {
+//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
+//			[self presentViewController:navigationController animated:NO completion:nil];
+//		}
+//	}
+	
+//	[navigationController setNavigationBarHidden:YES];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell snapWithSubject:(NSString *)subjectName {
@@ -654,9 +698,10 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"opponent", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	[self _goNewChallengeAtUser:userVO];
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell showUserTimeline:(HONUserVO *)userVO {

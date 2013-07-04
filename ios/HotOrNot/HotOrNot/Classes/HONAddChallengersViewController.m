@@ -109,7 +109,7 @@
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
 				[_recents addObject:vo];
 				
-				if ([_recents count] >= kFollowingUsersDisplayTotal)
+				if ([_recents count] >= kRecentOpponentsDisplayTotal)
 					break;
 			}
 			
@@ -214,12 +214,21 @@
 		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
 		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
 		
-		if ([fName length] == 0 || [lName length] == 0)
+		if ([fName length] == 0)
 			continue;
+		
+		if ([lName length] == 0)
+			lName = @"";
 		
 		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
 		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
 		
+		NSString *phoneNumber = @"";
+		if (phoneCount > 0) {
+			NSLog(@"\nPHONE:[%@]", (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0));
+			phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0);
+		}
+		/*
 		NSString *phoneNumber = @"";
 		for(CFIndex j=0; j<phoneCount; j++) {
 			NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
@@ -236,6 +245,7 @@
 				break;
 			}
 		}
+		*/
 		CFRelease(phoneProperties);
 		
 		
@@ -244,11 +254,14 @@
 		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
 		
 		if (emailCount > 0) {
-			for (CFIndex j=0; j<emailCount; j++) {
-				email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, j);
-			}
+			email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0);
+//			for (CFIndex j=0; j<emailCount; j++)
+//				email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, j);
 		}
 		CFRelease(emailProperties);
+		
+		if ([email length] == 0)
+			email = @"";
 		
 		if ([phoneNumber length] > 0 || [email length] > 0) {
 			[_contacts addObject:[HONContactUserVO contactWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:

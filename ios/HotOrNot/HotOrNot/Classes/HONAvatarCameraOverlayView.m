@@ -157,7 +157,7 @@
 	
 	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
 	
-	//image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.83333f : 0.83333f];
+	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.83333f : 0.83333f];
 	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
 	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);

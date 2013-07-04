@@ -22,7 +22,7 @@
 #import "HONAddContactViewCell.h"
 
 
-@interface HONAddContactsViewController ()<UITableViewDataSource, UITableViewDelegate, HONRecentOpponentViewCellDelegate, HONAddContactViewCellDelegate>
+@interface HONAddContactsViewController ()<UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONRecentOpponentViewCellDelegate, HONAddContactViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *nonAppContacts;
 @property (nonatomic, strong) NSMutableArray *inAppContacts;
 @property (nonatomic, strong) NSMutableArray *selectedNonAppContacts;
@@ -159,12 +159,10 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			NSMutableArray *friends = [[HONAppDelegate friendsList] mutableCopy];
-			[friends addObject:result];
-			[HONAppDelegate writeFriendsList:[friends copy]];
+			[HONAppDelegate writeFriendsList:result];
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];
@@ -273,7 +271,7 @@
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[emails substringToIndex:[emails length] - 1], @"addresses", nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailInvites);
+	VolleyJSONLog(@"%@ —/> (%@/%@)\n[%@]", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailInvites, params);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIEmailInvites parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -318,31 +316,46 @@
 		NSString *fName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonFirstNameProperty);
 		NSString *lName = (__bridge NSString *)ABRecordCopyValue(ref, kABPersonLastNameProperty);
 		
-		if ([fName length] == 0 || [lName length] == 0)
+		if ([fName length] == 0)
 			continue;
+		
+		if ([lName length] == 0)
+			lName = @"";
 		
 		ABMultiValueRef phoneProperties = ABRecordCopyValue(ref, kABPersonPhoneProperty);
 		CFIndex phoneCount = ABMultiValueGetCount(phoneProperties);
 		
 		NSString *phoneNumber = @"";
-		for(CFIndex j=0; j<phoneCount; j++) {
-			NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
+		if (phoneCount > 0) {
+			phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0);
 			
-			NSLog(@"PHONE:(%ld)[%@]", j, (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j));
-			
-			
-			if ([mobileLabel isEqualToString:(NSString *) kABPersonPhoneMobileLabel]) {
-				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-				break;
+			/*
+			NSString *phoneNumber = @"";
+			for(CFIndex j=0; j<phoneCount; j++) {
+				NSString *mobileLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneProperties, j);
 				
-			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
-				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-				break;
-			
-			} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMainLabel]) {
-				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
-				break;
+				NSLog(@"PHONE:(%ld)[%@]", j, (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j));
+				NSLog(@"PHONE:[%@]", (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0));
+				phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0);
+				
+				if ([mobileLabel isEqualToString:(NSString *) kABPersonPhoneMobileLabel]) {
+					phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+					break;
+					
+				} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneIPhoneLabel]) {
+					phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+					break;
+				
+				} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneMainLabel]) {
+					phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+					break;
+				
+				} else if ([mobileLabel isEqualToString:(NSString *)kABPersonPhoneHomeFAXLabel]) {
+					phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, j);
+					break;
+				}
 			}
+			 */
 		}
 		CFRelease(phoneProperties);
 		
@@ -352,11 +365,15 @@
 		CFIndex emailCount = ABMultiValueGetCount(emailProperties);
 		
 		if (emailCount > 0) {
-			for (CFIndex j=0; j<emailCount; j++) {
-				email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, j);
-			}
+			email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, 0);
+			
+//			for (CFIndex j=0; j<emailCount; j++)
+//				email = (__bridge NSString *)ABMultiValueCopyValueAtIndex(emailProperties, j);
 		}
 		CFRelease(emailProperties);
+		
+		if ([email length] == 0)
+			email = @"";
 		
 		if ([phoneNumber length] > 0 || [email length] > 0) {
 			HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -400,7 +417,7 @@
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:doneButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 45.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 65.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -497,9 +514,13 @@
 		[self _sendInvites];
 	
 	else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[self dismissViewControllerAnimated:YES completion:nil];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@"Your home feed will be empty until you add friends. (you can always add them later if you wish)"
+														   delegate:self
+												  cancelButtonTitle:@"Yes"
+												  otherButtonTitles:@"No", nil];
+		[alertView setTag:0];
+		[alertView show];
 	}
 }
 
@@ -688,6 +709,30 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		switch(buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Add Contacts - Confirm Done"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				[self dismissViewControllerAnimated:YES completion:nil];
+				break;
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Add Contacts - Cancel Done"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				break;
+		}
+	}
 }
 
 
