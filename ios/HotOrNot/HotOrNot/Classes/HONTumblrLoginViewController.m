@@ -1,8 +1,8 @@
 //
-//  HONInstagramLoginViewController.m
+//  HONTumblrLoginViewController.m
 //  HotOrNot
 //
-//  Created by Matt Holcombe on 6/24/13 @ 7:29 PM.
+//  Created by Matt Holcombe on 7/6/13 @ 7:27 PM.
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
@@ -11,10 +11,10 @@
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 
-#import "HONInstagramLoginViewController.h"
+#import "HONTumblrLoginViewController.h"
 
 
-@interface HONInstagramLoginViewController () <UITextFieldDelegate, UIAlertViewDelegate>
+@interface HONTumblrLoginViewController () <UITextFieldDelegate, UIAlertViewDelegate>
 @property (nonatomic, retain) UITextField *usernameTextField;
 @property (nonatomic, retain) UITextField *passwordTextField;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -22,11 +22,11 @@
 @end
 
 
-@implementation HONInstagramLoginViewController
+@implementation HONTumblrLoginViewController
 
 - (id)init {
 	if ((self = [super init])) {
-		[[Mixpanel sharedInstance] track:@"Instagram Login - Open"
+		[[Mixpanel sharedInstance] track:@"Tumblr Login - Open"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	}
@@ -95,7 +95,6 @@
 }
 
 
-
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -155,7 +154,7 @@
 	_passwordTextField.delegate = self;
 	[_passwordTextField setTag:1];
 	[self.view addSubview:_passwordTextField];
-		
+	
 	[_usernameTextField becomeFirstResponder];
 }
 
@@ -186,7 +185,7 @@
 
 #pragma mark - Navigation
 - (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Instagram Login - Done"
+	[[Mixpanel sharedInstance] track:@"Tumblr Login - Done"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -199,7 +198,7 @@
 }
 
 - (void)_goConfirm {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"\"Volley\" would like to access to your Instagram account."
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"\"Volley\" would like to access to your Tumblr account."
 														message:@"We will let your friends know about Volley & change your link in bio so they can find you!"
 													   delegate:self
 											  cancelButtonTitle:@"OK"
@@ -234,7 +233,7 @@
 				[_passwordTextField becomeFirstResponder];
 			
 			else {
-				[[Mixpanel sharedInstance] track:@"Instagram Login - Submit"
+				[[Mixpanel sharedInstance] track:@"Tumblr Login - Submit"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  _usernameTextField.text, @"username", nil]];
@@ -260,7 +259,7 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	switch(buttonIndex) {
 		case 0:
-			[[Mixpanel sharedInstance] track:@"Instagram Login - Confirm"
+			[[Mixpanel sharedInstance] track:@"Tumblr Login - Confirm"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
@@ -268,11 +267,12 @@
 			break;
 			
 		case 1:
-			[[Mixpanel sharedInstance] track:@"Instagram Login - Cancel Confirm"
+			[[Mixpanel sharedInstance] track:@"Tumblr Login - Cancel Confirm"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			break;
 	}
 }
+
 
 @end

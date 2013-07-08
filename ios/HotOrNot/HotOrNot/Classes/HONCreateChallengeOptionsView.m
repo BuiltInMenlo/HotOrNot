@@ -116,25 +116,23 @@
 }
 
 
-//- (void)_goExpire10Mins {
-//	[[Mixpanel sharedInstance] track:@"Create Snap Options - Expire 10 Minutes"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	[self _unselectAll];
-//	[_expire10MinsButton setSelected:YES];
-//	[self _goClose];
-//}
-//
-//- (void)_goExpire24Hours {
-//	[[Mixpanel sharedInstance] track:@"Create Snap Options - Expire 24 Hours"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	[self _unselectAll];
-//	[_expire24HoursButton setSelected:YES];
-//	[self _goClose];
-//}
+- (void)_goExpire10Mins {
+	[[Mixpanel sharedInstance] track:@"Create Snap Options - Expire 10 Minutes"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self.delegate challengeOptionsViewExpire10Minutes:self];
+	[self _goClose];
+}
+
+- (void)_goExpire24Hours {
+	[[Mixpanel sharedInstance] track:@"Create Snap Options - Expire 24 Hours"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self.delegate challengeOptionsViewExpire24Hours:self];
+	[self _goClose];
+}
 
 
 #pragma mark - UI Presentation

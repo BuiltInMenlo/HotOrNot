@@ -50,13 +50,14 @@
 	
 	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(12.0, 12.0, kSnapThumbDim, kSnapThumbDim)];
 	challengeImgHolderView.clipsToBounds = YES;
-	[self addSubview:challengeImgHolderView];
+	//[self addSubview:challengeImgHolderView];
 	
 	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
 	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 	[challengeImgHolderView addSubview:challengeImageView];
 	
-	UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 15.0, 180.0, 20.0)];
+	//UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 15.0, 180.0, 20.0)];
+	UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 15.0, 180.0, 20.0)];
 	challengerLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 	challengerLabel.textColor = [HONAppDelegate honBlueTextColor];
 	challengerLabel.backgroundColor = [UIColor clearColor];
@@ -67,7 +68,8 @@
 	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
 	[dateFormatter setDateFormat:@"h:mma"];
 		
-	UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 31.0, 200.0, 18.0)];
+	//UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 31.0, 200.0, 18.0)];
+	UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 31.0, 200.0, 18.0)];
 	subjectTimeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	subjectTimeLabel.textColor = [HONAppDelegate honGrey455Color];
 	subjectTimeLabel.backgroundColor = [UIColor clearColor];

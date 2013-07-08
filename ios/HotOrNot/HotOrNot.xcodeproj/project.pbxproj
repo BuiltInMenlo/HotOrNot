@@ -382,6 +382,7 @@
 		4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C80126F176A530500BD795D /* HONImageLoadingView.m */; };
 		4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C81A014163337C200AB188B /* UIImage+fixOrientation.m */; };
 		4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C81A016163367F300AB188B /* AVFoundation.framework */; };
+		4C84E42A178909970031CA44 /* HONTumblrLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C84E429178909970031CA44 /* HONTumblrLoginViewController.m */; };
 		4C93B25217697267002FABFF /* HONAddChallengersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C93B25117697267002FABFF /* HONAddChallengersViewController.m */; };
 		4C9872FD16F11CDB00E865C0 /* cameraLargeButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9872F916F11CDB00E865C0 /* cameraLargeButton_Active.png */; };
 		4C9872FE16F11CDB00E865C0 /* cameraLargeButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9872FA16F11CDB00E865C0 /* cameraLargeButton_Active@2x.png */; };
@@ -1343,6 +1344,8 @@
 		4C81A013163337C100AB188B /* UIImage+fixOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+fixOrientation.h"; sourceTree = "<group>"; };
 		4C81A014163337C200AB188B /* UIImage+fixOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+fixOrientation.m"; sourceTree = "<group>"; };
 		4C81A016163367F300AB188B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		4C84E428178909970031CA44 /* HONTumblrLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTumblrLoginViewController.h; sourceTree = "<group>"; };
+		4C84E429178909970031CA44 /* HONTumblrLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTumblrLoginViewController.m; sourceTree = "<group>"; };
 		4C93B25017697267002FABFF /* HONAddChallengersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONAddChallengersViewController.h; sourceTree = "<group>"; };
 		4C93B25117697267002FABFF /* HONAddChallengersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONAddChallengersViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C9872F916F11CDB00E865C0 /* cameraLargeButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraLargeButton_Active.png; sourceTree = "<group>"; };
@@ -1721,6 +1724,7 @@
 		4C0CA3F5175151FA00DD0652 /* Invite */ = {
 			isa = PBXGroup;
 			children = (
+				4C84E427178909750031CA44 /* Tumblr */,
 				4C6422F217793FF80035C1F6 /* Instagram */,
 				4C56864D177CCF7B004E570F /* HONAddContactsViewController.h */,
 				4C56864E177CCF7B004E570F /* HONAddContactsViewController.m */,
@@ -2676,6 +2680,15 @@
 				4C351CED16FE754B00BD9498 /* mainBG-568h@2x.png */,
 			);
 			name = Global;
+			sourceTree = "<group>";
+		};
+		4C84E427178909750031CA44 /* Tumblr */ = {
+			isa = PBXGroup;
+			children = (
+				4C84E428178909970031CA44 /* HONTumblrLoginViewController.h */,
+				4C84E429178909970031CA44 /* HONTumblrLoginViewController.m */,
+			);
+			name = Tumblr;
 			sourceTree = "<group>";
 		};
 		4CA0851516A12FD900673F3A /* AFNetworking */ = {
@@ -3761,6 +3774,7 @@
 				4C56864C177A2A59004E570F /* HONEmptyTimelineView.m in Sources */,
 				4CA0852F16A12FD900673F3A /* AFURLConnectionOperation.m in Sources */,
 				4CA0853016A12FD900673F3A /* AFXMLRequestOperation.m in Sources */,
+				4C84E42A178909970031CA44 /* HONTumblrLoginViewController.m in Sources */,
 				4CA0853116A12FD900673F3A /* UIImageView+AFNetworking.m in Sources */,
 				4C48745816BF0E36007D901B /* HONSearchBarHeaderView.m in Sources */,
 				4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */,

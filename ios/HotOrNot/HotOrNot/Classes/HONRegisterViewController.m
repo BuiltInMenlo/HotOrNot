@@ -230,16 +230,14 @@
 					[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 					
 					// normal
-//					if ([HONAppDelegate isFUEInviteEnabled])
-//						[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
+//					[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 					
 					// apple review fix
 					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				}];
 				
-//				if (![HONAppDelegate isFUEInviteEnabled])
-//					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				
 			} else {
 				if (_progressHUD == nil)
@@ -542,8 +540,7 @@
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
 			
 			// normal
-//			if ([HONAppDelegate isFUEInviteEnabled])
-//				[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
+//			[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 			
 			// apple review fix
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -551,8 +548,7 @@
 		}];
 		
 		// normal
-//		if (![HONAppDelegate isFUEInviteEnabled])
-//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 
@@ -635,11 +631,7 @@
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 		
 		// normal
-//		if ([HONAppDelegate isFUEInviteEnabled])
-//			[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
-//		
-//		else
-//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//		[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 	}];
 }
 

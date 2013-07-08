@@ -698,6 +698,14 @@ const CGFloat kFocusInterval = 0.5f;
 	[_cameraOverlayView updateChallengers:[NSArray array]];
 }
 
+- (void)cameraOverlayViewExpires10Minutes:(HONSnapCameraOverlayView *)cameraOverlayView {
+	
+}
+
+- (void)cameraOverlayViewExpires24Hours:(HONSnapCameraOverlayView *)cameraOverlayView {
+	
+}
+
 #pragma mark - AddFriends Delegate
 - (void)addChallengers:(HONAddChallengersViewController *)viewController selectFollowing:(NSArray *)following forAppending:(BOOL)isAppend {
 	NSLog(@"addChallengers: selectFollowing:[%@] forAppending:[%d]", following, isAppend);

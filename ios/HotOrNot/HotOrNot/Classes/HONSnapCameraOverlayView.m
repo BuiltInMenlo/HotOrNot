@@ -196,6 +196,14 @@
 	[self.delegate cameraOverlayView:self challengeIsPublic:NO];
 }
 
+- (void)challengeOptionsViewExpire10Minutes:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	[self.delegate cameraOverlayViewExpires10Minutes:self];
+}
+
+- (void)challengeOptionsViewExpire24Hours:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	[self.delegate cameraOverlayViewExpires24Hours:self];
+}
+
 - (void)challengeOptionsViewClose:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
 	[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 		_challengeOptionsView.frame = CGRectOffset(_challengeOptionsView.frame, 0.0, self.frame.size.height);

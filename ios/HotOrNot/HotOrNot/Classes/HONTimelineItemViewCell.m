@@ -218,7 +218,7 @@
 		
 		
 		UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		rightButton.frame = _lChallengeImageView.frame;
+		rightButton.frame = _rChallengeImageView.frame;
 		[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 		[rightButton addTarget:self action:@selector(_goTapOpponent) forControlEvents:UIControlEventTouchUpInside];
 		[_rHolderView addSubview:rightButton];
@@ -294,7 +294,7 @@
 		// awaiting challenger response
 		if (_challengeVO.challengerID != 0) {
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			rightButton.frame = _lChallengeImageView.frame;
+			rightButton.frame = _rChallengeImageView.frame;
 			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 			[rightButton addTarget:self action:@selector(_goTapOpponent) forControlEvents:UIControlEventTouchUpInside];
 			[_rHolderView addSubview:rightButton];
@@ -594,7 +594,12 @@
 				break;}
 				
 			case 1:
-				[self.delegate timelineItemViewCell:self snapWithSubject:_challengeVO.subjectName];
+				if (_isChallengeOpponent)
+					[self  _goAcceptChallenge];
+				
+				else
+					[self _goJoinChallenge];
+				
 				break;
 		}
 //	}

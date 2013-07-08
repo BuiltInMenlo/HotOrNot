@@ -35,19 +35,18 @@
 
 
 // json config url
-#if __DEV_CFG_JSON___ == 1
+#if __DEV_BUILD___ == 1
 NSString * const kConfigURL = @"http://107.20.161.159/hotornot";
 NSString * const kConfigJSON = @"boot-dev.json";
+NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
 NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
 NSString * const kConfigJSON = @"boot.json";
+NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
 #endif
 
 
-NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
-//NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
 //NSString * const kMixPanelToken = @"d93069ad5b368c367c3adc020cce8021"; // Focus Group I
-
 NSString * const kFacebookAppID = @"600550136636754";
 
 //api endpts
@@ -145,10 +144,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	}
 	
 	return (NO);
-}
-
-+ (BOOL)isFUEInviteEnabled {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"fue_invite"] isEqualToString:@"Y"]);
 }
 
 + (NSString *)smsInviteFormat {
@@ -959,15 +954,11 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
-//			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-//																			  [[result objectForKey:@"s3_creds"] objectForKey:@"key"], @"key",
-//																			  [[result objectForKey:@"s3_creds"] objectForKey:@"secret"], @"secret", nil] forKey:@"s3_creds"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
 																			  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"timeline_banner"] forKey:@"timeline_banner"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"fue_invite"] forKey:@"fue_invite"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 																			  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
 																			  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",

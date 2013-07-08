@@ -12,7 +12,7 @@
 #import "HONChallengeVO.h"
 
 
-#define __DEV_CFG_JSON___ 0
+#define __DEV_BUILD___ 1
 #define __ALWAYS_REGISTER__ 0
 #define __ALWAYS_VERIFY__ 0
 
@@ -78,7 +78,6 @@ extern NSString * const kTwilioSMS;
 + (NSString *)tutorialImageForPage:(int)page;
 + (NSString *)promoteInviteImageForType:(int)type;
 + (NSString *)timelineBannerURL;
-+ (BOOL)isFUEInviteEnabled;
 
 + (NSString *)smsInviteFormat;
 + (NSString *)emailInviteFormat;

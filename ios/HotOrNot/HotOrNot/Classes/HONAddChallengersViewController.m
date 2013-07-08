@@ -465,7 +465,7 @@
 		[_selectedContacts removeObject:userVO];
 	}
 	
-	[self.delegate addChallengers:self selectFollowing:[NSArray arrayWithObject:userVO] forAppending:isSelected];
+	[self.delegate addChallengers:self selectContacts:[NSArray arrayWithObject:userVO] forAppending:isSelected];
 }
 
 

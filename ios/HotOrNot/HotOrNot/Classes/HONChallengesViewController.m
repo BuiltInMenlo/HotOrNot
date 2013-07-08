@@ -242,7 +242,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			[_tableView reloadData];
 			
 			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
-			[cell toggleLoadMore:([parsedLists count] > 0)];
+			[cell toggleLoadMore:([parsedLists count] > 1)];
 			
 			[_headerView toggleRefresh:NO];
 			if (_progressHUD != nil) {
