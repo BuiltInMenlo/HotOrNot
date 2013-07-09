@@ -17,6 +17,14 @@ class BIM_User{
         
     }
     
+    public static function isVerified( $userId ){
+        $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+        $res = $dao->getPhoneList( (object) array('id' => $userId ) );
+        $res = json_decode($res);
+        $verified = (!empty( $res->_source->hashed_number ) && $res->_source->hashed_number );
+        return $verified;
+    }
+    
     public function isExtant(){
         return ( isset( $this->id ) && $this->id ); 
     }

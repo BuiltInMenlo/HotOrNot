@@ -7,10 +7,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
     protected $oauth_data = null;
     
     public function __construct( $persona ){
-        if( is_string( $persona )  ){
-            $persona = new BIM_Growth_Persona( $persona );
-        } 
-        $this->persona = $persona;
+        $this->persona = new BIM_Growth_Persona( $persona );
         
         $this->instagramConf = BIM_Config::instagram();
         $clientId = $this->instagramConf->api->client_id;
@@ -352,9 +349,9 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
 	 */
     public function instaInvite(){
         $this->handleLogin();
-        $friends = $this->getFriends( 5 );
+        $friends = $this->getFriends( 10 );
         foreach( $friends as $name => $url ){
-            if( $name != 'typeoh' ) continue;
+            //if( $name != 'typeoh' ) continue;
             $url = trim( $url, '/' );
             $pageUrl = "http://web.stagram.com/$url";
             $this->commentOnLatestPhoto( $pageUrl );
@@ -373,8 +370,10 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $inviteText = BIM_Config::inviteMsgs();            
             $message = $inviteText['instagram'];
             $message = preg_replace('/\[\[USERNAME\]\]/', $this->persona->name, $message);
-            echo "submitting comment to $pageUrl\n";
             $this->submitComment($id, $message);
+            $sleep = 5;
+            echo "submitted comment to $pageUrl - sleeping for $sleep seconds\n";
+            sleep($sleep);
         }
     }
     

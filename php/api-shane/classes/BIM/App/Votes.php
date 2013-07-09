@@ -1,5 +1,20 @@
 <?php
 
+/*
+    Votes
+        action 1 - ( getChallengesByActivity ),
+        action 2 - ( getChallengesForSubjectID ),
+        action 3 - ( getChallengeForChallengeID ),
+        action 4 - ( getChallengesByDate ),
+        action 5 - ( getVotersForChallenge ),
+        action 6 - ( upvoteChallenge ),
+        action 7 - ( getChallengesWithChallenger ),
+        action 8 - ( getChallengesForSubjectName ),
+        action 9 - ( getChallengesForUsername ),
+        action 10 - ( getChallengesWithFriends ),
+ * 
+ */
+
 class BIM_App_Votes extends BIM_App_Base{
     
 	/**
@@ -59,7 +74,6 @@ class BIM_App_Votes extends BIM_App_Base{
 				'updated' => $challenge_obj->updated, 
 				'creator' => $this->userForChallenge($challenge_obj->creator_id, $challenge_obj->id),
 				'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id),
-				'rechallenges' => $rechallenge_arr
 			); 
 			
 			$m->set( $key, $challenge_arr );
@@ -195,7 +209,13 @@ class BIM_App_Votes extends BIM_App_Base{
 			$id_arr[$row['id']] = 0;
 		
 		// get vote rows for challenges
-		$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 1 OR `tblChallenges`.`status_id` = 4;';
+		$query = '
+			SELECT tblChallenges.id 
+			FROM tblChallenges as tc
+				JOIN tblChallengeVotes as tcv
+				ON tc.id = tcv.challenge_id 
+			WHERE tc.status_id in (1,4)
+		';
 		$result = mysql_query($query);
 		
 		// loop thru votes, incrementing vote total array
@@ -272,16 +292,21 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * @param $subject_name The name of the subject (string)
 	 * @return The list of challenges (array)
 	**/
-	public function getChallengesForSubjectName($subject_name) {
+	public function getChallengesForSubjectName($subject_name, $private = 'N' ) {
 		$this->dbConnect();
 	    $challenge_arr = array();
-		
+	    
+	    $privateSql = ' AND `is_private` != "Y" ';
+	    if( $private == 'Y' ){
+	        $privateSql = ' AND `is_private` = "Y" ';
+	    }
+	    
 		// get the subject id
 		$query = 'SELECT `id` FROM `tblChallengeSubjects` WHERE `title` = "'. $subject_name .'";';
 		$subject_id = mysql_fetch_object(mysql_query($query))->id;
 		
 		// get challenges based on subject
-		$query = 'SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) AND `subject_id` = '. $subject_id .' ORDER BY `updated` DESC;';
+		$query = "SELECT * FROM `tblChallenges` WHERE (`status_id` = 1 OR `status_id` = 4) $privateSql AND `subject_id` = $subject_id  ORDER BY `updated` DESC;";
 		$result = mysql_query($query);
 		
 		// loop thru challenges
@@ -319,37 +344,18 @@ class BIM_App_Votes extends BIM_App_Base{
     	    }
 			
 	        $query = "
-				SELECT * 
+				SELECT id 
 				FROM `tblChallenges` 
-				WHERE ( status_id IN (1,2,4) ) 
+				WHERE ( status_id IN (1,4) ) 
 					$privateSql
-					AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') 
+					AND (`creator_id` = $user_id OR `challenger_id` = $user_id ) 
 				ORDER BY `updated` DESC LIMIT 50;";
 			$challenge_result = mysql_query($query);
 		
 			// loop thru the rows
 			while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH)) {
-			
-				// set challenge status to waiting if user is the challenger and it's been created
-				// if ($challenge_row['challenger_id'] == $user_id && $challenge_row['status_id'] == "2")
-				// 	$challenge_row['status_id'] = "0";
-			
-				// get the subject title
-				$query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_row['subject_id'] .';';
-				$sub_obj = mysql_fetch_object(mysql_query($query));
-			
 				// push challenge into list
-				array_push($challenge_arr, array(
-					'id' => $challenge_row['id'], 
-					'status' => $challenge_row['status_id'], 					
-					'subject' => $sub_obj->title, 
-					'has_viewed' => $challenge_row['hasPreviewed'], 
-					'started' => $challenge_row['started'], 
-					'added' => $challenge_row['added'],
-					'updated' => $challenge_row['updated'],
-					'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
-					'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
-				));
+				array_push( $challenge_arr, $this->getChallengeObj( $challenge_row['id'] ) );
 			}
 		
 			// return
@@ -364,18 +370,20 @@ class BIM_App_Votes extends BIM_App_Base{
         $friends = BIM_App_Social::getFriends($input);
         $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
 	    
+        // we add our own id here so we will include our challenges as well, not just our friends
+        $friendIds[] = $input->userID;
+        
 	    $fIdct = count( $friendIds );
 		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
 		
         $query = "
-        	SELECT tc.*, tcs.title as subject 
+        	SELECT id 
         	FROM `hotornot-dev`.`tblChallenges` as tc 
-        	JOIN `hotornot-dev`.tblChallengeSubjects as tcs 
-        		ON tc.subject_id = tcs.id 
-        		WHERE tc.status_id IN (1,2,4) 
+        	WHERE tc.status_id IN (1,4) 
         		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
-        	ORDER BY tc.`updated` DESC LIMIT 50 
+        	ORDER BY tc.`updated` DESC LIMIT 50
         ";
+        
 		$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         
         $params = $friendIds;
@@ -384,24 +392,14 @@ class BIM_App_Votes extends BIM_App_Base{
         }
         
         $stmt = $dao->prepareAndExecute( $query, $params );
-        
+
         // loop thru the rows
 		while ( $challenge_row = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
 		    //print_r( $challenge_row );
 			// push challenge into list
-			array_push($challenge_arr, array(
-				'id' => $challenge_row['id'], 
-				'status' => $challenge_row['status_id'], 					
-				'subject' => $challenge_row['subject'], 
-				'has_viewed' => $challenge_row['hasPreviewed'], 
-				'started' => $challenge_row['started'], 
-				'added' => $challenge_row['added'],
-				'updated' => $challenge_row['updated'],
-				'creator' => $this->userForChallenge($challenge_row['creator_id'], $challenge_row['id']),
-				'challenger' => $this->userForChallenge($challenge_row['challenger_id'], $challenge_row['id'])
-			));
+			array_push( $challenge_arr, $this->getChallengeObj( $challenge_row['id'] ) );
 		}
-	
+            
 		// return
 		return $challenge_arr;
 	}
@@ -423,7 +421,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	    // get challenges with these two users
 		$query = "
 			SELECT `id` FROM `tblChallenges` 
-			WHERE (`status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) 
+			WHERE (`status_id` IN (1,2,4) ) 
 				$privateSql
 				AND ( (`creator_id` = $user_id AND `challenger_id` = $challenger_id ) 
 					OR (`creator_id` = $challenger_id AND `challenger_id` = $user_id ) )
@@ -466,7 +464,7 @@ class BIM_App_Votes extends BIM_App_Base{
 		$challenge_result = mysql_query($query);
 		
 		// loop thru votes
-		while ($challenge_row = mysql_fetch_assoc($challenge_result)) {								
+		while ($challenge_row = mysql_fetch_assoc($challenge_result)) {
 			
 			// get user info
 			$query = 'SELECT * FROM `tblUsers` WHERE `id` = '. $challenge_row['user_id'] .';';

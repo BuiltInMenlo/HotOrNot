@@ -17,8 +17,10 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     }
     
     public function loginAndBrowseSelfies(){
-        $this->login();
-        $this->browseSelfies();
+        if( $this->handleLogin() ){
+            $this->authorizeApp();
+            $this->browseSelfies();
+        }
     }
     
 	/**
@@ -27,7 +29,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
 	 */
     public function login( ){
         
-        $this->purgeCookies();
+        // $this->purgeCookies();
                 
         $loggedIn = false;
         
@@ -100,6 +102,42 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
         
         $this->oauth_data = $response = json_decode($response);
+        $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
+        
+    }
+    
+    public function authorizeApp( ){
+        
+        $urls = $this->conf->urls;
+        
+        // first we attempt to access our oauth script
+        // and we get the oauth_token and the form_key from the response
+        $response = $this->get(  $urls->oauth->callback );
+        
+        $this->oauth_data = $response = json_decode($response);
+        
+        if( ! $response ){
+            
+            $ptrn = '/name="form_key" value="(.+?)"/';
+            preg_match($ptrn, $response, $matches);
+            $formKey = $matches[1];
+            
+            $ptrn = '/name="oauth_token" value="(.+?)"/';
+            preg_match($ptrn, $response, $matches);
+            $oauthToken = $matches[1];
+            
+            $input = array(
+                'form_key' => $formKey,
+                'oauth_token' => $oauthToken,
+                'allow' => ''
+            );
+            
+            $authUrl = $urls->oauth->authorize;
+            $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
+            
+            $this->oauth_data = $response = json_decode($response);
+        }
+        
         $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
         
     }
@@ -270,7 +308,89 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         
         $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
         $dao->updateUserStats( $userStats );
-        
     }
     
+    /**
+     * 
+     * first we check to see if we are logged in
+     * if we are not then we login
+     * and check once more
+     * if we still are not logged in, we disable the user
+     * 
+     */
+    public function handleLogin(){
+        $loggedIn = true;
+        $url = 'http://tumblr.com';
+        $response = $this->get( $url );
+        if( !$this->isLoggedIn($response) ){
+            $name = $this->persona->name;
+            echo "user $name not logged in to tumblr!  logging in!\n";
+            $this->login();
+            $response = $this->get( $url );
+            if( !$this->isLoggedIn($response) ){
+                $msg = "something is wrong with logging in $name to tumblr!  disabling the user!\n";
+                echo $msg;
+                $this->disablePersona( $msg );
+                $loggedIn = false;
+            }
+        }
+        return $loggedIn;
+    }
+    
+    public function isLoggedIn( $html ){
+        $ptrn = '@log in@i';
+        return !preg_match($ptrn, $html);
+    }
+    
+    public static function callback(){
+        
+        $conf = BIM_Config::tumblr();
+        //Tumblr API urls
+        $reqUrl = $conf->urls->oauth->request_token;
+        $authUrl = $conf->urls->oauth->authorize;
+        $accUrl = $conf->urls->oauth->access_token;
+        $callbackUrl = $conf->urls->oauth->callback;
+        
+        //Your Application key and secret, found here: http://www.tumblr.com/oauth/apps
+        $conskey = $conf->api->consumerKey;
+        $conssec = $conf->api->consumerSecret;
+         
+        //Enable session.  We will store token information here later
+        session_start();
+         
+        // state will determine the point in the authorization request our user is in
+        // In state=1 the next request should include an oauth_token.
+        // If it doesn't go back to 0
+        if(!isset($_GET['oauth_token']) && (!isset( $_SESSION['state'] ) || $_SESSION['state']==1) ) $_SESSION['state'] = 0;
+        try {
+         
+          //create a new Oauth request.  By default this uses the HTTP AUTHORIZATION headers and HMACSHA1 signature required by Tumblr.  More information is in the PHP docs
+          $oauth = new OAuth($conskey,$conssec);
+          $oauth->enableDebug();
+         
+          //If this is a new request, request a new token with callback and direct user to Tumblrs allow/deny page
+          if(!isset($_GET['oauth_token']) && !$_SESSION['state']) {
+            $request_token_info = $oauth->getRequestToken($reqUrl, $callbackUrl);
+            $_SESSION['oauth_token_secret'] = $request_token_info['oauth_token_secret'];
+            $_SESSION['state'] = 1;
+            header('Location: '.$authUrl.'?oauth_token='.$request_token_info['oauth_token']);
+            exit;
+         
+          //If this is a callback from Tumblr's allow/deny page, request the auth token and auth token secret codes and save them in session
+          } else if($_SESSION['state']==1) {
+            $oauth->setToken($_GET['oauth_token'],$_SESSION['oauth_token_secret']);
+            $access_token_info = $oauth->getAccessToken($accUrl);
+            $_SESSION['state'] = 2;
+            $_SESSION['oauth_token'] = $access_token_info['oauth_token'];
+            $_SESSION['oauth_token_secret'] = $access_token_info['oauth_token_secret'];
+            
+            echo json_encode( $access_token_info );
+            exit;
+          } 
+        } catch(OAuthException $E) {
+          print_r($E);
+        }
+        echo json_encode( $_SESSION );
+        exit;
+    }
 }

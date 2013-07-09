@@ -6,7 +6,7 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     
     public function init(){
         $this->jobs = new BIM_Jobs_Votes();
-        $this->votes = $votes = new BIM_App_Votes;
+        $this->votes = new BIM_App_Votes;
     }
     
     public function test(){
@@ -44,7 +44,9 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     
     public function getChallengesForSubjectName(){
 		if (isset($_POST['subjectName'])){
-			return $this->votes->getChallengesForSubjectName($_POST['subjectName']);
+		    $isPrivate = !empty( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N';
+		    $votes = new BIM_App_Votes();
+		    return $votes->getChallengesForSubjectName($_POST['subjectName'], $isPrivate);
 		}
 		return array();
     }
@@ -52,7 +54,8 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function getChallengesForUsername(){
         $input = $_POST ? $_POST : $_GET;
 		if (isset($input['username'])){
-			return $this->votes->getChallengesForUsername($input['username']);
+		    $votes = new BIM_App_Votes();
+			return $votes->getChallengesForUsername($input['username']);
 		}
 		return array();
     }
@@ -111,7 +114,8 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function getChallengesWithFriends(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if( !empty( $input->userID ) ){
-            return $this->votes->getChallengesWithFriends( $input );
+            $votes = new BIM_App_Votes();
+            return $votes->getChallengesWithFriends( $input );
         }
     }
 }

@@ -55,7 +55,9 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $popIds = $this->getPopular();
-            
+            if( !$popIds ){
+                $popIds = $this->searchForIds();
+            }
             //print_r( $popIds );exit;
             
             foreach( $popIds as $id ){
@@ -142,6 +144,40 @@ question[submit_facebook]	0
     }
     
     public function getQuestions(){
+        $questions = $this->scrapeQuestions();
+        if( !$questions ){
+            $this->getRandomQuestions( $this->persona->numQuestionsToGet() );
+            $questions = $this->scrapeQuestions();
+        }
+        return $questions;
+    }
+    
+    public function getRandomQuestions( $num = 1 ){
+        $url = 'http://ask.fm/account/questions';
+        $response = $this->get( $url );
+        
+        $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
+        preg_match($ptrn,$response,$matches);
+        $authToken = '';
+        if( isset( $matches[1] ) ){
+            $authToken = $matches[1];
+        }
+        
+        $params = array(
+            'authenticity_token' => $authToken
+        );
+        
+        $randUrl = 'http://ask.fm/questions/random';
+        
+        for( $n = 0; $n < $num; $n++ ){
+            $this->post( $randUrl, $params );
+            $sleep = 1;
+            echo "got question number $n. sleeping for $sleep seconds\n";
+            sleep($sleep);
+        }
+    }
+    
+    public function scrapeQuestions(){
         $url = 'http://ask.fm/account/questions';
         $response = $this->get( $url );
         
@@ -225,6 +261,59 @@ question[submit_facebook]	0
             }
         }
         return $loggedIn;
+    }
+    
+    public function searchForIds( ){
+        $taggedIds = array();
+        $idsPerTag = $this->persona->idsPerTagInsta();
+        $ids = $this->doIdSearch();
+        foreach( $ids as $id ){
+            if( count( $taggedIds ) < $idsPerTag && $this->canAsk( $id ) ){
+                $taggedIds[] = $id;
+            }
+        }
+        // print_r( $taggedIds ); exit;
+        return $taggedIds;
+    }
+    
+    /**
+     * 
+     * 
+     * we grab a tag and do a saecrh then parse out the ids from there
+     * @param unknown_type $iterations
+     */
+    public function doIdSearch( $iterations = 1 ){
+        $ids = array();
+        // http://ask.fm/search/name?q=food
+        $pageUrl = "http://ask.fm/search/name";
+        $params = array(
+            'q' => $this->persona->getAskfmSearchName(),
+        );
+        for( $n = 0; $n < $iterations; $n++ ){
+            $params['page'] = $n + 1;
+            $response = $this->get( $pageUrl, $params );
+
+            /*
+<div class="questionBox">.*?<a href="(.*?)".*?Answers: (\d+) 
+             */
+            $ptrn = '@<div class="questionBox">.*?<a href="(.*?)".*?Answers: (\d+)@is';
+            $matches = array();
+            preg_match_all($ptrn, $response, $matches);
+            if( isset( $matches[1] ) ){
+                foreach( $matches[1] as $index => $id  ){
+                    if( $matches[2][ $index ] > 100 ){
+                        $ids[] = $id;
+                    }
+                }
+            }
+            $sleep = $this->persona->getTagIdWaitTime();
+            echo "sleeping for $sleep seconds after fetching $pageUrl for name ".$params['q']."\n";
+            sleep( $sleep );
+        }
+        $ids = array_unique( $ids );
+        $ids = array_map( function( $el ){ return trim( $el, '/ ' ); } , $ids);
+        // print_r( array($ids, $tag) );exit;
+        return $ids;
     }
     
     public function getPopular( ){
