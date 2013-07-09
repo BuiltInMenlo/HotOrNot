@@ -121,6 +121,10 @@ class BIM_Growth_Persona{
         }
     }
     
+    public function numQuestionsToGet( ){
+        return mt_rand(1, 10);
+    }
+    
     public function getBrowseTagsTagWait( ){
         if( $this->type == 'ad' ){
             return mt_rand(120, 420);
