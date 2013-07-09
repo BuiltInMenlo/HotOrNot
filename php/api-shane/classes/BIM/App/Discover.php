@@ -1,4 +1,8 @@
 <?php
+/*
+Discover
+        action 1 - ( getTopChallengesByVotes ),
+*/
 
 require_once 'BIM/App/Base.php';
 

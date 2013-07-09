@@ -1,5 +1,20 @@
 <?php
 
+/*
+    Votes
+        action 1 - ( getChallengesByActivity ),
+        action 2 - ( getChallengesForSubjectID ),
+        action 3 - ( getChallengeForChallengeID ),
+        action 4 - ( getChallengesByDate ),
+        action 5 - ( getVotersForChallenge ),
+        action 6 - ( upvoteChallenge ),
+        action 7 - ( getChallengesWithChallenger ),
+        action 8 - ( getChallengesForSubjectName ),
+        action 9 - ( getChallengesForUsername ),
+        action 10 - ( getChallengesWithFriends ),
+ * 
+ */
+
 class BIM_App_Votes extends BIM_App_Base{
     
 	/**
@@ -194,7 +209,13 @@ class BIM_App_Votes extends BIM_App_Base{
 			$id_arr[$row['id']] = 0;
 		
 		// get vote rows for challenges
-		$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 1 OR `tblChallenges`.`status_id` = 4;';
+		$query = '
+			SELECT tblChallenges.id 
+			FROM tblChallenges as tc
+				JOIN tblChallengeVotes as tcv
+				ON tc.id = tcv.challenge_id 
+			WHERE tc.status_id in (1,4)
+		';
 		$result = mysql_query($query);
 		
 		// loop thru votes, incrementing vote total array

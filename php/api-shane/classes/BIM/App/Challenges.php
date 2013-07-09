@@ -1,6 +1,20 @@
 <?php
+/*
+    Challenges
+        action 1 - ( submitMatchingChallenge ),
+        action 2 - ( getChallengesForUser ),        
+        action 3 - ( getAllChallengesForUser ),
+        action 4 - ( acceptChallenge ),        
+        action 7 - ( submitChallengeWithUsername ),
+        action 8 - ( getPrivateChallengesForUser ),
+        action 9 - ( submitChallengeWithChallenger ),
+        action 11 - ( flagChallenge ),
+        action 12 - ( getChallengesForUserBeforeDate ),
+    action 13 - ( getPrivateChallengesForUserBeforeDate ),
+    action 14 - ( submitChallengeWithUsernames ),
 
-require_once 'BIM/App/Base.php';
+ * 
+ */
 
 class BIM_App_Challenges extends BIM_App_Base{
 	
