@@ -46,10 +46,10 @@ class BIM_Growth_Persona{
         if( !$network ){
             $network = 'instagram';
         }
-        $networkSymbol = 'a';
+        $networkSymbol = 'b';
         
         if( $network == 'tumblr' ){
-            $networkSymbol = 'b';
+            $networkSymbol = 'a';
         } else if( $network == 'askfm' ){
             $networkSymbol = 'c';
         }
