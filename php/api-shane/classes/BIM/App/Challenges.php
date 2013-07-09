@@ -1,17 +1,17 @@
 <?php
 /*
-    Challenges
-        action 1 - ( submitMatchingChallenge ),
-        action 2 - ( getChallengesForUser ),        
-        action 3 - ( getAllChallengesForUser ),
-        action 4 - ( acceptChallenge ),        
-        action 7 - ( submitChallengeWithUsername ),
-        action 8 - ( getPrivateChallengesForUser ),
-        action 9 - ( submitChallengeWithChallenger ),
-        action 11 - ( flagChallenge ),
-        action 12 - ( getChallengesForUserBeforeDate ),
-    action 13 - ( getPrivateChallengesForUserBeforeDate ),
-    action 14 - ( submitChallengeWithUsernames ),
+Challenges
+action 1 - ( submitMatchingChallenge ),
+action 2 - ( getChallengesForUser ),
+action 3 - ( getAllChallengesForUser ),
+action 4 - ( acceptChallenge ),
+action 7 - ( submitChallengeWithUsername ),
+action 8 - ( getPrivateChallengesForUser ),
+action 9 - ( submitChallengeWithChallenger ),
+action 11 - ( flagChallenge ),
+action 12 - ( getChallengesForUserBeforeDate ),
+action 13 - ( getPrivateChallengesForUserBeforeDate ),
+action 14 - ( submitChallengeWithUsernames ),
 
  * 
  */
@@ -67,6 +67,13 @@ class BIM_App_Challenges extends BIM_App_Base{
 		$challenge_obj = mysql_fetch_object(mysql_query($query));
 		
 		
+		$expires = -1;
+        if( !empty( $challenge_obj->expires ) && $challenge_obj->expires > -1 ){
+            $expires = time() - $challenge_obj->expires;
+            if( $expires < 0 ){
+                $expires = 0;
+            }
+        }
 		// compose object & return
 		return (array(
 			'id' => $challenge_obj->id, 
@@ -79,7 +86,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 			'updated' => $challenge_obj->updated, 
 			'creator' => $this->userForChallenge($challenge_obj->creator_id, $challenge_obj->id),
 			'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id),
-			'rechallenges' => $this->rechallengesForChallenge(array('subject_id' => $challenge_obj->subject_id, 'added' => $challenge_obj->added))
+		    'expires' => $expires
 		));
 	}
 	
@@ -403,7 +410,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $img_url The URL to the image for the challenge
 	 * @return An associative object for a challenge (array)
 	**/
-	public function submitMatchingChallenge($user_id, $subject, $img_url) {
+	public function submitMatchingChallenge($user_id, $subject, $img_url, $expires) {
 		$this->dbConnect();
 	    $challenge_arr = array();			
 		
@@ -437,7 +444,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 			$challenger_obj = mysql_fetch_object(mysql_query($query));
 			
 			// update the challenge to say it's nowe in session
-			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
+			$query = 'UPDATE `tblChallenges` SET `expires` = '.$expires.', status_id` = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
 			$update_result = mysql_query($query);
 			
 			// send push if creator allows it
@@ -462,8 +469,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 			
 			// add challenge as waiting for someone
 			$query = 'INSERT INTO `tblChallenges` (';
-			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`) ';
-			$query .= 'VALUES (NULL, "1", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0", "", "N", "0", NOW(), NOW(), NOW());';
+			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `expires`) ';
+			$query .= 'VALUES (NULL, "1", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0", "", "N", "0", NOW(), NOW(), NOW(), '.$expires.');';
 			$result = mysql_query($query);
 			$challenge_id = mysql_insert_id();
 			
@@ -534,7 +541,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $username The username of the user to target (string)
 	 * @return An associative object for a challenge (array)
 	**/
-	public function submitChallengeWithUsername($user_id, $subject, $img_url, $username, $is_private ) {
+	public function submitChallengeWithUsername($user_id, $subject, $img_url, $username, $is_private, $expires ) {
 	    $this->dbConnect();
 	    $challenge_arr = array();
 		
@@ -562,8 +569,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 			
 			// add the new challenge
 			$query = 'INSERT INTO `tblChallenges` (';
-			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`) ';
-			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW(), "'.$is_private.'");';
+			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`, `expires`) ';
+			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW(), "'.$is_private.'", '.$expires.');';
 			$result = mysql_query($query);
 			$challenge_id = mysql_insert_id();
 			
@@ -594,6 +601,19 @@ class BIM_App_Challenges extends BIM_App_Base{
 		return $challenge_arr;
 	}
 	
+	public function setExpirationTime( $arr ){
+	    if( !is_array($arr) ){
+	        // must be an id go get the object
+			$arr = $this->getChallengeObj($arr);
+	    }
+	    if( $arr['expires'] < -1 ){
+	        $expires = time() + abs( $arr['expires'] ) ;
+    	    $sql = "update tblChallenges set expires = ? where id = ?";
+    	    $params = array( $expires, $arr['id'] );
+    	    $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+    	    $dao->prepareAndExecute($sql,$params);
+	    }
+	}
 	
 	/** 
 	 * Gets all the challenges for a user

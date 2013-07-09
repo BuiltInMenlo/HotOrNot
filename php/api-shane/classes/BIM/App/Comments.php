@@ -1,8 +1,8 @@
 <?php
 /*
-    Comments
-        action 2 - ( submitCommentForChallenge ),
- */
+Comments
+action 2 - ( submitCommentForChallenge ),
+*/
 
 require_once 'BIM/App/Base.php';
 
