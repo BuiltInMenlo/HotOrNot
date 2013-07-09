@@ -290,24 +290,26 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
      *  	
      */
     public function updateUserStats(){
-        $this->login();
-        $blogName = $this->persona->tumblr->blogName;
-        $followers = $this->oauth->getBlogFollowers( $blogName );
-        $following = $this->oauth->getFollowedBlogs( );
-        $likes = $this->oauth->getBlogLikes( $blogName );
-        
-        $userStats = (object) array(
-            'followers' => $followers->total_users,
-            'following' => $following->total_blogs,
-            'likes' => $likes->liked_count,
-            'network' => 'tumblr',
-            'name' => $this->persona->name,
-        );
-        
-        print_r( $userStats );
-        
-        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
-        $dao->updateUserStats( $userStats );
+        if( $this->handleLogin() ){
+            $this->authorizeApp();
+            $blogName = $this->persona->tumblr->blogName;
+            $followers = $this->oauth->getBlogFollowers( $blogName );
+            $following = $this->oauth->getFollowedBlogs( );
+            $likes = $this->oauth->getBlogLikes( $blogName );
+            
+            $userStats = (object) array(
+                'followers' => $followers->total_users,
+                'following' => $following->total_blogs,
+                'likes' => $likes->liked_count,
+                'network' => 'tumblr',
+                'name' => $this->persona->name,
+            );
+            
+            print_r( $userStats );
+            
+            $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+            $dao->updateUserStats( $userStats );
+        }
     }
     
     /**
