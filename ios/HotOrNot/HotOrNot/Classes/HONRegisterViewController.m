@@ -538,17 +538,11 @@
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
-			
-			// normal
-//			[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
-			
-			// apple review fix
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+			}];
 		}];
-		
-		// normal
-//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 

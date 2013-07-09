@@ -77,6 +77,8 @@ extern NSString * const kTwilioSMS;
 
 + (NSString *)tutorialImageForPage:(int)page;
 + (NSString *)promoteInviteImageForType:(int)type;
+
++ (NSString *)timelineBannerType;
 + (NSString *)timelineBannerURL;
 
 + (NSString *)smsInviteFormat;
@@ -88,7 +90,7 @@ extern NSString * const kTwilioSMS;
 + (NSArray *)searchSubjects;
 + (NSArray *)searchUsers;
 + (NSArray *)inviteCelebs;
-+ (NSArray *)defaultFollowing;
++ (NSArray *)popularPeople;
 
 + (void)writeDeviceToken:(NSString *)token;
 + (NSString *)deviceToken;

@@ -105,7 +105,7 @@
 	
 	_isClosing = NO;
 	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina5]) ? 54.0 : 19.0, 231.0, ([HONAppDelegate isRetina5]) ? 99.0 : 89.0)];
-	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"instagramLoginText-568h@2x" : @"instagramLoginText"];
+	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"tumblrLoginText-568h@2x" : @"tumblrLoginText"];
 	[self.view addSubview:captionImageView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];

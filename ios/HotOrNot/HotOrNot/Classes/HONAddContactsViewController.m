@@ -171,7 +171,9 @@
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+			[self dismissViewControllerAnimated:YES completion:^(void){
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+			}];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -577,7 +579,9 @@
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+		[self dismissViewControllerAnimated:YES completion:^(void){
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+		}];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	}
 }
 
@@ -723,7 +727,9 @@
 				
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[self dismissViewControllerAnimated:YES completion:nil];
+				[self dismissViewControllerAnimated:YES completion:^(void){
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+				}];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				break;
 				
 			case 1:

@@ -16,7 +16,7 @@
 
 @protocol HONCreateChallengeOptionsViewDelegate
 - (void)challengeOptionsViewMakePublic:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
-- (void)challengeOptionsViewMakeRandom:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
+- (void)challengeOptionsViewMakeNonExpire:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
 - (void)challengeOptionsViewMakePrivate:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
 - (void)challengeOptionsViewExpire10Minutes:(HONCreateChallengeOptionsView *)createChallengeOptionsView;
 - (void)challengeOptionsViewExpire24Hours:(HONCreateChallengeOptionsView *)createChallengeOptionsView;

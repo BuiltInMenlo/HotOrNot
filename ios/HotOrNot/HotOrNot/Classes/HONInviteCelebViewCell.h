@@ -8,8 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "HONCelebVO.h"
+
+@protocol HONInviteCelebViewCellDelegate;
 @interface HONInviteCelebViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
+@property (nonatomic, retain) HONCelebVO *celebVO;
+@property (nonatomic, assign) id <HONInviteCelebViewCellDelegate> delegate;
+@end
 
-- (void)setContents:(NSDictionary *)dict;
+@protocol HONInviteCelebViewCellDelegate
+- (void)inviteCelebViewCell:(HONInviteCelebViewCell *)cell celeb:(HONCelebVO *)celebVO toggleSelected:(BOOL)isSelected;
 @end

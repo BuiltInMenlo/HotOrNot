@@ -6,12 +6,19 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import "HONInviteCelebViewController.h"
-#import "HONHeaderView.h"
-#import "HONInviteCelebViewCell.h"
+#import "AFHTTPClient.h"
+#import "AFHTTPRequestOperation.h"
+#import "MBProgressHUD.h"
+#import "UIImageView+AFNetworking.h"
 
-@interface HONInviteCelebViewController () <UITableViewDataSource, UITableViewDelegate>
-@property (nonatomic, strong) NSArray *celebs;
+#import "HONInviteCelebViewController.h"
+#import "HONInviteCelebViewCell.h"
+#import "HONCelebVO.h"
+#import "HONHeaderView.h"
+
+@interface HONInviteCelebViewController () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONInviteCelebViewCellDelegate>
+@property (nonatomic, strong) NSMutableArray *celebs;
+@property (nonatomic, strong) NSMutableArray *selectedCelebs;
 @property(nonatomic, strong) UITableView *tableView;
 @end
 
@@ -43,27 +50,26 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	bgImageView.frame = self.view.bounds;
-	[self.view addSubview:bgImageView];
+	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	_celebs = [NSMutableArray array];
+	_selectedCelebs = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_inviteCelebs", nil)];
-	[headerView hideRefreshing];
-	[headerView leftAlignTitle];
+	for (NSDictionary *dict in [HONAppDelegate inviteCelebs])
+		[_celebs addObject:[HONCelebVO celebWithDictionary:dict]];
+	
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Invite People"];
 	[self.view addSubview:headerView];
 	
-	UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	cancelButton.frame = CGRectMake(253.0, 0.0, 64.0, 44.0);
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-	[cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
-	[cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-	[headerView addSubview:cancelButton];
-	
-	_celebs = [HONAppDelegate inviteCelebs];
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(250.0, 0.0, 64.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:doneButton];
 	
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 100.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (100.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 65.0)) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
 	_tableView.delegate = self;
@@ -72,6 +78,13 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	UIButton *selectToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	selectToggleButton.frame = CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0);
+	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateNormal];
+	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_Active"] forState:UIControlStateHighlighted];
+	//[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:selectToggleButton];
 }
 
 - (void)viewDidLoad {
@@ -80,12 +93,54 @@
 
 
 #pragma mark - Navigation
-- (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Invite Celeb - Cancel"
+- (void)_goDone {
+	[[Mixpanel sharedInstance] track:@"Invite Celeb - Done"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	if ([_selectedCelebs count] == 0) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@"Invite celebs to Volley!"
+														   delegate:self
+												  cancelButtonTitle:@"Yes"
+												  otherButtonTitles:@"No", nil];
+		[alertView setTag:0];
+		[alertView show];
+	
+	} else {
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[self dismissViewControllerAnimated:YES completion:nil];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	}
+}
+
+
+#pragma mark - InviteCelebViewCell Delegates
+- (void)inviteCelebViewCell:(HONInviteCelebViewCell *)cell celeb:(HONCelebVO *)celebVO toggleSelected:(BOOL)isSelected {
+	if (isSelected) {
+		[[Mixpanel sharedInstance] track:@"Invite Celeb - Select"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - @%@", celebVO.fullName, celebVO.username], @"celeb", nil]];
+		
+		[_selectedCelebs addObject:celebVO];
+	} else {
+		[[Mixpanel sharedInstance] track:@"Invite Celeb - Deselect"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%@ - @%@", celebVO.fullName, celebVO.username], @"celeb", nil]];
+		
+		NSMutableArray *removeVOs = [NSMutableArray array];
+		for (HONCelebVO *vo in _selectedCelebs) {
+			for (HONCelebVO *dropVO in _celebs) {
+				if ([vo.username isEqualToString:dropVO.username]) {
+					[removeVOs addObject:vo];
+				}
+			}
+		}
+		
+		[_selectedCelebs removeObjectsInArray:removeVOs];
+		removeVOs = nil;
+	}
 }
 
 
@@ -105,7 +160,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = @"Invite Celebrities";
+	label.text = @"Invite cool people to volley";
 	[headerImageView addSubview:label];
 	
 	return (headerImageView);
@@ -117,7 +172,8 @@
 	if (cell == nil)
 		cell = [[HONInviteCelebViewCell alloc] init];
 		
-	[cell setContents:[_celebs objectAtIndex:indexPath.row]];
+	cell.celebVO = (HONCelebVO *)[_celebs objectAtIndex:indexPath.row];
+	cell.delegate = self;
 	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
 	
 	return (cell);
@@ -139,10 +195,29 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-	
-	[[Mixpanel sharedInstance] track:@"Invite Celeb - Select"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 @"", @"celeb", nil]];
 }
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		switch(buttonIndex) {
+			case 0:
+				[[Mixpanel sharedInstance] track:@"Invite Celeb - Confirm Done"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				[self dismissViewControllerAnimated:YES completion:nil];
+				break;
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Invite Celeb - Cancel Done"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				break;
+		}
+	}
+}
+
 @end

@@ -22,7 +22,7 @@
 - (void)cameraOverlayViewTakePicture:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewMakeChallengeRandom:(HONSnapCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewMakeChallengeNonExpire:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayView:(HONSnapCameraOverlayView *)cameraOverlayView challengeIsPublic:(BOOL)isPublic;
 - (void)cameraOverlayViewExpires10Minutes:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewExpires24Hours:(HONSnapCameraOverlayView *)cameraOverlayView;

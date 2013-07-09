@@ -18,8 +18,14 @@ typedef enum {
 	HONChallengeSubmitTypeOpponentID	= 9,	/** Directed at a user */
 	HONChallengeSubmitTypeAccept		= 4,	/** Accepts */
 	HONChallengeSubmitTypeJoin			= 14,	/** Joins an in-progress challenge */
-	HONChallengeSubmitTypeOpponentName	= 7,	/** Directed at a user */
+	HONChallengeSubmitTypeOpponentName	= 7		/** Directed at a user */
 } HONChallengeSubmitType;
+
+typedef enum {
+	HONChallengeExpireTypeNone		= 1,
+	HONChallengeExpireType10Minutes	= 2,
+	HONChallengeExpireType24Hours	= 1
+} HONChallengeExpireType;
 
 @interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 - (id)initWithUser:(HONUserVO *)userVO;

@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "HotOrNot/Classes/HONImagePickerViewController.m"
-            timestampString = "394602494.934516"
+            timestampString = "395019692.585831"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "377"
-            endingLineNumber = "377"
+            startingLineNumber = "379"
+            endingLineNumber = "379"
             landmarkName = "-_showCamera"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "HotOrNot/Classes/HONRegisterViewController.m"
-            timestampString = "394602041.689624"
+            timestampString = "395003161.367433"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "418"
-            endingLineNumber = "418"
+            startingLineNumber = "416"
+            endingLineNumber = "416"
             landmarkName = "-_presentCamera"
             landmarkType = "5">
          </BreakpointContent>

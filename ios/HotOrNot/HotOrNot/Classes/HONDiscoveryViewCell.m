@@ -101,7 +101,7 @@
 	
 	UIButton *txtSelectButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	txtSelectButton.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 10.0, subjectLabel.frame.size.width, subjectLabel.frame.size.height + 20.0);
-	[txtSelectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
+	[txtSelectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:txtSelectButton];
 	
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];

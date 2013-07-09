@@ -40,6 +40,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic) BOOL isPrivate;
 @property (nonatomic) HONUserVO *userVO;
 @property (nonatomic) int uploadCounter;
+@property (readonly, nonatomic, assign) HONChallengeExpireType challengeExpireType;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic, strong) NSTimer *focusTimer;
@@ -302,6 +303,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)loadView {
 	[super loadView];
 	
+	_challengeExpireType = HONChallengeExpireTypeNone;
 	_isPrivate = NO;
 	_addContacts = [NSMutableArray array];
 	_addFollowing = [NSMutableArray array];
@@ -689,21 +691,23 @@ const CGFloat kFocusInterval = 0.5f;
 	_isPrivate = !isPublic;
 }
 
-- (void)cameraOverlayViewMakeChallengeRandom:(HONSnapCameraOverlayView *)cameraOverlayView {
-	_challengeSubmitType = HONChallengeSubmitTypeMatch;
+- (void)cameraOverlayViewMakeChallengeNonExpire:(HONSnapCameraOverlayView *)cameraOverlayView {
+//	_challengeSubmitType = HONChallengeSubmitTypeMatch;
+//	
+//	[_addFollowing removeAllObjects];
+//	[_addContacts removeAllObjects];
+//	
+//	[_cameraOverlayView updateChallengers:[NSArray array]];
 	
-	[_addFollowing removeAllObjects];
-	[_addContacts removeAllObjects];
-	
-	[_cameraOverlayView updateChallengers:[NSArray array]];
+	_challengeExpireType = HONChallengeExpireTypeNone;
 }
 
 - (void)cameraOverlayViewExpires10Minutes:(HONSnapCameraOverlayView *)cameraOverlayView {
-	
+	_challengeExpireType = HONChallengeExpireType10Minutes;
 }
 
 - (void)cameraOverlayViewExpires24Hours:(HONSnapCameraOverlayView *)cameraOverlayView {
-	
+	_challengeExpireType = HONChallengeExpireType24Hours;
 }
 
 #pragma mark - AddFriends Delegate
@@ -816,6 +820,7 @@ const CGFloat kFocusInterval = 0.5f;
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 								   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 								   [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+								   [NSString stringWithFormat:@"%d", _challengeExpireType], @"expires",
 								   _subjectName, @"subject",
 								   _challengerName, @"username",
 								   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];

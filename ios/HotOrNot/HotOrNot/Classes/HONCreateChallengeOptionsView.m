@@ -10,12 +10,15 @@
 
 
 @interface HONCreateChallengeOptionsView()
-@property (nonatomic, strong) UIButton *publicButton;
-@property (nonatomic, strong) UIButton *randomButton;
+@property (nonatomic, strong) UIButton *nonExpireButton;
 @property (nonatomic, strong) UIButton *expire10MinsButton;
 @property (nonatomic, strong) UIButton *expire24HoursButton;
-@property (nonatomic, strong) UIButton *privateButton;
+@property (nonatomic, strong) UIImageView *publicPrivateImageView;
 @property (nonatomic, strong) UIButton *cancelButton;
+@property (nonatomic) BOOL isPrivate;
+//@property (nonatomic, strong) UIButton *publicButton;
+//@property (nonatomic, strong) UIButton *randomButton;
+//@property (nonatomic, strong) UIButton *privateButton;
 @end
 
 @implementation HONCreateChallengeOptionsView
@@ -28,51 +31,47 @@
 		bgImageView.userInteractionEnabled = YES;
 		[self addSubview:bgImageView];
 		
+		_isPrivate = NO;
+		
 		float offset = 30.0;
-		_publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_publicButton.frame = CGRectMake(28.0, offset, 264.0, 64.0);
-		[_publicButton setBackgroundImage:[UIImage imageNamed:@"publicVolley_nonActive"] forState:UIControlStateNormal];
-		[_publicButton setBackgroundImage:[UIImage imageNamed:@"publicVolley_Active"] forState:UIControlStateHighlighted];
-		[_publicButton addTarget:self action:@selector(_goPublic) forControlEvents:UIControlEventTouchUpInside];
-		[bgImageView addSubview:_publicButton];
+		_nonExpireButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_nonExpireButton.frame = CGRectMake(28.0, offset, 264.0, 64.0);
+		[_nonExpireButton setBackgroundImage:[UIImage imageNamed:@"foreverButton_nonActive"] forState:UIControlStateNormal];
+		[_nonExpireButton setBackgroundImage:[UIImage imageNamed:@"foreverButton_Active"] forState:UIControlStateHighlighted];
+		[_nonExpireButton addTarget:self action:@selector(_goNonExpire) forControlEvents:UIControlEventTouchUpInside];
+		[bgImageView addSubview:_nonExpireButton];
 		
-		_randomButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_randomButton.frame = CGRectMake(28.0, offset + 80.0, 264.0, 64.0);
-		[_randomButton setBackgroundImage:[UIImage imageNamed:@"randomVolley_nonActive"] forState:UIControlStateNormal];
-		[_randomButton setBackgroundImage:[UIImage imageNamed:@"randomVolley_Active"] forState:UIControlStateHighlighted];
-		[_randomButton addTarget:self action:@selector(_goRandom) forControlEvents:UIControlEventTouchUpInside];
-		[bgImageView addSubview:_randomButton];
+		_expire10MinsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_expire10MinsButton.frame = CGRectMake(28.0, offset + 80.0, 264.0, 64.0);
+		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_nonActive"] forState:UIControlStateNormal];
+		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_Active"] forState:UIControlStateHighlighted];
+		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_Tapped"] forState:UIControlStateSelected];
+		[_expire10MinsButton addTarget:self action:@selector(_goExpire10Mins) forControlEvents:UIControlEventTouchUpInside];
+		[bgImageView addSubview:_expire10MinsButton];
 		
-		_privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_privateButton.frame = CGRectMake(28.0, offset + 160.0, 264.0, 64.0);
-		[_privateButton setBackgroundImage:[UIImage imageNamed:@"privateVolley_nonActive"] forState:UIControlStateNormal];
-		[_privateButton setBackgroundImage:[UIImage imageNamed:@"privateVolley_Active"] forState:UIControlStateHighlighted];
-		[_privateButton addTarget:self action:@selector(_goPrivate) forControlEvents:UIControlEventTouchUpInside];
-		[bgImageView addSubview:_privateButton];
+		_expire24HoursButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_expire24HoursButton.frame = CGRectMake(28.0, offset + 160.0, 264.0, 64.0);
+		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_nonActive"] forState:UIControlStateNormal];
+		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_Active"] forState:UIControlStateHighlighted];
+		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_Tapped"] forState:UIControlStateSelected];
+		[_expire24HoursButton addTarget:self action:@selector(_goExpire24Hours) forControlEvents:UIControlEventTouchUpInside];
+		[bgImageView addSubview:_expire24HoursButton];
+		
+		_publicPrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(178.0, offset + 240.0, 114.0, 64.0)];
+		_publicPrivateImageView.image = [UIImage imageNamed:(_isPrivate) ? @"onPrivateMessage_" : @"offPrivateMessage_"];
+		[bgImageView addSubview:_publicPrivateImageView];
+		
+		UIButton *publicPrivateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		publicPrivateToggleButton.frame = _publicPrivateImageView.frame;
+		[publicPrivateToggleButton addTarget:self action:@selector(_goPublicPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
+		[bgImageView addSubview:publicPrivateToggleButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(28.0, offset + 270.0, 264.0, 64.0);
+		_cancelButton.frame = CGRectMake(28.0, offset + 320.0, 264.0, 64.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancel_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancel_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[bgImageView addSubview:_cancelButton];
-
-		
-//		_expire10MinsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_expire10MinsButton.frame = CGRectMake(28.0, offset + 70.0, 264.0, 64.0);
-//		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_nonActive"] forState:UIControlStateNormal];
-//		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_Active"] forState:UIControlStateHighlighted];
-//		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_Tapped"] forState:UIControlStateSelected];
-//		[_expire10MinsButton addTarget:self action:@selector(_goExpire10Mins) forControlEvents:UIControlEventTouchUpInside];
-//		[bgImageView addSubview:_expire10MinsButton];
-//
-//		_expire24HoursButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		_expire24HoursButton.frame = CGRectMake(28.0, offset + 140.0, 264.0, 64.0);
-//		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_nonActive"] forState:UIControlStateNormal];
-//		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_Active"] forState:UIControlStateHighlighted];
-//		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_Tapped"] forState:UIControlStateSelected];
-//		[_expire24HoursButton addTarget:self action:@selector(_goExpire24Hours) forControlEvents:UIControlEventTouchUpInside];
-//		[bgImageView addSubview:_expire24HoursButton];
 	}
 	
 	return (self);
@@ -80,47 +79,24 @@
 
 
 #pragma mark - Navigation
-- (void)_goPublic {
-	[[Mixpanel sharedInstance] track:@"Create Snap Options - Public"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[self.delegate challengeOptionsViewMakePublic:self];
-	[self _goClose];
-}
-
-- (void)_goRandom {
-	[[Mixpanel sharedInstance] track:@"Create Snap Options - Random"
+- (void)_goNonExpire {
+	[[Mixpanel sharedInstance] track:@"Create Snap Options - Non Expire"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[self.delegate challengeOptionsViewMakeRandom:self];
+	[_expire10MinsButton setSelected:NO];
+	[_expire24HoursButton setSelected:NO];
+	[self.delegate challengeOptionsViewMakeNonExpire:self];
 	[self _goClose];
 }
-
-- (void)_goPrivate {
-	[[Mixpanel sharedInstance] track:@"Create Snap Options - Private"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[self.delegate challengeOptionsViewMakePrivate:self];
-	[self _goClose];
-}
-
-- (void)_goCancel {
-	[[Mixpanel sharedInstance] track:@"Create Snap Options - Cancel"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[self _goClose];
-}
-
 
 - (void)_goExpire10Mins {
 	[[Mixpanel sharedInstance] track:@"Create Snap Options - Expire 10 Minutes"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[_expire10MinsButton setSelected:YES];
+	[_expire24HoursButton setSelected:NO];
 	[self.delegate challengeOptionsViewExpire10Minutes:self];
 	[self _goClose];
 }
@@ -130,20 +106,37 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[_expire10MinsButton setSelected:NO];
+	[_expire24HoursButton setSelected:YES];
 	[self.delegate challengeOptionsViewExpire24Hours:self];
+	[self _goClose];
+}
+
+- (void)_goPublicPrivateToggle {
+	_isPrivate = !_isPrivate;
+	
+	[[Mixpanel sharedInstance] track:@"Create Snap Options - Public / Private Toggle"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d", _isPrivate], @"private", nil]];
+	
+	_publicPrivateImageView.image = [UIImage imageNamed:(_isPrivate) ? @"onPrivateMessage_" : @"offPrivateMessage_"];
+	_publicPrivateImageView.image = [UIImage imageNamed:(_isPrivate) ? @"onPrivateMessage_" : @"offPrivateMessage_"];
+	
+	(_isPrivate) ? [self.delegate challengeOptionsViewMakePrivate:self] : [self.delegate challengeOptionsViewMakePublic:self];
+	[self _goClose];
+}
+
+- (void)_goCancel {
+	[[Mixpanel sharedInstance] track:@"Create Snap Options - Cancel"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	[self _goClose];
 }
 
 
 #pragma mark - UI Presentation
-- (void)_unselectAll {
-	[_publicButton setSelected:NO];
-	[_expire10MinsButton setSelected:NO];
-	[_expire24HoursButton setSelected:NO];
-	[_privateButton setSelected:NO];
-	[_cancelButton setSelected:NO];
-}
-
 - (void)_goClose {
 	[self.delegate challengeOptionsViewClose:self];
 }

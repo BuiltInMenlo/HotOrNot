@@ -272,7 +272,7 @@
 		[scrollView addSubview:joinHolderView];
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		joinButton.frame = CGRectMake(48.0, 73.0, 114.0, 64.0);
+		joinButton.frame = CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim);
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 		[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -286,7 +286,7 @@
 		[_rHolderView addSubview:rImgView];
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		joinButton.frame = CGRectMake(48.0, 73.0, 114.0, 64.0);
+		joinButton.frame = CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim);
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 		[_rHolderView addSubview:joinButton];

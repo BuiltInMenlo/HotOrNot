@@ -84,4 +84,5 @@
 	
 	[self.delegate friendViewCell:self user:_userVO toggleSelected:NO];
 }
+
 @end

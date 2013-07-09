@@ -25,8 +25,11 @@
 #import "HONCommentsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
 #import "HONInstagramLoginViewController.h"
+#import "HONTumblrLoginViewController.h"
+#import "HONInviteCelebViewController.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
+#import "HONInvitePopularViewController.h"
 
 
 @interface HONTimelineViewController() <MFMessageComposeViewControllerDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate>
@@ -120,6 +123,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSMSVerify:) name:@"SHOW_SMS_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeSMSVerify:) name:@"REMOVE_SMS_VERIFY" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -304,9 +308,9 @@
 		[_headerView hideRefreshing];
 		
 		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(3.0, 0.0, 64.0, 44.0);
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_nonActive"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButton_Active"] forState:UIControlStateHighlighted];
+		backButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
+		[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:backButton];
 	
@@ -440,13 +444,22 @@
 }
 
 - (void)_goTimelineBanner {
-	[[Mixpanel sharedInstance] track:@"Timeline - Banner"
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Banner (%@)", [HONAppDelegate timelineBannerType]]
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
+	UINavigationController *navigationController;
+	if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"instagram"])
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInstagramLoginViewController alloc] init]];
+	
+	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"tumblr"])
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTumblrLoginViewController alloc] init]];
+	
+	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"celeb"])
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
+	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInstagramLoginViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -537,6 +550,13 @@
 
 - (void)_removeSMSVerify:(NSNotification *)notification {
 	[self _goMobileSignupClose];
+}
+
+- (void)_showPopularUsers:(NSNotification *)notification {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInvitePopularViewController alloc] init]];
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)_refreshVoteTab:(NSNotification *)notification {

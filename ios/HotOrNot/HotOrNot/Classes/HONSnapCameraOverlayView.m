@@ -188,8 +188,8 @@
 	[self.delegate cameraOverlayView:self challengeIsPublic:YES];
 }
 
-- (void)challengeOptionsViewMakeRandom:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
-	[self.delegate cameraOverlayViewMakeChallengeRandom:self];
+- (void)challengeOptionsViewMakeNonExpire:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	[self.delegate cameraOverlayViewMakeChallengeNonExpire:self];
 }
 
 - (void)challengeOptionsViewMakePrivate:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
