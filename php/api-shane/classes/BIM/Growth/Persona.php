@@ -152,4 +152,62 @@ class BIM_Growth_Persona{
         return isset( $this->name ) && $this->name;
     }
     
+    public function getAskfmSearchName(){
+        $names = array(
+            "Breann",
+            "Leonie",
+            "Reanna",
+            "Brittany",
+            "Aide",
+            "Carolynn",
+            "Lorene",
+            "Bridgette",
+            "Lissette",
+            "Simone",
+            "Maudie",
+            "Waylon",
+            "Michaela",
+            "Kareen",
+            "Kerry",
+            "Maragret",
+            "Daria",
+            "Augustine",
+            "Rowena",
+            "Kari",
+            "Maryetta",
+            "Albert",
+            "Blondell",
+            "Laquita",
+            "Andy",
+            "Michel",
+            "Alix",
+            "Melony",
+            "Naoma",
+            "Kandra",
+            "Herschel",
+            "Marc",
+            "Lanelle",
+            "Barbara",
+            "Maegan",
+            "Shanae",
+            "Sixta",
+            "Aleida",
+            "Garland",
+            "Erick",
+            "Imogene",
+            "Gertude",
+            "Eryn",
+            "Margaretta",
+            "Domingo",
+            "Hoa",
+            "Shanel",
+            "Sophie",
+            "Yetta",
+            "Alishia",
+        );
+
+        $idx = mt_rand(0, count( $names ) - 1);
+        return $names[ $idx ];
+    }
+    
 }

@@ -55,8 +55,8 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $popIds = $this->getPopular();
-            if( ! $popIds ){
-                // $popIds = $this->searchForIds();
+            if( !$popIds ){
+                $popIds = $this->searchForIds();
             }
             //print_r( $popIds );exit;
             
@@ -287,7 +287,7 @@ question[submit_facebook]	0
         // http://ask.fm/search/name?q=food
         $pageUrl = "http://ask.fm/search/name";
         $params = array(
-            'q' => 'food',
+            'q' => $this->persona->getAskfmSearchName(),
         );
         for( $n = 0; $n < $iterations; $n++ ){
             $params['page'] = $n + 1;
@@ -307,7 +307,7 @@ question[submit_facebook]	0
                 }
             }
             $sleep = $this->persona->getTagIdWaitTime();
-            echo "sleeping for $sleep seconds after fetching $pageUrl\n";
+            echo "sleeping for $sleep seconds after fetching $pageUrl for name ".$params['q']."\n";
             sleep( $sleep );
         }
         $ids = array_unique( $ids );
