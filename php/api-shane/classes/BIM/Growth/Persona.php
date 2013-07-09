@@ -36,7 +36,9 @@ class BIM_Growth_Persona{
         $ct = count( $quotes ) - 1;
         $idx = mt_rand(0, $ct);
         $quote = $quotes[ $idx ];
-        $quote = str_replace( '[[TRACK_URL]]', $this->getTrackingUrl( $network ), $quote );
+        if( mt_rand(1,100) >= 50 ){
+            $quote .= " ".$this->getTrackingUrl( $network );
+        }
         return $quote;
     }
     
@@ -65,7 +67,9 @@ class BIM_Growth_Persona{
         $ct = count( $quotes ) - 1;
         $idx = mt_rand(0, $ct);
         $quote = $quotes[ $idx ];
-        $quote = str_replace( '[[TRACK_URL]]', $this->getTrackingUrl( $network ), $quote );
+        if( mt_rand(1,100) >= 50 ){
+            $quote .= " ".$this->getTrackingUrl( $network );
+        }
         return $quote;
     }
     
