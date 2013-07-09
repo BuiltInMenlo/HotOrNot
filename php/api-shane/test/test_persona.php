@@ -2,7 +2,10 @@
 require_once 'vendor/autoload.php';
 
 $p = new BIM_Growth_Persona( 'jenny1998xoxo' );
-echo $p->getTrackingUrl('askfm')."\n";
-echo $p->getTrackingUrl('instagram')."\n";
-echo $p->getTrackingUrl('tumblr')."\n";
+
+echo $p->getVolleyQuote('askfm')."\n";
+echo $p->getVolleyQuote('instagram')."\n";
+echo $p->getVolleyQuote('tumblr')."\n\n\n";
+
+echo $p->getVolleyAnswer('askfm')."\n";
 
