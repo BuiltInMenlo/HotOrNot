@@ -26,16 +26,33 @@ class BIM_Growth_Persona{
         return $blogName;
     }
     
-    public function getVolleyQuote( ){
+    public function getVolleyQuote( $network = '' ){
         if( isset( $this->type ) && $this->type == 'ad' ){
-            $quotes = $this->adQuotes;
+            $quotes = BIM_Config::adQuotes( $network );
         } else {
-            $quotes = $this->authenticQuotes;
+            $quotes = BIM_Config::authenticQuotes( $network );
         }
         
         $ct = count( $quotes ) - 1;
         $idx = mt_rand(0, $ct);
-        return $quotes[ $idx ];
+        $quote = $quotes[ $idx ];
+        $quote = str_replace( '[[TRACK_URL]]', $this->getTrackingUrl( $network ), $quote );
+        return $quote;
+    }
+    
+    public function getTrackingUrl( $network = '' ){
+        if( !$network ){
+            $network = 'instagram';
+        }
+        $networkSymbol = 'a';
+        
+        if( $network == 'tumblr' ){
+            $networkSymbol = 'b';
+        } else if( $network == 'askfm' ){
+            $networkSymbol = 'c';
+        }
+        $url = "http://getvolleyapp.com/$networkSymbol/$this->name";
+        return $url;
     }
     
     public function getVolleyAnswer( $network = '' ){
@@ -47,7 +64,9 @@ class BIM_Growth_Persona{
         
         $ct = count( $quotes ) - 1;
         $idx = mt_rand(0, $ct);
-        return $quotes[ $idx ];
+        $quote = $quotes[ $idx ];
+        $quote = str_replace( '[[TRACK_URL]]', $this->getTrackingUrl( $network ), $quote );
+        return $quote;
     }
     
     protected function loadData( $name ){

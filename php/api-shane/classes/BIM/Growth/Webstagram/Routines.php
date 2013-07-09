@@ -154,7 +154,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $lastTag =& end( $taggedIds );
             foreach( $taggedIds as $tag => $ids ){
                 foreach( $ids as $id ){
-                    $message = $this->persona->getVolleyQuote();
+                    $message = $this->persona->getVolleyQuote( 'instagram' );
                     $this->submitComment( $id, $message );
                     $sleep = $this->persona->getBrowseTagsCommentWait();
                     echo "submitted comment - sleeping for $sleep seconds\n";

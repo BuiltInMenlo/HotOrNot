@@ -162,7 +162,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $parts = parse_url($post->post_url);
             $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
             if( $this->canPing( $blogUrl ) ){
-                $comment = $this->persona->getVolleyQuote();
+                $comment = $this->persona->getVolleyQuote( 'tumblr' );
                 $parts = parse_url($post->post_url);
                 $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
                 if( mt_rand(1, 100) <= 10 ){
