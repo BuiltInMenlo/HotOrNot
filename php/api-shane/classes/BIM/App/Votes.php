@@ -1,17 +1,17 @@
 <?php
 
 /*
-    Votes
-        action 1 - ( getChallengesByActivity ),
-        action 2 - ( getChallengesForSubjectID ),
-        action 3 - ( getChallengeForChallengeID ),
-        action 4 - ( getChallengesByDate ),
-        action 5 - ( getVotersForChallenge ),
-        action 6 - ( upvoteChallenge ),
-        action 7 - ( getChallengesWithChallenger ),
-        action 8 - ( getChallengesForSubjectName ),
-        action 9 - ( getChallengesForUsername ),
-        action 10 - ( getChallengesWithFriends ),
+Votes
+action 1 - ( getChallengesByActivity ),
+action 2 - ( getChallengesForSubjectID ),
+action 3 - ( getChallengeForChallengeID ),
+action 4 - ( getChallengesByDate ),
+action 5 - ( getVotersForChallenge ),
+action 6 - ( upvoteChallenge ),
+action 7 - ( getChallengesWithChallenger ),
+action 8 - ( getChallengesForSubjectName ),
+action 9 - ( getChallengesForUsername ),
+action 10 - ( getChallengesWithFriends ),
  * 
  */
 
@@ -62,6 +62,14 @@ class BIM_App_Votes extends BIM_App_Base{
 			$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_id .' AND `status_id` = 1;';
 			$comments = mysql_num_rows(mysql_query($query));
 			
+			$expires = -1;
+            if( !empty( $challenge_obj->expires ) && $challenge_obj->expires > -1 ){
+                $expires = time() - $challenge_obj->expires;
+                if( $expires < 0 ){
+                    $expires = 0;
+                }
+            }
+            
 			// compose object
 			$challenge_arr = array(
 				'id' => $challenge_obj->id, 
@@ -74,6 +82,7 @@ class BIM_App_Votes extends BIM_App_Base{
 				'updated' => $challenge_obj->updated, 
 				'creator' => $this->userForChallenge($challenge_obj->creator_id, $challenge_obj->id),
 				'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id),
+			    'expires' => $expires
 			); 
 			
 			$m->set( $key, $challenge_arr );

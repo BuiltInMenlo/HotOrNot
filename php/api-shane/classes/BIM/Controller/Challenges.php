@@ -68,17 +68,34 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function submitMatchingChallenge(){
         $uv = null;
-		if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL'])){
+        $input = (object) ( $_POST ? $_POST : $_GET );
+        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL)){
 		    $thisFunc = array( __CLASS__, __FUNCTION__ );
+		    $expires = $this->resolveExpires();
 	        if( $this->useQueue( $thisFunc ) ){
-    			$uv = $this->jobs->queueSubmitMatchingChallengeJob( $_POST['userID'], $_POST['subject'], $_POST['imgURL'] );
+    			$uv = $this->jobs->queueSubmitMatchingChallengeJob( $input->userID, $input->subject, $input->imgURL, $expires );
 	        }
 	        if( !$uv ){
-    		    $uv = $this->challenges->submitMatchingChallenge( $_POST['userID'], $_POST['subject'], $_POST['imgURL'] );
+    		    $uv = $this->challenges->submitMatchingChallenge( $input->userID, $input->subject, $input->imgURL, $expires );
     		    $this->queueStaticPagesJobs();
    	        }
 		}
 		return $uv;
+    }
+    
+    // we use negative values to denote the amount of time we will set when we need to set the expiration date
+    // meaning that -86400 will inducate that we need to set the expiration time for 24 hours when we finally set the expiration time
+    // the reason we do this is that tyere are different events that will set the expiration time on a challenge
+    
+    protected function resolveExpires(){
+        $input = (object) ($_POST ? $_POST : $_GET );
+        $expires = !empty( $input->expires ) ? $input->expires : 1;
+        $expireTime = -1;
+        if( $expires == 2 ){
+            $expireTime = -600;
+        } else if( $expires == 3 ){
+            $expireTime = -86400;
+        }
     }
     
     public function flagChallenge(){
@@ -130,15 +147,16 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         $uv = null;
         if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL']) && isset($_POST['usernames'])){
             $usernames = explode('|', $_POST['usernames'] );
-            foreach( $usernames as $username ){
+		    $expires = $this->resolveExpires();
+            $isPrivate = !empty( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N' ;
+		    foreach( $usernames as $username ){
                 $uv = null;
-                $isPrivate = !empty( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N' ;
     		    $func = array( __CLASS__, 'submitChallengeWithUsername' );
     	        if( $this->useQueue( $func ) ){
-        			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $_POST['userID'], $_POST['subject'], $_POST['imgURL'], $username, $isPrivate );
+        			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $_POST['userID'], $_POST['subject'], $_POST['imgURL'], $username, $isPrivate, $expires );
     	        }
     	        if( !$uv ){
-    	            $uv = $this->challenges->submitChallengeWithUsername( $_POST['userID'], $_POST['subject'], $_POST['imgURL'], $username, $isPrivate );
+    	            $uv = $this->challenges->submitChallengeWithUsername( $_POST['userID'], $_POST['subject'], $_POST['imgURL'], $username, $isPrivate, $expires );
         		    $this->queueStaticPagesJobs();
     	        }
             }
@@ -152,11 +170,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         if (isset($input['userID']) && isset($input['subject']) && isset($input['imgURL']) && isset($input['username'])){
 		    $isPrivate = !empty( $input['isPrivate'] ) ? $input['isPrivate'] : 'N' ;
 		    $thisFunc = array( __CLASS__, __FUNCTION__ );
+		    $expires = $this->resolveExpires();
 	        if( $this->useQueue( $thisFunc ) ){
-    			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate );
+    			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires );
 	        }
 	        if( !$uv ){
-	            $uv = $this->challenges->submitChallengeWithUsername( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate );
+	            $uv = $this->challenges->submitChallengeWithUsername( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires  );
     		    $this->queueStaticPagesJobs();
 	        }
 		}
