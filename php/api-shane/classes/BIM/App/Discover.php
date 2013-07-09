@@ -1,7 +1,7 @@
 <?php
 /*
 Discover
-action 1 - ( getTopChallengesByVotes ),
+	action 1 - ( getTopChallengesByVotes ),
 */
 
 require_once 'BIM/App/Base.php';
@@ -31,7 +31,7 @@ class BIM_App_Discover extends BIM_App_Base{
 		
 		$expires = -1;
         if( !empty( $challenge_obj->expires ) && $challenge_obj->expires > -1 ){
-            $expires = time() - $challenge_obj->expires;
+            $expires = $challenge_obj->expires - time();
             if( $expires < 0 ){
                 $expires = 0;
             }
