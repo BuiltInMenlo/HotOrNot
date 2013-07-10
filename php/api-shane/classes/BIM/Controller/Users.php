@@ -147,28 +147,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     
     public function ffEmail(){
         $input = $_POST ? $_POST : $_GET;
-	    $friends = array(
-	    	/*
-	        array(
-                "username" => "shane",
-                "id" => 881,
-                "email" => "shane@builtinmenlo.com",
-	        	"avatar_url" => 'https://hotornot-avatars.s3.amazonaws.com/66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035.jpg',
-            ),
-	        array(
-                "username" => "Foogy",
-                "id" => 882,
-                "email" => "shane@builtinmenlo.com",
-	        	"avatar_url" => 'https://hotornot-avatars.s3.amazonaws.com/66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035.jpg'
-	        ),
-	        array(
-                "username" => "Boogy",
-                "email" => "shane@builtinmenlo.com",
-	        	"id" => 883,
-                "avatar_url" => 'https://hotornot-avatars.s3.amazonaws.com/66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035.jpg'
-	        ),
-	        */
-	    );
+	    $friends = array();
 		if ( !empty( $input['userID'] ) && !empty( $input['emailList'] ) ){
 		    $emailList = explode('|', $input['emailList'] );
 		    $params = (object) array(
