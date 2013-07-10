@@ -502,9 +502,27 @@ class BIM_App_Users extends BIM_App_Base{
 	    return $this->findfriends($list);
 	}
 	
+	public function matchFriendsEmail( $params ){
+	    $list = $this->addEmailList($params);
+	    return $this->findfriendsEmail($list);
+	}
+	
 	public function findfriends( $list ){
 	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
 	    $matches = $dao->findFriends( $list );
+	    $matches = json_decode($matches);
+	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
+	        $matches = &$matches->hits->hits;
+	        foreach( $matches as &$match ){
+	            $match = $match->fields->_source;
+	        }
+	    }
+	    return $matches;
+	}
+	
+	public function findfriendsEmail( $list ){
+	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+	    $matches = $dao->findFriendsEmail( $list );
 	    $matches = json_decode($matches);
 	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
 	        $matches = &$matches->hits->hits;

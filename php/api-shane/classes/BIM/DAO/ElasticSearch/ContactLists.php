@@ -48,6 +48,54 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
         
     }
     
+    public function findFriendsEmail( $params ){
+        $email = isset( $params->email ) ? $params->email : '';
+        $emailList = isset( $params->email_list ) ? $params->email_list : array();
+        $from = isset( $params->from ) ? $params->from : 0;
+        $size = isset( $params->size ) ? $params->size : 100;
+        
+        $should = array();
+        
+        // this portion sets up the search query for matching the
+        // passed list to the current hashed-numbers for our volley users
+        foreach( $emailList as $emailAddy ){
+            $should[] = array(
+                "term" => array( "email" => $emailAddy )
+            );
+        }
+        
+        // this part will search the email_list field
+        // using the users number that we got from twilio
+        if( $email ){
+            $should[] = array(
+                "term" => array( "email_list" => $email )
+            );
+        }
+        
+        $query = array(
+            "from" => $from,
+            "size" => $size,
+            "query" => array(
+                "bool" => array(
+                    "should" => $should,
+                    "minimum_number_should_match" => 1
+                )
+            ),
+            "partial_fields" => array(
+                "_source" => array(
+                    "exclude" => "email_list"
+                )
+            )
+        );
+        
+        $urlSuffix = "contact_lists/email/_search";
+        
+        //print_r( array( json_encode($query), $urlSuffix) ); exit;
+        
+        return $this->call('POST', $urlSuffix, $query);
+        
+    }
+    
     public function addPhoneList( $doc ){
         $added = false;
         if( isset( $doc->id ) ){
