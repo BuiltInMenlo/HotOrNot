@@ -1,17 +1,17 @@
 <?php
 /*
 Challenges
-action 1 - ( submitMatchingChallenge ),
-action 2 - ( getChallengesForUser ),
-action 3 - ( getAllChallengesForUser ),
-action 4 - ( acceptChallenge ),
-action 7 - ( submitChallengeWithUsername ),
-action 8 - ( getPrivateChallengesForUser ),
-action 9 - ( submitChallengeWithChallenger ),
-action 11 - ( flagChallenge ),
-action 12 - ( getChallengesForUserBeforeDate ),
-action 13 - ( getPrivateChallengesForUserBeforeDate ),
-action 14 - ( submitChallengeWithUsernames ),
+    action 1 - ( submitMatchingChallenge ),
+    action 2 - ( getChallengesForUser ),
+    action 3 - ( getAllChallengesForUser ),
+    action 4 - ( acceptChallenge ),
+    action 7 - ( submitChallengeWithUsername ),
+    action 8 - ( getPrivateChallengesForUser ),
+    action 9 - ( submitChallengeWithChallenger ),
+    action 11 - ( flagChallenge ),
+    action 12 - ( getChallengesForUserBeforeDate ),
+    action 13 - ( getPrivateChallengesForUserBeforeDate ),
+    action 14 - ( submitChallengeWithUsernames ),
 
  * 
  */
@@ -69,7 +69,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 		
 		$expires = -1;
         if( !empty( $challenge_obj->expires ) && $challenge_obj->expires > -1 ){
-            $expires = time() - $challenge_obj->expires;
+            $expires = $challenge_obj->expires - time();
             if( $expires < 0 ){
                 $expires = 0;
             }
@@ -444,7 +444,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 			$challenger_obj = mysql_fetch_object(mysql_query($query));
 			
 			// update the challenge to say it's nowe in session
-			$query = 'UPDATE `tblChallenges` SET `expires` = '.$expires.', status_id` = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
+			$query = 'UPDATE `tblChallenges` SET status_id = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
 			$update_result = mysql_query($query);
 			
 			// send push if creator allows it
@@ -490,7 +490,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $challenger_id The ID of the user to target (integer)
 	 * @return An associative object for a challenge (array)
 	**/
-	public function submitChallengeWithChallenger($user_id, $subject, $img_url, $challenger_id, $is_private) {
+	public function submitChallengeWithChallenger($user_id, $subject, $img_url, $challenger_id, $is_private, $expires) {
 		$this->dbConnect();
 	    $challenge_arr = array();
 		
@@ -508,8 +508,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 		
 		// add the challenge
 		$query = 'INSERT INTO `tblChallenges` (';
-		$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`) ';
-		$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW(), "'.$is_private.'" );';
+		$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`, `expires`) ';
+		$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW(), "'.$is_private.'", '.$expires.' );';
 		$result = mysql_query($query);
 		$challenge_id = mysql_insert_id();
 		
