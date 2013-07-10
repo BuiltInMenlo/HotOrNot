@@ -15,6 +15,7 @@
 - (void)setUsernames:(NSArray *)usernameList;
 - (void)showKeyboard;
 
+@property (nonatomic) int isPrivate;
 @property(nonatomic, assign) id <HONCreateChallengePreviewViewDelegate> delegate;
 @end
 

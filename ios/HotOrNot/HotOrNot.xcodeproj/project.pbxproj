@@ -1715,6 +1715,8 @@
 		4C0CA3F5175151FA00DD0652 /* Invite */ = {
 			isa = PBXGroup;
 			children = (
+				4CB03BB3173C88B40062B607 /* HONVerifyMobileViewController.h */,
+				4CB03BB4173C88B40062B607 /* HONVerifyMobileViewController.m */,
 				4C382FF1178B4D6800C7FA7C /* Celebs */,
 				4C382FF5178B86DB00C7FA7C /* Contacts */,
 				4C6422F217793FF80035C1F6 /* Instagram */,
@@ -1776,8 +1778,6 @@
 		4C148F7B17815BD900EBD245 /* registration */ = {
 			isa = PBXGroup;
 			children = (
-				4CB03BB3173C88B40062B607 /* HONVerifyMobileViewController.h */,
-				4CB03BB4173C88B40062B607 /* HONVerifyMobileViewController.m */,
 				4C6A3E1317669ADC00B6CD4D /* HONAddFriendsViewController.h */,
 				4C6A3E1417669ADC00B6CD4D /* HONAddFriendsViewController.m */,
 			);

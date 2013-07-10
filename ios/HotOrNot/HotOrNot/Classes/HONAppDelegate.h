@@ -122,7 +122,7 @@ extern NSString * const kTwilioSMS;
 + (NSString *)deviceLocale;
 
 + (NSString *)timeSinceDate:(NSDate *)date;
-
++ (NSString *)formattedExpireTime:(int)seconds;
 
 + (UIFont *)helveticaNeueFontRegular;
 + (UIFont *)helveticaNeueFontLight;

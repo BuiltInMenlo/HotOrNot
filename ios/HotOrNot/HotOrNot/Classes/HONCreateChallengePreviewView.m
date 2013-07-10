@@ -18,11 +18,11 @@
 @property (nonatomic, strong) UIView *subjectBGView;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UILabel *captionLabel;
-@property (nonatomic) BOOL isEnabled;
 @end
 
 @implementation HONCreateChallengePreviewView
 @synthesize delegate = _delegate;
+@synthesize isPrivate = _isPrivate;
 
 
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image {
@@ -31,7 +31,6 @@
 		//NSLog(@"NORMAL");
 		//NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
-		_isEnabled = NO;
 		_previewImage = image;
 		_subjectName = subject;
 		
@@ -53,7 +52,6 @@
 		//NSLog(@"MIRRORED");
 		//NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
-		_isEnabled = NO;
 		_previewImage = image;
 		_subjectName = subject;
 		
@@ -179,7 +177,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[_subjectTextField resignFirstResponder];
-	[self _dropKeyboardAndRemove:YES];
+	[self _dropKeyboardAndRemove:(!_isPrivate || (_isPrivate && [_usernamesLabel.text length] > 0))];
 	
 	[self.delegate previewView:self changeSubject:_subjectName];
 	[self.delegate previewViewSubmit:self];
@@ -193,8 +191,6 @@
 
 #pragma mark - UI Presentation
 - (void)_raiseKeyboard {
-	_isEnabled = YES;
-	
 	_subjectBGView.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
@@ -203,12 +199,12 @@
 }
 
 - (void)_dropKeyboardAndRemove:(BOOL)isRemoved {
-	_isEnabled = NO;
-	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
 		_captionLabel.alpha = 0.0;
 	} completion:^(BOOL finished) {
+		_subjectBGView.hidden = YES;
+		
 		if (isRemoved)
 			[self removeFromSuperview];
 	}];

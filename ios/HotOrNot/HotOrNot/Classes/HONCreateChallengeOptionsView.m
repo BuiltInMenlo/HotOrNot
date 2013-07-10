@@ -15,14 +15,12 @@
 @property (nonatomic, strong) UIButton *expire24HoursButton;
 @property (nonatomic, strong) UIImageView *publicPrivateImageView;
 @property (nonatomic, strong) UIButton *cancelButton;
-@property (nonatomic) BOOL isPrivate;
-//@property (nonatomic, strong) UIButton *publicButton;
-//@property (nonatomic, strong) UIButton *randomButton;
-//@property (nonatomic, strong) UIButton *privateButton;
 @end
 
 @implementation HONCreateChallengeOptionsView
 @synthesize delegate = _delegate;
+@synthesize expireType = _expireType;
+@synthesize isPrivate = _isPrivate;
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
@@ -44,18 +42,25 @@
 		_expire10MinsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_expire10MinsButton.frame = CGRectMake(28.0, offset + 80.0, 264.0, 64.0);
 		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_nonActive"] forState:UIControlStateNormal];
-		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_Active"] forState:UIControlStateHighlighted];
-		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_Tapped"] forState:UIControlStateSelected];
+		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_Tapped"] forState:UIControlStateHighlighted];
+		[_expire10MinsButton setBackgroundImage:[UIImage imageNamed:@"expire10mins_Active"] forState:UIControlStateSelected];
 		[_expire10MinsButton addTarget:self action:@selector(_goExpire10Mins) forControlEvents:UIControlEventTouchUpInside];
 		[bgImageView addSubview:_expire10MinsButton];
 		
 		_expire24HoursButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_expire24HoursButton.frame = CGRectMake(28.0, offset + 160.0, 264.0, 64.0);
 		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_nonActive"] forState:UIControlStateNormal];
-		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_Active"] forState:UIControlStateHighlighted];
-		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_Tapped"] forState:UIControlStateSelected];
+		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_Tapped"] forState:UIControlStateHighlighted];
+		[_expire24HoursButton setBackgroundImage:[UIImage imageNamed:@"expire24hours_Active"] forState:UIControlStateSelected];
 		[_expire24HoursButton addTarget:self action:@selector(_goExpire24Hours) forControlEvents:UIControlEventTouchUpInside];
 		[bgImageView addSubview:_expire24HoursButton];
+		
+		UILabel *privateLabel = [[UILabel alloc] initWithFrame:CGRectMake(95.0, offset + 259.0, 180.0, 24.0)];
+		privateLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
+		privateLabel.textColor = [UIColor whiteColor];
+		privateLabel.backgroundColor = [UIColor clearColor];
+		privateLabel.text = @"Private:";
+		[bgImageView addSubview:privateLabel];
 		
 		_publicPrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(178.0, offset + 240.0, 114.0, 64.0)];
 		_publicPrivateImageView.image = [UIImage imageNamed:(_isPrivate) ? @"onPrivateMessage_" : @"offPrivateMessage_"];
@@ -75,6 +80,30 @@
 	}
 	
 	return (self);
+}
+
+
+#pragma mark - Public APIs
+- (void)setExpireType:(HONChallengeExpireType)expireType {
+	_expireType = expireType;
+	
+	if (expireType == HONChallengeExpireTypeNone) {
+		[_expire10MinsButton setSelected:NO];
+		[_expire24HoursButton setSelected:NO];
+		
+	} else if (expireType == HONChallengeExpireType10Minutes) {
+		[_expire10MinsButton setSelected:YES];
+		[_expire24HoursButton setSelected:NO];
+		
+	} else if (expireType == HONChallengeExpireType24Hours) {
+		[_expire10MinsButton setSelected:NO];
+		[_expire24HoursButton setSelected:YES];
+	}
+}
+
+- (void)setIsPrivate:(BOOL)isPrivate {
+	_isPrivate = isPrivate;
+	_publicPrivateImageView.image = [UIImage imageNamed:(_isPrivate) ? @"onPrivateMessage_" : @"offPrivateMessage_"];
 }
 
 

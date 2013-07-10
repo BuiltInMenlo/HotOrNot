@@ -132,12 +132,12 @@
 	[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:subjectButton];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(246.0, 20.0, 60.0, 16.0)];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 20.0, 160.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
 	timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
+	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 	[self addSubview:timeLabel];
 	
 	UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, kSnapLargeDim)];

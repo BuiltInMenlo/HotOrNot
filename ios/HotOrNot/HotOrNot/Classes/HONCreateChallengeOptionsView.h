@@ -8,8 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "HONImagePickerViewController.h"
+
 @protocol HONCreateChallengeOptionsViewDelegate;
 @interface HONCreateChallengeOptionsView : UIView
+@property (nonatomic) BOOL isPrivate;
+@property (nonatomic, assign) HONChallengeExpireType expireType;
 @property(nonatomic, assign) id <HONCreateChallengeOptionsViewDelegate> delegate;
 @end
 

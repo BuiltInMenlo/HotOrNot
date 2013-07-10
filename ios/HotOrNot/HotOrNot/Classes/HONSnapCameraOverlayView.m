@@ -30,6 +30,8 @@
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) NSArray *usernames;
 @property (nonatomic, strong) NSString *username;
+@property (nonatomic) BOOL isPrivate;
+@property (readonly, nonatomic, assign) HONChallengeExpireType expireType;
 @end
 
 @implementation HONSnapCameraOverlayView
@@ -78,9 +80,9 @@
 		[self addSubview:_usernamesLabel];
 				
 		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_optionsButton.frame = CGRectMake(16.0, [UIScreen mainScreen].bounds.size.height - 60.0, 44.0, 44.0);
-		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_nonActive"] forState:UIControlStateNormal];
-		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"timeButton_Active"] forState:UIControlStateHighlighted];
+		_optionsButton.frame = CGRectMake(16.0, [UIScreen mainScreen].bounds.size.height - 70.0, 84.0, 64.0);
+		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"iconForever_nonActive"] forState:UIControlStateNormal];
+		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"iconForever_Active"] forState:UIControlStateHighlighted];
 		[_optionsButton addTarget:self action:@selector(_goChallengeOptions) forControlEvents:UIControlEventTouchUpInside];
 		[_controlsHolderView addSubview:_optionsButton];
 		
@@ -140,6 +142,8 @@
 	
 	_challengeOptionsView = [[HONCreateChallengeOptionsView alloc] initWithFrame:self.frame];
 	_challengeOptionsView.frame = CGRectOffset(_challengeOptionsView.frame, 0.0, self.frame.size.height);
+	[_challengeOptionsView setExpireType:_expireType];
+	[_challengeOptionsView setIsPrivate:_isPrivate];
 	_challengeOptionsView.delegate = self;
 	[self addSubview:_challengeOptionsView];
 	
@@ -185,22 +189,36 @@
 
 #pragma mark - ChallengeOptionsView Delegates
 - (void)challengeOptionsViewMakePublic:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	_isPrivate = NO;
 	[self.delegate cameraOverlayView:self challengeIsPublic:YES];
 }
 
-- (void)challengeOptionsViewMakeNonExpire:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
-	[self.delegate cameraOverlayViewMakeChallengeNonExpire:self];
-}
-
 - (void)challengeOptionsViewMakePrivate:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	_isPrivate = YES;
 	[self.delegate cameraOverlayView:self challengeIsPublic:NO];
 }
 
+- (void)challengeOptionsViewMakeNonExpire:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	_expireType = HONChallengeExpireTypeNone;
+	
+	[_optionsButton setBackgroundImage:[UIImage imageNamed:@"iconForever_nonActive"] forState:UIControlStateNormal];
+	[_optionsButton setBackgroundImage:[UIImage imageNamed:@"iconForever_Active"] forState:UIControlStateHighlighted];
+	[self.delegate cameraOverlayViewMakeChallengeNonExpire:self];
+}
+
 - (void)challengeOptionsViewExpire10Minutes:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	_expireType = HONChallengeExpireType10Minutes;
+	
+	[_optionsButton setBackgroundImage:[UIImage imageNamed:@"icon10mins_nonActive"] forState:UIControlStateNormal];
+	[_optionsButton setBackgroundImage:[UIImage imageNamed:@"icon10mins_Active"] forState:UIControlStateHighlighted];
 	[self.delegate cameraOverlayViewExpires10Minutes:self];
 }
 
 - (void)challengeOptionsViewExpire24Hours:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
+	_expireType = HONChallengeExpireType24Hours;
+	
+	[_optionsButton setBackgroundImage:[UIImage imageNamed:@"icon24hours_nonActive"] forState:UIControlStateNormal];
+	[_optionsButton setBackgroundImage:[UIImage imageNamed:@"icon24hours_Active"] forState:UIControlStateHighlighted];
 	[self.delegate cameraOverlayViewExpires24Hours:self];
 }
 

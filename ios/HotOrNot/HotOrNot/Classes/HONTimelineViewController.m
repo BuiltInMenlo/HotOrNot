@@ -167,7 +167,7 @@
 	} else if (_timelineType == HONTimelineTypeFriends) {
 	}
 	
-	NSLog(@"PARAMS:[%@]", params);
+	//NSLog(@"PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -186,12 +186,13 @@
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
 				if (vo != nil) {
-					[_challenges addObject:vo];
+					if (vo.expireSeconds != 0)
+						[_challenges addObject:vo];
 				}
 			}
 			
 			if (_timelineType == HONTimelineTypeOpponents) {
-				HONChallengeVO *vo = (HONChallengeVO *)[_challenges lastObject];
+				HONChallengeVO *vo = (HONChallengeVO *)[_challenges firstObject];
 				[_headerView setTitle:[NSString stringWithFormat:@"@%@", ([vo.challengerName length] == 0) ? vo.creatorName : (vo.creatorID == [[_challengerDict objectForKey:@"user1"] intValue] && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorName : vo.challengerName]];
 			}
 						
@@ -273,8 +274,10 @@
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
-			[HONAppDelegate addFriendToList:result];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil)
+				[HONAppDelegate addFriendToList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -328,7 +331,7 @@
 	[_headerView addSubview:createChallengeButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kNavBarHeaderHeight + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
 	_tableView.delegate = self;

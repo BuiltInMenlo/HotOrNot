@@ -15,16 +15,16 @@ const CGFloat kFocusInterval;
 
 typedef enum {
 	HONChallengeSubmitTypeMatch			= 1,	/** Pairs w/ existing or creates new */
-	HONChallengeSubmitTypeOpponentID	= 9,	/** Directed at a user */
 	HONChallengeSubmitTypeAccept		= 4,	/** Accepts */
-	HONChallengeSubmitTypeJoin			= 14,	/** Joins an in-progress challenge */
-	HONChallengeSubmitTypeOpponentName	= 7		/** Directed at a user */
+	HONChallengeSubmitTypeOpponentID	= 9,	/** Directed at a user */
+	HONChallengeSubmitTypeOpponentName	= 7,	/** Directed at a user */
+	HONChallengeSubmitTypeJoin			= 14	/** Joins an in-progress challenge */
 } HONChallengeSubmitType;
 
 typedef enum {
 	HONChallengeExpireTypeNone		= 1,
 	HONChallengeExpireType10Minutes	= 2,
-	HONChallengeExpireType24Hours	= 1
+	HONChallengeExpireType24Hours	= 3
 } HONChallengeExpireType;
 
 @interface HONImagePickerViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>

@@ -23,6 +23,7 @@
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *updatedDate;
+@property (nonatomic) int expireSeconds;
 
 @property (nonatomic) int creatorID;
 @property (nonatomic, retain) NSString *creatorFB;

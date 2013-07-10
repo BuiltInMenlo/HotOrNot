@@ -225,7 +225,6 @@
 		
 		NSString *phoneNumber = @"";
 		if (phoneCount > 0) {
-			NSLog(@"\nPHONE:[%@]", (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0));
 			phoneNumber = (__bridge NSString *)ABMultiValueCopyValueAtIndex(phoneProperties, 0);
 		}
 		/*

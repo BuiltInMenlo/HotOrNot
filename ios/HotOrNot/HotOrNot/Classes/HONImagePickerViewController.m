@@ -604,8 +604,9 @@ const CGFloat kFocusInterval = 0.5f;
 			for (HONContactUserVO *vo in _addContacts)
 				[usernames addObject:vo.fullName];
 			
-			[_previewView setUsernames:[usernames copy]];
 			_previewView.delegate = self;
+			[_previewView setUsernames:[usernames copy]];
+			[_previewView setIsPrivate:_isPrivate];
 			[self.view addSubview:_previewView];
 		}];
 	}
@@ -817,42 +818,54 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
-	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-								   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-								   [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
-								   [NSString stringWithFormat:@"%d", _challengeExpireType], @"expires",
-								   _subjectName, @"subject",
-								   _challengerName, @"username",
-								   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
-	
-	if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin) {
-		_challengeSubmitType = HONChallengeSubmitTypeAccept;
-		//[params setObject:((HONUserVO *)[_addFollowing firstObject]).username forKey:@"username"];
-	}
-	
-	if ([_addFollowing count] > 1) {
-		_challengeSubmitType = HONChallengeSubmitTypeJoin;
+	if (_isPrivate && ([_addFollowing count] == 0 || [_challengerName length] == 0)) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Cannot Send Private Message"
+															message:@"You must select a friend to send a private photo message."
+														   delegate:nil
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView show];
 		
-		NSString *usernames = @"";
-		for (HONUserVO *vo in _addFollowing)
-			usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
+		[_previewView showKeyboard];
 		
-		[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
+	} else {
+		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									   [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+									   [NSString stringWithFormat:@"%d", _challengeExpireType], @"expires",
+									   _subjectName, @"subject",
+									   _challengerName, @"username",
+									   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
+		
+		if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin) {
+			_challengeSubmitType = HONChallengeSubmitTypeAccept;
+			//[params setObject:((HONUserVO *)[_addFollowing firstObject]).username forKey:@"username"];
+		}
+		
+		if ([_addFollowing count] > 1) {
+			_challengeSubmitType = HONChallengeSubmitTypeJoin;
+			
+			NSString *usernames = @"";
+			for (HONUserVO *vo in _addFollowing)
+				usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
+			
+			[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
+		}
+		
+		if (_challengeVO != nil)
+			[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+		
+		if (_userVO != nil)
+			[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
+		
+		if (_fbID != nil)
+			[params setObject:_fbID forKey:@"fbID"];
+		
+		[params setObject:[NSString stringWithFormat:@"%d", _challengeSubmitType] forKey:@"action"];
+		
+		NSLog(@"PARAMS:[%@]", params);
+		[self _submitChallenge:params];
 	}
-	
-	if (_challengeVO != nil)
-		[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
-	
-	if (_userVO != nil)
-		[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
-	
-	if (_fbID != nil)
-		[params setObject:_fbID forKey:@"fbID"];
-	
-	[params setObject:[NSString stringWithFormat:@"%d", _challengeSubmitType] forKey:@"action"];
-	
-	NSLog(@"PARAMS:[%@]", params);
-	[self _submitChallenge:params];
 }
 
 
