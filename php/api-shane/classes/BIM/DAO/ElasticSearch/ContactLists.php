@@ -115,4 +115,70 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
         return $this->call('GET', $urlSuffix);
     }
     
+    public function addEmailList( $doc ){
+        $added = false;
+        if( isset( $doc->id ) ){
+            $email_list = isset( $doc->email_list ) && $doc->email_list ? $doc->email_list : array();
+            if( ! isset( $doc->email_list ) || ! is_array($doc->email_list)  ){
+                $doc->email_list = array();
+            }
+            $urlSuffix = "contact_lists/email/$doc->id/_create";
+            $added = $this->call('PUT', $urlSuffix, $doc);
+            $added = json_decode( $added );
+            if( isset( $added->ok ) && $added->ok ){
+                $added = true;
+            } else {
+                $added = false;
+            }
+        }
+        return $added;
+    }
+    
+    public function updateEmailList( $params ){
+        $hashedNumber = isset( $params->email ) ? $params->email : '';
+        $hashedList = isset( $params->email_list ) ? $params->email_list : array();
+        $userId = isset( $params->id ) ? $params->id : '';
+        
+        $update = array(
+            'script' => "
+            	var merged = new HashMap();
+            	
+            	if( ctx._source.containsKey('email_list') && ctx._source.email_list is ArrayList ){
+            		foreach( number : ctx._source.email_list ){
+            			merged.put( number, true );
+            		}
+            	}
+            	
+            	foreach( number : email_list ){
+            		merged.put( number, true );
+            	}
+            	
+            	ctx._source.email_list = new ArrayList( merged.keySet() );
+            	
+            	if( email != empty ){
+            		ctx._source.email = email;
+            	}
+            	
+            	;
+            ",
+            'params' => array(
+                'email_list' => $hashedList,
+                "email" => $hashedNumber,
+            )
+        );
+        
+        if( $hashedNumber ){
+            $update['params']['email'] = $hashedNumber;
+        }
+        
+        $urlSuffix = "contact_lists/email/$userId/_update";
+        $res = $this->call('POST', $urlSuffix, $update);
+    }
+    
+    public function getEmailList( $params ){
+        $userId = isset( $params->id ) ? $params->id : '';
+        $urlSuffix = "contact_lists/email/$userId";
+        return $this->call('GET', $urlSuffix);
+    }
+
 }

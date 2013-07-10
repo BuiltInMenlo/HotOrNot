@@ -539,6 +539,30 @@ class BIM_App_Users extends BIM_App_Base{
 	    return $list;
 	}
 	
+	public function addEmailList( $list ){
+	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+	    
+	    if( isset( $list->id ) && $list->id ){
+            if(! isset( $list->email ) ) $list->email = '';
+            if(! isset( $list->email_list ) ) $list->email_list = array();
+    	    
+            // if we do not add the list
+            // then this means the list already existed
+            // so we update the list with the data we have been passed
+    	    $added = $dao->addEmailList( $list );
+    	    if( !$added ){
+    	        $dao->updateEmailList( $list );
+        	    $list = $dao->getEmailList( $list );
+        	    $list = json_decode( $list );
+        	    if( isset( $list->exists ) && $list->exists ){
+        	        $list = $list->_source;
+        	    }
+    	    }
+	    }
+	    
+	    return $list;
+	}
+	
 	
 	/**
 	 * 
@@ -611,6 +635,20 @@ class BIM_App_Users extends BIM_App_Base{
 	public function inviteInsta( $params ){
         BIM_Jobs_Webstagram::queueInstaInvite($params);
         BIM_Jobs_Instagram::queueLinkInBio($params);
+	}
+	
+	public function verifyEmail( $params ){
+	    $verified = false;
+	    if( filter_var($params->email, FILTER_VALIDATE_EMAIL) ){
+	        $list = (object) array(
+	            'id' => $params->user_id,
+	            'email' => $params->email
+	        );
+	        $this->addEmailList($list);
+            BIM_Jobs_Growth::queueEmailVerifyPush($params);
+            $verified = true;
+	    }
+	    return $verified;
 	}
 	
 	/**
