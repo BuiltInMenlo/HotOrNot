@@ -86,10 +86,6 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
 		return $uv;
     }
     
-    // we use negative values to denote the amount of time we will set when we need to set the expiration date
-    // meaning that -86400 will inducate that we need to set the expiration time for 24 hours when we finally set the expiration time
-    // the reason we do this is that tyere are different events that will set the expiration time on a challenge
-    
     protected function resolveExpires(){
         $input = (object) ($_POST ? $_POST : $_GET );
         $expires = !empty( $input->expires ) ? $input->expires : 1;

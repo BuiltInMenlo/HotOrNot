@@ -406,7 +406,10 @@ class BIM_App_Votes extends BIM_App_Base{
 		while ( $challenge_row = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
 		    //print_r( $challenge_row );
 			// push challenge into list
-			array_push( $challenge_arr, $this->getChallengeObj( $challenge_row['id'] ) );
+			$co = $this->getChallengeObj( $challenge_row['id'] );
+			if( $co['expires'] != 0 ){
+    			array_push( $challenge_arr, $co );
+			}
 		}
             
 		// return
