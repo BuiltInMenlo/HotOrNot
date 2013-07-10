@@ -165,9 +165,9 @@ class BIM_Growth_Persona{
         }
     }
     
-    public function trackInboundClick( $networkId, $referer = '' ){
+    public function trackInboundClick( $networkId, $referer = '', $ua = '' ){
         $dao = new BIM_DAO_Mysql_Persona( BIM_Config::db() );
-        $dao->trackInboundClick($this->name, $networkId, $referer);
+        $dao->trackInboundClick($this->name, $networkId, $referer, $ua );
         return true;
     }
     
