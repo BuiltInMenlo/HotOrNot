@@ -564,18 +564,23 @@ class BIM_App_Users extends BIM_App_Base{
             if(! isset( $list->email ) ) $list->email = '';
             if(! isset( $list->email_list ) ) $list->email_list = array();
     	    
-            // if we do not add the list
-            // then this means the list already existed
-            // so we update the list with the data we have been passed
-    	    $added = $dao->addEmailList( $list );
-    	    if( !$added ){
-    	        $dao->updateEmailList( $list );
-        	    $list = $dao->getEmailList( $list );
-        	    $list = json_decode( $list );
-        	    if( isset( $list->exists ) && $list->exists ){
-        	        $list = $list->_source;
+            $user = new BIM_User( $list->id );
+            if( $user->isExtant() ){
+                $list->avatar_url = $user->getAvatarUrl();
+                $list->username = $user->username;
+                // if we do not add the list
+                // then this means the list already existed
+                // so we update the list with the data we have been passed
+        	    $added = $dao->addEmailList( $list );
+        	    if( !$added ){
+        	        $dao->updateEmailList( $list );
+            	    $list = $dao->getEmailList( $list );
+            	    $list = json_decode( $list );
+            	    if( isset( $list->exists ) && $list->exists ){
+            	        $list = $list->_source;
+            	    }
         	    }
-    	    }
+            }
 	    }
 	    
 	    return $list;
