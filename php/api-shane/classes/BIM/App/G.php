@@ -29,7 +29,8 @@ class BIM_App_G extends BIM_App_Base{
         $persona = new BIM_Growth_Persona( $personaName );
         $persona->name = $personaName;
         $referer = isset($params['referer']) ? $params['referer'] : '';
-        $persona->trackInboundClick($networkId, $referer);
+        $ua = isset($params['user_agent']) ? $params['user_agent'] : '';
+        $persona->trackInboundClick($networkId, $referer, $ua);
         return true;
     }
 }
