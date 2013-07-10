@@ -69,6 +69,23 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         }
     }
     
+    public static function queueEmailVerifyPush( $params ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Growth',
+        	'method' => 'emailVerifyPush',
+        	'data' => (object) array( 
+                'user_id' => $params->user_id,
+            ),
+        );
+        return self::queueBackground( $job, 'push' );
+    }
+    
+    public function emailVerifyPush( $workload ){
+        $user = new BIM_User( $workload->data->user_id );
+        $msg = "Volley on! Your Volley account has been verified!";
+        BIM_Push_UrbanAirship_Iphone::send( $user->device_token, $msg );
+    }
+    
     public function queueMatchPush( $friend, $user ){
         $job = array(
         	'class' => 'BIM_Jobs_Growth',

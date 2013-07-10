@@ -502,9 +502,27 @@ class BIM_App_Users extends BIM_App_Base{
 	    return $this->findfriends($list);
 	}
 	
+	public function matchFriendsEmail( $params ){
+	    $list = $this->addEmailList($params);
+	    return $this->findfriendsEmail($list);
+	}
+	
 	public function findfriends( $list ){
 	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
 	    $matches = $dao->findFriends( $list );
+	    $matches = json_decode($matches);
+	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
+	        $matches = &$matches->hits->hits;
+	        foreach( $matches as &$match ){
+	            $match = $match->fields->_source;
+	        }
+	    }
+	    return $matches;
+	}
+	
+	public function findfriendsEmail( $list ){
+	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+	    $matches = $dao->findFriendsEmail( $list );
 	    $matches = json_decode($matches);
 	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
 	        $matches = &$matches->hits->hits;
@@ -534,6 +552,35 @@ class BIM_App_Users extends BIM_App_Base{
         	        $list = $list->_source;
         	    }
     	    }
+	    }
+	    
+	    return $list;
+	}
+	
+	public function addEmailList( $list ){
+	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+	    
+	    if( isset( $list->id ) && $list->id ){
+            if(! isset( $list->email ) ) $list->email = '';
+            if(! isset( $list->email_list ) ) $list->email_list = array();
+    	    
+            $user = new BIM_User( $list->id );
+            if( $user->isExtant() ){
+                $list->avatar_url = $user->getAvatarUrl();
+                $list->username = $user->username;
+                // if we do not add the list
+                // then this means the list already existed
+                // so we update the list with the data we have been passed
+        	    $added = $dao->addEmailList( $list );
+        	    if( !$added ){
+        	        $dao->updateEmailList( $list );
+            	    $list = $dao->getEmailList( $list );
+            	    $list = json_decode( $list );
+            	    if( isset( $list->exists ) && $list->exists ){
+            	        $list = $list->_source;
+            	    }
+        	    }
+            }
 	    }
 	    
 	    return $list;
@@ -611,6 +658,35 @@ class BIM_App_Users extends BIM_App_Base{
 	public function inviteInsta( $params ){
         BIM_Jobs_Webstagram::queueInstaInvite($params);
         BIM_Jobs_Instagram::queueLinkInBio($params);
+	}
+	
+	public function verifyEmail( $params ){
+	    $verified = false;
+	    if( filter_var($params->email, FILTER_VALIDATE_EMAIL) ){
+	        $list = (object) array(
+	            'id' => $params->user_id,
+	            'email' => $params->email
+	        );
+	        $this->addEmailList($list);
+            BIM_Jobs_Growth::queueEmailVerifyPush($params);
+            $verified = true;
+	    }
+	    return $verified;
+	}
+	
+	public function verifyPhone( $params ){
+	    $verified = false;
+	    $phone = trim( $params->phone );
+	    if( preg_match('@^\+{0,1}\d+$@', $phone ) ){
+	        $list = (object) array(
+	            'id' => $params->user_id,
+	            'hashed_number' => $phone
+	        );
+	        $this->addPhoneList($list);
+            BIM_Jobs_Growth::queueEmailVerifyPush($params);
+            $verified = true;
+	    }
+	    return $verified;
 	}
 	
 	/**
