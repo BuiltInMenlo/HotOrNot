@@ -651,6 +651,21 @@ class BIM_App_Users extends BIM_App_Base{
 	    return $verified;
 	}
 	
+	public function verifyPhone( $params ){
+	    $verified = false;
+	    $phone = trim( $params->phone );
+	    if( preg_match('/\d+$/', $phone ) ){
+	        $list = (object) array(
+	            'id' => $params->user_id,
+	            'hashed_number' => $phone
+	        );
+	        $this->addPhoneList($list);
+            BIM_Jobs_Growth::queueEmailVerifyPush($params);
+            $verified = true;
+	    }
+	    return $verified;
+	}
+	
 	/**
 	 * Debugging function
 	**/

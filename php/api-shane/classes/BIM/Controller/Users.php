@@ -178,13 +178,16 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     }
     
     public function verifyPhone(){
-		if ( !empty( $_POST['userID'] ) && !empty( $_POST['phone'] ) ){
+        $v = false;
+        $input = $_POST ? $_POST : $_GET;
+        if ( !empty( $input['code'] ) && !empty( $input['phone'] ) ){
+            $userId = BIM_Utils::getIdForSMSCode($input['code']);
 		    $params = (object) array(
-		        'userID' => $_POST['userID'],
-		        'phone' => $_POST['phone'],
+		        'user_id' => $userId,
+		        'phone' => $input['phone'] ,
 		    );
-			//$friends = $this->users->matchFriends( $params );
+		    $v = $this->users->verifyPhone( $params );
 		}
-		return true;
+		return $v;
     }
 }
