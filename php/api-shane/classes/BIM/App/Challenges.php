@@ -663,7 +663,10 @@ class BIM_App_Challenges extends BIM_App_Base{
 		$cnt = 0;
 		$challenge_arr = array();
 		foreach ($challengeID_arr as $key => $val) {
-			array_push($challenge_arr, $this->getChallengeObj($val));
+			$co = $this->getChallengeObj( $val );
+			if( $co['expires'] != 0 ){
+    			array_push( $challenge_arr, $co );
+			}
 			
 			// stop at 10
 			if (++$cnt == 10)
@@ -722,7 +725,10 @@ class BIM_App_Challenges extends BIM_App_Base{
 		$cnt = 0;
 		$challenge_arr = array();
 		foreach ($challengeID_arr as $key => $val) {
-			array_push($challenge_arr, $this->getChallengeObj($val));
+			$co = $this->getChallengeObj( $val );
+			if( $co['expires'] != 0 ){
+    			array_push( $challenge_arr, $co );
+			}
 			
 			// stop at 10
 			if (++$cnt == 10)

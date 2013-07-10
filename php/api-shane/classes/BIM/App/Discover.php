@@ -148,7 +148,10 @@ class BIM_App_Discover extends BIM_App_Base{
 		while ($row = mysql_fetch_assoc($result)) {
 					
 			// push challenge into array
-			array_push($challenge_arr, $this->getChallengeObj($row['id']));
+			$co = $this->getChallengeObj( $row['id'] );
+			if( $co['expires'] != 0 ){
+    			array_push( $challenge_arr, $co );
+			}
 		}
 		
 		if (count($challenge_arr) % 2 == 1)
