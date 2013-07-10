@@ -107,6 +107,18 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     }
     
     public function authorizeApp( ){
+        $this->doAuthorizeApp();
+        if( empty( $this->oauth_data ) ){
+            $this->purgeCookies();
+            if( $this->handleLogin() ){
+                $this->doAuthorizeApp();
+            } else {
+                $this->sendWarningEmail("cannot authorize app for tumblr for ".$this->persona->username);
+            }
+        }
+    }
+    
+    protected function doAuthorizeApp( ){
         
         $urls = $this->conf->urls;
         
@@ -120,26 +132,28 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             
             $ptrn = '/name="form_key" value="(.+?)"/';
             preg_match($ptrn, $response, $matches);
-            $formKey = $matches[1];
-            
-            $ptrn = '/name="oauth_token" value="(.+?)"/';
-            preg_match($ptrn, $response, $matches);
-            $oauthToken = $matches[1];
-            
-            $input = array(
-                'form_key' => $formKey,
-                'oauth_token' => $oauthToken,
-                'allow' => ''
-            );
-            
-            $authUrl = $urls->oauth->authorize;
-            $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
-            
-            $this->oauth_data = $response = json_decode($response);
+            if( !empty( $matches[1] ) ){
+                $formKey = $matches[1];
+                
+                $ptrn = '/name="oauth_token" value="(.+?)"/';
+                preg_match($ptrn, $response, $matches);
+                $oauthToken = $matches[1];
+                
+                $input = array(
+                    'form_key' => $formKey,
+                    'oauth_token' => $oauthToken,
+                    'allow' => ''
+                );
+                
+                $authUrl = $urls->oauth->authorize;
+                $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
+                
+                $this->oauth_data = $response = json_decode($response);
+            }
         }
-        
-        $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
-        
+        if( $response ){
+            $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
+        }
     }
     
     public function followUser( $user ){
