@@ -654,7 +654,7 @@ class BIM_App_Users extends BIM_App_Base{
 	public function verifyPhone( $params ){
 	    $verified = false;
 	    $phone = trim( $params->phone );
-	    if( preg_match('/\d+$/', $phone ) ){
+	    if( preg_match('@^\+{0,1}\d+$@', $phone ) ){
 	        $list = (object) array(
 	            'id' => $params->user_id,
 	            'hashed_number' => $phone
