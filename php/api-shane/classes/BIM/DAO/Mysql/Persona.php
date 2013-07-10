@@ -8,9 +8,9 @@ class BIM_DAO_Mysql_Persona extends BIM_DAO_Mysql{
 		return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
 	}
 	
-	public function trackInboundClick( $name, $networkId, $referer = '' ){
-	    $sql = "insert into growth.inbound_persona_clicks (name, network_id, referer, time) values (?, ?, ?,?)";
-		$params = array( $name, $networkId, $referer, time() );
+	public function trackInboundClick( $name, $networkId, $referer = '', $ua = '' ){
+	    $sql = "insert into growth.inbound_persona_clicks (name, network_id, referer, time, user_agent) values (?, ?, ?, ?, ?)";
+		$params = array( $name, $networkId, $referer, time(), $ua );
 		$stmt = $this->prepareAndExecute( $sql, $params );
 	}
 }
