@@ -105,7 +105,9 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
             $update['params']['hashed_number'] = $hashedNumber;
         }
         
+        
         $urlSuffix = "contact_lists/phone/$userId/_update";
+        
         $res = $this->call('POST', $urlSuffix, $update);
     }
     

@@ -37,6 +37,8 @@ class BIM_Utils{
         $smsCode = base64_decode( $smsCodeB64 );
         $id = mcrypt_decrypt(MCRYPT_3DES, $c->secret, $smsCode, MCRYPT_MODE_ECB);
         
+        $id = trim( $id );
+        
         return $id;
     }
 }
