@@ -133,14 +133,16 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     }
     
     public function verifyEmail(){
-		if ( !empty( $_POST['userID'] ) && !empty( $_POST['email'] ) ){
+        $v = false;
+        $input = $_POST ? $_POST : $_GET;
+		if ( !empty( $input['userID'] ) && !empty( $input['email'] ) ){
 		    $params = (object) array(
-		        'user_id' => $_POST['userID'],
-		        'email' => $_POST['email'] ,
+		        'user_id' => $input['userID'],
+		        'email' => $input['email'] ,
 		    );
-			//$friends = $this->users->matchFriends( $params );
+		    $v = $this->users->verifyEmail( $params );
 		}
-		return true;
+		return $v;
     }
     
     public function ffEmail(){
@@ -148,16 +150,19 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 	        array(
                 "username" => "shane",
                 "id" => 881,
-                "avatar_url" => 'https://hotornot-avatars.s3.amazonaws.com/66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035.jpg'
-	        ),
+                "email" => "shane@builtinmenlo.com",
+	        	"avatar_url" => 'https://hotornot-avatars.s3.amazonaws.com/66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035.jpg',
+            ),
 	        array(
                 "username" => "Foogy",
                 "id" => 882,
-                "avatar_url" => 'https://hotornot-avatars.s3.amazonaws.com/66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035.jpg'
+                "email" => "shane@builtinmenlo.com",
+	        	"avatar_url" => 'https://hotornot-avatars.s3.amazonaws.com/66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035.jpg'
 	        ),
 	        array(
                 "username" => "Boogy",
-                "id" => 883,
+                "email" => "shane@builtinmenlo.com",
+	        	"id" => 883,
                 "avatar_url" => 'https://hotornot-avatars.s3.amazonaws.com/66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035.jpg'
 	        ),
 	    );
