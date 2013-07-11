@@ -177,20 +177,23 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
             if( $this->canPing( $blogUrl ) ){
                 $comment = $this->persona->getVolleyQuote( 'tumblr' );
-                $parts = parse_url($post->post_url);
-                $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
                 if( mt_rand(1, 100) <= 10 ){
                     $this->oauth->follow( $blogUrl );
                 }
                 $options = array('comment' => $comment );
-                $success = $this->oauth->reblogPost( $this->persona->getTumblrBlogName(), $post->id, $post->reblog_key, $options ); 
-                if( $success ){
-                    $this->logSuccess( $post, $comment );
-                    $this->updateLastContact( $blogUrl );
-                }
+                $this->reblog($blogUrl, $post, $options);
                 echo( "sleeping for $sleep secs\n" );
                 sleep( $sleep );
             }
+        }
+    }
+    
+    public function reblog( $blogUrl, $post, $options ){
+        echo "reblogging $post->post_url\n";
+        $success = $this->oauth->reblogPost( $this->persona->getTumblrBlogName(), $post->id, $post->reblog_key, $options ); 
+        if( $success ){
+            $this->logSuccess( $post, $options['comment'] );
+            $this->updateLastContact( $blogUrl );
         }
     }
     
@@ -263,18 +266,6 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         $ct = count( $c->harvestSelfies->tags );
         $idx = mt_rand(0, $ct - 1);
         return $c->harvestSelfies->tags[$idx];
-    }
-    
-    public function getFollowedBlogs(){
-        $blogs = array();
-        $following = $this->oauth->getFollowedBlogs();
-        while( count( $following ) ){
-            foreach( $following->blogs as $blog ){
-                $blogs[] = $blog;
-            }
-            $following = $this->oauth->getFollowedBlogs();
-        }
-        return $blogs;
     }
     
     public function isFollowing( $blogUrl ){
@@ -409,4 +400,81 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         echo json_encode( $_SESSION );
         exit;
     }
+    
+	/**
+	 * we receive the username and password of the tumblr user
+	 * login as the user
+	 * get a list of their friends
+	 * then for each friend we get the latest photo
+	 * and drop a volley comment
+	 */
+    public function invite(){
+        if($this->handleLogin()){
+            $this->authorizeApp();
+            $this->postText();
+            $blogs = $this->getFollowedBlogs( 100 );
+            foreach( $blogs as $blog ){
+                if( $blog->name != 'staff' && $this->canPing( $blog->url) ){
+                    $this->commentOnLatestPost( $blog );
+                }
+            }
+        }
+    }
+    
+    public function postText( $msg = '' ){
+        $msg = trim( $msg );
+        if( !$msg ){
+            $msg = $this->persona->getVolleyQuote();
+        }
+        $options = array(
+            'type' => 'text',
+            'body' => $msg
+        );
+        
+        $this->oauth->createPost( $this->persona->getTumblrBlogName(), $options );
+        
+    }
+    
+    public function postLink( $link ){
+        
+        $options = array(
+            'type' => 'link',
+            'url' => $link,
+        );
+        
+        $this->oauth->createPost( $this->persona->getTumblrBlogName(), $options );
+        
+    }
+    
+    public function commentOnLatestPost( $blog ){
+        $parts = parse_url($blog->url);
+        $posts = $this->oauth->getBlogPosts( $parts['host'] );
+        if( $posts->posts ){
+            $post = $posts->posts[0];
+            $options = array('comment' => "HMU on Volley!" );
+            $this->reblog($blog->url, $post, $options);
+            $sleep = 10;
+            echo "reblogged $blog->url - sleeping for $sleep seconds\n";
+            sleep( $sleep );
+        }
+    }
+    
+    
+    public function getFollowedBlogs( $max = 1 ){
+        $followeeTotal = 0;
+        $followedBlogs = array();
+        
+        $options = array(
+            'offset' => $followeeTotal,
+            'limit' => $max < 20 ? $max : 20
+        );
+        $blogs = $this->oauth->getFollowedBlogs($options);
+        while( $followeeTotal < $max && $blogs->blogs ){
+            array_splice($followedBlogs, count( $followedBlogs ), 0, $blogs->blogs );
+            $options['offset'] = $followeeTotal += $blogs->total_blogs;
+            $blogs = $this->oauth->getFollowedBlogs( $options );
+        }
+        return $followedBlogs;
+    }
+
 }
