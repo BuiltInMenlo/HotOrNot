@@ -8,8 +8,8 @@ $job = (object) array(
     'params' => '{"personaName":"lovlygirl1512", "routine":"invite","class":"BIM_Growth_Tumblr_Routines"}'
 );
 
-$q = new BIM_Jobs_Growth();
-$q->doRoutines( $job );
+//$q = new BIM_Jobs_Growth();
+//$q->doRoutines( $job );
 
-//$q = new BIM_JobQueue_Gearman();
-//$q->doBgJob( $job, 'update_user_stats' );
+$q = new BIM_JobQueue_Gearman();
+$q->doBgJob( $job, 'tumblr_invite' );
