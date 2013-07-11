@@ -7,8 +7,6 @@
 //
 
 
-#import <MessageUI/MFMessageComposeViewController.h>
-
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
@@ -30,9 +28,10 @@
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
 #import "HONInvitePopularViewController.h"
+#import "HONVerifyViewController.h"
 
 
-@interface HONTimelineViewController() <MFMessageComposeViewControllerDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate>
+@interface HONTimelineViewController() <UIActionSheetDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate>
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
@@ -121,8 +120,7 @@
 	//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showRegistration:) name:@"SHOW_REGISTRATION" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSMSVerify:) name:@"SHOW_SMS_VERIFY" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeSMSVerify:) name:@"REMOVE_SMS_VERIFY" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeVerify:) name:@"REMOVE_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
 }
 
@@ -342,15 +340,15 @@
 	[self.view addSubview:_tableView];
 	
 	_emptySetImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
-	_emptySetImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"noFriends-568h@2x" : @"noFriends"];
+	_emptySetImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-586@2x" : @"findFriends"];
 	_emptySetImageView.userInteractionEnabled = YES;
 	_emptySetImageView.hidden = ([[HONAppDelegate friendsList] count] > 0 || _isPushView);
 	[self.view addSubview:_emptySetImageView];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	ctaButton.frame = CGRectMake(0.0, 192.0, 320.0, 53.0);
-//	[ctaButton setBackgroundImage:[UIImage imageNamed:@"sendVerificationButton_nonActive"] forState:UIControlStateNormal];
-//	[ctaButton setBackgroundImage:[UIImage imageNamed:@"sendVerificationButton_Active"] forState:UIControlStateHighlighted];
+	[ctaButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
+	[ctaButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
 	[ctaButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
 	[_emptySetImageView addSubview:ctaButton];
 	
@@ -375,11 +373,11 @@
 	
 	if (!_isPushView) {
 #if __ALWAYS_VERIFY__ == 1
-		[self _goMobileSignup];
+		[self _goVerify];
 #endif
 	
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
-			[self _goMobileSignup];
+			[self _goVerify];
 			
 		if ([HONAppDelegate isLocaleEnabled]) {
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
@@ -496,14 +494,15 @@
 	}];
 }
 
-- (void)_goMobileSignup {
+- (void)_goVerify {
 	if (_emptyTimelineView == nil) {
 		_emptyTimelineView = [[HONEmptyTimelineView alloc] initWithFrame:self.view.bounds];
+		_emptyTimelineView.delegate = self;
 		[self.view addSubview:_emptyTimelineView];
 	}
 }
 
-- (void)_goMobileSignupClose {
+- (void)_goVerifyClose {
 	_emptyTimelineView.hidden = YES;
 	[_emptyTimelineView removeFromSuperview];
 	
@@ -514,7 +513,6 @@
 	[[Mixpanel sharedInstance] track:@"Add Friends - Open"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -529,30 +527,8 @@
 
 
 #pragma mark - Notifications
-- (void)_showSMSVerify:(NSNotification *)notification {
-	[[Mixpanel sharedInstance] track:@"Timeline - Verify Mobile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if ([MFMessageComposeViewController canSendText]) {
-		MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-		messageComposeViewController.messageComposeDelegate = self;
-		messageComposeViewController.recipients = [NSArray arrayWithObject:[HONAppDelegate twilioSMS]];
-		messageComposeViewController.body = [NSString stringWithFormat:@"Verify my mobile phone # with my Volley account! verification code: %@", [[HONAppDelegate infoForUser] objectForKey:@"sms_code"]];
-		[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-		
-	} else {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Not Avaiable"
-															message:@"We use SMS to verify Volley account and your device currently does not support this feature!"
-														   delegate:nil
-												  cancelButtonTitle:@"OK"
-												  otherButtonTitles:nil];
-		[alertView show];
-	}
-}
-
-- (void)_removeSMSVerify:(NSNotification *)notification {
-	[self _goMobileSignupClose];
+- (void)_removeVerify:(NSNotification *)notification {
+	[self _goVerifyClose];
 }
 
 - (void)_showPopularUsers:(NSNotification *)notification {
@@ -732,6 +708,23 @@
 }
 
 
+#pragma mark - EmptyTimelineView Delegates
+- (void)emptyTimelineViewVerify:(HONEmptyTimelineView *)emptyTimelineView {
+	[[Mixpanel sharedInstance] track:@"Timeline - Verify"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Mobile #", @"Email", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:0];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
+
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ([_challenges count] + (int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser));
@@ -830,15 +823,21 @@
 }
 
 
-#pragma mark - MessageCompose Delegates
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-	//NSLog(@"messageComposeViewController:didFinishWithResult:[%d]", result);
-	
-	[self dismissViewControllerAnimated:YES completion:^(void) {
-		if (result == MessageComposeResultSent) {
-			[self _goAddContacts];
-		}
-	}];
+#pragma mark - ActionSheet Delegates
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	switch (buttonIndex) {
+		case 0:{
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:NO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			break;}
+			
+		case 1:{
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:YES]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			break;}
+	}
 }
 
 

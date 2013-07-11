@@ -41,7 +41,7 @@ NSString * const kConfigJSON = @"boot-dev.json";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
 NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
-NSString * const kConfigJSON = @"boot.json";
+NSString * const kConfigJSON = @"boot_v2.json";
 NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
 #endif
 
@@ -61,6 +61,10 @@ NSString * const kAPIGetFriends = @"social/getfriends";
 NSString * const kAPIAddFriends = @"social/addfriend";
 NSString * const kAPISMSInvites = @"g/smsinvites";
 NSString * const kAPIEmailInvites = @"g/emailinvites";
+NSString * const kAPITumblrLogin = @"users/invitetumblr";
+NSString * const kAPIEmailVerify = @"users/verifyemail";
+NSString * const kAPIPhoneVerify = @"users/verifyphone";
+NSString * const kAPIEmailContacts = @"users/ffemail";
 
 // view heights
 const CGFloat kNavBarHeaderHeight = 44.0f;
@@ -883,24 +887,25 @@ NSString * const kTwilioSMS = @"6475577873";
 	// sms sound
 	AudioServicesPlaySystemSound(1007);
 	
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+	
 	int type_id = [[userInfo objectForKey:@"type"] intValue];
 	switch (type_id) {
 		
 		// challenge update
-		case 1:
+		case 1:{
 			[self _showOKAlert:@"Snap Update"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-			break;
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
+		break;}
 			
 		// poke
 		case 2:
 			[self _showOKAlert:@"Poke"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-			
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-			[[[UIApplication sharedApplication] delegate].window.rootViewController.navigationController popToRootViewControllerAnimated:NO];
-			[self.tabBarController.navigationController popToRootViewControllerAnimated:NO];
-			[self.tabBarController.delegate tabBarController:self.tabBarController didSelectViewController:[self.tabBarController.viewControllers objectAtIndex:2]];
 			break;
 	}
 	 	

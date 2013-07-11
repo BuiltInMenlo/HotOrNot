@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol HONEmptyTimelineViewDelegate;
 @interface HONEmptyTimelineView : UIView
+@property (nonatomic, assign) id <HONEmptyTimelineViewDelegate> delegate;
+@end
 
+@protocol HONEmptyTimelineViewDelegate
+- (void)emptyTimelineViewVerify:(HONEmptyTimelineView *)emptyTimelineView;
 @end

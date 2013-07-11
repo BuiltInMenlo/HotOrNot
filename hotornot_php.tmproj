@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>php/api-dev/Challenges.php</string>
+	<string>php/api/Votes.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -93,6 +93,20 @@
 	<integer>201</integer>
 	<key>metaData</key>
 	<dict>
+		<key>php/api-20/Challenges.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>110</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>php/api-dev/Challenges.php</key>
 		<dict>
 			<key>caret</key>
@@ -156,14 +170,104 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>17</integer>
+				<integer>74</integer>
 				<key>line</key>
-				<integer>671</integer>
+				<integer>597</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>579</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>64</integer>
+				<key>line</key>
+				<integer>597</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>74</integer>
+				<key>line</key>
+				<integer>597</integer>
+			</dict>
+		</dict>
+		<key>php/api/Challenges.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>91</integer>
+				<key>line</key>
+				<integer>524</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>497</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>81</integer>
+				<key>line</key>
+				<integer>524</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>91</integer>
+				<key>line</key>
+				<integer>524</integer>
+			</dict>
+		</dict>
+		<key>php/api/Comments.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>90</integer>
+				<key>line</key>
+				<integer>210</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>198</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>80</integer>
+				<key>line</key>
+				<integer>210</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>90</integer>
+				<key>line</key>
+				<integer>210</integer>
+			</dict>
+		</dict>
+		<key>php/api/Votes.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>4</integer>
+				<key>line</key>
+				<integer>590</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>650</integer>
+			<integer>623</integer>
 		</dict>
 		<key>php/config/boot-dev.json</key>
 		<dict>
@@ -213,15 +317,19 @@
 	<key>openDocuments</key>
 	<array>
 		<string>php/api-dev/Challenges.php</string>
+		<string>php/api-20/Challenges.php</string>
 		<string>php/api-dev/Users.php</string>
 		<string>php/api-dev/Search.php</string>
 		<string>php/harness/stats.php</string>
 		<string>php/config/boot-dev.json</string>
 		<string>php/api-dev/Votes.php</string>
+		<string>php/api/Challenges.php</string>
+		<string>php/api/Comments.php</string>
+		<string>php/api/Votes.php</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{10, 4}, {1226, 874}}</string>
+	<string>{{-3, 80}, {1233, 798}}</string>
 </dict>
 </plist>

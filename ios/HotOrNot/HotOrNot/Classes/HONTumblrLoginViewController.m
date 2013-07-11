@@ -50,10 +50,9 @@
 #pragma mark - Data Calls
 - (void)_submitLogin {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 12], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							_usernameTextField.text, @"instau",
-							_passwordTextField.text, @"instap", nil];
+							_usernameTextField.text, @"u",
+							_passwordTextField.text, @"p", nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];

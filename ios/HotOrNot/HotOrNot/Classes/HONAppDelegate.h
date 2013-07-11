@@ -31,6 +31,10 @@ extern NSString * const kAPIGetFriends;
 extern NSString * const kAPIAddFriends;
 extern NSString * const kAPISMSInvites;
 extern NSString * const kAPIEmailInvites;
+extern NSString * const kAPITumblrLogin;
+extern NSString * const kAPIEmailVerify;
+extern NSString * const kAPIPhoneVerify;
+extern NSString * const kAPIEmailContacts;
 
 // view heights
 const CGFloat kNavBarHeaderHeight;

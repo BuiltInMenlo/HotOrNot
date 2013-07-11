@@ -18,7 +18,6 @@
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, assign) id <HONTimelineItemViewCellDelegate> delegate;
-
 @end
 
 

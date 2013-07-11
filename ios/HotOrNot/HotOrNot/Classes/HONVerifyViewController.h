@@ -1,5 +1,5 @@
 //
-//  HONHONVerifyMobileViewController.h
+//  HONVerifyViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 05.09.13.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONVerifyMobileViewController : UIViewController
-
+@interface HONVerifyViewController : UIViewController
+- (id)initAsEmailVerify:(BOOL)isEmail;
 @end

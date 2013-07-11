@@ -97,6 +97,11 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[[Mixpanel sharedInstance] track:@"Cancel button (first run)"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  @"organic", @"user_type",
+									  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
+	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 																		 message:@"Your profile photo is how other people will know you're real!"
@@ -132,6 +137,8 @@
 
 #pragma mark - UI Presentation
 - (void)showPreview:(UIImage *)image {
+	//NSLog(@"PARENT:[%@]", [[self.superview class] description]);
+	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
 	} completion:nil];
@@ -151,6 +158,8 @@
 }
 
 - (void)showPreviewAsFlipped:(UIImage *)image {
+	//NSLog(@"PARENT:[%@]", [[self.superview.superview.superview class] description]);
+	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
 	} completion:nil];
@@ -195,6 +204,11 @@
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
+				[[Mixpanel sharedInstance] track:@"cancel alert button (first run)"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  @"organic", @"user_type",
+												  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
+				
 				[self.delegate cameraOverlayViewCloseCamera:self];
 				break;
 				
@@ -202,6 +216,11 @@
 				[[Mixpanel sharedInstance] track:@"Register - Skip Photo Cancel"
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				[[Mixpanel sharedInstance] track:@"cancel alert button Cancel (first run)"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  @"organic", @"user_type",
+												  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
 				break;
 		}
 	}

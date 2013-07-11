@@ -7,7 +7,6 @@
 //
 
 #import <FacebookSDK/FacebookSDK.h>
-#import <MessageUI/MFMessageComposeViewController.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -27,8 +26,9 @@
 #import "HONAddContactsViewController.h"
 #import "HONAddContactViewCell.h"
 #import "HONTimelineViewController.h"
+#import "HONVerifyViewController.h"
 
-@interface HONProfileViewController () <UITableViewDataSource, UITableViewDelegate, MFMessageComposeViewControllerDelegate, HONUserProfileViewCellDelegate>
+@interface HONProfileViewController () <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, HONUserProfileViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *recentOpponents;
 @property (nonatomic, strong) NSArray *friends;
 @property (nonatomic, strong) NSMutableArray *contacts;
@@ -488,25 +488,18 @@
 	
 	} else if (indexPath.section == 3) {
 		if (indexPath.row == 0) {
-			[[Mixpanel sharedInstance] track:@"Profile - Verify Mobile"
+			[[Mixpanel sharedInstance] track:@"Profile - Verify"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 			
-			if ([MFMessageComposeViewController canSendText]) {
-				MFMessageComposeViewController *messageComposeViewController = [[MFMessageComposeViewController alloc] init];
-				messageComposeViewController.messageComposeDelegate = self;
-				messageComposeViewController.recipients = [NSArray arrayWithObject:[HONAppDelegate twilioSMS]];
-				messageComposeViewController.body = [NSString stringWithFormat:@"Verify my mobile phone # with my Volley account! verification code: %@", [[HONAppDelegate infoForUser] objectForKey:@"sms_code"]];
-				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
-				
-			} else {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Not Avaiable"
-																	message:@"We use SMS to verify Volley account and your device currently does not support this feature!"
-																   delegate:nil
-														  cancelButtonTitle:@"OK"
-														  otherButtonTitles:nil];
-				[alertView show];
-			}
+			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																	 delegate:self
+															cancelButtonTitle:@"Cancel"
+													   destructiveButtonTitle:nil
+															otherButtonTitles:@"Mobile #", @"Email", nil];
+			actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+			[actionSheet setTag:0];
+			[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 		
 		} else {
 			[[Mixpanel sharedInstance] track:@"Profile - Add Contacts"
@@ -520,22 +513,23 @@
 	}
 }
 
-#pragma mark - MessageCompose Delegates
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
-	//NSLog(@"messageComposeViewController:didFinishWithResult:[%d]", result);
-	
-	[self dismissViewControllerAnimated:YES completion:^(void) {
-//		if (result == MessageComposeResultSent) {
-//			[[Mixpanel sharedInstance] track:@"Add Friends - Open"
-//								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//			
-//			
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-//			[navigationController setNavigationBarHidden:YES];
-//			[self presentViewController:navigationController animated:YES completion:nil];
-//		}
-	}];
+
+#pragma mark - ActionSheet Delegates
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	switch (buttonIndex) {
+		case 0:{
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:NO]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			break;}
+			
+		case 1:{
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:YES]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			break;}
+	}
 }
+
 
 @end

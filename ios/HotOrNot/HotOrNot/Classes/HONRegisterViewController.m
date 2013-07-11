@@ -18,7 +18,7 @@
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 #import "HONHeaderView.h"
-#import "HONVerifyMobileViewController.h"
+#import "HONVerifyViewController.h"
 
 @interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
@@ -47,6 +47,16 @@
 												 selector:@selector(_previewStarted:)
 													 name:@"PLCameraControllerPreviewStartedNotification"
 												   object:nil];
+		
+		[[Mixpanel sharedInstance] track:@"Register - Show"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[[Mixpanel sharedInstance] track:@"New user type (first run)"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  @"organic", @"user_type",
+										  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
+		
 	}
 	
 	return (self);
@@ -69,6 +79,11 @@
 - (void)_submitUsername {
 	if ([[_username substringToIndex:1] isEqualToString:@"@"])
 		_username = [_username substringFromIndex:1];
+	
+	[[Mixpanel sharedInstance] track:@"Submit username"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  @"organic", @"user_type",
+									  _username, @"username", nil]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 7], @"action",
@@ -379,10 +394,10 @@
 - (void)_goNext {
 	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-											 message:@"You need to enter a username to start snapping"
-										   delegate:nil
-								cancelButtonTitle:@"OK"
-								otherButtonTitles:nil] show];
+									message:@"You need to enter a username to start snapping"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
 	[_usernameTextField becomeFirstResponder];
 		
 	} else {
@@ -394,6 +409,11 @@
 	[[Mixpanel sharedInstance] track:@"Register - Close Scroll"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[Mixpanel sharedInstance] track:@"Sign up now button (first run)"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  @"organic", @"user_type",
+									  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
 	
 	
 	[_usernameTextField becomeFirstResponder];
@@ -589,6 +609,11 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 _username, @"username", nil]];
 	
+	[[Mixpanel sharedInstance] track:@"Change username (first run)"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  @"organic", @"user_type",
+									  _username, @"username", nil]];
+	
 	//[self _goNext];
 	[self _submitUsername];
 }
@@ -623,9 +648,6 @@
 		//- apple fix
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-		
-		// normal
-//		[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
 	}];
 }
 
@@ -633,6 +655,11 @@
 	[[Mixpanel sharedInstance] track:@"Register - Switch Camera"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[Mixpanel sharedInstance] track:@"User flips (first run)"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  @"organic", @"user_type",
+									  _username, @"username", nil]];
 	
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
@@ -649,6 +676,11 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[[Mixpanel sharedInstance] track:@"User selects from camera roll (first run)"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  @"organic", @"user_type",
+									  _username, @"username", nil]];
+	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
@@ -657,12 +689,22 @@
 	[[Mixpanel sharedInstance] track:@"Register - Retake"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[Mixpanel sharedInstance] track:@"User retakes photo (first run)"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  @"organic", @"user_type",
+									  _username, @"username", nil]];
 }
 
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Register - Take Photo"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[[Mixpanel sharedInstance] track:@"User takes photo (first run)"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  @"organic", @"user_type",
+									  _username, @"username", nil]];
 	
 	[_imagePicker takePicture];
 }

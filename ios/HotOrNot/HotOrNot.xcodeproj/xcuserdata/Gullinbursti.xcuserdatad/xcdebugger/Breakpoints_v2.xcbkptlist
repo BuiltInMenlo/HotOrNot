@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "HotOrNot/Classes/HONRegisterViewController.m"
-            timestampString = "395003161.367433"
+            timestampString = "395177646.284041"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "416"
-            endingLineNumber = "416"
+            startingLineNumber = "436"
+            endingLineNumber = "436"
             landmarkName = "-_presentCamera"
             landmarkType = "5">
          </BreakpointContent>

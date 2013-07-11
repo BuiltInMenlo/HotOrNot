@@ -205,8 +205,8 @@
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
 		
 		// these two fuckers don't work in ios7 right now!!
-//		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//		_imagePicker.showsCameraControls = NO;
+		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		_imagePicker.showsCameraControls = NO;
 		// ---------------------------------------------------------------------------
 		
 		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);

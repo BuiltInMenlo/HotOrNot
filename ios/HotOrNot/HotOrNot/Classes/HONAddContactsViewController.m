@@ -29,6 +29,7 @@
 @property (nonatomic, strong) NSMutableArray *selectedInAppContacts;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSString *smsRecipients;
+@property (nonatomic, strong) NSString *emailRecipients;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic) int inviteTypeCounter;
 @property (nonatomic) int inviteTypeTotal;
@@ -62,12 +63,6 @@
 
 #pragma mark - Data Calls
 - (void)_sendSMSContacts {
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 11], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -96,7 +91,6 @@
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																   sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			
-			_inAppContacts = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 															   [serverList objectForKey:@"id"], @"id",
@@ -132,6 +126,72 @@
 		_progressHUD = nil;
 	}];
 }
+
+- (void)_sendEmailContacts {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[_emailRecipients substringToIndex:[_emailRecipients length] - 1], @"emailList",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIEmailContacts
+				  );
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIEmailContacts parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
+																   sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+			
+			for (NSDictionary *serverList in parsedUsers) {
+				HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+															   [serverList objectForKey:@"id"], @"id",
+															   [serverList objectForKey:@"username"], @"username",
+															   [serverList objectForKey:@"avatar_url"], @"avatar_url",
+															   @"", @"points",
+															   @"", @"votes",
+															   @"", @"pokes",
+															   @"", @"pics",
+															   @"", @"fb_id", nil]];
+				[_inAppContacts addObject:vo];
+			}
+			
+			if (_progressHUD != nil) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
+			
+			[_tableView reloadData];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 - (void)_sendFriendRequests {
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -169,11 +229,11 @@
 				_progressHUD = nil;
 			}
 			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[self dismissViewControllerAnimated:YES completion:^(void){
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
-			}];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+				//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+			}];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -389,12 +449,28 @@
 			
 			if (vo.isSMSAvailable)
 				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
+			
+			else
+				_emailRecipients = [_emailRecipients stringByAppendingFormat:@"%@|", vo.email];
 		}
+	}
+	
+	if ([_smsRecipients length] > 0 || [_emailRecipients length] > 0) {
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.taskInProgress = YES;
 	}
 	
 	if ([_smsRecipients length] > 0) {
 		NSLog(@"SMS CONTACTS:[%@]", [_smsRecipients substringToIndex:[_smsRecipients length] - 1]);
 		[self _sendSMSContacts];
+	}
+	
+	if ([_emailRecipients length] > 0) {
+		NSLog(@"EMAIL CONTACTS:[%@]", [_emailRecipients substringToIndex:[_emailRecipients length] - 1]);
+		[self _sendEmailContacts];
 	}
 }
 
@@ -406,6 +482,8 @@
 	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	
 	_smsRecipients = @"";
+	_emailRecipients = @"";
+	_inAppContacts = [NSMutableArray array];
 	_selectedNonAppContacts = [NSMutableArray array];
 	_selectedInAppContacts = [NSMutableArray array];
 	
@@ -577,11 +655,11 @@
 			_progressHUD = nil;
 		}
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self dismissViewControllerAnimated:YES completion:^(void){
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
-		}];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+			//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+		}];
 	}
 }
 
@@ -725,11 +803,11 @@
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_SMS_VERIFY" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[self dismissViewControllerAnimated:YES completion:^(void){
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
-				}];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+					//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+				}];
 				break;
 				
 			case 1:
