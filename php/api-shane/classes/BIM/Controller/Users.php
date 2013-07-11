@@ -127,7 +127,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		        'volley_user_id' => $input['userID'],
 		    );
 		    $users = new BIM_App_Users();
-			//$users->inviteInsta( $params );
+			$users->inviteTumblr( $params );
 		}
 		return true;
     }
