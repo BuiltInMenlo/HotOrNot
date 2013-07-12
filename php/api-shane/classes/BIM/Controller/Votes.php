@@ -36,8 +36,10 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     
     public function getChallengesWithChallenger(){
         $input = $_POST ? $_POST : $_GET;
-        if (isset($input['userID']) && isset($input['challengerID'])){
-			return $this->votes->getChallengesWithChallenger($input['userID'], $input['challengerID']);
+        if ( !empty( $input['userID'] ) && !empty( $input['challengerID'] ) ){
+		    $isPrivate = !empty( $input['isPrivate'] ) ? $input['isPrivate'] : 'N';
+		    $votes = new BIM_App_Votes();
+            return $votes->getChallengesWithChallenger($input['userID'], $input['challengerID'], $isPrivate );
 		}
 		return array();
     }
