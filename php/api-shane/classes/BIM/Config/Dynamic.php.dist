@@ -18,6 +18,15 @@ class BIM_Config_Dynamic{
         );
     }
     
+    public static function smtp(){
+        return (object) array(
+            'host' => 'smtp.mandrillapp.com',
+            'port' => 587,
+            'username' => '',
+            'password' => ''
+        );
+    }
+
     public static function warningEmail(){
         return (object) array(
             'emailData' => (object) array(

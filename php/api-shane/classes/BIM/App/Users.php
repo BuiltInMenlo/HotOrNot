@@ -510,6 +510,8 @@ class BIM_App_Users extends BIM_App_Base{
 	        $matches = &$matches->hits->hits;
 	        foreach( $matches as &$match ){
 	            $match = $match->fields->_source;
+	            $user = self::getUser( $match->id );
+	            $match->username = $user->username;
 	        }
 	    }
 	    return $matches;

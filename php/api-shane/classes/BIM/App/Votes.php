@@ -356,7 +356,7 @@ class BIM_App_Votes extends BIM_App_Base{
 		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
 		
         $query = "
-        	SELECT id 
+        	SELECT id, is_private, creator_id, challenger_id
         	FROM `hotornot-dev`.`tblChallenges` as tc 
         	WHERE tc.status_id IN (1,4) 
         		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
@@ -376,7 +376,11 @@ class BIM_App_Votes extends BIM_App_Base{
 		while ( $challenge_row = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
 		    //print_r( $challenge_row );
 			// push challenge into list
-			array_push( $challenge_arr, $this->getChallengeObj( $challenge_row['id'] ) );
+			
+		    $isForUser = ( $challenge_row['creator_id'] == $input->userID || $challenge_row['challenger_id'] == $input->userID );
+			if( $challenge_row['is_private'] == 'N' || $isForUser ){
+    			array_push( $challenge_arr, $this->getChallengeObj( $challenge_row['id'] ) );
+			}
 		}
             
 		// return
@@ -389,12 +393,12 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * @param $challenger_id The ID of the second user (integer)
 	 * @return The list of challenges (array)
 	**/
-	public function getChallengesWithChallenger($user_id, $challenger_id, $private = false) {
+	public function getChallengesWithChallenger($user_id, $challenger_id, $private = 'N') {
 		$this->dbConnect();
 	    $challenge_arr = array();
 		
 	    $privateSql = ' AND `is_private` != "Y" ';
-	    if( $private ){
+	    if( $private == 'Y' ){
 	        $privateSql = ' AND `is_private` = "Y" ';
 	    }
 	    // get challenges with these two users
