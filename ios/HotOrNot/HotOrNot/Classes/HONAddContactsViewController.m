@@ -366,6 +366,7 @@
 
 #pragma mark - Device Functions
 - (void)_retrieveContacts {
+	NSMutableArray *unsortedContacts = [NSMutableArray array];
 	_nonAppContacts = [NSMutableArray array];
 	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
 	
@@ -443,9 +444,7 @@
 																			lName, @"l_name",
 																			phoneNumber, @"phone",
 																			email, @"email", nil]];
-			
-			[_nonAppContacts addObject:vo];
-			
+			[unsortedContacts addObject:vo.dictionary];
 			
 			if (vo.isSMSAvailable)
 				_smsRecipients = [_smsRecipients stringByAppendingFormat:@"%@|", vo.mobileNumber];
@@ -471,6 +470,12 @@
 	if ([_emailRecipients length] > 0) {
 		NSLog(@"EMAIL CONTACTS:[%@]", [_emailRecipients substringToIndex:[_emailRecipients length] - 1]);
 		[self _sendEmailContacts];
+	}
+	
+	NSArray *sortedContacts = [NSArray arrayWithArray:[unsortedContacts sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"f_name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
+	for (NSDictionary *dict in sortedContacts) {
+		HONContactUserVO *vo = [HONContactUserVO contactWithDictionary:dict];
+		[_nonAppContacts addObject:vo];
 	}
 }
 
@@ -511,7 +516,7 @@
 	UIButton *selectToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	selectToggleButton.frame = CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0);
 	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateNormal];
-	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_Active"] forState:UIControlStateHighlighted];
+	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateHighlighted];
 	//[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:selectToggleButton];
 	

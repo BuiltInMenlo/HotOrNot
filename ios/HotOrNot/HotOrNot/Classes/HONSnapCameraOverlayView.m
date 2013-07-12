@@ -94,7 +94,7 @@
 		[_controlsHolderView addSubview:_captureButton];
 		
 		UIButton *cameraOptionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		cameraOptionsButton.frame = CGRectMake(248.0, [UIScreen mainScreen].bounds.size.height - 51.0, 64.0, 44.0);
+		cameraOptionsButton.frame = CGRectMake(248.0, [UIScreen mainScreen].bounds.size.height - 61.0, 64.0, 64.0);
 		[cameraOptionsButton setBackgroundImage:[UIImage imageNamed:@"moreWhiteButton_nonActive"] forState:UIControlStateNormal];
 		[cameraOptionsButton setBackgroundImage:[UIImage imageNamed:@"moreWhiteButton_Active"] forState:UIControlStateHighlighted];
 		[cameraOptionsButton addTarget:self action:@selector(_goCameraOptions) forControlEvents:UIControlEventTouchUpInside];

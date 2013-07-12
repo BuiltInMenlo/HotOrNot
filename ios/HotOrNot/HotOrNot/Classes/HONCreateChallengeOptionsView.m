@@ -35,8 +35,10 @@
 		_nonExpireButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_nonExpireButton.frame = CGRectMake(28.0, offset, 264.0, 64.0);
 		[_nonExpireButton setBackgroundImage:[UIImage imageNamed:@"foreverButton_nonActive"] forState:UIControlStateNormal];
-		[_nonExpireButton setBackgroundImage:[UIImage imageNamed:@"foreverButton_Active"] forState:UIControlStateHighlighted];
+		[_nonExpireButton setBackgroundImage:[UIImage imageNamed:@"foreverButton_Tapped"] forState:UIControlStateHighlighted];
+		[_nonExpireButton setBackgroundImage:[UIImage imageNamed:@"foreverButton_Active"] forState:UIControlStateSelected];
 		[_nonExpireButton addTarget:self action:@selector(_goNonExpire) forControlEvents:UIControlEventTouchUpInside];
+		[_nonExpireButton setSelected:YES];
 		[bgImageView addSubview:_nonExpireButton];
 		
 		_expire10MinsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -88,14 +90,17 @@
 	_expireType = expireType;
 	
 	if (expireType == HONChallengeExpireTypeNone) {
+		[_nonExpireButton setSelected:YES];
 		[_expire10MinsButton setSelected:NO];
 		[_expire24HoursButton setSelected:NO];
 		
 	} else if (expireType == HONChallengeExpireType10Minutes) {
+		[_nonExpireButton setSelected:NO];
 		[_expire10MinsButton setSelected:YES];
 		[_expire24HoursButton setSelected:NO];
 		
 	} else if (expireType == HONChallengeExpireType24Hours) {
+		[_nonExpireButton setSelected:NO];
 		[_expire10MinsButton setSelected:NO];
 		[_expire24HoursButton setSelected:YES];
 	}
@@ -113,6 +118,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[_nonExpireButton setSelected:YES];
 	[_expire10MinsButton setSelected:NO];
 	[_expire24HoursButton setSelected:NO];
 	[self.delegate challengeOptionsViewMakeNonExpire:self];
@@ -124,6 +130,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[_nonExpireButton setSelected:NO];
 	[_expire10MinsButton setSelected:YES];
 	[_expire24HoursButton setSelected:NO];
 	[self.delegate challengeOptionsViewExpire10Minutes:self];
@@ -135,6 +142,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[_nonExpireButton setSelected:NO];
 	[_expire10MinsButton setSelected:NO];
 	[_expire24HoursButton setSelected:YES];
 	[self.delegate challengeOptionsViewExpire24Hours:self];

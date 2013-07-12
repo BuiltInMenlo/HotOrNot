@@ -63,8 +63,12 @@
 	for (NSDictionary *dict in [HONAppDelegate popularPeople])
 		[_celebs addObject:[HONCelebVO celebWithDictionary:dict]];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Cool People"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
 	[self.view addSubview:headerView];
+	
+	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"coolPeopleTitle"]];
+	titleImageView.frame = CGRectOffset(titleImageView.frame, 93.0, 10.0);
+	[self.view addSubview:titleImageView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(250.0, 0.0, 64.0, 44.0);
@@ -88,7 +92,7 @@
 	UIButton *selectToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	selectToggleButton.frame = CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0);
 	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateNormal];
-	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_Active"] forState:UIControlStateHighlighted];
+	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateHighlighted];
 	//[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:selectToggleButton];
 }
@@ -124,19 +128,19 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if ([_selectedCelebs count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-															message:@"Invite popular people to Volley!"
-														   delegate:self
-												  cancelButtonTitle:@"Yes"
-												  otherButtonTitles:@"No", nil];
-		[alertView setTag:0];
-		[alertView show];
-		
-	} else {
+//	if ([_selectedCelebs count] == 0) {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+//															message:@"Invite popular people to Volley!"
+//														   delegate:self
+//												  cancelButtonTitle:@"Yes"
+//												  otherButtonTitles:@"No", nil];
+//		[alertView setTag:0];
+//		[alertView show];
+//		
+//	} else {
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[self dismissViewControllerAnimated:YES completion:nil];//[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-	}
+		[self dismissViewControllerAnimated:YES completion:nil];
+//	}
 }
 
 

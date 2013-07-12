@@ -897,9 +897,9 @@ NSString * const kTwilioSMS = @"6475577873";
 			[self _showOKAlert:@"Snap Update"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
+			//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+			//[navigationController setNavigationBarHidden:YES];
+			//[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
 		break;}
 			
 		// poke
