@@ -31,7 +31,7 @@
 #import "HONVerifyViewController.h"
 
 
-@interface HONTimelineViewController() <UIActionSheetDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate>
+@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate>
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
@@ -44,7 +44,7 @@
 @property (nonatomic) BOOL isPublic;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) UIImageView *emptySetImageView;
+@property (nonatomic, strong) UIImageView *findFriendsImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @end
 
@@ -339,18 +339,18 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_emptySetImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
-	_emptySetImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-586@2x" : @"findFriends"];
-	_emptySetImageView.userInteractionEnabled = YES;
-	_emptySetImageView.hidden = ([[HONAppDelegate friendsList] count] > 0 || _isPushView);
-	[self.view addSubview:_emptySetImageView];
+	_findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
+	_findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-586@2x" : @"findFriends"];
+	_findFriendsImageView.userInteractionEnabled = YES;
+	_findFriendsImageView.hidden = ([[HONAppDelegate friendsList] count] > 0 || _isPushView);
+	[self.view addSubview:_findFriendsImageView];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	ctaButton.frame = CGRectMake(0.0, 192.0, 320.0, 53.0);
 	[ctaButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
 	[ctaButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
-	[ctaButton addTarget:self action:@selector(_goAddContacts) forControlEvents:UIControlEventTouchUpInside];
-	[_emptySetImageView addSubview:ctaButton];
+	[ctaButton addTarget:self action:@selector(_goAddContactsAlert) forControlEvents:UIControlEventTouchUpInside];
+	[_findFriendsImageView addSubview:ctaButton];
 	
 	[self.view addSubview:_headerView];
 	
@@ -376,8 +376,8 @@
 		[self _goVerify];
 #endif
 	
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
-			[self _goVerify];
+//		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
+//			[self _goVerify];
 			
 		if ([HONAppDelegate isLocaleEnabled]) {
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
@@ -502,20 +502,26 @@
 }
 
 - (void)_goVerifyClose {
-	_emptyTimelineView.hidden = YES;
-	[_emptyTimelineView removeFromSuperview];
+	if (_emptyTimelineView != nil) {
+		_emptyTimelineView.hidden = YES;
+		[_emptyTimelineView removeFromSuperview];
+	}
 	
-	_emptySetImageView.hidden = [[HONAppDelegate friendsList] count] > 0;
+	_findFriendsImageView.hidden = [[HONAppDelegate friendsList] count] > 0;
 }
 
-- (void)_goAddContacts {
+- (void)_goAddContactsAlert {
 	[[Mixpanel sharedInstance] track:@"Add Friends - Open"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Verify Account First?"
+														message:@"Would you like to verify your account before looking for friends (recommended)?"
+													   delegate:self
+											  cancelButtonTitle:@"Yes"
+											  otherButtonTitles:@"No", nil];
+	[alertView show];
 }
 
 - (void)_goNewChallengeAtUser:(HONUserVO *)userVO {
@@ -836,6 +842,26 @@
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;}
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 0) {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																 delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:nil
+														otherButtonTitles:@"Use mobile #", @"Use email address", nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:0];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+		
+	} else if (buttonIndex == 1) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
 	}
 }
 
