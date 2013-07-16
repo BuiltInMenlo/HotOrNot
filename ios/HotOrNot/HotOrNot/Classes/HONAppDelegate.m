@@ -35,7 +35,7 @@
 
 
 // json config url
-#if __DEV_BUILD___ == 1
+#if __DEV_BUILD___ == 0
 NSString * const kConfigURL = @"http://107.20.161.159/hotornot";//50.16.152.131/hotornot";
 NSString * const kConfigJSON = @"boot_122.json";//boot-dev.json";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
