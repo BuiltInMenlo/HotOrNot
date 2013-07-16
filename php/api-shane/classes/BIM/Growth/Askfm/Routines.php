@@ -266,7 +266,7 @@ question[submit_facebook]	0
     public function searchForIds( ){
         $taggedIds = array();
         $idsPerTag = $this->persona->idsPerTagInsta();
-        $ids = $this->doIdSearch();
+        $ids = $this->doIdSearch( 10 );
         foreach( $ids as $id ){
             if( count( $taggedIds ) < $idsPerTag && $this->canAsk( $id ) ){
                 $taggedIds[] = $id;
