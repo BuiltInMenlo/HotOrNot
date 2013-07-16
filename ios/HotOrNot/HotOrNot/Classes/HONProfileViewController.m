@@ -29,6 +29,7 @@
 #import "HONVerifyViewController.h"
 #import "HONInvitePopularViewController.h"
 #import "HONInviteCelebViewController.h"
+#import "HONImagingDepictor.h"
 
 @interface HONProfileViewController () <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, HONUserProfileViewCellDelegate>
 @property (nonatomic, strong) NSMutableArray *recentOpponents;
@@ -334,7 +335,7 @@
 		return ([_friends count]);
 		
 	} else {
-		return (4);
+		return (6);
 	}
 }
 
@@ -425,11 +426,11 @@
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
-															   @"Verify my Volley account", @"username",
+															   @"Find friends who volley", @"username",
 															   @"", @"fb_id",
 															   @"", @"avatar_url", nil]];
 			cell.userVO = userVO;
-		
+			
 		} else if (indexPath.row == 1) {
 			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
@@ -437,11 +438,11 @@
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
-															   @"Find friends who volley", @"username",
+															   @"Share Volley with instagram friends", @"username",
 															   @"", @"fb_id",
 															   @"", @"avatar_url", nil]];
 			cell.userVO = userVO;
-			
+		
 		} else if (indexPath.row == 2) {
 			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
@@ -449,7 +450,7 @@
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
-															   @"Find cool people who volley", @"username",
+															   @"Promote my profile on Kik", @"username",
 															   @"", @"fb_id",
 															   @"", @"avatar_url", nil]];
 			cell.userVO = userVO;
@@ -461,10 +462,35 @@
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
 															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
+															   @"Find cool people who volley", @"username",
+															   @"", @"fb_id",
+															   @"", @"avatar_url", nil]];
+			cell.userVO = userVO;
+			
+		} else if (indexPath.row == 4) {
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
 															   @"Invite cool people who volley", @"username",
 															   @"", @"fb_id",
 															   @"", @"avatar_url", nil]];
 			cell.userVO = userVO;
+			
+		} else if (indexPath.row == 5) {
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]], @"id",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"points",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]], @"votes",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pokes"] intValue]], @"pokes",
+															   [NSString stringWithFormat:@"%d", [[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]], @"pics",
+															   @"Verify my Volley account", @"username",
+															   @"", @"fb_id",
+															   @"", @"avatar_url", nil]];
+			cell.userVO = userVO;
+			
 		}
 		
 		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
@@ -514,6 +540,62 @@
 	
 	} else if (indexPath.section == 3) {
 		if (indexPath.row == 0) {
+			[[Mixpanel sharedInstance] track:@"Profile - Add Contacts"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			
+		} else if (indexPath.row == 1) {
+			[[Mixpanel sharedInstance] track:@"Profile - Promote Instagram"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			UIImage *image = [HONImagingDepictor prepImageForInstagram:[UIImage imageNamed:@"instagram_template-0000"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
+																									[HONAppDelegate instagramShareComment], @"caption",
+																									image, @"image", nil]];
+			
+		} else if (indexPath.row == 2) {
+			[[Mixpanel sharedInstance] track:@"Profile - Promote Kik"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+			UIImage *shareImage = [UIImage imageNamed:@"instagram_template-0000"];
+			NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_test.jpg"];
+			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
+			
+			KikAPIMessage *myMessage = [KikAPIMessage message];
+			myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			myMessage.description = @"";
+			myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
+			myMessage.filePath = savePath;
+			myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
+			myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
+			
+			[KikAPIClient sendMessage:myMessage];
+
+		} else if (indexPath.row == 3) {
+			[[Mixpanel sharedInstance] track:@"Profile - Popular"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInvitePopularViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			
+		} else if (indexPath.row == 4) {
+			[[Mixpanel sharedInstance] track:@"Profile - Invite"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			
+		} else if (indexPath.row == 5) {
 			[[Mixpanel sharedInstance] track:@"Profile - Verify"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -526,35 +608,6 @@
 			actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 			[actionSheet setTag:0];
 			[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-		
-		} else if (indexPath.row == 1) {
-			[[Mixpanel sharedInstance] track:@"Profile - Add Contacts"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-			
-		} else if (indexPath.row == 2) {
-			[[Mixpanel sharedInstance] track:@"Profile - Popular"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-			
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInvitePopularViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		
-		} else if (indexPath.row == 3) {
-			[[Mixpanel sharedInstance] track:@"Profile - Invite Celeb"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-			
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
 }

@@ -396,6 +396,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_goPublicChallenges {
+	[[Mixpanel sharedInstance] track:@"Activity - Public"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_isPrivate = NO;
 	
 	[_publicButton setSelected:YES];
@@ -412,6 +416,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_goPrivateChallenges {
+	[[Mixpanel sharedInstance] track:@"Activity - Private"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_isPrivate = YES;
 	
 	[_publicButton setSelected:NO];

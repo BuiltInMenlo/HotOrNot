@@ -57,7 +57,7 @@ const CGFloat kFocusInterval = 0.5f;
 	if ((self = [super init])) {
 		NSLog(@"%@ - init", [self description]);
 		self.view.backgroundColor = [UIColor blackColor];
-		_subjectName = [HONAppDelegate rndDefaultSubject];
+		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
 		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 		_challengerName = @"";
 		_isFirstAppearance = YES;
@@ -71,7 +71,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (id)initWithUser:(HONUserVO *)userVO {
 	if ((self = [super init])) {
 		NSLog(@"%@ - initWithUser:[%d/%@]", [self description], userVO.userID, userVO.username);
-		_subjectName = [HONAppDelegate rndDefaultSubject];
+		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
 		_challengerName = userVO.username;
 		_challengeSubmitType = HONChallengeSubmitTypeOpponentID;

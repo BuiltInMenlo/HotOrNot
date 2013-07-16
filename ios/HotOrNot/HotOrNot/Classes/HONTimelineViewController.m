@@ -329,7 +329,8 @@
 	[_headerView addSubview:createChallengeButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kNavBarHeaderHeight + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor clearColor]];
+	//[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor whiteColor]];
+	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
 	_tableView.delegate = self;
@@ -459,9 +460,11 @@
 	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"celeb"])
 		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	if ([[HONAppDelegate timelineBannerURL] length] > 0) {
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:YES completion:nil];
+	}
 }
 
 - (void)_goLocaleRestriction {
@@ -816,7 +819,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (([[HONAppDelegate timelineBannerURL] length] > 0) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 50.0 : 0.0);
+	return ((([[HONAppDelegate timelineBannerURL] length] > 0)) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 50.0 : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

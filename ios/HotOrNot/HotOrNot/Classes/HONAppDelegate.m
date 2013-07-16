@@ -35,9 +35,9 @@
 
 
 // json config url
-#if __DEV_BUILD___ == 0
-NSString * const kConfigURL = @"http://107.20.161.159/hotornot";//50.16.152.131/hotornot";
-NSString * const kConfigJSON = @"boot_122.json";//boot-dev.json";
+#if __DEV_BUILD___ == 1
+NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";//http://107.20.161.159/hotornot";//50.16.152.131/hotornot";
+NSString * const kConfigJSON = @"boot-dev.json";//boot-dev.json";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
 NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
@@ -186,7 +186,11 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 + (NSString *)timelineBannerURL {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"] objectForKey:@"url"]);
+	if ([[[[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"] objectForKey:@"type"] lowercaseString] isEqualToString:@"none"])
+		return (@"");
+	
+	else
+		return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"] objectForKey:@"url"]);
 }
 
 
@@ -664,7 +668,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	} else {
 		[self _showOKAlert:NSLocalizedString(@"alert_instagramError_t", nil)
-				 withMessage:NSLocalizedString(@"alert_instagramError_m", nil)];
+			   withMessage:NSLocalizedString(@"alert_instagramError_m", nil)];
 	}
 }
 
@@ -979,7 +983,7 @@ NSString * const kTwilioSMS = @"6475577873";
 				[populars addObject:popular];
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api-dev"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
