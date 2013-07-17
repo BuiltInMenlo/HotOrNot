@@ -43,4 +43,31 @@ class BIM_DAO_Mysql_Jobs extends BIM_DAO_Mysql{
 		$params = array( "%\"$pesonaName\"%" );
 		$this->prepareAndExecute($sql, $params);
 	}
+	
+	/**
+INSERT INTO `gearman_jobs` (`id`, `handle`, `next_run_time`, `class`, `name`, `method`, `disabled`, `schedule`, `params`)
+VALUES
+	('905cfabc-d2cc-11e2-b0a5-386077cdb2f6', 'H:ip-10-154-141-76:11142', '2013-07-16 10:50:00', 'BIM_Jobs_Growth', 'webstagram', 'doRoutines', 1, '* 10-13 * * *', '{\"personaName\":\"idabmack7\", \"routine\":\"browseTags\",\"class\":\"BIM_Growth_Webstagram_Routines\"}');
+	 */
+	public function create( $job ){
+	    
+	    $id = !empty( $job->id ) ? $job->id : uniqid( true );
+	    $nextRunTime = !empty( $job->nextRunTime ) ? $job->nextRunTime : 0;
+	    $class = !empty( $job->class ) ? $job->class : 'BIM_Jobs_Growth';
+	    $name = !empty( $job->name ) ? $job->name : '';
+	    $method = !empty( $job->method ) ? $job->method : '';
+	    $disabled = !empty( $job->disabled ) ? $job->disabled : '';
+	    $schedule = !empty( $job->schedule ) ? $job->schedule : '';
+	    $params = !empty( $job->params ) ? json_encode( $job->params ) : '';
+	    
+        $sql = "INSERT IGNORE INTO 
+     	queue.`gearman_jobs` (`id`, `handle`, `next_run_time`, `class`, `name`, `method`, `disabled`, `schedule`, `params`)
+    		VALUES
+    		(?, '', ?, ?, ?, ?, ?, ?, ?)
+    	";
+        
+		$params = array( $id, $nextRunTime, $class, $name, $method, $disabled, $schedule, $params );
+				
+		$this->prepareAndExecute($sql, $params);    
+	}
 }
