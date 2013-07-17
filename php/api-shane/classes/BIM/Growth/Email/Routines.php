@@ -38,7 +38,7 @@ www.letsvolley.com
         
         foreach( $addys as $addy ){
             $emailData->to_email = $addy;
-            $e = new BIM_Email_Swift();
+            $e = new BIM_Email_Swift( BIM_Config::smtp() );
             $e->sendEmail( $emailData );
         }
     }

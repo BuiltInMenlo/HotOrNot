@@ -233,4 +233,22 @@ class BIM_Growth_Persona{
         return $names[ $idx ];
     }
     
+    public function create(){
+        $dao = new BIM_DAO_Mysql_Persona( BIM_Config::db() );
+        if( !empty( $this->username ) && !empty( $this->password ) ){
+            $data = (object) array(
+                'username' => $this->username,
+                'password' => $this->password,
+                'network' => $this->network,
+            );
+            
+            if( !empty($this->extra) ){
+                $data->extra = json_encode($this->extra);
+            }
+            
+            $dao->create($data);
+            return new self( $data->username );
+        }
+    }
+    
 }

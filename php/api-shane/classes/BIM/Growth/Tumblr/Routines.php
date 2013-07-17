@@ -84,25 +84,26 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         );
         
         $response = $this->post("$authUrl?oauth_token=$oauthToken", $input);
-        
+
         $ptrn = '/name="form_key" value="(.+?)"/';
         preg_match($ptrn, $response, $matches);
-        $formKey = $matches[1];
+        $formKey = !empty($matches[1]) ? $matches[1] : '';
         
         $ptrn = '/name="oauth_token" value="(.+?)"/';
         preg_match($ptrn, $response, $matches);
-        $oauthToken = $matches[1];
+        $oauthToken = !empty($matches[1]) ? $matches[1] : '';
         
         $input = array(
             'form_key' => $formKey,
             'oauth_token' => $oauthToken,
             'allow' => ''
         );
-        
-        $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
-        
-        $this->oauth_data = $response = json_decode($response);
-        $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
+        if( $oauthToken ){
+            $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
+            
+            $this->oauth_data = $response = json_decode($response);
+            $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
+        }
         
     }
     
@@ -477,4 +478,110 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         return $followedBlogs;
     }
 
+    public static function checkPersonas($filename){
+        $fh = fopen($filename, 'rb');
+        while( $line = fgets( $fh ) ){
+            $values = explode( ',', $line );
+            $username = trim( $values[0] );
+            $password = trim( $values[1] );
+            self::checkPersona($username, $password);
+            $sleep = 10;
+            echo "loaded $username sleeping for $sleep seconds\n";
+            sleep($sleep);
+        }
+    }
+    
+    public static function checkPersona( $username, $password ){
+        
+        $persona->tumblr = (object) array(
+            'email' => $username,
+        	'username' => $username,
+            'password' => $password
+        );
+        $persona->name = $username;
+        $persona->type = 'auth';
+        
+        $persona = new BIM_Growth_Persona( $persona );
+        $r = new self( $persona );
+        
+        if( !$r->handleLogin() ){
+            echo "invalid account: $username\n";
+        } else {
+            echo "valid account: $username\n";
+        }
+    }
+        
+    public static function loadPersonas($filename){
+        $fh = fopen($filename, 'rb');
+        while( $line = fgets( $fh ) ){
+            $values = explode( ',', $line );
+            $username = trim( $values[0] );
+            $password = trim( $values[1] );
+            self::loadUser( $username, $password, 'tumblr' );
+            $sleep = 5;
+            sleep($sleep);
+            echo "loaded $username sleeping for $sleep seconds\n";
+        }
+    }
+    
+    /**
+     * we add the persona
+     * then we change the link in bio
+     * then we add the gearman job, disabled 
+     * 
+{"personaName":"beresalexis", "routine":"loginAndBrowseSelfies","class":"BIM_Growth_Tumblr_Routines"}
+     * 
+     */
+    public static function loadUser( $username, $password, $network ){
+        $persona = new BIM_Growth_Persona( $username );
+        
+        $persona->username = $username;
+        $persona->password = $password;
+        $persona->network = $network;
+        
+        $r = new self( $persona );
+        
+        $blogName = $r->getUserInfo();
+        $blogName = $blogName->blogs[0]->name.'.tumblr.com';
+        $persona->extra = array(
+    		"blogName" => $blogName
+        );
+        
+        $persona = $persona->create();
+
+        $hr1 = mt_rand(0, 23);
+        $hr2 = $hr1 + 3;
+    	$schedule = "* $hr1-$hr2 * * *";
+        
+    	$job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'growth',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 1,
+    	    'schedule' => $schedule,
+            'params' => array(
+                "personaName" => "$persona->name", 
+                "routine" => "loginAndBrowseSelfies",
+                "class" => "BIM_Growth_Tumblr_Routines"
+            ),
+        );
+        
+        $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
+        $j->createJbb($job);
+        
+        $hr = mt_rand(0, 23);
+        $job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'update_user_stats',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 1,
+    	    'schedule' => "0 $hr * * *",
+            'params' => array(
+                "personaName" => "$persona->name", 
+                "routine" => "updateUserStats",
+                "class" => "BIM_Growth_Tumblr_Routines"
+            ),
+        );
+        $j->createJbb($job);
+    }
 }

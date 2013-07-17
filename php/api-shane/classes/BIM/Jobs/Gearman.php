@@ -60,4 +60,14 @@ class BIM_Jobs_Gearman extends BIM_Jobs{
 		}
 		return $canQueue;
 	}
+	
+	public function createJbb( $job ){
+	    if( !empty( $job->params->personaName ) ){
+	        echo "making hashed id\n";
+	        print_r( $job->params );
+	        $job->id = md5( join('', array($job->params->personaName, $job->params->class, $job->params->routine ) ) );
+	    }
+		$jobsDAO = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
+		$jobsDAO->create( $job );
+	}
 }
