@@ -455,4 +455,82 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
         
     }
     
+    public static function loadPersonas($filename){
+        $fh = fopen($filename, 'rb');
+        while( $line = fgets( $fh ) ){
+            $values = explode( ',', $line );
+            $username = trim( $values[0] );
+            $password = trim( $values[1] );
+            self::loadUser( $username, $password, 'askfm' );
+        }
+    }
+    
+    /**
+     * we add the persona
+     * then we change the link in bio
+     * then we add the gearman job, disabled 
+     */
+    public static function loadUser( $username, $password, $network ){
+        $persona = new BIM_Growth_Persona( $username );
+        $persona->username = $username;
+        $persona->password = $password;
+        $persona->network = $network;
+        $persona = $persona->create();
+        
+        $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
+        
+        $hr1 = mt_rand(0, 23);
+        $hr2 = $hr1 + 1;
+    	$schedule = "* $hr1-$hr2 * * *";
+    	
+        $job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'askfm',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 1,
+    	    'schedule' => $schedule,
+            'params' => (object) array(
+                "personaName" => $persona->name, 
+                "routine" => "answerQuestions",
+                "class" => "BIM_Growth_Askfm_Routines"
+            ),
+        );
+        
+        $j->createJbb($job);
+        
+        $hr3 = $hr2 + 1;
+        $hr4 = $hr3 + 1;
+        $schedule = "* $hr3-$hr4 * * *";
+    	
+        $job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'askfm',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 1,
+    	    'schedule' => $schedule,
+            'params' => (object) array(
+                "personaName" => $persona->name,
+                "routine" => "askQuestions",
+                "class" => "BIM_Growth_Askfm_Routines"
+            ),
+        );
+        
+        $j->createJbb($job);
+        
+        $hr = mt_rand(0, 23);
+        $job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'update_user_stats',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 1,
+    	    'schedule' => "0 $hr * * *",
+            'params' => (object) array(
+                "personaName" => $persona->name, 
+                "routine" => "updateUserStats",
+                "class" => "BIM_Growth_Askfm_Routines"
+            ),
+        );
+        $j->createJbb($job);
+        
+    }
 }
