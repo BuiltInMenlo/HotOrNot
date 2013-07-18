@@ -34,7 +34,8 @@ class BIM_Growth{
     
     protected function getCurlParams( $headers = array() ){
         $cookieFile = $this->getCookieFileName();
-        return array(
+        
+        $opts = array(
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_COOKIEJAR => $cookieFile,
             CURLOPT_COOKIEFILE => $cookieFile,
@@ -50,6 +51,7 @@ class BIM_Growth{
 			CURLOPT_VERBOSE        => false,
 			CURLOPT_USERAGENT => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
         );
+        return $opts;
     }
     
 	public function get( $url, $args = array(), $fullResponse = false, $headers = array() ){
@@ -68,7 +70,21 @@ class BIM_Growth{
 	}
 	
 	public function handleRequest( $url, $options, $fullResponse = false ){
-		$ch = curl_init( $url );
+	    
+        $proxy = BIM_Config::getProxy();
+        if( $proxy ){
+            if( preg_match( '/^https/i', trim($url) ) ){
+                $proxy->host = "https://$proxy->host";
+            } else {
+                $proxy->host = "http://$proxy->host";
+            }
+            $opts[CURLOPT_PROXYPORT] = $proxy->port;
+            $opts[CURLOPT_PROXY] = $proxy->host;
+            echo "using proxy: \n";
+            print_r( $proxy );
+        }
+	    
+        $ch = curl_init( $url );
 		//$ch = $this->initCurl($url);
 		curl_setopt_array($ch,$options);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
