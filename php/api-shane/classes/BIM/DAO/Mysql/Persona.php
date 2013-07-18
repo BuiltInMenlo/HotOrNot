@@ -30,11 +30,43 @@ instagram|''|Ariannaxoxoluver|teamvolleypassword|Ariannaxoxoluver|{}|1|authentic
 	    $type = !empty( $data->type ) ? $data->type : 'authentic';
 	    
 	    $sql = "
-	    	insert ignore into growth.persona 
+	    	insert ignore into growth.persona
 	    	(network , email , username , password , name , extra , enabled , type) 
 	    	values ( ?, ?, ?, ?, ?, ?, ?, ? )
 	    ";
 		$params = array( $network, $email, $username, $password, $name, $extra, $enabled, $type );
 		$stmt = $this->prepareAndExecute( $sql, $params );
+	}
+	
+	public function update( $data ){
+	    $name = $data->name;
+	    unset( $data->name );
+	    
+	    $network = $data->network;
+        unset( $data->network );
+        	    
+	    $setSql = array();
+	    $setParams = array();
+        foreach( $data as $prop => $value ){
+	        $setSql[] = "$prop = ?";
+	        if( $prop == 'extra' ){
+	            $value = json_encode( $value );
+	        }
+	        $setParams[] = $value;
+	    }
+	    
+	    if( $setSql ){
+    	    $setParams[] = $name;
+    	    $setParams[] = $network;
+    	    
+    	    $setSql = join(',',$setSql);
+            $sql = "
+    	    	update growth.persona 
+    	    	set $setSql
+    	    	where name = ? and network = ?
+    	    ";
+            
+    		$stmt = $this->prepareAndExecute( $sql, $setParams );
+	    }
 	}
 }
