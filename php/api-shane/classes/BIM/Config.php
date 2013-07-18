@@ -261,6 +261,27 @@ class BIM_Config{
         		'9' => 'getChallengesForUsername',
         		'10' => 'getChallengesWithFriends',
             )
-        );        
+        );
+    }
+    
+    public static function getProxy( $key = null ){
+        $c = BIM_Config::proxies();
+        $proxy = null;
+        if( !empty( $c->useProxies ) ){
+            if( is_string( $key ) ){
+                $key = ( crc32( $key ) >> 16 ) & 0x7fff;
+                mt_srand( $key );
+            }
+            
+            $idx = mt_rand( 0, count( $c->proxies ) - 1 );
+            
+            list( $host, $port ) = explode(':',$c->proxies[ $idx ] );
+            
+            $proxy = (object) array( 
+                'host' => $host,
+                'port' => $port,
+            );
+        }
+        return $proxy;
     }
 }
