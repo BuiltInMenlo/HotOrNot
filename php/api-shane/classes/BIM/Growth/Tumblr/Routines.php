@@ -505,9 +505,9 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         $r = new self( $persona );
         
         if( !$r->handleLogin() ){
-            echo "invalid account: $username\n";
+            echo "invalid account: $username,$password\n";
         } else {
-            echo "valid account: $username\n";
+            echo "valid account: $username,$password\n";
         }
     }
         
@@ -518,9 +518,9 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $username = trim( $values[0] );
             $password = trim( $values[1] );
             self::loadUser( $username, $password, 'tumblr' );
-            $sleep = 5;
-            sleep($sleep);
+            $sleep = 10;
             echo "loaded $username sleeping for $sleep seconds\n";
+            sleep($sleep);
         }
     }
     
@@ -535,53 +535,62 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     public static function loadUser( $username, $password, $network ){
         $persona = new BIM_Growth_Persona( $username );
         
+        $persona->email = $username;
         $persona->username = $username;
         $persona->password = $password;
         $persona->network = $network;
         
+        $persona = $persona->create();
+        
         $r = new self( $persona );
         
-        $blogName = $r->getUserInfo();
-        $blogName = $blogName->blogs[0]->name.'.tumblr.com';
-        $persona->extra = array(
-    		"blogName" => $blogName
-        );
+        if( $r->handleLogin() ){
+            $blogName = $r->getUserInfo();
+            
+            $blogName = $blogName->user->blogs[0]->name.'.tumblr.com';
+            $update = (object) array( 'extra' => (object) array( "blogName" => $blogName ) );
+            
+            $persona->update('tumblr', $update);
+            
+            $hr1 = mt_rand(0, 23);
+        	$schedule = "* $hr1 * * *";
+            
+        	$job = (object) array(
+        	    'class' =>  'BIM_Jobs_Growth',
+        	    'name' => 'growth',
+        	    'method' => 'doRoutines',
+        	    'disabled' => 1,
+        	    'schedule' => $schedule,
+                'params' => array(
+                    "personaName" => "$persona->name", 
+                    "routine" => "loginAndBrowseSelfies",
+                    "class" => "BIM_Growth_Tumblr_Routines"
+                ),
+            );
+            
+            print_r( $job );
+            
+            $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
+            $j->createJbb($job);
+            
+            /**
+            
+            $hr = mt_rand(0, 23);
+            $job = (object) array(
+        	    'class' =>  'BIM_Jobs_Growth',
+        	    'name' => 'update_user_stats',
+        	    'method' => 'doRoutines',
+        	    'disabled' => 1,
+        	    'schedule' => "0 $hr * * *",
+                'params' => array(
+                    "personaName" => "$persona->name", 
+                    "routine" => "updateUserStats",
+                    "class" => "BIM_Growth_Tumblr_Routines"
+                ),
+            );
+            $j->createJbb($job);
+            */
+        }
         
-        $persona = $persona->create();
-
-        $hr1 = mt_rand(0, 23);
-        $hr2 = $hr1 + 3;
-    	$schedule = "* $hr1-$hr2 * * *";
-        
-    	$job = (object) array(
-    	    'class' =>  'BIM_Jobs_Growth',
-    	    'name' => 'growth',
-    	    'method' => 'doRoutines',
-    	    'disabled' => 1,
-    	    'schedule' => $schedule,
-            'params' => array(
-                "personaName" => "$persona->name", 
-                "routine" => "loginAndBrowseSelfies",
-                "class" => "BIM_Growth_Tumblr_Routines"
-            ),
-        );
-        
-        $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
-        $j->createJbb($job);
-        
-        $hr = mt_rand(0, 23);
-        $job = (object) array(
-    	    'class' =>  'BIM_Jobs_Growth',
-    	    'name' => 'update_user_stats',
-    	    'method' => 'doRoutines',
-    	    'disabled' => 1,
-    	    'schedule' => "0 $hr * * *",
-            'params' => array(
-                "personaName" => "$persona->name", 
-                "routine" => "updateUserStats",
-                "class" => "BIM_Growth_Tumblr_Routines"
-            ),
-        );
-        $j->createJbb($job);
     }
 }

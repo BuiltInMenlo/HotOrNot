@@ -405,7 +405,7 @@ external_url	http://www.letsvolley.com
             $username = trim( $values[0] );
             $password = trim( $values[1] );
             self::loadUser( $username, $password, 'instagram' );
-            $sleep = 0;
+            $sleep = 5;
             echo "loaded $username sleeping for $sleep seconds\n";
             sleep($sleep);
         }
@@ -418,14 +418,15 @@ external_url	http://www.letsvolley.com
      */
     public static function loadUser( $username, $password, $network ){
         $persona = new BIM_Growth_Persona( $username );
-        $persona->username = $username;
-        $persona->password = $password;
-        $persona->network = $network;
-        $persona = $persona->create();
+        //$persona->username = $username;
+        //$persona->password = $password;
+        //$persona->network = $network;
+        //$persona = $persona->create();
 
-        //$r = new self( $persona );
-        //$r->dropLinkInBio( "http://getvolleyapp.com/b/$persona->name" );
+        $r = new self( $persona );
+        $r->dropLinkInBio( "http://getvolleyapp.com/b/$persona->name" );
         
+        /*
         $hr1 = mt_rand(0, 23);
         $hr2 = $hr1 + 3;
     	$schedule = "* $hr1-$hr2 * * *";
@@ -460,5 +461,6 @@ external_url	http://www.letsvolley.com
             ),
         );
         $j->createJbb($job);
+        */
     }
 }

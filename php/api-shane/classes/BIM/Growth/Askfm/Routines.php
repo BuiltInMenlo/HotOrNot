@@ -50,7 +50,7 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
     public function browseQuestions(){
         return $this->askQuestions();
     }
-    
+
     public function askQuestions(){
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
@@ -63,7 +63,7 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
             foreach( $popIds as $id ){
                 $this->askQuestion( $id );
                 $sleep = $this->persona->getBrowseTagsCommentWait();
-                echo "submitted comment - sleeping for $sleep seconds\n";
+                echo "submitted question - sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
             $sleep = $this->persona->getBrowseTagsTagWait();
@@ -104,38 +104,52 @@ question[submit_facebook]	0
     public function answerQuestion( $question ){
         $questionId = $question->id;
         
-        $name = $this->persona->askfm->username;
+        $name = explode('@', $this->persona->askfm->username);
+        $name = $name[0];
+        
         $url = "http://ask.fm/$name/questions/$questionId/reply";
         $response = $this->get( $url );
 
         $authToken = '';
         $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
         preg_match($ptrn,$response,$matches);
-        if( isset( $matches[1] ) ){
+        if( !empty( $matches[1] ) ){
             $authToken = $matches[1];
+        } else {
+            echo "no authtoken for answering a question! $url -  trying again!\n";
+            $response = $this->get( $url );
+            preg_match($ptrn,$response,$matches);
+            if( !empty( $matches[1] ) ){
+                $authToken = $matches[1];
+            } else {
+                $msg = "no authtoken for answering a question!	$url - ". json_encode($question);
+                echo "$msg\n";
+                $this->sendWarningEmail( $msg );
+            }
         }
         
-        $answer = $this->persona->getVolleyAnswer( 'askfm' );
-        
-        $params = array(
-            '_method' => 'put',
-            'authenticity_token' => $authToken,
-            'question[answer_text]'	=> $answer,
-            'photo_request_id'	=> '',
-            'commit'	=> 'Answer',
-            'question[submit_stream]'	=> 1,
-            'question[submit_twitter]'	=> 0,
-            'question[submit_facebook]'	=> 0
-        );
-        
-        $formActionUrl = "http://ask.fm/questions/$questionId/answer";
-        
-        $response = $this->post( $formActionUrl, $params, true );
-        
-        $this->logAnswerSuccess( $questionId, $question->text, $answer, $question->userId, $question->name );
-        
+        if( $authToken ){
+            $answer = $this->persona->getVolleyAnswer( 'askfm' );
+            
+            $params = array(
+                '_method' => 'put',
+                'authenticity_token' => $authToken,
+                'question[answer_text]'	=> $answer,
+                'photo_request_id'	=> '',
+                'commit'	=> 'Answer',
+                'question[submit_stream]'	=> 1,
+                'question[submit_twitter]'	=> 0,
+                'question[submit_facebook]'	=> 0
+            );
+            
+            $formActionUrl = "http://ask.fm/questions/$questionId/answer";
+            
+            $response = $this->post( $formActionUrl, $params, true );
+            
+            $this->logAnswerSuccess( $questionId, $question->text, $answer, $question->userId, $question->name );
+            
+        }
         print_r( array( $params ) );
-        
     }
     
     public function logAnswerSuccess( $qId, $text, $answer, $userId, $username ){
@@ -225,13 +239,12 @@ question[submit_facebook]	0
     }
     
     public function canAnswer( $questionId ){
-        return true;
         $canAnswer = false;
         $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
         $timeSpan = 86400 * 7;
         $currentTime = time();
         $question = $dao->getQuestion( $questionId );
-        if( $question ){
+        if( !$question ){
             $canAnswer = true;
         }
         return $canAnswer;

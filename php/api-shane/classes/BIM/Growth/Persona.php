@@ -36,7 +36,10 @@ class BIM_Growth_Persona{
         $ct = count( $quotes ) - 1;
         $idx = mt_rand(0, $ct);
         $quote = $quotes[ $idx ];
-        if( mt_rand(1,100) >= 50 ){
+        $username = explode('@',$this->$network->username);
+        $username = $username[0];
+        $quote = str_replace('[[USERNAME]]', $username, $quote);
+        if( mt_rand(1,100) >= 1 ){
             $quote .= " ".$this->getTrackingUrl( $network );
         }
         return $quote;
@@ -53,7 +56,9 @@ class BIM_Growth_Persona{
         } else if( $network == 'askfm' ){
             $networkSymbol = 'c';
         }
-        $url = "http://getvolleyapp.com/$networkSymbol/$this->name";
+        $name = explode('@',$this->name);
+        $name = $name[0];
+        $url = "http://getvolleyapp.com/$networkSymbol/$name";
         return $url;
     }
     
@@ -67,7 +72,7 @@ class BIM_Growth_Persona{
         $ct = count( $quotes ) - 1;
         $idx = mt_rand(0, $ct);
         $quote = $quotes[ $idx ];
-        if( mt_rand(1,100) >= 50 ){
+        if( mt_rand(1,100) >= 1 ){
             $quote .= " ".$this->getTrackingUrl( $network );
         }
         return $quote;
@@ -242,6 +247,10 @@ class BIM_Growth_Persona{
                 'network' => $this->network,
             );
             
+            if( !empty($this->email) ){
+                $data->email = $this->email;
+            }
+            
             if( !empty($this->extra) ){
                 $data->extra = json_encode($this->extra);
             }
@@ -251,4 +260,16 @@ class BIM_Growth_Persona{
         }
     }
     
+    public function update( $network, $data ){
+        
+        $data->network = $network;
+        $data->name = $this->name;
+        
+        $dao = new BIM_DAO_Mysql_Persona( BIM_Config::db() );
+        $dao->update($data);
+        
+        foreach( $data as $prop => $value ){
+            $this->$network->$prop = $data;
+        }
+    }
 }
