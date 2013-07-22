@@ -137,7 +137,7 @@ class BIM_App_Comments extends BIM_App_Base{
 		
 		// send push if creator allows it
 		if ($creator_obj->notifications == "Y" && $creator_obj->id != $user_id)
-			$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' snap!", "sound": "push_01.caf"}}');
+			$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"3", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' snap!", "sound": "push_01.caf"}}');
 		
 		// get the challenge challenger
 		$query = 'SELECT `id`, `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
@@ -145,7 +145,7 @@ class BIM_App_Comments extends BIM_App_Base{
 		
 		// send push if challenger allows it
 		if ($challenger_obj->notifications == "Y" && $challenger_obj->id != $user_id)
-			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' snap!", "sound": "push_01.caf"}}');
+			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"3", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' snap!", "sound": "push_01.caf"}}');
 		
 		
 		// get the submitted comment
