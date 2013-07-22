@@ -521,7 +521,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 		if ($challenger_obj->notifications == "Y"){
  		    $private = $is_private == 'Y' ? 'private' : '';
  		    $msg = "@$creator_obj->username has sent you a $private Volley!";
-			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"3", "challenge":"'.$challenge_id.'", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
+			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "challenge":"'.$challenge_id.'", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
 		}
 		// get the newly created challenge
 		$challenge_arr = $this->getChallengeObj($challenge_id);
@@ -582,7 +582,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 			if ($challenger_obj->notifications == "Y"){
  		        $private = $is_private == 'Y' ? 'private' : '';
  		        $msg = "@$creator_obj->username has sent you a $private Volley!";
-			    $this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"3", "challenge":"'.$challenge_id.'", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
+			    $this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "challenge":"'.$challenge_id.'", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
 			}
 		    
 			// get the newly created challenge
