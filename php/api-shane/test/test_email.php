@@ -48,7 +48,7 @@ $list = array(
 
 $emailData = (object) array(
 	'to_email' => '',
-	'from_email' => 'apps@builtinmenlo.com',
+	'from_email' => 'shane@shanehill.com',
 	'from_name' => 'Built In Menlo',
 	'subject' => 'Thanks for installing Volley!',
 	'text' => 
@@ -77,6 +77,8 @@ $c = (object) array(
 );
 
 $e = new BIM_Email_Swift( $c );
+
+$list = array('alerts@builtinmenlo.com');
 
 foreach( $list as $addy ){
     $addy = trim( $addy );

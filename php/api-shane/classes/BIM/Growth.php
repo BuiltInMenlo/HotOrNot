@@ -5,11 +5,60 @@ class BIM_Growth{
     protected $curl = null;
     protected $instagramApiClient = null; 
     protected $twilioApiClient = null; 
+    protected $useProxy = true;
+    
+	public function testProxies( $url ){
+	    
+	    $c = BIM_Config::proxies();
+	    foreach( $c->proxies as $proxyInfo ){
+	        list( $host,$port) = explode(':',$proxyInfo);
+	        echo "testing $host $port\n";
+	        $ch = curl_init( $url );
+    		//$ch = $this->initCurl($url);
+    		$options = $this->getCurlParams();
+    		$options[CURLOPT_TIMEOUT] = 30;
+    		$options[CURLOPT_CONNECTTIMEOUT] = 30;
+    		curl_setopt_array($ch, $options );
+    		
+    		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
+            curl_setopt($ch, CURLOPT_PROXY, $host);
+            curl_setopt($ch, CURLOPT_PROXYPORT, $port);
+            curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
+    		
+            $responseStr = curl_exec($ch);
+    		$err = curl_errno($ch);
+    		$data = curl_getinfo( $ch );
+    		if( $err ){
+    			$errmsg  = curl_error($ch) ;
+    			$msg = "err no: $err - err msg: $errmsg\n";
+    			error_log( "bad proxy: $host:$port" );
+    		}
+    		curl_close($ch);
+	    }
+	}
+   
+    public function getProxy(){
+	    $proxy = BIM_Config::getProxy();
+	    return $proxy;
+    }
+	
+    protected function setUseProxy( $onOff = true ){
+        $this->useProxy = $onOff;
+    }
+    
+    protected function useProxy( $onOff = true ){
+        return $this->useProxy;
+    }
     
     public function disablePersona( $reason ){
         $dao = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
         $dao->disableJob($this->persona->name);
         $this->sendWarningEmail( $reason );
+    }
+    
+    public function enablePersona( ){
+        $dao = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
+        $dao->enableJob($this->persona->name);
     }
     
     public function sendWarningEmail( $reason ){
@@ -34,7 +83,8 @@ class BIM_Growth{
     
     protected function getCurlParams( $headers = array() ){
         $cookieFile = $this->getCookieFileName();
-        return array(
+        
+        $opts = array(
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_COOKIEJAR => $cookieFile,
             CURLOPT_COOKIEFILE => $cookieFile,
@@ -44,17 +94,20 @@ class BIM_Growth{
 			CURLOPT_ENCODING	   => "",
 			CURLOPT_AUTOREFERER	   => true,
 			CURLOPT_CONNECTTIMEOUT => 60,
-			CURLOPT_TIMEOUT		   => 300,
+			CURLOPT_TIMEOUT		   => 60,
 			CURLOPT_MAXREDIRS	   => 10,
-			CURLOPT_SSL_VERIFYPEER => true,
+			CURLOPT_SSL_VERIFYPEER => false,
 			CURLOPT_VERBOSE        => false,
 			CURLOPT_USERAGENT => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36'
         );
+        return $opts;
     }
     
 	public function get( $url, $args = array(), $fullResponse = false, $headers = array() ){
         $queryStr = http_build_query($args);
-	    $url = "$url?$queryStr";
+        if( $queryStr ){
+    	    $url = "$url?$queryStr";
+        }
 		$options = $this->getCurlParams( $headers );
 	    return $this->handleRequest($url, $options, $fullResponse, $headers );
 	}
@@ -68,11 +121,23 @@ class BIM_Growth{
 	}
 	
 	public function handleRequest( $url, $options, $fullResponse = false ){
-		$ch = curl_init( $url );
+	    
+        $ch = curl_init( $url );
 		//$ch = $this->initCurl($url);
 		curl_setopt_array($ch,$options);
 		curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-		$responseStr = curl_exec($ch);
+		
+		if( $this->useProxy() ){
+            $proxy = $this->getProxy();
+		    if( $proxy ){
+                //print_r( array( "USING PROXY", $proxy ) );
+                curl_setopt($ch, CURLOPT_PROXY, $proxy->host);
+                curl_setopt($ch, CURLOPT_PROXYPORT, $proxy->port);
+                curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
+            }
+        }
+        
+        $responseStr = curl_exec($ch);
 		$err = curl_errno($ch);
 		$data = curl_getinfo( $ch );
 		if( $err ){
@@ -80,7 +145,7 @@ class BIM_Growth{
 			$msg = "err no: $err - err msg: $errmsg\n";
 			error_log( print_r(array($msg,$data),true) );
 		}
-		//curl_close($ch);
+		curl_close($ch);
 		$response = self::parseResponse( $responseStr );
 		//		return $format == 'json' ? json_decode( $response['body'] ) : $response['body'];
 		$response['req_info'] = $data;

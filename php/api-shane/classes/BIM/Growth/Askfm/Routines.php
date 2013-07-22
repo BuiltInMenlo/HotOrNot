@@ -50,7 +50,7 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
     public function browseQuestions(){
         return $this->askQuestions();
     }
-    
+
     public function askQuestions(){
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
@@ -63,7 +63,7 @@ class BIM_Growth_Askfm_Routines extends BIM_Growth_Askfm{
             foreach( $popIds as $id ){
                 $this->askQuestion( $id );
                 $sleep = $this->persona->getBrowseTagsCommentWait();
-                echo "submitted comment - sleeping for $sleep seconds\n";
+                echo "submitted question - sleeping for $sleep seconds\n";
                 sleep($sleep);
             }
             $sleep = $this->persona->getBrowseTagsTagWait();
@@ -104,38 +104,52 @@ question[submit_facebook]	0
     public function answerQuestion( $question ){
         $questionId = $question->id;
         
-        $name = $this->persona->askfm->username;
+        $name = explode('@', $this->persona->askfm->username);
+        $name = $name[0];
+        
         $url = "http://ask.fm/$name/questions/$questionId/reply";
         $response = $this->get( $url );
 
         $authToken = '';
         $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
         preg_match($ptrn,$response,$matches);
-        if( isset( $matches[1] ) ){
+        if( !empty( $matches[1] ) ){
             $authToken = $matches[1];
+        } else {
+            echo "no authtoken for answering a question! $url -  trying again!\n";
+            $response = $this->get( $url );
+            preg_match($ptrn,$response,$matches);
+            if( !empty( $matches[1] ) ){
+                $authToken = $matches[1];
+            } else {
+                $msg = "no authtoken for answering a question!	$url - ". json_encode($question);
+                echo "$msg\n";
+                $this->sendWarningEmail( $msg );
+            }
         }
         
-        $answer = $this->persona->getVolleyAnswer( 'askfm' );
-        
-        $params = array(
-            '_method' => 'put',
-            'authenticity_token' => $authToken,
-            'question[answer_text]'	=> $answer,
-            'photo_request_id'	=> '',
-            'commit'	=> 'Answer',
-            'question[submit_stream]'	=> 1,
-            'question[submit_twitter]'	=> 0,
-            'question[submit_facebook]'	=> 0
-        );
-        
-        $formActionUrl = "http://ask.fm/questions/$questionId/answer";
-        
-        $response = $this->post( $formActionUrl, $params, true );
-        
-        $this->logAnswerSuccess( $questionId, $question->text, $answer, $question->userId, $question->name );
-        
+        if( $authToken ){
+            $answer = $this->persona->getVolleyAnswer( 'askfm' );
+            
+            $params = array(
+                '_method' => 'put',
+                'authenticity_token' => $authToken,
+                'question[answer_text]'	=> $answer,
+                'photo_request_id'	=> '',
+                'commit'	=> 'Answer',
+                'question[submit_stream]'	=> 1,
+                'question[submit_twitter]'	=> 0,
+                'question[submit_facebook]'	=> 0
+            );
+            
+            $formActionUrl = "http://ask.fm/questions/$questionId/answer";
+            
+            $response = $this->post( $formActionUrl, $params, true );
+            
+            $this->logAnswerSuccess( $questionId, $question->text, $answer, $question->userId, $question->name );
+            
+        }
         print_r( array( $params ) );
-        
     }
     
     public function logAnswerSuccess( $qId, $text, $answer, $userId, $username ){
@@ -225,13 +239,12 @@ question[submit_facebook]	0
     }
     
     public function canAnswer( $questionId ){
-        return true;
         $canAnswer = false;
         $dao = new BIM_DAO_Mysql_Growth_Askfm( BIM_Config::db() );
         $timeSpan = 86400 * 7;
         $currentTime = time();
         $question = $dao->getQuestion( $questionId );
-        if( $question ){
+        if( !$question ){
             $canAnswer = true;
         }
         return $canAnswer;
@@ -266,7 +279,7 @@ question[submit_facebook]	0
     public function searchForIds( ){
         $taggedIds = array();
         $idsPerTag = $this->persona->idsPerTagInsta();
-        $ids = $this->doIdSearch();
+        $ids = $this->doIdSearch( 10 );
         foreach( $ids as $id ){
             if( count( $taggedIds ) < $idsPerTag && $this->canAsk( $id ) ){
                 $taggedIds[] = $id;
@@ -385,7 +398,9 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
      */
     
     public function askQuestion( $id ){
+        $id = 'exty86';
         $message = $this->persona->getVolleyQuote('askfm');
+        $message = 'yooo? http://www.letsvolley.com';
         $html = $this->get("http://ask.fm/$id");
         
         $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
@@ -401,9 +416,12 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
             'question[force_anonymous]' => '',
         );
         
-        print_r( array("http://ask.fm/$id/questions/create", $params) );
+        $url = "http://ask.fm/$id/questions/create";
+        print_r( array($url, $params) );
         
-        $response = $this->post( "http://ask.fm/$id/questions/create", $params );
+        $response = $this->post( $url, $params );
+        
+        echo "asking question of $url - $message\n";
         
         if( !preg_match('/your question has been sent/i', $response ) ){
             //$this->disablePersona( "disabling ".$this->persona->name." in (class :: function) ".__CLASS__.' :: '.__FUNCTION__ );
@@ -455,4 +473,82 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
         
     }
     
+    public static function loadPersonas($filename){
+        $fh = fopen($filename, 'rb');
+        while( $line = fgets( $fh ) ){
+            $values = explode( ',', $line );
+            $username = trim( $values[0] );
+            $password = trim( $values[1] );
+            self::loadUser( $username, $password, 'askfm' );
+        }
+    }
+    
+    /**
+     * we add the persona
+     * then we change the link in bio
+     * then we add the gearman job, disabled 
+     */
+    public static function loadUser( $username, $password, $network ){
+        $persona = new BIM_Growth_Persona( $username );
+        $persona->username = $username;
+        $persona->password = $password;
+        $persona->network = $network;
+        $persona = $persona->create();
+        
+        $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
+        
+        $hr1 = mt_rand(0, 23);
+        $hr2 = $hr1 + 1;
+    	$schedule = "* $hr1-$hr2 * * *";
+    	
+        $job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'askfm',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 1,
+    	    'schedule' => $schedule,
+            'params' => (object) array(
+                "personaName" => $persona->name, 
+                "routine" => "answerQuestions",
+                "class" => "BIM_Growth_Askfm_Routines"
+            ),
+        );
+        
+        $j->createJbb($job);
+        
+        $hr3 = $hr2 + 1;
+        $hr4 = $hr3 + 1;
+        $schedule = "* $hr3-$hr4 * * *";
+    	
+        $job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'askfm',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 1,
+    	    'schedule' => $schedule,
+            'params' => (object) array(
+                "personaName" => $persona->name,
+                "routine" => "askQuestions",
+                "class" => "BIM_Growth_Askfm_Routines"
+            ),
+        );
+        
+        $j->createJbb($job);
+        
+        $hr = mt_rand(0, 23);
+        $job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'update_user_stats',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 1,
+    	    'schedule' => "0 $hr * * *",
+            'params' => (object) array(
+                "personaName" => $persona->name, 
+                "routine" => "updateUserStats",
+                "class" => "BIM_Growth_Askfm_Routines"
+            ),
+        );
+        $j->createJbb($job);
+        
+    }
 }
