@@ -16,12 +16,14 @@ class RequestHandler
     /**
      * Instantiate a new RequestHandler
      */
-    public function __construct()
+    public function __construct( $curlOpts = array() )
     {
         $this->signatureMethod = new \Eher\OAuth\HmacSha1();
         $this->client = new \Guzzle\Http\Client(null, array(
-            'redirect.disable' => true
-        ));
+            	'redirect.disable' => true,
+                'curl.options' => $curlOpts
+            )
+        );
     }
 
     /**

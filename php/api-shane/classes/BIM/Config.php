@@ -268,7 +268,8 @@ class BIM_Config{
         $c = BIM_Config::proxies();
         $proxy = null;
         if( !empty( $c->useProxies ) ){
-            if( is_string( $key ) ){
+            
+            if( $key ){
                 $key = ( crc32( $key ) >> 16 ) & 0x7fff;
                 mt_srand( $key );
             }

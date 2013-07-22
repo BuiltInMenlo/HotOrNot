@@ -418,15 +418,14 @@ external_url	http://www.letsvolley.com
      */
     public static function loadUser( $username, $password, $network ){
         $persona = new BIM_Growth_Persona( $username );
-        //$persona->username = $username;
-        //$persona->password = $password;
-        //$persona->network = $network;
-        //$persona = $persona->create();
+        $persona->username = $username;
+        $persona->password = $password;
+        $persona->network = $network;
+        $persona = $persona->create();
 
         $r = new self( $persona );
         $r->dropLinkInBio( "http://getvolleyapp.com/b/$persona->name" );
         
-        /*
         $hr1 = mt_rand(0, 23);
         $hr2 = $hr1 + 3;
     	$schedule = "* $hr1-$hr2 * * *";
@@ -435,7 +434,7 @@ external_url	http://www.letsvolley.com
     	    'class' =>  'BIM_Jobs_Growth',
     	    'name' => 'webstagram',
     	    'method' => 'doRoutines',
-    	    'disabled' => 1,
+    	    'disabled' => 0,
     	    'schedule' => $schedule,
             'params' => (object) array(
                 "personaName" => $persona->name, 
@@ -446,21 +445,5 @@ external_url	http://www.letsvolley.com
         
         $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
         $j->createJbb($job);
-        
-        $hr = mt_rand(0, 23);
-        $job = (object) array(
-    	    'class' =>  'BIM_Jobs_Growth',
-    	    'name' => 'update_user_stats',
-    	    'method' => 'doRoutines',
-    	    'disabled' => 1,
-    	    'schedule' => "0 $hr * * *",
-            'params' => (object) array(
-                "personaName" => $persona->name, 
-                "routine" => "updateUserStats",
-                "class" => "BIM_Growth_Webstagram_Routines"
-            ),
-        );
-        $j->createJbb($job);
-        */
     }
 }

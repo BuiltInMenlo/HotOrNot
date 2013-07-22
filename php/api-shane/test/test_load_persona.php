@@ -2,12 +2,12 @@
 require_once 'vendor/autoload.php';
 
 // SandaWarnerzf7409@hotmail.com,qipoqyjky
-$filename = '/home/shane/dev/hotornot/php/api-shane/test/personas_tumblr.txt';
-BIM_Growth_Tumblr_Routines::loadPersonas( $filename );
+//$filename = '/home/shane/dev/hotornot/php/api-shane/test/personas_tumblr.txt';
+//BIM_Growth_Tumblr_Routines::loadPersonas( $filename );
 
-$filename = '/home/shane/dev/hotornot-dev/php/api-shane/test/personas_tumblr.txt';
-BIM_Growth_Tumblr_Routines::checkPersonas( $filename );
-
+//$filename = '/home/shane/dev/hotornot-dev/php/api-shane/test/personas_tumblr.txt';
+//BIM_Growth_Tumblr_Routines::checkPersonas( $filename );
+BIM_Growth_Webstagram_Routines::checkPersonas();
 //$filename = '/home/shane/dev/hotornot/php/api-shane/test/personas.txt';
 //BIM_Growth_Instagram_Routines::loadPersonas($filename);
 

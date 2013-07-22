@@ -5,6 +5,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     protected $oauth = null;
     protected $oauth_data = null;
     protected $conf = null;
+    protected $loggingIn = false;
+    protected $proxyKey = false;
     
     public function __construct( $persona ){
         if( is_string( $persona )  ){
@@ -13,7 +15,36 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         $this->persona = $persona;
         
         $this->conf = $c = BIM_Config::tumblr();
-        $this->oauth = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
+        
+        $curlOpts = array();
+        $proxy = $this->getProxy();
+        if( $proxy ){
+            $curlOpts = array(
+                CURLOPT_PROXY => $proxy->host,
+                CURLOPT_PROXYPORT => $proxy->port,
+                CURLOPT_HTTPPROXYTUNNEL =>  0,
+            );
+            
+            print_r( array( 'USING PROXY FOR GUZZLE', $curlOpts ) );
+        }
+        
+        $this->oauth = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret, null, null, $curlOpts );
+        
+    }
+
+    public function getProxyKey(){
+        if( !$this->proxyKey ){
+            $this->proxyKey = uniqid();
+        }
+        return $this->proxyKey;
+    }
+    
+    public function getProxy(){
+        if( $this->loggingIn ){
+            return BIM_Config::getProxy( $this->getProxyKey() );
+        } else {
+            return BIM_Config::getProxy();
+        }
     }
     
     public function loginAndBrowseSelfies(){
@@ -28,6 +59,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
 	 * input type="hidden" name="form_key" value="!1231369675784|eYlf6FoNjc0vyXVkMWKKyenrNFU"
 	 */
     public function login( ){
+        
+        $this->loggingIn = true;
         
         // $this->purgeCookies();
                 
@@ -70,7 +103,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             'seen_suggestion' => '0',
             'used_suggestion' => '0',
         );
-                
+        
         $response = $this->post( $loginUrl, $input, true);
         
         if( isset( $response['headers']['Set-Cookie'] ) && preg_match('/logged_in=1/', $response['headers']['Set-Cookie'] ) ){
@@ -105,6 +138,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
         }
         
+        $this->loggingIn = false;
+        
     }
     
     public function authorizeApp( ){
@@ -125,19 +160,19 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         
         // first we attempt to access our oauth script
         // and we get the oauth_token and the form_key from the response
-        $response = $this->get(  $urls->oauth->callback );
+        $responseData = $this->get(  $urls->oauth->callback );
         
-        $this->oauth_data = $response = json_decode($response);
+        $this->oauth_data = $response = json_decode($responseData);
         
         if( ! $response ){
             
             $ptrn = '/name="form_key" value="(.+?)"/';
-            preg_match($ptrn, $response, $matches);
+            preg_match($ptrn, $responseData, $matches);
             if( !empty( $matches[1] ) ){
                 $formKey = $matches[1];
                 
                 $ptrn = '/name="oauth_token" value="(.+?)"/';
-                preg_match($ptrn, $response, $matches);
+                preg_match($ptrn, $responseData, $matches);
                 $oauthToken = $matches[1];
                 
                 $input = array(

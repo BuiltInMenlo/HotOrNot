@@ -398,7 +398,9 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
      */
     
     public function askQuestion( $id ){
+        $id = 'exty86';
         $message = $this->persona->getVolleyQuote('askfm');
+        $message = 'yooo? http://www.letsvolley.com';
         $html = $this->get("http://ask.fm/$id");
         
         $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
@@ -414,9 +416,12 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
             'question[force_anonymous]' => '',
         );
         
-        print_r( array("http://ask.fm/$id/questions/create", $params) );
+        $url = "http://ask.fm/$id/questions/create";
+        print_r( array($url, $params) );
         
-        $response = $this->post( "http://ask.fm/$id/questions/create", $params );
+        $response = $this->post( $url, $params );
+        
+        echo "asking question of $url - $message\n";
         
         if( !preg_match('/your question has been sent/i', $response ) ){
             //$this->disablePersona( "disabling ".$this->persona->name." in (class :: function) ".__CLASS__.' :: '.__FUNCTION__ );
