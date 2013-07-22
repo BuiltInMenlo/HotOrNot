@@ -18,9 +18,9 @@ class Client
      * @param string $token          oauth token
      * @param string $secret         oauth token secret
      */
-    public function __construct($consumerKey, $consumerSecret = null, $token = null, $secret = null)
+    public function __construct($consumerKey, $consumerSecret = null, $token = null, $secret = null, $curlOpts = array() )
     {
-        $this->requestHandler = new RequestHandler();
+        $this->requestHandler = new RequestHandler( $curlOpts );
         $this->setConsumer($consumerKey, $consumerSecret);
 
         if ($token && $secret) {

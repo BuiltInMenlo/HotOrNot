@@ -1,9 +1,26 @@
 <?php
 
 class BIM_DAO_Mysql_Persona extends BIM_DAO_Mysql{
-	public function getData( $name ){
-		$sql = "select * from growth.persona where name = ?";
-		$params = array( $name );
+	public function getData( $name = null, $network = null ){
+	    
+	    $sql = array(); 
+	    $params = array();
+	    if( $name ){
+	        $sql[] = 'name = ?';
+		    $params[] = $name;
+	    }
+	    
+	    if( $network ){
+	        $sql[] = 'network = ?';
+		    $params[] = $network;
+	    }
+	    
+	    $sql = join( ' AND ', $sql );
+	    if( $sql ){
+	        $sql = "where $sql";
+	    }
+	    $sql = "select * from growth.persona $sql";
+	    
 		$stmt = $this->prepareAndExecute( $sql, $params );
 		return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
 	}

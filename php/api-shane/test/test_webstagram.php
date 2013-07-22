@@ -1,20 +1,4 @@
 <?php
 require_once 'vendor/autoload.php';
-
-try{
-
-    $data = (object) array(
-        'data' => (object) array(
-            'username' => 'kelly1998xoxo',
-            'password' => 'teamvolleypassword',
-            'volley_user_id' => 2456,
-        )
-    );
-    
-    $j = new BIM_Jobs_Webstagram();
-    
-    $j->instaInvite($data);
-
-} catch( Exception $e ){
-    print_r( $e );
-}
+$file = '/home/shane/dev/webstagram_valid';
+BIM_Growth_Webstagram_Routines::enablePersonas($file);

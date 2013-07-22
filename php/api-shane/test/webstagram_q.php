@@ -5,7 +5,7 @@ require_once 'vendor/autoload.php';
 $job = (object) array(
 	'class' => 'BIM_Jobs_Growth',
 	'method' => 'doRoutines',
-    'params' => '{"personaName":"Holmools", "routine":"browseTags","class":"BIM_Growth_Webstagram_Routines"}'
+    'params' => '{"personaName":"Clinitupl", "routine":"browseTags","class":"BIM_Growth_Webstagram_Routines"}'
 );
 
 $q = new BIM_Jobs_Growth();

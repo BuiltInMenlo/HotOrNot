@@ -34,6 +34,16 @@ class BIM_DAO_Mysql_Jobs extends BIM_DAO_Mysql{
 		$this->prepareAndExecute($sql, $params);
 	}
 	
+	public function enableJob( $pesonaName ){
+		$sql = "
+			update queue.gearman_jobs
+			set disabled = 0
+			where params like ?
+		";
+		$params = array( "%\"$pesonaName\"%" );
+		$this->prepareAndExecute($sql, $params);
+	}
+	
 	public function disableJob( $pesonaName ){
 		$sql = "
 			update queue.gearman_jobs
