@@ -184,6 +184,16 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
 		return $uv;
     }
     
+    public function get(){
+        $input = $_POST ? $_POST : $_GET;
+        $challenge = array();
+        if( isset( $input['challengeID'] ) ){
+            $challenges = new BIM_App_Challenges();
+            $challenge = $challenges->getChallengeObj( $input['challengeID'] );
+        }
+        return $challenge;
+    }
+    
     protected function queueStaticPagesJobs(){
     	return;
 	    $this->voteJobs->queueStaticChallengesByDate();
