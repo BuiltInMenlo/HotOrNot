@@ -81,6 +81,11 @@
 - (void)_goCancel {
 	[_searchTextField resignFirstResponder];
 	
+	[[Mixpanel sharedInstance] track:@"Search - Cancel"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	
 	_searchTextField.text = @"";//NSLocalizedString(@"search_placeHolder", nil);
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = 0.0;
@@ -92,6 +97,11 @@
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
 	[_searchTextField resignFirstResponder];
+	
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Search - %@ Search", (_isUser) ? @"User" : @"Hashtag"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  _searchTextField.text, @"query", nil]];
 	
 	if (![_searchTextField.text isEqualToString:@"@"] && ![_searchTextField.text isEqualToString:@"search for users to snap with…"])
 		[[NSNotificationCenter defaultCenter] postNotificationName:(_isUser) ? @"RETRIEVE_USER_SEARCH_RESULTS" : @"RETRIEVE_SUBJECT_SEARCH_RESULTS" object:[_searchTextField.text substringFromIndex:1]];
@@ -112,6 +122,11 @@
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
 	_cancelButton.alpha = 0.0;
 	_cancelButton.hidden = NO;
+	
+	[[Mixpanel sharedInstance] track:@"Search - Clicked"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = 1.0;

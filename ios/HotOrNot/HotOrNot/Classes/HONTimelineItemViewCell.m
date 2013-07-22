@@ -457,10 +457,22 @@
 }
 
 - (void)_goCreatorTimeline {
+	[[Mixpanel sharedInstance] track:@"Timeline - Show Creator Timeline"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorID, _challengeVO.creatorName], @"creator", nil]];
+	
 	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.creatorName];
 }
 
 - (void)_goChallengerTimeline {
+	[[Mixpanel sharedInstance] track:@"Timeline - Show Challenger Timeline"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengerID, _challengeVO.challengerName], @"challenger", nil]];
+	
 	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.challengerName];
 }
 

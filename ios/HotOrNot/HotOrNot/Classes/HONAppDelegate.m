@@ -18,6 +18,7 @@
 #import "MBProgressHUD.h"
 #import "KikAPI.h"
 #import "Reachability.h"
+#import "TSTapstream.h"
 #import "UAirship.h"
 #import "UAPush.h"
 
@@ -36,7 +37,7 @@
 
 // json config url
 #if __DEV_BUILD___ == 1
-NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";//http://107.20.161.159/hotornot";//50.16.152.131/hotornot";
+NSString * const kConfigURL = @"http://50.16.152.131/hotornot";//http://107.20.161.159/hotornot";//50.16.152.131/hotornot";
 NSString * const kConfigJSON = @"boot-dev.json";//boot-dev.json";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
@@ -66,6 +67,7 @@ NSString * const kAPITumblrLogin = @"users/invitetumblr";
 NSString * const kAPIEmailVerify = @"users/verifyemail";
 NSString * const kAPIPhoneVerify = @"users/verifyphone";
 NSString * const kAPIEmailContacts = @"users/ffemail";
+NSString * const kAPIChallengeObject = @"challenges/get";
 
 // view heights
 const CGFloat kNavBarHeaderHeight = 44.0f;
@@ -122,9 +124,9 @@ NSString * const kTwilioSMS = @"6475577873";
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
 	
-//	return (@"http://discover.getassembly.com/hotornot/api-shane");
-//	return (@"http://107.20.161.159/hotornot/api-shane");
-//	return (@"http://50.17.142.22/hotornot/api-shane");
+	//	return (@"http://discover.getassembly.com/hotornot/api-shane");
+	//	return (@"http://107.20.161.159/hotornot/api-shane");
+	//	return (@"http://50.17.142.22/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -299,7 +301,7 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 + (void)setAllowsFBPosting:(BOOL)canPost {
-	[[NSUserDefaults standardUserDefaults] setObject:(canPost) ? @"YES" : @"NO" forKey:@"fb_posting"];	
+	[[NSUserDefaults standardUserDefaults] setObject:(canPost) ? @"YES" : @"NO" forKey:@"fb_posting"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -333,8 +335,8 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 + (NSArray *)refreshDiscoverChallenges {
-//	NSLog(@"allChallenges:\n%@", [discover_challenges objectForKey:@"total"]);
-//	NSLog(@"remainingChallenges:\n%@", [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"]);
+	//	NSLog(@"allChallenges:\n%@", [discover_challenges objectForKey:@"total"]);
+	//	NSLog(@"remainingChallenges:\n%@", [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"]);
 	
 	NSArray *allChallenges = [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"total"];
 	NSMutableArray *remainingChallenges = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"] mutableCopy];
@@ -396,13 +398,13 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 + (BOOL)canPingConfigServer {
-//	struct sockaddr_in address;
-//	address.sin_len = sizeof(address);
-//	address.sin_family = AF_INET;
-//	address.sin_port = htons(80);
-//	address.sin_addr.s_addr = inet_addr(kConfigURL);
-//	
-//	Reachability *reachability = [Reachability reachabilityWithAddress:&address];
+	//	struct sockaddr_in address;
+	//	address.sin_len = sizeof(address);
+	//	address.sin_family = AF_INET;
+	//	address.sin_port = htons(80);
+	//	address.sin_addr.s_addr = inet_addr(kConfigURL);
+	//
+	//	Reachability *reachability = [Reachability reachabilityWithAddress:&address];
 	
 	//return (!([[Reachability reachabilityWithAddress:kConfigURL] currentReachabilityStatus] == NotReachable));
 	return (YES);
@@ -572,6 +574,43 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 
+#pragma mark - Data Calls
+- (void)_challengeObjectFromPush:(int)challengeID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", challengeID], @"challengeID", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengeObject);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIChallengeObject parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengeResult);
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
+			[navigationController setNavigationBarHidden:YES];
+			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 #pragma mark - Notifications
 - (void)_showSearchTable:(NSNotification *)notification {
 	if (_searchViewController != nil) {
@@ -611,15 +650,15 @@ NSString * const kTwilioSMS = @"6475577873";
 	HONUserVO *vo = (HONUserVO *)[notification object];
 	
 	[[Mixpanel sharedInstance] track:@"Timeline - Poke User"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"challenger", nil]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 6], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
-									[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
-									nil];
+							[NSString stringWithFormat:@"%d", 6], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"pokerID",
+							[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
+							nil];
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -665,7 +704,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		_documentInteractionController.delegate = self;
 		_documentInteractionController.annotation = [NSDictionary dictionaryWithObject:[dict objectForKey:@"caption"] forKey:@"InstagramCaption"];
 		[_documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:[HONAppDelegate appTabBarController].view animated:YES];
-	
+		
 	} else {
 		[self _showOKAlert:NSLocalizedString(@"alert_instagramError_t", nil)
 			   withMessage:NSLocalizedString(@"alert_instagramError_m", nil)];
@@ -679,11 +718,11 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)_showOKAlert:(NSString *)title withMessage:(NSString *)message {
 	UIAlertView *alertView = [[UIAlertView alloc]
-									  initWithTitle:title
-									  message:message
-									  delegate:nil
-									  cancelButtonTitle:@"OK"
-									  otherButtonTitles:nil];
+							  initWithTitle:title
+							  message:message
+							  delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil];
 	[alertView show];
 }
 
@@ -699,13 +738,22 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showUserSearchTimeline:) name:@"SHOW_USER_SEARCH_TIMELINE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_pokeUser:) name:@"POKE_USER" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_sendToInstagram:) name:@"SEND_TO_INSTAGRAM" object:nil];
-
+	
 #ifdef FONTS
 	[self _showFonts];
 #endif
 	
-//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
-//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
+	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
+	
+	TSConfig *config = [TSConfig configWithDefaults];
+	config.collectWifiMac = NO;
+	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+//	config.odin1 = @"<ODIN-1 value goes here>";
+//	config.openUdid = @"<OpenUDID value goes here>";
+//	config.secureUdid = @"<SecureUDID value goes here>";
+	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
+	
 	
 	if ([HONAppDelegate hasNetwork]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
@@ -728,10 +776,10 @@ NSString * const kTwilioSMS = @"6475577873";
 		}
 		
 		[KikAPIClient registerAsKikPluginWithAppID:@"kik-com.builtinmenlo.hotornot"
-											withHomepageURI:@"http://www.builtinmenlo.com"
-												addAppButton:YES];
+								   withHomepageURI:@"http://www.builtinmenlo.com"
+									  addAppButton:YES];
 		
-			
+		
 		int boot_total = 0;
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"])
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:boot_total] forKey:@"boot_total"];
@@ -746,26 +794,26 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		if (boot_total == 5) {
 			UIAlertView *alertView = [[UIAlertView alloc]
-										 initWithTitle:@"Rate Volley"
-										 message:@"Why not rate Volley in the app store!"
-										 delegate:self
-										 cancelButtonTitle:nil
-										 otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
+									  initWithTitle:@"Rate Volley"
+									  message:@"Why not rate Volley in the app store!"
+									  delegate:self
+									  cancelButtonTitle:nil
+									  otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
 			[alertView setTag:2];
 			[alertView show];
 		}
 		
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 			[HONAppDelegate setAllowsFBPosting:NO];
-				
+		
 		//[self _retrieveConfigJSON];
-
+		
 		[Mixpanel sharedInstanceWithToken:kMixPanelToken];
 		[[Mixpanel sharedInstance] track:@"App Boot"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-					
+		
 		self.tabBarController = [[HONTabBarController alloc] init];
 		self.tabBarController.delegate = self;
 		
@@ -775,7 +823,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		self.window.rootViewController = self.tabBarController;
 		[self.window makeKeyAndVisible];
-	
+		
 	} else {
 		[self _showOKAlert:@"No Network Connection"
 			   withMessage:@"This app requires a network connection to work."];
@@ -789,8 +837,8 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
 	[[Mixpanel sharedInstance] track:@"App Entering Background"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 }
@@ -802,20 +850,21 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	[FBSettings publishInstall:kFacebookAppID];
 	
-//	[FBAppCall handleDidBecomeActive];
+	//	[FBAppCall handleDidBecomeActive];
 	
 	if (_isFromBackground && [HONAppDelegate hasNetwork]) {
 		[[Mixpanel sharedInstance] track:@"App Leaving Background"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
 		if (![HONAppDelegate canPingConfigServer]) {
 			[self _showOKAlert:NSLocalizedString(@"alert_connectionError_t", nil)
 				   withMessage:NSLocalizedString(@"alert_connectionError_m", nil)];
-		
+			
 		} else {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
-			//[self _retrieveConfigJSON];
+			[self _retrieveConfigJSON];
+			_isFromBackground = NO;
 			
 			NSString *notificationName;
 			switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
@@ -826,7 +875,7 @@ NSString * const kTwilioSMS = @"6475577873";
 				case 1:
 					notificationName = @"REFRESH_DISCOVERY_TAB";
 					break;
-				
+					
 				case 2:
 					notificationName = @"REFRESH_CHALLENGES_TAB";
 					break;
@@ -891,37 +940,35 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	// sms sound
 	AudioServicesPlaySystemSound(1007);
-	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	
 	int type_id = [[userInfo objectForKey:@"type"] intValue];
 	switch (type_id) {
-		
-		// challenge update
+			
+			// challenge update
 		case 1:{
-			[self _showOKAlert:@"Snap Update"
-				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+//			[self _showOKAlert:@"Snap Update"
+//				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			
-			//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-			//[navigationController setNavigationBarHidden:YES];
-			//[self.tabBarController presentViewController:navigationController animated:NO completion:nil];
-		break;}
+			NSLog(@"CHALLENGE:(%d)", [[userInfo objectForKey:@"challenge"] intValue]);
+			[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
+			break;}
 			
-		// poke
+			// poke
 		case 2:
 			[self _showOKAlert:@"Poke"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			break;
 	}
-	 	
+	
 	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
 	localNotification.fireDate = [[NSDate alloc] initWithTimeIntervalSinceNow:1];
 	localNotification.alertBody = [NSString stringWithFormat:@"%d", [[userInfo objectForKey:@"type"] intValue]];;
 	localNotification.soundName = UILocalNotificationDefaultSoundName;
-	 
-//	NSDictionary *infoDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Object 1", @"Key 1", @"Object 2", @"Key 2", nil];
-//	localNotification.userInfo = infoDict;
-	 
+	
+	//	NSDictionary *infoDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Object 1", @"Key 1", @"Object 2", @"Key 2", nil];
+	//	localNotification.userInfo = infoDict;
+	
 	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 }
 
@@ -983,7 +1030,7 @@ NSString * const kTwilioSMS = @"6475577873";
 				[populars addObject:popular];
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api-dev"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
@@ -1026,7 +1073,9 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
-			[self _registerUser];
+			
+			if (!_isFromBackground)
+				[self _registerUser];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1046,9 +1095,9 @@ NSString * const kTwilioSMS = @"6475577873";
 
 - (void)_registerUser {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 1], @"action",
-									[HONAppDelegate deviceToken], @"token",
-									nil];
+							[NSString stringWithFormat:@"%d", 1], @"action",
+							[HONAppDelegate deviceToken], @"token",
+							nil];
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -1057,7 +1106,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-		
+			
 			if (_progressHUD == nil)
 				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.minShowTime = kHUDTime;
@@ -1067,7 +1116,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[_progressHUD show:NO];
 			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 			_progressHUD = nil;
-		
+			
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
@@ -1078,7 +1127,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			[self _initTabs];
 		}
-				
+		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 		
@@ -1185,30 +1234,30 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - DocumentInteraction Delegates
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
 	[[Mixpanel sharedInstance] track:@"Presenting DocInteraction Shelf"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [controller name], @"controller", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
 	[[Mixpanel sharedInstance] track:@"Dismissing DocInteraction Shelf"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [controller name], @"controller", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller willBeginSendingToApplication:(NSString *)application {
 	[[Mixpanel sharedInstance] track:@"Launching DocInteraction App"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [controller name], @"controller", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
 }
 
 - (void)documentInteractionController:(UIDocumentInteractionController *)controller didEndSendingToApplication:(NSString *)application {
 	[[Mixpanel sharedInstance] track:@"Entering DocInteraction App Foreground"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [controller name], @"controller", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [controller name], @"controller", nil]];
 }
 
 @end

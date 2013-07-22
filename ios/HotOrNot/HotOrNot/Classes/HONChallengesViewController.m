@@ -396,11 +396,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_goPublicChallenges {
-	[[Mixpanel sharedInstance] track:@"Activity - Public"
+	_isPrivate = NO;
+	
+	[[Mixpanel sharedInstance] track:@"Activity - Public Toggle"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	_isPrivate = NO;
 	
 	[_publicButton setSelected:YES];
 	[_privateButton setSelected:NO];
@@ -416,11 +416,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 }
 
 - (void)_goPrivateChallenges {
-	[[Mixpanel sharedInstance] track:@"Activity - Private"
+	_isPrivate = YES;
+	
+	[[Mixpanel sharedInstance] track:@"Activity - Private Toggle"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	_isPrivate = YES;
 	
 	[_publicButton setSelected:NO];
 	[_privateButton setSelected:YES];
@@ -455,6 +455,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 #pragma mark - ChallengeCell Delegates
 - (void)challengeViewCellLoadMore:(HONChallengeViewCell *)cell {
+	[[Mixpanel sharedInstance] track:@"Activity - Load More"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;

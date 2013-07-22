@@ -13,7 +13,9 @@
 @interface HONSnapCameraOverlayView : UIView
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username;
 - (void)updateChallengers:(NSArray *)challengers;
-
+- (void)addPreview:(UIImage *)image;
+- (void)addMirroredPreview:(UIImage *)image;
+- (void)removePreview;
 @property(nonatomic, assign) id <HONSnapCameraOverlayViewDelegate> delegate;
 @end
 

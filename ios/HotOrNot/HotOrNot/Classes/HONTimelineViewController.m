@@ -27,7 +27,7 @@
 #import "HONInviteCelebViewController.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
-#import "HONInvitePopularViewController.h"
+#import "HONPopularViewController.h"
 #import "HONVerifyViewController.h"
 
 
@@ -45,6 +45,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIImageView *findFriendsImageView;
+@property (nonatomic, strong) UIView *tooltipView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @end
 
@@ -107,8 +108,8 @@
 		_isPublic = isPublic;
 		_timelineType = HONTimelineTypeOpponents;
 		_challengerDict = [NSDictionary dictionaryWithObjectsAndKeys:
-								 [NSNumber numberWithInt:userID], @"user1",
-								 [NSNumber numberWithInt:opponentID], @"user2", nil];
+						   [NSNumber numberWithInt:userID], @"user1",
+						   [NSNumber numberWithInt:opponentID], @"user2", nil];
 		
 		[self _registerNotifications];
 	}
@@ -148,20 +149,20 @@
 	// all public
 	if (_timelineType == HONTimelineTypePublic) {
 		
-	// between two users
+		// between two users
 	} else if (_timelineType == HONTimelineTypeOpponents) {
 		[params setObject:[_challengerDict objectForKey:@"user1"] forKey:@"userID"];
 		[params setObject:[_challengerDict objectForKey:@"user2"] forKey:@"challengerID"];
-	
-	// with hashtag
+		
+		// with hashtag
 	} else if (_timelineType == HONTimelineTypeSubject) {
 		[params setObject:_subjectName forKey:@"subjectName"];
-	
-	// a user's
+		
+		// a user's
 	} else if (_timelineType == HONTimelineTypeSingleUser) {
 		[params setObject:_username forKey:@"username"];
-	
-	// a user's friends
+		
+		// a user's friends
 	} else if (_timelineType == HONTimelineTypeFriends) {
 	}
 	
@@ -177,6 +178,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult lastObject]);
 			
 			_challenges = [NSMutableArray new];
 			
@@ -190,10 +192,10 @@
 			}
 			
 			if (_timelineType == HONTimelineTypeOpponents) {
-				HONChallengeVO *vo = (HONChallengeVO *)[_challenges firstObject];
+				HONChallengeVO *vo = (HONChallengeVO *)[_challenges lastObject];
 				[_headerView setTitle:[NSString stringWithFormat:@"@%@", ([vo.challengerName length] == 0) ? vo.creatorName : (vo.creatorID == [[_challengerDict objectForKey:@"user1"] intValue] && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorName : vo.challengerName]];
 			}
-						
+			
 			[_tableView reloadData];
 		}
 		
@@ -222,9 +224,9 @@
 
 - (void)_retrieveUser {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 8], @"action",
-									_username, @"username",
-									nil];
+							[NSString stringWithFormat:@"%d", 8], @"action",
+							_username, @"username",
+							nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
@@ -271,15 +273,36 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (result != nil)
-				[HONAppDelegate addFriendToList:result];
+				[HONAppDelegate writeFriendsList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);		
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
+- (void)_flagUser:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", userID], @"userID", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 	}];
 }
 
@@ -294,7 +317,7 @@
 	
 	_userVO = nil;
 	_challenges = [NSMutableArray array];
-		
+	
 	if (_isPushView) {
 		
 		NSString *title = @"";
@@ -314,7 +337,14 @@
 		[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
 		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
 		[_headerView addSubview:backButton];
-	
+		
+		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		moreButton.frame = CGRectMake(256.0, 0.0, 64.0, 44.0);
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_nonActive"] forState:UIControlStateNormal];
+		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_Active"] forState:UIControlStateHighlighted];
+		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+		[_headerView addSubview:moreButton];
+		
 	} else {
 		_headerView = [[HONHeaderView alloc] initAsVoteWall];
 		[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
@@ -363,9 +393,9 @@
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
 		[self _retrieveUser];
-		
+	
 	[self _retrieveChallenges];
-
+	
 #if __ALWAYS_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -376,14 +406,19 @@
 #if __ALWAYS_VERIFY__ == 1
 		[self _goVerify];
 #endif
-	
-//		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
-//			[self _goVerify];
-			
-		if ([HONAppDelegate isLocaleEnabled]) {
-			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
-				[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
 		
+		//		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
+		//			[self _goVerify];
+		
+		if ([HONAppDelegate isLocaleEnabled]) {
+			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
+				_tooltipView = [[UIView alloc] initWithFrame:CGRectMake(250.0, 40.0, 60.0, 30.0)];
+				_tooltipView.backgroundColor = [HONAppDelegate honDebugGreenColor];
+				[self.view addSubview:_tooltipView];
+				
+				[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
+			}
+			
 		} else
 			[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
 	}
@@ -401,17 +436,17 @@
 #pragma mark - Navigation
 - (void)_goBack {
 	[[Mixpanel sharedInstance] track:@"Timeline Profile - Go Back"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)_goRefresh {
-	[_headerView toggleRefresh:YES];	
+	[_headerView toggleRefresh:YES];
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
 		[self _retrieveUser];
@@ -421,21 +456,26 @@
 
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Timeline - Create Snap"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	if (_tooltipView != nil) {
+		[_tooltipView removeFromSuperview];
+		_tooltipView = nil;
+	}
 	
 	if (_userVO == nil) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
-	
+		
 	} else {
 		if ([_userVO.username isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"name"]]) {
 			[[[UIAlertView alloc] initWithTitle:@"Snap Problem!"
-												 message:@"You cannot snap at yourself!"
-												delegate:nil
-									cancelButtonTitle:@"OK"
-									otherButtonTitles:nil] show];
+										message:@"You cannot snap at yourself!"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
 			
 		} else {
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO]];
@@ -445,10 +485,26 @@
 	}
 }
 
+- (void)_goMore {
+	[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:@"Report abuse"
+													otherButtonTitles:@"Photo message", @"Follow user", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:1];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
 - (void)_goTimelineBanner {
 	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Banner (%@)", [HONAppDelegate timelineBannerType]]
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	UINavigationController *navigationController;
 	if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"instagram"])
@@ -472,8 +528,8 @@
 	//[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[[Mixpanel sharedInstance] track:@"Timeline - Locale Restricted"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRestrictedLocaleViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
@@ -483,8 +539,8 @@
 
 - (void)_goRegistration {
 	[[Mixpanel sharedInstance] track:@"Register User"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	int boot_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"boot_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++boot_total] forKey:@"boot_total"];
@@ -540,7 +596,7 @@
 }
 
 - (void)_showPopularUsers:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInvitePopularViewController alloc] init]];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -555,10 +611,6 @@
 	
 	[self _retrieveChallenges];
 }
-
-//- (void)_showRegistration:(NSNotification *)notification {
-//	[self _goRegistration];
-//}
 
 
 #pragma mark - TimelineItemCell Delegates
@@ -652,29 +704,29 @@
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
 	
-//	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == challengeVO.creatorID) {
-//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:challengeVO.subjectName]];
-//		[self presentViewController:navigationController animated:NO completion:nil];
-//		
-//	} else {
-//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
-//		[self presentViewController:navigationController animated:NO completion:nil];
-		
-//		if (challengeVO.statusID == 1) {
-//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
-//			[self presentViewController:navigationController animated:NO completion:nil];
-//		
-//		} else if (challengeVO.statusID == 2) {
-//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
-//			[self presentViewController:navigationController animated:NO completion:nil];
-//			
-//		} else {
-//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
-//			[self presentViewController:navigationController animated:NO completion:nil];
-//		}
-//	}
+	//	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == challengeVO.creatorID) {
+	//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:challengeVO.subjectName]];
+	//		[self presentViewController:navigationController animated:NO completion:nil];
+	//
+	//	} else {
+	//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
+	//		[self presentViewController:navigationController animated:NO completion:nil];
 	
-//	[navigationController setNavigationBarHidden:YES];
+	//		if (challengeVO.statusID == 1) {
+	//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
+	//			[self presentViewController:navigationController animated:NO completion:nil];
+	//
+	//		} else if (challengeVO.statusID == 2) {
+	//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
+	//			[self presentViewController:navigationController animated:NO completion:nil];
+	//
+	//		} else {
+	//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
+	//			[self presentViewController:navigationController animated:NO completion:nil];
+	//		}
+	//	}
+	
+	//	[navigationController setNavigationBarHidden:YES];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell snapWithSubject:(NSString *)subjectName {
@@ -706,9 +758,9 @@
 									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"opponent", nil]];
 	
 	[self _goNewChallengeAtUser:userVO];
-//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO]];
-//	[navigationController setNavigationBarHidden:YES];
-//	[self presentViewController:navigationController animated:YES completion:nil];
+	//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO]];
+	//	[navigationController setNavigationBarHidden:YES];
+	//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell showUserTimeline:(HONUserVO *)userVO {
@@ -751,9 +803,9 @@
 		
 		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:bgView.frame];
 		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
-//		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]]
-//																					cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-//																			  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
+		//		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]]
+		//																					cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+		//																			  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 		[bgView addSubview:bannerImageView];
 		
 		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -778,7 +830,7 @@
 			cell.delegate = self;
 			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 			return (cell);
-		
+			
 		} else {
 			HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 			
@@ -801,7 +853,7 @@
 			cell = [[HONTimelineItemViewCell alloc] initAsStartedCell:(vo.statusID == 4)];
 			cell.challengeVO = vo;
 		}
-			
+		
 		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
@@ -819,7 +871,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((([[HONAppDelegate timelineBannerURL] length] > 0)) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 50.0 : 0.0);
+	return ((([[HONAppDelegate timelineBannerURL] length] > 0) && !_isPushView) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 50.0 : 0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -828,24 +880,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-}
-
-
-#pragma mark - ActionSheet Delegates
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	switch (buttonIndex) {
-		case 0:{
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:NO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-			break;}
-			
-		case 1:{
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:YES]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-			break;}
-	}
 }
 
 
@@ -865,6 +899,56 @@
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
+	}
+}
+
+
+#pragma mark - ActionSheet Delegates
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (actionSheet.tag == 0) {
+		switch (buttonIndex) {
+			case 0:{
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:NO]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:YES completion:nil];
+				break;}
+				
+			case 1:{
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:YES]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:YES completion:nil];
+				break;}
+		}
+	
+	} else if (actionSheet.tag == 1) {
+		switch (buttonIndex) {
+			case 0:{
+				[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self Flag User"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
+				
+				[self _flagUser:_userVO.userID];
+				break;}
+				
+			case 1:{
+				[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self Snap At User"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
+				
+				[self _goNewChallengeAtUser:_userVO];
+				break;}
+				
+			case 2:{
+				[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self Follow User"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
+				
+				[self _addFriend:_userVO.userID];
+				break;}
+		}
 	}
 }
 

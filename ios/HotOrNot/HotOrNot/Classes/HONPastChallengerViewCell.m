@@ -45,7 +45,7 @@
 	avatarImageView.hidden = _isRandom;
 	[self addSubview:avatarImageView];
 	
-	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isRandom) ? 10.0 : 59.0, 24.0, (_isRandom) ? 270.0 : 230.0, 20.0)];
+	UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake((_isRandom) ? 10.0 : 59.0, 24.0, (_isRandom) ? 260.0 : 220.0, 20.0)];
 	usernameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 	usernameLabel.textColor = [HONAppDelegate honBlueTextColor];
 	usernameLabel.backgroundColor = [UIColor clearColor];

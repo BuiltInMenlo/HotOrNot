@@ -13,6 +13,7 @@
 
 @property (nonatomic, retain) NSDictionary *dictionary;
 
+@property (nonatomic) int userID;
 @property (nonatomic, retain) NSString *fullName;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *avatarURL;

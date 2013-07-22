@@ -49,6 +49,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UIImage *challangeImage;
+@property (nonatomic, strong) UIImage *rawImage;
 @end
 
 @implementation HONImagePickerViewController
@@ -57,7 +58,7 @@ const CGFloat kFocusInterval = 0.5f;
 	if ((self = [super init])) {
 		NSLog(@"%@ - init", [self description]);
 		self.view.backgroundColor = [UIColor blackColor];
-		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
+		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 		_challengerName = @"";
 		_isFirstAppearance = YES;
@@ -71,7 +72,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (id)initWithUser:(HONUserVO *)userVO {
 	if ((self = [super init])) {
 		NSLog(@"%@ - initWithUser:[%d/%@]", [self description], userVO.userID, userVO.username);
-		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
+		_subjectName = [HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
 		_challengerName = userVO.username;
 		_challengeSubmitType = HONChallengeSubmitTypeOpponentID;
@@ -428,6 +429,8 @@ const CGFloat kFocusInterval = 0.5f;
 			}
 		}
 		
+		[self performSelector:@selector(_takePhoto) withObject:nil afterDelay:3.0];
+		
 	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -439,6 +442,15 @@ const CGFloat kFocusInterval = 0.5f;
 
 - (void)_showOverlay {
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
+}
+
+- (void)_takePhoto {
+	if (_focusTimer != nil) {
+		[_focusTimer invalidate];
+		_focusTimer = nil;
+	}
+	
+	[_imagePicker takePicture];
 }
 
 - (void)_autofocusCamera {
@@ -550,27 +562,27 @@ const CGFloat kFocusInterval = 0.5f;
 		_focusTimer = nil;
 	}
 	
-	UIImage *rawImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+	_rawImage = [info objectForKey:UIImagePickerControllerOriginalImage];
 	
-	if (rawImage.imageOrientation != 0)
-		rawImage = [rawImage fixOrientation];
+	if (_rawImage.imageOrientation != 0)
+		_rawImage = [_rawImage fixOrientation];
 	
-	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(rawImage.size));
+	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(_rawImage.size));
 	
 	// image is wider than tall (800x600)
-	if (rawImage.size.width > rawImage.size.height) {
-		float offset = (rawImage.size.width - rawImage.size.height) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:rawImage toRect:CGRectMake(offset, 0.0, rawImage.size.height, rawImage.size.height)];
+	if (_rawImage.size.width > _rawImage.size.height) {
+		float offset = (_rawImage.size.width - _rawImage.size.height) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:_rawImage toRect:CGRectMake(offset, 0.0, _rawImage.size.height, _rawImage.size.height)];
 		
 		// image is taller than wide (600x800)
-	} else if (rawImage.size.width < rawImage.size.height) {
-		float offset = (rawImage.size.height - rawImage.size.width) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:rawImage toRect:CGRectMake(0.0, offset, rawImage.size.width, rawImage.size.width)];
+	} else if (_rawImage.size.width < _rawImage.size.height) {
+		float offset = (_rawImage.size.height - _rawImage.size.width) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:_rawImage toRect:CGRectMake(0.0, offset, _rawImage.size.width, _rawImage.size.width)];
 		
 		// image is square
-	} else {
-		_challangeImage = rawImage;
-	}
+	} else
+		_challangeImage = _rawImage;
+	
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
@@ -583,36 +595,25 @@ const CGFloat kFocusInterval = 0.5f;
 			for (HONContactUserVO *vo in _addContacts)
 				[usernames addObject:vo.fullName];
 			
-			[_previewView setUsernames:[usernames copy]];
+			//[_previewView setUsernames:[usernames copy]];
+			
 			_previewView.delegate = self;
+			[_previewView setIsPrivate:_isPrivate];
 			[self.view addSubview:_previewView];
+			
+			[_cameraOverlayView removePreview];
+			
+			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+			[self _uploadPhoto:_challangeImage];
 		}];
 		
 	} else {
-		[self dismissViewControllerAnimated:NO completion:^(void) {
-			if (rawImage.size.width >= 720)
-				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:rawImage];
-			
-			else
-				_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:rawImage];
-			
-			
-			NSMutableArray *usernames = [NSMutableArray array];
-			for (HONUserVO *vo in _addFollowing)
-				[usernames addObject:vo.username];
-			
-			for (HONContactUserVO *vo in _addContacts)
-				[usernames addObject:vo.fullName];
-			
-			_previewView.delegate = self;
-			[_previewView setUsernames:[usernames copy]];
-			[_previewView setIsPrivate:_isPrivate];
-			[self.view addSubview:_previewView];
-		}];
+		if (_rawImage.size.width >= 720)
+			[_cameraOverlayView addPreview:_rawImage];
+		
+		else
+			[_cameraOverlayView addMirroredPreview:_rawImage];
 	}
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	[self _uploadPhoto:_challangeImage];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -636,12 +637,32 @@ const CGFloat kFocusInterval = 0.5f;
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if (_focusTimer != nil) {
-		[_focusTimer invalidate];
-		_focusTimer = nil;
-	}
+	//[_imagePicker takePicture];
 	
-	[_imagePicker takePicture];
+	[_cameraOverlayView removePreview];
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		if (_rawImage.size.width >= 720)
+			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_rawImage];
+		 
+		else
+			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
+		 
+		 
+		_previewView.delegate = self;
+		NSMutableArray *usernames = [NSMutableArray array];
+		for (HONUserVO *vo in _addFollowing)
+			[usernames addObject:vo.username];
+		 
+		for (HONContactUserVO *vo in _addContacts)
+			[usernames addObject:vo.fullName];
+		 
+		[_previewView setUsernames:[usernames copy]];
+		[_previewView setIsPrivate:_isPrivate];
+		[self.view addSubview:_previewView];
+		
+		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+		[self _uploadPhoto:_challangeImage];
+	}];
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -746,9 +767,6 @@ const CGFloat kFocusInterval = 0.5f;
 	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil) && _challengeSubmitType != HONChallengeSubmitTypeJoin)
 		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 	
-//	if ([_addFollowing count] > 0)
-//		_challengerName = ((HONUserVO *)[_addFollowing objectAtIndex:0]).username;
-	
 	if ([_addFollowing count] == 1) {
 		_challengeSubmitType = HONChallengeSubmitTypeOpponentName;
 		_challengerName = ((HONUserVO *)[_addFollowing objectAtIndex:0]).username;
@@ -796,6 +814,7 @@ const CGFloat kFocusInterval = 0.5f;
 #pragma mark - PreviewView Delegates
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
 	NSLog(@"previewViewBackToCamera");
+	
 	[self _showCamera];
 }
 

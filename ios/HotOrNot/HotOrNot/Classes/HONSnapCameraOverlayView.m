@@ -19,6 +19,8 @@
 
 @interface HONSnapCameraOverlayView() <HONCreateChallengeOptionsViewDelegate, HONSnapCameraOptionsViewDelegate>
 @property (nonatomic, strong) UIImageView *irisImageView;
+@property (nonatomic, strong) UIView *previewHolderView;
+@property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) HONCreateChallengeOptionsView *challengeOptionsView;
 @property (nonatomic, strong) HONSnapCameraOptionsView *cameraOptionsView;
 @property (nonatomic, strong) UIView *controlsHolderView;
@@ -50,8 +52,10 @@
 		_irisImageView.alpha = 0.0;
 		//[self addSubview:_irisImageView];
 		
-		_controlsHolderView = [[UIView alloc] initWithFrame:self.frame];
-		_controlsHolderView.userInteractionEnabled = YES;
+		_previewHolderView = [[UIView alloc] initWithFrame:self.frame];
+		[self addSubview:_previewHolderView];
+		
+		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
 		[self addSubview:_controlsHolderView];
 		
 		_addFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -84,21 +88,36 @@
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"iconForever_nonActive"] forState:UIControlStateNormal];
 		[_optionsButton setBackgroundImage:[UIImage imageNamed:@"iconForever_Active"] forState:UIControlStateHighlighted];
 		[_optionsButton addTarget:self action:@selector(_goChallengeOptions) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:_optionsButton];
+//		[_controlsHolderView addSubview:_optionsButton];
 		
 		_captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_captureButton.frame = CGRectMake(123.0, [UIScreen mainScreen].bounds.size.height - 100.0, 74.0, 74.0);
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[_captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[_captureButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:_captureButton];
+//		[_controlsHolderView addSubview:_captureButton];
 		
 		UIButton *cameraOptionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraOptionsButton.frame = CGRectMake(248.0, [UIScreen mainScreen].bounds.size.height - 61.0, 64.0, 64.0);
 		[cameraOptionsButton setBackgroundImage:[UIImage imageNamed:@"moreWhiteButton_nonActive"] forState:UIControlStateNormal];
 		[cameraOptionsButton setBackgroundImage:[UIImage imageNamed:@"moreWhiteButton_Active"] forState:UIControlStateHighlighted];
 		[cameraOptionsButton addTarget:self action:@selector(_goCameraOptions) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:cameraOptionsButton];
+//		[_controlsHolderView addSubview:cameraOptionsButton];
+		
+		float offset = ([HONAppDelegate isRetina5]) ? 469.0 : 389.0;
+		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		retakeButton.frame = CGRectMake(340.0, offset + 24.0, 128.0, 49.0);
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_nonActive"] forState:UIControlStateNormal];
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_Active"] forState:UIControlStateHighlighted];
+		[retakeButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
+		[_controlsHolderView addSubview:retakeButton];
+		
+		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		submitButton.frame = CGRectMake(496.0, offset + 24.0, 128.0, 49.0);
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_nonActive"] forState:UIControlStateNormal];
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_Active"] forState:UIControlStateHighlighted];
+		[submitButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
+		[_controlsHolderView addSubview:submitButton];
 	}
 	
 	return (self);
@@ -117,6 +136,36 @@
 	
 	//NSLog(@"updateChallengers:[%@]\nusernames:[%@]", _usernames, usernames);
 	_usernamesLabel.text = ([usernames length] == 0) ? @"" : [usernames substringToIndex:[usernames length] - 2];
+}
+
+- (void)addPreview:(UIImage *)image {
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
+	} completion:nil];
+	
+	if (_previewImageView == nil) {
+		_previewImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor scaleImage:image byFactor:(([HONAppDelegate isRetina5]) ? 1.25f : 1.125f) * (self.frame.size.width / image.size.width)]];
+		[_previewHolderView addSubview:_previewImageView];
+	}
+}
+
+- (void)addMirroredPreview:(UIImage *)image {
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
+	} completion:nil];
+	
+	if (_previewImageView == nil) {
+		UIImage *scaledImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.83333f : 0.83333f];
+		_previewImageView = [[UIImageView alloc] initWithImage:scaledImage];
+		_previewImageView.frame = CGRectOffset(_previewImageView.frame, ABS(self.frame.size.width - scaledImage.size.width) * -0.5, (ABS(self.frame.size.height - scaledImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
+		_previewImageView.transform = CGAffineTransformScale(_previewImageView.transform, -1.0f, 1.0f);
+		[_previewHolderView addSubview:_previewImageView];
+	}
+}
+
+- (void)removePreview {
+	[_previewImageView removeFromSuperview];
+	_previewImageView = nil;
 }
 
 

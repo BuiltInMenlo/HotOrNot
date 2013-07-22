@@ -35,6 +35,7 @@ extern NSString * const kAPITumblrLogin;
 extern NSString * const kAPIEmailVerify;
 extern NSString * const kAPIPhoneVerify;
 extern NSString * const kAPIEmailContacts;
+extern NSString * const kAPIChallengeObject;
 
 // view heights
 const CGFloat kNavBarHeaderHeight;

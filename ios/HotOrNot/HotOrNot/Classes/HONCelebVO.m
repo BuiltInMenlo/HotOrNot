@@ -16,6 +16,7 @@
 	HONCelebVO *vo = [[HONCelebVO alloc] init];
 	vo.dictionary = dictionary;
 	
+	vo.userID = [[dictionary objectForKey:@"id"] intValue];
 	vo.fullName = [dictionary objectForKey:@"full_name"];
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.avatarURL = [dictionary objectForKey:@"avatar_url"];

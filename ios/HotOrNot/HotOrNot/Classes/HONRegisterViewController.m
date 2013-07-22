@@ -123,6 +123,13 @@
 				_progressHUD = nil;
 				
 				[HONAppDelegate writeUserInfo:userResult];
+				[[[UIAlertView alloc] initWithTitle:@"Take Your Photo!"
+											message:@"Take a profile photo so people know who you are."
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+				
+				
 				[self _presentCamera];
 				
 			} else {
@@ -332,11 +339,27 @@
 	
 	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
 	[page1ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:0], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
+	page1ImageView.userInteractionEnabled = YES;
 	[_tutorialScrollView addSubview:page1ImageView];
+	
+	UIButton *skipTutorial1Button = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipTutorial1Button.frame = CGRectMake(42.0, _tutorialScrollView.frame.size.height - 135.0, 237.0, 67.0);
+	[skipTutorial1Button setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
+	[skipTutorial1Button setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
+	[skipTutorial1Button addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+	[page1ImageView addSubview:skipTutorial1Button];
 	
 	UIImageView *page2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
 	[page2ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:1], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
+	page2ImageView.userInteractionEnabled = YES;
 	[_tutorialScrollView addSubview:page2ImageView];
+	
+	UIButton *skipTutorial2Button = [UIButton buttonWithType:UIButtonTypeCustom];
+	skipTutorial2Button.frame = CGRectMake(42.0, _tutorialScrollView.frame.size.height - 135.0, 237.0, 67.0);
+	[skipTutorial2Button setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
+	[skipTutorial2Button setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
+	[skipTutorial2Button addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+	[page2ImageView addSubview:skipTutorial2Button];
 	
 	UIImageView *page3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(636.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
 	[page3ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:2], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
