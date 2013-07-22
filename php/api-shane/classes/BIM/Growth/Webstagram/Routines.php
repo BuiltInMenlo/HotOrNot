@@ -223,13 +223,6 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         return $loggedIn;
     }
     
-    public function disablePersona( $reason ){
-        $dao = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
-        $name = $this->persona->instagram->name;
-        $dao->disableJob($this->persona->instagram->name);
-        $this->sendWarningEmail( $reason );
-    }
-    
     public function sendWarningEmail( $reason ){
         $c = BIM_Config::warningEmail();
         $e = new BIM_Email_Swift( $c->smtp );

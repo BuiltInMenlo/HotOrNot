@@ -6,7 +6,7 @@ aws/
 
 #-- api --#
 php/api-shane/bin/admin/.htaccess
-php/api-shane/bin/gearman/admin/config.php
+php/api-shane/bin/gearman/admin/config*
 php/api-shane/classes/BIM/Config/Dynamic.php
 php/api-shane/test/quotes.sql
 php/api-shane/test/tumblr.o
@@ -17,6 +17,5 @@ bash/purge.log
 #-- xcode --#
 *.xcuserdata*
 *.xcuserstate
-
 ios/HotOrNot/Obj-C Notes
 ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata/Gullinbursti.xcuserdatad/UserInterfaceState.xcuserstate
