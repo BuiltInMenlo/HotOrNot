@@ -26,15 +26,6 @@ class BIM_App_Votes extends BIM_App_Base{
 	    
 	    $key = "challenge_$challenge_id";
 	    
-        /**
-        * The following will initialize a Memcached client to utilize the Auto Discovery feature.
-        * 
-        * By configuring the client with the Dynamic client mode with single endpoint, the
-        * client will periodically use the configuration endpoint to retrieve the current cache
-        * cluster configuration. This allows scaling the cache cluster up or down in number of nodes
-        * without requiring any changes to the PHP application. 
-        */
-        
         /* Configuration endpoint to use to initialize memcached client */
         $server_endpoint = "127.0.0.1";
         /* Port for connecting to the ElastiCache cluster */
