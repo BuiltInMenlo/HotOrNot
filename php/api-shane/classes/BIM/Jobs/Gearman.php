@@ -24,7 +24,11 @@ class BIM_Jobs_Gearman extends BIM_Jobs{
 			try{
 				if( $this->canQueueJob( $job->handle ) ){
 					$job->handle = $queue->doBgJob( $job, $job->name );
-					$jobsDAO->updateNextRunTime( $job );
+					if( empty( $job->is_temp ) ){
+    					$jobsDAO->updateNextRunTime( $job );
+					} else {
+    					$jobsDAO->disableJobById( $job->id );
+					}
 				}
 			} catch( Exception $e ){
 				error_log( print_r( $e, true ) );
