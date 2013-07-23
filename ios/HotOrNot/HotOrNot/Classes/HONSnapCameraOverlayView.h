@@ -22,6 +22,7 @@
 
 @protocol HONSnapCameraOverlayViewDelegate
 - (void)cameraOverlayViewTakePicture:(HONSnapCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewMakeChallengeNonExpire:(HONSnapCameraOverlayView *)cameraOverlayView;

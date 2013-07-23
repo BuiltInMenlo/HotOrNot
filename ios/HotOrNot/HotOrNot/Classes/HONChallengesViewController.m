@@ -21,7 +21,7 @@
 #import "HONSearchBarHeaderView.h"
 #import "HONInviteNetworkViewController.h"
 #import "HONAddContactsViewController.h"
-
+#import "HONSnapPreviewViewController.h"
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
@@ -126,13 +126,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 - (void)_retrieveChallenges {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", (_isPrivate) ? 8 : 2], @"action",
-							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							nil];
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID", nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], (_isPrivate) ? kAPIGetPrivateMessages : kAPIGetPublicMessages);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:(_isPrivate) ? kAPIGetPrivateMessages : kAPIGetPublicMessages parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -329,6 +327,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	[_tableView addGestureRecognizer:lpGestureRecognizer];
+	
 	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0)];
 	[self.view addSubview:toggleHolderView];
 	
@@ -378,12 +379,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
 	[[Mixpanel sharedInstance] track:@"Activity - Create Snap"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
 }
 
 - (void)_goRefresh {
@@ -433,6 +434,24 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
 	[self _retrieveChallenges];
+}
+
+-(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		CGPoint touchPoint = [lpGestureRecognizer locationInView:self.view];
+		NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:touchPoint];
+		
+		if (indexPath != nil) {
+			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
+			HONSnapPreviewViewController *snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithImageURL:[NSString stringWithFormat:@"%@_l.jpg", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.creatorImgPrefix : vo.challengerImgPrefix]];
+			[self.view addSubview:snapPreviewViewController.view];
+		}
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+		NSLog(@"UIGestureRecognizerStateRecognized");
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateEnded) {
+	}
 }
 
 
@@ -577,8 +596,56 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	[self _updateChallengeAsSeen];
 	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUserID:_challengeVO.creatorID andOpponentID:_challengeVO.challengerID asPublic:!_isPrivate] animated:YES];
 	
+	if (vo.statusID == 1) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
+		[navigationController setNavigationBarHidden:YES];
+		[self presentViewController:navigationController animated:NO completion:nil];
+	
+	} else if (vo.statusID == 2) {
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) {
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+															   [NSString stringWithFormat:@"%d", vo.challengerID], @"id",
+															   [NSString stringWithFormat:@"%d", 0], @"points",
+															   [NSString stringWithFormat:@"%d", 0], @"votes",
+															   [NSString stringWithFormat:@"%d", 0], @"pokes",
+															   [NSString stringWithFormat:@"%d", 0], @"pics",
+															   vo.challengerName, @"username",
+															   vo.challengerFB, @"fb_id",
+															   vo.challengerAvatar, @"avatar_url", nil]];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
+		
+		} else {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:vo]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
+		}
+	
+	} else if (vo.statusID == 4) {
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) {
+			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+															   [NSString stringWithFormat:@"%d", vo.challengerID], @"id",
+															   [NSString stringWithFormat:@"%d", 0], @"points",
+															   [NSString stringWithFormat:@"%d", 0], @"votes",
+															   [NSString stringWithFormat:@"%d", 0], @"pokes",
+															   [NSString stringWithFormat:@"%d", 0], @"pics",
+															   vo.challengerName, @"username",
+															   vo.challengerFB, @"fb_id",
+															   vo.challengerAvatar, @"avatar_url", nil]];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
+		
+		} else {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:vo]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:NO completion:nil];
+		}
+	}
 }
 
 

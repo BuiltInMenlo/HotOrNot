@@ -68,6 +68,9 @@ NSString * const kAPIEmailVerify = @"users/verifyemail";
 NSString * const kAPIPhoneVerify = @"users/verifyphone";
 NSString * const kAPIEmailContacts = @"users/ffemail";
 NSString * const kAPIChallengeObject = @"challenges/get";
+NSString * const kAPIGetPublicMessages = @"challenges/getpublic";
+NSString * const kAPIGetPrivateMessages = @"challenges/getprivate";
+
 
 // view heights
 const CGFloat kNavBarHeaderHeight = 44.0f;

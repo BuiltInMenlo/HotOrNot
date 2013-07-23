@@ -36,6 +36,8 @@ extern NSString * const kAPIEmailVerify;
 extern NSString * const kAPIPhoneVerify;
 extern NSString * const kAPIEmailContacts;
 extern NSString * const kAPIChallengeObject;
+extern NSString * const kAPIGetPublicMessages;
+extern NSString * const kAPIGetPrivateMessages;
 
 // view heights
 const CGFloat kNavBarHeaderHeight;

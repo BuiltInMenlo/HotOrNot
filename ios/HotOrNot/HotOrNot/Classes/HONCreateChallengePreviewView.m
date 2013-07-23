@@ -16,6 +16,7 @@
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) UIView *subjectBGView;
+@property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UILabel *captionLabel;
 @end
@@ -131,6 +132,13 @@
 	_subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.93];
 	_subjectBGView.hidden = YES;
 	[self addSubview:_subjectBGView];
+	
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 7.0, 298.0, 30.0)];
+	_placeholderLabel.backgroundColor = [UIColor clearColor];
+	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];;
+	_placeholderLabel.textColor = [HONAppDelegate honGrey455Color];
+	_placeholderLabel.text = ([_subjectName length] == 0) ? @"what's on your mind?" : @"";
+	[_subjectBGView addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 7.0, 298.0, 30.0)];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];

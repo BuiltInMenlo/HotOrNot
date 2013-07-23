@@ -58,7 +58,7 @@ const CGFloat kFocusInterval = 0.5f;
 	if ((self = [super init])) {
 		NSLog(@"%@ - init", [self description]);
 		self.view.backgroundColor = [UIColor blackColor];
-		_subjectName = [HONAppDelegate rndDefaultSubject];
+		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
 		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 		_challengerName = @"";
 		_isFirstAppearance = YES;
@@ -72,7 +72,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (id)initWithUser:(HONUserVO *)userVO {
 	if ((self = [super init])) {
 		NSLog(@"%@ - initWithUser:[%d/%@]", [self description], userVO.userID, userVO.username);
-		_subjectName = [HONAppDelegate rndDefaultSubject];
+		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
 		_userVO = userVO;
 		_challengerName = userVO.username;
 		_challengeSubmitType = HONChallengeSubmitTypeOpponentID;
@@ -681,6 +681,15 @@ const CGFloat kFocusInterval = 0.5f;
 	} else {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceFront;
 	}
+}
+
+- (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Back"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[_cameraOverlayView removePreview];
+	[self performSelector:@selector(_takePhoto) withObject:nil afterDelay:3.0];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {

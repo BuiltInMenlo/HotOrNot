@@ -109,7 +109,7 @@
 		retakeButton.frame = CGRectMake(340.0, offset + 24.0, 128.0, 49.0);
 		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_nonActive"] forState:UIControlStateNormal];
 		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_Active"] forState:UIControlStateHighlighted];
-		[retakeButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
+		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
 		[_controlsHolderView addSubview:retakeButton];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -166,6 +166,8 @@
 - (void)removePreview {
 	[_previewImageView removeFromSuperview];
 	_previewImageView = nil;
+	
+	_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 320.0, 0.0);
 }
 
 
@@ -229,6 +231,10 @@
 
 - (void)_goToggleFlash {
 	[self.delegate cameraOverlayViewChangeFlash:self];
+}
+
+- (void)_goCameraBack {
+	[self.delegate cameraOverlayViewCameraBack:self];
 }
 
 - (void)_goCloseCamera {
