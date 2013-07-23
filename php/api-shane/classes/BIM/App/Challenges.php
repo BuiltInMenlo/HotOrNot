@@ -379,7 +379,12 @@ class BIM_App_Challenges extends BIM_App_Base{
 			    		"sound" =>  "push_01.caf"
 			        )
 			    );
-        	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+			    
+			    $delay = mt_rand(30,120);
+			    $pushTime = time() + $delay;
+			    
+			    $this->createTimedPush($push, $pushTime);
+			    
 			}
 			// update the challenge to started
 			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
@@ -387,6 +392,22 @@ class BIM_App_Challenges extends BIM_App_Base{
 		}
 	}
 	
+	public function createTimedPush( $push, $time ){
+        $time = new DateTime("@$time");
+        $time = $time->format('Y-m-d H:i:s');
+	    
+        $job = (object) array(
+            'nextRunTime' => $time,
+            'class' => 'BIM_Jobs_Challenges',
+            'method' => 'doPush',
+            'name' => 'push',
+        	'params' => $push,
+            'is_temp' => true,
+        );
+        
+        $j = new BIM_Jobs_Gearman();
+        $j->createJbb($job);
+	}
 	
 	/**
 	 * Inserts a new challenge and attempts to match on a waiting challenge with the same subject
@@ -530,7 +551,15 @@ class BIM_App_Challenges extends BIM_App_Base{
 		    		"sound" =>  "push_01.caf"
 		        )
 		    );
-    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+		    
+            BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+            // create a reminder push
+            if( $expires > 0 ){
+ 		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! #$subject";
+ 		        $push['aps']['alert'] = $msg;
+	            $time = $expires - self::reminderTime();
+	            $this->createTimedPush($push, $time);
+            }
 		}
 		// get the newly created challenge
 		$challenge_arr = $this->getChallengeObj($challenge_id);
@@ -540,6 +569,10 @@ class BIM_App_Challenges extends BIM_App_Base{
 		
 		/// return
 		return $challenge_arr;
+	}
+	
+	protected static function reminderTime(){
+	    return 180;
 	}
 	
 	/**
@@ -607,6 +640,13 @@ class BIM_App_Challenges extends BIM_App_Base{
     		        )
     		    );
         	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+        	    // create the reminder push
+                if( $expires > 0 ){
+     		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! #$subject";
+     		        $push['aps']['alert'] = $msg;
+    	            $time = $expires - self::reminderTime();
+    	            $this->createTimedPush($push, $time);
+                }
 			}
 		    
 			// get the newly created challenge

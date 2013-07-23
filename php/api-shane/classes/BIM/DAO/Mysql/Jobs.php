@@ -54,6 +54,16 @@ class BIM_DAO_Mysql_Jobs extends BIM_DAO_Mysql{
 		$this->prepareAndExecute($sql, $params);
 	}
 	
+	public function disableJobById( $id ){
+		$sql = "
+			update queue.gearman_jobs
+			set disabled = 1
+			where id = ?
+		";
+		$params = array( $id );
+		$this->prepareAndExecute($sql, $params);
+	}
+	
 	/**
 INSERT INTO `gearman_jobs` (`id`, `handle`, `next_run_time`, `class`, `name`, `method`, `disabled`, `schedule`, `params`)
 VALUES
@@ -66,18 +76,19 @@ VALUES
 	    $class = !empty( $job->class ) ? $job->class : 'BIM_Jobs_Growth';
 	    $name = !empty( $job->name ) ? $job->name : '';
 	    $method = !empty( $job->method ) ? $job->method : '';
-	    $disabled = !empty( $job->disabled ) ? $job->disabled : '';
+	    $disabled = !empty( $job->disabled ) ? $job->disabled : 0;
 	    $schedule = !empty( $job->schedule ) ? $job->schedule : '';
 	    $params = !empty( $job->params ) ? json_encode( $job->params ) : '';
+	    $isTemp = !empty( $job->is_temp ) ? $job->is_temp : 0;
 	    
         $sql = "INSERT IGNORE INTO 
-     	queue.`gearman_jobs` (`id`, `handle`, `next_run_time`, `class`, `name`, `method`, `disabled`, `schedule`, `params`)
+     	queue.`gearman_jobs` (`id`, `handle`, `next_run_time`, `class`, `name`, `method`, `disabled`, `schedule`, `params`, `is_temp`)
     		VALUES
-    		(?, '', ?, ?, ?, ?, ?, ?, ?)
+    		(?, '', ?, ?, ?, ?, ?, ?, ?, ?)
     	";
         
-		$params = array( $id, $nextRunTime, $class, $name, $method, $disabled, $schedule, $params );
-				
-		$this->prepareAndExecute($sql, $params);    
+		$params = array( $id, $nextRunTime, $class, $name, $method, $disabled, $schedule, $params, $isTemp );
+
+ 		$this->prepareAndExecute($sql, $params);
 	}
 }
