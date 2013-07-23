@@ -7,9 +7,13 @@ require_once 'vendor/autoload.php';
 
 //$filename = '/home/shane/dev/hotornot-dev/php/api-shane/test/personas_tumblr.txt';
 //BIM_Growth_Tumblr_Routines::checkPersonas( $filename );
-BIM_Growth_Webstagram_Routines::checkPersonas();
+
 //$filename = '/home/shane/dev/hotornot/php/api-shane/test/personas.txt';
 //BIM_Growth_Instagram_Routines::loadPersonas($filename);
+//BIM_Growth_Webstagram_Routines::checkPersonas();
+
+//$file = '/home/shane/dev/hotornot/php/api-shane/test/webstagram_personas.txt';
+//BIM_Growth_Webstagram_Routines::enablePersonas($file);
 
 //$filename = '/home/shane/dev/hotornot/php/api-shane/test/askfm_personas.txt';
 //BIM_Growth_Askfm_Routines::loadPersonas($filename);

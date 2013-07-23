@@ -21,8 +21,38 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
      *  pk	505068195439511399_25025320
 		t	9432
      */
-    public function doLike( $id ){
+    public function like( $id ){
         $url = 'http://web.stagram.com/do_like/';
+        $params = array(
+            'pk' => $id,
+            't' => mt_rand(5000, 10000)
+        );
+        $response = json_decode( $this->post( $url ) );
+        if( empty( $response->status ) || $response->status != 'OK' ){
+            $msg = "cannot like photo using id : $id with persona: ".$this->persona->instagram->username;
+            echo "$msg\n";
+            $this->sendWarningEmail( $msg );
+        }
+    }
+    
+    /**
+     * http://web.stagram.com/do_follow/
+     * 
+     * 
+       request 
+       
+           pk	25025320
+    	   t	5742
+	   
+	   response:
+            {
+                "status": "OK",
+                "message": "follows"
+            }	   
+	   
+     */
+    public function follow( $id ){
+        $url = 'http://web.stagram.com/do_follow/';
         $params = array(
             'pk' => $id,
             't' => mt_rand(5000, 10000)
@@ -183,9 +213,16 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 foreach( $ids as $id ){
                     $message = $this->persona->getVolleyQuote( 'instagram' );
                     $this->submitComment( $id, $message );
+                    
                     if( mt_rand(1,100) <= 100  ){
-                        $this->doLike($id);
+                        $this->like($id);
                     }
+                    
+                    if( mt_rand(1, 100) <= 30 ){
+                        list($photoId, $userId) = explode('_', $id );
+                        $this->follow( $userId );
+                    }
+                    
                     $sleep = $this->persona->getBrowseTagsCommentWait();
                     echo "submitted comment - sleeping for $sleep seconds\n";
                     sleep($sleep);
@@ -296,7 +333,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $params = array(
             'message' => $message,
             'messageid' => $id,
-            't'=> 5069
+            't'=> mt_rand(5000, 10000)
         );
         print_r( $params );
         $response = $this->post( 'http://web.stagram.com/post_comment/', $params );
