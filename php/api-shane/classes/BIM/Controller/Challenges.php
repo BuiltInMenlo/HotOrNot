@@ -28,7 +28,8 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
 		if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && isset($input->challengerID)){
 		    $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N';
 		    $expires = $this->resolveExpires();
-		    return $this->challenges->submitChallengeWithChallenger($input->userID, $input->subject, $input->imgURL, $input->challengerID, $isPrivate, $expires );
+		    $challenges = new BIM_App_Challenges;
+		    return $challenges->submitChallengeWithChallenger($input->userID, $input->subject, $input->imgURL, $input->challengerID, $isPrivate, $expires );
 		}
     }
     
