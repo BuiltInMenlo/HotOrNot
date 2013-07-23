@@ -69,6 +69,21 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
      * returns all challeneges including those without an opponent
      */
     public function getPublicChallenges(){
+        return $this->getPublic();
+    }
+    
+    /*
+     * returns all challeneges including those without an opponent
+     */
+    public function getPrivateChallenges(){
+        return $this->getPrivate();
+    }
+    
+    
+    /*
+     * returns all challeneges including those without an opponent
+     */
+    public function getPublic(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if ( !empty( $input->userID ) ){
             return $this->challenges->getChallenges( $input->userID );
@@ -78,13 +93,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     /*
      * returns all challeneges including those without an opponent
      */
-    public function getPrivateChallenges(){
+    public function getPrivate(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if ( !empty( $input->userID ) ){
 			return $this->challenges->getChallenges( $input->userID, TRUE ); // true means get private challenge only
         }
     }
-    
     
     public function getPrivateChallengesForUserBeforeDate(){
 		if (isset($_POST['userID']) && isset($_POST['prevIDs']) && isset($_POST['datetime']))
