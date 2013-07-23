@@ -29,7 +29,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         );
         $response = json_decode( $this->post( $url ) );
         if( empty( $response->status ) || $response->status != 'OK' ){
-            $msg = "cannot like photo using id : $id with persona: ".$this->persona->username;
+            $msg = "cannot like photo using id : $id with persona: ".$this->persona->instagram->username;
             echo "$msg\n";
             $this->sendWarningEmail( $msg );
         }
