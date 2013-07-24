@@ -13,10 +13,12 @@ class BIM_Config{
     static protected $lastTagFetch = 0;
     static protected $authenticTags = array();
     static protected $adTags = array();
+    static protected $otherTags = array();
     
     static protected $lastQuoteFetch = 0;
     static protected $authenticQuotes = array();
     static protected $adQuotes = array();
+    static protected $otherQuotes = array();
     
     public static function __callstatic( $name, $params ){
         $callable = array('BIM_Config_Dynamic', $name);
@@ -38,20 +40,37 @@ class BIM_Config{
         
     }
     
+    public static function otherTags( $network = '' ){
+        if( !$network ){
+            $network = self::$defaultNetwork;
+        }
+        if( !isset(self::$otherTags[ $network ]) || ( time() - self::$lastTagFetch >= 300 ) ){
+            self::getTags();
+            if( !isset( self::$otherTags[ $network ] ) ){
+                self::$otherTags[ $network ] = self::$otherTags[ self::$defaultNetwork ];
+            }
+            self::$lastTagFetch = time();
+        }
+        return self::$otherTags[ $network ];
+        
+    }
+    
     protected static function getTags(){
         $dao = new BIM_DAO_Mysql_Growth( self::db() );
         $tagArray = $dao->getTags();
         foreach( $tagArray as $tagData ){
             if( $tagData->type == 'ad' ){
                 self::$adTags[ $tagData->network ] = json_decode( $tagData->tags );
-            } else {
+            } else if( $tagData->type == 'authentic' ){
                 self::$authenticTags[ $tagData->network ] = json_decode( $tagData->tags );
+            } else {
+                self::$otherTags[ $tagData->network ] = json_decode( $tagData->tags );
             }
         }
     }
     
     public static function saveTags( $data ){
-        if( !isset( $data->type ) || !preg_match('/authentic|ad/', $data->type) ){
+        if( !isset( $data->type ) || !preg_match('/authentic|ad|other/', $data->type) ){
             $data->type = 'authentic';
         }
         if( !isset( $data->network ) ){
@@ -82,7 +101,7 @@ class BIM_Config{
     
     /*  Quote funcs  */
     public static function saveQuotes( $data ){
-        if( !isset( $data->type ) || !preg_match('/authentic|ad/', $data->type) ){
+        if( !isset( $data->type ) || !preg_match('/authentic|ad|other/', $data->type) ){
             $data->type = 'authentic';
         }
         if( !isset( $data->network ) ){
@@ -101,8 +120,10 @@ class BIM_Config{
         foreach( $quoteArray as $quoteData ){
             if( $quoteData->type == 'ad' ){
                 self::$adQuotes[ $quoteData->network ] = json_decode( $quoteData->quotes );
-            } else {
+            } else if( $quoteData->type == 'authentic' ){
                 self::$authenticQuotes[ $quoteData->network ] = json_decode( $quoteData->quotes );
+            } else {
+                self::$otherQuotes[ $quoteData->network ] = json_decode( $quoteData->quotes );
             }
         }
     }
@@ -133,6 +154,21 @@ class BIM_Config{
             self::$lastQuoteFetch = time();
         }
         return self::$adQuotes[ $network ];
+        
+    }
+    
+    public static function otherQuotes( $network = '' ){
+        if( !$network ){
+            $network = self::$defaultNetwork;
+        }
+        if( !isset(self::$otherQuotes[ $network ]) || ( time() - self::$lastQuoteFetch >= 300 ) ){
+            self::getQuotes();
+            if( !isset( self::$otherQuotes[ $network ] ) ){
+                self::$otherQuotes[ $network ] = self::$otherQuotes[ self::$defaultNetwork ];
+            }
+            self::$lastQuoteFetch = time();
+        }
+        return self::$otherQuotes[ $network ];
         
     }
     
