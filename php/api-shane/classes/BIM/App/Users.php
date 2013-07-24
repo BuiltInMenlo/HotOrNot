@@ -109,44 +109,6 @@ class BIM_App_Users extends BIM_App_Base{
 		// send & return
 		return (mail($to, $subject, $msg, implode("\r\n", $headers_arr)));
 	}
-    
-	/** 
-	 * Helper function to send an Urban Airship push
-	 * @param $msg The message body of the push (string)
-	 * @return null
-	**/
-	public function sendPush($msg) {
-	    return;
-		// curl urban airship's api
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-		//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-		curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-	 	$res = curl_exec($ch);
-		$err_no = curl_errno($ch);
-		$err_msg = curl_error($ch);
-		$header = curl_getinfo($ch);
-		curl_close($ch);
-		
-		// curl urban airship's api
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-		curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-		//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-	 	$res = curl_exec($ch);
-		$err_no = curl_errno($ch);
-		$err_msg = curl_error($ch);
-		$header = curl_getinfo($ch);
-		curl_close($ch);	
-	}
 	
 	/**
 	 * Adds a new user or returns one if it already exists
@@ -431,9 +393,18 @@ class BIM_App_Users extends BIM_App_Base{
 		$pokee_obj = mysql_fetch_object(mysql_query($query));			
 		
 		// send push if allowed
-		if ($pokee_obj->notifications == "Y")
-			$this->sendPush('{"device_tokens": ["'. $pokee_obj->device_token .'"], "type":"2", "aps": {"alert": "@'. $poker_name .' has poked you!", "sound": "push_01.caf"}}');
-		
+		if ($pokee_obj->notifications == "Y"){
+            $msg = "@$poker_name has poked you!";
+			$push = array(
+		    	"device_tokens" =>  array( $pokee_obj->device_token ), 
+		    	"type" => "2", 
+		    	"aps" =>  array(
+		    		"alert" =>  $msg,
+		    		"sound" =>  "push_01.caf"
+		        )
+		    );
+    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+		}
 		return array(
 			'id' => $poke_id
 		);

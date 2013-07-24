@@ -153,44 +153,6 @@ class BIM_App_Votes extends BIM_App_Base{
 	}
 	
 	/** 
-	 * Helper function to send an Urban Airship push
-	 * @param $msg The message body of the push (string)
-	 * @return null
-	**/
-    public function sendPush($msg) {
-        return;
-	// curl urban airship's api
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-		//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-		curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-	 	$res = curl_exec($ch);
-		$err_no = curl_errno($ch);
-		$err_msg = curl_error($ch);
-		$header = curl_getinfo($ch);
-		curl_close($ch);
-		
-		// curl urban airship's api
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-		curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-		//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-	 	$res = curl_exec($ch);
-		$err_no = curl_errno($ch);
-		$err_msg = curl_error($ch);
-		$header = curl_getinfo($ch);
-		curl_close($ch);		
-	}
-	
-	/** 
 	 * Gets the list of challenges sorted by total votes
 	 * @param $user_id The ID of the user (integer)
 	 * @return The list of challenges (array)
@@ -590,7 +552,16 @@ class BIM_App_Votes extends BIM_App_Base{
 			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 			$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 			
-			$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"3", "aps": {"alert": "Your '. $sub_name .' snap has received '. $score_arr['creator'] .' upvotes!", "sound": "push_01.caf"}}');
+            $msg = "Your $sub_name snap has received ". $score_arr['creator'] .' upvotes!';
+			$push = array(
+		    	"device_tokens" =>  array( $device_token ), 
+		    	"type" => "3", 
+		    	"aps" =>  array(
+		    		"alert" =>  $msg,
+		    		"sound" =>  "push_01.caf"
+		        )
+		    );
+    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
 		}
 		
 		// send push to challenger if votes equal a certain amount
@@ -598,7 +569,16 @@ class BIM_App_Votes extends BIM_App_Base{
 			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 			$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 			
-			$this->sendPush('{"device_tokens": ["'. $device_token .'"], "type":"3", "aps": {"alert": "Your '. $sub_name .' snap has received '. $score_arr['challenger'] .' upvotes!", "sound": "push_01.caf"}}');
+            $msg = "Your $sub_name snap has received ". $score_arr['challenger'] .' upvotes!';
+			$push = array(
+		    	"device_tokens" =>  array( $device_token ), 
+		    	"type" => "3", 
+		    	"aps" =>  array(
+		    		"alert" =>  $msg,
+		    		"sound" =>  "push_01.caf"
+		        )
+		    );
+    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
 		}
 		return $this->getChallengeObj($challenge_id);
 	}

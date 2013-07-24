@@ -116,6 +116,9 @@ class BIM_DAO_Mysql_Growth_Reports extends BIM_DAO_Mysql_Growth{
 	}
 	
 	public function getOutboundMsgs(){
+	    $sql = "set time_zone = '-07:00'";
+	    $stmt = $this->prepareAndExecute($sql);
+	    
 	    $sql = 
 	    "select DATE( FROM_UNIXTIME( time ) ) as day , network, count(*) as count
         from growth.contact_log 
@@ -136,6 +139,9 @@ class BIM_DAO_Mysql_Growth_Reports extends BIM_DAO_Mysql_Growth{
 	}
 	
 	public function getInboundClicks(){
+	    $sql = "set time_zone = '-07:00'";
+	    $stmt = $this->prepareAndExecute($sql);
+	    
 	    $sql = 
         "select DATE( FROM_UNIXTIME( time ) ) as day, network_id as network, count(*) as count
         from growth.inbound_persona_clicks 

@@ -8,8 +8,9 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 	    	where started < DATE( FROM_UNIXTIME( ? ) )
 	    		and expires = -1
 	    		and status_id in (1,2)
+	    	order by added desc
 	    ";
-	    $time = time() - (86400 * 7);
+	    $time = time() - (86400 * 14);
 	    $params = array( $time );
 		$stmt = $this->prepareAndExecute( $sql, $params );
 		return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
@@ -24,7 +25,6 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 				updated = now()
 	    	where id = ?
 	    ";
-	    $time = time() - (86400 * 7);
 	    $params = array( $user->id, $volley->id );
 		$this->prepareAndExecute( $sql, $params );
 	}
