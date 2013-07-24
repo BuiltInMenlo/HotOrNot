@@ -174,12 +174,12 @@
 	return ([UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:(image.imageOrientation == UIImageOrientationUp) ? UIImageOrientationUpMirrored : UIImageOrientationUp]);
 }
 
-+ (UIImage *)prepImageForInstagram:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle {
++ (UIImage *)prepImageForSharing:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle {
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 612.0, 612.0)];
 	canvasView.backgroundColor = [UIColor blackColor];
 	[canvasView addSubview:[[UIImageView alloc] initWithImage:baseImage]];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(213.0, 213.0, 185.0, 185.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(395.0, 186.0, 130.0, 130.0)];
 	avatarImageView.image = avatar;
 	[canvasView addSubview:avatarImageView];
 	
@@ -190,7 +190,7 @@
 	nameLabel.text = [NSString stringWithFormat:@"@%@", handle];
 	//[canvasView addSubview:nameLabel];
 	
-	[canvasView.layer addSublayer:[HONImagingDepictor drawTextToLayer:[NSString stringWithFormat:@"@%@", handle] inFrame:CGRectMake(23.0, 542.0, 370.0, 60.0) withFont:[[HONAppDelegate cartoGothicBold] fontWithSize:42.0] textColor:[UIColor whiteColor]]];
+	//[canvasView.layer addSublayer:[HONImagingDepictor drawTextToLayer:[NSString stringWithFormat:@"@%@", handle] inFrame:CGRectMake(23.0, 542.0, 370.0, 60.0) withFont:[[HONAppDelegate cartoGothicBold] fontWithSize:42.0] textColor:[UIColor whiteColor]]];
 	
 	return ([HONImagingDepictor createImageFromView:canvasView]);
 }

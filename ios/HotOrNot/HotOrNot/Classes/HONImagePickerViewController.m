@@ -27,12 +27,13 @@
 
 const CGFloat kFocusInterval = 0.5f;
 
-@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONAddChallengersDelegate, HONCreateChallengePreviewViewDelegate>
+@interface HONImagePickerViewController () <UIAlertViewDelegate, AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONAddChallengersDelegate, HONCreateChallengePreviewViewDelegate>
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *challengerName;
 @property (nonatomic, strong) NSMutableArray *addFollowing;
 @property (nonatomic, strong) NSMutableArray *addContacts;
+@property (nonatomic, strong) NSMutableArray *usernames;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSString *fbID;
@@ -588,14 +589,12 @@ const CGFloat kFocusInterval = 0.5f;
 		[self dismissViewControllerAnimated:NO completion:^(void) {
 			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_challangeImage];
 			
-			NSMutableArray *usernames = [NSMutableArray array];
+			_usernames = [NSMutableArray array];
 			for (HONUserVO *vo in _addFollowing)
-				[usernames addObject:vo.username];
+				[_usernames addObject:vo.username];
 			
 			for (HONContactUserVO *vo in _addContacts)
-				[usernames addObject:vo.fullName];
-			
-			//[_previewView setUsernames:[usernames copy]];
+				[_usernames addObject:vo.fullName];
 			
 			_previewView.delegate = self;
 			[_previewView setIsPrivate:_isPrivate];
@@ -649,14 +648,13 @@ const CGFloat kFocusInterval = 0.5f;
 		 
 		 
 		_previewView.delegate = self;
-		NSMutableArray *usernames = [NSMutableArray array];
+		_usernames = [NSMutableArray array];
 		for (HONUserVO *vo in _addFollowing)
-			[usernames addObject:vo.username];
+			[_usernames addObject:vo.username];
 		 
 		for (HONContactUserVO *vo in _addContacts)
-			[usernames addObject:vo.fullName];
+			[_usernames addObject:vo.fullName];
 		 
-		[_previewView setUsernames:[usernames copy]];
 		[_previewView setIsPrivate:_isPrivate];
 		[self.view addSubview:_previewView];
 		
@@ -821,6 +819,16 @@ const CGFloat kFocusInterval = 0.5f;
 
 
 #pragma mark - PreviewView Delegates
+- (void)previewViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Add Friends"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	HONAddChallengersViewController *addChallengersViewController = [[HONAddChallengersViewController alloc] initRecentsSelected:[_addFollowing copy] friendsSelected:[NSArray array] contactsSelected:[_addContacts copy]];
+	addChallengersViewController.delegate = self;
+	[self presentViewController:addChallengersViewController animated:YES completion:nil];
+}
+
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
 	NSLog(@"previewViewBackToCamera");
 	
@@ -845,18 +853,29 @@ const CGFloat kFocusInterval = 0.5f;
 	}
 }
 
+- (void)previewView:(HONCreateChallengePreviewView *)cameraOverlayView challengeIsPublic:(BOOL)isPublic {
+	_isPrivate = !isPublic;
+	
+	[[Mixpanel sharedInstance] track:@"Create Snap Options - Public / Private Toggle"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d", _isPrivate], @"private", nil]];
+}
+
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
 	if (_isPrivate && ([_addFollowing count] == 0 || [_challengerName length] == 0)) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Cannot Send Private Message"
 															message:@"You must select a friend to send a private photo message."
-														   delegate:nil
+														   delegate:self
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];
+		[alertView setTag:0];
 		[alertView show];
 		
-		[_previewView showKeyboard];
-		
 	} else {
+		if ([_subjectName length] == 0)
+			_subjectName = [HONAppDelegate rndDefaultSubject];
+		
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									   [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
@@ -907,11 +926,20 @@ const CGFloat kFocusInterval = 0.5f;
 		_progressHUD = nil;
 		
 		[_previewView showKeyboard];
+		[_previewView setUsernames:[_usernames copy]];
 	}
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
 	//NSLog(@"AWS didFailWithError:\n%@", error);
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		[_previewView showKeyboard];
+	}
 }
 
 @end

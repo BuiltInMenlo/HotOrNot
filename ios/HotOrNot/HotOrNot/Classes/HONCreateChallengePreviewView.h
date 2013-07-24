@@ -20,7 +20,9 @@
 @end
 
 @protocol HONCreateChallengePreviewViewDelegate
+- (void)previewViewAddChallengers:(HONCreateChallengePreviewView *)previewView;
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView;
+- (void)previewView:(HONCreateChallengePreviewView *)cameraOverlayView challengeIsPublic:(BOOL)isPublic;
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject;
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView;
 @end

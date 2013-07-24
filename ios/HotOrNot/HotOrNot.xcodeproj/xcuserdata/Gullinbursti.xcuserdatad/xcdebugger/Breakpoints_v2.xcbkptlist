@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "HotOrNot/Classes/HONImagePickerViewController.m"
-            timestampString = "395791518.10516"
+            timestampString = "396324744.48201"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "380"
-            endingLineNumber = "380"
+            startingLineNumber = "381"
+            endingLineNumber = "381"
             landmarkName = "-_showCamera"
             landmarkType = "5">
          </BreakpointContent>

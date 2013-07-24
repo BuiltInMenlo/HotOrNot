@@ -50,7 +50,31 @@
 
 
 #pragma mark - Data Calls
-
+- (void)_addFriend:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", userID], @"target",
+							@"1", @"auto", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriends);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIAddFriends parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil)
+				[HONAppDelegate writeFriendsList:result];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -225,6 +249,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	HONCelebVO *vo = (HONCelebVO *)[_celebs objectAtIndex:indexPath.row];
+	[self _addFriend:vo.userID];
 }
 
 

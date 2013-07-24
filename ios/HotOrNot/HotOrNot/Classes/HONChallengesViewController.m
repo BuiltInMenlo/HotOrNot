@@ -327,8 +327,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	[_tableView addGestureRecognizer:lpGestureRecognizer];
+//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
 	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0)];
 	[self.view addSubview:toggleHolderView];

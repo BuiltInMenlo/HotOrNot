@@ -19,6 +19,9 @@
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UILabel *captionLabel;
+@property (nonatomic, strong) UIButton *privateToggleButton;
+@property (nonatomic, strong) UIButton *addFriendsButton;
+@property (nonatomic, strong) UIButton *backButton;
 @end
 
 @implementation HONCreateChallengePreviewView
@@ -93,15 +96,26 @@
 #pragma mark - UI Presentation
 - (void)_makeUI {
 	//self.frame = CGRectOffset(self.frame, 0.0, -[[UIApplication sharedApplication] statusBarFrame].size.height);
-	self.alpha = 0.0;
 	
-	UIImageView *addFriendsButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"addButton_nonActive"]];
-	addFriendsButtonImageView.frame = CGRectOffset(addFriendsButtonImageView.frame, 12.0, 11.0);
-	[self addSubview:addFriendsButtonImageView];
+	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
+	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
+	[self addSubview:overlayView];
 	
-	UIImageView *closeButtonImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"closeButton_nonActive"]];
-	closeButtonImageView.frame = CGRectOffset(closeButtonImageView.frame, 263.0, 11.0);
-	[self addSubview:closeButtonImageView];
+	_addFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_addFriendsButton.frame = CGRectMake(12.0, 11.0, 44.0, 44.0);
+	[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_nonActive"] forState:UIControlStateNormal];
+	[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_Active"] forState:UIControlStateHighlighted];
+	[_addFriendsButton addTarget:self action:@selector(_goAddChallengers) forControlEvents:UIControlEventTouchUpInside];
+	_addFriendsButton.alpha = 0.0;
+	[self addSubview:_addFriendsButton];
+	
+	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_backButton.frame = CGRectMake(263.0, 11.0, 44.0, 44.0);
+	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
+	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+	[_backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	_backButton.alpha = 0.0;
+	[self addSubview:_backButton];
 	
 	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 21.0, 210.0, 24.0)];
 	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
@@ -110,10 +124,6 @@
 	_usernamesLabel.text = @"";
 	[self addSubview:_usernamesLabel];
 	
-	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
-	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
-	[self addSubview:overlayView];
-	
 	_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, ((self.frame.size.height - 230.0) - 44.0) * 0.5, 320.0, 44.0)];
 	_captionLabel.backgroundColor = [UIColor clearColor];
 	_captionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:22];
@@ -121,12 +131,15 @@
 	_captionLabel.textAlignment = NSTextAlignmentCenter;
 	_captionLabel.text = @"Tap to retake photo";
 	_captionLabel.alpha = 0.0;
-	[self addSubview:_captionLabel];
+	//[self addSubview:_captionLabel];
 	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = self.frame;
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:backButton];
+	_privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_privateToggleButton.frame = CGRectMake(184.0, self.frame.size.height - 315.0, 134.0, 44.0);
+	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_nonActive" : @"privateOff_nonActive"] forState:UIControlStateNormal];
+	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_Active" : @"privateOff_Active"] forState:UIControlStateHighlighted];
+	[_privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
+	_privateToggleButton.alpha = 0.0;
+	[self addSubview:_privateToggleButton];
 	
 	_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 47.0, 320.0, 47.0)];
 	_subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.93];
@@ -160,14 +173,14 @@
 	[sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	[_subjectBGView addSubview:sendButton];
-	
-	[UIView animateWithDuration:0.5 animations:^(void) {
-		self.alpha = 1.0;
-	}];
 }
 
 
 #pragma mark - Navigation
+- (void)_goAddChallengers {
+	[self.delegate previewViewAddChallengers:self];
+}
+
 - (void)_goBack {
 	[[Mixpanel sharedInstance] track:@"Camera Preview - Back"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -177,6 +190,15 @@
 	[self _dropKeyboardAndRemove:YES];
 	
 	[self.delegate previewViewBackToCamera:self];
+}
+
+- (void)_goPrivateToggle {
+	_isPrivate = !_isPrivate;
+	
+	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_nonActive" : @"privateOff_nonActive"] forState:UIControlStateNormal];
+	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_Active" : @"privateOff_Active"] forState:UIControlStateHighlighted];
+	
+	[self.delegate previewView:self challengeIsPublic:!_isPrivate];
 }
 
 - (void)_goSubmit {
@@ -203,6 +225,9 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
 		_captionLabel.alpha = 0.875;
+		_privateToggleButton.alpha = 1.0;
+		_addFriendsButton.alpha = 1.0;
+		_backButton.alpha = 1.0;
 	}];
 }
 
@@ -210,6 +235,9 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
 		_captionLabel.alpha = 0.0;
+		_privateToggleButton.alpha = 0.0;
+		_addFriendsButton.alpha = 0.0;
+		_backButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_subjectBGView.hidden = YES;
 		
@@ -220,6 +248,8 @@
 
 #pragma mark - Notifications
 - (void)_textFieldTextDidChangeChange:(NSNotification *)notification {
+	_placeholderLabel.text = ([_subjectTextField.text length] == 0) ? @"what's on your mind?" : @"";
+	
 }
 
 
@@ -238,7 +268,7 @@
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
 	if ([textField.text isEqualToString:@""])
 		textField.text = @"#";
-
+	
 	return (YES);
 }
 

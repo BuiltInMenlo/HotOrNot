@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIImageView *previewImageView;
+@property (nonatomic, strong) UIImageView *circleFillImageView;
 @property (nonatomic, strong) HONCreateChallengeOptionsView *challengeOptionsView;
 @property (nonatomic, strong) HONSnapCameraOptionsView *cameraOptionsView;
 @property (nonatomic, strong) UIView *controlsHolderView;
@@ -62,7 +63,8 @@
 		_addFriendsButton.frame = CGRectMake(12.0, 11.0, 44.0, 44.0);
 		[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_nonActive"] forState:UIControlStateNormal];
 		[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_Active"] forState:UIControlStateHighlighted];
-		[_addFriendsButton addTarget:self action:@selector(_goAddFriends) forControlEvents:UIControlEventTouchUpInside];
+		//[_addFriendsButton addTarget:self action:@selector(_goAddFriends) forControlEvents:UIControlEventTouchUpInside];
+		//_addFriendsButton.hidden = ([_username length] == 0);
 		[self addSubview:_addFriendsButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -82,6 +84,20 @@
 		_usernamesLabel.backgroundColor = [UIColor clearColor];
 		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		[self addSubview:_usernamesLabel];
+		
+		UIImageView *circleBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 110.0, 74.0, 74.0)];
+		circleBGImageView.image = [UIImage imageNamed:@"timeCircleBackground"];
+		[_controlsHolderView addSubview:circleBGImageView];
+		
+		_circleFillImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timeCircleFill"]];
+		_circleFillImageView.frame = CGRectOffset(_circleFillImageView.frame, 123.0, self.frame.size.height - 110.0);
+		_circleFillImageView.transform = CGAffineTransformMakeScale(0.01, 0.01);
+		[_controlsHolderView addSubview:_circleFillImageView];
+		
+		[UIView animateWithDuration:3.0 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
+			//_circleFillImageView.transform = CGAffineTransformIdentity;
+			//_circleFillImageView.frame = CGRectMake(123.0, self.frame.size.height - 110.0, 74.0, 74.0);
+		} completion:nil];
 				
 		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_optionsButton.frame = CGRectMake(16.0, [UIScreen mainScreen].bounds.size.height - 70.0, 84.0, 64.0);

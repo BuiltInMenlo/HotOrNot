@@ -343,7 +343,7 @@
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_nonActive"] forState:UIControlStateNormal];
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_Active"] forState:UIControlStateHighlighted];
 		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:moreButton];
+//		[_headerView addSubview:moreButton];
 		
 	} else {
 		_headerView = [[HONHeaderView alloc] initAsVoteWall];
@@ -515,6 +515,9 @@
 	
 	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"celeb"])
 		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
+	
+	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"popular"])
+		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
 	
 	if ([[HONAppDelegate timelineBannerURL] length] > 0) {
 		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
@@ -803,9 +806,6 @@
 		
 		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:bgView.frame];
 		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
-		//		[bannerImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]]
-		//																					cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-		//																			  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 		[bgView addSubview:bannerImageView];
 		
 		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];

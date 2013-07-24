@@ -25,6 +25,6 @@
 + (UIImage *)editImage:(UIImage *)image toSize:(CGSize)size thenCrop:(CGRect)rect;
 + (UIImage *)mirrorImage:(UIImage *)image;
 
-+ (UIImage *)prepImageForInstagram:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle;
++ (UIImage *)prepImageForSharing:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle;
 
 @end
