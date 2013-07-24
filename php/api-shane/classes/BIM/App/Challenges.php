@@ -1042,7 +1042,7 @@ class BIM_App_Challenges extends BIM_App_Base{
  		        
 			    $push = array(
 			    	//"device_tokens" =>  array( '66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035' ), 
-			    	"device_tokens" =>  array( $challenger_obj->device_token ), 
+			    	"device_tokens" =>  array( $challenger->device_token ), 
 			    	"type" => "1", 
 			    	"challenge" => $volley->id, 
 			    	"aps" =>  array(
@@ -1054,7 +1054,6 @@ class BIM_App_Challenges extends BIM_App_Base{
         	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
 			}
 			echo "Volley $volley->id was re-vollied to $challenger->username : $challenger->id\n";
-			exit;
 	    }
 	}
 }
