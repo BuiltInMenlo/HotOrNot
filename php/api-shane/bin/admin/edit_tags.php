@@ -53,6 +53,15 @@ if( $method == 'post' ) {
         BIM_Config::saveQuotes($data);
     }
     
+    if( trim($_POST['quotes_other']) ){
+        $data = (object) array(
+            'network' => $network,
+            'type' => 'other',
+            'quotes' => cleanInput($_POST['quotes_other'])
+        );
+        BIM_Config::saveQuotes($data);
+    }
+    
     if( trim( $_POST['tags_authentic'] ) ){
         $data = (object) array(
             'network' => $network,
@@ -67,6 +76,15 @@ if( $method == 'post' ) {
             'network' => $network,
             'type' => 'ad',
             'tags' => cleanInput($_POST['tags_ad'])
+        );
+        BIM_Config::saveTags($data);
+    }
+    
+    if( trim( $_POST['tags_other'] ) ) {
+        $data = (object) array(
+            'network' => $network,
+            'type' => 'other',
+            'tags' => cleanInput($_POST['tags_other'])
         );
         BIM_Config::saveTags($data);
     }
@@ -110,14 +128,19 @@ Apply changes to new network: <input type="text" size="50" name="new_network" id
 <table>
 <tr>
 <td>
-Authentic Tags
+Tag Group 1
 <br>
 <textarea rows="25" cols="50" name="tags_authentic" id="tags_authentic"></textarea>
 </td>
 <td>
-Ad Tags
+Tag Group 2
 <br>
 <textarea rows="25" cols="50" name="tags_ad" id="tags_ad"></textarea>
+</td>
+<td>
+Tag Group 3
+<br>
+<textarea rows="25" cols="50" name="tags_other" id="tags_other"></textarea>
 </td>
 </tr>
 </table>
@@ -126,14 +149,19 @@ Ad Tags
 <table>
 <tr>
 <td>
-Authentic Quotes
+Quotes Group 1
 <br>
 <textarea rows="25" cols="50" name="quotes_authentic" id="quotes_authentic"></textarea>
 </td>
 <td>
-Ad Quotes
+Quotes Group 2
 <br>
 <textarea rows="25" cols="50" name="quotes_ad" id="quotes_ad"></textarea>
+</td>
+<td>
+Quotes Group 3
+<br>
+<textarea rows="25" cols="50" name="quotes_other" id="quotes_other"></textarea>
 </td>
 </tr>
 </table>
@@ -146,7 +174,7 @@ data = <?php echo json_encode($data); ?>;
 
 function populateForm(){
     var network = $("#network").val();
-    var fields = ["quotes_authentic","quotes_ad","tags_ad","tags_authentic" ];
+    var fields = ["quotes_authentic","quotes_ad",'quotes_other',"tags_ad","tags_authentic",'tags_other' ];
     for( var n = 0; n < fields.length; n++ ){
         var keys = fields[n].split('_');
         var el = $("#" + fields[n] );
