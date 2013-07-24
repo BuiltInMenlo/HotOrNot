@@ -300,9 +300,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     
     public function getRandomTag(){
         $tags = $this->persona->getTags('tumblr');
-        $ct = count( $tags );
-        $idx = mt_rand(0, $ct - 1);
-        return $tags[$idx];
+        return array_rand( $tags );
     }
     
     public function isFollowing( $blogUrl ){
