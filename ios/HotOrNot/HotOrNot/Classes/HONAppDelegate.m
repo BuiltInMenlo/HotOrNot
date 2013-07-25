@@ -11,6 +11,7 @@
 #import <AdSupport/AdSupport.h>
 #import <AVFoundation/AVFoundation.h>
 #import <FacebookSDK/FacebookSDK.h>
+#import <HockeySDK/HockeySDK.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -37,8 +38,8 @@
 
 // json config url
 #if __DEV_BUILD___ == 1
-NSString * const kConfigURL = @"http://50.16.152.131/hotornot";//http://107.20.161.159/hotornot";//50.16.152.131/hotornot";
-NSString * const kConfigJSON = @"boot-dev.json";//boot-dev.json";
+NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";//http://107.20.161.159/hotornot";//50.16.152.131/hotornot";
+NSString * const kConfigJSON = @"boot_122.json";//boot-dev.json";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
 NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
@@ -98,7 +99,7 @@ const BOOL kIsImageCacheEnabled = YES;
 const NSUInteger kRecentOpponentsDisplayTotal = 10;
 NSString * const kTwilioSMS = @"6475577873";
 
-@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
@@ -749,6 +750,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
+	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
 	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
@@ -1261,6 +1265,16 @@ NSString * const kTwilioSMS = @"6475577873";
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [controller name], @"controller", nil]];
+}
+
+
+#pragma mark - UpdateManager Delegates
+- (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
+#ifndef CONFIGURATION_AppStore
+	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
+		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
+#endif
+	return nil;
 }
 
 @end

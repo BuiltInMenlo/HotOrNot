@@ -141,13 +141,13 @@
 	[self addSubview:timeLabel];
 	
 	UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, kSnapLargeDim)];
-	scrollView.contentSize = CGSizeMake(10.0 + ((kSnapLargeDim + 10.0) * (2.0 + (int)_hasOponentRetorted)), kSnapLargeDim);
+	scrollView.contentSize = CGSizeMake((kSnapLargeDim + 10.0 + 74.0) + ((kSnapLargeDim + 20.0) * ((int)_hasOponentRetorted)), kSnapLargeDim);
 	scrollView.pagingEnabled = NO;
 	scrollView.showsHorizontalScrollIndicator = NO;
 	scrollView.backgroundColor = [UIColor whiteColor];
 	[self addSubview:scrollView];
 	
-	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
+	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(84.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 	_lHolderView.clipsToBounds = YES;
 	[scrollView addSubview:_lHolderView];
 	
@@ -196,7 +196,7 @@
 	[creatorNameButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[_lHolderView addSubview:creatorNameButton];
 	
-	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(20.0 + kSnapLargeDim, 0.0, kSnapLargeDim, kSnapLargeDim)];//[[UIView alloc] initWithFrame:CGRectMake(225.0, 0.0, 210.0, 210.0)];
+	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(74.0 + 20.0 + kSnapLargeDim, 0.0, kSnapLargeDim, kSnapLargeDim)];//[[UIView alloc] initWithFrame:CGRectMake(225.0, 0.0, 210.0, 210.0)];
 	_rHolderView.clipsToBounds = YES;
 	[scrollView addSubview:_rHolderView];
 	
@@ -267,12 +267,11 @@
 		[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:likesLabelButton];
 		
-		UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(30.0 + (kSnapLargeDim * 2), 0.0, kSnapLargeDim, kSnapLargeDim)];
-		joinHolderView.backgroundColor = [UIColor colorWithWhite:0.957 alpha:1.0];
+		UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(8.0, 0.0, 64.0, kSnapLargeDim)];
 		[scrollView addSubview:joinHolderView];
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		joinButton.frame = CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim);
+		joinButton.frame = CGRectMake(0.0, 73.0, 64.0, 64.0);
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 		[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -280,16 +279,14 @@
 		
 	// no challengers have responded yet
 	} else {
-		UIImageView *rImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
-		rImgView.image = [UIImage imageNamed:@"thumbCameraAction"];
-		rImgView.userInteractionEnabled = YES;
-		[_rHolderView addSubview:rImgView];
+		UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(8.0, 0.0, 64.0, kSnapLargeDim)];
+		[scrollView addSubview:joinHolderView];
 		
 		UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		joinButton.frame = CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim);
+		joinButton.frame = CGRectMake(0.0, 73.0, 64.0, 64.0);
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 		[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-		[_rHolderView addSubview:joinButton];
+		[joinHolderView addSubview:joinButton];
 		
 		// awaiting challenger response
 		if (_challengeVO.challengerID != 0) {
@@ -326,18 +323,19 @@
 			
 			SEL joinSelector = @selector(_goJoinChallenge);
 			
-//			if (_isChallengeCreator)
-//				joinSelector = @selector(_goChallengerChallenge);
-//			
-//			if (_isChallengeOpponent)
-//				joinSelector = @selector(_goCreatorChallenge);
+			if (_isChallengeCreator)
+				joinSelector = @selector(_goChallengerChallenge);
+			
+			if (_isChallengeOpponent)
+				joinSelector = @selector(_goAcceptChallenge);
 			
 			
 			[joinButton addTarget:self action:joinSelector forControlEvents:UIControlEventTouchUpInside];
 		
 		// no challengers
 		} else {
-			[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];//[joinButton addTarget:self action:(_isChallengeCreator) ? @selector(_goNewSubjectChallenge) : @selector(_goCreatorChallenge) forControlEvents:UIControlEventTouchUpInside];
+			//[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+			[joinButton addTarget:self action:(_isChallengeCreator) ? @selector(_goNewSubjectChallenge) : @selector(_goAcceptChallenge) forControlEvents:UIControlEventTouchUpInside];
 		}
 	}
 	

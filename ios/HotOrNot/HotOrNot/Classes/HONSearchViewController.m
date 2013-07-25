@@ -82,7 +82,7 @@
 		} else {
 			NSArray *unsortedUsers = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[unsortedUsers sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"points" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedUsers);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], unsortedUsers);
 			
 			for (NSDictionary *serverList in parsedUsers) {
 				HONUserVO *vo = [HONUserVO userWithDictionary:serverList];
@@ -366,7 +366,7 @@
 	[self.view addSubview:_tableView];
 	
 	[self retrieveDefaultUsers];
-	[self _retrievePastUsers];
+	//[self _retrievePastUsers];
 	
 	[self performSelector:@selector(_showTable) withObject:nil afterDelay:0.25];
 }

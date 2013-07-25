@@ -50,7 +50,6 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	_celebs = [NSMutableArray array];
 	_selectedCelebs = [NSMutableArray array];
 	

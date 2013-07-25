@@ -11,7 +11,7 @@
 #import "HONImagingDepictor.h"
 
 
-@interface HONCreateChallengePreviewView () <UITextFieldDelegate>
+@interface HONCreateChallengePreviewView () <UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, strong) UILabel *usernamesLabel;
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSString *subjectName;
@@ -59,11 +59,11 @@
 		_previewImage = image;
 		_subjectName = subject;
 		
-		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.83333f : 0.83333f];
+		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83333f];
 		//NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
+		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-22.0 + (-24.0 * [HONAppDelegate isRetina5])) + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 		previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 		[self addSubview:previewImageView];
 		
@@ -81,10 +81,7 @@
 		usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
 	
 	//NSLog(@"USERNAMES:[%@][%@]", usernameList, usernames);
-	_usernamesLabel.text = ([usernames length] == 0) ? @"" : [usernames substringToIndex:[usernames length] - 2];
-	
-	if ([usernameList count] > 0)
-		self.frame = CGRectOffset(self.frame, 0.0, -[[UIApplication sharedApplication] statusBarFrame].size.height);
+	_usernamesLabel.text = ([usernames length] == 0) ? @"add friends" : [usernames substringToIndex:[usernames length] - 2];
 }
 
 - (void)showKeyboard {
@@ -95,8 +92,6 @@
 
 #pragma mark - UI Presentation
 - (void)_makeUI {
-	//self.frame = CGRectOffset(self.frame, 0.0, -[[UIApplication sharedApplication] statusBarFrame].size.height);
-	
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
 	[self addSubview:overlayView];
@@ -134,14 +129,14 @@
 	//[self addSubview:_captionLabel];
 	
 	_privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_privateToggleButton.frame = CGRectMake(184.0, self.frame.size.height - 315.0, 134.0, 44.0);
+	_privateToggleButton.frame = CGRectMake(184.0, self.frame.size.height - 335.0, 134.0, 44.0);
 	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_nonActive" : @"privateOff_nonActive"] forState:UIControlStateNormal];
 	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_Active" : @"privateOff_Active"] forState:UIControlStateHighlighted];
 	[_privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
 	_privateToggleButton.alpha = 0.0;
 	[self addSubview:_privateToggleButton];
 	
-	_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 47.0, 320.0, 47.0)];
+	_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 67.0, 320.0, 47.0)];
 	_subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.93];
 	_subjectBGView.hidden = YES;
 	[self addSubview:_subjectBGView];
@@ -206,11 +201,23 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[_subjectTextField resignFirstResponder];
-	[self _dropKeyboardAndRemove:(!_isPrivate || (_isPrivate && [_usernamesLabel.text length] > 0))];
+	if ((_isPrivate && ![_usernamesLabel.text isEqualToString:@"add friends"]) || !_isPrivate) {
+		[_subjectTextField resignFirstResponder];
+		[self _dropKeyboardAndRemove:YES];
 	
-	[self.delegate previewView:self changeSubject:_subjectName];
-	[self.delegate previewViewSubmit:self];
+		[self.delegate previewView:self changeSubject:_subjectName];
+		[self.delegate previewViewSubmit:self];
+	
+	} else {
+		[self _dropKeyboardAndRemove:NO];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Cannot Send Private Message"
+															message:@"You must select a friend to send a private photo message."
+														   delegate:self
+												  cancelButtonTitle:@"OK"
+												  otherButtonTitles:nil];
+		[alertView setTag:0];
+		[alertView show];
+	}
 }
 
 - (void)_onTextDoneEditingOnExit:(id)sender {
@@ -222,12 +229,15 @@
 #pragma mark - UI Presentation
 - (void)_raiseKeyboard {
 	_subjectBGView.hidden = NO;
+	[_subjectTextField becomeFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
 		_captionLabel.alpha = 0.875;
 		_privateToggleButton.alpha = 1.0;
 		_addFriendsButton.alpha = 1.0;
 		_backButton.alpha = 1.0;
+		_usernamesLabel.alpha = 1.0;
+	}completion:^(BOOL finished) {
 	}];
 }
 
@@ -238,6 +248,7 @@
 		_privateToggleButton.alpha = 0.0;
 		_addFriendsButton.alpha = 0.0;
 		_backButton.alpha = 0.0;
+		_usernamesLabel.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_subjectBGView.hidden = YES;
 		
@@ -253,12 +264,19 @@
 }
 
 
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		[self _raiseKeyboard];
+	}
+}
+
 #pragma mark - TextField Delegates
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
 	[[NSNotificationCenter defaultCenter] addObserver:self
-														  selector:@selector(_textFieldTextDidChangeChange:)
-																name:UITextFieldTextDidChangeNotification
-															 object:textField];
+											 selector:@selector(_textFieldTextDidChangeChange:)
+												 name:UITextFieldTextDidChangeNotification
+											   object:textField];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {

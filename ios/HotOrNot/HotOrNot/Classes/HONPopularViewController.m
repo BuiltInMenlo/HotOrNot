@@ -1,5 +1,5 @@
 //
-//  HONInvitePopularViewController.m
+//  HONPopularViewController.m
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 7/8/13 @ 5:02 PM.
@@ -80,7 +80,8 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	self.view.backgroundColor = [UIColor blackColor];
+	
 	_celebs = [NSMutableArray array];
 	_selectedCelebs = [NSMutableArray array];
 	
@@ -102,7 +103,7 @@
 	[self.view addSubview:doneButton];
 	
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 45.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 44.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 44.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -168,7 +169,7 @@
 }
 
 
-#pragma mark PopularUserVieCell Delegates
+#pragma mark - PopularUserVieCell Delegates
 - (void)popularUserViewCell:(HONPopularUserViewCell *)cell celeb:(HONCelebVO *)celebVO toggleSelected:(BOOL)isSelected {
 	if (isSelected) {
 		[[Mixpanel sharedInstance] track:@"Popular People - Select"

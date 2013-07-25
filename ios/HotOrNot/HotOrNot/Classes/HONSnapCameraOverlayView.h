@@ -16,6 +16,7 @@
 - (void)addPreview:(UIImage *)image;
 - (void)addMirroredPreview:(UIImage *)image;
 - (void)removePreview;
+- (void)updateClock:(int)tick;
 @property(nonatomic, assign) id <HONSnapCameraOverlayViewDelegate> delegate;
 @end
 

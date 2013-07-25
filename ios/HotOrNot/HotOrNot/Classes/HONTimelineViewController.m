@@ -22,8 +22,8 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
-#import "HONInstagramLoginViewController.h"
-#import "HONTumblrLoginViewController.h"
+//#import "HONInstagramLoginViewController.h"
+//#import "HONTumblrLoginViewController.h"
 #import "HONInviteCelebViewController.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
@@ -45,7 +45,7 @@
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIImageView *findFriendsImageView;
-@property (nonatomic, strong) UIView *tooltipView;
+@property (nonatomic, strong) UIImageView *tooltipImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @end
 
@@ -373,7 +373,7 @@
 	_findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
 	_findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-586@2x" : @"findFriends"];
 	_findFriendsImageView.userInteractionEnabled = YES;
-	_findFriendsImageView.hidden = ([[HONAppDelegate friendsList] count] > 0 || _isPushView);
+	_findFriendsImageView.hidden = ([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
 	[self.view addSubview:_findFriendsImageView];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -412,9 +412,9 @@
 		
 		if ([HONAppDelegate isLocaleEnabled]) {
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
-				_tooltipView = [[UIView alloc] initWithFrame:CGRectMake(250.0, 40.0, 60.0, 30.0)];
-				_tooltipView.backgroundColor = [HONAppDelegate honDebugGreenColor];
-				[self.view addSubview:_tooltipView];
+				_tooltipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(72.0, 35.0, 244.0, 94.0)];
+				_tooltipImageView.image = [UIImage imageNamed:@"tapTheCameraOverlay"];
+				[self.view addSubview:_tooltipImageView];
 				
 				[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
 			}
@@ -459,9 +459,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if (_tooltipView != nil) {
-		[_tooltipView removeFromSuperview];
-		_tooltipView = nil;
+	if (_tooltipImageView != nil) {
+		[_tooltipImageView removeFromSuperview];
+		_tooltipImageView = nil;
 	}
 	
 	if (_userVO == nil) {
@@ -507,20 +507,20 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	UINavigationController *navigationController;
-	if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"instagram"])
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInstagramLoginViewController alloc] init]];
-	
-	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"tumblr"])
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTumblrLoginViewController alloc] init]];
-	
-	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"celeb"])
+	if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"celeb"])
 		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
+	
+//	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"tumblr"])
+//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTumblrLoginViewController alloc] init]];
+//	
+//	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"instagram"])
+//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInstagramLoginViewController alloc] init]];
 	
 	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"popular"])
 		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
 	
 	if ([[HONAppDelegate timelineBannerURL] length] > 0) {
-		[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+		//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:YES completion:nil];
 	}

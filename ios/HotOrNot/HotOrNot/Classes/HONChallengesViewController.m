@@ -619,13 +619,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			[self presentViewController:navigationController animated:NO completion:nil];
 		
 		} else {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:vo]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]];
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
 		}
 	
 	} else if (vo.statusID == 4) {
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) {
+//		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) {
 			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 															   [NSString stringWithFormat:@"%d", vo.challengerID], @"id",
 															   [NSString stringWithFormat:@"%d", 0], @"points",
@@ -640,11 +640,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:NO completion:nil];
 		
-		} else {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:vo]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
+//		} else {
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:vo]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:NO completion:nil];
+//		}
 	}
 }
 

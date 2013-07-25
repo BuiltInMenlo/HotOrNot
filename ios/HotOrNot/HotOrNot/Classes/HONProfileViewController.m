@@ -256,7 +256,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Settings", @"Status update", @"Find friends", nil];
+													otherButtonTitles:@"Settings", @"Send volley", @"Find friends", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -318,6 +318,10 @@
 
 
 #pragma mark - UserProfileCell Delegates
+- (void)userProfileViewCellNewSnap:(HONUserProfileViewCell *)cell {
+	[self _goCreateChallenge];
+}
+
 - (void)userProfileViewCellShowSettings:(HONUserProfileViewCell *)cell {
 	[[Mixpanel sharedInstance] track:@"Profile - Settings"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:

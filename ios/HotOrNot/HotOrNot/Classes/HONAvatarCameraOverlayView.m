@@ -47,7 +47,7 @@
 		
 		UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (self.frame.size.height - 12.0) * 0.5, 320.0, 24.0)];
 		captionImageView.image = [UIImage imageNamed:@"takePhotoOverlay"];
-		[_controlsHolderView addSubview:captionImageView];
+		//[_controlsHolderView addSubview:captionImageView];
 		
 		float offset = ([HONAppDelegate isRetina5]) ? 469.0 : 389.0;
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -104,10 +104,10 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																		 message:@"Your profile photo is how other people will know you're real!"
-																		delegate:self
-															cancelButtonTitle:@"Skip"
-															otherButtonTitles:@"Take Photo", nil];
+														message:@"Your profile photo is how other people will know you're real!"
+													   delegate:self
+											  cancelButtonTitle:@"Skip"
+											  otherButtonTitles:@"Take Photo", nil];
 	[alertView setTag:0];
 	[alertView show];
 }

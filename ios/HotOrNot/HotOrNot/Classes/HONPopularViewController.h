@@ -1,5 +1,5 @@
 //
-//  HONInvitePopularViewController.h
+//  HONPopularViewController.h
 //  HotOrNot
 //
 //  Created by Matt Holcombe on 7/8/13 @ 5:02 PM.

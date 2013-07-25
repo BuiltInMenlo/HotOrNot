@@ -23,6 +23,7 @@
 
 @protocol HONUserProfileViewCellDelegate
 @optional
+- (void)userProfileViewCellNewSnap:(HONUserProfileViewCell *)cell;
 - (void)userProfileViewCellShowSettings:(HONUserProfileViewCell *)cell;
 - (void)userProfileViewCellFindFriends:(HONUserProfileViewCell *)cell;
 - (void)userProfileViewCellTakeNewAvatar:(HONUserProfileViewCell *)cell;

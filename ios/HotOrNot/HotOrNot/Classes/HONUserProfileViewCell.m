@@ -129,15 +129,15 @@
 	[self addSubview:_ptsLabel];
 	
 	UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	statusButton.frame = CGRectMake(19.0, 152.0, 129.0, 44.0);
+	statusButton.frame = CGRectMake(21.0, 152.0, 129.0, 44.0);
 	[statusButton setBackgroundImage:[UIImage imageNamed:@"statusButton_nonActive"] forState:UIControlStateNormal];
 	[statusButton setBackgroundImage:[UIImage imageNamed:@"statusButton_Active"] forState:UIControlStateHighlighted];
-	[statusButton addTarget:self action:@selector(_goSettings) forControlEvents:UIControlEventTouchUpInside];
+	[statusButton addTarget:self action:@selector(_goNewSnap) forControlEvents:UIControlEventTouchUpInside];
 	statusButton.hidden = !isUser;
 	[self addSubview:statusButton];
 	
 	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	findFriendsButton.frame = CGRectMake(170.0, 152.0, 129.0, 44.0);
+	findFriendsButton.frame = CGRectMake(168.0, 152.0, 129.0, 44.0);
 	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"friendsButton_nonActive"] forState:UIControlStateNormal];
 	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"friendsButton_Active"] forState:UIControlStateHighlighted];
 	[findFriendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
@@ -145,12 +145,20 @@
 	[self addSubview:findFriendsButton];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(20.0, 152.0, 279.0, 44.0);
+	snapButton.frame = CGRectMake(21.0, 152.0, 129.0, 44.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goUserChallenge) forControlEvents:UIControlEventTouchUpInside];
 	snapButton.hidden = isUser;
 	[self addSubview:snapButton];
+	
+	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	addFriendButton.frame = CGRectMake(168.0, 152.0, 129.0, 44.0);
+	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_nonActive"] forState:UIControlStateNormal];
+	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_Active"] forState:UIControlStateHighlighted];
+	[snapButton addTarget:self action:@selector(_goFriendUser) forControlEvents:UIControlEventTouchUpInside];
+	addFriendButton.hidden = isUser;
+	[self addSubview:addFriendButton];
 }
 
 - (void)updateCell {
@@ -166,6 +174,10 @@
 #pragma mark - Navigation
 - (void)_goProfilePic {
 	[self.delegate userProfileViewCellTakeNewAvatar:self];
+}
+
+- (void)_goNewSnap {
+	[self.delegate userProfileViewCellNewSnap:self];
 }
 
 - (void)_goSettings {
