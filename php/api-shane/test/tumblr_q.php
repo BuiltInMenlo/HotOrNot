@@ -5,8 +5,9 @@ require_once 'vendor/autoload.php';
 $job = (object) array(
 	'class' => 'BIM_Jobs_Growth',
 	'method' => 'doRoutines',
-    'params' => '{"personaName":"fpbmkvtmombcyt@aol.com", "routine":"loginAndBrowseSelfies","class":"BIM_Growth_Tumblr_Routines"}'
+    'params' => '{"personaName":"p.ocamb@yahoo.com", "routine":"loginAndBrowseSelfies","class":"BIM_Growth_Tumblr_Routines"}'
 );
+// centrichleialoha@yahoo.com,aqCwj9xass,rqmabeevl.tumblr.com
 
 $q = new BIM_Jobs_Growth();
 $q->doRoutines( $job );

@@ -367,7 +367,14 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         if( !$this->isLoggedIn($response) ){
             $name = $this->persona->name;
             echo "user $name not logged in to tumblr!  logging in!\n";
+            if( $this->needTOS( $response ) ){
+                $this->acceptTOS($response);
+            }
             $this->login();
+            $response = $this->get( $url );
+            if( $this->needTOS( $response ) ){
+                $this->acceptTOS($response);
+            }
             $response = $this->get( $url );
             if( !$this->isLoggedIn($response) ){
                 $msg = "something is wrong with logging in $name to tumblr!  disabling the user!\n";
@@ -377,6 +384,45 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             }
         }
         return $loggedIn;
+    }
+    
+    public function needTOS( $response ){
+        return preg_match('@updated our Terms of Service@',$response );
+    }
+    
+    /*
+		http://www.tumblr.com/svc/policy/accept
+		
+		form_key:nJHu0eei2DMVIRIIgZsU9wSsE
+		
+        {
+            "meta": {
+                "status": 200,
+                "msg": "OK"
+            },
+            "response": {
+                "message": "OK"
+            }
+        }
+     */
+    public function acceptTOS( $response ){
+        echo "accepting TOS\n";
+        
+        $ptrn = '/name="form_key" value="(.+?)"/';
+        preg_match($ptrn, $response, $matches);
+        $formKey = $matches[1];
+        
+        $url = 'http://www.tumblr.com/svc/policy/accept';
+        
+        $input = array(
+            'form_key' => $formKey,
+        );
+        
+        $response = json_decode( $this->post( $url, $input ) );
+        
+        if( $response ){
+            print_r( $response );
+        }
     }
     
     public function isLoggedIn( $html ){
