@@ -334,7 +334,14 @@ class BIM_App_Challenges extends BIM_App_Base{
 			2391,
 			2392,
 			2393,
-			2394
+			2394,
+            2804,
+            2805,
+            2811,
+            2815,
+            2818,
+            2819,
+            2824
 		);
 		
 		// get challenge data
@@ -754,7 +761,6 @@ class BIM_App_Challenges extends BIM_App_Base{
 			array_push($challengeID_arr, key($val[0]));
 			
 		$challengeID_arr = array_unique($challengeID_arr);
-		
 		// sort by date asc, then reverse to go desc
 		asort($challengeID_arr);
 		$challengeID_arr = array_reverse($challengeID_arr, true);
@@ -773,6 +779,8 @@ class BIM_App_Challenges extends BIM_App_Base{
 				break;
 		}
 			
+		//print_r( array( $opponentID_arr, $opponentChallenges_arr, $challengeID_arr, $challenge_arr ) ); exit;
+		
 		
 		// return
 		return $challenge_arr;

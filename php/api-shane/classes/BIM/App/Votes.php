@@ -341,8 +341,9 @@ class BIM_App_Votes extends BIM_App_Base{
         $query = "
         	SELECT id, is_private, creator_id, challenger_id 
         	FROM `hotornot-dev`.`tblChallenges` as tc 
-        	WHERE tc.status_id IN (1,4) 
-        		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
+        	WHERE (tc.status_id IN (1,4) 
+        		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) )
+        		OR ( tc.status_id = 2 AND tc.challenger_id = ? )
         	ORDER BY tc.`updated` DESC LIMIT 50
         ";
         
@@ -352,6 +353,7 @@ class BIM_App_Votes extends BIM_App_Base{
         foreach( $friendIds as $friendId ){
             $params[] = $friendId;
         }
+        $params[] = $input->userID;
         
         $stmt = $dao->prepareAndExecute( $query, $params );
 
@@ -359,12 +361,12 @@ class BIM_App_Votes extends BIM_App_Base{
 		while ( $challenge_row = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
 		    //print_r( $challenge_row );
 			// push challenge into list
-		    $isForUser = ( $challenge_row['creator_id'] == $input->userID || $challenge_row['challenger_id'] == $input->userID );
+		    	$isForUser = ( $challenge_row['creator_id'] == $input->userID || $challenge_row['challenger_id'] == $input->userID );
 			if( $challenge_row['is_private'] == 'N' || $isForUser ){
-		        $co = $this->getChallengeObj( $challenge_row['id'] );
-    			if( $co['expires'] != 0 ){
-        			array_push( $challenge_arr, $co );
-    			}
+		        	$co = $this->getChallengeObj( $challenge_row['id'] );
+    				if( $co['expires'] != 0 ){
+        				array_push( $challenge_arr, $co );
+    				}
 			}
 		}
             
