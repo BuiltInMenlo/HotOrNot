@@ -140,4 +140,70 @@ class BIM_Growth_Reports{
         }
         return $stats;
     }
+    
+    /*
+set time_zone = '-07:00';
+
+select DATE( FROM_UNIXTIME( time ) ) as day , network, count(*) 
+from growth.contact_log 
+group by day, network order by day; 
+
+select DATE( FROM_UNIXTIME( time ) ) as day , network, count(*) 
+from growth.webstagram_contact_log 
+group by day, network order by day; 
+
+select DATE( FROM_UNIXTIME( time ) ) as day , network, count(*) 
+from growth.askfm_answer_log 
+group by day, network order by day; 
+
+select DATE( FROM_UNIXTIME( time ) ) as day, network_id, count(*) 
+from growth.inbound_persona_clicks 
+where user_agent not like '%fetchor%' 
+    and user_agent not like '%googlebot%' 
+    and user_agent not like '%slurp%' 
+    and user_agent not like '%tweetmeme%' 
+    and user_agent not like '%baidu%'  
+    and user_agent not like '%queryseeker%' 
+group by day, network_id order by count(*);     
+     */
+    public function clickbacks(){
+        $dao = new BIM_DAO_Mysql_Growth_Reports(BIM_Config::db());
+        $outboundData = $dao->getOutboundMsgs();
+        
+        $outbound = array();
+        foreach( $outboundData as $row ){
+            if( empty( $outbound[ $row->day ][ $row->network ] ) ){
+                $outbound[ $row->day ][ $row->network ] = 0;
+            }
+            $outbound[ $row->day ][ $row->network ] += $row->count;
+        }
+        
+        $clicks = $dao->getInboundClicks();
+        $clickbacks = array();
+        foreach( $clicks as $row ){
+            if( empty( $clickbacks[ $row->day ][ $row->network ] ) ){
+                $clickbacks[ $row->day ][ $row->network ] = 0;
+            }
+            $clickbacks[ $row->day ][ $row->network ] += $row->count;
+        }
+        
+        $counts = array();
+        foreach( $outbound as $day => $networkData ){
+           foreach( $networkData as $network => $outcount ){
+               $incount = 0;
+               if( !empty( $clickbacks[ $day ][ $network ] ) ){
+                   $incount = $clickbacks[ $day ][ $network ];
+               }
+               
+               if( empty( $counts[ $day ][ $network ] ) ){
+                   $counts[ $day ][ $network ] = array(
+                       'inbound' => $incount,
+                       'outbound' => $outcount,
+                       'rate' =>  sprintf("%01.2f", (string) ( ($incount / $outcount) * 100 ) )
+                   );
+               }
+           }
+        }
+        return $counts;
+    }
 }

@@ -89,6 +89,19 @@ class BIM_App_Challenges extends BIM_App_Base{
 		    'expires' => $expires
 		));
 	}
+
+	public static function getSubject($subject_id) {
+	    $subject = '';
+	    $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+	    $query = 'SELECT `title` FROM `hotornot-dev`.`tblChallengeSubjects` WHERE `id` = ?';
+	    $params = array( $subject_id );
+	    $stmt = $dao->prepareAndExecute( $query, $params );
+		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+		if( $data ){
+		    $subject = $data[0]->title;
+		}
+		return $subject;
+	}
 	
 	/**
 	 * Helper function to get the subject for a challenge
@@ -307,43 +320,6 @@ class BIM_App_Challenges extends BIM_App_Base{
 		return ($challenge_arr);
 	}
 	
-	/** 
-	 * Helper function to send an Urban Airship push
-	 * @param $msg The message body of the push (string)
-	 * @return null
-	**/
-	public function sendPush($msg) {
-		// curl urban airship's api
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-		//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-		curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-	 	$res = curl_exec($ch);
-		$err_no = curl_errno($ch);
-		$err_msg = curl_error($ch);
-		$header = curl_getinfo($ch);
-		curl_close($ch);
-		
-		// curl urban airship's api
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-		curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-		//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-	 	$res = curl_exec($ch);
-		$err_no = curl_errno($ch);
-		$err_msg = curl_error($ch);
-		$header = curl_getinfo($ch);
-		curl_close($ch);
-	}
-	
 	/**
 	 * Checks to see if a user ID is a default
 	 * @param $challenge_id The ID of the challenge
@@ -400,15 +376,45 @@ class BIM_App_Challenges extends BIM_App_Base{
 			$creator_obj = mysql_fetch_object(mysql_query($query));
 		
 			// send push if allowed
-			if ($creator_obj->notifications == "Y")
-				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_obj->username .' has accepted your '. $subject_name .' snap!", "sound": "push_01.caf"}}'); 			
-
+			if ($creator_obj->notifications == "Y"){
+                $msg = "$challenger_obj->username has accepted your $subject_name snap!";
+				$push = array(
+			    	"device_tokens" =>  array( $creator_obj->device_token ), 
+			    	"type" => "3", 
+			    	"aps" =>  array(
+			    		"alert" =>  $msg,
+			    		"sound" =>  "push_01.caf"
+			        )
+			    );
+			    
+			    $delay = mt_rand(30,120);
+			    $pushTime = time() + $delay;
+			    
+			    $this->createTimedPush($push, $pushTime);
+			    
+			}
 			// update the challenge to started
 			$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
 			$result = mysql_query($query);
 		}
 	}
 	
+	public function createTimedPush( $push, $time ){
+        $time = new DateTime("@$time");
+        $time = $time->format('Y-m-d H:i:s');
+	    
+        $job = (object) array(
+            'nextRunTime' => $time,
+            'class' => 'BIM_Jobs_Challenges',
+            'method' => 'doPush',
+            'name' => 'push',
+        	'params' => $push,
+            'is_temp' => true,
+        );
+        
+        $j = new BIM_Jobs_Gearman();
+        $j->createJbb($job);
+	}
 	
 	/**
 	 * Inserts a new challenge and attempts to match on a waiting challenge with the same subject
@@ -455,9 +461,18 @@ class BIM_App_Challenges extends BIM_App_Base{
 			$update_result = mysql_query($query);
 			
 			// send push if creator allows it
-			if ($creator_obj->notifications == "Y")
-				$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_obj->username .' has accepted your '. $subject .' snap!", "sound": "push_01.caf"}}');
-			
+			if ($creator_obj->notifications == "Y"){
+                $msg = "$challenger_obj->username has accepted your $subject snap!";
+				$push = array(
+			    	"device_tokens" =>  array( $creator_obj->device_token ), 
+			    	"type" => "3", 
+			    	"aps" =>  array(
+			    		"alert" =>  $msg,
+			    		"sound" =>  "push_01.caf"
+			        )
+			    );
+        	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+			}
 		    
 			// get the updated challenge info 
 			$challenge_arr = $this->getChallengeObj($challenge_row['id']);
@@ -526,9 +541,32 @@ class BIM_App_Challenges extends BIM_App_Base{
 		
 		// send push to targeted user if allowed
 		if ($challenger_obj->notifications == "Y"){
- 		    $private = $is_private == 'Y' ? 'private' : '';
- 		    $msg = "@$creator_obj->username has sent you a $private Volley!";
-			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
+ 		    $private = $is_private == 'Y' ? ' private' : '';
+ 		    $expiresTxt = '';
+	        if($expires == 86400){
+                $expiresTxt = ' that will expire in 24 hours';
+	        } else if( $expires == 600 ){
+                $expiresTxt = ' that will expire in 10 mins';
+	        }
+ 		    $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. $subject";
+			$push = array(
+		    	"device_tokens" =>  array( $challenger_obj->device_token ), 
+		    	"type" => "1", 
+			    "challenge" => $challenge_id,
+		    	"aps" =>  array(
+		    		"alert" =>  $msg,
+		    		"sound" =>  "push_01.caf"
+		        )
+		    );
+		    
+            BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+            // create a reminder push
+            if( $expires > 0 ){
+ 		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! $subject";
+ 		        $push['aps']['alert'] = $msg;
+	            $time = $expires - self::reminderTime();
+	            $this->createTimedPush($push, $time);
+            }
 		}
 		// get the newly created challenge
 		$challenge_arr = $this->getChallengeObj($challenge_id);
@@ -538,6 +576,10 @@ class BIM_App_Challenges extends BIM_App_Base{
 		
 		/// return
 		return $challenge_arr;
+	}
+	
+	protected static function reminderTime(){
+	    return 180;
 	}
 	
 	/**
@@ -587,9 +629,31 @@ class BIM_App_Challenges extends BIM_App_Base{
 			
 			// send push if allowed
 			if ($challenger_obj->notifications == "Y"){
- 		        $private = $is_private == 'Y' ? 'private' : '';
- 		        $msg = "@$creator_obj->username has sent you a $private Volley!";
-			    $this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'.$msg.'", "sound": "push_01.caf"}}');
+ 		        $private = $is_private == 'Y' ? ' private' : '';
+ 		        $expiresTxt = '';
+ 		        if($expires == 86400){
+                    $expiresTxt = ' that will expire in 24 hours';
+ 		        } else if( $expires == 600 ){
+                    $expiresTxt = ' that will expire in 10 mins';
+ 		        }
+ 		        $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. $subject";
+    			$push = array(
+    		    	"device_tokens" =>  array( $challenger_obj->device_token ), 
+    		    	"type" => "1", 
+    			    "challenge" => $challenge_id,
+    		    	"aps" =>  array(
+    		    		"alert" =>  $msg,
+    		    		"sound" =>  "push_01.caf"
+    		        )
+    		    );
+        	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+        	    // create the reminder push
+                if( $expires > 0 ){
+     		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! $subject";
+     		        $push['aps']['alert'] = $msg;
+    	            $time = $expires - self::reminderTime();
+    	            $this->createTimedPush($push, $time);
+                }
 			}
 		    
 			// get the newly created challenge
@@ -639,6 +703,40 @@ class BIM_App_Challenges extends BIM_App_Base{
 		while ($row = mysql_fetch_assoc($result))
 			array_push($challenge_arr, $this->getChallengeObj($row['id']));
 		
+		// return
+		return $challenge_arr;
+	}
+	
+	/** 
+	 * Gets all the public challenges for a user
+	 * @param $user_id The ID of the user (integer)
+	 * @return The list of challenges (array)
+	**/
+	public function getChallenges($user_id, $private = false ) {
+		$this->dbConnect();
+		
+		$pSql = "AND is_private = 'N'";
+		if( $private ){
+			$pSql = "AND is_private = 'Y'";
+		}
+	    
+		$user_id = mysql_escape_string($user_id);
+		// get challenges for user
+		$query = "
+			SELECT `id` 
+			FROM `tblChallenges` 
+			WHERE `status_id` in ( 1,2,4 ) 
+				AND (`creator_id` = $user_id  OR `challenger_id` = $user_id )
+				$pSql
+			ORDER BY `updated` DESC;
+		";
+		$result = mysql_query($query);
+		
+		// loop thru the rows
+		$challenge_arr = array();
+		while ($row = mysql_fetch_assoc($result)){
+			array_push($challenge_arr, $this->getChallengeObj($row['id']));
+		}
 		// return
 		return $challenge_arr;
 	}
@@ -778,9 +876,18 @@ class BIM_App_Challenges extends BIM_App_Base{
 		$isPush = ($creator_obj->notifications == "Y");
 		
 		// send push if allowed
-		if ($isPush)
-			$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $challenger_name .' has accepted your '. $subject_name .' snap!", "sound": "push_01.caf"}}'); 			
-
+		if ($isPush){
+	        $msg = "$challenger_name has accepted your $subject_name snap!";
+			$push = array(
+		    	"device_tokens" =>  array( $creator_obj->device_token ), 
+		    	"type" => "3", 
+		    	"aps" =>  array(
+		    		"alert" =>  $msg,
+		    		"sound" =>  "push_01.caf"
+		        )
+		    );
+    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+		}
 		// update the challenge to started
 		$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
 		$result = mysql_query($query);			
@@ -902,5 +1009,59 @@ class BIM_App_Challenges extends BIM_App_Base{
 		return array(
 			'result' => true
 		);
+	}
+	
+	/**
+	 * 
+	 * this function will look for old unjoined volleys and redirect them
+	 * 
+	 * get all challenges that have status = 1,2 and are > 2 weeks old and expires = -1 and that have a challenger
+	 * foreach challenge, we randomly select a user and fire a volley at them
+	 * the process of revolley will simply change the challenger_id column
+	 * we send a push to the new challenger
+	 * 
+	 */
+	public static function processReVolleys(){
+	    $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+	    $unjoined = $dao->getUnjoined();
+	    foreach( $unjoined as $volley ){
+	        self::reVolley( $volley );
+	    }
+	}
+	
+	public static function reVolley( $volley ){
+	    $conf = BIM_Config::db();
+	    
+	    $dao = new BIM_DAO_Mysql_User( $conf );
+	    $userId = $dao->getRandomUserId( array($volley->challenger_id, $volley->creator_id ) );
+	    if( $userId ){
+	        $subject = self::getSubject($volley->subject_id);
+	        $challenger = new BIM_User( $userId );
+	        $creator = new BIM_User( $volley->creator_id );
+	        
+	        $dao = new BIM_DAO_Mysql_Volleys( $conf );
+	        
+    	    $dao->reVolley( $volley, $challenger );
+    	    
+			// send push if allowed
+			if ($challenger->notifications == "Y"){
+ 		        $private = $volley->is_private == 'Y' ? ' private' : '';
+ 		        $msg = "@$creator->username has sent you a$private Volley. $subject";
+ 		        
+			    $push = array(
+			    	//"device_tokens" =>  array( '66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035' ), 
+			    	"device_tokens" =>  array( $challenger->device_token ), 
+			    	"type" => "1", 
+			    	"challenge" => $volley->id, 
+			    	"aps" =>  array(
+			    		"alert" =>  $msg,
+			    		"sound" =>  "push_01.caf"
+			        )
+			    );
+			    
+        	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+			}
+			echo "Volley $volley->id was re-vollied to $challenger->username : $challenger->id\n";
+	    }
 	}
 }

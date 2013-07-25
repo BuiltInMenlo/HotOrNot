@@ -17,6 +17,54 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         //$this->oauth->enableDebug();
     }
     
+    /**
+     *  pk	505068195439511399_25025320
+		t	9432
+     */
+    public function like( $id ){
+        $url = 'http://web.stagram.com/do_like/';
+        $params = array(
+            'pk' => $id,
+            't' => mt_rand(5000, 10000)
+        );
+        $response = json_decode( $this->post( $url ) );
+        if( empty( $response->status ) || $response->status != 'OK' ){
+            $msg = "cannot like photo using id : $id with persona: ".$this->persona->instagram->username;
+            echo "$msg\n";
+            $this->sendWarningEmail( $msg );
+        }
+    }
+    
+    /**
+     * http://web.stagram.com/do_follow/
+     * 
+     * 
+       request 
+       
+           pk	25025320
+    	   t	5742
+	   
+	   response:
+            {
+                "status": "OK",
+                "message": "follows"
+            }	   
+	   
+     */
+    public function follow( $id ){
+        $url = 'http://web.stagram.com/do_follow/';
+        $params = array(
+            'pk' => $id,
+            't' => mt_rand(5000, 10000)
+        );
+        $response = json_decode( $this->post( $url ) );
+        if( empty( $response->status ) || $response->status != 'OK' ){
+            $msg = "cannot like photo using id : $id with persona: ".$this->persona->username;
+            echo "$msg\n";
+            $this->sendWarningEmail( $msg );
+        }
+    }
+    
     /*
     
     Request URL:https://instagram.com/oauth/authorize/?client_id=63a3a9e66f22406799e904ccb91c3ab4&redirect_uri=http://54.243.163.24/instagram_oauth.php&response_type=code
@@ -46,16 +94,22 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $this->purgeCookies();
         
         $response = $this->login();
-        
-        $ptrn = '/Authorization Request/';
+
+        $ptrn = '@Please complete the following CAPTCHA@';
         if( preg_match( $ptrn, $response ) ){
             // we are at the authorize page
-            $response = $this->authorizeApp($response);
+            echo "captcha'd persona ",join(',', array( $this->persona->instagram->username, $this->persona->instagram->password ) ),"\n";
+        } else {
+            $ptrn = '/Authorization Request/';
+            if( preg_match( $ptrn, $response ) ){
+                // we are at the authorize page
+                $response = $this->authorizeApp($response);
+            }
         }
     }
     
     public function authorizeApp( $authPageHtml ){
-        
+        $this->setUseProxy( false );
         $ptrn = '/<form.*?action="(.+?)"/';
         preg_match($ptrn, $authPageHtml, $matches);
         $formActionUrl = 'https://instagram.com'.$matches[1];
@@ -77,12 +131,14 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             'Origin: https://instagram.com',
         );
         $response = $this->post( $formActionUrl, $args, false, $headers);
+        $this->setUseProxy( true );
         // print_r( array( $url, $args, $response)  ); exit;
         return $response;
     }
     
     public function login(){
         
+        $this->setUseProxy( false );
         $redirectUri = 'https://api.instagram.com/oauth/authorize/';
         $params = array(
             'client_id' => '9d836570317f4c18bca0db6d2ac38e29',
@@ -91,7 +147,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             'scope' => 'likes comments relationships',
         );
         $response = $this->get( $redirectUri, $params );
-           
+        
         // now we should have the login form
         // so we login and make sure we are logged in
         $ptrn = '/name="csrfmiddlewaretoken" value="(.+?)"/';
@@ -117,6 +173,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         //print_r(  array( $response, $args, $headers ) ); exit;
         
         $response = $this->post( $formActionUrl, $args, false, $headers );
+        $this->setUseProxy( true );
         
         //print_r( array( $formActionUrl, $args, $response)  ); exit;
         
@@ -148,6 +205,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
      */
     
     public function browseTags(){
+        $this->persona->setType();
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $taggedIds = $this->getTaggedIds( );
@@ -156,6 +214,16 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 foreach( $ids as $id ){
                     $message = $this->persona->getVolleyQuote( 'instagram' );
                     $this->submitComment( $id, $message );
+                    
+                    if( mt_rand(1,100) <= 100  ){
+                        $this->like($id);
+                    }
+                    
+                    if( mt_rand(1, 100) <= 30 ){
+                        list($photoId, $userId) = explode('_', $id );
+                        $this->follow( $userId );
+                    }
+                    
                     $sleep = $this->persona->getBrowseTagsCommentWait();
                     echo "submitted comment - sleeping for $sleep seconds\n";
                     sleep($sleep);
@@ -193,12 +261,6 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         return $loggedIn;
     }
     
-    public function disablePersona( $reason ){
-        $dao = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
-        $dao->disableJob($this->persona->instagram->name);
-        $this->sendWarningEmail( $reason );
-    }
-    
     public function sendWarningEmail( $reason ){
         $c = BIM_Config::warningEmail();
         $e = new BIM_Email_Swift( $c->smtp );
@@ -209,13 +271,16 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
     public function getTaggedIds( ){
         $tags = $this->persona->getTags();
         $taggedIds = array();
-        $idsPerTag = $this->persona->idsPerTagInsta();
-        foreach( $tags as $tag ){
-            $ids = $this->getIdsForTag($tag, 2);
-            $taggedIds[ $tag ] = array();
-            foreach( $ids as $id ){
-                if( count( $taggedIds[ $tag ] ) < $idsPerTag && $this->canPing( $id ) ){
-                    $taggedIds[ $tag ][] = $id;
+        if($tags){
+            $tags = array_rand( $tags, 1 );
+            $idsPerTag = $this->persona->idsPerTagInsta();
+            foreach( $tags as $tag ){
+                $ids = $this->getIdsForTag($tag, 2);
+                $taggedIds[ $tag ] = array();
+                foreach( $ids as $id ){
+                    if( count( $taggedIds[ $tag ] ) < $idsPerTag && $this->canPing( $id ) ){
+                        $taggedIds[ $tag ][] = $id;
+                    }
                 }
             }
         }
@@ -272,7 +337,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         $params = array(
             'message' => $message,
             'messageid' => $id,
-            't'=> 5069
+            't'=> mt_rand(5000, 10000)
         );
         print_r( $params );
         $response = $this->post( 'http://web.stagram.com/post_comment/', $params );
@@ -416,4 +481,41 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         }
         return $friendData;
     }
+    
+    
+    public static function checkPersonas(){
+        $dao = new BIM_DAO_Mysql_Persona( BIM_Config::db() );
+        $data = $dao->getData( null, 'instagram' );
+        foreach($data as $persona ){
+            self::checkPersona( $persona );
+            $sleep = 0;
+            echo "loaded $persona->username sleeping for $sleep seconds\n";
+            sleep($sleep);
+        }
+    }
+    
+    public static function checkPersona( $persona ){
+        
+        $persona = new BIM_Growth_Persona( $persona->username );
+        $r = new self( $persona );
+        
+        if( !$r->handleLogin() ){
+            echo "invalid account: ".$persona->instagram->username.",".$persona->instagram->password."\n";
+        } else {
+            echo "valid account: ".$persona->instagram->username.",".$persona->instagram->password."\n";
+            $r->enablePersona();
+        }
+    }
+    
+    public static function enablePersonas( $file ){
+        $fh = fopen( $file, 'rb' );
+        while( $line = fgets( $fh ) ){
+            echo "enabling $line\n";
+            list($name,$password) = explode(',',$line);
+            $persona = new BIM_Growth_Persona( $name );
+            $r = new self( $persona );
+            $r->enablePersona();
+        }
+    }
+    
 }

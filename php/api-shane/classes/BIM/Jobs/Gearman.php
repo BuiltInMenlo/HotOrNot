@@ -24,7 +24,11 @@ class BIM_Jobs_Gearman extends BIM_Jobs{
 			try{
 				if( $this->canQueueJob( $job->handle ) ){
 					$job->handle = $queue->doBgJob( $job, $job->name );
-					$jobsDAO->updateNextRunTime( $job );
+					if( empty( $job->is_temp ) ){
+    					$jobsDAO->updateNextRunTime( $job );
+					} else {
+    					$jobsDAO->disableJobById( $job->id );
+					}
 				}
 			} catch( Exception $e ){
 				error_log( print_r( $e, true ) );
@@ -59,5 +63,15 @@ class BIM_Jobs_Gearman extends BIM_Jobs{
 			$canQueue = true;
 		}
 		return $canQueue;
+	}
+	
+	public function createJbb( $job ){
+	    if( !empty( $job->params->personaName ) ){
+	        echo "making hashed id\n";
+	        print_r( $job->params );
+	        $job->id = md5( join('', array($job->params->personaName, $job->params->class, $job->params->routine ) ) );
+	    }
+		$jobsDAO = new BIM_DAO_Mysql_Jobs( BIM_Config::db() );
+		$jobsDAO->create( $job );
 	}
 }

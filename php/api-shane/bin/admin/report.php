@@ -121,9 +121,6 @@ $socialStats = $r->getSocialStats( '', $persona );
 		Showing report for <?php echo $persona; ?>
 	</div>		
 </div>
-<div>
-This is where te user details will be going
-</div>
 <hr>
 <?php }?>
 <div id="fw_content">
@@ -284,9 +281,9 @@ This is where te user details will be going
         		</tr>
         	</thead>
         	<tbody>
-        		<tr class="gradeA">
         			<?php $total = 0; ?>
         			<?php foreach( $report->totals->byMonth as $month => $monthData ) {?>
+	        		<tr class="gradeA">
             			<td><?php echo $month; ?></td>
             			<?php $networks = get_object_vars( $report->totals->byMonth->$month->byNetwork ); ?>
             			<?php foreach( $networks as $network => $data ) {
@@ -295,8 +292,8 @@ This is where te user details will be going
             			<td class="center"><?php echo $report->totals->byMonth->$month->byNetwork->$network;?></td>
             			<?php }?>
 	        			<td class="center"><?php echo $total;?></td>
+	        		</tr>
         			<?php }?>
-        		</tr>
         	</tbody>
         </table>
     </div>

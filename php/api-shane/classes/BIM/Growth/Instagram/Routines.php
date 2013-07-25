@@ -397,4 +397,53 @@ external_url	http://www.letsvolley.com
         $response = $this->post( $editUrl, $args, true, $headers );
         //print_r( $response );
     }
+// MarquitaIvaLuc  cZWyJzZCjf
+    public static function loadPersonas($filename){
+        $fh = fopen($filename, 'rb');
+        while( $line = fgets( $fh ) ){
+            $values = explode( ':', $line );
+            $username = trim( $values[0] );
+            $password = trim( $values[1] );
+            self::loadUser( $username, $password, 'instagram' );
+            $sleep = 5;
+            echo "loaded $username sleeping for $sleep seconds\n";
+            sleep($sleep);
+        }
+    }
+    
+    /**
+     * we add the persona
+     * then we change the link in bio
+     * then we add the gearman job, disabled 
+     */
+    public static function loadUser( $username, $password, $network ){
+        $persona = new BIM_Growth_Persona( $username );
+        $persona->username = $username;
+        $persona->password = $password;
+        $persona->network = $network;
+        $persona = $persona->create();
+
+        $r = new self( $persona );
+        $r->dropLinkInBio( "http://getvolleyapp.com/b/$persona->name" );
+        
+        $hr1 = mt_rand(0, 23);
+        $hr2 = $hr1 + 3;
+    	$schedule = "* $hr1-$hr2 * * *";
+    	
+        $job = (object) array(
+    	    'class' =>  'BIM_Jobs_Growth',
+    	    'name' => 'webstagram',
+    	    'method' => 'doRoutines',
+    	    'disabled' => 0,
+    	    'schedule' => $schedule,
+            'params' => (object) array(
+                "personaName" => $persona->name, 
+                "routine" => "browseTags",
+                "class" => "BIM_Growth_Webstagram_Routines"
+            ),
+        );
+        
+        $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
+        $j->createJbb($job);
+    }
 }

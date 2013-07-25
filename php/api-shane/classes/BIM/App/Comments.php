@@ -8,45 +8,6 @@ require_once 'BIM/App/Base.php';
 
 class BIM_App_Comments extends BIM_App_Base{
 	
-	/** 
-	 * Helper function to send an Urban Airship push
-	 * @param $msg The message body of the push (string)
-	 * @return null
-	**/
-    public function sendPush($msg) {
-        return;
-		// curl urban airship's api
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-		//curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-		curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-	 	$res = curl_exec($ch);
-		$err_no = curl_errno($ch);
-		$err_msg = curl_error($ch);
-		$header = curl_getinfo($ch);
-		curl_close($ch);
-		
-		// curl urban airship's api
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, 'https://go.urbanairship.com/api/push/');
-		curl_setopt($ch, CURLOPT_USERPWD, "qJAZs8c4RLquTcWKuL-gug:mbNYNOkaQ7CZJDypDsyjlQ"); // dev
-		//curl_setopt($ch, CURLOPT_USERPWD, "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw"); // live
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $msg);
-	 	$res = curl_exec($ch);
-		$err_no = curl_errno($ch);
-		$err_msg = curl_error($ch);
-		$header = curl_getinfo($ch);
-		curl_close($ch);
-	}
-	
-	
 	/**
 	 * Gets comments for a particular challenge
 	 * @param $challenge_id The user submitting the challenge (integer)
@@ -136,17 +97,35 @@ class BIM_App_Comments extends BIM_App_Base{
 		$creator_obj = mysql_fetch_object(mysql_query($query));
 		
 		// send push if creator allows it
-		if ($creator_obj->notifications == "Y" && $creator_obj->id != $user_id)
-			$this->sendPush('{"device_tokens": ["'. $creator_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' snap!", "sound": "push_01.caf"}}');
-		
+		if ($creator_obj->notifications == "Y" && $creator_obj->id != $user_id){
+            $msg = "$user_obj->username has commented on your $subject snap!";
+			$push = array(
+		    	"device_tokens" =>  array( $creator_obj->device_token ), 
+		    	"type" => "3", 
+		    	"aps" =>  array(
+		    		"alert" =>  $msg,
+		    		"sound" =>  "push_01.caf"
+		        )
+		    );
+    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+		}		
 		// get the challenge challenger
 		$query = 'SELECT `id`, `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
 		$challenger_obj = mysql_fetch_object(mysql_query($query));
 		
 		// send push if challenger allows it
-		if ($challenger_obj->notifications == "Y" && $challenger_obj->id != $user_id)
-			$this->sendPush('{"device_tokens": ["'. $challenger_obj->device_token .'"], "type":"1", "aps": {"alert": "'. $user_obj->username .' has commented on your '. $subject .' snap!", "sound": "push_01.caf"}}');
-		
+		if ($challenger_obj->notifications == "Y" && $challenger_obj->id != $user_id){
+            $msg = "$user_obj->username has commented on your $subject snap!";
+			$push = array(
+		    	"device_tokens" =>  array( $challenger_obj->device_token ), 
+		    	"type" => "3", 
+		    	"aps" =>  array(
+		    		"alert" =>  $msg,
+		    		"sound" =>  "push_01.caf"
+		        )
+		    );
+    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+		}		
 		
 		// get the submitted comment
 		$query = 'SELECT * FROM `tblComments` WHERE `id` = '. $comment_id .';';

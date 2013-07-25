@@ -108,4 +108,17 @@ class BIM_DAO_Mysql_Growth extends BIM_DAO_Mysql{
 	    $sql = "select * from hotornot-dev.mobile_numbers where number IN( $placeHolders )";
 		return $this->prepareAndExecute( $sql, $numbers )->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
 	}
+	
+	public function getTrackingUrl( $network ){
+	    $link = null;
+	    if( $network ){
+	        $sql = "select link from growth.tracking_links where network = ?";
+    		$stmt = $this->prepareAndExecute($sql);
+    		$data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+    		if( $data ){
+        		$link = $data[0]->link;
+    		}
+	    }
+	    return $link;
+	}
 }

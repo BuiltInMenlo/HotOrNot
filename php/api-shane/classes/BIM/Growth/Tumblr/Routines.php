@@ -5,6 +5,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     protected $oauth = null;
     protected $oauth_data = null;
     protected $conf = null;
+    protected $loggingIn = false;
+    protected $proxyKey = false;
     
     public function __construct( $persona ){
         if( is_string( $persona )  ){
@@ -13,7 +15,36 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         $this->persona = $persona;
         
         $this->conf = $c = BIM_Config::tumblr();
-        $this->oauth = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret);
+        
+        $curlOpts = array();
+        $proxy = $this->getProxy();
+        if( $proxy ){
+            $curlOpts = array(
+                CURLOPT_PROXY => $proxy->host,
+                CURLOPT_PROXYPORT => $proxy->port,
+                CURLOPT_HTTPPROXYTUNNEL =>  0,
+            );
+            
+            print_r( array( 'USING PROXY FOR GUZZLE', $curlOpts ) );
+        }
+        
+        $this->oauth = new Tumblr\API\Client($c->api->consumerKey, $c->api->consumerSecret, null, null, $curlOpts );
+        
+    }
+
+    public function getProxyKey(){
+        if( !$this->proxyKey ){
+            $this->proxyKey = uniqid();
+        }
+        return $this->proxyKey;
+    }
+    
+    public function getProxy(){
+        if( $this->loggingIn ){
+            return BIM_Config::getProxy( $this->getProxyKey() );
+        } else {
+            return BIM_Config::getProxy();
+        }
     }
     
     public function loginAndBrowseSelfies(){
@@ -28,6 +59,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
 	 * input type="hidden" name="form_key" value="!1231369675784|eYlf6FoNjc0vyXVkMWKKyenrNFU"
 	 */
     public function login( ){
+        
+        $this->loggingIn = true;
         
         // $this->purgeCookies();
                 
@@ -70,7 +103,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             'seen_suggestion' => '0',
             'used_suggestion' => '0',
         );
-                
+        
         $response = $this->post( $loginUrl, $input, true);
         
         if( isset( $response['headers']['Set-Cookie'] ) && preg_match('/logged_in=1/', $response['headers']['Set-Cookie'] ) ){
@@ -84,25 +117,28 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         );
         
         $response = $this->post("$authUrl?oauth_token=$oauthToken", $input);
-        
+
         $ptrn = '/name="form_key" value="(.+?)"/';
         preg_match($ptrn, $response, $matches);
-        $formKey = $matches[1];
+        $formKey = !empty($matches[1]) ? $matches[1] : '';
         
         $ptrn = '/name="oauth_token" value="(.+?)"/';
         preg_match($ptrn, $response, $matches);
-        $oauthToken = $matches[1];
+        $oauthToken = !empty($matches[1]) ? $matches[1] : '';
         
         $input = array(
             'form_key' => $formKey,
             'oauth_token' => $oauthToken,
             'allow' => ''
         );
+        if( $oauthToken ){
+            $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
+            
+            $this->oauth_data = $response = json_decode($response);
+            $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
+        }
         
-        $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
-        
-        $this->oauth_data = $response = json_decode($response);
-        $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
+        $this->loggingIn = false;
         
     }
     
@@ -124,19 +160,19 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         
         // first we attempt to access our oauth script
         // and we get the oauth_token and the form_key from the response
-        $response = $this->get(  $urls->oauth->callback );
+        $responseData = $this->get(  $urls->oauth->callback );
         
-        $this->oauth_data = $response = json_decode($response);
+        $this->oauth_data = $response = json_decode($responseData);
         
         if( ! $response ){
             
             $ptrn = '/name="form_key" value="(.+?)"/';
-            preg_match($ptrn, $response, $matches);
+            preg_match($ptrn, $responseData, $matches);
             if( !empty( $matches[1] ) ){
                 $formKey = $matches[1];
                 
                 $ptrn = '/name="oauth_token" value="(.+?)"/';
-                preg_match($ptrn, $response, $matches);
+                preg_match($ptrn, $responseData, $matches);
                 $oauthToken = $matches[1];
                 
                 $input = array(
@@ -177,8 +213,9 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
             if( $this->canPing( $blogUrl ) ){
                 $comment = $this->persona->getVolleyQuote( 'tumblr' );
-                if( mt_rand(1, 100) <= 10 ){
+                if( mt_rand(1, 100) <= 30 ){
                     $this->oauth->follow( $blogUrl );
+                    $this->oauth->like( $post->id, $post->reblog_key );
                 }
                 $options = array('comment' => $comment );
                 $this->reblog($blogUrl, $post, $options);
@@ -262,10 +299,8 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     }
     
     public function getRandomTag(){
-        $c = BIM_Config::tumblr();
-        $ct = count( $c->harvestSelfies->tags );
-        $idx = mt_rand(0, $ct - 1);
-        return $c->harvestSelfies->tags[$idx];
+        $tags = $this->persona->getTags('tumblr');
+        return array_rand( $tags );
     }
     
     public function isFollowing( $blogUrl ){
@@ -477,4 +512,119 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         return $followedBlogs;
     }
 
+    public static function checkPersonas($filename){
+        $fh = fopen($filename, 'rb');
+        while( $line = fgets( $fh ) ){
+            $values = explode( ',', $line );
+            $username = trim( $values[0] );
+            $password = trim( $values[1] );
+            self::checkPersona($username, $password);
+            $sleep = 10;
+            echo "loaded $username sleeping for $sleep seconds\n";
+            sleep($sleep);
+        }
+    }
+    
+    public static function checkPersona( $username, $password ){
+        
+        $persona->tumblr = (object) array(
+            'email' => $username,
+        	'username' => $username,
+            'password' => $password
+        );
+        $persona->name = $username;
+        $persona->type = 'auth';
+        
+        $persona = new BIM_Growth_Persona( $persona );
+        $r = new self( $persona );
+        
+        if( !$r->handleLogin() ){
+            echo "invalid account: $username,$password\n";
+        } else {
+            echo "valid account: $username,$password\n";
+        }
+    }
+        
+    public static function loadPersonas($filename){
+        $fh = fopen($filename, 'rb');
+        while( $line = fgets( $fh ) ){
+            $values = explode( ',', $line );
+            $username = trim( $values[0] );
+            $password = trim( $values[1] );
+            self::loadUser( $username, $password, 'tumblr' );
+            $sleep = 10;
+            echo "loaded $username sleeping for $sleep seconds\n";
+            sleep($sleep);
+        }
+    }
+    
+    /**
+     * we add the persona
+     * then we change the link in bio
+     * then we add the gearman job, disabled 
+     * 
+{"personaName":"beresalexis", "routine":"loginAndBrowseSelfies","class":"BIM_Growth_Tumblr_Routines"}
+     * 
+     */
+    public static function loadUser( $username, $password, $network ){
+        $persona = new BIM_Growth_Persona( $username );
+        
+        $persona->email = $username;
+        $persona->username = $username;
+        $persona->password = $password;
+        $persona->network = $network;
+        
+        $persona = $persona->create();
+        
+        $r = new self( $persona );
+        
+        if( $r->handleLogin() ){
+            $blogName = $r->getUserInfo();
+            
+            $blogName = $blogName->user->blogs[0]->name.'.tumblr.com';
+            $update = (object) array( 'extra' => (object) array( "blogName" => $blogName ) );
+            
+            $persona->update('tumblr', $update);
+            
+            $hr1 = mt_rand(0, 23);
+        	$schedule = "* $hr1 * * *";
+            
+        	$job = (object) array(
+        	    'class' =>  'BIM_Jobs_Growth',
+        	    'name' => 'growth',
+        	    'method' => 'doRoutines',
+        	    'disabled' => 1,
+        	    'schedule' => $schedule,
+                'params' => array(
+                    "personaName" => "$persona->name", 
+                    "routine" => "loginAndBrowseSelfies",
+                    "class" => "BIM_Growth_Tumblr_Routines"
+                ),
+            );
+            
+            print_r( $job );
+            
+            $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
+            $j->createJbb($job);
+            
+            /**
+            
+            $hr = mt_rand(0, 23);
+            $job = (object) array(
+        	    'class' =>  'BIM_Jobs_Growth',
+        	    'name' => 'update_user_stats',
+        	    'method' => 'doRoutines',
+        	    'disabled' => 1,
+        	    'schedule' => "0 $hr * * *",
+                'params' => array(
+                    "personaName" => "$persona->name", 
+                    "routine" => "updateUserStats",
+                    "class" => "BIM_Growth_Tumblr_Routines"
+                ),
+            );
+            $j->createJbb($job);
+            */
+        }
+        
+    }
 }
