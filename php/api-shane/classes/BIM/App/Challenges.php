@@ -541,7 +541,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 	        } else if( $expires == 600 ){
                 $expiresTxt = ' that will expire in 10 mins';
 	        }
- 		    $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. #$subject";
+ 		    $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. $subject";
 			$push = array(
 		    	"device_tokens" =>  array( $challenger_obj->device_token ), 
 		    	"type" => "1", 
@@ -555,7 +555,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             BIM_Push_UrbanAirship_Iphone::sendPush( $push );
             // create a reminder push
             if( $expires > 0 ){
- 		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! #$subject";
+ 		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! $subject";
  		        $push['aps']['alert'] = $msg;
 	            $time = $expires - self::reminderTime();
 	            $this->createTimedPush($push, $time);
@@ -629,7 +629,7 @@ class BIM_App_Challenges extends BIM_App_Base{
  		        } else if( $expires == 600 ){
                     $expiresTxt = ' that will expire in 10 mins';
  		        }
- 		        $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. #$subject";
+ 		        $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. $subject";
     			$push = array(
     		    	"device_tokens" =>  array( $challenger_obj->device_token ), 
     		    	"type" => "1", 
@@ -642,7 +642,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
         	    // create the reminder push
                 if( $expires > 0 ){
-     		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! #$subject";
+     		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! $subject";
      		        $push['aps']['alert'] = $msg;
     	            $time = $expires - self::reminderTime();
     	            $this->createTimedPush($push, $time);
@@ -1038,7 +1038,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 			// send push if allowed
 			if ($challenger->notifications == "Y"){
  		        $private = $volley->is_private == 'Y' ? ' private' : '';
- 		        $msg = "@$creator->username has sent you a$private Volley. #$subject";
+ 		        $msg = "@$creator->username has sent you a$private Volley. $subject";
  		        
 			    $push = array(
 			    	//"device_tokens" =>  array( '66595a3b5265b15305212c4e06d1a996bf3094df806c8345bf3c32e1f0277035' ), 
