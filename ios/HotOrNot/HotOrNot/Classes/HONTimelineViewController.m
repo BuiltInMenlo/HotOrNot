@@ -123,6 +123,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeVerify:) name:@"REMOVE_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_killTooltip:) name:@"KILL_TOOLTIP" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -377,7 +378,7 @@
 	[self.view addSubview:_findFriendsImageView];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	ctaButton.frame = CGRectMake(0.0, 192.0, 320.0, 53.0);
+	ctaButton.frame = CGRectMake(0.0, 164.0, 320.0, 53.0);
 	[ctaButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
 	[ctaButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
 	[ctaButton addTarget:self action:@selector(_goAddContactsAlert) forControlEvents:UIControlEventTouchUpInside];
@@ -459,10 +460,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if (_tooltipImageView != nil) {
-		[_tooltipImageView removeFromSuperview];
-		_tooltipImageView = nil;
-	}
+	[self _removeToolTip];
 	
 	if (_userVO == nil) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
@@ -578,18 +576,32 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Verify Account First?"
-														message:@"Would you like to verify your account before looking for friends (recommended)?"
-													   delegate:self
-											  cancelButtonTitle:@"Yes"
-											  otherButtonTitles:@"No", nil];
-	[alertView show];
+	[self _removeToolTip];
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+	
+//	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Verify Account First?"
+//														message:@"Would you like to verify your account before looking for friends (recommended)?"
+//													   delegate:self
+//											  cancelButtonTitle:@"Yes"
+//											  otherButtonTitles:@"No", nil];
+//	[alertView show];
 }
 
 - (void)_goNewChallengeAtUser:(HONUserVO *)userVO {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_removeToolTip {
+	if (_tooltipImageView != nil) {
+		[_tooltipImageView removeFromSuperview];
+		_tooltipImageView = nil;
+	}
 }
 
 
@@ -613,6 +625,10 @@
 		[self _retrieveUser];
 	
 	[self _retrieveChallenges];
+}
+
+- (void)_killTooltip:(NSNotification *)notification {
+	[self _removeToolTip];
 }
 
 

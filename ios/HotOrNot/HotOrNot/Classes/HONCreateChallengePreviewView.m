@@ -119,6 +119,12 @@
 	_usernamesLabel.text = @"";
 	[self addSubview:_usernamesLabel];
 	
+	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	usernameButton.frame = _usernamesLabel.frame;
+	[usernameButton addTarget:self action:@selector(_goAddChallengers) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:usernameButton];
+	
+	
 	_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, ((self.frame.size.height - 230.0) - 44.0) * 0.5, 320.0, 44.0)];
 	_captionLabel.backgroundColor = [UIColor clearColor];
 	_captionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:22];

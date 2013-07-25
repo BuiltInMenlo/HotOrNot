@@ -99,13 +99,15 @@ const BOOL kIsImageCacheEnabled = YES;
 const NSUInteger kRecentOpponentsDisplayTotal = 10;
 NSString * const kTwilioSMS = @"6475577873";
 
-@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+//@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONSearchViewController *searchViewController;
+@property (nonatomic) int challengeID;
 @end
 
 @implementation HONAppDelegate
@@ -750,8 +752,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
+//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
+//	[[BITHockeyManager sharedHockeyManager] startManager];
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -952,13 +954,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	int type_id = [[userInfo objectForKey:@"type"] intValue];
 	switch (type_id) {
 			
-			// challenge update
+		// challenge request
 		case 1:{
-//			[self _showOKAlert:@"Snap Update"
-//				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-			
-			NSLog(@"CHALLENGE:(%d)", [[userInfo objectForKey:@"challenge"] intValue]);
-			[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
+			_challengeID = [[userInfo objectForKey:@"challenge"] intValue];
+			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Snap Update"
+																message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+															   delegate:self
+													  cancelButtonTitle:@"Cancel"
+													  otherButtonTitles:@"OK", nil];
+			[alertView setTag:3];
+			[alertView show];
 			break;}
 			
 			// poke
@@ -966,17 +971,21 @@ NSString * const kTwilioSMS = @"6475577873";
 			[self _showOKAlert:@"Poke"
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			break;
+			
+			// accpeted challenge
+		case 3:
+			[self _showOKAlert:@"Snap Update"
+				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+			break;
+			
 	}
 	
-	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-	localNotification.fireDate = [[NSDate alloc] initWithTimeIntervalSinceNow:1];
-	localNotification.alertBody = [NSString stringWithFormat:@"%d", [[userInfo objectForKey:@"type"] intValue]];;
-	localNotification.soundName = UILocalNotificationDefaultSoundName;
+//	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+//	localNotification.fireDate = [[NSDate alloc] initWithTimeIntervalSinceNow:1];
+//	localNotification.alertBody = [NSString stringWithFormat:@"%d", [[userInfo objectForKey:@"type"] intValue]];;
+//	localNotification.soundName = UILocalNotificationDefaultSoundName;
+//	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 	
-	//	NSDictionary *infoDict = [NSDictionary dictionaryWithObjectsAndKeys:@"Object 1", @"Key 1", @"Object 2", @"Key 2", nil];
-	//	localNotification.userInfo = infoDict;
-	
-	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 }
 
 //- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
@@ -1037,7 +1046,7 @@ NSString * const kTwilioSMS = @"6475577873";
 				[populars addObject:popular];
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api-dev"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
@@ -1223,9 +1232,14 @@ NSString * const kTwilioSMS = @"6475577873";
 				[[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itms://itunes.apple.com/us/app/id%@?mt=8", [[NSUserDefaults standardUserDefaults] objectForKey:@"appstore_id"]]]];
 				break;
 		}
-	}
 	
-	else if (alertView.tag == 5) {
+	} else if (alertView.tag == 3) {
+		switch (buttonIndex) {
+			case 0:
+				break;
+		}
+	
+	} else if (alertView.tag == 5) {
 		switch (buttonIndex) {
 			case 0:
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
@@ -1237,6 +1251,17 @@ NSString * const kTwilioSMS = @"6475577873";
 	}
 }
 
+
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 3) {
+		switch (buttonIndex) {
+			case 1:
+				NSLog(@"CHALLENGE:(%d)", _challengeID);
+				[self _challengeObjectFromPush:_challengeID];
+				break;
+		}
+	}
+}
 
 #pragma mark - DocumentInteraction Delegates
 - (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller {
@@ -1271,8 +1296,8 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 #ifndef CONFIGURATION_AppStore
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
-		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
+//	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
+//		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
 #endif
 	return nil;
 }

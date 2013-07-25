@@ -335,6 +335,7 @@
 	
 	[self.delegate tabBarController:self didSelectViewController:selectedViewController];
 	//[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"KILL_TOOLTIP" object:nil];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabID] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];

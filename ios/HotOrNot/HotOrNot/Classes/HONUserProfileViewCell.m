@@ -154,8 +154,8 @@
 	
 	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	addFriendButton.frame = CGRectMake(168.0, 152.0, 129.0, 44.0);
-	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_nonActive"] forState:UIControlStateNormal];
-	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_Active"] forState:UIControlStateHighlighted];
+	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
+	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goFriendUser) forControlEvents:UIControlEventTouchUpInside];
 	addFriendButton.hidden = isUser;
 	[self addSubview:addFriendButton];

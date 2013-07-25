@@ -88,12 +88,8 @@
 	for (NSDictionary *dict in [HONAppDelegate popularPeople])
 		[_celebs addObject:[HONCelebVO celebWithDictionary:dict]];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Popular People"];
 	[self.view addSubview:headerView];
-	
-	UIImageView *titleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"coolPeopleTitle"]];
-	titleImageView.frame = CGRectOffset(titleImageView.frame, 93.0, 10.0);
-	[self.view addSubview:titleImageView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(250.0, 0.0, 64.0, 44.0);
@@ -215,7 +211,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = @"Invite cool people to volley";
+	label.text = @"Add people to home feed";
 	[headerImageView addSubview:label];
 	
 	return (headerImageView);

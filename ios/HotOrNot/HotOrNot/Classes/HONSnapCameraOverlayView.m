@@ -163,7 +163,7 @@
 	if (_previewImageView == nil) {
 		UIImage *scaledImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83f];
 		//_previewImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 480.0)];
-		_previewImageView.image = scaledImage;
+		//_previewImageView.image = scaledImage;
 		_previewImageView = [[UIImageView alloc] initWithImage:scaledImage];
 		_previewImageView.frame = CGRectOffset(_previewImageView.frame, ABS(self.frame.size.width - scaledImage.size.width) * -0.5, -12.0 + ABS(self.frame.size.width - scaledImage.size.width) * -0.5);
 		_previewImageView.transform = CGAffineTransformScale(_previewImageView.transform, -1.0f, 1.0f);
