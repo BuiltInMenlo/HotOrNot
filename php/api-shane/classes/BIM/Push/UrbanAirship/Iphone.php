@@ -8,7 +8,6 @@ class BIM_Push_UrbanAirship_Iphone{
         }
         $push = array(
             'device_tokens' => $ids,
-            'type' =>  1,
             "aps" => array(
                 "alert" => $msg,
                 "sound" => "push_01.caf"
@@ -22,7 +21,6 @@ class BIM_Push_UrbanAirship_Iphone{
     public static function sendPush( $push ){
         $conf = BIM_Config::urbanAirship();
         $push = json_encode($push);
-
         $ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $conf->api->push_url);
 		curl_setopt($ch, CURLOPT_USERPWD, $conf->api->pass_key );
