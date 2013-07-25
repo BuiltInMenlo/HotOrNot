@@ -341,8 +341,9 @@ class BIM_App_Votes extends BIM_App_Base{
         $query = "
         	SELECT id, is_private, creator_id, challenger_id 
         	FROM `hotornot-dev`.`tblChallenges` as tc 
-        	WHERE tc.status_id IN (1,4) 
-        		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
+        	WHERE (tc.status_id IN (1,4) 
+        		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) )
+        		OR ( tc.status_id = 2 AND tc.challenger_id = ? )
         	ORDER BY tc.`updated` DESC LIMIT 50
         ";
         
@@ -352,6 +353,7 @@ class BIM_App_Votes extends BIM_App_Base{
         foreach( $friendIds as $friendId ){
             $params[] = $friendId;
         }
+        $params[] = $input->userID;
         
         $stmt = $dao->prepareAndExecute( $query, $params );
 
