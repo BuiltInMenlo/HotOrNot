@@ -130,6 +130,7 @@ class BIM_Growth{
 		if( $this->useProxy() ){
             $proxy = $this->getProxy();
 		    if( $proxy ){
+		        print_r( array( 'USING PROXY', $proxy ) );
                 //print_r( array( "USING PROXY", $proxy ) );
                 curl_setopt($ch, CURLOPT_PROXY, $proxy->host);
                 curl_setopt($ch, CURLOPT_PROXYPORT, $proxy->port);

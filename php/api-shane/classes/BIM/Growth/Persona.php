@@ -55,9 +55,9 @@ class BIM_Growth_Persona{
     public function getTrackingUrl( $network ){
         
         $tUrls = array(
-            'instagram' => 'http://taps.io/mta5mdaz',
-            'tumblr' => 'http://taps.io/mta3mty5',
-            'askfm' => 'http://taps.io/mta5mda3',
+            'instagram' => 'http://taps.io/MTA5MDAz',
+            'tumblr' => 'http://taps.io/MTA3MTY5',
+            'askfm' => 'http://taps.io/MTA5MDA3',
         );
         
         $url = '';
