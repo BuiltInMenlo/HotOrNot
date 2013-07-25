@@ -144,7 +144,6 @@ external_url	http://www.letsvolley.com
     }
     
     public function login(){
-        
         $loginUrl = 'https://instagram.com/accounts/login/';
         $response = $this->get( $loginUrl );
         //print_r( $response ); exit;
@@ -405,7 +404,7 @@ external_url	http://www.letsvolley.com
             $username = trim( $values[0] );
             $password = trim( $values[1] );
             self::loadUser( $username, $password, 'instagram' );
-            $sleep = 5;
+            $sleep = 10;
             echo "loaded $username sleeping for $sleep seconds\n";
             sleep($sleep);
         }
@@ -424,26 +423,32 @@ external_url	http://www.letsvolley.com
         $persona = $persona->create();
 
         $r = new self( $persona );
-        $r->dropLinkInBio( "http://getvolleyapp.com/b/$persona->name" );
-        
-        $hr1 = mt_rand(0, 23);
-        $hr2 = $hr1 + 3;
-    	$schedule = "* $hr1-$hr2 * * *";
-    	
-        $job = (object) array(
-    	    'class' =>  'BIM_Jobs_Growth',
-    	    'name' => 'webstagram',
-    	    'method' => 'doRoutines',
-    	    'disabled' => 0,
-    	    'schedule' => $schedule,
-            'params' => (object) array(
-                "personaName" => $persona->name, 
-                "routine" => "browseTags",
-                "class" => "BIM_Growth_Webstagram_Routines"
-            ),
-        );
-        
-        $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
-        $j->createJbb($job);
+        $r->setUseProxy( false );
+        if( $r->handleLogin() ){
+            $link = "http://taps.io/MTA5MDAz";
+            $r->editProfile( (object) array( 'external_url' => $link ) );
+            
+            $hr1 = mt_rand(0, 23);
+            $hr2 = $hr1 + 1;
+        	$schedule = "* $hr1-$hr2 * * *";
+        	
+            $job = (object) array(
+        	    'class' =>  'BIM_Jobs_Growth',
+        	    'name' => 'webstagram',
+        	    'method' => 'doRoutines',
+        	    'disabled' => 1,
+        	    'schedule' => $schedule,
+                'params' => (object) array(
+                    "personaName" => $persona->name, 
+                    "routine" => "browseTags",
+                    "class" => "BIM_Growth_Webstagram_Routines"
+                ),
+            );
+            
+            $j = new BIM_Jobs_Gearman( BIM_Config::gearman() );
+            $j->createJbb($job);
+        } else {
+            file_put_contents('/tmp/websta_failed_users', $persona->instagram->username.",".$persona->instagram->password."\n", FILE_APPEND );
+        }
     }
 }

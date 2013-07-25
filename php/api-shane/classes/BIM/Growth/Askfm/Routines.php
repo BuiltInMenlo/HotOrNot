@@ -398,9 +398,8 @@ authenticity_token	IHp06ESgZ1Up0Ebiapg83Y4pnebjO4ad7eUBZ8Pwhv8=
      */
     
     public function askQuestion( $id ){
-        $id = 'exty86';
+        //$id = 'exty86';
         $message = $this->persona->getVolleyQuote('askfm');
-        $message = 'yooo? http://www.letsvolley.com';
         $html = $this->get("http://ask.fm/$id");
         
         $ptrn = '/name="authenticity_token".*?value="(.+?)"/';
