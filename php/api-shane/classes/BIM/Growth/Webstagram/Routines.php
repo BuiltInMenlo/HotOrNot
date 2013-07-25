@@ -205,6 +205,7 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
      */
     
     public function browseTags(){
+        $this->persona->setType();
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $taggedIds = $this->getTaggedIds( );
@@ -270,13 +271,16 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
     public function getTaggedIds( ){
         $tags = $this->persona->getTags();
         $taggedIds = array();
-        $idsPerTag = $this->persona->idsPerTagInsta();
-        foreach( $tags as $tag ){
-            $ids = $this->getIdsForTag($tag, 2);
-            $taggedIds[ $tag ] = array();
-            foreach( $ids as $id ){
-                if( count( $taggedIds[ $tag ] ) < $idsPerTag && $this->canPing( $id ) ){
-                    $taggedIds[ $tag ][] = $id;
+        if($tags){
+            $tags = array_rand( $tags, 1 );
+            $idsPerTag = $this->persona->idsPerTagInsta();
+            foreach( $tags as $tag ){
+                $ids = $this->getIdsForTag($tag, 2);
+                $taggedIds[ $tag ] = array();
+                foreach( $ids as $id ){
+                    if( count( $taggedIds[ $tag ] ) < $idsPerTag && $this->canPing( $id ) ){
+                        $taggedIds[ $tag ][] = $id;
+                    }
                 }
             }
         }
