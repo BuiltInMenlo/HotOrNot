@@ -24,9 +24,11 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     }    
     
     public function submitChallengeWithChallenger(){
-		if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL']) && isset($_POST['challengerID'])){
-		    $isPrivate = !empty( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N';
-			return $this->challenges->submitChallengeWithChallenger($_POST['userID'], $_POST['subject'], $_POST['imgURL'], $_POST['challengerID'], $isPrivate );
+        $input = (object) ( $_POST ? $_POST : $_GET );
+		if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && isset($input->challengerID)){
+		    $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N';
+		    $expires = $this->resolveExpires();
+		    return $this->challenges->submitChallengeWithChallenger($input->userID, $input->subject, $input->imgURL, $input->challengerID, $isPrivate, $expires );
 		}
     }
     
@@ -57,8 +59,9 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     }
     
     public function getPrivateChallengesForUser(){
-		if (isset($_POST['userID']))
-			return $this->challenges->getChallengesForUser($_POST['userID'], TRUE); // true means get private challenge only
+        $input = ( $_POST ? $_POST : $_GET );
+        if (isset($input['userID']))
+			return $this->challenges->getChallengesForUser($input['userID'], TRUE); // true means get private challenge only
     }
     
     public function getPrivateChallengesForUserBeforeDate(){
@@ -68,17 +71,32 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function submitMatchingChallenge(){
         $uv = null;
-		if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL'])){
+        $input = (object) ( $_POST ? $_POST : $_GET );
+        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL)){
 		    $thisFunc = array( __CLASS__, __FUNCTION__ );
+		    $expires = $this->resolveExpires();
 	        if( $this->useQueue( $thisFunc ) ){
-    			$uv = $this->jobs->queueSubmitMatchingChallengeJob( $_POST['userID'], $_POST['subject'], $_POST['imgURL'] );
+    			$uv = $this->jobs->queueSubmitMatchingChallengeJob( $input->userID, $input->subject, $input->imgURL, $expires );
 	        }
 	        if( !$uv ){
-    		    $uv = $this->challenges->submitMatchingChallenge( $_POST['userID'], $_POST['subject'], $_POST['imgURL'] );
+    		    $uv = $this->challenges->submitMatchingChallenge( $input->userID, $input->subject, $input->imgURL, $expires );
     		    $this->queueStaticPagesJobs();
    	        }
 		}
 		return $uv;
+    }
+    
+    protected function resolveExpires(){
+        $input = (object) ($_POST ? $_POST : $_GET );
+        $expires = !empty( $input->expires ) ? $input->expires : 1;
+        $expireTime = -1;
+        $time = time();
+        if( $expires == 2 ){
+            $expireTime = $time + 600;
+        } else if( $expires == 3 ){
+            $expireTime = $time + 86400;
+        }
+        return $expireTime;
     }
     
     public function flagChallenge(){
@@ -128,17 +146,19 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function submitChallengeWithUsernames(){
         $uv = null;
-        if (isset($_POST['userID']) && isset($_POST['subject']) && isset($_POST['imgURL']) && isset($_POST['usernames'])){
-            $usernames = explode('|', $_POST['usernames'] );
-            foreach( $usernames as $username ){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && isset($input->usernames)){
+            $usernames = explode('|', $input->usernames );
+		    $expires = $this->resolveExpires();
+            $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N' ;
+		    foreach( $usernames as $username ){
                 $uv = null;
-                $isPrivate = !empty( $_POST['isPrivate'] ) ? $_POST['isPrivate'] : 'N' ;
     		    $func = array( __CLASS__, 'submitChallengeWithUsername' );
     	        if( $this->useQueue( $func ) ){
-        			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $_POST['userID'], $_POST['subject'], $_POST['imgURL'], $username, $isPrivate );
+        			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $input->userID, $input->subject, $input->imgURL, $username, $isPrivate, $expires );
     	        }
     	        if( !$uv ){
-    	            $uv = $this->challenges->submitChallengeWithUsername( $_POST['userID'], $_POST['subject'], $_POST['imgURL'], $username, $isPrivate );
+    	            $uv = $this->challenges->submitChallengeWithUsername( $input->userID, $input->subject, $input->imgURL, $username, $isPrivate, $expires );
         		    $this->queueStaticPagesJobs();
     	        }
             }
@@ -152,11 +172,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         if (isset($input['userID']) && isset($input['subject']) && isset($input['imgURL']) && isset($input['username'])){
 		    $isPrivate = !empty( $input['isPrivate'] ) ? $input['isPrivate'] : 'N' ;
 		    $thisFunc = array( __CLASS__, __FUNCTION__ );
+		    $expires = $this->resolveExpires();
 	        if( $this->useQueue( $thisFunc ) ){
-    			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate );
+    			$uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires );
 	        }
 	        if( !$uv ){
-	            $uv = $this->challenges->submitChallengeWithUsername( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate );
+	            $uv = $this->challenges->submitChallengeWithUsername( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires  );
     		    $this->queueStaticPagesJobs();
 	        }
 		}

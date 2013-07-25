@@ -17,8 +17,10 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
     }
     
     public function loginAndBrowseSelfies(){
-        $this->login();
-        $this->browseSelfies();
+        if( $this->handleLogin() ){
+            $this->authorizeApp();
+            $this->browseSelfies();
+        }
     }
     
 	/**
@@ -27,7 +29,7 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
 	 */
     public function login( ){
         
-        $this->purgeCookies();
+        // $this->purgeCookies();
                 
         $loggedIn = false;
         
@@ -104,6 +106,56 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         
     }
     
+    public function authorizeApp( ){
+        $this->doAuthorizeApp();
+        if( empty( $this->oauth_data ) ){
+            $this->purgeCookies();
+            if( $this->handleLogin() ){
+                $this->doAuthorizeApp();
+            } else {
+                $this->sendWarningEmail("cannot authorize app for tumblr for ".$this->persona->username);
+            }
+        }
+    }
+    
+    protected function doAuthorizeApp( ){
+        
+        $urls = $this->conf->urls;
+        
+        // first we attempt to access our oauth script
+        // and we get the oauth_token and the form_key from the response
+        $response = $this->get(  $urls->oauth->callback );
+        
+        $this->oauth_data = $response = json_decode($response);
+        
+        if( ! $response ){
+            
+            $ptrn = '/name="form_key" value="(.+?)"/';
+            preg_match($ptrn, $response, $matches);
+            if( !empty( $matches[1] ) ){
+                $formKey = $matches[1];
+                
+                $ptrn = '/name="oauth_token" value="(.+?)"/';
+                preg_match($ptrn, $response, $matches);
+                $oauthToken = $matches[1];
+                
+                $input = array(
+                    'form_key' => $formKey,
+                    'oauth_token' => $oauthToken,
+                    'allow' => ''
+                );
+                
+                $authUrl = $urls->oauth->authorize;
+                $response = $this->post("$authUrl?oauth_token=$oauthToken", $input );
+                
+                $this->oauth_data = $response = json_decode($response);
+            }
+        }
+        if( $response ){
+            $this->oauth->setToken( $response->oauth_token, $response->oauth_token_secret);
+        }
+    }
+    
     public function followUser( $user ){
         //Post text 'This is a test post' to user's Tumblr
         return $this->oauth->follow( $user->blogUrl );
@@ -124,21 +176,24 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
             $parts = parse_url($post->post_url);
             $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
             if( $this->canPing( $blogUrl ) ){
-                $comment = $this->persona->getVolleyQuote();
-                $parts = parse_url($post->post_url);
-                $blogUrl = $parts['scheme'].'://'.$parts['host'].'/';
+                $comment = $this->persona->getVolleyQuote( 'tumblr' );
                 if( mt_rand(1, 100) <= 10 ){
                     $this->oauth->follow( $blogUrl );
                 }
                 $options = array('comment' => $comment );
-                $success = $this->oauth->reblogPost( $this->persona->getTumblrBlogName(), $post->id, $post->reblog_key, $options ); 
-                if( $success ){
-                    $this->logSuccess( $post, $comment );
-                    $this->updateLastContact( $blogUrl );
-                }
+                $this->reblog($blogUrl, $post, $options);
                 echo( "sleeping for $sleep secs\n" );
                 sleep( $sleep );
             }
+        }
+    }
+    
+    public function reblog( $blogUrl, $post, $options ){
+        echo "reblogging $post->post_url\n";
+        $success = $this->oauth->reblogPost( $this->persona->getTumblrBlogName(), $post->id, $post->reblog_key, $options ); 
+        if( $success ){
+            $this->logSuccess( $post, $options['comment'] );
+            $this->updateLastContact( $blogUrl );
         }
     }
     
@@ -213,18 +268,6 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
         return $c->harvestSelfies->tags[$idx];
     }
     
-    public function getFollowedBlogs(){
-        $blogs = array();
-        $following = $this->oauth->getFollowedBlogs();
-        while( count( $following ) ){
-            foreach( $following->blogs as $blog ){
-                $blogs[] = $blog;
-            }
-            $following = $this->oauth->getFollowedBlogs();
-        }
-        return $blogs;
-    }
-    
     public function isFollowing( $blogUrl ){
         $following = false;
         $blogs = $this->oauth->getFollowedBlogs();
@@ -252,25 +295,186 @@ class BIM_Growth_Tumblr_Routines extends BIM_Growth_Tumblr {
      *  	
      */
     public function updateUserStats(){
-        $this->login();
-        $blogName = $this->persona->tumblr->blogName;
-        $followers = $this->oauth->getBlogFollowers( $blogName );
-        $following = $this->oauth->getFollowedBlogs( );
-        $likes = $this->oauth->getBlogLikes( $blogName );
+        if( $this->handleLogin() ){
+            $this->authorizeApp();
+            $blogName = $this->persona->tumblr->blogName;
+            $followers = $this->oauth->getBlogFollowers( $blogName );
+            $following = $this->oauth->getFollowedBlogs( );
+            $likes = $this->oauth->getBlogLikes( $blogName );
+            
+            $userStats = (object) array(
+                'followers' => $followers->total_users,
+                'following' => $following->total_blogs,
+                'likes' => $likes->liked_count,
+                'network' => 'tumblr',
+                'name' => $this->persona->name,
+            );
+            
+            print_r( $userStats );
+            
+            $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+            $dao->updateUserStats( $userStats );
+        }
+    }
+    
+    /**
+     * 
+     * first we check to see if we are logged in
+     * if we are not then we login
+     * and check once more
+     * if we still are not logged in, we disable the user
+     * 
+     */
+    public function handleLogin(){
+        $loggedIn = true;
+        $url = 'http://tumblr.com';
+        $response = $this->get( $url );
+        if( !$this->isLoggedIn($response) ){
+            $name = $this->persona->name;
+            echo "user $name not logged in to tumblr!  logging in!\n";
+            $this->login();
+            $response = $this->get( $url );
+            if( !$this->isLoggedIn($response) ){
+                $msg = "something is wrong with logging in $name to tumblr!  disabling the user!\n";
+                echo $msg;
+                $this->disablePersona( $msg );
+                $loggedIn = false;
+            }
+        }
+        return $loggedIn;
+    }
+    
+    public function isLoggedIn( $html ){
+        $ptrn = '@log in@i';
+        return !preg_match($ptrn, $html);
+    }
+    
+    public static function callback(){
         
-        $userStats = (object) array(
-            'followers' => $followers->total_users,
-            'following' => $following->total_blogs,
-            'likes' => $likes->liked_count,
-            'network' => 'tumblr',
-            'name' => $this->persona->name,
+        $conf = BIM_Config::tumblr();
+        //Tumblr API urls
+        $reqUrl = $conf->urls->oauth->request_token;
+        $authUrl = $conf->urls->oauth->authorize;
+        $accUrl = $conf->urls->oauth->access_token;
+        $callbackUrl = $conf->urls->oauth->callback;
+        
+        //Your Application key and secret, found here: http://www.tumblr.com/oauth/apps
+        $conskey = $conf->api->consumerKey;
+        $conssec = $conf->api->consumerSecret;
+         
+        //Enable session.  We will store token information here later
+        session_start();
+         
+        // state will determine the point in the authorization request our user is in
+        // In state=1 the next request should include an oauth_token.
+        // If it doesn't go back to 0
+        if(!isset($_GET['oauth_token']) && (!isset( $_SESSION['state'] ) || $_SESSION['state']==1) ) $_SESSION['state'] = 0;
+        try {
+         
+          //create a new Oauth request.  By default this uses the HTTP AUTHORIZATION headers and HMACSHA1 signature required by Tumblr.  More information is in the PHP docs
+          $oauth = new OAuth($conskey,$conssec);
+          $oauth->enableDebug();
+         
+          //If this is a new request, request a new token with callback and direct user to Tumblrs allow/deny page
+          if(!isset($_GET['oauth_token']) && !$_SESSION['state']) {
+            $request_token_info = $oauth->getRequestToken($reqUrl, $callbackUrl);
+            $_SESSION['oauth_token_secret'] = $request_token_info['oauth_token_secret'];
+            $_SESSION['state'] = 1;
+            header('Location: '.$authUrl.'?oauth_token='.$request_token_info['oauth_token']);
+            exit;
+         
+          //If this is a callback from Tumblr's allow/deny page, request the auth token and auth token secret codes and save them in session
+          } else if($_SESSION['state']==1) {
+            $oauth->setToken($_GET['oauth_token'],$_SESSION['oauth_token_secret']);
+            $access_token_info = $oauth->getAccessToken($accUrl);
+            $_SESSION['state'] = 2;
+            $_SESSION['oauth_token'] = $access_token_info['oauth_token'];
+            $_SESSION['oauth_token_secret'] = $access_token_info['oauth_token_secret'];
+            
+            echo json_encode( $access_token_info );
+            exit;
+          } 
+        } catch(OAuthException $E) {
+          print_r($E);
+        }
+        echo json_encode( $_SESSION );
+        exit;
+    }
+    
+	/**
+	 * we receive the username and password of the tumblr user
+	 * login as the user
+	 * get a list of their friends
+	 * then for each friend we get the latest photo
+	 * and drop a volley comment
+	 */
+    public function invite(){
+        if($this->handleLogin()){
+            $this->authorizeApp();
+            $this->postText();
+            $blogs = $this->getFollowedBlogs( 100 );
+            foreach( $blogs as $blog ){
+                if( $blog->name != 'staff' && $this->canPing( $blog->url) ){
+                    $this->commentOnLatestPost( $blog );
+                }
+            }
+        }
+    }
+    
+    public function postText( $msg = '' ){
+        $msg = trim( $msg );
+        if( !$msg ){
+            $msg = $this->persona->getVolleyQuote();
+        }
+        $options = array(
+            'type' => 'text',
+            'body' => $msg
         );
         
-        print_r( $userStats );
-        
-        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
-        $dao->updateUserStats( $userStats );
+        $this->oauth->createPost( $this->persona->getTumblrBlogName(), $options );
         
     }
     
+    public function postLink( $link ){
+        
+        $options = array(
+            'type' => 'link',
+            'url' => $link,
+        );
+        
+        $this->oauth->createPost( $this->persona->getTumblrBlogName(), $options );
+        
+    }
+    
+    public function commentOnLatestPost( $blog ){
+        $parts = parse_url($blog->url);
+        $posts = $this->oauth->getBlogPosts( $parts['host'] );
+        if( $posts->posts ){
+            $post = $posts->posts[0];
+            $options = array('comment' => "HMU on Volley!" );
+            $this->reblog($blog->url, $post, $options);
+            $sleep = 10;
+            echo "reblogged $blog->url - sleeping for $sleep seconds\n";
+            sleep( $sleep );
+        }
+    }
+    
+    
+    public function getFollowedBlogs( $max = 1 ){
+        $followeeTotal = 0;
+        $followedBlogs = array();
+        
+        $options = array(
+            'offset' => $followeeTotal,
+            'limit' => $max < 20 ? $max : 20
+        );
+        $blogs = $this->oauth->getFollowedBlogs($options);
+        while( $followeeTotal < $max && $blogs->blogs ){
+            array_splice($followedBlogs, count( $followedBlogs ), 0, $blogs->blogs );
+            $options['offset'] = $followeeTotal += $blogs->total_blogs;
+            $blogs = $this->oauth->getFollowedBlogs( $options );
+        }
+        return $followedBlogs;
+    }
+
 }

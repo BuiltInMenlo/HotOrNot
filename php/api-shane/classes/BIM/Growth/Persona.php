@@ -26,16 +26,35 @@ class BIM_Growth_Persona{
         return $blogName;
     }
     
-    public function getVolleyQuote( ){
+    public function getVolleyQuote( $network = '' ){
         if( isset( $this->type ) && $this->type == 'ad' ){
-            $quotes = $this->adQuotes;
+            $quotes = BIM_Config::adQuotes( $network );
         } else {
-            $quotes = $this->authenticQuotes;
+            $quotes = BIM_Config::authenticQuotes( $network );
         }
         
         $ct = count( $quotes ) - 1;
         $idx = mt_rand(0, $ct);
-        return $quotes[ $idx ];
+        $quote = $quotes[ $idx ];
+        if( mt_rand(1,100) >= 50 ){
+            $quote .= " ".$this->getTrackingUrl( $network );
+        }
+        return $quote;
+    }
+    
+    public function getTrackingUrl( $network = '' ){
+        if( !$network ){
+            $network = 'instagram';
+        }
+        $networkSymbol = 'b';
+        
+        if( $network == 'tumblr' ){
+            $networkSymbol = 'a';
+        } else if( $network == 'askfm' ){
+            $networkSymbol = 'c';
+        }
+        $url = "http://getvolleyapp.com/$networkSymbol/$this->name";
+        return $url;
     }
     
     public function getVolleyAnswer( $network = '' ){
@@ -47,7 +66,11 @@ class BIM_Growth_Persona{
         
         $ct = count( $quotes ) - 1;
         $idx = mt_rand(0, $ct);
-        return $quotes[ $idx ];
+        $quote = $quotes[ $idx ];
+        if( mt_rand(1,100) >= 50 ){
+            $quote .= " ".$this->getTrackingUrl( $network );
+        }
+        return $quote;
     }
     
     protected function loadData( $name ){
@@ -121,6 +144,10 @@ class BIM_Growth_Persona{
         }
     }
     
+    public function numQuestionsToGet( ){
+        return mt_rand(1, 10);
+    }
+    
     public function getBrowseTagsTagWait( ){
         if( $this->type == 'ad' ){
             return mt_rand(120, 420);
@@ -138,14 +165,72 @@ class BIM_Growth_Persona{
         }
     }
     
-    public function trackInboundClick( $networkId, $referer = '' ){
+    public function trackInboundClick( $networkId, $referer = '', $ua = '' ){
         $dao = new BIM_DAO_Mysql_Persona( BIM_Config::db() );
-        $dao->trackInboundClick($this->name, $networkId, $referer);
+        $dao->trackInboundClick($this->name, $networkId, $referer, $ua );
         return true;
     }
     
     public function isExtant(){
         return isset( $this->name ) && $this->name;
+    }
+    
+    public function getAskfmSearchName(){
+        $names = array(
+            "Breann",
+            "Leonie",
+            "Reanna",
+            "Brittany",
+            "Aide",
+            "Carolynn",
+            "Lorene",
+            "Bridgette",
+            "Lissette",
+            "Simone",
+            "Maudie",
+            "Waylon",
+            "Michaela",
+            "Kareen",
+            "Kerry",
+            "Maragret",
+            "Daria",
+            "Augustine",
+            "Rowena",
+            "Kari",
+            "Maryetta",
+            "Albert",
+            "Blondell",
+            "Laquita",
+            "Andy",
+            "Michel",
+            "Alix",
+            "Melony",
+            "Naoma",
+            "Kandra",
+            "Herschel",
+            "Marc",
+            "Lanelle",
+            "Barbara",
+            "Maegan",
+            "Shanae",
+            "Sixta",
+            "Aleida",
+            "Garland",
+            "Erick",
+            "Imogene",
+            "Gertude",
+            "Eryn",
+            "Margaretta",
+            "Domingo",
+            "Hoa",
+            "Shanel",
+            "Sophie",
+            "Yetta",
+            "Alishia",
+        );
+
+        $idx = mt_rand(0, count( $names ) - 1);
+        return $names[ $idx ];
     }
     
 }

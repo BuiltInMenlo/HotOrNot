@@ -117,4 +117,59 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		}
 		return true;
     }
+    
+    public function inviteTumblr(){
+        $input = $_POST ? $_POST : $_GET;
+		if ( !empty( $input['u'] ) && !empty( $input['p'] ) && !empty( $input['userID'] ) ){
+		    $params = (object) array(
+		        'username' => $input['u'],
+		        'password' => $input['p'],
+		        'volley_user_id' => $input['userID'],
+		    );
+		    $users = new BIM_App_Users();
+			$users->inviteTumblr( $params );
+		}
+		return true;
+    }
+    
+    public function verifyEmail(){
+        $v = false;
+        $input = $_POST ? $_POST : $_GET;
+		if ( !empty( $input['userID'] ) && !empty( $input['email'] ) ){
+		    $params = (object) array(
+		        'user_id' => $input['userID'],
+		        'email' => $input['email'] ,
+		    );
+		    $v = $this->users->verifyEmail( $params );
+		}
+		return $v;
+    }
+    
+    public function ffEmail(){
+        $input = $_POST ? $_POST : $_GET;
+	    $friends = array();
+		if ( !empty( $input['userID'] ) && !empty( $input['emailList'] ) ){
+		    $emailList = explode('|', $input['emailList'] );
+		    $params = (object) array(
+		        'id' => $input['userID'],
+		        'email_list' => $emailList,
+		    );
+			$friends = $this->users->matchFriendsEmail( $params );
+		}
+		return $friends;
+    }
+    
+    public function verifyPhone(){
+        $v = false;
+        $input = $_POST ? $_POST : $_GET;
+        if ( !empty( $input['code'] ) && !empty( $input['phone'] ) ){
+            $userId = BIM_Utils::getIdForSMSCode($input['code']);
+		    $params = (object) array(
+		        'user_id' => $userId,
+		        'phone' => $input['phone'] ,
+		    );
+		    $v = $this->users->verifyPhone( $params );
+		}
+		return $v;
+    }
 }

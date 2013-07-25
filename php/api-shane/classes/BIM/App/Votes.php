@@ -1,5 +1,20 @@
 <?php
 
+/*
+Votes
+action 1 - ( getChallengesByActivity ),
+action 2 - ( getChallengesForSubjectID ),
+action 3 - ( getChallengeForChallengeID ),
+action 4 - ( getChallengesByDate ),
+action 5 - ( getVotersForChallenge ),
+action 6 - ( upvoteChallenge ),
+action 7 - ( getChallengesWithChallenger ),
+action 8 - ( getChallengesForSubjectName ),
+action 9 - ( getChallengesForUsername ),
+action 10 - ( getChallengesWithFriends ),
+ * 
+ */
+
 class BIM_App_Votes extends BIM_App_Base{
     
 	/**
@@ -47,6 +62,14 @@ class BIM_App_Votes extends BIM_App_Base{
 			$query = 'SELECT `id` FROM `tblComments` WHERE `challenge_id` = '. $challenge_id .' AND `status_id` = 1;';
 			$comments = mysql_num_rows(mysql_query($query));
 			
+			$expires = -1;
+            if( !empty( $challenge_obj->expires ) && $challenge_obj->expires > -1 ){
+                $expires = $challenge_obj->expires - time();
+                if( $expires < 0 ){
+                    $expires = 0;
+                }
+            }
+            
 			// compose object
 			$challenge_arr = array(
 				'id' => $challenge_obj->id, 
@@ -59,6 +82,7 @@ class BIM_App_Votes extends BIM_App_Base{
 				'updated' => $challenge_obj->updated, 
 				'creator' => $this->userForChallenge($challenge_obj->creator_id, $challenge_obj->id),
 				'challenger' => $this->userForChallenge($challenge_obj->challenger_id, $challenge_obj->id),
+			    'expires' => $expires
 			); 
 			
 			$m->set( $key, $challenge_arr );
@@ -194,7 +218,13 @@ class BIM_App_Votes extends BIM_App_Base{
 			$id_arr[$row['id']] = 0;
 		
 		// get vote rows for challenges
-		$query = 'SELECT `tblChallenges`.`id` FROM `tblChallenges` INNER JOIN `tblChallengeVotes` ON `tblChallenges`.`id` = `tblChallengeVotes`.`challenge_id` WHERE `tblChallenges`.`status_id` = 1 OR `tblChallenges`.`status_id` = 4;';
+		$query = '
+			SELECT tblChallenges.id 
+			FROM tblChallenges as tc
+				JOIN tblChallengeVotes as tcv
+				ON tc.id = tcv.challenge_id 
+			WHERE tc.status_id in (1,4)
+		';
 		$result = mysql_query($query);
 		
 		// loop thru votes, incrementing vote total array
@@ -356,7 +386,7 @@ class BIM_App_Votes extends BIM_App_Base{
 		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
 		
         $query = "
-        	SELECT id, is_private, creator_id, challenger_id
+        	SELECT id, is_private, creator_id, challenger_id 
         	FROM `hotornot-dev`.`tblChallenges` as tc 
         	WHERE tc.status_id IN (1,4) 
         		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
@@ -376,10 +406,12 @@ class BIM_App_Votes extends BIM_App_Base{
 		while ( $challenge_row = $stmt->fetch( PDO::FETCH_ASSOC ) ) {
 		    //print_r( $challenge_row );
 			// push challenge into list
-			
-		    $isForUser = ( $challenge_row['creator_id'] == $input->userID || $challenge_row['challenger_id'] == $input->userID );
+		    	$isForUser = ( $challenge_row['creator_id'] == $input->userID || $challenge_row['challenger_id'] == $input->userID );
 			if( $challenge_row['is_private'] == 'N' || $isForUser ){
-    			array_push( $challenge_arr, $this->getChallengeObj( $challenge_row['id'] ) );
+		        	$co = $this->getChallengeObj( $challenge_row['id'] );
+    				if( $co['expires'] != 0 ){
+        				array_push( $challenge_arr, $co );
+    				}
 			}
 		}
             

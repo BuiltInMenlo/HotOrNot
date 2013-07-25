@@ -2,16 +2,16 @@
 require_once('vendor/autoload.php');
 
 $indices = array(
-/*
     array(
     	'name' => 'contact_lists',
     	'mappings' => require '/home/shane/dev/hotornot-dev/php/api-shane/bin/data/elasticsearch/indices/contact_lists.php',
     ),
-*/
+    /*
     array(
     	'name' => 'social',
     	'mappings' => require '/home/shane/dev/hotornot-dev/php/api-shane/bin/data/elasticsearch/indices/social.php',
     )
+    */
 );
 
 dropIndices($indices);

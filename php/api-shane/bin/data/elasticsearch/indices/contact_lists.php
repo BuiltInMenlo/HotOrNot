@@ -39,6 +39,17 @@ return array(
                 'avatar_url' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
                 'username' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
             )
+        ),
+        'email' => array(
+            "_source" => array( "compress" => true),
+            "_timestamp" => array( "enabled" => true ),
+			'properties' => array(
+                'id' => array('type' => 'integer', 'include_in_all' => false, 'index' => 'not_analyzed'),
+    			'email' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                'email_list' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                'avatar_url' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+                'username' => array('type' => 'string', 'include_in_all' => false, 'index' => 'not_analyzed'),
+            )
         )
     )
 );
