@@ -205,7 +205,6 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
      */
     
     public function browseTags(){
-        $this->persona->setType();
         $loggedIn = $this->handleLogin();
         if( $loggedIn ){
             $taggedIds = $this->getTaggedIds( );
