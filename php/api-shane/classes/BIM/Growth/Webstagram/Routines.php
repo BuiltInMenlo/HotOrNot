@@ -95,15 +95,20 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         
         $response = $this->login();
 
-        $ptrn = '@Please complete the following CAPTCHA@';
+        $ptrn = '@This account is inactive@i';
         if( preg_match( $ptrn, $response ) ){
-            // we are at the authorize page
-            echo "captcha'd persona ",join(',', array( $this->persona->instagram->username, $this->persona->instagram->password ) ),"\n";
+            echo "inactive account: ",join(',', array( $this->persona->instagram->username, $this->persona->instagram->password ) ),"\n";
         } else {
-            $ptrn = '/Authorization Request/';
+            $ptrn = '@Please complete the following CAPTCHA@i';
             if( preg_match( $ptrn, $response ) ){
                 // we are at the authorize page
-                $response = $this->authorizeApp($response);
+                echo "captcha'd persona ",join(',', array( $this->persona->instagram->username, $this->persona->instagram->password ) ),"\n";
+            } else {
+                $ptrn = '/Authorization Request/i';
+                if( preg_match( $ptrn, $response ) ){
+                    // we are at the authorize page
+                    $response = $this->authorizeApp($response);
+                }
             }
         }
     }
@@ -490,6 +495,21 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
             $sleep = 0;
             echo "loaded $persona->username sleeping for $sleep seconds\n";
             sleep($sleep);
+        }
+    }
+    
+    public static function checkPersonasInFile( $filename = '' ){
+        $fh = fopen($filename,'rb');
+        while( $line = trim( fgets( $fh ) ) ){
+            $data = explode(':', $line);
+            if( $data ){
+                $username = $data[0];
+                $persona = (object) array( 'username' => $username);
+                self::checkPersona( $persona );
+                $sleep = 1;
+                echo "loaded $persona->username sleeping for $sleep seconds\n";
+                sleep($sleep);
+            }
         }
     }
     

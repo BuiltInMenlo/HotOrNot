@@ -1,7 +1,7 @@
 <?php 
 require_once 'vendor/autoload.php';
 
-// SandaWarnerzf7409@hotmail.com,qipoqyjky
+//SandaWarnerzf7409@hotmail.com,qipoqyjky
 //$filename = '/home/shane/dev/hotornot/php/api-shane/test/personas_tumblr.txt';
 //BIM_Growth_Tumblr_Routines::loadPersonas( $filename );
 
@@ -9,9 +9,11 @@ require_once 'vendor/autoload.php';
 //BIM_Growth_Tumblr_Routines::checkPersonas( $filename );
 
 $filename = '/home/shane/dev/hotornot/php/api-shane/test/personas.txt';
-BIM_Growth_Instagram_Routines::loadPersonas($filename);
+//BIM_Growth_Instagram_Routines::loadPersonas($filename);
 
-//BIM_Growth_Webstagram_Routines::checkPersonas();
+//BIM_Growth_Webstagram_Routines::checkPersonas( $filename );
+
+BIM_Growth_Webstagram_Routines::checkPersonasInFile( $filename );
 
 //$file = '/home/shane/dev/hotornot/php/api-shane/test/webstagram_personas.txt';
 //BIM_Growth_Webstagram_Routines::enablePersonas($file);
