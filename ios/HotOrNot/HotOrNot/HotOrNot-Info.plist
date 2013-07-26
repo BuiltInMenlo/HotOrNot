@@ -54,18 +54,18 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>hotornot</string>
+				<string>volley</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kik-com.builtinmenlo.hotornot</string>
+				<string>kik-com.builtinmenlo.volley</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>10161</string>
+	<string>10173</string>
 	<key>FacebookAppID</key>
 	<string>600550136636754</string>
 	<key>FacebookDisplayName</key>

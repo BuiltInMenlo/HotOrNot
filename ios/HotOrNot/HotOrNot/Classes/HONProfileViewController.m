@@ -256,7 +256,7 @@
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
 											   destructiveButtonTitle:nil
-													otherButtonTitles:@"Settings", @"Send volley", @"Find friends", nil];
+													otherButtonTitles:@"Change avatar", @"Settings", @"Send volley", @"Find friends", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -676,12 +676,12 @@
 			[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
 			
 			KikAPIMessage *myMessage = [KikAPIMessage message];
-			myMessage.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
+			myMessage.title = [HONAppDelegate instagramShareComment];
 			myMessage.description = @"";
 			myMessage.previewImage = UIImageJPEGRepresentation(shareImage, 1.0f);
 			myMessage.filePath = savePath;
-			myMessage.iphoneURIs = [NSArray arrayWithObjects:@"my iphone URI", nil];
-			myMessage.genericURIs = [NSArray arrayWithObjects:@"my generic URI", nil];
+			myMessage.iphoneURIs = [NSArray arrayWithObjects:@"volley://", nil];
+			myMessage.genericURIs = [NSArray arrayWithObjects:@"http://taps.io/MTA5MDAz", nil];
 			
 			[KikAPIClient sendMessage:myMessage];
 			
@@ -736,6 +736,17 @@
 	if (actionSheet.tag == 0) {
 		switch (buttonIndex) {
 			case 0:{
+				[[Mixpanel sharedInstance] track:@"Profile - More Self Change Avatar"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+				[navigationController setNavigationBarHidden:YES];
+				[self presentViewController:navigationController animated:NO completion:nil];
+				
+				break;}
+				
+			case 1:{
 				[[Mixpanel sharedInstance] track:@"Profile - More Self Settings"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -745,7 +756,7 @@
 				[self presentViewController:navigationController animated:YES completion:nil];
 				break;}
 				
-			case 1:{
+			case 2:{
 				[[Mixpanel sharedInstance] track:@"Profile - More Self Status Update"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -756,7 +767,7 @@
 				[self presentViewController:navigationController animated:NO completion:nil];
 				break;}
 				
-			case 2:{
+			case 3:{
 				[[Mixpanel sharedInstance] track:@"Profile - More Self Add Contacts"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

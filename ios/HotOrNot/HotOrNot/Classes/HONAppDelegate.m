@@ -978,6 +978,11 @@ NSString * const kTwilioSMS = @"6475577873";
 				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			break;
 			
+		default:
+			[self _showOKAlert:@""
+				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+			break;
+			
 	}
 	
 //	UILocalNotification *localNotification = [[UILocalNotification alloc] init];

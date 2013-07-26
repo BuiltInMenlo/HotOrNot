@@ -156,7 +156,7 @@
 	addFriendButton.frame = CGRectMake(168.0, 152.0, 129.0, 44.0);
 	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
 	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
-	[snapButton addTarget:self action:@selector(_goFriendUser) forControlEvents:UIControlEventTouchUpInside];
+	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
 	addFriendButton.hidden = isUser;
 	[self addSubview:addFriendButton];
 }
@@ -192,7 +192,7 @@
 	[self.delegate userProfileViewCell:self showUserTimeline:_userVO];
 }
 
-- (void)_goFriendUser {
+- (void)_goAddFriend {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 	
 	[self.delegate userProfileViewCell:self addFriend:_userVO];
