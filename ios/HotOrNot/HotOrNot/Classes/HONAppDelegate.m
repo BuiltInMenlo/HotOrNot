@@ -99,8 +99,8 @@ const BOOL kIsImageCacheEnabled = YES;
 const NSUInteger kRecentOpponentsDisplayTotal = 10;
 NSString * const kTwilioSMS = @"6475577873";
 
-//@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
-@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+//@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
@@ -752,8 +752,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
-//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
-//	[[BITHockeyManager sharedHockeyManager] startManager];
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
 	
 	TSConfig *config = [TSConfig configWithDefaults];
 	config.collectWifiMac = NO;
@@ -873,29 +873,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		} else {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 			[self _retrieveConfigJSON];
-			_isFromBackground = NO;
-			
-			NSString *notificationName;
-			switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
-				case 0:
-					notificationName = @"REFRESH_VOTE_TAB";
-					break;
-					
-				case 1:
-					notificationName = @"REFRESH_DISCOVERY_TAB";
-					break;
-					
-				case 2:
-					notificationName = @"REFRESH_CHALLENGES_TAB";
-					break;
-					
-				case 3:
-					notificationName = @"REFRESH_PROFILE_TAB";
-					break;
-			}
-			
-			NSLog(@"REFRESHING:[%@]", notificationName);
-			[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+			//_isFromBackground = NO;
 		}
 	}
 }
@@ -1051,7 +1029,7 @@ NSString * const kTwilioSMS = @"6475577873";
 				[populars addObject:popular];
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api-dev"] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
@@ -1097,6 +1075,31 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			if (!_isFromBackground)
 				[self _registerUser];
+			
+			else {
+				_isFromBackground = NO;
+				NSString *notificationName;
+				switch ([(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue]) {
+					case 0:
+						notificationName = @"REFRESH_VOTE_TAB";
+						break;
+						
+					case 1:
+						notificationName = @"REFRESH_DISCOVERY_TAB";
+						break;
+						
+					case 2:
+						notificationName = @"REFRESH_CHALLENGES_TAB";
+						break;
+						
+					case 3:
+						notificationName = @"REFRESH_PROFILE_TAB";
+						break;
+				}
+				
+				NSLog(@"REFRESHING:[%@]", notificationName);
+				[[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:nil];
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1301,8 +1304,8 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 #ifndef CONFIGURATION_AppStore
-//	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
-//		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
+	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
+		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
 #endif
 	return nil;
 }
