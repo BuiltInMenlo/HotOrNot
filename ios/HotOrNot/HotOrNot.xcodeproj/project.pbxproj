@@ -26,6 +26,8 @@
 		4C0761E1173B024A006C3836 /* plusButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0761DD173B024A006C3836 /* plusButton_Active@2x.png */; };
 		4C0761E2173B024A006C3836 /* plusButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0761DE173B024A006C3836 /* plusButton_nonActive.png */; };
 		4C0761E3173B024A006C3836 /* plusButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0761DF173B024A006C3836 /* plusButton_nonActive@2x.png */; };
+		4C08036417A4ACC0001FF5DE /* HONUserBirthdayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C08036317A4ACC0001FF5DE /* HONUserBirthdayViewController.m */; };
+		4C08036717A4ACE6001FF5DE /* HONProfileRangeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C08036617A4ACE6001FF5DE /* HONProfileRangeViewController.m */; };
 		4C0879FF171DEFA200246C0C /* profileBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0879FD171DEFA200246C0C /* profileBackground.png */; };
 		4C087A00171DEFA200246C0C /* profileBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0879FE171DEFA200246C0C /* profileBackground@2x.png */; };
 		4C0AAB00170D4DF100BB32BD /* whiteOverlay_50.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C0AAAFF170D4DF100BB32BD /* whiteOverlay_50.png */; };
@@ -636,6 +638,10 @@
 		4C0761DD173B024A006C3836 /* plusButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plusButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C0761DE173B024A006C3836 /* plusButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plusButton_nonActive.png; sourceTree = "<group>"; };
 		4C0761DF173B024A006C3836 /* plusButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plusButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4C08036217A4ACC0001FF5DE /* HONUserBirthdayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserBirthdayViewController.h; sourceTree = "<group>"; };
+		4C08036317A4ACC0001FF5DE /* HONUserBirthdayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserBirthdayViewController.m; sourceTree = "<group>"; };
+		4C08036517A4ACE6001FF5DE /* HONProfileRangeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONProfileRangeViewController.h; sourceTree = "<group>"; };
+		4C08036617A4ACE6001FF5DE /* HONProfileRangeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONProfileRangeViewController.m; sourceTree = "<group>"; };
 		4C0879FD171DEFA200246C0C /* profileBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = profileBackground.png; sourceTree = "<group>"; };
 		4C0879FE171DEFA200246C0C /* profileBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "profileBackground@2x.png"; sourceTree = "<group>"; };
 		4C087A05171DF74F00246C0C /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1858,6 +1864,8 @@
 		4C148F7B17815BD900EBD245 /* registration */ = {
 			isa = PBXGroup;
 			children = (
+				4C689379171A1BFE005F8D0A /* HONRestrictedLocaleViewController.h */,
+				4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */,
 				4C6A3E1317669ADC00B6CD4D /* HONAddFriendsViewController.h */,
 				4C6A3E1417669ADC00B6CD4D /* HONAddFriendsViewController.m */,
 			);
@@ -3300,8 +3308,10 @@
 			children = (
 				4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */,
 				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
-				4C689379171A1BFE005F8D0A /* HONRestrictedLocaleViewController.h */,
-				4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */,
+				4C08036217A4ACC0001FF5DE /* HONUserBirthdayViewController.h */,
+				4C08036317A4ACC0001FF5DE /* HONUserBirthdayViewController.m */,
+				4C08036517A4ACE6001FF5DE /* HONProfileRangeViewController.h */,
+				4C08036617A4ACE6001FF5DE /* HONProfileRangeViewController.m */,
 			);
 			name = Splash;
 			sourceTree = "<group>";
@@ -4010,6 +4020,8 @@
 				4C3D7E92176D3B8400AE07B3 /* HONCreateChallengePreviewView.m in Sources */,
 				4C382FF9178B8AA200C7FA7C /* HONPopularViewController.m in Sources */,
 				4C43C8D41772127800983BE8 /* HONAvatarCameraOverlayView.m in Sources */,
+				4C08036417A4ACC0001FF5DE /* HONUserBirthdayViewController.m in Sources */,
+				4C08036717A4ACE6001FF5DE /* HONProfileRangeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4808,7 +4820,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "DEB8DCF3-F267-4B3C-9B0A-5DD6F05F6CF0";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "426A09AC-22F8-45B7-9520-A1DF62F8495B";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
@@ -4842,7 +4854,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F5276212-245A-4229-875E-65C95A42FAD4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "FB224F18-2C9C-46F3-8024-9D13517135F6";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

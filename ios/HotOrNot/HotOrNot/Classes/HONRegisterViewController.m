@@ -18,7 +18,7 @@
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 #import "HONHeaderView.h"
-#import "HONVerifyViewController.h"
+#import "HONUserBirthdayViewController.h"
 
 @interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
@@ -123,14 +123,19 @@
 				_progressHUD = nil;
 				
 				[HONAppDelegate writeUserInfo:userResult];
-				[[[UIAlertView alloc] initWithTitle:@"Take your profile photo!"
-											message:@"Your profile photo is how people will know you're real!"
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
 				
 				
-				[self _presentCamera];
+				[self.navigationController pushViewController:[[HONUserBirthdayViewController alloc] init] animated:YES];
+				
+				
+//				[[[UIAlertView alloc] initWithTitle:@"Take your profile photo!"
+//											message:@"Your profile photo is how people will know you're real!"
+//										   delegate:nil
+//								  cancelButtonTitle:@"OK"
+//								  otherButtonTitles:nil] show];
+//				
+//				
+//				[self _presentCamera];
 				
 			} else {
 				if (_progressHUD == nil)

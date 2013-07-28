@@ -398,8 +398,14 @@
 		[self _goUpvoteCreator];
 	
 	else {
-		if (!_isChallengeCreator)
-			[self _goCreatorChallenge];
+		if (!_isChallengeCreator) {
+			if (_isChallengeOpponent)
+				[self _goAcceptChallenge];
+			
+			else
+				[self _goCreatorChallenge];
+		}
+			
 	}
 }
 
