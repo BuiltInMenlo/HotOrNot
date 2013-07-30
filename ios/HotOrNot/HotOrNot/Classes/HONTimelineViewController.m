@@ -15,6 +15,7 @@
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
 #import "HONUserProfileViewCell.h"
+#import "HONUserProfileRequestViewCell.h"
 #import "HONUserVO.h"
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
@@ -42,6 +43,7 @@
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic) BOOL isPushView;
 @property (nonatomic) BOOL isPublic;
+@property (nonatomic) BOOL isFriend;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIImageView *findFriendsImageView;
@@ -123,6 +125,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeVerify:) name:@"REMOVE_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showAddContacts:) name:@"SHOW_ADD_CONTACTS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_killTooltip:) name:@"KILL_TOOLTIP" object:nil];
 }
 
@@ -242,6 +245,18 @@
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
+			
+			_isFriend = NO;
+			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+				if (vo.userID == _userVO.userID) {
+					_isFriend = YES;
+					break;
+				}
+			}
+			
+			if (!_isFriend)
+				[_headerView setTitle:@"Sending Request…"];
+			
 			[_tableView reloadData];
 		}
 		
@@ -317,6 +332,7 @@
 	[self.view addSubview:bgImageView];
 	
 	_userVO = nil;
+	_isFriend = YES;
 	_challenges = [NSMutableArray array];
 	
 	if (_isPushView) {
@@ -617,6 +633,13 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)_showAddContacts:(NSNotification *)notification {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)_refreshVoteTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_headerView toggleRefresh:YES];
@@ -722,30 +745,6 @@
 	navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
-	
-	//	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == challengeVO.creatorID) {
-	//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:challengeVO.subjectName]];
-	//		[self presentViewController:navigationController animated:NO completion:nil];
-	//
-	//	} else {
-	//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
-	//		[self presentViewController:navigationController animated:NO completion:nil];
-	
-	//		if (challengeVO.statusID == 1) {
-	//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
-	//			[self presentViewController:navigationController animated:NO completion:nil];
-	//
-	//		} else if (challengeVO.statusID == 2) {
-	//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:challengeVO]];
-	//			[self presentViewController:navigationController animated:NO completion:nil];
-	//
-	//		} else {
-	//			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
-	//			[self presentViewController:navigationController animated:NO completion:nil];
-	//		}
-	//	}
-	
-	//	[navigationController setNavigationBarHidden:YES];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell snapWithSubject:(NSString *)subjectName {
@@ -806,7 +805,7 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_challenges count] + (int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser));
+	return (((int)(_isFriend) * [_challenges count]) + (int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser));
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -836,16 +835,30 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (_timelineType == HONTimelineTypeSingleUser && _userVO != nil) {
 		if (indexPath.row == 0) {
-			HONUserProfileViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-			
-			if (cell == nil) {
-				cell = [[HONUserProfileViewCell alloc] init];
-				cell.userVO = _userVO;
+			if (_isFriend) {
+				HONUserProfileViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+				
+				if (cell == nil) {
+					cell = [[HONUserProfileViewCell alloc] init];
+					cell.userVO = _userVO;
+				}
+				
+				cell.delegate = self;
+				[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+				return (cell);
+				
+			} else {
+				HONUserProfileRequestViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+				
+				if (cell == nil) {
+					cell = [[HONUserProfileRequestViewCell alloc] init];
+					cell.userVO = _userVO;
+				}
+				
+				//cell.delegate = self;
+				[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+				return (cell);
 			}
-			
-			cell.delegate = self;
-			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-			return (cell);
 			
 		} else {
 			HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
@@ -880,7 +893,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return ((_timelineType == HONTimelineTypeSingleUser) ? 210.0 : 320.0);
+		return ((_timelineType == HONTimelineTypeSingleUser) ? (_isFriend) ? 210.0 : 420.0 : 320.0);
 		
 	} else
 		return (320.0);

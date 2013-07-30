@@ -18,7 +18,7 @@
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 #import "HONHeaderView.h"
-#import "HONUserBirthdayViewController.h"
+#import "HONProfileRangeViewController.h"
 
 @interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
@@ -125,7 +125,7 @@
 				[HONAppDelegate writeUserInfo:userResult];
 				
 				
-				[self.navigationController pushViewController:[[HONUserBirthdayViewController alloc] init] animated:YES];
+				[self.navigationController pushViewController:[[HONProfileRangeViewController alloc] init] animated:YES];
 				
 				
 //				[[[UIAlertView alloc] initWithTitle:@"Take your profile photo!"
@@ -581,7 +581,7 @@
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
 			}];
 		}];
 	}

@@ -12,7 +12,6 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONUserProfileViewCell.h"
-#import "HONAppDelegate.h"
 #import "HONImageLoadingView.h"
 #import "HONImagingDepictor.h"
 
@@ -36,8 +35,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBackground"]];
-		[self addSubview:bgImageView];
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBackground"]]];
 	}
 	
 	return (self);

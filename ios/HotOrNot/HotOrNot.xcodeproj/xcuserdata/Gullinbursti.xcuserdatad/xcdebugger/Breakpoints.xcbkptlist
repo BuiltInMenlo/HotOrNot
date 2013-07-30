@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "HotOrNot/Classes/HONTimelineViewController.m"
-         timestampString = "396461812.81464"
+         timestampString = "396827041.982587"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "449"
-         endingLineNumber = "449"
+         startingLineNumber = "465"
+         endingLineNumber = "465"
          landmarkName = "-_goRefresh"
          landmarkType = "5">
       </FileBreakpoint>
@@ -21,11 +21,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "HotOrNot/Classes/HONUserProfileViewCell.m"
-         timestampString = "393490594.13314"
+         timestampString = "396827175.073103"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "47"
-         endingLineNumber = "47"
+         startingLineNumber = "45"
+         endingLineNumber = "45"
          landmarkName = "-setUserVO:"
          landmarkType = "5">
       </FileBreakpoint>
