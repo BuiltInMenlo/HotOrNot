@@ -46,4 +46,17 @@ class BIM_User{
 		// use custom
 		return ($this->img_url);
 	}
+	
+	public static function getByUsername( $name ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $params = $dao->getDataByUsername( $name );
+        $me = null;
+        if( $params ){
+            $me = new self();
+            foreach( $params as $prop => $value ){
+                $me->$prop = $value;
+            }
+        }
+        return $me;
+	}
 }
