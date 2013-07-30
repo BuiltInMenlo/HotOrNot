@@ -126,41 +126,6 @@ class BIM_App_Challenges extends BIM_App_Base{
     }
     
     /**
-     * Helper function to get the rechallenges for a challenge
-     * @param $challenge_obj The origin challenge (array)
-     * @return An associative object for a user (array)
-    **/
-    public function rechallengesForChallenge($challenge_obj) {
-        $this->dbConnect();
-        
-        $rechallenge_arr = array();
-        //$query = 'SELECT `id`, `creator_id`, `added` FROM `tblChallenges` WHERE `subject_id` = '. $challenge_obj->subject_id .' AND `added` > "'. $challenge_obj->added .'" ORDER BY `added` ASC LIMIT 10;';
-        $query = 'SELECT `id`, `creator_id`, `added` FROM `tblChallenges` WHERE `subject_id` = '. $challenge_obj['subject_id'] .' AND `added` > "'. $challenge_obj['added'] .'" ORDER BY `added` ASC LIMIT 10;';
-        $result = mysql_query($query);
-    
-        // loop thru the rows
-        while ($row = mysql_fetch_assoc($result)) {
-            $query = 'SELECT `fb_id`, `username`, `img_url` FROM `tblUsers` WHERE `id` = '. $row['creator_id'] .';';
-            $user_obj = mysql_fetch_object(mysql_query($query));
-            
-            // find the avatar image
-            $avatar_url = $this->avatarURLForUser($user_obj);
-            
-            // push rechallenge into list
-            array_push($rechallenge_arr, array(
-                'id' => $row['id'],
-                'user_id' => $row['creator_id'],
-                'fb_id' => $user_obj->fb_id,
-                'img_url' => $avatar_url,
-                'username' => $user_obj->username,
-                'added' => $row['added']
-            ));
-        }
-        
-        return ($rechallenge_arr);
-    }
-    
-    /**
      * Helper function to get the correct user avatar
      * @param $user_obj A associative object of the user (array)
      * @return A url to an image (string)
@@ -325,77 +290,34 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $challenge_id The ID of the challenge
      * @return An associative object for a challenge (array)
     **/
-    public function acceptChallengeAsDefaultUser($challenge_id) {
-        $this->dbConnect();
-        
-        // list of default user IDs
-        $defaultUserID_arr = array(
-            2390,
-            2391,
-            2392,
-            2393,
-            2394,
-            2804,
-            2805,
-            2811,
-            2815,
-            2818,
-            2819,
-            2824
-        );
-        
-        // get challenge data
-        $query = 'SELECT `subject_id`, `creator_id`, `challenger_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
-        $challenge_obj = mysql_fetch_object(mysql_query($query));
-        
-        // check for ID
-        $isFound = false;
-        foreach ($defaultUserID_arr as $key => $val) {
-            if ($challenge_obj->challenger_id == $val) {
-                $isFound = true;
-                break;
+    public function acceptChallengeAsDefaultUser($volleyObject, $creator, $targetUser) {
+        $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824 );
+        if ( in_array($targetUser->id, $defaultUserID_arr) ) {
+            $imgUrl = "https://hotornot-challenges.s3.amazonaws.com/". $targetUser->device_token ."_000000000". mt_rand(0, 2);
+            $volleyObject->accept( $imgUrl );
+            if ($creator->notifications == "Y"){
+                $delay = mt_rand(30,120);
+                $this->doAcceptNotification($volleyObject, $creator, $targetUser, $delay);
             }
         }
+    }
+    
+    public function doAcceptNotification( $volleyObject, $creator, $targetUser, $delay = 0 ){
+        $msg = "$targetUser->username has accepted your $volleyObject->subject snap!";
+        $push = array(
+            "device_tokens" =>  array( $creator->device_token ), 
+            "type" => "3", 
+            "aps" =>  array(
+                "alert" =>  $msg,
+                "sound" =>  "push_01.caf"
+            )
+        );
         
-        // found a default user
-        if ($isFound) {
-            
-            // get the subject name for this challenge
-            $query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
-            $subject_name = mysql_fetch_object(mysql_query($query))->title;
-            
-            // get default user info
-            $query = 'SELECT `device_token`, `username` FROM `tblUsers` WHERE `id` = '. $challenge_obj->challenger_id .';';
-            $challenger_obj = mysql_fetch_object(mysql_query($query));
-            
-            // pick a random image
-            $img_url = "https://hotornot-challenges.s3.amazonaws.com/". $challenger_obj->device_token ."_000000000". mt_rand(0, 2);
-            
-            // get the creator's device info
-            $query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';            
-            $creator_obj = mysql_fetch_object(mysql_query($query));
-        
-            // send push if allowed
-            if ($creator_obj->notifications == "Y"){
-                $msg = "$challenger_obj->username has accepted your $subject_name snap!";
-                $push = array(
-                    "device_tokens" =>  array( $creator_obj->device_token ), 
-                    "type" => "3", 
-                    "aps" =>  array(
-                        "alert" =>  $msg,
-                        "sound" =>  "push_01.caf"
-                    )
-                );
-                
-                $delay = mt_rand(30,120);
-                $pushTime = time() + $delay;
-                
-                $this->createTimedPush($push, $pushTime);
-                
-            }
-            // update the challenge to started
-            $query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
-            $result = mysql_query($query);
+        if( $delay ){
+            $pushTime = time() + $delay;
+            $this->createTimedPush($push, $pushTime);
+        } else {
+            BIM_Push_UrbanAirship_Iphone::sendPush( $push );
         }
     }
     
@@ -423,85 +345,22 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $img_url The URL to the image for the challenge
      * @return An associative object for a challenge (array)
     **/
-    public function submitMatchingChallenge($user_id, $subject, $img_url, $expires) {
-        $this->dbConnect();
-        $challenge_arr = array();            
+    public function submitMatchingChallenge($userId, $hashTag, $imgUrl, $expires) {
+        $v = new BIM_Model_Volley();
+        $volley = $v->getRandomAvailableByHashTag( $hashTag, $userId );
         
-        // get the subject id for subject name
-        $subject_id = $this->submitSubject($user_id, $subject);
-        
-        // prime the list of available challenges
-        $rndChallenge_arr = array();
-        
-        // get any pending challenges for this subject that isn't created by this user
-        $query = 'SELECT `id`, `creator_id` FROM `tblChallenges` WHERE `status_id` = 1 AND `subject_id` = '. $subject_id .' AND `creator_id` != '. $user_id .';';
-        $challenge_result = mysql_query($query);
-        
-        // found some waiting challenges
-        if (mysql_num_rows($challenge_result) > 0) {            
-            
-            // push into available challenge array
-            while ($challenge_row = mysql_fetch_array($challenge_result, MYSQL_BOTH))
-                array_push($rndChallenge_arr, $challenge_row);
-            
-            // pick a random challenge from list
-            $rnd_ind = mt_rand(0, count($rndChallenge_arr) - 1);
-            $challenge_row = $rndChallenge_arr[$rnd_ind];
-            
-            // get the challenge creator's info
-            $query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_row['creator_id'] .';';
-            $creator_obj = mysql_fetch_object(mysql_query($query));                            
-            
-            // get user's info as the challenger
-            $query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-            $challenger_obj = mysql_fetch_object(mysql_query($query));
-            
-            // update the challenge to say it's nowe in session
-            $query = 'UPDATE `tblChallenges` SET status_id = 4, `challenger_id` = '. $user_id .', `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_row['id'] .';';
-            $update_result = mysql_query($query);
-            
-            // send push if creator allows it
-            if ($creator_obj->notifications == "Y"){
-                $msg = "$challenger_obj->username has accepted your $subject snap!";
-                $push = array(
-                    "device_tokens" =>  array( $creator_obj->device_token ), 
-                    "type" => "3", 
-                    "aps" =>  array(
-                        "alert" =>  $msg,
-                        "sound" =>  "push_01.caf"
-                    )
-                );
-                BIM_Push_UrbanAirship_Iphone::sendPush( $push );
-            }
-            
-            // get the updated challenge info 
-            $challenge_arr = $this->getChallengeObj($challenge_row['id']);
-        
+        if ( $volley ) {
+            $creator = new BIM_User( $volley->creator->id );
+            $targetUser = new BIM_User( $userId );
+            $volley->accept( $imgUrl );
+            $this->doAcceptNotification($volley, $creator, $targetUser);
         // no available challenges found with this subject
         } else {
-            
-            // get the user's info as creator
-            $query = 'SELECT `username`, `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-            $creator_obj = mysql_fetch_object(mysql_query($query));                
-            $points = $creator_obj->points;            
-            
-            // increment the user's points
-            $query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
-            $result = mysql_query($query);
-            
-            // add challenge as waiting for someone
-            $query = 'INSERT INTO `tblChallenges` (';
-            $query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `expires`) ';
-            $query .= 'VALUES (NULL, "1", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "0", "", "N", "0", NOW(), NOW(), NOW(), '.$expires.');';
-            $result = mysql_query($query);
-            $challenge_id = mysql_insert_id();
-            
+            $volleyId = $v->create($userId, $hashTag, $imgUrl, null, 'N', $expires);            
             // get the newly created challenge info
-            $challenge_arr = $this->getChallengeObj($challenge_id);                
+            $volley = $v->get( $volleyId );                
         }
-        
-        // return
-        return $challenge_arr;
+        return $volley;
     }
     
     /**
@@ -512,70 +371,20 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $challenger_id The ID of the user to target (integer)
      * @return An associative object for a challenge (array)
     **/
-    public function submitChallengeWithChallenger($user_id, $subject, $img_url, $challenger_id, $is_private, $expires) {
-        $this->dbConnect();
-        $challenge_arr = array();
-        
-        // get the subject id for the subject name
-        $subject_id = $this->submitSubject($user_id, $subject);
-        
-        // get the user's info as the creator
-        $query = 'SELECT `username`, `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-        $creator_obj = mysql_fetch_object(mysql_query($query));
-        $points = $creator_obj->points;
-        
-        // increment the user's points
-        $query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
-        $result = mysql_query($query);
-        
-        // add the challenge
-        $query = 'INSERT INTO `tblChallenges` (';
-        $query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`, `expires`) ';
-        $query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW(), "'.$is_private.'", '.$expires.' );';
-        $result = mysql_query($query);
-        $challenge_id = mysql_insert_id();
-        
-        // get the targeted user's info
-        $query = 'SELECT `device_token`, `username`, `fb_id`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenger_id .';';
-        $challenger_obj = mysql_fetch_object(mysql_query($query));
-        
-        // send push to targeted user if allowed
-        if ($challenger_obj->notifications == "Y"){
-             $private = $is_private == 'Y' ? ' private' : '';
-             $expiresTxt = '';
-            if($expires == 86400){
-                $expiresTxt = ' that will expire in 24 hours';
-            } else if( $expires == 600 ){
-                $expiresTxt = ' that will expire in 10 mins';
-            }
-             $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. $subject";
-            $push = array(
-                "device_tokens" =>  array( $challenger_obj->device_token ), 
-                "type" => "1", 
-                "challenge" => $challenge_id,
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            
-            BIM_Push_UrbanAirship_Iphone::sendPush( $push );
-            // create a reminder push
-            if( $expires > 0 ){
-                 $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! $subject";
-                 $push['aps']['alert'] = $msg;
-                $time = $expires - self::reminderTime();
-                $this->createTimedPush($push, $time);
+    public function submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $targetId, $isPrivate, $expires) {
+        $volley = null;
+        $targetUser = new BIM_User( $targetId );
+        $creator = new BIM_User( $userId );
+        if ( $targetUser->isExtant() && $creator->isExtant() ) {
+            $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, $targetUser->id, $isPrivate, $expires);
+            if( $volley ){
+                $this->acceptChallengeAsDefaultUser( $volley, $creator, $targetUser );
+                if ($targetUser->notifications == "Y"){
+                    $this->doNotification( $creator, $targetUser, $volley->id, $hashTag, $expires, $isPrivate );
+                }
             }
         }
-        // get the newly created challenge
-        $challenge_arr = $this->getChallengeObj($challenge_id);
-        
-        // auto-accept if sent to default user
-        $this->acceptChallengeAsDefaultUser($challenge_id);
-        
-        /// return
-        return $challenge_arr;
+        return $volley;
     }
     
     protected static function reminderTime(){
@@ -591,21 +400,8 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return An associative object for a challenge (array)
     **/
     public function submitChallengeWithUsername($userId, $hashTag, $imgUrl, $username, $isPrivate, $expires ) {
-        $volleyObject = null;
         $targetUser = BIM_User::getByUsername( $username );
-        $creator = new BIM_User( $userId );
-        if ( $targetUser->isExtant() && $creator->isExtant() ) {
-            $volley = new BIM_Model_Volley();
-            $volleyId = $volley->create($creator->id, $hashTag, $imgUrl, $targetUser->id, $isPrivate, $expires);
-            if( $volleyId ){
-                $volleyObject = $volley->get( $volleyId );
-                $this->acceptChallengeAsDefaultUser( $volleyId );
-                if ($targetUser->notifications == "Y"){
-                    $this->doNotification( $creator, $targetUser, $volleyId, $hashTag, $expires, $isPrivate );
-                }
-            }
-        }
-        return $volleyObject;
+        return $this->submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $targetUser->id, $isPrivate, $expires);
     }
     
     public function doNotification( $creator, $target, $volleyId, $hashTag, $expires, $isPrivate = 'N' ){
