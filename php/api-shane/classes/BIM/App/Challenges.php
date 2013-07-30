@@ -346,19 +346,14 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return An associative object for a challenge (array)
     **/
     public function submitMatchingChallenge($userId, $hashTag, $imgUrl, $expires) {
-        $v = new BIM_Model_Volley();
-        $volley = $v->getRandomAvailableByHashTag( $hashTag, $userId );
-        
+        $volley = BIM_Model_Volley::getRandomAvailableByHashTag( $hashTag, $userId );
         if ( $volley ) {
             $creator = new BIM_User( $volley->creator->id );
             $targetUser = new BIM_User( $userId );
             $volley->accept( $imgUrl );
             $this->doAcceptNotification($volley, $creator, $targetUser);
-        // no available challenges found with this subject
         } else {
-            $volleyId = $v->create($userId, $hashTag, $imgUrl, null, 'N', $expires);            
-            // get the newly created challenge info
-            $volley = $v->get( $volleyId );                
+            $volley = BIM_Model_Volley::create($userId, $hashTag, $imgUrl, -1, 'N', $expires);
         }
         return $volley;
     }
@@ -437,20 +432,8 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $user_id The ID of the user (integer)
      * @return The list of challenges (array)
     **/
-    public function getAllChallengesForUser($user_id) {
-        $this->dbConnect();
-        
-        // get challenges for user
-        $query = 'SELECT `id` FROM `tblChallenges` WHERE (`status_id` != 2 AND `status_id` != 3 AND `status_id` != 6 AND `status_id` != 8) AND (`creator_id` = '. $user_id .' OR `challenger_id` = '. $user_id .') ORDER BY `updated` DESC;';
-        $result = mysql_query($query);
-        
-        // loop thru the rows
-        $challenge_arr = array();
-        while ($row = mysql_fetch_assoc($result))
-            array_push($challenge_arr, $this->getChallengeObj($row['id']));
-        
-        // return
-        return $challenge_arr;
+    public function getAllChallengesForUser($userId) {
+        return BIM_Model_Volley::getAllForUser( $userId );
     }
     
     /** 
@@ -600,48 +583,12 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $img_url The URL to the challenger's image (string)
      * @return The ID of the challenge (integer)
     **/
-    public function acceptChallenge($user_id, $challenge_id, $img_url) {
-        $this->dbConnect();
-        $challenge_arr = array();
-        
-        // get the user's name
-        $query = 'SELECT `username` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-        $challenger_name = mysql_fetch_object(mysql_query($query))->username; 
-        
-        // get the subject & the id of the user that created the challenge
-        $query = 'SELECT `subject_id`, `creator_id` FROM `tblChallenges` WHERE `id` = '. $challenge_id .';';
-        $challenge_obj = mysql_fetch_object(mysql_query($query));
-        
-        // get the subject name for this challenge
-        $query = 'SELECT `title` FROM `tblChallengeSubjects` WHERE `id` = '. $challenge_obj->subject_id .';';
-        $subject_name = mysql_fetch_object(mysql_query($query))->title;
-        
-        // get the creator's device info
-        $query = 'SELECT `device_token`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenge_obj->creator_id .';';            
-        $creator_obj = mysql_fetch_object(mysql_query($query));
-        $isPush = ($creator_obj->notifications == "Y");
-        
-        // send push if allowed
-        if ($isPush){
-            $msg = "$challenger_name has accepted your $subject_name snap!";
-            $push = array(
-                "device_tokens" =>  array( $creator_obj->device_token ), 
-                "type" => "3", 
-                "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
-                )
-            );
-            BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+    public function acceptChallenge($userId, $volleyId, $imgUrl ) {
+        $volley = new BIM_Model_Volley( $volleyId );
+        if( $volley && $volley->challenger->id == $userId ){
+            $volley->accept($imgUrl);
         }
-        // update the challenge to started
-        $query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
-        $result = mysql_query($query);            
-        
-        // return
-        return array(
-            'id' => $challenge_id
-        );
+        return $volley;        
     }
     
     /**
@@ -649,16 +596,10 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $challenge_id The challenge to update (integer)
      * @return The ID of the challenge (integer)
     **/
-    public function cancelChallenge ($challenge_id) {
-        $this->dbConnect();
-        // update the challenge status
-        $query = 'UPDATE `tblChallenges` SET `status_id` = 3 WHERE `id` = '. $challenge_id .';';
-        $result = mysql_query($query);            
-        
-        // return
-        return array(
-            'id' => $challenge_id
-        );
+    public function cancelChallenge ($volleyId) {
+        $volley = new BIM_Model_Volley( $volleyId );
+        $volley->cancel();
+        return $volley;
     }
     
     /** 
@@ -667,22 +608,21 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $challenge The ID of the challenge to flag (integer)
      * @return An associative object (array)
     **/
-    public function flagChallenge ($user_id, $challenge_id) {
-        $this->dbConnect();
-        // update the challenge status
-        $query = 'UPDATE `tblChallenges` SET `status_id` = 6 WHERE `id` = '. $challenge_id .';';
-        $result = mysql_query($query);
-        
-        // insert record to flagged challenges
-        $query = 'INSERT INTO `tblFlaggedChallenges` (';
-        $query .= '`challenge_id`, `user_id`, `added`) VALUES (';
-        $query .= '"'. $challenge_id .'", "'. $user_id .'", NOW());';                
-        $result = mysql_query($query);
-        
+    public function flagChallenge ($userId, $volleyId) {
+        $volley = new BIM_Model_Volley($volleyId);
+        $volley->flag( $userId );
+        $this->sendFlagEmail($volleyId, $userId);
+        return array(
+            'id' => $volleyId,
+            'mail' => true
+        );
+    }
+    
+    public function sendFlagEmail( $volleyId, $userId ){
         // send email
         $to = "bim.picchallenge@gmail.com";
         $subject = "Flagged Challenge";
-        $body = "Challenge ID: #". $challenge_id ."\nFlagged By User: #". $user_id;
+        $body = "Challenge ID: #". $volleyId ."\nFlagged By User: #". $userId;
         $from = "picchallenge@builtinmenlo.com";
         
         $headers_arr = array();
@@ -694,17 +634,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $headers_arr[] = "Subject: {$subject}";
         $headers_arr[] = "X-Mailer: PHP/". phpversion();
 
-        if (mail($to, $subject, $body, implode("\r\n", $headers_arr))) 
-           $mail_res = true;
-
-        else
-           $mail_res = false;  
-        
-        // return
-        return array(
-            'id' => $challenge_id,
-            'mail' => $mail_res
-        );
+        mail($to, $subject, $body, implode("\r\n", $headers_arr));
     }
             
     /** 

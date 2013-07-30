@@ -2,24 +2,15 @@
 
 class BIM_Controller_Challenges extends BIM_Controller_Base {
     
-    public $challenges = null;
-    public $jobs = null;
-    public $voteJobs = null;
-    
-    public function __construct(){
-        parent::__construct();
-        $this->jobs = new BIM_Jobs_Challenges();
-        $this->voteJobs = new BIM_Jobs_Votes();
-        $this->challenges = $challenges = new BIM_App_Challenges;
-    }
-    
     public function test(){
-        return $this->challenges->test();
+        $challenges = new BIM_App_Challenges();
+        return $challenges->test();
     }
     
     public function getChallengesForUserBeforeDate(){
         if (isset($_POST['userID']) && isset($_POST['prevIDs']) && isset($_POST['datetime'])){
-            return $this->challenges->getChallengesForUserBeforeDate($_POST['userID'], $_POST['prevIDs'], $_POST['datetime']);
+            $challenges = new BIM_App_Challenges();
+            return $challenges->getChallengesForUserBeforeDate($_POST['userID'], $_POST['prevIDs'], $_POST['datetime']);
         }
     }    
     
@@ -35,34 +26,40 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function updatePreviewed(){
         if (isset($_POST['challengeID'])){
-            return $this->challenges->updatePreviewed($_POST['challengeID']);
+            $challenges = new BIM_App_Challenges();
+            return $challenges->updatePreviewed($_POST['challengeID']);
         }
     }
     
     public function getPreviewForSubject(){
         if (isset($_POST['subjectName'])){
-            return $this->challenges->getPreviewForSubject($_POST['subjectName']);
+            $challenges = new BIM_App_Challenges();
+            return $challenges->getPreviewForSubject($_POST['subjectName']);
         }
     }
     
     public function getAllChallengesForUser(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if ( isset( $input->userID ) ){
-            return $this->challenges->getAllChallengesForUser( $input->userID );
+            $challenges = new BIM_App_Challenges();
+            return $challenges->getAllChallengesForUser( $input->userID );
         }
     }
 
     public function getChallengesForUser(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if ( !empty( $input->userID ) ){
-            return $this->challenges->getChallengesForUser( $input->userID );
+            $challenges = new BIM_App_Challenges();
+            return $challenges->getChallengesForUser( $input->userID );
         }
     }
     
     public function getPrivateChallengesForUser(){
         $input = ( $_POST ? $_POST : $_GET );
-        if (isset($input['userID']))
-            return $this->challenges->getChallengesForUser($input['userID'], TRUE); // true means get private challenge only
+        if (isset($input['userID'])){
+            $challenges = new BIM_App_Challenges();
+            return $challenges->getChallengesForUser($input['userID'], TRUE); // true means get private challenge only
+        }
     }
     
     /*
@@ -86,7 +83,8 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function getPublic(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if ( !empty( $input->userID ) ){
-            return $this->challenges->getChallenges( $input->userID );
+            $challenges = new BIM_App_Challenges();
+            return $challenges->getChallenges( $input->userID );
         }
     }
     
@@ -96,13 +94,17 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function getPrivate(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if ( !empty( $input->userID ) ){
-            return $this->challenges->getChallenges( $input->userID, TRUE ); // true means get private challenge only
+            $challenges = new BIM_App_Challenges();
+            return $challenges->getChallenges( $input->userID, TRUE ); // true means get private challenge only
         }
     }
     
     public function getPrivateChallengesForUserBeforeDate(){
-        if (isset($_POST['userID']) && isset($_POST['prevIDs']) && isset($_POST['datetime']))
-            return $this->challenges->getChallengesForUserBeforeDate($_POST['userID'], $_POST['prevIDs'], $_POST['datetime'], TRUE); // true means get private challenges only
+        $input = ( $_POST ? $_POST : $_GET );
+        if (isset($input['userID']) && isset($input['prevIDs']) && isset($input['datetime'])){
+            $challenges = new BIM_App_Challenges();
+            return $challenges->getChallengesForUserBeforeDate($input['userID'], $input['prevIDs'], $input['datetime'], TRUE); // true means get private challenges only
+        }
     }
     
     public function submitMatchingChallenge(){
@@ -112,10 +114,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
             $thisFunc = array( __CLASS__, __FUNCTION__ );
             $expires = $this->resolveExpires();
             if( $this->useQueue( $thisFunc ) ){
-                $uv = $this->jobs->queueSubmitMatchingChallengeJob( $input->userID, $input->subject, $input->imgURL, $expires );
+                $jobs = new BIM_Jobs_Challenges();
+                $uv = $jobs->queueSubmitMatchingChallengeJob( $input->userID, $input->subject, $input->imgURL, $expires );
             }
             if( !$uv ){
-                $uv = $this->challenges->submitMatchingChallenge( $input->userID, $input->subject, $input->imgURL, $expires );
+                $challenges = new BIM_App_Challenges();
+                $uv = $challenges->submitMatchingChallenge( $input->userID, $input->subject, $input->imgURL, $expires );
                 $this->queueStaticPagesJobs();
                }
         }
@@ -140,10 +144,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         if ( isset($_POST['userID']) && isset($_POST['challengeID']) ){
             $thisFunc = array( __CLASS__, __FUNCTION__ );
             if( $this->useQueue( $thisFunc ) ){
-                $uv = $this->jobs->queueFlagChallengeJob( $_POST['userID'], $_POST['challengeID'] );
+                $jobs = new BIM_Jobs_Challenges();
+                $uv = $jobs->queueFlagChallengeJob( $_POST['userID'], $_POST['challengeID'] );
             }
             if( !$uv ){
-                $uv = $this->challenges->flagChallenge( $_POST['userID'], $_POST['challengeID'] );
+                $challenges = new BIM_App_Challenges();
+                $uv = $challenges->flagChallenge( $_POST['userID'], $_POST['challengeID'] );
                 $this->queueStaticPagesJobs();
                }
         }
@@ -155,14 +161,18 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         if (isset($_POST['challengeID'])) {
             $thisFunc = array( __CLASS__, __FUNCTION__ );
             if( $this->useQueue( $thisFunc ) ){
-                $uv = $this->jobs->queueCancelChallengeJob( $_POST['challengeID'] );
+                $jobs = new BIM_Jobs_Challenges();
+                $uv = $jobs->queueCancelChallengeJob( $_POST['challengeID'] );
             }
             if( !$uv ){
-                $uv = $this->challenges->cancelChallenge( $_POST['challengeID'] );
+                $challenges = new BIM_App_Challenges();
+                $uv = $challenges->cancelChallenge( $_POST['challengeID'] );
                 $this->queueStaticPagesJobs();
-               }
+            }
         }
-        return $uv;
+        return array(
+            'id' => $uv->id
+        );
     }
     
     public function acceptChallenge(){
@@ -170,14 +180,18 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         if (isset( $_POST['userID']) && isset($_POST['challengeID']) && isset($_POST['imgURL'])) {
             $thisFunc = array( __CLASS__, __FUNCTION__ );
             if( $this->useQueue( $thisFunc ) ){
-                $uv = $this->jobs->queueAcceptChallengeJob( $_POST['userID'], $_POST['challengeID'], $_POST['imgURL'] );
+                $jobs = new BIM_Jobs_Challenges();
+                $uv = $jobs->queueAcceptChallengeJob( $_POST['userID'], $_POST['challengeID'], $_POST['imgURL'] );
             }
             if( !$uv ){
-                $uv = $this->challenges->acceptChallenge( $_POST['userID'], $_POST['challengeID'], $_POST['imgURL'] );
+                $challenges = new BIM_App_Challenges();
+                $uv = $challenges->acceptChallenge( $_POST['userID'], $_POST['challengeID'], $_POST['imgURL'] );
                 $this->queueStaticPagesJobs();
                }
         }
-        return $uv;
+        return array(
+            'id' => $uv->id
+        );
     }
     
     public function submitChallengeWithUsernames(){
@@ -191,10 +205,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
                 $uv = null;
                 $func = array( __CLASS__, 'submitChallengeWithUsername' );
                 if( $this->useQueue( $func ) ){
-                    $uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $input->userID, $input->subject, $input->imgURL, $username, $isPrivate, $expires );
+                    $jobs = new BIM_Jobs_Challenges();
+                    $uv = $jobs->queueSubmitChallengeWithUsernameJob( $input->userID, $input->subject, $input->imgURL, $username, $isPrivate, $expires );
                 }
                 if( !$uv ){
-                    $uv = $this->challenges->submitChallengeWithUsername( $input->userID, $input->subject, $input->imgURL, $username, $isPrivate, $expires );
+                    $challenges = new BIM_App_Challenges();
+                    $uv = $challenges->submitChallengeWithUsername( $input->userID, $input->subject, $input->imgURL, $username, $isPrivate, $expires );
                     $this->queueStaticPagesJobs();
                 }
             }
@@ -210,10 +226,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
             $thisFunc = array( __CLASS__, __FUNCTION__ );
             $expires = $this->resolveExpires();
             if( $this->useQueue( $thisFunc ) ){
-                $uv = $this->jobs->queueSubmitChallengeWithUsernameJob( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires );
+                $jobs = new BIM_Jobs_Challenges();
+                $uv = $jobs->queueSubmitChallengeWithUsernameJob( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires );
             }
             if( !$uv ){
-                $uv = $this->challenges->submitChallengeWithUsername( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires  );
+                $challenges = new BIM_App_Challenges();
+                $uv = $challenges->submitChallengeWithUsername( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires  );
                 $this->queueStaticPagesJobs();
             }
         }
@@ -232,8 +250,9 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     protected function queueStaticPagesJobs(){
         return;
-        $this->voteJobs->queueStaticChallengesByDate();
-        $this->voteJobs->queueStaticChallengesByActivity();
-        $this->voteJobs->queueStaticTopChallengesByVotes();
+        $voteJobs = new BIM_Jobs_Votes();
+        $voteJobs->queueStaticChallengesByDate();
+        $voteJobs->queueStaticChallengesByActivity();
+        $voteJobs->queueStaticTopChallengesByVotes();
     }
 }
