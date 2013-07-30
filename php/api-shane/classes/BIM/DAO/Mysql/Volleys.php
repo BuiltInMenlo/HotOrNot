@@ -105,7 +105,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         if( $data ){
             $count = $data[0]->count;
         }
-        return $count;
+        return (int) $count;
     }
     
     /**
@@ -121,4 +121,36 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
     }
     
+    public function accept( $volleyId, $imgUrl ){
+        $sql = 'UPDATE `hotornot-dev`.`tblChallenges` SET `status_id` = 4, `challenger_img` = ?, `updated` = NOW(), `started` = NOW() WHERE `id` = ? ';
+        $params = array( $imgUrl, $volleyId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
+    public function getRandomAvailableByHashTag( $hashTag, $userId = null ){
+        $v = null;
+        $params = array( $hashTag );
+        if( $userId ){
+            $params[] = $userId;
+            $userSql = 'AND `creator_id` != ?';
+        }
+        
+        $sql = "
+            SELECT `id`, `creator_id`
+            FROM `hotornot-dev`.`tblChallenges` as tc
+                JOIN tblChallengeSubjects as tcs
+                ON tc.subject_id = tcs.id
+            WHERE tc.status_id = 1 
+                AND tcs.title = ? 
+                $userSql
+            ORDER BY RAND()
+            LIMIT 1
+        ";
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        if( $data ){
+            $v = $data[0];
+        }
+        return $v;
+    }
 }

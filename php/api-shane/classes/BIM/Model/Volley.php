@@ -2,26 +2,7 @@
 
 class BIM_Model_Volley{
     
-    public function create( $userId, $hashTag, $imgUrl, $targetId, $isPrivate, $expires ) {
-        $volleyId = null;
-        $hashTagId = $this->getHashTagId($userId, $hashTag);
-        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $volleyId = $dao->add( $userId, $targetId, $hashTagId, $imgUrl, $isPrivate, $expires );
-        return $volleyId;
-    }
-    
-    /**
-    $user_arr = array(
-        'id' => $user_id, 
-        'fb_id' => "",
-        'username' => "",
-        'avatar' => "",
-        'img' => "",
-        'score' => 0
-    );
-     */
-    
-    public function get($volleyId, $userId = 0) {
+    public function __construct($volleyId, $userId = 0) {
         
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volley = $dao->get( $volleyId );
@@ -64,28 +45,56 @@ class BIM_Model_Volley{
                 }
             }
         }
-        // compose object & return
-        return (array(
-            'id' => $volley->id, 
-            'status' => ($userId != 0 && $userId == $volley->challenger_id && $volley->status_id == "2") ? "0" : $volley->status_id, 
-            'subject' => $dao->getSubject($volley->subject_id), 
-            'comments' => $dao->commentCount( $volley->id ), 
-            'has_viewed' => $volley->hasPreviewed, 
-            'started' => $volley->started, 
-            'added' => $volley->added, 
-            'updated' => $volley->updated,
-            'creator' => $creator,
-            'challenger' => $target,
-            'expires' => $expires
-        ));
+        $this->id = $volley->id; 
+        $this->status = ($userId != 0 && $userId == $volley->challenger_id && $volley->status_id == "2") ? "0" : $volley->status_id; 
+        $this->subject = $dao->getSubject($volley->subject_id); 
+        $this->comments = $dao->commentCount( $volley->id ); 
+        $this->has_viewed = $volley->hasPreviewed; 
+        $this->started = $volley->started; 
+        $this->added = $volley->added; 
+        $this->updated = $volley->updated;
+        $this->creator = $creator;
+        $this->challenger = $target;
+        $this->expires = $expires;
     }
     
-    public function getHashTagId( $userId, $hashTag = 'N/A' ) {
+    public static function create( $userId, $hashTag, $imgUrl, $targetId, $isPrivate, $expires ) {
+        $volleyId = null;
+        $hashTagId = self::getHashTagId($userId, $hashTag);
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $volleyId = $dao->add( $userId, $targetId, $hashTagId, $imgUrl, $isPrivate, $expires );
+        $volley = new self( $volleyId );
+        return $volley;
+    }
+    
+    /**
+    $user_arr = array(
+        'id' => $user_id, 
+        'fb_id' => "",
+        'username' => "",
+        'avatar' => "",
+        'img' => "",
+        'score' => 0
+    );
+     */
+    
+    public static function getHashTagId( $userId, $hashTag = 'N/A' ) {
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $hashTagId = $dao->addHashTag($hashTag, $userId);
         if( !$hashTagId ){
             $hashTagId = $dao->getHashTagId($hashTag, $userId);
         }
         return $hashTagId;
+    }
+    
+    public function accept( $imgUrl ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao->accept( $this->id, $imgUrl );
+    }
+    
+    public function getRandomAvailableByHashTag( $hashTag, $userId = null ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $v = $dao->getRandomAvailableByHashTag( $hashTag, $userId );
+        return $this->get($v->id);
     }
 }
