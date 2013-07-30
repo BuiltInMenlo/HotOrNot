@@ -34,4 +34,21 @@ class BIM_Push_UrbanAirship_Iphone{
 		$header = curl_getinfo($ch);
 		curl_close($ch);
     }
+    
+	public static function createTimedPush( $push, $time ){
+        $time = new DateTime("@$time");
+        $time = $time->format('Y-m-d H:i:s');
+	    
+        $job = (object) array(
+            'nextRunTime' => $time,
+            'class' => 'BIM_Jobs_Challenges',
+            'method' => 'doPush',
+            'name' => 'push',
+        	'params' => $push,
+            'is_temp' => true,
+        );
+        
+        $j = new BIM_Jobs_Gearman();
+        $j->createJbb($job);
+	}
 }

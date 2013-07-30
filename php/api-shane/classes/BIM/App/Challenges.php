@@ -199,7 +199,7 @@ class BIM_App_Challenges extends BIM_App_Base{
 			'username' => "",
 			'avatar' => "",
 			'img' => "",
-			'score' => 0			
+			'score' => 0
 		);
 		
 		// challenge object
@@ -590,100 +590,50 @@ class BIM_App_Challenges extends BIM_App_Base{
 	 * @param $username The username of the user to target (string)
 	 * @return An associative object for a challenge (array)
 	**/
-	public function submitChallengeWithUsername($user_id, $subject, $img_url, $username, $is_private, $expires ) {
-	    $this->dbConnect();
-	    $challenge_arr = array();
-		
-		// get the targeted user's info
-		$query = 'SELECT `id` FROM `tblUsers` WHERE `username` = "'. $username .'";';
-		$challenger_result = mysql_query($query);
-		
-		// user was found based on username
-		if (mysql_num_rows($challenger_result) > 0) {			
-			$challenger_id = mysql_fetch_object($challenger_result)->id;
-			
-			// look for default users
-			
-			// get the subject id for the subject name
-			$subject_id = $this->submitSubject($user_id, $subject);
-			
-			// get the user's info as the creator
-			$query = 'SELECT `username`, `fb_id`, `points` FROM `tblUsers` WHERE `id` = '. $user_id .';';
-			$creator_obj = mysql_fetch_object(mysql_query($query));				
-			$points = $creator_obj->points;
-			
-			// increment the points
-			$query = 'UPDATE `tblUsers` SET `points` = "'. ($points + 1) .'" WHERE `id` ='. $user_id .';';
-			$result = mysql_query($query);
-			
-			// add the new challenge
-			$query = 'INSERT INTO `tblChallenges` (';
-			$query .= '`id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`, `expires`) ';
-			$query .= 'VALUES (NULL, "2", "'. $subject_id .'", "'. $user_id .'", "'. $img_url .'", "'. $challenger_id .'", "", "N", "0", NOW(), NOW(), NOW(), "'.$is_private.'", '.$expires.');';
-			$result = mysql_query($query);
-			$challenge_id = mysql_insert_id();
-			
-			// get targeted user's info for push
-			$query = 'SELECT `device_token`, `username`, `fb_id`, `notifications` FROM `tblUsers` WHERE `id` = '. $challenger_id .';';
-			$challenger_obj = mysql_fetch_object(mysql_query($query));
-			
-			// send push if allowed
-			if ($challenger_obj->notifications == "Y"){
- 		        $private = $is_private == 'Y' ? ' private' : '';
- 		        $expiresTxt = '';
- 		        if($expires == 86400){
-                    $expiresTxt = ' that will expire in 24 hours';
- 		        } else if( $expires == 600 ){
-                    $expiresTxt = ' that will expire in 10 mins';
- 		        }
- 		        $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. $subject";
-    			$push = array(
-    		    	"device_tokens" =>  array( $challenger_obj->device_token ), 
-    		    	"type" => "1", 
-    			    "challenge" => $challenge_id,
-    		    	"aps" =>  array(
-    		    		"alert" =>  $msg,
-    		    		"sound" =>  "push_01.caf"
-    		        )
-    		    );
-        	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
-        	    // create the reminder push
-                if( $expires > 0 ){
-     		        $msg = "@$creator_obj->username has sent you a$private Volley that will expire in 2 mins! $subject";
-     		        $push['aps']['alert'] = $msg;
-    	            $time = $expires - self::reminderTime();
-    	            $this->createTimedPush($push, $time);
-                }
-			}
-		    
-			// get the newly created challenge
-			$challenge_arr = $this->getChallengeObj($challenge_id);
-			
-			
-			// auto-accept if sent to default user
-			$this->acceptChallengeAsDefaultUser($challenge_id);
-			
-		
-		// couldn't find this user
-		} else
-			$challenge_arr = array("result" => "fail");					
-		
-		// return
-		return $challenge_arr;
+	public function submitChallengeWithUsername($userId, $hashTag, $imgUrl, $username, $isPrivate, $expires ) {
+	    $volleyObject = null;
+		$targetUser = BIM_User::getByUsername( $username );
+		$creator = new BIM_User( $userId );
+		if ( $targetUser->isExtant() && $creator->isExtant() ) {
+    		$volley = new BIM_Model_Volley();
+    	    $volleyId = $volley->create($creator->id, $hashTag, $imgUrl, $targetUser->id, $isPrivate, $expires);
+    	    if( $volleyId ){
+        		$volleyObject = $volley->get( $volleyId );
+        		$this->acceptChallengeAsDefaultUser( $volleyId );
+        		if ($targetUser->notifications == "Y"){
+        		    $this->doNotification( $creator, $targetUser, $volleyId, $hashTag, $expires, $isPrivate );
+        		}
+    	    }
+		}
+		return $volleyObject;
 	}
 	
-	public function setExpirationTime( $arr ){
-	    if( !is_array($arr) ){
-	        // must be an id go get the object
-			$arr = $this->getChallengeObj($arr);
-	    }
-	    if( $arr['expires'] < -1 ){
-	        $expires = time() + abs( $arr['expires'] ) ;
-    	    $sql = "update tblChallenges set expires = ? where id = ?";
-    	    $params = array( $expires, $arr['id'] );
-    	    $dao = new BIM_DAO_Mysql( BIM_Config::db() );
-    	    $dao->prepareAndExecute($sql,$params);
-	    }
+	public function doNotification( $creator, $target, $volleyId, $hashTag, $expires, $isPrivate = 'N' ){
+        $private = $isPrivate == 'Y' ? ' private' : '';
+        $expiresTxt = '';
+        if($expires == 86400){
+            $expiresTxt = ' that will expire in 24 hours';
+        } else if( $expires == 600 ){
+            $expiresTxt = ' that will expire in 10 mins';
+        }
+        $msg = "@$creator->username has sent you a$private Volley$expiresTxt. $hashTag";
+		$push = array(
+	    	"device_tokens" =>  array( $target->device_token ), 
+	    	"type" => "1", 
+		    "challenge" => $volleyId,
+	    	"aps" =>  array(
+	    		"alert" =>  $msg,
+	    		"sound" =>  "push_01.caf"
+	        )
+	    );
+	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+	    // create the reminder push
+        if( $expires > 0 ){
+	        $msg = "@$creator->username has sent you a$private Volley that will expire in 2 mins! $hashTag";
+	        $push['aps']['alert'] = $msg;
+            $time = $expires - self::reminderTime();
+            BIM_Push_UrbanAirship_Iphone::createTimedPush($push, $time);
+        }
 	}
 	
 	/** 
