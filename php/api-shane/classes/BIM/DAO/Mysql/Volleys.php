@@ -132,6 +132,12 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute($sql, $params);
     }
     
+    public function setPreviewed( $volleyId ){
+        $sql = 'UPDATE `tblChallenges` SET `hasPreviewed` = "Y" WHERE `id` = ?';
+        $params = array( $volleyId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
     public function flag( $volleyId, $userId ){
         $sql = 'UPDATE `tblChallenges` SET `status_id` = 6 WHERE `id` = ?';
         $params = array( $volleyId );
@@ -178,6 +184,68 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		AND (`creator_id` = ? OR `challenger_id` = ? ) 
         	ORDER BY `updated` DESC
         ';
+        $params = array( $userId, $userId );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+    }
+    
+    public function getOpponents( $userId, $private ){
+        $privateSql = ' AND `is_private` != "Y" ';
+        if( $private ){
+            $privateSql = ' AND `is_private` = "Y" ';
+        }
+        $sql = "
+        	SELECT `creator_id`, `challenger_id` 
+            FROM `tblChallenges` 
+            WHERE ( status_id NOT IN (3,6,8) $privateSql ) 
+              AND (`creator_id` = ? OR `challenger_id` = ? ) 
+            ORDER BY `updated` DESC";
+        
+        $params = array( $userId, $userId );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+    }
+    
+    public function withOpponent( $userId, $opponentId, $lastDate = "9999-99-99 99:99:99", $private ){
+        $privateSql = ' AND `is_private` != "Y" ';
+        if( $private ){
+            $privateSql = ' AND `is_private` = "Y" ';
+        }
+        
+        if( $lastDate === null ){
+            $lastDate = "9999-99-99 99:99:99";
+        }
+        
+        // get challenges where both users are included
+        $sql = "
+        	SELECT `id`, `creator_id`, `challenger_id`, `updated` 
+            FROM `tblChallenges` 
+            WHERE ( status_id NOT IN (3,6,8) $privateSql )
+                AND ( (`creator_id` = ? OR `challenger_id` = ?) AND (`creator_id` = ? OR `challenger_id` = ? ) ) 
+                AND `updated` < ? 
+            ORDER BY `updated` DESC
+        ";
+        
+        $params = array( $userId, $userId, $opponentId, $opponentId, $lastDate );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+    }
+    
+    public function getIds( $userId, $private ){
+        $pSql = "AND is_private = 'N'";
+        if( $private ){
+            $pSql = "AND is_private = 'Y'";
+        }
+        
+        $query = "
+            SELECT `id` 
+            FROM `tblChallenges` 
+            WHERE `status_id` in ( 1,2,4 ) 
+                AND (`creator_id` = ?  OR `challenger_id` = ? )
+                $pSql
+            ORDER BY `updated` DESC;
+        ";
+        
         $params = array( $userId, $userId );
         $stmt = $this->prepareAndExecute( $sql, $params );
         return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );

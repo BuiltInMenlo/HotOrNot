@@ -27,7 +27,10 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     public function updatePreviewed(){
         if (isset($_POST['challengeID'])){
             $challenges = new BIM_App_Challenges();
-            return $challenges->updatePreviewed($_POST['challengeID']);
+            $volley = $challenges->updatePreviewed($_POST['challengeID']);
+            return array(
+                'id' => $volley->id
+            );
         }
     }
     
