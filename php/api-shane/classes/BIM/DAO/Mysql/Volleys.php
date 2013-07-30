@@ -38,7 +38,6 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
                 (NULL, "2", ?, ?, ?, ?, "", "N", "0", NOW(), NOW(), NOW(), ?, ? )
         ';
         $params = array($hashTagId, $userId, $imgUrl, $targetId, $isPrivate, $expires);
-        
         $this->prepareAndExecute( $sql, $params );
         return $this->lastInsertId;
     }
@@ -127,18 +126,34 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute($sql, $params);
     }
     
+    public function cancel( $volleyId ){
+        $sql = 'UPDATE `hotornot-dev`.`tblChallenges` SET `status_id` = 3 WHERE `id` = ?';
+        $params = array( $volleyId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
+    public function flag( $volleyId, $userId ){
+        $sql = 'UPDATE `tblChallenges` SET `status_id` = 6 WHERE `id` = ?';
+        $params = array( $volleyId );
+        $this->prepareAndExecute($sql, $params);
+        
+        $sql = 'INSERT INTO `tblFlaggedChallenges` ( challenge_id`, `user_id`, `added`) VALUES ( ?, ? NOW() )';
+        $params = array( $volleyId, $userId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
     public function getRandomAvailableByHashTag( $hashTag, $userId = null ){
         $v = null;
         $params = array( $hashTag );
         if( $userId ){
             $params[] = $userId;
-            $userSql = 'AND `creator_id` != ?';
+            $userSql = 'AND tc.`creator_id` != ?';
         }
         
         $sql = "
-            SELECT `id`, `creator_id`
+            SELECT tc.`id`, tc.`creator_id`
             FROM `hotornot-dev`.`tblChallenges` as tc
-                JOIN tblChallengeSubjects as tcs
+                JOIN `hotornot-dev`.tblChallengeSubjects as tcs
                 ON tc.subject_id = tcs.id
             WHERE tc.status_id = 1 
                 AND tcs.title = ? 
@@ -151,6 +166,20 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         if( $data ){
             $v = $data[0];
         }
+        
         return $v;
+    }
+    
+    public function getAllIdsForUser( $userId ){
+        $sql = '
+        	SELECT `id` 
+        	FROM `hotornot-dev`.`tblChallenges` 
+        	WHERE (`status_id` NOT IN (2,3,6,8) )
+        		AND (`creator_id` = ? OR `challenger_id` = ? ) 
+        	ORDER BY `updated` DESC
+        ';
+        $params = array( $userId, $userId );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
     }
 }

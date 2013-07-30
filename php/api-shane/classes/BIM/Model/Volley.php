@@ -67,17 +67,6 @@ class BIM_Model_Volley{
         return $volley;
     }
     
-    /**
-    $user_arr = array(
-        'id' => $user_id, 
-        'fb_id' => "",
-        'username' => "",
-        'avatar' => "",
-        'img' => "",
-        'score' => 0
-    );
-     */
-    
     public static function getHashTagId( $userId, $hashTag = 'N/A' ) {
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $hashTagId = $dao->addHashTag($hashTag, $userId);
@@ -92,9 +81,32 @@ class BIM_Model_Volley{
         $dao->accept( $this->id, $imgUrl );
     }
     
-    public function getRandomAvailableByHashTag( $hashTag, $userId = null ){
+    public function cancel(){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao->cancel( $this->id );
+    }
+    
+    public function flag( $userId ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao->flag( $this->id, $userId );
+    }
+    
+    public static function getRandomAvailableByHashTag( $hashTag, $userId = null ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $v = $dao->getRandomAvailableByHashTag( $hashTag, $userId );
-        return $this->get($v->id);
+        if( $v ){
+            $v = new self( $v->id );
+        }
+        return $v;
+    }
+    
+    public static function getAllForUser( $userId ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $volleyIds = $dao->getAllIdsForUser( $userId );
+        $volleys = array();
+        foreach( $volleyIds as $volleyId ){
+            $volleys[] = new BIM_Model_Volley($volleyId);
+        }
+        return $volleys;
     }
 }
