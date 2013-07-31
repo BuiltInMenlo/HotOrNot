@@ -29,17 +29,39 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
     }
     
-    public function add( $userId, $targetId, $hashTagId, $imgUrl, $isPrivate, $expires ){
+    public function add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires ){
         // add the new challenge
         $sql = '
             INSERT INTO `hotornot-dev`.`tblChallenges` 
-                ( `id`, `status_id`, `subject_id`, `creator_id`, `creator_img`, `challenger_id`, `challenger_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`, `expires`) 
+                ( `status_id`, `subject_id`, `creator_id`, `creator_img`, `hasPreviewed`, `votes`, `updated`, `started`, `added`, `is_private`, `expires`)
             VALUES 
-                (NULL, "2", ?, ?, ?, ?, "", "N", "0", NOW(), NOW(), NOW(), ?, ? )
+                ("2", ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ? )
         ';
-        $params = array($hashTagId, $userId, $imgUrl, $targetId, $isPrivate, $expires);
+        $params = array($hashTagId, $userId, $imgUrl, $isPrivate, $expires);
         $this->prepareAndExecute( $sql, $params );
-        return $this->lastInsertId;
+        $volleyId = $this->lastInsertId;
+        
+        if( $volleyId ){
+            // now we create the insert statement for all of the users in this volley
+            $params = array();
+            $insertSql = array();
+            foreach( $targetIds as $targetId ){
+                $insertSql[] = '(?,?)';
+                $params[] = $volleyId;
+                $params[] = $targetId;
+            }
+            $insertSql = join( ',' , $insertSql );
+            
+            $sql = "
+                INSERT INTO `hotornot-dev`.`tblChallengeParticipants`
+                    ( challenge_id, user_id )
+                VALUES 
+                	$insertSql;
+            ";
+            $this->prepareAndExecute( $sql, $params );
+        }
+        
+        return $volleyId;
     }
     
     public function addHashTag( $subject, $userId ){
@@ -63,12 +85,28 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     
     public function get( $id ){
         $volley = null;
-        $sql = 'SELECT * FROM `hotornot-dev`.`tblChallenges` WHERE `id` = ?';
+        
+        $sql = '
+        	SELECT 
+        		tc.*, 
+        		tcp.user_id AS challenger_id, 
+        		tcp.img AS challenger_img 
+        	FROM `hotornot-dev`.`tblChallenges` AS tc 
+        		JOIN `hotornot-dev`.`tblChallengeParticipants` AS tcp
+        		ON tc.id = tcp.challenge_id 
+        	WHERE tc.`id` = ?';
+        
         $params = array( $id );
         $stmt = $this->prepareAndExecute( $sql, $params );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
         if( $data ){
-            $volley = $data[0];
+            $volley = array_shift( $data );
+            $volley->challengers = array( ( object ) array( 'challenger_id' => $volley->challenger_id, 'challenger_img' => $volley->challenger_img ) );
+            unset( $volley->challenger_id );
+            unset( $volley->challenger_img );
+            foreach( $data as $row ){
+                $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img );
+            }
         }
         return $volley;
     }
@@ -121,7 +159,11 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     }
     
     public function accept( $volleyId, $imgUrl ){
-        $sql = 'UPDATE `hotornot-dev`.`tblChallenges` SET `status_id` = 4, `challenger_img` = ?, `updated` = NOW(), `started` = NOW() WHERE `id` = ? ';
+        $sql = 'UPDATE `hotornot-dev`.`tblChallenges` SET `status_id` = 4, `updated` = NOW(), `started` = NOW() WHERE `id` = ? ';
+        $params = array( $volleyId );
+        $this->prepareAndExecute($sql, $params);
+        
+        $sql = 'UPDATE `hotornot-dev`.`tblChallengeParticipants` SET img = ? where `challenge_id` = ? ';
         $params = array( $imgUrl, $volleyId );
         $this->prepareAndExecute($sql, $params);
     }

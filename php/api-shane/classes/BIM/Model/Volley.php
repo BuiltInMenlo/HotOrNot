@@ -25,26 +25,31 @@ class BIM_Model_Volley{
             'score' => 0
         );
         
-        $target = new BIM_User( $volley->challenger_id );
-        $target = (object) array(
-            'id' => $target->id, 
-            'fb_id' => $target->fb_id,
-            'username' => $target->username,
-            'avatar' => $target->getAvatarUrl(),
-            'img' => $volley->challenger_img,
-            'score' => 0
-        );
-        
-        $usersInChallenge = array( $creator, $target );
-        $likes = $dao->getLikes($volleyId);
-        foreach( $likes as $likeData ){
-            foreach( $usersInChallenge as $user ){
-                if( $user->id == $likeData->uid ){
-                    $user->score = $likeData->count;
-                    break;
+        $challengers = array();
+        foreach( $volley->challengers as $challenger ){
+            $target = new BIM_User( $challenger->challenger_id );
+            $target = (object) array(
+                'id' => $target->id, 
+                'fb_id' => $target->fb_id,
+                'username' => $target->username,
+                'avatar' => $target->getAvatarUrl(),
+                'img' => $challenger->challenger_img,
+                'score' => 0
+            );
+            
+            $usersInChallenge = array( $creator, $target );
+            $likes = $dao->getLikes($volleyId);
+            foreach( $likes as $likeData ){
+                foreach( $usersInChallenge as $user ){
+                    if( $user->id == $likeData->uid ){
+                        $user->score = $likeData->count;
+                        break;
+                    }
                 }
             }
+            $challengers[] = $target;            
         }
+        
         $this->id = $volley->id; 
         $this->status = ($userId != 0 && $userId == $volley->challenger_id && $volley->status_id == "2") ? "0" : $volley->status_id; 
         $this->subject = $dao->getSubject($volley->subject_id); 
@@ -54,15 +59,15 @@ class BIM_Model_Volley{
         $this->added = $volley->added; 
         $this->updated = $volley->updated;
         $this->creator = $creator;
-        $this->challenger = $target;
+        $this->challengers = $challengers;
         $this->expires = $expires;
     }
     
-    public static function create( $userId, $hashTag, $imgUrl, $targetId, $isPrivate, $expires ) {
+    public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires ) {
         $volleyId = null;
         $hashTagId = self::getHashTagId($userId, $hashTag);
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $volleyId = $dao->add( $userId, $targetId, $hashTagId, $imgUrl, $isPrivate, $expires );
+        $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires );
         $volley = new self( $volleyId );
         return $volley;
     }

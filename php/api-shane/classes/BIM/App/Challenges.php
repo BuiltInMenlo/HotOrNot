@@ -120,16 +120,32 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $challenger_id The ID of the user to target (integer)
      * @return An associative object for a challenge (array)
     **/
-    public function submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $targetId, $isPrivate, $expires) {
+    public function submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires) {
         $volley = null;
-        $targetUser = new BIM_User( $targetId );
         $creator = new BIM_User( $userId );
-        if ( $targetUser->isExtant() && $creator->isExtant() ) {
-            $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, $targetUser->id, $isPrivate, $expires);
+        if ( $creator->isExtant() ) {
+            if( ! is_array( $targetIds ) ){
+                $targetIds = array( $targetIds );
+            }
+            
+            $validTargetIds = array();
+            $validTargets = array();
+            foreach( $targetIds as $target ){
+                if( !is_object( $target ) ){
+                    $target = new BIM_User( $target );
+                }
+                if( $target->isExtant() ){
+                    $validTargetIds[] = $target->id;
+                    $validTargets[] = $target;
+                }
+            }
+            $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, $validTargetIds, $isPrivate, $expires);
             if( $volley ){
-                $this->acceptChallengeAsDefaultUser( $volley, $creator, $targetUser );
-                if ($targetUser->notifications == "Y"){
-                    $this->doNotification( $creator, $targetUser, $volley->id, $hashTag, $expires, $isPrivate );
+                foreach( $validTargets as $targetUser ){
+                    $this->acceptChallengeAsDefaultUser( $volley, $creator, $targetUser );
+                    if ($targetUser->notifications == "Y"){
+                        $this->doNotification( $creator, $targetUser, $volley->id, $hashTag, $expires, $isPrivate );
+                    }
                 }
             }
         }
@@ -145,12 +161,17 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $user_id The user submitting the challenge (integer)
      * @param $subject The challenge's subject (string)
      * @param $img_url The URL to the challenge's image (string)
-     * @param $username The username of the user to target (string)
+     * @param $username array | string the username(s) of the user to target (string)
      * @return An associative object for a challenge (array)
     **/
-    public function submitChallengeWithUsername($userId, $hashTag, $imgUrl, $username, $isPrivate, $expires ) {
-        $targetUser = BIM_User::getByUsername( $username );
-        return $this->submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $targetUser->id, $isPrivate, $expires);
+    public function submitChallengeWithUsername($userId, $hashTag, $imgUrl, $usernames, $isPrivate, $expires ) {
+        if( ! is_array( $usernames ) ){
+            $usernames = array( $usernames );
+        }
+        foreach( $usernames as &$uname ){
+            $uname = BIM_User::getByUsername( $uname );
+        }
+        return $this->submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $usernames, $isPrivate, $expires);
     }
     
     public function doNotification( $creator, $target, $volleyId, $hashTag, $expires, $isPrivate = 'N' ){
