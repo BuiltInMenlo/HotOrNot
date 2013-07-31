@@ -105,7 +105,7 @@
 	[self addSubview:_addFriendsButton];
 	
 	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_backButton.frame = CGRectMake(263.0, 11.0, 44.0, 44.0);
+	_backButton.frame = CGRectMake(253.0, 11.0, 44.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];

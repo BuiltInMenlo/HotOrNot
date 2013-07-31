@@ -12,6 +12,9 @@
 
 #define kStatsColor [UIColor colorWithRed:0.227 green:0.380 blue:0.349 alpha:1.0]
 
+@interface HONUserProfileRequestViewCell() <UIAlertViewDelegate>
+@property (nonatomic) BOOL isAnimating;
+@end
 
 @implementation HONUserProfileRequestViewCell
 
@@ -26,6 +29,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
+		_isAnimating = NO;
 		//[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBackground"]]];
 	}
 	
@@ -101,9 +105,35 @@
 
 
 - (void)_animateUp {
-	[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
-		self.frame = CGRectOffset(self.frame, 0.0, -200.0);
-	} completion:^(BOOL finished) {}];
+	if (!_isAnimating) {
+		_isAnimating = YES;
+		[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
+			self.frame = CGRectOffset(self.frame, 0.0, -200.0);
+		} completion:^(BOOL finished) {
+			if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < _userVO.age) {
+				[[[UIAlertView alloc] initWithTitle:@"Womp, you're too young!"
+											message:@"This profile is age range protected, send your selfie for approval!"
+										   delegate:self
+								  cancelButtonTitle:@"Cancel"
+								  otherButtonTitles:@"OK", nil] show];
+				
+			} else {
+				[[[UIAlertView alloc] initWithTitle:@"Womp, you're too old!"
+											message:@"This profile is age range protected, send your selfie for approval!"
+										   delegate:self
+								  cancelButtonTitle:@"Cancel"
+								  otherButtonTitles:@"OK", nil] show];
+			}
+		}];
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		[self.delegate profileRequestViewCell:self sendRequest:_userVO];
+	}
 }
 
 @end

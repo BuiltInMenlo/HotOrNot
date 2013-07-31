@@ -71,6 +71,8 @@ NSString * const kAPIEmailContacts = @"users/ffemail";
 NSString * const kAPIChallengeObject = @"challenges/get";
 NSString * const kAPIGetPublicMessages = @"challenges/getpublic";
 NSString * const kAPIGetPrivateMessages = @"challenges/getprivate";
+NSString * const kAPISetUserAgeGroup = @"users/setage";
+
 
 
 // view heights
@@ -281,6 +283,7 @@ NSString * const kTwilioSMS = @"6475577873";
 														  [NSString stringWithFormat:@"%d", 0], @"votes",
 														  [NSString stringWithFormat:@"%d", 0], @"pokes",
 														  [NSString stringWithFormat:@"%d", 0], @"pics",
+														  [NSString stringWithFormat:@"%d", 0], @"age",
 														  [[dict objectForKey:@"user"] objectForKey:@"username"], @"username",
 														  @"", @"fb_id",
 														  [[dict objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];

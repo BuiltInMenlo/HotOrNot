@@ -610,6 +610,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 															   [NSString stringWithFormat:@"%d", 0], @"votes",
 															   [NSString stringWithFormat:@"%d", 0], @"pokes",
 															   [NSString stringWithFormat:@"%d", 0], @"pics",
+															   [NSString stringWithFormat:@"%d", 0], @"age",
 															   vo.challengerName, @"username",
 															   vo.challengerFB, @"fb_id",
 															   vo.challengerAvatar, @"avatar_url", nil]];
@@ -632,6 +633,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 															   [NSString stringWithFormat:@"%d", 0], @"votes",
 															   [NSString stringWithFormat:@"%d", 0], @"pokes",
 															   [NSString stringWithFormat:@"%d", 0], @"pics",
+															   [NSString stringWithFormat:@"%d", 0], @"age",
 															   vo.challengerName, @"username",
 															   vo.challengerFB, @"fb_id",
 															   vo.challengerAvatar, @"avatar_url", nil]];

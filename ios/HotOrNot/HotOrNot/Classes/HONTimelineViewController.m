@@ -32,7 +32,7 @@
 #import "HONVerifyViewController.h"
 
 
-@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate>
+@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONUserProfileRequestViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate>
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
@@ -43,7 +43,7 @@
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic) BOOL isPushView;
 @property (nonatomic) BOOL isPublic;
-@property (nonatomic) BOOL isFriend;
+@property (nonatomic) BOOL isProfileViewable;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) UIImageView *findFriendsImageView;
@@ -242,19 +242,19 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
 			
-			_isFriend = NO;
+			_isProfileViewable = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] == _userVO.age || [[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] <= 0 || _userVO.age <= 0);
 			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
 				if (vo.userID == _userVO.userID) {
-					_isFriend = YES;
+					_isProfileViewable = YES;
 					break;
 				}
 			}
 			
-			if (!_isFriend)
+			if (!_isProfileViewable)
 				[_headerView setTitle:@"Sending Request…"];
 			
 			[_tableView reloadData];
@@ -332,7 +332,7 @@
 	[self.view addSubview:bgImageView];
 	
 	_userVO = nil;
-	_isFriend = YES;
+	_isProfileViewable = YES;
 	_challenges = [NSMutableArray array];
 	
 	if (_isPushView) {
@@ -408,8 +408,13 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+//	if (_timelineType == HONTimelineTypeSingleUser)
+//		[self _retrieveUser];
+//	
+//	[self _retrieveChallenges];
+	
 	if (_timelineType == HONTimelineTypeSingleUser)
-		[self _retrieveUser];
+		[self performSelector:@selector(_retrieveUser) withObject:nil afterDelay:0.125];
 	
 	[self _retrieveChallenges];
 	
@@ -424,8 +429,8 @@
 		[self _goVerify];
 #endif
 		
-		//		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
-		//			[self _goVerify];
+//		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
+//			[self _goVerify];
 		
 		if ([HONAppDelegate isLocaleEnabled]) {
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
@@ -716,6 +721,7 @@
 													   [NSString stringWithFormat:@"%d", 0], @"votes",
 													   [NSString stringWithFormat:@"%d", 0], @"pokes",
 													   [NSString stringWithFormat:@"%d", 0], @"pics",
+													   [NSString stringWithFormat:@"%d", 0], @"age",
 													   challengeVO.challengerName, @"username",
 													   challengeVO.challengerFB, @"fb_id",
 													   challengeVO.challengerAvatar, @"avatar_url", nil]];
@@ -737,6 +743,7 @@
 													   [NSString stringWithFormat:@"%d", 0], @"votes",
 													   [NSString stringWithFormat:@"%d", 0], @"pokes",
 													   [NSString stringWithFormat:@"%d", 0], @"pics",
+													   [NSString stringWithFormat:@"%d", 0], @"age",
 													   challengeVO.creatorName, @"username",
 													   challengeVO.creatorFB, @"fb_id",
 													   challengeVO.creatorAvatar, @"avatar_url", nil]];
@@ -786,6 +793,13 @@
 }
 
 
+#pragma mark - ProfileRequestView Delegates
+- (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell sendRequest:(HONUserVO *)vo {
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo withSubject:@"#verifyMe"]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
 #pragma mark - EmptyTimelineView Delegates
 - (void)emptyTimelineViewVerify:(HONEmptyTimelineView *)emptyTimelineView {
 	[[Mixpanel sharedInstance] track:@"Timeline - Verify"
@@ -805,7 +819,13 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (((int)(_isFriend) * [_challenges count]) + (int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser));
+	if (_isProfileViewable)
+		return ([_challenges count] + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
+	
+	else
+		return (1);
+	
+	//return (((int)(_isProfileViewable) * [_challenges count]) + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -835,7 +855,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (_timelineType == HONTimelineTypeSingleUser && _userVO != nil) {
 		if (indexPath.row == 0) {
-			if (_isFriend) {
+			if (_isProfileViewable) {
 				HONUserProfileViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 				
 				if (cell == nil) {
@@ -855,7 +875,7 @@
 					cell.userVO = _userVO;
 				}
 				
-				//cell.delegate = self;
+				cell.delegate = self;
 				[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 				return (cell);
 			}
@@ -893,7 +913,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return ((_timelineType == HONTimelineTypeSingleUser) ? (_isFriend) ? 210.0 : 420.0 : 320.0);
+		return ((_timelineType == HONTimelineTypeSingleUser) ? (_isProfileViewable) ? 210.0 : 420.0 : 320.0);
 		
 	} else
 		return (320.0);

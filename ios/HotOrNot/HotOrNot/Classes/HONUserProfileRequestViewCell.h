@@ -21,4 +21,5 @@
 @end
 
 @protocol HONUserProfileRequestViewCellDelegate
+- (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell sendRequest:(HONUserVO *)vo;
 @end

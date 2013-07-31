@@ -278,7 +278,9 @@ const CGFloat kFocusInterval = 0.5f;
 				
 			} else {
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+				
+				//if (![_subjectName isEqualToString:@"#verifyMe"])
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
 				if (_imagePicker.parentViewController != nil) {
 					[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
@@ -390,6 +392,7 @@ const CGFloat kFocusInterval = 0.5f;
 																[NSString stringWithFormat:@"%d", 0], @"votes",
 																[NSString stringWithFormat:@"%d", 0], @"pokes",
 																[NSString stringWithFormat:@"%d", 0], @"pics",
+																[NSString stringWithFormat:@"%d", 0], @"age",
 																_challengeVO.creatorName, @"username",
 																_challengeVO.creatorFB, @"fb_id",
 																_challengeVO.creatorAvatar, @"avatar_url", nil]]];
@@ -402,6 +405,7 @@ const CGFloat kFocusInterval = 0.5f;
 																	[NSString stringWithFormat:@"%d", 0], @"votes",
 																	[NSString stringWithFormat:@"%d", 0], @"pokes",
 																	[NSString stringWithFormat:@"%d", 0], @"pics",
+																	[NSString stringWithFormat:@"%d", 0], @"age",
 																	_challengeVO.creatorName, @"username",
 																	_challengeVO.creatorFB, @"fb_id",
 																	_challengeVO.creatorAvatar, @"avatar_url", nil]]];
@@ -413,6 +417,7 @@ const CGFloat kFocusInterval = 0.5f;
 																	[NSString stringWithFormat:@"%d", 0], @"votes",
 																	[NSString stringWithFormat:@"%d", 0], @"pokes",
 																	[NSString stringWithFormat:@"%d", 0], @"pics",
+																	[NSString stringWithFormat:@"%d", 0], @"age",
 																	_challengeVO.challengerName, @"username",
 																	_challengeVO.challengerFB, @"fb_id",
 																	_challengeVO.challengerAvatar, @"avatar_url", nil]]];

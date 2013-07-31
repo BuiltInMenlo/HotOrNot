@@ -80,7 +80,7 @@
 		[_controlsHolderView addSubview:submitButton];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(270.0, 5.0, 44.0, 44.0);
+		skipButton.frame = CGRectMake(250.0, 5.0, 44.0, 44.0);
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];

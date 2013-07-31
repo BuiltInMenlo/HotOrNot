@@ -53,10 +53,11 @@
 									  [NSString stringWithFormat:@"%d", _ageRangeType], @"age_range", nil]];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 7], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-							[NSString stringWithFormat:@"%d", _ageRangeType], @"age_range",
+							[NSString stringWithFormat:@"%d", _ageRangeType], @"age",
 							nil];
+	
+	NSLog(@"PARMS:[%@]", params);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_checkUsername", nil);
@@ -64,9 +65,9 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPISetUserAgeGroup);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPISetUserAgeGroup parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -85,27 +86,20 @@
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
-			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-				
-				[HONAppDelegate writeUserInfo:userResult];
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-				
-			} else {
-				if (_progressHUD == nil)
-					_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_usernameTaken", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:1.5];
-				_progressHUD = nil;
-				
-				
-			}
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+			
+			NSMutableArray *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
+			[userInfo setValue:[NSString stringWithFormat:@"%d", _ageRangeType] forKey:@"age"];
+			[HONAppDelegate writeUserInfo:[userInfo copy]];
+			
+			[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
+			}];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -128,17 +122,25 @@
 - (void)loadView {
 	[super loadView];
 	
-	_ranges = [NSArray arrayWithObjects:@"All", @"13-15", @"15-17", nil];
+	_ageRangeType = 0;
+	_ranges = [NSArray arrayWithObjects:@"All", @"13-17", @"18-25", @"26-35", @"36+", nil];
 	
 	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
 	bgImageView.frame = [UIScreen mainScreen].bounds;
 	[self.view addSubview:bgImageView];
 	
-	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 182.0 : 153.0, 244.0, 44.0)];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, ([HONAppDelegate isRetina5]) ? 5.0 : 10.0, 254.0, ([HONAppDelegate isRetina5]) ? 144.0 : 124.0)];
+	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunAgeRangeCopy-568h@2x" : @"firstRunAgeRangeCopy"];
+	[self.view addSubview:captionImageView];
+	
+	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 147.0, 244.0, 44.0)];
 	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
+	inputBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:inputBGImageView];
 	
 	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(6.0, 8.0, 230.0, 30.0)];
+	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
+	_birthdayLabel.textColor = [HONAppDelegate honGrey710Color];
 	_birthdayLabel.text = [_ranges objectAtIndex:0];
 	[inputBGImageView addSubview:_birthdayLabel];
 	
@@ -166,10 +168,13 @@
 
 #pragma mark - Navigation
 - (void)_goSubmit {
-	//[self _submitAgeRange];
+	[self _submitAgeRange];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+//	
+//	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 
@@ -192,6 +197,7 @@
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+	_ageRangeType = row;
 	_birthdayLabel.text = [_ranges objectAtIndex:row];
 }
 

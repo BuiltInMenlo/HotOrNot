@@ -100,6 +100,7 @@
 															   @"", @"votes",
 															   @"", @"pokes",
 															   @"", @"pics",
+															   @"", @"age",
 															   @"", @"fb_id", nil]];
 				[_inAppContacts addObject:vo];
 			}
@@ -165,6 +166,7 @@
 															   @"", @"votes",
 															   @"", @"pokes",
 															   @"", @"pics",
+															   @"", @"age",
 															   @"", @"fb_id", nil]];
 				[_inAppContacts addObject:vo];
 			}
@@ -495,12 +497,19 @@
 	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Find Friends"];
 	[self.view addSubview:headerView];
 	
-	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(250.0, 0.0, 64.0, 44.0);
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
-	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
-	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:doneButton];
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:closeButton];
+	
+	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	inviteAllButton.frame = CGRectMake(250.0, 0.0, 64.0, 44.0);
+	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
+	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
+	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:inviteAllButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 65.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
@@ -579,16 +588,8 @@
 
 
 #pragma mark - Navigation
-- (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Back"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)_goDone {
-	[[Mixpanel sharedInstance] track:@"Add Contacts - Done"
+- (void)_goClose {
+	[[Mixpanel sharedInstance] track:@"Add Contacts - Close"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	

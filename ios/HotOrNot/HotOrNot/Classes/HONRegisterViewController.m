@@ -180,11 +180,11 @@
 	_progressHUD.taskInProgress = YES;
 	
 	@try {
-		float avatarSize = 200.0;
+		float avatarSize = kSnapLargeDim;
 		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
 		
 		UIImage *lImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
-		lImage =	[HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
+		lImage = [HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
 		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:_filename inBucket:@"hotornot-avatars"];
@@ -308,15 +308,16 @@
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 49.0, 320.0, ([HONAppDelegate isRetina5]) ? 110.0 : 87.0)];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, ([HONAppDelegate isRetina5]) ? 5.0 : 10.0, 254.0, ([HONAppDelegate isRetina5]) ? 144.0 : 124.0)];
 	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunCopy_username-568h@2x" : @"firstRunCopy_username"];
 	[_usernameHolderView addSubview:captionImageView];
 	
-	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 163.0, 244.0, 44.0)];
+	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 147.0, 244.0, 44.0)];
 	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
+	inputBGImageView.userInteractionEnabled = YES;
 	[_usernameHolderView addSubview:inputBGImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina5]) ? 200.0 : 171.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(6.0, 8.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -330,7 +331,7 @@
 	_usernameTextField.placeholder = @"@username";
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
-	[_usernameHolderView addSubview:_usernameTextField];
+	[inputBGImageView addSubview:_usernameTextField];
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	[self.view addSubview:_tutorialHolderView];
@@ -372,8 +373,8 @@
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"nextStepButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"nextStepButton_Active"] forState:UIControlStateHighlighted];
 	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
 	_submitButton.hidden = YES;
 	[self.view addSubview:_submitButton];
@@ -448,7 +449,7 @@
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
 	[UIView setAnimationDelay:0.33];
-	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height - ((int)!([HONAppDelegate isRetina5]) * 25.0));
+	_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 	[UIView commitAnimations];
 }
 

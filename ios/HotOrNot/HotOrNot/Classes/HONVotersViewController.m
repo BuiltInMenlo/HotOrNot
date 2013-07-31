@@ -163,6 +163,7 @@
 												   [NSString stringWithFormat:@"%d", _voterVO.votes], @"votes",
 												   [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
 												   [NSString stringWithFormat:@"%d", 0], @"pics",
+												   [NSString stringWithFormat:@"%d", 0], @"age",
 												   _voterVO.username, @"username",
 												   _voterVO.fbID, @"fb_id",
 												   _voterVO.imageURL, @"avatar_url", nil]];
