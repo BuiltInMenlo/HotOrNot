@@ -279,7 +279,7 @@ const CGFloat kFocusInterval = 0.5f;
 			} else {
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				
-				//if (![_subjectName isEqualToString:@"#verifyMe"])
+				if (![_subjectName isEqualToString:@"#verifyMe"])
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
 				if (_imagePicker.parentViewController != nil) {

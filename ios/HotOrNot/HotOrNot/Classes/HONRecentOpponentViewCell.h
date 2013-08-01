@@ -15,6 +15,7 @@
 @interface HONRecentOpponentViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
+- (id)initAsInviteUser:(BOOL)isInvite;
 - (void)toggleSelected:(BOOL)isSelected;
 @property (nonatomic, retain) HONUserVO *userVO;
 @property (nonatomic, assign) id <HONRecentOpponentViewCellDelegate> delegate;

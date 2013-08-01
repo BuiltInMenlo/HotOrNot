@@ -28,17 +28,17 @@
 		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_checkButton.frame = CGRectMake(266.0, 9.0, 44.0, 44.0);
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateHighlighted];
+		_checkButton.frame = CGRectMake(246.0, 9.0, 64.0, 44.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_nonActive"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"checkmarkButton_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUninvite) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self addSubview:_checkButton];
 		
 		_inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_inviteButton.frame = CGRectMake(259.0, 9.0, 44.0, 44.0);
-		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"emailButton_nonActive"] forState:UIControlStateNormal];
-		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"emailButton_Active"] forState:UIControlStateHighlighted];
+		_inviteButton.frame = CGRectMake(246.0, 9.0, 64.0, 44.0);
+		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
+		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
 		[_inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_inviteButton];
 	}

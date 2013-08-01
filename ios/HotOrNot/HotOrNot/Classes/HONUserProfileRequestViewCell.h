@@ -21,5 +21,6 @@
 @end
 
 @protocol HONUserProfileRequestViewCellDelegate
+- (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell reportAbuse:(HONUserVO *)vo;
 - (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell sendRequest:(HONUserVO *)vo;
 @end

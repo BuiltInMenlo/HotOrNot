@@ -511,7 +511,7 @@
 		HONRecentOpponentViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			cell = [[HONRecentOpponentViewCell alloc] init];
+			cell = [[HONRecentOpponentViewCell alloc] initAsInviteUser:NO];
 			cell.userVO = (HONUserVO *)[_recents objectAtIndex:indexPath.row];
 			
 			for (HONUserVO *vo in _selectedRecents) {

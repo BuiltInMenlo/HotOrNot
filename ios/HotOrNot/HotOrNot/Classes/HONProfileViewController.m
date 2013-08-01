@@ -610,7 +610,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0)
-		return (210.0);
+		return (237.0);
 	
 	else
 		return (kOrthodoxTableCellHeight);

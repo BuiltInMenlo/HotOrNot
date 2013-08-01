@@ -30,6 +30,7 @@
 #import "HONAddContactsViewController.h"
 #import "HONPopularViewController.h"
 #import "HONVerifyViewController.h"
+#import "HONImagingDepictor.h"
 
 
 @interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONUserProfileRequestViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate>
@@ -388,15 +389,15 @@
 	[self.view addSubview:_tableView];
 	
 	_findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
-	_findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-586@2x" : @"findFriends"];
+	_findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-568h@2x" : @"findFriends"];
 	_findFriendsImageView.userInteractionEnabled = YES;
 	_findFriendsImageView.hidden = ([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
 	[self.view addSubview:_findFriendsImageView];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	ctaButton.frame = CGRectMake(0.0, 164.0, 320.0, 53.0);
-	[ctaButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
-	[ctaButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
+	ctaButton.frame = CGRectMake(0.0, 302.0, 320.0, 53.0);
+	[ctaButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateNormal];
+	[ctaButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateHighlighted];
 	[ctaButton addTarget:self action:@selector(_goAddContactsAlert) forControlEvents:UIControlEventTouchUpInside];
 	[_findFriendsImageView addSubview:ctaButton];
 	
@@ -414,9 +415,10 @@
 //	[self _retrieveChallenges];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
-		[self performSelector:@selector(_retrieveUser) withObject:nil afterDelay:0.125];
+		[self performSelector:@selector(_retrieveUser) withObject:nil afterDelay:0.25];
 	
 	[self _retrieveChallenges];
+	//[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.5];
 	
 #if __ALWAYS_REGISTER__ == 1
 	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
@@ -525,23 +527,26 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	UINavigationController *navigationController;
-	if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"celeb"])
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
 	
-//	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"tumblr"])
-//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONTumblrLoginViewController alloc] init]];
-//	
-//	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"instagram"])
-//		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInstagramLoginViewController alloc] init]];
+	if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"celeb"]) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
+		if ([[HONAppDelegate timelineBannerURL] length] > 0) {
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
 	
-	else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"popular"])
-		navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+	} else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"popular"]) {
+		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
+		if ([[HONAppDelegate timelineBannerURL] length] > 0) {
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
 	
-	if ([[HONAppDelegate timelineBannerURL] length] > 0) {
-		//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+	} else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"instagram"]) {
+		UIImage *image = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
+																								[HONAppDelegate instagramShareComment], @"caption",
+																								image, @"image", nil]];
 	}
 }
 
@@ -607,6 +612,7 @@
 //													   delegate:self
 //											  cancelButtonTitle:@"Yes"
 //											  otherButtonTitles:@"No", nil];
+//	[alertView setTag:0];
 //	[alertView show];
 }
 
@@ -639,10 +645,13 @@
 }
 
 - (void)_showAddContacts:(NSNotification *)notification {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find Friends?"
+														message:@"Would you like to find friends from your contacts list?"
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:1];
+	[alertView show];
 }
 
 - (void)_refreshVoteTab:(NSNotification *)notification {
@@ -794,6 +803,14 @@
 
 
 #pragma mark - ProfileRequestView Delegates
+- (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell reportAbuse:(HONUserVO *)vo {
+	[[Mixpanel sharedInstance] track:@"Timeline Profile - Report Abuse"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self _flagUser:vo.userID];
+}
+
 - (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell sendRequest:(HONUserVO *)vo {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo withSubject:@"#verifyMe"]];
 	[navigationController setNavigationBarHidden:YES];
@@ -913,7 +930,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return ((_timelineType == HONTimelineTypeSingleUser) ? (_isProfileViewable) ? 210.0 : 420.0 : 320.0);
+		return ((_timelineType == HONTimelineTypeSingleUser) ? (_isProfileViewable) ? 237.0 : 620.0 : 320.0);
 		
 	} else
 		return (320.0);
@@ -934,20 +951,30 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (buttonIndex == 0) {
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																 delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:nil
-														otherButtonTitles:@"Use mobile #", @"Use email address", nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:0];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	if (alertView.tag == 0) {
+		if (buttonIndex == 0) {
+			UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																	 delegate:self
+															cancelButtonTitle:@"Cancel"
+													   destructiveButtonTitle:nil
+															otherButtonTitles:@"Use mobile #", @"Use email address", nil];
+			actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+			[actionSheet setTag:0];
+			[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+			
+		} else if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
 		
-	} else if (buttonIndex == 1) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
+	} else if (alertView.tag == 1) {
+		if (buttonIndex == 1) {
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		}
 	}
 }
 

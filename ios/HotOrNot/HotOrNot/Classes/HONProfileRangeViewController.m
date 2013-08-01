@@ -47,11 +47,6 @@
 
 #pragma mark - Data Calls
 - (void)_submitAgeRange {
-	[[Mixpanel sharedInstance] track:@"Register - Submit Range"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d", _ageRangeType], @"age_range", nil]];
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[NSString stringWithFormat:@"%d", _ageRangeType], @"age",
@@ -89,6 +84,10 @@
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 			
+			[[Mixpanel sharedInstance] track:@"Register - Submit"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
 			NSMutableArray *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
 			[userInfo setValue:[NSString stringWithFormat:@"%d", _ageRangeType] forKey:@"age"];
 			[HONAppDelegate writeUserInfo:[userInfo copy]];
@@ -122,14 +121,14 @@
 - (void)loadView {
 	[super loadView];
 	
-	_ageRangeType = 0;
-	_ranges = [NSArray arrayWithObjects:@"All", @"13-17", @"18-25", @"26-35", @"36+", nil];
+	_ageRangeType = 1;
+	_ranges = [NSArray arrayWithObjects:@"13-17", @"18-25", @"26-35", @"36+", nil];
 	
 	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
 	bgImageView.frame = [UIScreen mainScreen].bounds;
 	[self.view addSubview:bgImageView];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, ([HONAppDelegate isRetina5]) ? 5.0 : 10.0, 254.0, ([HONAppDelegate isRetina5]) ? 144.0 : 124.0)];
+	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, 15.0, 254.0, ([HONAppDelegate isRetina5]) ? 144.0 : 124.0)];
 	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunAgeRangeCopy-568h@2x" : @"firstRunAgeRangeCopy"];
 	[self.view addSubview:captionImageView];
 	
@@ -168,13 +167,12 @@
 
 #pragma mark - Navigation
 - (void)_goSubmit {
-	[self _submitAgeRange];
+	[[Mixpanel sharedInstance] track:@"Register - Submit Range"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d", _ageRangeType], @"range", nil]];
 	
-//	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-//	[[NSUserDefaults standardUserDefaults] synchronize];
-//	
-//	[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+	[self _submitAgeRange];
 }
 
 
@@ -197,7 +195,13 @@
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-	_ageRangeType = row;
+	_ageRangeType = row + 1;
+	
+	[[Mixpanel sharedInstance] track:@"Register - Change Range"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d", _ageRangeType], @"range", nil]];
+	
 	_birthdayLabel.text = [_ranges objectAtIndex:row];
 }
 

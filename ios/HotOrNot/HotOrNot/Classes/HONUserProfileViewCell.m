@@ -35,7 +35,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBackground"]]];
+		//[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBackground"]]];
 	}
 	
 	return (self);
@@ -46,9 +46,13 @@
 	
 	[self addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(127.0, 31.0)]];
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(113.0, 17.0, 93.0, 93.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(100.0, 17.0, 120.0, 120.0)];
 	_avatarImageView.userInteractionEnabled = YES;
 	[self addSubview:_avatarImageView];
+	
+	UIImageView *avatarMaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
+	avatarMaskImageView.frame = _avatarImageView.frame;
+	[self addSubview:avatarMaskImageView];
 	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	if (isUser) {
@@ -83,7 +87,7 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	float yPos = 124.0;
+	float yPos = 151.0;
 	
 	//_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, yPos, 80.0, 16.0)];
 	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, yPos, 80.0, 16.0)];
@@ -127,7 +131,7 @@
 	[self addSubview:_ptsLabel];
 	
 	UIButton *statusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	statusButton.frame = CGRectMake(21.0, 152.0, 129.0, 44.0);
+	statusButton.frame = CGRectMake(21.0, 179.0, 129.0, 44.0);
 	[statusButton setBackgroundImage:[UIImage imageNamed:@"statusButton_nonActive"] forState:UIControlStateNormal];
 	[statusButton setBackgroundImage:[UIImage imageNamed:@"statusButton_Active"] forState:UIControlStateHighlighted];
 	[statusButton addTarget:self action:@selector(_goNewSnap) forControlEvents:UIControlEventTouchUpInside];
@@ -135,7 +139,7 @@
 	[self addSubview:statusButton];
 	
 	UIButton *findFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	findFriendsButton.frame = CGRectMake(168.0, 152.0, 129.0, 44.0);
+	findFriendsButton.frame = CGRectMake(168.0, 179.0, 129.0, 44.0);
 	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"friendsButton_nonActive"] forState:UIControlStateNormal];
 	[findFriendsButton setBackgroundImage:[UIImage imageNamed:@"friendsButton_Active"] forState:UIControlStateHighlighted];
 	[findFriendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
@@ -143,20 +147,20 @@
 	[self addSubview:findFriendsButton];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(21.0, 152.0, 129.0, 44.0);
+	snapButton.frame = CGRectMake(21.0, 179.0, 279.0, 44.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_nonActive"] forState:UIControlStateNormal];
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goUserChallenge) forControlEvents:UIControlEventTouchUpInside];
 	snapButton.hidden = isUser;
 	[self addSubview:snapButton];
 	
-	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	addFriendButton.frame = CGRectMake(168.0, 152.0, 129.0, 44.0);
-	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
-	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
-	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
-	addFriendButton.hidden = isUser;
-	[self addSubview:addFriendButton];
+//	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	addFriendButton.frame = CGRectMake(168.0, 179.0, 129.0, 44.0);
+//	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
+//	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
+//	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
+//	addFriendButton.hidden = isUser;
+//	[self addSubview:addFriendButton];
 }
 
 - (void)updateCell {

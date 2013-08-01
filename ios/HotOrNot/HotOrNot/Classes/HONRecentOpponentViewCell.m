@@ -24,6 +24,29 @@
 	return (NSStringFromClass(self));
 }
 
+- (id)initAsInviteUser:(BOOL)isInvite {
+	if ((self = [super init])) {
+		self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"genericRowBackground_nonActive"]];
+		//self.selectedBackgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"rowGray_nonActive"]];
+		
+		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_checkButton.frame = CGRectMake(266.0, 9.0, 44.0, 44.0);
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateHighlighted];
+		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
+		_checkButton.hidden = YES;
+		[self addSubview:_checkButton];
+		
+		_followButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_followButton.frame = CGRectMake(258.0 - ((int)(isInvite) * 20.0), 9.0, 44.0 + ((int)(isInvite) * 20.0), 44.0);
+		[_followButton setBackgroundImage:[UIImage imageNamed:(isInvite) ? @"followButton_nonActive" : @"addFriendPlus_nonActive"] forState:UIControlStateNormal];
+		[_followButton setBackgroundImage:[UIImage imageNamed:(isInvite) ? @"followButton_Active" : @"addFriendPlus_Active"] forState:UIControlStateHighlighted];
+		[_followButton addTarget:self action:@selector(_goFollow) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_followButton];
+	}
+	
+	return (self);
+}
 
 - (id)init {
 	if ((self = [super init])) {
