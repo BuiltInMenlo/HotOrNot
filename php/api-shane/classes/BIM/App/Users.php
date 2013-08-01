@@ -73,7 +73,8 @@ class BIM_App_Users extends BIM_App_Base{
 			'website' => $row->website,
 			'paid' => $row->paid,
 			'points' => $row->points, 
-			'votes' => $votes, 
+			'votes' => $votes,
+		    'age' => $row->age,
 			'pokes' => $pokes, 
 			'pics' => $pics,
 			'notifications' => $row->notifications, 
@@ -169,7 +170,30 @@ class BIM_App_Users extends BIM_App_Base{
 			$result = mysql_query($query);
 			
 			// starting users & snaps
-			$snap_arr = array(
+            $snap_arr = array(
+            	array(// @Team Volley #welcomeVolley
+            		'user_id' => "2394", 
+            		'subject_id' => "1367", 
+            		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000000"),
+            	
+            	array(// @Team Volley #teamVolleyRules
+            		'user_id' => "2394", 
+            		'subject_id' => "1368", 
+            		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000001"),
+            		
+            	array(// @Team Volley #teamVolley
+            		'user_id' => "2394", 
+            		'subject_id' => "1369", 
+            		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000002"),
+            		
+            	array(// @Team Volley #teamVolleygirls
+            		'user_id' => "2394", 
+            		'subject_id' => "1370", 
+            		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000003")
+            );
+            $snap_arr = array( $snap_arr[ array_rand( $snap_arr ) ] );
+			/*
+            $snap_arr = array(
 				array(// @jason #bestFriend
 					'user_id' => "2393", 
 					'subject_id' => "9", 
@@ -183,7 +207,8 @@ class BIM_App_Users extends BIM_App_Base{
 					'subject_id' => "28", 
 					'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff_0000000001") 
 			);
-			
+			*/
+            
 			// loop thru user/snap array
 			foreach ($snap_arr as $key => $val) {
 				
@@ -670,6 +695,14 @@ class BIM_App_Users extends BIM_App_Base{
 	    }
 	    return $verified;
 	}
+	
+    public function setAge( $userId, $ageRange ){
+        $user = new BIM_User( $userId );
+        if( $user->isExtant() ){
+            $user->setAgeRange( $ageRange );
+        }
+        return $this->userObject( $userId );
+    }
 	
 	/**
 	 * Debugging function

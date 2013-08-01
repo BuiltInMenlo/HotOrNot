@@ -17,6 +17,12 @@ class BIM_User{
         
     }
     
+    public function setAgeRange( $ageRange ){
+        $this->age = $ageRange;
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->setAgeRange( $this->id, $ageRange );        
+    }
+    
     public static function isVerified( $userId ){
         $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
         $res = $dao->getPhoneList( (object) array('id' => $userId ) );

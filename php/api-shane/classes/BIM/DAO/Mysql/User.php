@@ -37,4 +37,18 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 		}
 		return $id;
 	}
+	
+	public function canPush(){
+	    $can = false;
+	    if( !empty( $this->notifications ) && $this->notifications == "Y" ){
+	        $can = true;
+	    }
+	    return $can;
+	}
+	
+	public function setAgeRange( $userId, $ageRange ){
+	    $sql = 'update `hotornot-dev`.tblUsers set age = ? where id = ? ';
+	    $params = array( $ageRange, $userId );
+	    $this->prepareAndExecute( $sql, $params );
+	}
 }

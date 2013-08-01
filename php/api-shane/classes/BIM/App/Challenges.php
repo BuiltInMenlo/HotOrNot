@@ -542,6 +542,9 @@ class BIM_App_Challenges extends BIM_App_Base{
                 $expiresTxt = ' that will expire in 10 mins';
 	        }
  		    $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. $subject";
+	        if( strtolower( $subject ) == '#verifyme' ){
+	            $msg = "@$creator_obj->username has requested verification to see your profile! Volley them back to approve #verifyMe";
+	        }
 			$push = array(
 		    	"device_tokens" =>  array( $challenger_obj->device_token ), 
 		    	"type" => "1", 
@@ -630,6 +633,9 @@ class BIM_App_Challenges extends BIM_App_Base{
                     $expiresTxt = ' that will expire in 10 mins';
  		        }
  		        $msg = "@$creator_obj->username has sent you a$private Volley$expiresTxt. $subject";
+ 		        if( strtolower( $subject ) == '#verifyme' ){
+ 		            $msg = "@$creator_obj->username has requested verification to see your profile! Volley them back to approve #verifyMe";
+ 		        }
     			$push = array(
     		    	"device_tokens" =>  array( $challenger_obj->device_token ), 
     		    	"type" => "1", 
@@ -870,6 +876,9 @@ class BIM_App_Challenges extends BIM_App_Base{
 		// send push if allowed
 		if ($isPush){
 	        $msg = "$challenger_name has accepted your $subject_name snap!";
+	        if( strtolower( $subject_name ) == '#verifyme' ){
+	            $msg = "@$challenger_name has approved your verification request! Volley on!";
+	        }
 			$push = array(
 		    	"device_tokens" =>  array( $creator_obj->device_token ), 
 		    	"type" => "3", 
@@ -883,6 +892,34 @@ class BIM_App_Challenges extends BIM_App_Base{
 		// update the challenge to started
 		$query = 'UPDATE `tblChallenges` SET `status_id` = 4, `challenger_id` = "'. $user_id .'", `challenger_img` = "'. $img_url .'", `updated` = NOW(), `started` = NOW() WHERE `id` = '. $challenge_id .';';
 		$result = mysql_query($query);			
+		
+        // now we check to see if it is OK to auto friend due to the special tag that is passed
+        if( strtolower( $subject_name ) == '#verifyme' ){
+            // now we auto friend and send pushes if OK to send pushes
+            $social = new BIM_App_Social();
+            $params = (object) array(
+                'userID' => $challenge_obj->creator_id,
+                'target' => $user_id,
+                'auto' => true,
+            );
+            // we auto friend here and we DO NOT send a push
+            // as we are going to send a special push below
+            $social->addFriend( $params, false );
+            
+            $targetUser = new BIM_User( $user_id );
+            if( $targetUser->notifications == 'Y' ){
+                $creator = new BIM_User( $challenge_obj->creator_id );
+                $msg = "@$creator->username has been verified and can now view your profile! Volley on!";
+    			$push = array(
+    		    	"device_tokens" =>  array( $targetUser->device_token ), 
+    		    	"aps" =>  array(
+    		    		"alert" =>  $msg,
+    		    		"sound" =>  "push_01.caf"
+    		        )
+    		    );
+        	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+            }
+        }
 		
 		// return
 		return array(
