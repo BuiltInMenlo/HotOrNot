@@ -8,9 +8,10 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     }
     
     public function getChallengesForUserBeforeDate(){
-        if (isset($_POST['userID']) && isset($_POST['prevIDs']) && isset($_POST['datetime'])){
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID']) && isset($input['prevIDs']) && isset($input['datetime'])){
             $challenges = new BIM_App_Challenges();
-            return $challenges->getChallengesForUserBeforeDate($_POST['userID'], $_POST['prevIDs'], $_POST['datetime']);
+            return $challenges->getChallengesForUserBeforeDate($input['userID'], $input['prevIDs'], $input['datetime']);
         }
     }    
     
@@ -26,9 +27,10 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     }
     
     public function updatePreviewed(){
-        if (isset($_POST['challengeID'])){
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['challengeID'])){
             $challenges = new BIM_App_Challenges();
-            $volley = $challenges->updatePreviewed($_POST['challengeID']);
+            $volley = $challenges->updatePreviewed($input['challengeID']);
             return array(
                 'id' => $volley->id
             );
@@ -36,9 +38,10 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     }
     
     public function getPreviewForSubject(){
-        if (isset($_POST['subjectName'])){
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['subjectName'])){
             $challenges = new BIM_App_Challenges();
-            return $challenges->getPreviewForSubject($_POST['subjectName']);
+            return $challenges->getPreviewForSubject($input['subjectName']);
         }
     }
     
@@ -146,24 +149,30 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function cancelChallenge(){
         $uv = null;
-        if (isset($_POST['challengeID'])) {
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['challengeID'])) {
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->cancelChallenge( $_POST['challengeID'] );
+            $uv = $challenges->cancelChallenge( $input['challengeID'] );
         }
-        return array(
-            'id' => $uv->id
-        );
+        if( $uv ){
+            return array(
+                'id' => $uv->id
+            );
+        }
     }
     
     public function acceptChallenge(){
         $uv = null;
-        if (isset( $_POST['userID']) && isset($_POST['challengeID']) && isset($_POST['imgURL'])) {
+        $input = $_POST ? $_POST : $_GET;
+        if (isset( $input['userID']) && isset($input['challengeID']) && isset($input['imgURL'])) {
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->acceptChallenge( $_POST['userID'], $_POST['challengeID'], $_POST['imgURL'] );
+            $uv = $challenges->acceptChallenge( $input['userID'], $input['challengeID'], $input['imgURL'] );
         }
-        return array(
-            'id' => $uv->id
-        );
+        if( $uv ){
+            return array(
+                'id' => $uv->id
+            );
+        }
     }
     
     public function submitChallengeWithUsernames(){

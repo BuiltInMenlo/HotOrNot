@@ -231,14 +231,14 @@ class BIM_App_Challenges extends BIM_App_Base{
         // get list of past opponents & loop thru
         $opponentID_arr = BIM_Model_Volley::getOpponents($user_id, $private);
 
-        foreach($opponentID_arr as $key => $val)
+        foreach($opponentID_arr as $key => $val){
             $opponentChallenges_arr[$user_id .'_'. $val][] = $this->challengesWithOpponent($user_id, $val, null, $private);
-        
+        }
         // loop thru each paired match & pull off most recent
         $challengeID_arr = array();
-        foreach($opponentChallenges_arr as $key => $val)
+        foreach($opponentChallenges_arr as $key => $val){
             array_push($challengeID_arr, key($val[0]));
-            
+        }
         $challengeID_arr = array_unique($challengeID_arr);
         // sort by date asc, then reverse to go desc
         asort($challengeID_arr);
@@ -249,7 +249,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $challenge_arr = array();
         foreach ($challengeID_arr as $key => $val) {
             $co = $this->getChallengeObj( $val );
-            if( $co['expires'] != 0 ){
+            if( $co->expires != 0 ){
                 array_push( $challenge_arr, $co );
             }
             
@@ -333,8 +333,20 @@ class BIM_App_Challenges extends BIM_App_Base{
     **/
     public function acceptChallenge($userId, $volleyId, $imgUrl ) {
         $volley = new BIM_Model_Volley( $volleyId );
-        if( $volley && $volley->challenger->id == $userId ){
-            $volley->accept($imgUrl);
+        if( $volley ){
+            $OK = true;
+            if( $volley->is_private == 'Y' ){
+                $OK = false;
+                foreach( $volley->challengers as $challenger ){
+                    if( $challenger->id == $userId ){
+                        $OK = true;
+                        break;
+                    }
+                }
+            }
+            if( $OK ){
+                $volley->accept($imgUrl);
+            }
         }
         return $volley;        
     }
@@ -396,7 +408,6 @@ class BIM_App_Challenges extends BIM_App_Base{
         return $volley;
     }
     
-    
     /**
      * Gets the iTunes info for a specific challenge subject
      * @param $subject_name The subject to look up (string)
@@ -415,9 +426,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             'linkshare_url' => ""
         );
     }
-    
-    
-    
+
     /** 
      * Debugging function
     **/

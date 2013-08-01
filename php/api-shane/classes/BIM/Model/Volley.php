@@ -61,6 +61,7 @@ class BIM_Model_Volley{
         $this->creator = $creator;
         $this->challengers = $challengers;
         $this->expires = $expires;
+        $this->is_private = $volley->is_private;
     }
     
     public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires ) {
@@ -127,10 +128,10 @@ class BIM_Model_Volley{
     **/
     public static function getOpponents($user_id, $private = false) {
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $ids = $dao->getOpponents( $user_id, $private );        
+        $ids = $dao->getOpponents( $user_id, $private );
         // push opponent id
         $id_arr = array();
-        foreach( $ids as $idData ){
+        foreach( $ids as $row ){
             $id_arr[] = ( $user_id == $row->creator_id ) ? $row->challenger_id : $row->creator_id;
         }
         $id_arr = array_unique($id_arr);
@@ -165,7 +166,7 @@ class BIM_Model_Volley{
         $volleyIds = $dao->getIds($userId, $private);
         $volleyArr = array();
         foreach( $volleyIds as $volleyId ){
-            $volleyArr[] = new self($volleyId);
+            $volleyArr[] = new self($volleyId->id);
         }
         return $volleyArr;
     }
