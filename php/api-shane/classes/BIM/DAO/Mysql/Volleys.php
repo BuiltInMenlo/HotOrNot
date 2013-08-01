@@ -158,13 +158,23 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
     }
     
-    public function accept( $volleyId, $imgUrl ){
+    public function join( $volleyId, $userId, $imgUrl ){
+        $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img) VALUES (?, ?, ?)';
+        $params = array( $volleyId, $userId, $imgUrl );
+        $this->prepareAndExecute($sql, $params);
+        
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
         $params = array( $volleyId );
         $this->prepareAndExecute($sql, $params);
+    }
+    
+    public function accept( $volleyId, $userId, $imgUrl ){
+        $sql = 'UPDATE `hotornot-dev`.tblChallengeParticipants SET img = ? where challenge_id = ? and user_id = ? ';
+        $params = array( $imgUrl, $volleyId, $userId );
+        $this->prepareAndExecute($sql, $params);
         
-        $sql = 'UPDATE `hotornot-dev`.tblChallengeParticipants SET img = ? where challenge_id = ? ';
-        $params = array( $imgUrl, $volleyId );
+        $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
+        $params = array( $volleyId );
         $this->prepareAndExecute($sql, $params);
     }
     

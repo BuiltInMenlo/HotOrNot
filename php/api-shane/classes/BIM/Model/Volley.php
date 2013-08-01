@@ -82,9 +82,15 @@ class BIM_Model_Volley{
         return $hashTagId;
     }
     
-    public function accept( $imgUrl ){
+    // $userId, $imgUrl
+    public function join( $userId, $imgUrl ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $dao->accept( $this->id, $imgUrl );
+        $dao->join( $this->id, $userId, $imgUrl );
+    }
+    
+    public function accept( $userId, $imgUrl ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao->accept( $this->id, $userId, $imgUrl );
     }
     
     public function cancel(){
