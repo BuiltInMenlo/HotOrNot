@@ -59,7 +59,12 @@ class BIM_Model_Volley{
         $this->added = $volley->added; 
         $this->updated = $volley->updated;
         $this->creator = $creator;
-        $this->challengers = $challengers;
+        // legacy versions of client do not support multiple challengers
+        if( defined( 'IS_LEGACY' ) && IS_LEGACY ){
+            $this->challenger = $challengers[0];
+        } else{
+            $this->challengers = $challengers;
+        }
         $this->expires = $expires;
         $this->is_private = $volley->is_private;
     }

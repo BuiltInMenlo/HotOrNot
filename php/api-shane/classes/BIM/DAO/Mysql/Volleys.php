@@ -94,7 +94,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         	FROM `hotornot-dev`.tblChallenges AS tc 
         		JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
         		ON tc.id = tcp.challenge_id 
-        	WHERE tc.id = ?';
+        	WHERE tc.id = ?
+        	ORDER BY challenge_id';
         
         $params = array( $id );
         $stmt = $this->prepareAndExecute( $sql, $params );
