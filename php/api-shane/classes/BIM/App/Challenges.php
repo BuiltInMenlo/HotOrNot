@@ -48,7 +48,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824 );
         if ( in_array($targetUser->id, $defaultUserID_arr) ) {
             $imgUrl = "https://hotornot-challenges.s3.amazonaws.com/". $targetUser->device_token ."_000000000". mt_rand(0, 2);
-            $volleyObject->accept( $imgUrl );
+            $volleyObject->accept( $targetUser->id, $imgUrl );
             if ($creator->notifications == "Y"){
                 $delay = mt_rand(30,120);
                 $this->doAcceptNotification($volleyObject, $creator, $targetUser, $delay);
@@ -104,8 +104,10 @@ class BIM_App_Challenges extends BIM_App_Base{
         if ( $volley ) {
             $creator = new BIM_User( $volley->creator->id );
             $targetUser = new BIM_User( $userId );
-            $volley->accept( $imgUrl );
-            $this->doAcceptNotification($volley, $creator, $targetUser);
+            if( $targetUsr->isExtant() ){
+                $volley->accept( $userId, $imgUrl );
+                $this->doAcceptNotification($volley, $creator, $targetUser);
+            }
         } else {
             $volley = BIM_Model_Volley::create($userId, $hashTag, $imgUrl, -1, 'N', $expires);
         }
@@ -331,6 +333,24 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param $img_url The URL to the challenger's image (string)
      * @return The ID of the challenge (integer)
     **/
+    public function join($userId, $volleyId, $imgUrl ) {
+        $volley = new BIM_Model_Volley( $volleyId );
+        if( $volley ){
+            $OK = false;
+            if( $volley->is_private == 'N' ){
+                $volley->join( $userId, $imgUrl );
+            }
+        }
+        return $volley;        
+    }
+    
+    /**
+     * Updates a challenge with a challenger
+     * @param $user_id The user's ID who is accepting the challenge (integer)
+     * @param $challenge_id the ID of the challenge being accepted (integer)
+     * @param $img_url The URL to the challenger's image (string)
+     * @return The ID of the challenge (integer)
+    **/
     public function acceptChallenge($userId, $volleyId, $imgUrl ) {
         $volley = new BIM_Model_Volley( $volleyId );
         if( $volley ){
@@ -345,7 +365,7 @@ class BIM_App_Challenges extends BIM_App_Base{
                 }
             }
             if( $OK ){
-                $volley->accept($imgUrl);
+                $volley->accept($userId, $imgUrl);
             }
         }
         return $volley;        

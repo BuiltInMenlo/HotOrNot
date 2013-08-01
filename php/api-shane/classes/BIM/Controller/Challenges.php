@@ -175,6 +175,20 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         }
     }
     
+    public function join(){
+        $uv = null;
+        $input = $_POST ? $_POST : $_GET;
+        if (isset( $input['userID']) && isset($input['challengeID']) && isset($input['imgURL'])) {
+            $challenges = new BIM_App_Challenges();
+            $uv = $challenges->join( $input['userID'], $input['challengeID'], $input['imgURL'] );
+        }
+        if( $uv ){
+            return array(
+                'id' => $uv->id
+            );
+        }
+    }
+    
     public function submitChallengeWithUsernames(){
         $uv = null;
         $input = (object) ($_POST ? $_POST : $_GET);
