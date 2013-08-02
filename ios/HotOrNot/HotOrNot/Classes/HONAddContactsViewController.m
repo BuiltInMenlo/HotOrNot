@@ -87,7 +87,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																   sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			
@@ -153,7 +153,7 @@
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]);
 			NSArray *parsedUsers = [NSMutableArray arrayWithArray:[[NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error]
 																   sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]];
 			
@@ -196,12 +196,6 @@
 
 
 - (void)_sendFriendRequests {
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
 	NSString *userIDs = @"";
 	for (HONUserVO *vo in _selectedInAppContacts)
 		userIDs = [userIDs stringByAppendingFormat:@"%d|", vo.userID];
@@ -222,7 +216,7 @@
 			
 		} else {
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			[HONAppDelegate writeFriendsList:result];
 			
@@ -233,9 +227,12 @@
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[self dismissViewControllerAnimated:YES completion:^(void){
-				//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
-			}];
+			
+			if ([_selectedNonAppContacts count] == 0) {
+				[self dismissViewControllerAnimated:YES completion:^(void){
+					//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+				}];
+			}
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -289,7 +286,7 @@
 			phoneNumbers = [phoneNumbers stringByAppendingFormat:@"%@|", vo.mobileNumber];
 	}
 	
-	NSLog(@"SELECTED CONTACTS:[%@]", [phoneNumbers substringToIndex:[phoneNumbers length] - 1]);
+	NSLog(@"SELECTED PHONE:[%@]", [phoneNumbers substringToIndex:[phoneNumbers length] - 1]);
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[phoneNumbers substringToIndex:[phoneNumbers length] - 1], @"numbers", nil];
@@ -330,7 +327,7 @@
 		emails = [emails stringByAppendingFormat:@"%@|", vo.email];
 	}
 	
-	NSLog(@"SELECTED CONTACTS:[%@]", [emails substringToIndex:[emails length] - 1]);
+	NSLog(@"SELECTED EMAIL:[%@]", [emails substringToIndex:[emails length] - 1]);
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[emails substringToIndex:[emails length] - 1], @"addresses", nil];
@@ -596,10 +593,10 @@
 	if ([_selectedInAppContacts count] > 0)
 		[self _sendFriendRequests];
 	
-	else if ([_selectedNonAppContacts count] > 0)
+	if ([_selectedNonAppContacts count] > 0)
 		[self _sendInvites];
 	
-	else {
+	if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
 															message:@"Your home feed will be empty until you add friends. (you can always add them later if you wish)"
 														   delegate:self
@@ -630,22 +627,13 @@
 		[_selectedInAppContacts removeAllObjects];
 		
 	} else {
-		[[Mixpanel sharedInstance] track:@"Add Contacts - Select All"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		for (int i=0; i<[_inAppContacts count]; i++) {
-			HONRecentOpponentViewCell *cell = (HONRecentOpponentViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-			[cell toggleSelected:YES];
-		}
-		
-		for (int i=0; i<[_nonAppContacts count]; i++) {
-			HONAddContactViewCell *cell = (HONAddContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:1]];
-			[cell toggleSelected:YES];
-		}
-		
-		_selectedNonAppContacts = [NSMutableArray arrayWithArray:_nonAppContacts];
-		_selectedInAppContacts = [NSMutableArray arrayWithArray:_inAppContacts];
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@"Are you sure you wish to select all of your contacts?"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:1];
+		[alertView show];
 	}
 }
 
@@ -820,6 +808,29 @@
 				[[Mixpanel sharedInstance] track:@"Add Contacts - Cancel Done"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				break;
+		}
+	
+	} else if (alertView.tag == 1) {
+		switch(buttonIndex) {
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Add Contacts - Select All"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+				
+				for (int i=0; i<[_inAppContacts count]; i++) {
+					HONRecentOpponentViewCell *cell = (HONRecentOpponentViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+					[cell toggleSelected:YES];
+				}
+				
+				for (int i=0; i<[_nonAppContacts count]; i++) {
+					HONAddContactViewCell *cell = (HONAddContactViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:1]];
+					[cell toggleSelected:YES];
+				}
+				
+				_selectedNonAppContacts = [NSMutableArray arrayWithArray:_nonAppContacts];
+				_selectedInAppContacts = [NSMutableArray arrayWithArray:_inAppContacts];
+				
 				break;
 		}
 	}

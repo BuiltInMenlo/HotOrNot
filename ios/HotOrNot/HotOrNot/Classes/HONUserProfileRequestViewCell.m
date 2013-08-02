@@ -140,6 +140,7 @@
 		self.frame = CGRectOffset(self.frame, 0.0, -203.0);
 	} completion:^(BOOL finished) {
 		[_animationImageView stopAnimating];
+		[self.delegate profileRequestViewCellDoneAnimating:self];
 		
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < _userVO.age) {
 			[[[UIAlertView alloc] initWithTitle:@"Womp, you're too young!"

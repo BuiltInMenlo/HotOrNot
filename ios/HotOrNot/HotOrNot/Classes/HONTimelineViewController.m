@@ -50,6 +50,7 @@
 @property (nonatomic, strong) UIImageView *findFriendsImageView;
 @property (nonatomic, strong) UIImageView *tooltipImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
+@property (nonatomic, strong) UIButton *backButton;
 @end
 
 @implementation HONTimelineViewController
@@ -258,6 +259,8 @@
 			if (!_isProfileViewable)
 				[_headerView setTitle:@"Sending Request…"];
 			
+			_backButton.hidden = !_isProfileViewable;
+			
 			[_tableView reloadData];
 		}
 		
@@ -349,12 +352,13 @@
 		_headerView = [[HONHeaderView alloc] initWithTitle:title];
 		[_headerView hideRefreshing];
 		
-		UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		backButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
-		[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
-		[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-		[_headerView addSubview:backButton];
+		_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_backButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
+		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
+		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
+		[_backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+		_backButton.hidden = !_isProfileViewable;
+		[_headerView addSubview:_backButton];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		moreButton.frame = CGRectMake(256.0, 0.0, 64.0, 44.0);
@@ -587,15 +591,6 @@
 	}
 }
 
-- (void)_goVerifyClose {
-	if (_emptyTimelineView != nil) {
-		_emptyTimelineView.hidden = YES;
-		[_emptyTimelineView removeFromSuperview];
-	}
-	
-	_findFriendsImageView.hidden = [[HONAppDelegate friendsList] count] > 0;
-}
-
 - (void)_goAddContactsAlert {
 	[[Mixpanel sharedInstance] track:@"Add Friends - Open"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -634,7 +629,15 @@
 
 #pragma mark - Notifications
 - (void)_removeVerify:(NSNotification *)notification {
-	[self _goVerifyClose];
+	if (_emptyTimelineView != nil) {
+		_emptyTimelineView.hidden = YES;
+		[_emptyTimelineView removeFromSuperview];
+	}
+	
+	_findFriendsImageView.hidden = [[HONAppDelegate friendsList] count] > 0;
+	
+	if ([[notification object] isEqualToString:@"Y"])
+		_findFriendsImageView.hidden = YES;
 }
 
 - (void)_showPopularUsers:(NSNotification *)notification {
@@ -803,6 +806,10 @@
 
 
 #pragma mark - ProfileRequestView Delegates
+- (void)profileRequestViewCellDoneAnimating:(HONUserProfileRequestViewCell *)profileRequestViewCell {
+	_backButton.hidden = NO;
+}
+
 - (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell reportAbuse:(HONUserVO *)vo {
 	[[Mixpanel sharedInstance] track:@"Timeline Profile - Report Abuse"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:

@@ -148,8 +148,8 @@
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	snapButton.frame = CGRectMake(21.0, 179.0, 279.0, 44.0);
-	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_nonActive"] forState:UIControlStateNormal];
-	[snapButton setBackgroundImage:[UIImage imageNamed:@"photoMessageButton_Active"] forState:UIControlStateHighlighted];
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"sendVolleyMessageButton_nonActive"] forState:UIControlStateNormal];
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"sendVolleyMessageButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goUserChallenge) forControlEvents:UIControlEventTouchUpInside];
 	snapButton.hidden = isUser;
 	[self addSubview:snapButton];

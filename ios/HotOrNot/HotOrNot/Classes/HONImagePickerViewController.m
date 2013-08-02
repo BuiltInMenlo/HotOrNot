@@ -282,6 +282,11 @@ const CGFloat kFocusInterval = 0.5f;
 				if (![_subjectName isEqualToString:@"#verifyMe"])
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
 				
+				else {
+					if (_challengeSubmitType == HONChallengeSubmitTypeAccept)
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:@"Y"];
+				}
+				
 				if (_imagePicker.parentViewController != nil) {
 					[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];

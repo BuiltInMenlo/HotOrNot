@@ -39,17 +39,20 @@
 // json config url
 #if __DEV_BUILD___ == 1
 NSString * const kConfigURL = @"http://50.16.152.131/hotornot";//@"http://config.letsvolley.com/hotornot";//http://107.20.161.159/hotornot"";
-NSString * const kConfigJSON = @"boot.json";
+NSString * const kConfigJSON = @"boot_123.json";
+NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
 NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
 NSString * const kConfigJSON = @"boot_123.json";
-NSString * const kMixPanelToken = @"de3e67b68e6b8bf0344ca58573733ee5"; // Soft Launch II
+NSString * const kAPIHost = @"data_api";
+NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3
 #endif
 
 
 //NSString * const kMixPanelToken = @"d93069ad5b368c367c3adc020cce8021"; // Focus Group I
 //NSString * const kMixPanelToken = @"8ae70817a3d885455f940ff261657ec7"; // Soft Launch I
+//NSString * const kMixPanelToken = @"de3e67b68e6b8bf0344ca58573733ee5"; // Soft Launch II
 NSString * const kFacebookAppID = @"600550136636754";
 
 //api endpts
@@ -101,8 +104,8 @@ const BOOL kIsImageCacheEnabled = YES;
 const NSUInteger kRecentOpponentsDisplayTotal = 10;
 NSString * const kTwilioSMS = @"6475577873";
 
-@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
-//@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+//@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
@@ -755,16 +758,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
-	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
-	[[BITHockeyManager sharedHockeyManager] startManager];
+//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
+//	[[BITHockeyManager sharedHockeyManager] startManager];
 	
-	TSConfig *config = [TSConfig configWithDefaults];
-	config.collectWifiMac = NO;
-	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-//	config.odin1 = @"<ODIN-1 value goes here>";
-//	config.openUdid = @"<OpenUDID value goes here>";
-//	config.secureUdid = @"<SecureUDID value goes here>";
-	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
+//	TSConfig *config = [TSConfig configWithDefaults];
+//	config.collectWifiMac = NO;
+//	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+//	//config.odin1 = @"<ODIN-1 value goes here>";
+//	//config.openUdid = @"<OpenUDID value goes here>";
+//	//config.secureUdid = @"<SecureUDID value goes here>";
+//	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
 	
 	
 	if ([HONAppDelegate hasNetwork]) {
@@ -928,42 +931,47 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	NSLog(@"alert:(%d)[%@]", [[userInfo objectForKey:@"type"] intValue], [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);
 	
-	// sms sound
-	AudioServicesPlaySystemSound(1007);
-	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-	
-	int type_id = [[userInfo objectForKey:@"type"] intValue];
-	switch (type_id) {
-			
-		// challenge request
-		case 1:{
-			_challengeID = [[userInfo objectForKey:@"challenge"] intValue];
-			UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Snap Update"
-																message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-															   delegate:self
-													  cancelButtonTitle:@"Cancel"
-													  otherButtonTitles:@"OK", nil];
-			[alertView setTag:3];
-			[alertView show];
-			break;}
-			
-			// poke
-		case 2:
-			[self _showOKAlert:@"Poke"
-				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-			break;
-			
-			// accpeted challenge
-		case 3:
-			[self _showOKAlert:@"Snap Update"
-				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-			break;
-			
-		default:
-			[self _showOKAlert:@""
-				   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-			break;
-			
+	if (!_isFromBackground) {
+		// sms sound
+		AudioServicesPlaySystemSound(1007);
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+		
+		int type_id = [[userInfo objectForKey:@"type"] intValue];
+		switch (type_id) {
+				
+			// challenge request
+			case 1:{
+				_challengeID = [[userInfo objectForKey:@"challenge"] intValue];
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Snap Update"
+																	message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+																   delegate:self
+														  cancelButtonTitle:@"Cancel"
+														  otherButtonTitles:@"OK", nil];
+				[alertView setTag:3];
+				[alertView show];
+				break;}
+				
+				// poke
+			case 2:
+				[self _showOKAlert:@"Poke"
+					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+				break;
+				
+				// accpeted challenge
+			case 3:
+				[self _showOKAlert:@"Snap Update"
+					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+				break;
+				
+			default:
+				[self _showOKAlert:@""
+					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+				break;
+		}
+		
+	} else {
+		if ([[userInfo objectForKey:@"type"] intValue] == 1)
+			[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
 	}
 	
 //	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
@@ -1032,7 +1040,7 @@ NSString * const kTwilioSMS = @"6475577873";
 				[populars addObject:popular];
 			
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"appstore_id"] forKey:@"appstore_id"];
-			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:@"data_api"] forKey:@"server_api"];
+			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
@@ -1075,6 +1083,12 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] synchronize];
 			
 			NSLog(@"API END PT:[%@]\n[=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=]", [HONAppDelegate apiServerPath]);
+			
+			
+			if ([[result objectForKey:@"update_app"] isEqualToString:@"Y"]) {
+				[self _showOKAlert:@"Update Required"
+					   withMessage:@"Please update Volley to the latest version to use the latest features."];
+			}
 			
 			if (!_isFromBackground)
 				[self _registerUser];
@@ -1305,12 +1319,12 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 #pragma mark - UpdateManager Delegates
-- (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
-#ifndef CONFIGURATION_AppStore
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
-		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
-#endif
-	return nil;
-}
+//- (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
+//#ifndef CONFIGURATION_AppStore
+//	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
+//		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
+//#endif
+//	return nil;
+//}
 
 @end
