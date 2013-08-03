@@ -28,7 +28,6 @@
 									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		self.view.backgroundColor = [UIColor whiteColor];
 		_username = [[HONAppDelegate infoForUser] objectForKey:@"name"];
 	}
 	
@@ -51,6 +50,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
+	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 	bgImageView.frame = self.view.bounds;
@@ -100,7 +100,9 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
+
 
 - (void)viewDidUnload {
 	[super viewDidUnload];

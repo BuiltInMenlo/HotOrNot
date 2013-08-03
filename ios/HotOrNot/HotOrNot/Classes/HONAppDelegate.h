@@ -12,7 +12,7 @@
 #import "HONChallengeVO.h"
 
 
-#define __DEV_BUILD___ 0
+#define __DEV_BUILD___ 1
 #define __ALWAYS_REGISTER__ 0
 #define __ALWAYS_VERIFY__ 0
 
@@ -129,6 +129,7 @@ extern NSString * const kTwilioSMS;
 + (BOOL)canPingConfigServer;
 + (BOOL)audioMuted;
 + (NSString *)deviceLocale;
++ (void)offsetSubviewsForIOS7:(UIView *)view;
 
 + (NSString *)timeSinceDate:(NSDate *)date;
 + (NSString *)formattedExpireTime:(int)seconds;

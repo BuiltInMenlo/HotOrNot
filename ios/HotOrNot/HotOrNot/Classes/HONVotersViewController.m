@@ -34,7 +34,6 @@
 	if ((self = [super init])) {
 		_challengeVO = vo;
 		
-		self.view.backgroundColor = [UIColor whiteColor];
 		self.voters = [NSMutableArray new];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_voterChallenge:) name:@"VOTER_CHALLENGE" object:nil];
@@ -128,6 +127,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 

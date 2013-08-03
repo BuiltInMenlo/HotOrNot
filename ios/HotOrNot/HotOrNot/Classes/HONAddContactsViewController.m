@@ -482,8 +482,8 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	
 	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	self.view.frame = CGRectOffset(self.view.frame, 0.0, 20.0);
 	
 	_smsRecipients = @"";
 	_emailRecipients = @"";
@@ -561,6 +561,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidUnload {

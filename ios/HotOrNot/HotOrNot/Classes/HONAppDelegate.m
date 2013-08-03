@@ -104,8 +104,8 @@ const BOOL kIsImageCacheEnabled = YES;
 const NSUInteger kRecentOpponentsDisplayTotal = 10;
 NSString * const kTwilioSMS = @"6475577873";
 
-//@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
-@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
+//@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
@@ -134,10 +134,6 @@ NSString * const kTwilioSMS = @"6475577873";
 
 + (NSString *)apiServerPath {
 	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"server_api"]);
-	
-	//	return (@"http://discover.getassembly.com/hotornot/api-shane");
-	//	return (@"http://107.20.161.159/hotornot/api-shane");
-	//	return (@"http://50.17.142.22/hotornot/api-shane");
 }
 
 + (NSString *)customerServiceURL {
@@ -210,6 +206,15 @@ NSString * const kTwilioSMS = @"6475577873";
 + (NSString *)rndDefaultSubject {
 	NSArray *subjects = [[NSUserDefaults standardUserDefaults] objectForKey:@"default_subjects"];
 	return ([subjects objectAtIndex:(arc4random() % [subjects count])]);
+}
+
++ (void)offsetSubviewsForIOS7:(UIView *)view {
+	//view.frame = ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"7"]) ? CGRectMake(view.frame.origin.x, 20.0, view.frame.size.width, view.frame.size.height - 20.0) : CGRectOffset(view.frame, 0.0, 0.0);
+	
+	if ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"7"]) {
+		for (UIView *subview in [view subviews])
+			subview.frame = CGRectOffset(subview.frame, 0.0, 20.0);
+	}
 }
 
 + (BOOL)isLocaleEnabled {
@@ -742,6 +747,8 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	self.window.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	//self.window.frame = CGRectOffset(self.window.frame, 0.0, 20.0);
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
@@ -830,6 +837,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		
 		self.tabBarController = [[HONTabBarController alloc] init];
+		//self.tabBarController.view.frame = CGRectOffset(self.tabBarController.view.frame, 0.0, 20.0);
 		self.tabBarController.delegate = self;
 		
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
@@ -1319,12 +1327,12 @@ NSString * const kTwilioSMS = @"6475577873";
 
 
 #pragma mark - UpdateManager Delegates
-//- (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
-//#ifndef CONFIGURATION_AppStore
-//	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
-//		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
-//#endif
-//	return nil;
-//}
+- (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
+#ifndef CONFIGURATION_AppStore
+	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
+		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
+#endif
+	return nil;
+}
 
 @end

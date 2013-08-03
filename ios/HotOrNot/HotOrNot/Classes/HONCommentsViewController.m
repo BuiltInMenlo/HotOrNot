@@ -36,7 +36,6 @@
 		_challengeVO = vo;
 		_isGoingBack = NO;
 		
-		self.view.backgroundColor = [UIColor whiteColor];
 		self.comments = [NSMutableArray new];
 	}
 	
@@ -250,6 +249,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 	
 	//[_commentTextField becomeFirstResponder];
 	[UIView beginAnimations:nil context:nil];

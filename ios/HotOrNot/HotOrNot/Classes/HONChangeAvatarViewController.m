@@ -173,6 +173,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
+	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 	bgImageView.frame = self.view.bounds;

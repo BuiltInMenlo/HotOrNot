@@ -31,7 +31,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.view.backgroundColor = [UIColor whiteColor];
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_DISCOVERY_TAB" object:nil];
@@ -153,6 +152,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidUnload {
@@ -166,12 +166,16 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	NSLog(@"refresh:[%d]", [_allChallenges count]);
 	_currChallenges = [NSMutableArray array];
-	for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
-		[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
 	
-	[_headerView toggleRefresh:NO];
-	[_tableView reloadData];
+	if ([_allChallenges count] > 0) {
+		for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
+			[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
+		
+		[_headerView toggleRefresh:NO];
+		[_tableView reloadData];
+	}
 }
 
 - (void)_goCreateChallenge {

@@ -79,8 +79,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	
-	self.view.backgroundColor = [UIColor blackColor];
+	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	
 	_celebs = [NSMutableArray array];
 	_selectedCelebs = [NSMutableArray array];
@@ -120,6 +119,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidUnload {

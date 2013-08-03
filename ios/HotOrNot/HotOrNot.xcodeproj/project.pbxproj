@@ -1945,6 +1945,8 @@
 		4C148F7B17815BD900EBD245 /* registration */ = {
 			isa = PBXGroup;
 			children = (
+				4C08036217A4ACC0001FF5DE /* HONUserBirthdayViewController.h */,
+				4C08036317A4ACC0001FF5DE /* HONUserBirthdayViewController.m */,
 				4C689379171A1BFE005F8D0A /* HONRestrictedLocaleViewController.h */,
 				4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */,
 				4C6A3E1317669ADC00B6CD4D /* HONAddFriendsViewController.h */,
@@ -3430,8 +3432,6 @@
 			children = (
 				4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */,
 				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
-				4C08036217A4ACC0001FF5DE /* HONUserBirthdayViewController.h */,
-				4C08036317A4ACC0001FF5DE /* HONUserBirthdayViewController.m */,
 				4C08036517A4ACE6001FF5DE /* HONProfileRangeViewController.h */,
 				4C08036617A4ACE6001FF5DE /* HONProfileRangeViewController.m */,
 			);
@@ -5016,7 +5016,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5AEBE682-6484-4922-BB93-F8CE9808F214";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "15BE16A6-6030-49D8-943A-5F240941848E";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

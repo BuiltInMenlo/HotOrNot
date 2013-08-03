@@ -47,7 +47,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		self.view.backgroundColor = [UIColor whiteColor];
 		
 		_recentOpponents = [NSMutableArray array];
 		_friends = [NSMutableArray array];
@@ -219,6 +218,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 }
 
 - (void)viewDidUnload {
