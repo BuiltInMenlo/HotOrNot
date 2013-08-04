@@ -9,7 +9,7 @@
 
 #import "HONCreateChallengePreviewView.h"
 #import "HONImagingDepictor.h"
-
+#import "HONImageLoadingView.h"
 
 @interface HONCreateChallengePreviewView () <UIAlertViewDelegate, UITextFieldDelegate>
 @property (nonatomic, strong) UILabel *usernamesLabel;
@@ -18,10 +18,10 @@
 @property (nonatomic, strong) UIView *subjectBGView;
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
-@property (nonatomic, strong) UILabel *captionLabel;
 @property (nonatomic, strong) UIButton *privateToggleButton;
 @property (nonatomic, strong) UIButton *addFriendsButton;
 @property (nonatomic, strong) UIButton *backButton;
+@property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @end
 
 @implementation HONCreateChallengePreviewView
@@ -63,7 +63,7 @@
 		//NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-22.0 + (-24.0 * [HONAppDelegate isRetina5])) + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
+		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-26.0 + (-24.0 * [HONAppDelegate isRetina5])) + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 		previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 		[self addSubview:previewImageView];
 		
@@ -75,6 +75,11 @@
 
 
 #pragma mark - Puplic APIs
+- (void)uploadComplete {
+	[_imageLoadingView stopAnimating];
+	[_imageLoadingView removeFromSuperview];
+}
+
 - (void)setUsernames:(NSArray *)usernameList {
 	NSString *usernames = @"";
 	for (NSString *username in usernameList)
@@ -95,6 +100,11 @@
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
 	[self addSubview:overlayView];
+	
+	UIButton *toggleKeyboardButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	toggleKeyboardButton.frame = self.frame;
+	[toggleKeyboardButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:toggleKeyboardButton];
 	
 	_addFriendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_addFriendsButton.frame = CGRectMake(12.0, 11.0, 44.0, 44.0);
@@ -124,15 +134,9 @@
 	[usernameButton addTarget:self action:@selector(_goAddChallengers) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:usernameButton];
 	
-	
-	_captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, ((self.frame.size.height - 230.0) - 44.0) * 0.5, 320.0, 44.0)];
-	_captionLabel.backgroundColor = [UIColor clearColor];
-	_captionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:22];
-	_captionLabel.textColor = [UIColor whiteColor];
-	_captionLabel.textAlignment = NSTextAlignmentCenter;
-	_captionLabel.text = @"Tap to retake photo";
-	_captionLabel.alpha = 0.0;
-	//[self addSubview:_captionLabel];
+	_imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(12.0, 50.0)];
+	_imageLoadingView.alpha = 0.0;
+	[self addSubview:_imageLoadingView];
 	
 	_privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_privateToggleButton.frame = CGRectMake(184.0, self.frame.size.height - 335.0, 134.0, 44.0);
@@ -178,6 +182,14 @@
 
 
 #pragma mark - Navigation
+- (void)_goToggleKeyboard {
+	if ([_subjectTextField isFirstResponder])
+		[self _dropKeyboardAndRemove:NO];
+	
+	else
+		[self _raiseKeyboard];
+}
+
 - (void)_goAddChallengers {
 	[self.delegate previewViewAddChallengers:self];
 }
@@ -187,9 +199,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[_subjectTextField resignFirstResponder];
 	[self _dropKeyboardAndRemove:YES];
-	
 	[self.delegate previewViewBackToCamera:self];
 }
 
@@ -208,7 +218,6 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if ((_isPrivate && ![_usernamesLabel.text isEqualToString:@"add friends"]) || !_isPrivate) {
-		[_subjectTextField resignFirstResponder];
 		[self _dropKeyboardAndRemove:YES];
 	
 		[self.delegate previewView:self changeSubject:_subjectName];
@@ -237,8 +246,9 @@
 	_subjectBGView.hidden = NO;
 	[_subjectTextField becomeFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_imageLoadingView.alpha = 1.0;
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
-		_captionLabel.alpha = 0.875;
+		_subjectBGView.alpha = 1.0;
 		_privateToggleButton.alpha = 1.0;
 		_addFriendsButton.alpha = 1.0;
 		_backButton.alpha = 1.0;
@@ -248,9 +258,11 @@
 }
 
 - (void)_dropKeyboardAndRemove:(BOOL)isRemoved {
+	[_subjectTextField resignFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_imageLoadingView.alpha = 0.0;
 		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
-		_captionLabel.alpha = 0.0;
+		_subjectBGView.alpha = 0.0;
 		_privateToggleButton.alpha = 0.0;
 		_addFriendsButton.alpha = 0.0;
 		_backButton.alpha = 0.0;

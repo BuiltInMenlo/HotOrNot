@@ -20,6 +20,7 @@
 @interface HONSnapCameraOverlayView() <HONCreateChallengeOptionsViewDelegate, HONSnapCameraOptionsViewDelegate>
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIView *previewHolderView;
+@property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *circleFillImageView;
 @property (nonatomic, strong) HONCreateChallengeOptionsView *challengeOptionsView;
@@ -68,7 +69,7 @@
 		//[self addSubview:_addFriendsButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 64.0);
+		_cancelButton.frame = CGRectMake(384.0, -64.0, 64.0, 64.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
@@ -122,8 +123,12 @@
 		submitButton.frame = CGRectMake(496.0, offset + 24.0, 128.0, 49.0);
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_nonActive"] forState:UIControlStateNormal];
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_Active"] forState:UIControlStateHighlighted];
-		[submitButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
+		[submitButton addTarget:self action:@selector(_goAcceptPhoto) forControlEvents:UIControlEventTouchUpInside];
 		[_controlsHolderView addSubview:submitButton];
+		
+		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
+		_blackMatteView.backgroundColor = [UIColor blackColor];
+		[self addSubview:_blackMatteView];
 	}
 	
 	return (self);
@@ -131,6 +136,15 @@
 
 
 #pragma mark - Public API
+- (void)intro {
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
+		_blackMatteView.alpha = 0.0;
+		_cancelButton.frame = CGRectMake(253.0, 5.0, 64.0, 64.0);
+	} completion:^(BOOL fininshed){
+		[_blackMatteView removeFromSuperview];
+	}];
+}
+
 - (void)updateChallengers:(NSArray *)challengers {
 	_usernames = challengers;
 	
@@ -238,9 +252,9 @@
 	[UIView commitAnimations];
 }
 
-- (void)_goTakePhoto {
+- (void)_goAcceptPhoto {
 	[self _animateShutter];
-	[self.delegate cameraOverlayViewTakePicture:self];
+	[self.delegate cameraOverlayViewAcceptPhoto:self];
 }
 
 - (void)_goToggleFlash {

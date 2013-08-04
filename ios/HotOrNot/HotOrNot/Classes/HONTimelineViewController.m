@@ -23,8 +23,6 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
-//#import "HONInstagramLoginViewController.h"
-//#import "HONTumblrLoginViewController.h"
 #import "HONInviteCelebViewController.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
@@ -47,7 +45,7 @@
 @property (nonatomic) BOOL isProfileViewable;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) UIImageView *findFriendsImageView;
+@property (nonatomic, strong) UIScrollView *findFriendsScrollView;
 @property (nonatomic, strong) UIImageView *tooltipImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) UIButton *backButton;
@@ -184,7 +182,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult lastObject]);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray new];
 			
@@ -391,31 +389,34 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
-	_findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-568h@2x" : @"findFriends"];
-	_findFriendsImageView.userInteractionEnabled = YES;
-	_findFriendsImageView.hidden = ([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
-	[self.view addSubview:_findFriendsImageView];
+	_findFriendsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
+	_findFriendsScrollView.contentSize = CGSizeMake(_findFriendsScrollView.frame.size.width, _findFriendsScrollView.frame.size.height+ 1.0);
+	_findFriendsScrollView.pagingEnabled = NO;
+	_findFriendsScrollView.showsVerticalScrollIndicator = YES;
+	_findFriendsScrollView.showsHorizontalScrollIndicator = NO;
+	_findFriendsScrollView.backgroundColor = [UIColor whiteColor];
+	[self.view addSubview:_findFriendsScrollView];
+	
+	UIImageView *findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
+	findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-568h@2x" : @"findFriends"];
+	findFriendsImageView.userInteractionEnabled = YES;
+	findFriendsImageView.hidden = ([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
+	[_findFriendsScrollView addSubview:findFriendsImageView];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	ctaButton.frame = CGRectMake(0.0, 302.0, 320.0, 53.0);
 	[ctaButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateNormal];
 	[ctaButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateHighlighted];
 	[ctaButton addTarget:self action:@selector(_goAddContactsAlert) forControlEvents:UIControlEventTouchUpInside];
-	[_findFriendsImageView addSubview:ctaButton];
+	[findFriendsImageView addSubview:ctaButton];
 	
 	[self.view addSubview:_headerView];
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-//	if (_timelineType == HONTimelineTypeSingleUser)
-//		[self _retrieveUser];
-//	
-//	[self _retrieveChallenges];
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
 		[self performSelector:@selector(_retrieveUser) withObject:nil afterDelay:0.25];
@@ -634,10 +635,10 @@
 		[_emptyTimelineView removeFromSuperview];
 	}
 	
-	_findFriendsImageView.hidden = [[HONAppDelegate friendsList] count] > 0;
+	_findFriendsScrollView.hidden = [[HONAppDelegate friendsList] count] > 0;
 	
 	if ([[notification object] isEqualToString:@"Y"])
-		_findFriendsImageView.hidden = YES;
+		_findFriendsScrollView.hidden = YES;
 }
 
 - (void)_showPopularUsers:(NSNotification *)notification {

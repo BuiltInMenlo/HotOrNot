@@ -52,29 +52,36 @@
 	challengeImgHolderView.clipsToBounds = YES;
 	//[self addSubview:challengeImgHolderView];
 	
-	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
-	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
-	[challengeImgHolderView addSubview:challengeImageView];
+//	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
+//	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
+//	[challengeImgHolderView addSubview:challengeImageView];
 	
 	//UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 15.0, 180.0, 20.0)];
-	UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 15.0, 180.0, 20.0)];
-	challengerLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
-	challengerLabel.textColor = [HONAppDelegate honBlueTextColor];
-	challengerLabel.backgroundColor = [UIColor clearColor];
-	challengerLabel.text = ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName];
-	[self addSubview:challengerLabel];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 5.0, 200.0, 20.0)];
+	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
+	subjectLabel.backgroundColor = [UIColor clearColor];
+	subjectLabel.text = _challengeVO.subjectName;
+	[self addSubview:subjectLabel];
 	
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
 	[dateFormatter setDateFormat:@"h:mma"];
 		
 	//UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 31.0, 200.0, 18.0)];
-	UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 31.0, 200.0, 18.0)];
-	subjectTimeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
-	subjectTimeLabel.textColor = [HONAppDelegate honGrey455Color];
-	subjectTimeLabel.backgroundColor = [UIColor clearColor];
-	subjectTimeLabel.text = [NSString stringWithFormat:@"%@ at %@", _challengeVO.subjectName, [[dateFormatter stringFromDate:_challengeVO.updatedDate] lowercaseString]];
-	[self addSubview:subjectTimeLabel];
+	UILabel *opponentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 23.0, 180.0, 18.0)];
+	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	opponentsLabel.textColor = [HONAppDelegate honGrey455Color];
+	opponentsLabel.backgroundColor = [UIColor clearColor];
+	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], [[dateFormatter stringFromDate:_challengeVO.updatedDate] lowercaseString]];
+	[self addSubview:opponentsLabel];
+	
+	UILabel *tapLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 40.0, 120.0, 18.0)];
+	tapLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	tapLabel.textColor = [HONAppDelegate honGrey710Color];
+	tapLabel.backgroundColor = [UIColor clearColor];
+	tapLabel.text = @"tap & hold to view";
+	[self addSubview:tapLabel];
 	
 	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(265.0, 9.0, 44.0, 44.0)];
 	_hasSeenImageView.image = [UIImage imageNamed:(_challengeVO.hasViewed) ? @"viewedSnapCheck" : @"newSnapDot"];

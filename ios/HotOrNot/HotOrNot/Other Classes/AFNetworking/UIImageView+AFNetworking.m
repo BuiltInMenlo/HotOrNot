@@ -145,6 +145,13 @@ static char kAFImageRequestOperationObjectKey;
     self.af_imageRequestOperation = nil;
 }
 
+
+- (BOOL)isImageCached:(NSURLRequest *)urlRequest {
+	//UIImage *cachedImage = [[[self class] af_sharedImageCache] objectForKey:AFImageCacheKeyFromURLRequest(urlRequest)];
+	UIImage *cachedImage = [[[self class] af_sharedImageCache] cachedImageForRequest:urlRequest];
+	return (cachedImage != nil);
+}
+
 @end
 
 #pragma mark -
@@ -174,6 +181,7 @@ static inline NSString * AFImageCacheKeyFromURLRequest(NSURLRequest *request) {
         [self setObject:image forKey:AFImageCacheKeyFromURLRequest(request)];
     }
 }
+
 
 @end
 

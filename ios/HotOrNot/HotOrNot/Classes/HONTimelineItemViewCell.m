@@ -156,7 +156,7 @@
 	
 	_lChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 	_lChallengeImageView.userInteractionEnabled = YES;
-	_lChallengeImageView.alpha = 0.0;
+	_lChallengeImageView.alpha = [_lChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]]]];
 	[_lHolderView addSubview:_lChallengeImageView];
 	
 	[_lChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]]
@@ -205,7 +205,7 @@
 	
 	if (_hasOponentRetorted) {
 		_rChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
-		_rChallengeImageView.alpha = 0.0;
+		_rChallengeImageView.alpha = [_rChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]]]];
 		_rChallengeImageView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:_rChallengeImageView];
 		

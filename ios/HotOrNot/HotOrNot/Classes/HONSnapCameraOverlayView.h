@@ -12,6 +12,7 @@
 @protocol HONSnapCameraOverlayViewDelegate;
 @interface HONSnapCameraOverlayView : UIView
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username;
+- (void)intro;
 - (void)updateChallengers:(NSArray *)challengers;
 - (void)addPreview:(UIImage *)image;
 - (void)addMirroredPreview:(UIImage *)image;
@@ -22,7 +23,7 @@
 
 
 @protocol HONSnapCameraOverlayViewDelegate
-- (void)cameraOverlayViewTakePicture:(HONSnapCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewAcceptPhoto:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView;

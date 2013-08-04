@@ -73,6 +73,8 @@
  */
 - (void)cancelImageRequestOperation;
 
+
+- (BOOL)isImageCached:(NSURLRequest *)urlRequest;
 @end
 
 #endif

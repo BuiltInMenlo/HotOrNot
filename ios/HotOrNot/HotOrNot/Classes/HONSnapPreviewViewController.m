@@ -52,6 +52,7 @@
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor blackColor];
+	self.view.frame = CGRectOffset(self.view.frame, 0.0, -(20.0));
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(128.0, ([UIScreen mainScreen].bounds.size.height - 64.0) * 0.5)];
 	[self.view addSubview:imageLoadingView];

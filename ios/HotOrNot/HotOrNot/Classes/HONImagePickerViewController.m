@@ -190,13 +190,14 @@ const CGFloat kFocusInterval = 0.5f;
 	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"FILE PREFIX: https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_uploadPhoto", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_uploadPhoto", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 	
 	@try {
+		UIImage *oImage = _rawImage;
 		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeDim * 2.0, kSnapLargeDim * 2.0)];
 		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
 		UIImage *tImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbDim * 2.0, kSnapThumbDim * 2.0)];
@@ -219,6 +220,12 @@ const CGFloat kFocusInterval = 0.5f;
 		por3.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
 		por3.delegate = self;
 		[s3 putObject:por3];
+		
+		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
+		por4.contentType = @"image/jpeg";
+		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+		por4.delegate = self;
+		[s3 putObject:por4];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -457,16 +464,8 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_showOverlay {
+	[_cameraOverlayView intro];
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
-}
-
-- (void)_takePhoto {
-	if (_focusTimer != nil) {
-		[_focusTimer invalidate];
-		_focusTimer = nil;
-	}
-	
-	[_imagePicker takePicture];
 }
 
 - (void)_autofocusCamera {
@@ -488,11 +487,16 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)_updateClock {
 	_clockCounter++;
 	
-	if (_clockCounter >= 9) {
+	if (_clockCounter >= 10) {
 		[_clockTimer invalidate];
 		_clockTimer = nil;
 		
-		[self _takePhoto];
+		if (_focusTimer != nil) {
+			[_focusTimer invalidate];
+			_focusTimer = nil;
+		}
+		
+		[_imagePicker takePicture];
 	
 	} else
 		[_cameraOverlayView updateClock:_clockCounter];
@@ -523,8 +527,33 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	[self _showOverlay];
 	
-	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	int camera_total = 0;
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
+	
+	else {
+		camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
+	
+	if (camera_total == 0) {
+		UIAlertView *alertView = [[UIAlertView alloc]
+								  initWithTitle:@"Automatic Camera"
+								  message:@"Volley uses an automatic camera."
+								  delegate:self
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil];
+		[alertView setTag:1];
+		[alertView show];
+		
+	} else {
+		_clockCounter = 0;
+		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	}
+	
+//	_clockCounter = 0;
+//	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
 }
 
@@ -614,34 +643,52 @@ const CGFloat kFocusInterval = 0.5f;
 		_challangeImage = _rawImage;
 	
 	
-	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-		[self dismissViewControllerAnimated:NO completion:^(void) {
-			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_challangeImage];
-			
-			_usernames = [NSMutableArray array];
-			for (HONUserVO *vo in _addFollowing)
-				[_usernames addObject:vo.username];
-			
-			for (HONContactUserVO *vo in _addContacts)
-				[_usernames addObject:vo.fullName];
-			
-			_previewView.delegate = self;
-			[_previewView setIsPrivate:_isPrivate];
-			[self.view addSubview:_previewView];
-			
-			[_cameraOverlayView removePreview];
-			[self _uploadPhoto:_challangeImage];
-			
-			//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		}];
+	
+	[self dismissViewControllerAnimated:NO completion:^(void) {
+		_usernames = [NSMutableArray array];
+		for (HONUserVO *vo in _addFollowing)
+			[_usernames addObject:vo.username];
 		
-	} else {
-//		if (_rawImage.size.width >= 720)
-//			[_cameraOverlayView addPreview:_rawImage];
+		for (HONContactUserVO *vo in _addContacts)
+			[_usernames addObject:vo.fullName];
+		
+		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
+		_previewView.delegate = self;
+		[_previewView setIsPrivate:_isPrivate];
+		[self.view addSubview:_previewView];
+		
+		[self _uploadPhoto:_challangeImage];
+		
+		[_previewView showKeyboard];
+		[_previewView setUsernames:[_usernames copy]];
+		
+		//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+	}];
+	
+//	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+//		[self dismissViewControllerAnimated:NO completion:^(void) {
+//			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_challangeImage];
+//			
+//			_usernames = [NSMutableArray array];
+//			for (HONUserVO *vo in _addFollowing)
+//				[_usernames addObject:vo.username];
+//			
+//			for (HONContactUserVO *vo in _addContacts)
+//				[_usernames addObject:vo.fullName];
+//			
+//			_previewView.delegate = self;
+//			[_previewView setIsPrivate:_isPrivate];
+//			[self.view addSubview:_previewView];
+//			
+//			[_cameraOverlayView removePreview];
+//			[self _uploadPhoto:_challangeImage];
+//			
+//			//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//		}];
 //		
-//		else
-			[_cameraOverlayView addMirroredPreview:_rawImage];
-	}
+//	} else {
+//		[_cameraOverlayView addMirroredPreview:_rawImage];
+//	}
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -660,20 +707,14 @@ const CGFloat kFocusInterval = 0.5f;
 
 
 #pragma mark - CameraOverlay Delegates
-- (void)cameraOverlayViewTakePicture:(HONSnapCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Take Photo"
+- (void)cameraOverlayViewAcceptPhoto:(HONSnapCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Accept Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	//[_imagePicker takePicture];
-	
 	[_cameraOverlayView removePreview];
 	[self dismissViewControllerAnimated:NO completion:^(void) {
-//		if (_rawImage.size.width >= 720)
-//			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_rawImage];
-//		 
-//		else
-			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
+		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
 		 
 		_previewView.delegate = self;
 		_usernames = [NSMutableArray array];
@@ -682,8 +723,7 @@ const CGFloat kFocusInterval = 0.5f;
 		 
 		for (HONContactUserVO *vo in _addContacts)
 			[_usernames addObject:vo.fullName];
-		 
-		//[_previewView setUsernames:[_usernames copy]];
+		
 		[_previewView setIsPrivate:_isPrivate];
 		[self.view addSubview:_previewView];
 		
@@ -948,12 +988,13 @@ const CGFloat kFocusInterval = 0.5f;
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
-	if (_uploadCounter == 3) {
-		[_progressHUD hide:YES];
-		_progressHUD = nil;
+	if (_uploadCounter == 4) {
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
 		
-		[_previewView showKeyboard];
-		[_previewView setUsernames:[_usernames copy]];
+		[_previewView uploadComplete];
 	}
 }
 
@@ -966,6 +1007,12 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 0) {
 		[_previewView showKeyboard];
+	
+	} else if (alertView.tag == 1) {
+		if (buttonIndex == 0) {
+			_clockCounter = 0;
+			_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+		}
 	}
 }
 

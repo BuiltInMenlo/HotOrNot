@@ -25,13 +25,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "HotOrNot/Classes/HONImagePickerViewController.m"
-            timestampString = "396420844.315929"
+            filePath = "HotOrNot/Classes/HONRegisterViewController.m"
+            timestampString = "396419799.042857"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "383"
-            endingLineNumber = "383"
-            landmarkName = "-_showCamera"
+            startingLineNumber = "452"
+            endingLineNumber = "452"
+            landmarkName = "-_goCloseTutorial"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,13 +41,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "HotOrNot/Classes/HONRegisterViewController.m"
-            timestampString = "396419799.042857"
+            filePath = "HotOrNot/Other Classes/AFNetworking/UIImageView+AFNetworking.m"
+            timestampString = "397250033.262027"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "452"
-            endingLineNumber = "452"
-            landmarkName = "-_goCloseTutorial"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
+            landmarkName = "-isImageCached:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

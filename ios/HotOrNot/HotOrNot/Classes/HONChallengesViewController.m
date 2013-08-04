@@ -27,19 +27,19 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 
 @interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate>
-@property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) NSMutableArray *recentChallenges;
-@property(nonatomic, strong) NSMutableArray *olderChallenges;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) NSDate *lastDate;
-@property(nonatomic, strong) HONChallengeVO *challengeVO;
-@property(nonatomic, strong) NSIndexPath *idxPath;
-@property(nonatomic, strong) HONHeaderView *headerView;
-@property(nonatomic, strong) NSMutableArray *friends;
-@property(nonatomic, strong) UIButton *publicButton;
-@property(nonatomic, strong) UIButton *privateButton;
-
-@property(nonatomic) int blockCounter;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *recentChallenges;
+@property (nonatomic, strong) NSMutableArray *olderChallenges;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) NSDate *lastDate;
+@property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) NSIndexPath *idxPath;
+@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) NSMutableArray *friends;
+//@property (nonatomic, strong) UIButton *publicButton;
+//@property (nonatomic, strong) UIButton *privateButton;
+@property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
+@property (nonatomic) int blockCounter;
 @property (nonatomic, strong) UIImageView *togglePrivateImageView;
 @property (nonatomic) BOOL isPrivate;
 @end
@@ -316,7 +316,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[_headerView addSubview:createChallengeButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 44.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height + 44.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -327,27 +327,27 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-//	[_tableView addGestureRecognizer:lpGestureRecognizer];
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
-	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0)];
-	[self.view addSubview:toggleHolderView];
-	
-	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
-	[toggleHolderView addSubview:_togglePrivateImageView];
-	
-	_publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_publicButton.frame = CGRectMake(0.0, 0.0, 160.0, 44.0);
-	[_publicButton addTarget:self action:@selector(_goPublicChallenges) forControlEvents:UIControlEventTouchUpInside];
-	[_publicButton setSelected:YES];
-	[toggleHolderView addSubview:_publicButton];
-	
-	_privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_privateButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
-	[_privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
-	[_privateButton setSelected:NO];
-	[toggleHolderView addSubview:_privateButton];
+//	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0)];
+//	[self.view addSubview:toggleHolderView];
+//	
+//	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
+//	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
+//	[toggleHolderView addSubview:_togglePrivateImageView];
+//	
+//	_publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_publicButton.frame = CGRectMake(0.0, 0.0, 160.0, 44.0);
+//	[_publicButton addTarget:self action:@selector(_goPublicChallenges) forControlEvents:UIControlEventTouchUpInside];
+//	[_publicButton setSelected:YES];
+//	[toggleHolderView addSubview:_publicButton];
+//	
+//	_privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_privateButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
+//	[_privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
+//	[_privateButton setSelected:NO];
+//	[toggleHolderView addSubview:_privateButton];
 }
 
 - (void)viewDidLoad {
@@ -397,45 +397,45 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[self _retrieveChallenges];
 }
 
-- (void)_goPublicChallenges {
-	_isPrivate = NO;
-	
-	[[Mixpanel sharedInstance] track:@"Activity - Public Toggle"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[_publicButton setSelected:YES];
-	[_privateButton setSelected:NO];
-	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
-	[self _retrieveChallenges];
-}
-
-- (void)_goPrivateChallenges {
-	_isPrivate = YES;
-	
-	[[Mixpanel sharedInstance] track:@"Activity - Private Toggle"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[_publicButton setSelected:NO];
-	[_privateButton setSelected:YES];
-	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
-	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
-	[self _retrieveChallenges];
-}
+//- (void)_goPublicChallenges {
+//	_isPrivate = NO;
+//	
+//	[[Mixpanel sharedInstance] track:@"Activity - Public Toggle"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+//	
+//	[_publicButton setSelected:YES];
+//	[_privateButton setSelected:NO];
+//	
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
+//	
+//	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
+//	[self _retrieveChallenges];
+//}
+//
+//- (void)_goPrivateChallenges {
+//	_isPrivate = YES;
+//	
+//	[[Mixpanel sharedInstance] track:@"Activity - Private Toggle"
+//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+//	
+//	[_publicButton setSelected:NO];
+//	[_privateButton setSelected:YES];
+//	
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
+//	
+//	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
+//	[self _retrieveChallenges];
+//}
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
@@ -444,12 +444,15 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		
 		if (indexPath != nil) {
 			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
-			HONSnapPreviewViewController *snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithImageURL:[NSString stringWithFormat:@"%@_l.jpg", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.creatorImgPrefix : vo.challengerImgPrefix]];
-			[self.view addSubview:snapPreviewViewController.view];
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithImageURL:[NSString stringWithFormat:@"%@_l.jpg", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.creatorImgPrefix : vo.challengerImgPrefix]];
+			[self.view addSubview:_snapPreviewViewController.view];
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-		NSLog(@"UIGestureRecognizerStateRecognized");
+		if (_snapPreviewViewController != nil) {
+			[_snapPreviewViewController.view removeFromSuperview];
+			_snapPreviewViewController = nil;
+		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateEnded) {
 	}

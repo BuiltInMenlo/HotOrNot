@@ -12,6 +12,7 @@
 @interface HONCreateChallengePreviewView : UIView
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image;
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image;
+- (void)uploadComplete;
 - (void)setUsernames:(NSArray *)usernameList;
 - (void)showKeyboard;
 
