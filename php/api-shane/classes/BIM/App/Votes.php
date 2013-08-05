@@ -549,13 +549,14 @@ class BIM_App_Votes extends BIM_App_Base{
 				$score_arr['challenger']++;
 		}
 		
+        $liker = new BIM_User( $user_id );
 		// send push to creator if votes equal a certain amount
-		if($winningUser_id == $creator_id && $score_arr['creator'] % 5 == 0) {
+		if($winningUser_id == $creator_id ) {
 			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 			$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 			
-            $msg = "Your $sub_name snap has received ". $score_arr['creator'] .' upvotes!';
-			$push = array(
+            $msg = "@$liker->username liked your Volley";
+            $push = array(
 		    	"device_tokens" =>  array( $device_token ), 
 		    	"type" => "3", 
 		    	"aps" =>  array(
@@ -567,12 +568,12 @@ class BIM_App_Votes extends BIM_App_Base{
 		}
 		
 		// send push to challenger if votes equal a certain amount
-		if($winningUser_id == $challenger_id && $score_arr['challenger'] % 5 == 0) {
+		if($winningUser_id == $challenger_id ) {
 			$query = 'SELECT `device_token` FROM `tblUsers` WHERE `id` = '. $winningUser_id .';';
 			$device_token = mysql_fetch_object(mysql_query($query))->device_token;
 			
-            $msg = "Your $sub_name snap has received ". $score_arr['challenger'] .' upvotes!';
-			$push = array(
+            $msg = "@$liker->username liked your Volley";
+            $push = array(
 		    	"device_tokens" =>  array( $device_token ), 
 		    	"type" => "3", 
 		    	"aps" =>  array(
