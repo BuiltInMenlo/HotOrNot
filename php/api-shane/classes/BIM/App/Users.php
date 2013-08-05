@@ -234,6 +234,7 @@ class BIM_App_Users extends BIM_App_Base{
 		
 		// return
 		$user_arr = $this->userObject($user_id);
+		BIM_Utils::setSession($user_id);
 		return $user_arr;
 	}
 	

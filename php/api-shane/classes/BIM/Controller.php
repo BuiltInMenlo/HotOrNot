@@ -2,34 +2,26 @@
 
 class BIM_Controller{
     
-    public function handleReq(){
-        $c = BIM_Config::app();
-        $cdata = trim(str_replace( $c->base_path, '', $_SERVER['SCRIPT_URL'] ),'/');
-        
-        $cdata = explode( '/', $cdata );
-        
-        $controller = ucfirst( trim($cdata[0],'/') );
-        $controller = str_replace('.php', '', $controller);
-        $method = isset( $cdata[1] ) ? trim( $cdata[1], '/' ) : '';
-        
-        $controllerClass = "BIM_Controller_$controller";
-        
-        $r = new $controllerClass();
-        if( $method && method_exists( $r, $method ) ){
-            $res = $r->$method();
-        } else {
-            $res = $r->handleReq();
-        }
-        
-        if( is_bool( $res ) ){
-            $res = array( 'result' => $res );
-        }
-        $code = 200;
-        
-        //setcookie( 'foo','poo', time() + 7200, '/','discover.getassembly.com' );
-        $this->sendResponse( $code, $res );
-    }
+    protected $user = null;
     
+    public function handleReq(){
+        $res = null;
+        if( $this->sessionOK() ){
+            $request = BIM_Utils::getRequest();
+            $method = $request->method;
+            $controllerClass = $request->controllerClass;
+            $r = new $controllerClass();
+            if( $method && method_exists( $r, $method ) ){
+                $r->user = BIM_Utils::getSessionUser();
+                $res = $r->$method();
+                if( is_bool( $res ) ){
+                    $res = array( 'result' => $res );
+                }
+            }
+        }
+        $this->sendResponse( 200, $res );
+    }
+        
 	public function getStatusCodeMessage($status) {			
 		$codes = array(
 			100 => 'Continue',
@@ -85,4 +77,28 @@ class BIM_Controller{
 		
 		echo isset($body->data) ? json_encode( $body->data ) : json_encode( $body );
 	}
+	
+	/*
+	 * session is ok if 
+	 * 		we are calling the function to create a new user
+	 * 		OR we have turned off sessions
+	 * 		OR we find a valid session user 
+	 */
+	protected function sessionOK(){
+        
+        $newUser = false;
+        $request = BIM_Utils::getRequest();
+        
+        if( strtolower( $request->controllerClass ) == 'bim_controller_users' 
+                && strtolower( $request->method ) == 'submitnewuser' 
+        )
+        {
+            $newUser = true;
+        }
+        
+        $sessionConf = BIM_Config::session();
+        
+        return ( $newUser || empty( $sessionConf->use ) || BIM_Utils::getSessionUser() );
+	}
+
 }

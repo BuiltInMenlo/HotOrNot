@@ -1,8 +1,40 @@
 <?php 
 class BIM_Utils{
+    
+    protected static $user = null;
+    protected static $request = null;
+    
     public static function hashMobileNumber( $number ){
         // for now we are not hashing until we decide on a scheme
         return $number;
+    }
+    
+    public static function getRequest(){
+        if( ! self::$request ){
+            $c = BIM_Config::app();
+            $cdata = trim(str_replace( $c->base_path, '', $_SERVER['SCRIPT_URL'] ),'/');
+            
+            $cdata = explode( '/', $cdata );
+            
+            $controller = ucfirst( trim($cdata[0],'/') );
+            $controller = str_replace('.php', '', $controller);
+            $method = isset( $cdata[1] ) ? trim( $cdata[1], '/' ) : '';
+            
+            $controllerClass = "BIM_Controller_$controller";
+            
+            if( !$method ){
+                $input = (object) ( $_POST ? $_POST : $_GET );
+                $actionMethods = BIM_Config::actionMethods();
+                $method = !empty( $input->action ) && !empty( $actionMethods[ $controllerClass ][$input->action] ) ? $actionMethods[ $controllerClass ][$input->action] : null;
+            }
+            
+            self::$request = (object) array(
+                'controllerClass' => $controllerClass,
+                'method' => $method
+            );
+        }
+        
+        return self::$request;
     }
     
     public static function getSMSCodeForId( $id ){
@@ -41,4 +73,38 @@ class BIM_Utils{
         
         return $id;
     }
+    
+	// here we check for a valid session key
+	// in a cookie named as named in the onfig
+	public static function getSessionUser(){
+	    if( ! self::$user ){
+    	    $conf = BIM_Config::session();
+    	    if( !empty( $_COOKIE[ $conf->cookie->name ] ) ){
+    	        // decrypt the userId
+    	        $userId = BIM_Utils::getIdForSMSCode(  $_COOKIE[ $conf->cookie->name ]  );
+    	        if( $userId ){
+    	            $user = new BIM_User( $userId );
+    	            if( !$user->isExtant() ){
+    	                $user = null;
+    	            }
+                    self::$user = $user;    	            
+    	        }
+    	    }
+	    }
+	    return self::$user;
+	}
+	
+	public static function setSession( $userId ){
+	    $value = BIM_Utils::getSMSCodeForId( $userId );
+	    
+	    $conf = BIM_Config::session();
+	    $name = !empty( $conf->cookie->name ) ? $conf->cookie->name : '/';
+	    $expires = !empty( $conf->cookie->expires ) ? time() + $conf->cookie->expires : 0;
+	    $path = !empty( $conf->cookie->path ) ? $conf->cookie->path : '/';
+	    $domain = !empty( $conf->cookie->domain ) ? $conf->cookie->domain : $_SERVER['HTTP_HOST'];
+	    $secure = !empty( $conf->cookie->secure ) ? $conf->cookie->secure : false;
+	    $httpOnly = !empty( $conf->cookie->httpOnly ) ? $conf->cookie->httpOnly : false;
+	    
+	    setcookie($conf->cookie->name,$value,$expires,$path,$domain,$secure,$httpOnly);
+	}
 }

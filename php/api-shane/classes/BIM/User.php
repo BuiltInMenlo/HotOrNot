@@ -11,6 +11,9 @@ class BIM_User{
         
         if( $params ){
             foreach( $params as $prop => $value ){
+                if( preg_match('@password@', $prop) ) {
+                    continue;
+                }
                 $this->$prop = $value;
             }
         }

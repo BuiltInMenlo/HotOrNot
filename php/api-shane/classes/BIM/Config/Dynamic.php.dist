@@ -178,6 +178,16 @@ class BIM_Config_Dynamic{
         );
     }
     
+    public static function session(){
+        return (object) array(
+            'cookie' => (object) array(
+                'name' => "MB38FktJS8242wzKOOvEFQ:2c_IIFqWQKCpW9rhYifZVw", // live
+                'expires' => 'https://go.urbanairship.com/api/push/',
+                'domain' => '',
+            ),
+        );
+    }
+
     public static function urbanAirship(){
         return (object) array(
             'api' => (object) array(
