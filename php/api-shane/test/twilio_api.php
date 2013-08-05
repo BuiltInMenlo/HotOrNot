@@ -4,7 +4,7 @@ require_once 'vendor/autoload.php';
 $persona = (object) array(
     'sms' => (object) array(
         'userId' => 45,
-        'numbers' => '14152549391'
+        'numbers' => '+14152549391'
     ),
 );
 

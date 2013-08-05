@@ -337,7 +337,14 @@ class BIM_App_Challenges extends BIM_App_Base{
 			2391,
 			2392,
 			2393,
-			2394
+			2394,
+            2804,
+            2805,
+            2811,
+            2815,
+            2818,
+            2819,
+            2824
 		);
 		
 		// get challenge data

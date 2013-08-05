@@ -42,3 +42,4 @@ function match_push( $job, &$config ){ any_job($job, $config); }
 function find_friends( $job, &$config ){ any_job($job, $config); }
 function friend_notification( $job, &$config ){ any_job($job, $config); }
 function insta_invite( $job, &$config ){ any_job($job, $config); }
+function smsinvites( $job, &$config ){ any_job($job, $config); }
