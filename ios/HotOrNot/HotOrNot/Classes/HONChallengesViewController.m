@@ -439,12 +439,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		CGPoint touchPoint = [lpGestureRecognizer locationInView:self.view];
+		CGPoint touchPoint = [lpGestureRecognizer locationInView:_tableView];
 		NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:touchPoint];
 		
 		if (indexPath != nil) {
 			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithImageURL:[NSString stringWithFormat:@"%@_l.jpg", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.creatorImgPrefix : vo.challengerImgPrefix]];
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:vo];
 			[self.view addSubview:_snapPreviewViewController.view];
 		}
 		

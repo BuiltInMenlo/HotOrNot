@@ -64,8 +64,14 @@
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
+	NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
+	NSTimeZone *utcTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+	
+	NSTimeInterval gmtInterval = [currentTimeZone secondsFromGMTForDate:_challengeVO.updatedDate] - [utcTimeZone secondsFromGMTForDate:_challengeVO.updatedDate];
+	NSDate *localDate = [[NSDate alloc] initWithTimeInterval:gmtInterval sinceDate:_challengeVO.updatedDate];
+	
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"GMT"]];
 	[dateFormatter setDateFormat:@"h:mma"];
 		
 	//UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 31.0, 200.0, 18.0)];
@@ -73,7 +79,7 @@
 	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	opponentsLabel.textColor = [HONAppDelegate honGrey455Color];
 	opponentsLabel.backgroundColor = [UIColor clearColor];
-	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], [[dateFormatter stringFromDate:_challengeVO.updatedDate] lowercaseString]];
+	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], [[dateFormatter stringFromDate:localDate] lowercaseString]];
 	[self addSubview:opponentsLabel];
 	
 	UILabel *tapLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 40.0, 120.0, 18.0)];

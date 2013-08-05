@@ -750,6 +750,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	self.window.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	//self.window.frame = CGRectOffset(self.window.frame, 0.0, 20.0);
 	
+	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
+	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonArrow_nonActive"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonArrow_Active"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
+	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
@@ -1206,10 +1210,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	UINavigationController *navigationController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
 	UINavigationController *navigationController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];
 	
-	[navigationController1 setNavigationBarHidden:YES];
-	[navigationController2 setNavigationBarHidden:YES];
-	[navigationController3 setNavigationBarHidden:YES];
-	[navigationController4 setNavigationBarHidden:YES];
+//	[navigationController1 setNavigationBarHidden:YES];
+//	[navigationController2 setNavigationBarHidden:YES];
+//	[navigationController3 setNavigationBarHidden:YES];
+//	[navigationController4 setNavigationBarHidden:YES];
 	
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navigationController1, navigationController2, navigationController3, navigationController4, nil];
 }

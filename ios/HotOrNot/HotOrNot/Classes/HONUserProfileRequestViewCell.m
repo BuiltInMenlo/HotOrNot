@@ -38,8 +38,6 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	//[self addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(127.0, 31.0)]];
-	
 	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(100.0, 17.0, 120.0, 120.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
 //	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
@@ -47,9 +45,9 @@
 //														  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 	[self addSubview:avatarImageView];
 	
-	UIImageView *avatar1MaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
-	avatar1MaskImageView.frame = avatarImageView.frame;
-	[self addSubview:avatar1MaskImageView];
+//	UIImageView *avatar1MaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
+//	avatar1MaskImageView.frame = avatarImageView.frame;
+//	[self addSubview:avatar1MaskImageView];
 	
 	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(150.0, 145.0, 20.0, 64.0)];
 	_animationImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"profileAnimation_001"],
@@ -63,14 +61,11 @@
 	
 	UIImageView *avatar2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(100.0, 217.0, 120.0, 120.0)];
 	[avatar2ImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-//	[avatar2ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
-//															  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-//														  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 	[self addSubview:avatar2ImageView];
 	
-	UIImageView *avatar2MaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
-	avatar2MaskImageView.frame = avatar2ImageView.frame;
-	[self addSubview:avatar2MaskImageView];
+//	UIImageView *avatar2MaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
+//	avatar2MaskImageView.frame = avatar2ImageView.frame;
+//	[self addSubview:avatar2MaskImageView];
 	
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];

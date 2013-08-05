@@ -50,9 +50,9 @@
 	_avatarImageView.userInteractionEnabled = YES;
 	[self addSubview:_avatarImageView];
 	
-	UIImageView *avatarMaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
-	avatarMaskImageView.frame = _avatarImageView.frame;
-	[self addSubview:avatarMaskImageView];
+//	UIImageView *avatarMaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
+//	avatarMaskImageView.frame = _avatarImageView.frame;
+//	[self addSubview:avatarMaskImageView];
 	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	if (isUser) {

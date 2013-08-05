@@ -182,7 +182,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray new];
 			
@@ -339,10 +339,10 @@
 	if (_isPushView) {
 		
 		NSString *title = @"";
-		if (_timelineType == HONTimelineTypeSubject)
+		if (_timelineType == HONTimelineTypeSubject) {
 			title = _subjectName;
 		
-		else if (_timelineType == HONTimelineTypeSingleUser)
+		} else if (_timelineType == HONTimelineTypeSingleUser)
 			title = [NSString stringWithFormat:@"@%@", _username];
 		
 		
@@ -395,12 +395,12 @@
 	_findFriendsScrollView.showsVerticalScrollIndicator = YES;
 	_findFriendsScrollView.showsHorizontalScrollIndicator = NO;
 	_findFriendsScrollView.backgroundColor = [UIColor whiteColor];
+	_findFriendsScrollView.hidden = ([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
 	[self.view addSubview:_findFriendsScrollView];
 	
 	UIImageView *findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
 	findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-568h@2x" : @"findFriends"];
 	findFriendsImageView.userInteractionEnabled = YES;
-	findFriendsImageView.hidden = ([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
 	[_findFriendsScrollView addSubview:findFriendsImageView];
 	
 	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
