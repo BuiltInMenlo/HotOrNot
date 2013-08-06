@@ -36,15 +36,14 @@
 #import "HONImagingDepictor.h"
 
 
-// json config url
 #if __DEV_BUILD___ == 1
 NSString * const kConfigURL = @"http://50.16.152.131/hotornot";//@"http://config.letsvolley.com/hotornot";//http://107.20.161.159/hotornot"";
-NSString * const kConfigJSON = @"boot_123.json";
+NSString * const kConfigJSON = @"boot.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
 NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
-NSString * const kConfigJSON = @"boot_123.json";
+NSString * const kConfigJSON = @"boot_124.json";
 NSString * const kAPIHost = @"data_api";
 NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3
 #endif
@@ -751,8 +750,16 @@ NSString * const kTwilioSMS = @"6475577873";
 	//self.window.frame = CGRectOffset(self.window.frame, 0.0, 20.0);
 	
 	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
+	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+														  [UIColor whiteColor], UITextAttributeTextColor,
+														  [UIColor clearColor], UITextAttributeTextShadowColor,
+														  [[HONAppDelegate cartoGothicBook] fontWithSize:20], UITextAttributeFont, nil]];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonArrow_nonActive"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonArrow_Active"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
+	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+														  [UIColor whiteColor], UITextAttributeTextColor,
+														  [UIColor clearColor], UITextAttributeTextShadowColor,
+														  [[HONAppDelegate cartoGothicBook] fontWithSize:14], UITextAttributeFont,nil] forState:UIControlStateNormal];
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
@@ -846,7 +853,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 		_bgImageView.frame = CGRectMake(0.0, [[UIApplication sharedApplication] statusBarFrame].size.height, 320.0, [UIScreen mainScreen].bounds.size.height);
-		[self.tabBarController.view addSubview:_bgImageView];
+		//[self.tabBarController.view addSubview:_bgImageView];
 		
 		self.window.rootViewController = self.tabBarController;
 		[self.window makeKeyAndVisible];

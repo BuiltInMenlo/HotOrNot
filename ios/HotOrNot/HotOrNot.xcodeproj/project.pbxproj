@@ -553,6 +553,7 @@
 		4CBB5C88169CDCF600D44E77 /* moreIcon_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CBB5C86169CDCF600D44E77 /* moreIcon_Active@2x.png */; };
 		4CBE874C16371D24004084DF /* HONSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE874B16371D22004084DF /* HONSupportViewController.m */; };
 		4CC4D14116390BA400E2B217 /* push_02.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4CC4D14016390BA400E2B217 /* push_02.caf */; };
+		4CC6AD0E17B0AA98004E7A3F /* HONRefreshButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC6AD0D17B0AA98004E7A3F /* HONRefreshButtonView.m */; };
 		4CC8E5F417AF3E7400712223 /* UINavigationBar+NavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC8E5F317AF3E7400712223 /* UINavigationBar+NavigationBar.m */; };
 		4CCF194017A06A3B007D726B /* cameraAnimation_001.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CCF193017A06A3B007D726B /* cameraAnimation_001.png */; };
 		4CCF194117A06A3B007D726B /* cameraAnimation_001@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CCF193117A06A3B007D726B /* cameraAnimation_001@2x.png */; };
@@ -1636,6 +1637,8 @@
 		4CBE874A16371D1E004084DF /* HONSupportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSupportViewController.h; sourceTree = "<group>"; };
 		4CBE874B16371D22004084DF /* HONSupportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSupportViewController.m; sourceTree = "<group>"; };
 		4CC4D14016390BA400E2B217 /* push_02.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = push_02.caf; sourceTree = "<group>"; };
+		4CC6AD0C17B0AA98004E7A3F /* HONRefreshButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRefreshButtonView.h; sourceTree = "<group>"; };
+		4CC6AD0D17B0AA98004E7A3F /* HONRefreshButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRefreshButtonView.m; sourceTree = "<group>"; };
 		4CC8E5F217AF3E7400712223 /* UINavigationBar+NavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationBar+NavigationBar.h"; sourceTree = "<group>"; };
 		4CC8E5F317AF3E7400712223 /* UINavigationBar+NavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationBar+NavigationBar.m"; sourceTree = "<group>"; };
 		4CCF193017A06A3B007D726B /* cameraAnimation_001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraAnimation_001.png; sourceTree = "<group>"; };
@@ -2228,6 +2231,8 @@
 				4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */,
 				4C43C8D21772127800983BE8 /* HONAvatarCameraOverlayView.h */,
 				4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */,
+				4CC6AD0C17B0AA98004E7A3F /* HONRefreshButtonView.h */,
+				4CC6AD0D17B0AA98004E7A3F /* HONRefreshButtonView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -4190,6 +4195,7 @@
 				4C08036717A4ACE6001FF5DE /* HONProfileRangeViewController.m in Sources */,
 				4C04DAA417A635FB0059DB70 /* HONUserProfileRequestViewCell.m in Sources */,
 				4CC8E5F417AF3E7400712223 /* UINavigationBar+NavigationBar.m in Sources */,
+				4CC6AD0E17B0AA98004E7A3F /* HONRefreshButtonView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

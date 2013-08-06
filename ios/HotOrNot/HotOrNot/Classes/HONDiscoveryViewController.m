@@ -115,23 +115,36 @@
 - (void)loadView {
 	[super loadView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_discover", nil)];
-	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:_headerView];
+	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+	
+	UIView *refreshButtonHolderView = [[UIView alloc] initWithFrame:refreshButton.frame];
+	refreshButton.frame = CGRectOffset(refreshButton.frame, -5.0, -1.0);
+	[refreshButtonHolderView addSubview:refreshButton];
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:createChallengeButton];
 	
-	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 88.0, 320.0, 285.0)];
+	self.navigationController.navigationBar.topItem.title = @"Discover";
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:refreshButtonHolderView];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:createChallengeButton];
+	
+	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_discover", nil)];
+	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+//	[self.view addSubview:_headerView];
+	
+	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, [UIScreen mainScreen].bounds.size.height - (20.0 + kNavBarHeaderHeight + kTabSize.height)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
@@ -199,6 +212,7 @@
 - (void)_showSearchTable:(NSNotification *)notification {
 	if (self.view.frame.origin.y >= 0) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
+			self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, -kNavBarHeaderHeight);
 			self.view.frame = CGRectOffset(self.view.frame, 0.0, -kNavBarHeaderHeight);
 		}];
 	}
@@ -207,6 +221,7 @@
 - (void)_hideSearchTable:(NSNotification *)notification {
 	if (self.view.frame.origin.y < 0) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
+			self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, kNavBarHeaderHeight);
 			self.view.frame = CGRectOffset(self.view.frame, 0.0, kNavBarHeaderHeight);
 		}];
 	}

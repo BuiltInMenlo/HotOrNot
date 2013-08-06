@@ -330,7 +330,7 @@
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 	bgImageView.frame = self.view.bounds;
-	[self.view addSubview:bgImageView];
+	//[self.view addSubview:bgImageView];
 	
 	_userVO = nil;
 	_isProfileViewable = YES;
@@ -345,7 +345,7 @@
 		} else if (_timelineType == HONTimelineTypeSingleUser)
 			title = [NSString stringWithFormat:@"@%@", _username];
 		
-		
+		self.navigationController.navigationBar.topItem.title = title;
 		_headerView = [[HONHeaderView alloc] initWithTitle:title];
 		[_headerView hideRefreshing];
 		
@@ -365,31 +365,45 @@
 //		[_headerView addSubview:moreButton];
 		
 	} else {
+		self.navigationController.navigationBar.topItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]];
+		
+		UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
+		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
+		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
+		[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+		
+		UIView *refreshButtonHolderView = [[UIView alloc] initWithFrame:refreshButton.frame];
+		refreshButton.frame = CGRectOffset(refreshButton.frame, -5.0, -1.0);
+		[refreshButtonHolderView addSubview:refreshButton];
+		
+		self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:refreshButtonHolderView];
+		
 		_headerView = [[HONHeaderView alloc] initAsVoteWall];
 		[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	}
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 44.0);
+	createChallengeButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	createChallengeButton.hidden = _isPushView;
-	[_headerView addSubview:createChallengeButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kNavBarHeaderHeight + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:createChallengeButton];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
 	//[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor whiteColor]];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
-	_tableView.userInteractionEnabled = YES;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_findFriendsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
+	_findFriendsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
 	_findFriendsScrollView.contentSize = CGSizeMake(_findFriendsScrollView.frame.size.width, _findFriendsScrollView.frame.size.height+ 1.0);
 	_findFriendsScrollView.pagingEnabled = NO;
 	_findFriendsScrollView.showsVerticalScrollIndicator = YES;
@@ -410,7 +424,7 @@
 	[ctaButton addTarget:self action:@selector(_goAddContactsAlert) forControlEvents:UIControlEventTouchUpInside];
 	[findFriendsImageView addSubview:ctaButton];
 	
-	[self.view addSubview:_headerView];
+//	[self.view addSubview:_headerView];
 	
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 //	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
