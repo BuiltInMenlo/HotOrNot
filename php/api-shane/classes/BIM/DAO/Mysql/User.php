@@ -34,20 +34,16 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         }
         $id = null;
         $sql = "select id from `hotornot-dev`.tblUsers";
-        $stmt = $this->prepareAndExecute( $sql );
+        if( $exclude ){
+            $placeHolders = join('',array_fill(0, count( $exclude ), '?') );
+            $sql = "$sql where id not in ($placeHolders)";
+        }
+        $stmt = $this->prepareAndExecute( $sql, $exclude );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
         if( $data ){
             $len = count( $data );
-            for($n = 0; $n < 10; $n++ ){
-                $idx = mt_rand(1, $len) - 1;
-                $id = $data[ $idx ]->id;
-                // make sure id does not match the exclude ids
-                if( !in_array( $id, $exclude ) ){
-                    break;
-                } else {
-                    $id = null;
-                }
-            }
+            $idx = mt_rand(1, $len) - 1;
+            $id = $data[ $idx ]->id;
         }
         return $id;
     }

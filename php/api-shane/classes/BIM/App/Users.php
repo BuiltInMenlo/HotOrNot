@@ -229,7 +229,12 @@ class BIM_App_Users extends BIM_App_Base{
 				$params = array( $challenge_id, $user_id );
 				$dao->prepareAndExecute($sql, $params);
 				
-			}		
+			}
+			
+            // have @teamvolley friend the new user			
+			$friendRelation = (object) array( 'target' => $user_id, 'userID' => 2394 );
+			$s = new BIM_App_Social();
+			$s->addFriend($friendRelation);
 		}
 		
 		// return
