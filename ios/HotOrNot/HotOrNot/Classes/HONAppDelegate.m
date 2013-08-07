@@ -37,7 +37,7 @@
 
 
 #if __DEV_BUILD___ == 1
-NSString * const kConfigURL = @"http://50.16.152.131/hotornot";//@"http://config.letsvolley.com/hotornot";//http://107.20.161.159/hotornot"";
+NSString * const kConfigURL = @"http://54.221.205.30/hotornot";
 NSString * const kConfigJSON = @"boot.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
@@ -1216,12 +1216,19 @@ NSString * const kTwilioSMS = @"6475577873";
 	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
 	UINavigationController *navigationController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
 	UINavigationController *navigationController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];
+		
+	if ([navigationController1.navigationBar respondsToSelector:@selector(setShadowImage:)])
+		[navigationController1.navigationBar setShadowImage:[[UIImage alloc] init]];
 	
-//	[navigationController1 setNavigationBarHidden:YES];
-//	[navigationController2 setNavigationBarHidden:YES];
-//	[navigationController3 setNavigationBarHidden:YES];
-//	[navigationController4 setNavigationBarHidden:YES];
+	if ([navigationController2.navigationBar respondsToSelector:@selector(setShadowImage:)])
+		[navigationController2.navigationBar setShadowImage:[[UIImage alloc] init]];
 	
+	if ([navigationController3.navigationBar respondsToSelector:@selector(setShadowImage:)])
+		[navigationController3.navigationBar setShadowImage:[[UIImage alloc] init]];
+	
+	if ([navigationController4.navigationBar respondsToSelector:@selector(setShadowImage:)])
+		[navigationController4.navigationBar setShadowImage:[[UIImage alloc] init]];
+		
 	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navigationController1, navigationController2, navigationController3, navigationController4, nil];
 }
 

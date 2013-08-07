@@ -11,16 +11,13 @@
 @implementation HONChallengeVO
 
 @synthesize dictionary;
-@synthesize challengeID, statusID, status, subjectName, commentTotal, hasViewed, rechallengedUsers, addedDate, startedDate, updatedDate, expireSeconds;
-@synthesize creatorID, creatorFB, creatorName, creatorAvatar, creatorImgPrefix, creatorScore;
-@synthesize challengerID, challengerFB, challengerName, challengerAvatar, challengerImgPrefix, challengerScore;
+@synthesize challengeID, statusID, status, subjectName, challengers, commentTotal, hasViewed, addedDate, startedDate, updatedDate, expireSeconds;
 
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary {
 	HONChallengeVO *vo = [[HONChallengeVO alloc] init];
 	vo.dictionary = dictionary;
 	
-	NSDictionary *creator = [dictionary objectForKey:@"creator"];
-	NSDictionary *challenger = [dictionary objectForKey:@"challenger"];
+	//NSDictionary *challenger = [dictionary objectForKey:@"challenger"];
 	//NSLog(@"CREATOR[%d]:\n%@\nCHALLENGER[%d]:\n%@\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", [[dictionary objectForKey:@"id"] intValue], creator, [[dictionary objectForKey:@"id"] intValue], challenger);
 	
 	vo.challengeID = [[dictionary objectForKey:@"id"] intValue];
@@ -28,7 +25,6 @@
 	vo.subjectName = ([dictionary objectForKey:@"subject"] != [NSNull null]) ? [dictionary objectForKey:@"subject"] : @"#N/A";
 	vo.commentTotal = [[dictionary objectForKey:@"comments"] intValue];
 	vo.hasViewed = [[dictionary objectForKey:@"has_viewed"] isEqualToString:@"Y"];	
-	vo.rechallengedUsers = @"";
 	vo.expireSeconds = [[dictionary objectForKey:@"expires"] intValue];
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
@@ -71,19 +67,19 @@
 			break;
 	}
 	
-	vo.creatorID = [[creator objectForKey:@"id"] intValue];
-	vo.creatorFB = [creator objectForKey:@"fb_id"];
-	vo.creatorName = [creator objectForKey:@"username"];
-	vo.creatorAvatar = [creator objectForKey:@"avatar"];
-	vo.creatorImgPrefix = [creator objectForKey:@"img"];
-	vo.creatorScore = [[creator objectForKey:@"score"] intValue];
+	vo.creatorVO = [HONOpponentVO opponentWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+														  [[dictionary objectForKey:@"creator"] objectForKey:@"id"], @"id",
+														  [[dictionary objectForKey:@"creator"] objectForKey:@"fb_id"], @"fb_id",
+														  [[dictionary objectForKey:@"creator"] objectForKey:@"username"], @"username",
+														  [[dictionary objectForKey:@"creator"] objectForKey:@"avatar"], @"avatar",
+														  [[dictionary objectForKey:@"creator"] objectForKey:@"img"], @"img",
+														  [[dictionary objectForKey:@"creator"] objectForKey:@"score"], @"score",
+														  [dictionary objectForKey:@"added"], @"joined", nil]];
 	
-	vo.challengerID = [[challenger objectForKey:@"id"] intValue];
-	vo.challengerFB = [challenger objectForKey:@"fb_id"];
-	vo.challengerName = [challenger objectForKey:@"username"];
-	vo.challengerAvatar = [challenger objectForKey:@"avatar"];
-	vo.challengerImgPrefix = [challenger objectForKey:@"img"];
-	vo.challengerScore = [[challenger objectForKey:@"score"] intValue];
+	vo.challengers = [NSMutableArray array];
+	for (NSDictionary *challenger in [dictionary objectForKey:@"challengers"]) {
+		[vo.challengers addObject:[HONOpponentVO opponentWithDictionary:challenger]];
+	}
 	
 	//NSLog(@"CREATOR[%@]:\nCHALLENGER[%@]", vo.creatorAvatar, vo.challengerAvatar);
 	
@@ -93,15 +89,12 @@
 - (void)dealloc {
 	self.dictionary = nil;
 	self.status = nil;
-	self.creatorImgPrefix = nil;
-	self.challengerImgPrefix = nil;
 	self.subjectName = nil;
-	self.creatorName = nil;
-	self.creatorFB = nil;
-	self.challengerFB = nil;
-	self.challengerName = nil;
 	self.startedDate = nil;
 	self.addedDate = nil;
+	self.updatedDate = nil;
+	self.creatorVO = nil;
+	self.challengers = nil;
 }
 
 @end

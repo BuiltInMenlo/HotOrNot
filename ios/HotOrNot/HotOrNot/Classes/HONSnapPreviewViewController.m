@@ -13,7 +13,7 @@
 
 #import "HONSnapPreviewViewController.h"
 #import "HONImageLoadingView.h"
-
+#import "HONOpponentVO.h"
 
 @interface HONSnapPreviewViewController ()
 @property (nonatomic, strong) NSString *url;
@@ -69,7 +69,7 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	NSTimeInterval diff = [_challengeVO.addedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-03 00:00:00"]];
 	
-	BOOL isCreator = _challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
+	BOOL isCreator = _challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 10500 && diff > 0);
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 5.0, 200.0, 20.0)];
@@ -95,7 +95,7 @@
 	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	opponentsLabel.textColor = [HONAppDelegate honGrey455Color];
 	opponentsLabel.backgroundColor = [UIColor clearColor];
-	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], [[dateFormatter stringFromDate:localDate] lowercaseString]];
+	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username], [[dateFormatter stringFromDate:localDate] lowercaseString]];
 	[self.view addSubview:opponentsLabel];
 
 	
@@ -103,7 +103,7 @@
 	[self.view addSubview:imageLoadingView];
 	
 	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim)];
-	[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_%@.jpg", (isCreator && _challengeVO.statusID == 4) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix, (isOriginalImageAvailable) ? @"o" : @"l"]] placeholderImage:nil];
+	[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_%@.jpg", (isCreator && _challengeVO.statusID == 4) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).imagePrefix : _challengeVO.creatorVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"]] placeholderImage:nil];
 	
 	[self.view addSubview:_imageView];
 }

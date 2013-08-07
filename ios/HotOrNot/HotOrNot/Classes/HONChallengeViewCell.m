@@ -9,7 +9,7 @@
 #import "UIImageView+AFNetworking.h"
 
 #import "HONChallengeViewCell.h"
-
+#import "HONOpponentVO.h"
 
 @interface HONChallengeViewCell()
 @property (nonatomic, strong) UIButton *loadMoreButton;
@@ -46,7 +46,7 @@
 	_challengeVO = challengeVO;
 	
 	[self hideChevron];
-	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID;
+	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID;
 	
 	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(12.0, 12.0, kSnapThumbDim, kSnapThumbDim)];
 	challengeImgHolderView.clipsToBounds = YES;
@@ -79,7 +79,7 @@
 	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	opponentsLabel.textColor = [HONAppDelegate honGrey455Color];
 	opponentsLabel.backgroundColor = [UIColor clearColor];
-	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], [[dateFormatter stringFromDate:localDate] lowercaseString]];
+	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username], [[dateFormatter stringFromDate:localDate] lowercaseString]];
 	[self addSubview:opponentsLabel];
 	
 	UILabel *tapLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 40.0, 120.0, 18.0)];

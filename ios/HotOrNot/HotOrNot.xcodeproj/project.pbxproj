@@ -554,6 +554,8 @@
 		4CBE874C16371D24004084DF /* HONSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CBE874B16371D22004084DF /* HONSupportViewController.m */; };
 		4CC4D14116390BA400E2B217 /* push_02.caf in Resources */ = {isa = PBXBuildFile; fileRef = 4CC4D14016390BA400E2B217 /* push_02.caf */; };
 		4CC6AD0E17B0AA98004E7A3F /* HONRefreshButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC6AD0D17B0AA98004E7A3F /* HONRefreshButtonView.m */; };
+		4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC6AD1017B1ACE9004E7A3F /* HONOpponentVO.m */; };
+		4CC6AD1417B1F267004E7A3F /* HONTimelineHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC6AD1317B1F266004E7A3F /* HONTimelineHeaderView.m */; };
 		4CC8E5F417AF3E7400712223 /* UINavigationBar+NavigationBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CC8E5F317AF3E7400712223 /* UINavigationBar+NavigationBar.m */; };
 		4CCF194017A06A3B007D726B /* cameraAnimation_001.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CCF193017A06A3B007D726B /* cameraAnimation_001.png */; };
 		4CCF194117A06A3B007D726B /* cameraAnimation_001@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CCF193117A06A3B007D726B /* cameraAnimation_001@2x.png */; };
@@ -1639,6 +1641,10 @@
 		4CC4D14016390BA400E2B217 /* push_02.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = push_02.caf; sourceTree = "<group>"; };
 		4CC6AD0C17B0AA98004E7A3F /* HONRefreshButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRefreshButtonView.h; sourceTree = "<group>"; };
 		4CC6AD0D17B0AA98004E7A3F /* HONRefreshButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRefreshButtonView.m; sourceTree = "<group>"; };
+		4CC6AD0F17B1ACE9004E7A3F /* HONOpponentVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONOpponentVO.h; sourceTree = "<group>"; };
+		4CC6AD1017B1ACE9004E7A3F /* HONOpponentVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONOpponentVO.m; sourceTree = "<group>"; };
+		4CC6AD1217B1F266004E7A3F /* HONTimelineHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONTimelineHeaderView.h; sourceTree = "<group>"; };
+		4CC6AD1317B1F266004E7A3F /* HONTimelineHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONTimelineHeaderView.m; sourceTree = "<group>"; };
 		4CC8E5F217AF3E7400712223 /* UINavigationBar+NavigationBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationBar+NavigationBar.h"; sourceTree = "<group>"; };
 		4CC8E5F317AF3E7400712223 /* UINavigationBar+NavigationBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationBar+NavigationBar.m"; sourceTree = "<group>"; };
 		4CCF193017A06A3B007D726B /* cameraAnimation_001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cameraAnimation_001.png; sourceTree = "<group>"; };
@@ -2032,6 +2038,8 @@
 				4C02601C172B4703001CC476 /* HONContactUserVO.m */,
 				4C382FF2178B7D2000C7FA7C /* HONCelebVO.h */,
 				4C382FF3178B7D2000C7FA7C /* HONCelebVO.m */,
+				4CC6AD0F17B1ACE9004E7A3F /* HONOpponentVO.h */,
+				4CC6AD1017B1ACE9004E7A3F /* HONOpponentVO.m */,
 			);
 			name = VO;
 			sourceTree = "<group>";
@@ -2049,6 +2057,8 @@
 				4C62673F15F96E5600AA7FCE /* HONTimelineViewController.m */,
 				4C04DAA217A635FB0059DB70 /* HONUserProfileRequestViewCell.h */,
 				4C04DAA317A635FB0059DB70 /* HONUserProfileRequestViewCell.m */,
+				4CC6AD1217B1F266004E7A3F /* HONTimelineHeaderView.h */,
+				4CC6AD1317B1F266004E7A3F /* HONTimelineHeaderView.m */,
 			);
 			name = Timeline;
 			sourceTree = "<group>";
@@ -4196,6 +4206,8 @@
 				4C04DAA417A635FB0059DB70 /* HONUserProfileRequestViewCell.m in Sources */,
 				4CC8E5F417AF3E7400712223 /* UINavigationBar+NavigationBar.m in Sources */,
 				4CC6AD0E17B0AA98004E7A3F /* HONRefreshButtonView.m in Sources */,
+				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
+				4CC6AD1417B1F267004E7A3F /* HONTimelineHeaderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

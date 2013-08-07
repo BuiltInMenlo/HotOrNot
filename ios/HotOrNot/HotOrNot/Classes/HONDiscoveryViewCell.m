@@ -44,11 +44,11 @@
 	[holderView addSubview:imageLoadingView];
 	
 	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorImgPrefix]] placeholderImage:nil];
+	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorVO.imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:lImageView];
 	
 	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
-	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.challengerImgPrefix]] placeholderImage:nil];
+	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_lChallengeVO.challengers lastObject]).imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:rImageView];
 	
 	
@@ -83,11 +83,11 @@
 	[holderView addSubview:imageLoadingView];
 
 	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorImgPrefix]] placeholderImage:nil];
+	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorVO.imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:lImageView];
 	
 	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
-	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.challengerImgPrefix]] placeholderImage:nil];
+	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_rChallengeVO.challengers lastObject]).imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:rImageView];
 	
 	

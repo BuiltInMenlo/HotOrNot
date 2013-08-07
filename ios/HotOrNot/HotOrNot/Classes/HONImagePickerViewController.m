@@ -22,6 +22,7 @@
 #import "HONAddChallengersViewController.h"
 #import "HONCreateChallengePreviewView.h"
 #import "HONUserVO.h"
+#import "HONOpponentVO.h"
 #import "HONContactUserVO.h"
 
 
@@ -123,10 +124,10 @@ const CGFloat kFocusInterval = 0.5f;
 	if ((self = [super init])) {
 		NSLog(@"%@ - initWithChallenge:[%d]", [self description], vo.challengeID);
 		_challengeVO = vo;
-		_fbID = vo.creatorFB;
+		_fbID = vo.creatorVO.fbID;
 		_subjectName = vo.subjectName;
 		_challengeSubmitType = HONChallengeSubmitTypeAccept;
-		_challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;;
+		_challengerName = (_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username;;
 		_isFirstAppearance = YES;
 		_isPrivate = NO;//vo.isPrivate;
 		[self _registerNotifications];
@@ -136,10 +137,10 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (id)initWithJoinChallenge:(HONChallengeVO *)vo {
-	NSLog(@"%@ - initWithJoinChallenge:[%d] (%d/%d)", [self description], vo.challengeID, vo.creatorID, vo.challengerID);
+	NSLog(@"%@ - initWithJoinChallenge:[%d] (%d/%d)", [self description], vo.challengeID, vo.creatorVO.userID, ((HONOpponentVO *)[vo.challengers lastObject]).userID);
 	if ((self = [super init])) {
 		_challengeVO = vo;
-		_fbID = vo.creatorFB;
+		_fbID = vo.creatorVO.fbID;
 		_subjectName = vo.subjectName;
 		_challengeSubmitType = HONChallengeSubmitTypeJoin;
 		_challengerName = @"";
@@ -399,40 +400,40 @@ const CGFloat kFocusInterval = 0.5f;
 		
 	} else if (_challengeSubmitType == HONChallengeSubmitTypeAccept) {
 		[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																[NSString stringWithFormat:@"%d", _challengeVO.creatorID], @"id",
+																[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
 																[NSString stringWithFormat:@"%d", 0], @"points",
 																[NSString stringWithFormat:@"%d", 0], @"votes",
 																[NSString stringWithFormat:@"%d", 0], @"pokes",
 																[NSString stringWithFormat:@"%d", 0], @"pics",
 																[NSString stringWithFormat:@"%d", 0], @"age",
-																_challengeVO.creatorName, @"username",
-																_challengeVO.creatorFB, @"fb_id",
-																_challengeVO.creatorAvatar, @"avatar_url", nil]]];
+																_challengeVO.creatorVO.username, @"username",
+																_challengeVO.creatorVO.fbID, @"fb_id",
+																_challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
 		
 	} else if (_challengeSubmitType == HONChallengeSubmitTypeJoin) {
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorID) {
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorVO.userID) {
 			[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																	[NSString stringWithFormat:@"%d", _challengeVO.creatorID], @"id",
+																	[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
 																	[NSString stringWithFormat:@"%d", 0], @"points",
 																	[NSString stringWithFormat:@"%d", 0], @"votes",
 																	[NSString stringWithFormat:@"%d", 0], @"pokes",
 																	[NSString stringWithFormat:@"%d", 0], @"pics",
 																	[NSString stringWithFormat:@"%d", 0], @"age",
-																	_challengeVO.creatorName, @"username",
-																	_challengeVO.creatorFB, @"fb_id",
-																	_challengeVO.creatorAvatar, @"avatar_url", nil]]];
+																	_challengeVO.creatorVO.username, @"username",
+																	_challengeVO.creatorVO.fbID, @"fb_id",
+																	_challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
 		}
-		if (_challengeVO.statusID != 1 && [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.challengerID) {
+		if (_challengeVO.statusID != 1 && [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID) {
 			[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																	[NSString stringWithFormat:@"%d", _challengeVO.challengerID], @"id",
+																	[NSString stringWithFormat:@"%d", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID], @"id",
 																	[NSString stringWithFormat:@"%d", 0], @"points",
 																	[NSString stringWithFormat:@"%d", 0], @"votes",
 																	[NSString stringWithFormat:@"%d", 0], @"pokes",
 																	[NSString stringWithFormat:@"%d", 0], @"pics",
 																	[NSString stringWithFormat:@"%d", 0], @"age",
-																	_challengeVO.challengerName, @"username",
-																	_challengeVO.challengerFB, @"fb_id",
-																	_challengeVO.challengerAvatar, @"avatar_url", nil]]];
+																	((HONOpponentVO *)[_challengeVO.challengers lastObject]).username, @"username",
+																	((HONOpponentVO *)[_challengeVO.challengers lastObject]).fbID, @"fb_id",
+																	((HONOpponentVO *)[_challengeVO.challengers lastObject]).avatarURL, @"avatar_url", nil]]];
 		}
 	}
 	
@@ -926,7 +927,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	// accepting, now submit new against username w/ subject
 	if (_challengeSubmitType == HONChallengeSubmitTypeAccept && (_challengeVO != nil && ![_subjectName isEqualToString:_challengeVO.subjectName])) {
-		_challengerName = (_challengeVO.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? _challengeVO.challengerName : _challengeVO.creatorName;
+		_challengerName = (_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username;
 		_challengeSubmitType = HONChallengeSubmitTypeOpponentName;
 	}
 }

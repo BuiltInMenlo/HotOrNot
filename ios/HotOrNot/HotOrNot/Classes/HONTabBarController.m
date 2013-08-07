@@ -398,7 +398,7 @@
 				NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
 											 [NSNumber numberWithInt:vo.challengeID], @"id",
 											 (vo.statusID == 1 || vo.statusID == 2) ? @"created" : @"started", @"status",
-											 [NSNumber numberWithInt:(vo.creatorID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorScore : vo.challengerScore], @"score",
+											 [NSNumber numberWithInt:(vo.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.score : ((HONOpponentVO *)[vo.challengers lastObject]).score], @"score",
 											 [NSNumber numberWithInt:vo.commentTotal], @"comments",
 											 nil];
 				

@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "HotOrNot/Classes/HONTimelineViewController.m"
-         timestampString = "397453565.483007"
+         timestampString = "397538698.772107"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "490"
-         endingLineNumber = "490"
+         startingLineNumber = "462"
+         endingLineNumber = "462"
          landmarkName = "-_goRefresh"
          landmarkType = "5">
       </FileBreakpoint>

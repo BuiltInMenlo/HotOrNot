@@ -11,7 +11,8 @@
 #import "MBProgressHUD.h"
 
 #import "HONDiscoveryViewController.h"
-#import "HONHeaderView.h"
+#import "HONRefreshButtonView.h"
+#import "HONRefreshButtonView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
@@ -20,7 +21,7 @@
 @interface HONDiscoveryViewController ()<UITableViewDataSource, UITableViewDelegate, HONDiscoveryViewCellDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) HONHeaderView *headerView;
+@property(nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property(nonatomic, strong) UIImageView *emptySetImgView;
 @property(nonatomic, strong) NSMutableDictionary *allChallenges;
 @property(nonatomic, strong) NSMutableArray *currChallenges;
@@ -57,7 +58,7 @@
 
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
-	[_headerView toggleRefresh:YES];
+	[_refreshButtonView toggleRefresh:YES];
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"action"];
@@ -71,7 +72,7 @@
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists lastObject]);
 			
 			_allChallenges = [NSMutableDictionary dictionary];
 			NSMutableArray *retrievedChallenges = [NSMutableArray array];
@@ -90,7 +91,7 @@
 			[_tableView reloadData];
 		}
 		
-		[_headerView toggleRefresh:NO];
+		[_refreshButtonView toggleRefresh:NO];
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -99,7 +100,7 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [error localizedDescription]);
 		
-		[_headerView toggleRefresh:NO];
+		[_refreshButtonView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -115,29 +116,16 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-	[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-	[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-	
-	UIView *refreshButtonHolderView = [[UIView alloc] initWithFrame:refreshButton.frame];
-	refreshButton.frame = CGRectOffset(refreshButton.frame, -5.0, -1.0);
-	[refreshButtonHolderView addSubview:refreshButton];
-	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	createChallengeButton.frame = CGRectMake(270.0, 0.0, 50.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
 	
+	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 	self.navigationController.navigationBar.topItem.title = @"Discover";
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:refreshButtonHolderView];
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:createChallengeButton];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_discover", nil)];
-	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:_headerView];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
@@ -186,7 +174,7 @@
 		for (NSNumber *cID in [HONAppDelegate refreshDiscoverChallenges])
 			[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
 		
-		[_headerView toggleRefresh:NO];
+		[_refreshButtonView toggleRefresh:NO];
 		[_tableView reloadData];
 	}
 }
@@ -205,7 +193,7 @@
 #pragma mark - Notifications
 - (void)_refreshDiscoveryTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	[_headerView toggleRefresh:YES];
+	[_refreshButtonView toggleRefresh:YES];
 	[self _goRefresh];
 }
 

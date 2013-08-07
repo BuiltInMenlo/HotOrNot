@@ -15,6 +15,7 @@
 #import "HONImageLoadingView.h"
 #import "HONVoterVO.h"
 #import "HONUserVO.h"
+#import "HONOpponentVO.h"
 
 
 @interface HONTimelineItemViewCell() <UIActionSheetDelegate>
@@ -112,33 +113,33 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID);
-	_isChallengeOpponent = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.challengerID);
+	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
+	_isChallengeOpponent = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID);
 	
 	
 	__weak typeof(self) weakSelf = self;
 	//NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasOponentRetorted);
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 18.0, 200.0, 28.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:24];
-	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = _challengeVO.subjectName;
-	[self addSubview:subjectLabel];
-	
-	UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	subjectButton.frame = subjectLabel.frame;
-	[subjectButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:subjectButton];
-	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 20.0, 160.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
-	[self addSubview:timeLabel];
+//	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 18.0, 200.0, 28.0)];
+//	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:24];
+//	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
+//	subjectLabel.backgroundColor = [UIColor clearColor];
+//	subjectLabel.text = _challengeVO.subjectName;
+//	[self addSubview:subjectLabel];
+//	
+//	UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	subjectButton.frame = subjectLabel.frame;
+//	[subjectButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+//	[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
+//	[self addSubview:subjectButton];
+//	
+//	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 20.0, 160.0, 16.0)];
+//	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+//	timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
+//	timeLabel.backgroundColor = [UIColor clearColor];
+//	timeLabel.textAlignment = NSTextAlignmentRight;
+//	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
+//	[self addSubview:timeLabel];
 	
 	UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 55.0, 320.0, kSnapLargeDim)];
 	scrollView.contentSize = CGSizeMake((kSnapLargeDim + 10.0 + 54.0) + ((kSnapLargeDim + 20.0) * ((int)_hasOponentRetorted)), kSnapLargeDim);
@@ -156,10 +157,10 @@
 	
 	_lChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
 	_lChallengeImageView.userInteractionEnabled = YES;
-	_lChallengeImageView.alpha = [_lChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]]]];
+	_lChallengeImageView.alpha = [_lChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorVO.imagePrefix]]]];
 	[_lHolderView addSubview:_lChallengeImageView];
 	
-	[_lChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorImgPrefix]]
+	[_lChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.creatorVO.imagePrefix]]
 																  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 									weakSelf.lChallengeImageView.image = image;
@@ -174,7 +175,7 @@
 	[_lHolderView addSubview:leftButton];
 	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 162.0, 38.0, 38.0)];
-	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
+	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 	creatorAvatarImageView.userInteractionEnabled = YES;
 	[_lHolderView addSubview:creatorAvatarImageView];
 	
@@ -188,7 +189,7 @@
 	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	creatorNameLabel.textColor = [UIColor whiteColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
-	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorName];
+	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
 	[_lHolderView addSubview:creatorNameLabel];
 	
 	UIButton *creatorNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -205,11 +206,11 @@
 	
 	if (_hasOponentRetorted) {
 		_rChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
-		_rChallengeImageView.alpha = [_rChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]]]];
+		_rChallengeImageView.alpha = [_rChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).imagePrefix]]]];
 		_rChallengeImageView.userInteractionEnabled = YES;
 		[_rHolderView addSubview:_rChallengeImageView];
 		
-		[_rChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", challengeVO.challengerImgPrefix]]
+		[_rChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).imagePrefix]]
 																	  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 										weakSelf.rChallengeImageView.image = image;
@@ -224,7 +225,7 @@
 		[_rHolderView addSubview:rightButton];
 		
 		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 162.0, 38.0, 38.0)];
-		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
+		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers lastObject]).avatarURL] placeholderImage:nil];
 		challengerAvatarImageView.userInteractionEnabled = YES;
 		challengerAvatarImageView.clipsToBounds = YES;
 		[_rHolderView addSubview:challengerAvatarImageView];
@@ -239,7 +240,7 @@
 		challengerNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 		challengerNameLabel.textColor = [UIColor whiteColor];
 		challengerNameLabel.backgroundColor = [UIColor clearColor];
-		challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
+		challengerNameLabel.text = [NSString stringWithFormat:@"@%@", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username];
 		[_rHolderView addSubview:challengerNameLabel];
 		
 		UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -258,7 +259,7 @@
 		_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 		_likesLabel.textColor = [HONAppDelegate honBlueTextColor];
 		_likesLabel.backgroundColor = [UIColor clearColor];
-		_likesLabel.text = (_challengeVO.creatorScore + _challengeVO.challengerScore > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
+		_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
 		[self addSubview:_likesLabel];
 		
 		UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -289,7 +290,7 @@
 		[joinHolderView addSubview:joinButton];
 		
 		// awaiting challenger response
-		if (_challengeVO.challengerID != 0) {
+		if (((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID != 0) {
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			rightButton.frame = _rChallengeImageView.frame;
 			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
@@ -297,7 +298,7 @@
 			[_rHolderView addSubview:rightButton];
 			
 			UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 162.0, 38.0, 38.0)];
-			[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
+			[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers lastObject]).avatarURL] placeholderImage:nil];
 			challengerAvatarImageView.userInteractionEnabled = YES;
 			challengerAvatarImageView.clipsToBounds = YES;
 			[_rHolderView addSubview:challengerAvatarImageView];
@@ -312,7 +313,7 @@
 			challengerNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 			challengerNameLabel.textColor = [UIColor whiteColor];
 			challengerNameLabel.backgroundColor = [UIColor clearColor];
-			challengerNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.challengerName];
+			challengerNameLabel.text = [NSString stringWithFormat:@"@%@", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username];
 			[_rHolderView addSubview:challengerNameLabel];
 			
 			UIButton *challengerNameButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -346,7 +347,7 @@
 	_lScoreLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:20];
 	_lScoreLabel.backgroundColor = [UIColor clearColor];
 	_lScoreLabel.textColor = [UIColor whiteColor];
-	_lScoreLabel.text = [numberFormatter stringFromNumber:[NSNumber numberWithInt:_challengeVO.creatorScore]];//[NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+	_lScoreLabel.text = [numberFormatter stringFromNumber:[NSNumber numberWithInt:_challengeVO.creatorVO.score]];
 	_lScoreLabel.hidden = YES;//!_hasOponentRetorted;
 	[_lHolderView addSubview:_lScoreLabel];
 	
@@ -354,7 +355,7 @@
 	_rScoreLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:20];
 	_rScoreLabel.backgroundColor = [UIColor clearColor];
 	_rScoreLabel.textColor = [UIColor whiteColor];
-	_rScoreLabel.text = [numberFormatter stringFromNumber:[NSNumber numberWithInt:_challengeVO.challengerScore]];//[NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+	_rScoreLabel.text = [numberFormatter stringFromNumber:[NSNumber numberWithInt:((HONOpponentVO *)[_challengeVO.challengers lastObject]).score]];
 	_rScoreLabel.hidden = YES;//!_hasOponentRetorted;
 	[_rHolderView addSubview:_rScoreLabel];
 	
@@ -465,9 +466,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorID, _challengeVO.creatorName], @"creator", nil]];
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"creator", nil]];
 	
-	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.creatorName];
+	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.creatorVO.username];
 }
 
 - (void)_goChallengerTimeline {
@@ -475,9 +476,9 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengerID, _challengeVO.challengerName], @"challenger", nil]];
+									  [NSString stringWithFormat:@"%d - %@", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID, ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username], @"challenger", nil]];
 	
-	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.challengerName];
+	[self.delegate timelineItemViewCell:self showUserChallenges:((HONOpponentVO *)[_challengeVO.challengers lastObject]).username];
 }
 
 - (void)_goUpvoteCreator {
@@ -496,7 +497,7 @@
 		_upvoteImageView = nil;
 	}];
 	
-	_challengeVO.creatorScore++;
+	_challengeVO.creatorVO.score++;
 	
 	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
 		[[Mixpanel sharedInstance] track:@"Timeline - Upvote Creator"
@@ -508,8 +509,8 @@
 		[self _upvoteChallengeCreator:YES];
 	}
 	
-	_likesLabel.text = (_challengeVO.creatorScore + _challengeVO.challengerScore > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorScore];
+	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
+	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.score];
 }
 
 - (void)_goUpvoteChallenger {
@@ -528,7 +529,7 @@
 		_upvoteImageView = nil;
 	}];
 	
-	_challengeVO.challengerScore++;
+	((HONOpponentVO *)[_challengeVO.challengers lastObject]).score++;
 	
 	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
 		[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenger"
@@ -540,8 +541,8 @@
 		[self _upvoteChallengeCreator:NO];
 	}
 	
-	_likesLabel.text = (_challengeVO.creatorScore + _challengeVO.challengerScore > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorScore + _challengeVO.challengerScore)];
-	_rScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.challengerScore];
+	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
+	_rScoreLabel.text = [NSString stringWithFormat:@"%d", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score];
 
 }
 

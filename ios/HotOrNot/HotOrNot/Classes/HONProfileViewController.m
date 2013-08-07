@@ -18,7 +18,6 @@
 #import "HONSettingsViewController.h"
 #import "HONUserProfileViewCell.h"
 #import "HONPastChallengerViewCell.h"
-#import "HONHeaderView.h"
 #import "HONRefreshButtonView.h"
 #import "HONImagePickerViewController.h"
 #import "HONSearchBarHeaderView.h"
@@ -38,7 +37,7 @@
 @property (nonatomic, strong) NSArray *friends;
 @property (nonatomic, strong) NSMutableArray *contacts;
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (strong, nonatomic) FBRequestConnection *requestConnection;
 @property (nonatomic) BOOL hasRefreshed;
@@ -200,8 +199,9 @@
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	
+	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 	self.navigationController.navigationBar.topItem.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)]];
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:moreButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height)) style:UITableViewStylePlain];
@@ -214,17 +214,6 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
-	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-//	[self.view addSubview:_headerView];
-	
-//	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	moreButton.frame = CGRectMake(256.0, 0.0, 64.0, 44.0);
-//	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_nonActive"] forState:UIControlStateNormal];
-//	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_Active"] forState:UIControlStateHighlighted];
-//	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-//	[_headerView addSubview:moreButton];
 }
 
 - (void)viewDidLoad {
@@ -298,7 +287,7 @@
 				[HONAppDelegate writeUserInfo:userResult];
 			
 			[(HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] updateCell];
-			[_headerView setTitle:[NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]]];
+			self.navigationController.navigationBar.topItem.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
 			
 			_recentOpponents = [NSMutableArray array];
 			_friends = [NSMutableArray array];

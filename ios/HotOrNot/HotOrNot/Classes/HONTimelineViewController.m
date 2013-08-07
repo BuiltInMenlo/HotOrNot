@@ -16,10 +16,12 @@
 #import "HONTimelineItemViewCell.h"
 #import "HONUserProfileViewCell.h"
 #import "HONUserProfileRequestViewCell.h"
+#import "HONOpponentVO.h"
 #import "HONUserVO.h"
+#import "HONTimelineHeaderView.h"
 #import "HONRegisterViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONHeaderView.h"
+#import "HONRefreshButtonView.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONRestrictedLocaleViewController.h"
@@ -44,7 +46,7 @@
 @property (nonatomic) BOOL isPublic;
 @property (nonatomic) BOOL isProfileViewable;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) UIScrollView *findFriendsScrollView;
 @property (nonatomic, strong) UIImageView *tooltipImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
@@ -197,13 +199,13 @@
 			
 			if (_timelineType == HONTimelineTypeOpponents) {
 				HONChallengeVO *vo = (HONChallengeVO *)[_challenges lastObject];
-				[_headerView setTitle:[NSString stringWithFormat:@"@%@", ([vo.challengerName length] == 0) ? vo.creatorName : (vo.creatorID == [[_challengerDict objectForKey:@"user1"] intValue] && vo.creatorID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorName : vo.challengerName]];
+				self.navigationController.navigationBar.topItem.title = [NSString stringWithFormat:@"@%@", ([((HONOpponentVO *)[vo.challengers lastObject]).username length] == 0) ? vo.creatorVO.username : (vo.creatorVO.userID == [[_challengerDict objectForKey:@"user1"] intValue] && vo.creatorVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.username : ((HONOpponentVO *)[vo.challengers lastObject]).username];
 			}
 			
 			[_tableView reloadData];
 		}
 		
-		[_headerView toggleRefresh:NO];
+		[_refreshButtonView toggleRefresh:NO];
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
@@ -212,7 +214,7 @@
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
 		
-		[_headerView toggleRefresh:NO];
+		[_refreshButtonView toggleRefresh:NO];
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 		_progressHUD.minShowTime = kHUDTime;
@@ -255,7 +257,7 @@
 			}
 			
 			if (!_isProfileViewable)
-				[_headerView setTitle:@"Sending Request…"];
+				self.navigationController.navigationBar.topItem.title = @"Sending Request…";
 			
 			_backButton.hidden = !_isProfileViewable;
 			
@@ -346,41 +348,11 @@
 			title = [NSString stringWithFormat:@"@%@", _username];
 		
 		self.navigationController.navigationBar.topItem.title = title;
-		_headerView = [[HONHeaderView alloc] initWithTitle:title];
-		[_headerView hideRefreshing];
-		
-		_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_backButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
-		[_backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
-		[_backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-		_backButton.hidden = !_isProfileViewable;
-		[_headerView addSubview:_backButton];
-		
-		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(256.0, 0.0, 64.0, 44.0);
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_nonActive"] forState:UIControlStateNormal];
-		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreHeaderButton_Active"] forState:UIControlStateHighlighted];
-		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-//		[_headerView addSubview:moreButton];
 		
 	} else {
-		self.navigationController.navigationBar.topItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]];
-		
-		UIButton *refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
-		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
-		[refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-		[refreshButton addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
-		
-		UIView *refreshButtonHolderView = [[UIView alloc] initWithFrame:refreshButton.frame];
-		refreshButton.frame = CGRectOffset(refreshButton.frame, -5.0, -1.0);
-		[refreshButtonHolderView addSubview:refreshButton];
-		
-		self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:refreshButtonHolderView];
-		
-		_headerView = [[HONHeaderView alloc] initAsVoteWall];
-		[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
+		_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
+		self.navigationController.navigationBar.topItem.titleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]];		
+		self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 	}
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -486,7 +458,7 @@
 }
 
 - (void)_goRefresh {
-	[_headerView toggleRefresh:YES];
+	[_refreshButtonView toggleRefresh:YES];
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -674,7 +646,7 @@
 
 - (void)_refreshVoteTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
-	[_headerView toggleRefresh:YES];
+	[_refreshButtonView toggleRefresh:YES];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
 		[self _retrieveUser];
@@ -743,15 +715,15 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-													   [NSString stringWithFormat:@"%d", challengeVO.challengerID], @"id",
+													   [NSString stringWithFormat:@"%d", ((HONOpponentVO *)[challengeVO.challengers lastObject]).userID], @"id",
 													   [NSString stringWithFormat:@"%d", 0], @"points",
 													   [NSString stringWithFormat:@"%d", 0], @"votes",
 													   [NSString stringWithFormat:@"%d", 0], @"pokes",
 													   [NSString stringWithFormat:@"%d", 0], @"pics",
 													   [NSString stringWithFormat:@"%d", 0], @"age",
-													   challengeVO.challengerName, @"username",
-													   challengeVO.challengerFB, @"fb_id",
-													   challengeVO.challengerAvatar, @"avatar_url", nil]];
+													   ((HONOpponentVO *)[challengeVO.challengers lastObject]).username, @"username",
+													   ((HONOpponentVO *)[challengeVO.challengers lastObject]).fbID, @"fb_id",
+													   ((HONOpponentVO *)[challengeVO.challengers lastObject]).avatarURL, @"avatar_url", nil]];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
 	[navigationController setNavigationBarHidden:YES];
@@ -765,15 +737,15 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-													   [NSString stringWithFormat:@"%d", challengeVO.creatorID], @"id",
+													   [NSString stringWithFormat:@"%d", challengeVO.creatorVO.userID], @"id",
 													   [NSString stringWithFormat:@"%d", 0], @"points",
 													   [NSString stringWithFormat:@"%d", 0], @"votes",
 													   [NSString stringWithFormat:@"%d", 0], @"pokes",
 													   [NSString stringWithFormat:@"%d", 0], @"pics",
 													   [NSString stringWithFormat:@"%d", 0], @"age",
-													   challengeVO.creatorName, @"username",
-													   challengeVO.creatorFB, @"fb_id",
-													   challengeVO.creatorAvatar, @"avatar_url", nil]];
+													   challengeVO.creatorVO.username, @"username",
+													   challengeVO.creatorVO.fbID, @"fb_id",
+													   challengeVO.creatorVO.avatarURL, @"avatar_url", nil]];
 	
 	UINavigationController *navigationController;
 	navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:challengeVO.subjectName]];
@@ -858,37 +830,38 @@
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return (1);
+	//return (((int)(_isProfileViewable) * [_challenges count]) + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	if (_isProfileViewable)
 		return ([_challenges count] + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
 	
 	else
 		return (1);
-	
-	//return (((int)(_isProfileViewable) * [_challenges count]) + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	if (_timelineType == HONTimelineTypeSingleUser)
-		return (nil);
+//	if (_timelineType == HONTimelineTypeSingleUser)
+//		return (nil);
+//	
+//	else {
+//		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
+//		
+//		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:bgView.frame];
+//		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
+//		[bgView addSubview:bannerImageView];
+//		
+//		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		bannerButton.frame = bannerImageView.frame;
+//		[bannerButton addTarget:self action:@selector(_goTimelineBanner) forControlEvents:UIControlEventTouchUpInside];
+//		[bgView addSubview:bannerButton];
+//		
+//		return (bgView);
+//	}
 	
-	else {
-		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-		
-		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:bgView.frame];
-		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
-		[bgView addSubview:bannerImageView];
-		
-		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		bannerButton.frame = bannerImageView.frame;
-		[bannerButton addTarget:self action:@selector(_goTimelineBanner) forControlEvents:UIControlEventTouchUpInside];
-		[bgView addSubview:bannerButton];
-		
-		return (bgView);
-	}
+	return ([[HONTimelineHeaderView alloc] initWithChallenge:(HONChallengeVO *)[_challenges objectAtIndex:section]]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

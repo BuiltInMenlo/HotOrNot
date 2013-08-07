@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "HONOpponentVO.h"
+
 @interface HONChallengeVO : NSObject
 + (HONChallengeVO *)challengeWithDictionary:(NSDictionary *)dictionary;
 
@@ -19,24 +21,12 @@
 @property (nonatomic, retain) NSString *subjectName;
 @property (nonatomic) int commentTotal;
 @property (nonatomic) BOOL hasViewed;
-@property (nonatomic, retain) NSString *rechallengedUsers;
 @property (nonatomic, retain) NSDate *addedDate;
 @property (nonatomic, retain) NSDate *startedDate;
 @property (nonatomic, retain) NSDate *updatedDate;
 @property (nonatomic) int expireSeconds;
 
-@property (nonatomic) int creatorID;
-@property (nonatomic, retain) NSString *creatorFB;
-@property (nonatomic, retain) NSString *creatorName;
-@property (nonatomic, retain) NSString *creatorAvatar;
-@property (nonatomic, retain) NSString *creatorImgPrefix;
-@property (nonatomic) int creatorScore;
-
-@property (nonatomic) int challengerID;
-@property (nonatomic, retain) NSString *challengerFB;
-@property (nonatomic, retain) NSString *challengerName;
-@property (nonatomic, retain) NSString *challengerAvatar;
-@property (nonatomic, retain) NSString *challengerImgPrefix;
-@property (nonatomic) int challengerScore;
+@property (nonatomic, retain) HONOpponentVO *creatorVO;
+@property (nonatomic, retain) NSMutableArray *challengers;
 
 @end
