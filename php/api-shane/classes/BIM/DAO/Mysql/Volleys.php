@@ -110,7 +110,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             unset( $volley->challenger_img );
             unset( $volley->joined );
             foreach( $data as $row ){
-                $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $volley->joined );
+                $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $row->joined );
             }
         }
         return $volley;
