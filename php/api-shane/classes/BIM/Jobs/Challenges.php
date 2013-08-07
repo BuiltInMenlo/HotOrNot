@@ -105,4 +105,25 @@ class BIM_Jobs_Challenges extends BIM_Jobs{
         $push = json_decode($workload->params);
         BIM_Push_UrbanAirship_Iphone::sendPush( $push );
     }
+    
+    public static function queueAcceptChallengeAsDefaultUser( $volleyObject, $creator, $targetUser ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Challenges',
+        	'method' => 'acceptChallengeAsDefaultUser',
+        	'params' => array( 
+                'volleyObject' => $volleyObject,
+                'creator' => $creator,
+                'targetUser' => $targetUser,
+            ),
+        );
+        return self::queueBackground( $job, __CLASS__ );
+    }
+    
+    public function acceptChallengeAsDefaultUser( $workload ){
+        $c = new BIM_App_Challenges();
+        $params = (object) $workload->params;
+        $c->doAcceptChallemgeAsDefaultUser($params->volleyObject, $params->creator, $params->targetUser);
+    }
+    
 }
+    

@@ -89,7 +89,9 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		        'id' => $_POST['userID'],
 		        'hashed_list' => $hashedList,
 		    );
-			$friends = $this->users->matchFriends( $params );
+		    $users = new BIM_App_Users();
+			$friends = $users->matchFriends( $params );
+			
 		}
 		return $friends;
     }

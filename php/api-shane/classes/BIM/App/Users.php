@@ -395,7 +395,7 @@ class BIM_App_Users extends BIM_App_Base{
 		$user_id = mysql_fetch_object(mysql_query($query))->id;
 		
 		// get user & return
-		$user_arr = $this->userObject($user_id);			
+		$user_arr = $this->userObject($user_id);
 		return $user_arr;
 	}
 	
@@ -520,7 +520,19 @@ class BIM_App_Users extends BIM_App_Base{
 	
 	public function matchFriends( $params ){
 	    $list = $this->addPhoneList($params);
-	    return $this->findfriends($list);
+	    $friendMatches = $this->findfriends($list, true);
+	    $friendList = BIM_App_Social::getFriends($params, true);
+	    
+	    // firletering out users with which we are already friends
+	    $friendIds = array_keys( $friendList );
+	    $matchIds = array_keys( $friendMatches );
+        $matches = array_diff($matchIds, $friendIds);
+        
+        foreach( $matches as &$user ){
+            $user = $friendMatches[ $user ];
+        }
+        
+        return $matches;
 	}
 	
 	public function matchFriendsEmail( $params ){
@@ -528,19 +540,27 @@ class BIM_App_Users extends BIM_App_Base{
 	    return $this->findfriendsEmail($list);
 	}
 	
-	public function findfriends( $list ){
+	public function findfriends( $list, $assoc = false ){
 	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
-	    $matches = $dao->findFriends( $list );
-	    $matches = json_decode($matches);
-	    if( isset( $matches->hits->hits ) && is_array($matches->hits->hits) ){
-	        $matches = &$matches->hits->hits;
-	        foreach( $matches as &$match ){
-	            $match = $match->fields->_source;
-                $user = self::getUser( $match->id );
-                $match->username = $user->username;
+	    $hits = $dao->findFriends( $list, $assoc );
+	    $hits = json_decode($hits);
+	    if( isset( $hits->hits->hits ) && is_array($hits->hits->hits) ){
+	        $hits = &$hits->hits->hits;
+	        $matches = array();
+	        foreach( $hits as $hit ){
+	            $hit = $hit->fields->_source;
+                $user = self::getUser( $hit->id );
+                if( $user->isExtant() ){
+                    $hit->username = $user->username;
+                    if( $assoc ){
+                        $matches[ $hit->id ] = $hit;
+                    } else {
+                        $matches[] = $hit;
+                    }
+                }
 	        }
 	    }
-	    return $matches;
+	    return $hits;
 	}
 	
 	public function findfriendsEmail( $list ){

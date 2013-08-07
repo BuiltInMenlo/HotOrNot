@@ -5,8 +5,25 @@ class BIM_Utils{
     protected static $request = null;
     
     public static function hashMobileNumber( $number ){
-        // for now we are not hashing until we decide on a scheme
+        $c = BIM_Config::sms();
+        if( !empty($c->useHashing) ){
+            $number = self::blowfishEncrypt($number);
+        }
         return $number;
+    }
+    
+    public static function blowfishEncrypt( $number ){
+        $c = BIM_Config::sms();
+        $iv = base64_decode($c->blowfish->b64iv);
+        $enc = base64_encode( mcrypt_encrypt( MCRYPT_BLOWFISH, $c->blowfish->key, $number, MCRYPT_MODE_CBC, $iv ) );
+        return $enc;
+    }
+    
+    public static function blowfishDecrypt( $encrptedNumber ){
+        $c = BIM_Config::sms();
+        $iv = base64_decode($c->blowfish->b64iv);
+        $dec = mcrypt_decrypt( MCRYPT_BLOWFISH, $c->blowfish->key, base64_decode( $encrptedNumber ), MCRYPT_MODE_CBC, $iv );
+        return $dec;
     }
     
     public static function getRequest(){

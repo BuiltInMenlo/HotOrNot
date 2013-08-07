@@ -16,6 +16,9 @@ class BIM_DAO_ElasticSearch_ContactLists extends BIM_DAO_ElasticSearch {
             $should[] = array(
                 "term" => array( "hashed_number" => $hashedPhoneNumber )
             );
+            $should[] = array(
+                "term" => array( "hashed_list" => $hashedPhoneNumber )
+            );
         }
         
         // this part will search the hashed_list field

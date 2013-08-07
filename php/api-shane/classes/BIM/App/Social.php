@@ -106,7 +106,13 @@ class BIM_App_Social extends BIM_App_Base{
         return $removed;
     }
     
-    public static function getFriends( $params ){
+    /**
+     * 
+     * @param stdClass $params
+     * @param boolean $assoc - true to return an assoc array where the keys are the user ids
+     * 
+     */
+    public static function getFriends( $params, $assoc = false ){
         $friendList = array();
         $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
         
@@ -126,7 +132,11 @@ class BIM_App_Social extends BIM_App_Base{
                 }
                 unset( $hit->_source->source_data );
                 unset( $hit->_source->target_data );
-                $friendList[] = $hit->_source;
+                if( $assoc ){
+                    $friendList[$hit->_source->id] = $hit->_source;
+                } else {
+                    $friendList[] = $hit->_source;
+                }
             }
         }
         return $friendList;
