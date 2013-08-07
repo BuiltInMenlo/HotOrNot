@@ -28,13 +28,16 @@ class BIM_Model_Volley{
         $challengers = array();
         foreach( $volley->challengers as $challenger ){
             $target = new BIM_User( $challenger->challenger_id );
+            $joined = new DateTime( "@$challenger->joined" );
+            $joined = $joined->format('Y-m-d H:i:s');
             $target = (object) array(
                 'id' => $target->id, 
                 'fb_id' => $target->fb_id,
                 'username' => $target->username,
                 'avatar' => $target->getAvatarUrl(),
                 'img' => $challenger->challenger_img,
-                'score' => 0
+                'score' => 0,
+                'joined' => $joined
             );
             
             $usersInChallenge = array( $creator, $target );

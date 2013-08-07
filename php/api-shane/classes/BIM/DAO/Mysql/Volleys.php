@@ -90,7 +90,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         	SELECT 
         		tc.*, 
         		tcp.user_id AS challenger_id, 
-        		tcp.img AS challenger_img 
+        		tcp.img AS challenger_img,
+        		tcp.joined as joined
         	FROM `hotornot-dev`.tblChallenges AS tc 
         		JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
         		ON tc.id = tcp.challenge_id 
@@ -98,15 +99,18 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         	ORDER BY challenge_id';
         
         $params = array( $id );
+        
+        
         $stmt = $this->prepareAndExecute( $sql, $params );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
         if( $data ){
             $volley = array_shift( $data );
-            $volley->challengers = array( ( object ) array( 'challenger_id' => $volley->challenger_id, 'challenger_img' => $volley->challenger_img ) );
+            $volley->challengers = array( ( object ) array( 'challenger_id' => $volley->challenger_id, 'challenger_img' => $volley->challenger_img,  'joined' => $volley->joined ) );
             unset( $volley->challenger_id );
             unset( $volley->challenger_img );
+            unset( $volley->joined );
             foreach( $data as $row ){
-                $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img );
+                $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $volley->joined );
             }
         }
         return $volley;
@@ -160,8 +164,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     }
     
     public function join( $volleyId, $userId, $imgUrl ){
-        $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img) VALUES (?, ?, ?)';
-        $params = array( $volleyId, $userId, $imgUrl );
+        $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img, joined ) VALUES (?, ?, ?, ?)';
+        $params = array( $volleyId, $userId, $imgUrl, time() );
         $this->prepareAndExecute($sql, $params);
         
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
@@ -170,8 +174,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     }
     
     public function accept( $volleyId, $userId, $imgUrl ){
-        $sql = 'UPDATE `hotornot-dev`.tblChallengeParticipants SET img = ? where challenge_id = ? and user_id = ? ';
-        $params = array( $imgUrl, $volleyId, $userId );
+        $sql = 'UPDATE `hotornot-dev`.tblChallengeParticipants SET img = ?, joined = ? where challenge_id = ? and user_id = ? ';
+        $params = array( $imgUrl, time(), $volleyId, $userId );
         $this->prepareAndExecute($sql, $params);
         
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
