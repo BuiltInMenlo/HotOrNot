@@ -47,12 +47,16 @@ class BIM_App_Challenges extends BIM_App_Base{
     public function acceptChallengeAsDefaultUser($volleyObject, $creator, $targetUser) {
         $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824 );
         if ( in_array($targetUser->id, $defaultUserID_arr) ) {
-            $imgUrl = "https://hotornot-challenges.s3.amazonaws.com/". $targetUser->device_token ."_000000000". mt_rand(0, 2);
-            $volleyObject->accept( $targetUser->id, $imgUrl );
-            if ($creator->notifications == "Y"){
-                $delay = mt_rand(30,120);
-                $this->doAcceptNotification($volleyObject, $creator, $targetUser, $delay);
-            }
+            $time = time() + mt_rand(30, 120);
+            $this->createTimedAccept( $volleyObject, $creator, $targetUser, $time );
+        }
+    }
+    
+    public function doAcceptChallemgeAsDefaultUser( $volleyObject, $creator, $targetUser ){
+        $imgUrl = "https://hotornot-challenges.s3.amazonaws.com/". $targetUser->device_token ."_000000000". mt_rand(0, 2);
+        $volleyObject->accept( $targetUser->id, $imgUrl );
+        if ($creator->notifications == "Y"){
+            $this->doAcceptNotification($volleyObject, $creator, $targetUser);
         }
     }
     
@@ -73,6 +77,27 @@ class BIM_App_Challenges extends BIM_App_Base{
         } else {
             BIM_Push_UrbanAirship_Iphone::sendPush( $push );
         }
+    }
+    
+    public function createTimedAccept( $volleyObject, $creator, $targetUser, $time ){
+        $time = new DateTime("@$time");
+        $time = $time->format('Y-m-d H:i:s');
+        
+        $job = (object) array(
+            'nextRunTime' => $time,
+            'class' => 'BIM_Jobs_Challenges',
+            'method' => 'acceptChallengeAsDefaultUser',
+            'name' => 'acceptchallengeasdefaultuser',
+            'params' => array( 
+                'volleyObject' => $volleyObject,
+                'creator' => $creator,
+                'targetUser' => $targetUser,
+            ),
+            'is_temp' => true,
+        );
+        
+        $j = new BIM_Jobs_Gearman();
+        $j->createJbb($job);
     }
     
     public function createTimedPush( $push, $time ){

@@ -16,7 +16,7 @@ class BIM_App_Comments extends BIM_App_Base{
     public function getCommentsForChallenge($challenge_id) {
 		$this->dbConnect();
 	    $comment_arr = array();
-		
+	    
 		$query = 'SELECT * FROM `tblComments` WHERE `challenge_id` = '. $challenge_id .' AND `status_id` = 1 ORDER BY `added` ASC;';
 		$comment_result = mysql_query($query);
 		
