@@ -74,18 +74,11 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
      * 
      */
     public function upvoteChallenge(){
+        $input = $_POST ? $_POST : $_GET;
         $uv = null;
-		if ( isset( $_POST['challengeID'] ) && isset( $_POST['userID'] ) && isset( $_POST['creator'] ) ){
-		    $thisFunc = array( __CLASS__, __FUNCTION__ );
-	        if( $this->useQueue( $thisFunc ) ){
-    			$uv = $this->jobs->queueUpvoteJob( $_POST['challengeID'], $_POST['userID'], $_POST['creator'] );
-	        }
-	        if( !$uv ){
-    		    $uv = $this->votes->upvoteChallenge( $_POST['challengeID'], $_POST['userID'], $_POST['creator'] );
-    			//$this->jobs->queueStaticChallengesByDate();
-    			//$this->jobs->queueStaticChallengesByActivity();
-    			//$this->jobs->queueStaticTopChallengesByVotes();
-	        }
+		if ( isset( $input['challengeID'] ) && isset( $input['userID'] ) && isset( $input['challengerID'] ) ){
+		    $votes = new BIM_App_Votes();
+		    $uv = $votes->upvoteChallenge( $input['challengeID'], $input['userID'], $input['challengerID'] );
 		}
 		return $uv;
     }

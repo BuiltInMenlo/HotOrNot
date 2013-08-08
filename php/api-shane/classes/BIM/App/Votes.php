@@ -378,19 +378,22 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * Upvotes a challenge
 	 * @param $challenge_id The ID of the challenge (integer)
 	 * @param $user_id The ID of the user performing the upvote
-	 * @param $isCreator Y/N whether or not the vote is for the challenge creator
+	 * @param $targetId the id of the user receiving the vote
 	 * @return An associative object of the challenge (array)
 	**/
-	public function upvoteChallenge($challenge_id, $user_id, $isCreator) {
+	public function upvoteChallenge($challenge_id, $user_id, $targetId) {
 		$this->dbConnect();
 		// get challenge info
+		$targetId = mysql_escape_string($targetId);
+		$challenge_id = mysql_escape_string($challenge_id);
+		$user_id = mysql_escape_string($user_id);
 		
-	    $query = '
+	    $query = "
 	    	SELECT tc.`creator_id`, tc.`subject_id`, tc.user_id as challenger_id, tc.`votes` 
 	    	FROM `tblChallenges` as tc
             	JOIN tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
-	    	WHERE tc.`id` = '. $challenge_id .';';
+	    	WHERE tc.`id` = $challenge_id and tcp.user_id = $targetId";
 	    
 		$challenge_obj = mysql_fetch_object(mysql_query($query));
 		$creator_id = $challenge_obj->creator_id;
@@ -398,11 +401,11 @@ class BIM_App_Votes extends BIM_App_Base{
 		$vote_tot = $challenge_obj->votes;
 		
 		// assign vote
-		if ($isCreator == "Y")
+		if ($targetId == $creator_id)
 			$winningUser_id = $creator_id;
 						
 		else
-			$winningUser_id = $challenger_id;
+			$winningUser_id = $targetId;
 			
 		// get any votes for this challenge by this user
 		$query = 'SELECT `id` FROM `tblChallengeVotes` WHERE `challenge_id` = '. $challenge_id .' AND `user_id` = '. $user_id .';';
