@@ -5059,6 +5059,7 @@
 			baseConfigurationReference = 4C4BAB4717A0EC5400AA4457 /* HockeySDK.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = HotOrNot/HotOrNot.entitlements;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\"$(SRCROOT)/HotOrNot/Other\\ Frameworks\\\"",
@@ -5088,6 +5089,7 @@
 			baseConfigurationReference = 4C4BAB4717A0EC5400AA4457 /* HockeySDK.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = HotOrNot/HotOrNot.entitlements;
+				"CODE_SIGN_ENTITLEMENTS[sdk=iphoneos*]" = HotOrNot/HotOrNot.entitlements;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\\\"$(SRCROOT)/HotOrNot/Other\\ Frameworks\\\"",
