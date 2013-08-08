@@ -13,6 +13,7 @@
 		4C026015172AF87D001CC476 /* HONPastChallengerViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C026014172AF87D001CC476 /* HONPastChallengerViewCell.m */; };
 		4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C026019172B2CA8001CC476 /* AddressBook.framework */; };
 		4C02601D172B4703001CC476 /* HONContactUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C02601C172B4703001CC476 /* HONContactUserVO.m */; };
+		4C03963017B3350800AECD97 /* HONChallengeDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */; };
 		4C04DAA417A635FB0059DB70 /* HONUserProfileRequestViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C04DAA317A635FB0059DB70 /* HONUserProfileRequestViewCell.m */; };
 		4C068AA3170267850019428A /* commentsInputField_Active.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4C068A9F170267850019428A /* commentsInputField_Active.jpg */; };
 		4C068AA4170267850019428A /* commentsInputField_Active@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4C068AA0170267850019428A /* commentsInputField_Active@2x.jpg */; };
@@ -668,6 +669,8 @@
 		4C026019172B2CA8001CC476 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		4C02601B172B4703001CC476 /* HONContactUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactUserVO.h; sourceTree = "<group>"; };
 		4C02601C172B4703001CC476 /* HONContactUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactUserVO.m; sourceTree = "<group>"; };
+		4C03962E17B3350700AECD97 /* HONChallengeDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeDetailsViewController.h; sourceTree = "<group>"; };
+		4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeDetailsViewController.m; sourceTree = "<group>"; };
 		4C04DAA217A635FB0059DB70 /* HONUserProfileRequestViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileRequestViewCell.h; sourceTree = "<group>"; };
 		4C04DAA317A635FB0059DB70 /* HONUserProfileRequestViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileRequestViewCell.m; sourceTree = "<group>"; };
 		4C068A9F170267850019428A /* commentsInputField_Active.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = commentsInputField_Active.jpg; sourceTree = "<group>"; };
@@ -2059,6 +2062,8 @@
 				4C04DAA317A635FB0059DB70 /* HONUserProfileRequestViewCell.m */,
 				4CC6AD1217B1F266004E7A3F /* HONTimelineHeaderView.h */,
 				4CC6AD1317B1F266004E7A3F /* HONTimelineHeaderView.m */,
+				4C03962E17B3350700AECD97 /* HONChallengeDetailsViewController.h */,
+				4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */,
 			);
 			name = Timeline;
 			sourceTree = "<group>";
@@ -4208,6 +4213,7 @@
 				4CC6AD0E17B0AA98004E7A3F /* HONRefreshButtonView.m in Sources */,
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
 				4CC6AD1417B1F267004E7A3F /* HONTimelineHeaderView.m in Sources */,
+				4C03963017B3350800AECD97 /* HONChallengeDetailsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

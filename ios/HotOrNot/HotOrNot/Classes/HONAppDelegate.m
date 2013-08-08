@@ -74,7 +74,7 @@ NSString * const kAPIChallengeObject = @"challenges/get";
 NSString * const kAPIGetPublicMessages = @"challenges/getpublic";
 NSString * const kAPIGetPrivateMessages = @"challenges/getprivate";
 NSString * const kAPISetUserAgeGroup = @"users/setage";
-
+NSString * const kAPIJoinChallenge = @"challenges/join";
 
 
 // view heights

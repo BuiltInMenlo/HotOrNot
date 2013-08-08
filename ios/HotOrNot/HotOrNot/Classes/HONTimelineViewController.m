@@ -184,7 +184,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray new];
 			
@@ -835,7 +835,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	if (_isProfileViewable)
+	if (_isProfileViewable || _timelineType == HONTimelineTypeSubject)
 		return ([_challenges count] + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
 	
 	else
@@ -910,7 +910,7 @@
 		HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
 		if (cell == nil) {
-			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section];
 			cell = [[HONTimelineItemViewCell alloc] initAsStartedCell:(vo.statusID == 4)];
 			cell.challengeVO = vo;
 		}
@@ -925,14 +925,14 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.row == 0) {
-		return ((_timelineType == HONTimelineTypeSingleUser) ? (_isProfileViewable) ? 237.0 : 620.0 : 320.0);
+		return ((_timelineType == HONTimelineTypeSingleUser) ? (_isProfileViewable) ? 237.0 : 620.0 : 290.0);
 		
 	} else
-		return (320.0);
+		return (290.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return ((([[HONAppDelegate timelineBannerURL] length] > 0) && !_isPushView) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 50.0 : 0.0);
+	return ((([[HONAppDelegate timelineBannerURL] length] > 0) && !_isPushView) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 50.0 : 50.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UIImageView+AFNetworking.h"
+
 #import "HONTimelineHeaderView.h"
 
 @interface HONTimelineHeaderView()
@@ -22,18 +24,24 @@
 		
 		self.backgroundColor = [UIColor whiteColor];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 18.0, 200.0, 28.0)];
-		subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:24];
+		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 30.0, 30.0)];
+		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
+		creatorAvatarImageView.userInteractionEnabled = YES;
+		[self addSubview:creatorAvatarImageView];
+		
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 10.0, 180.0, 20.0)];
+		subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
 		subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _challengeVO.subjectName;
 		[self addSubview:subjectLabel];
 		
-		UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		subjectButton.frame = subjectLabel.frame;
-		[subjectButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-		[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:subjectButton];
+		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 25.0, 150.0, 19.0)];
+		creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+		creatorNameLabel.textColor = [HONAppDelegate honGrey518Color];
+		creatorNameLabel.backgroundColor = [UIColor clearColor];
+		creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
+		[self addSubview:creatorNameLabel];
 		
 		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 20.0, 160.0, 16.0)];
 		timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
@@ -42,7 +50,11 @@
 		timeLabel.textAlignment = NSTextAlignmentRight;
 		timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 		[self addSubview:timeLabel];
-	
+		
+		UIButton *subjectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		subjectButton.frame = self.frame;
+		[subjectButton addTarget:self action:@selector(_goSubjectTimeline) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:subjectButton];
 	}
 	
 	return (self);
