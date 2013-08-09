@@ -40,6 +40,7 @@ extern NSString * const kAPIChallengeObject;
 extern NSString * const kAPIGetPublicMessages;
 extern NSString * const kAPIGetPrivateMessages;
 extern NSString * const kAPISetUserAgeGroup;
+extern NSString * const kAPIVerifyList;
 
 // view heights
 const CGFloat kNavBarHeaderHeight;

@@ -26,7 +26,7 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *recentChallenges;
 @property (nonatomic, strong) NSMutableArray *olderChallenges;
@@ -128,9 +128,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID", nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], (_isPrivate) ? kAPIGetPrivateMessages : kAPIGetPublicMessages);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], (_isPrivate) ? kAPIGetPrivateMessages : kAPIVerifyList);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient postPath:(_isPrivate) ? kAPIGetPrivateMessages : kAPIGetPublicMessages parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:(_isPrivate) ? kAPIGetPrivateMessages : kAPIVerifyList parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -295,6 +295,32 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	}];
 }
 
+- (void)_addFriend:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", userID], @"target",
+							@"1", @"auto", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriends);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIAddFriends parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil)
+				[HONAppDelegate writeFriendsList:result];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -305,7 +331,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	bgImageView.frame = self.view.bounds;
 	[self.view addSubview:bgImageView];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:NSLocalizedString(@"header_activity", nil)];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify"];
 	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_headerView];
 	
@@ -439,12 +465,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		CGPoint touchPoint = [lpGestureRecognizer locationInView:self.view];
+		CGPoint touchPoint = [lpGestureRecognizer locationInView:_tableView];
 		NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:touchPoint];
 		
 		if (indexPath != nil) {
 			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithImageURL:[NSString stringWithFormat:@"%@_l.jpg", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) ? vo.creatorImgPrefix : vo.challengerImgPrefix]];
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:vo];
 			[self.view addSubview:_snapPreviewViewController.view];
 		}
 		
@@ -601,6 +627,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[self _updateChallengeAsSeen];
 	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
 	
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:@"Report Abuse"
+													otherButtonTitles:@"Approve", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:1];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	
+	/*
 	if (vo.statusID == 1) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
 		[navigationController setNavigationBarHidden:YES];
@@ -651,7 +688,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 //			[navigationController setNavigationBarHidden:YES];
 //			[self presentViewController:navigationController animated:NO completion:nil];
 //		}
-	}
+	}*/
 }
 
 
@@ -848,6 +885,63 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				}];
 				break;
 		}
+	}
+}
+
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorID;
+	
+	switch (buttonIndex) {
+		case 0:{
+			[[Mixpanel sharedInstance] track:@"Activity Approve - Flag"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", (isCreator) ? _challengeVO.challengerID : _challengeVO.creatorID, (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], @"challenger", nil]];
+			
+			[_olderChallenges removeObjectAtIndex:_idxPath.row];
+			[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
+			
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 11], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+									nil];
+			
+			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+					
+				} else {
+					[self _goRefresh];
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+				
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+			}];
+			break;}
+			
+		case 1:
+			[[Mixpanel sharedInstance] track:@"Activity Approve - Approve"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", (isCreator) ? _challengeVO.challengerID : _challengeVO.creatorID, (isCreator) ? _challengeVO.challengerName : _challengeVO.creatorName], @"challenger", nil]];
+
+			
+			[self _addFriend:(isCreator) ? _challengeVO.challengerID : _challengeVO.creatorID];
+			break;
 	}
 }
 

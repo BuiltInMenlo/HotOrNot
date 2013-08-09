@@ -340,6 +340,27 @@
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:tabID] forKey:@"current_tab"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+	
+	if (tabID == 2) {
+		int camera_total = 0;
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
+		
+		else {
+			camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+		}
+		
+		if (camera_total == 0) {
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:@"The Verify section allows you to control who can see your Volley profile. If someone outside your age range tries to view your profile he or she will need to request approval from you by sending their real-time selfie. Flag fakes and anyone being inappropriate!"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+		}
+	}
+	
 	//[self _dropTabs];
 }
 

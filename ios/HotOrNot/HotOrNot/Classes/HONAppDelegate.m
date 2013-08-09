@@ -38,7 +38,7 @@
 
 // json config url
 #if __DEV_BUILD___ == 1
-NSString * const kConfigURL = @"http://50.16.152.131/hotornot";//@"http://config.letsvolley.com/hotornot";//http://107.20.161.159/hotornot"";
+NSString * const kConfigURL = @"http://54.221.205.30/hotornot";//@"http://config.letsvolley.com/hotornot";//http://107.20.161.159/hotornot"";
 NSString * const kConfigJSON = @"boot_123.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
@@ -75,7 +75,7 @@ NSString * const kAPIChallengeObject = @"challenges/get";
 NSString * const kAPIGetPublicMessages = @"challenges/getpublic";
 NSString * const kAPIGetPrivateMessages = @"challenges/getprivate";
 NSString * const kAPISetUserAgeGroup = @"users/setage";
-
+NSString * const kAPIVerifyList = @"challenges/getVerifyList";
 
 
 // view heights

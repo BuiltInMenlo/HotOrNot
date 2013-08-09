@@ -174,7 +174,9 @@
 	[_lHolderView addSubview:leftButton];
 	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 162.0, 38.0, 38.0)];
-	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar] placeholderImage:nil];
+	[creatorAvatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.creatorAvatar]
+															  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+														  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 	creatorAvatarImageView.userInteractionEnabled = YES;
 	[_lHolderView addSubview:creatorAvatarImageView];
 	
@@ -224,7 +226,9 @@
 		[_rHolderView addSubview:rightButton];
 		
 		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 162.0, 38.0, 38.0)];
-		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar] placeholderImage:nil];
+		[challengerAvatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.challengerAvatar]
+																		cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+																	timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 		challengerAvatarImageView.userInteractionEnabled = YES;
 		challengerAvatarImageView.clipsToBounds = YES;
 		[_rHolderView addSubview:challengerAvatarImageView];

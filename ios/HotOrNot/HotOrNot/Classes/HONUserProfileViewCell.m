@@ -147,20 +147,20 @@
 	[self addSubview:findFriendsButton];
 	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	snapButton.frame = CGRectMake(21.0, 179.0, 279.0, 44.0);
-	[snapButton setBackgroundImage:[UIImage imageNamed:@"sendVolleyMessageButton_nonActive"] forState:UIControlStateNormal];
-	[snapButton setBackgroundImage:[UIImage imageNamed:@"sendVolleyMessageButton_Active"] forState:UIControlStateHighlighted];
+	snapButton.frame = CGRectMake(21.0, 179.0, 129.0, 44.0);
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"statusButton_nonActive"] forState:UIControlStateNormal];
+	[snapButton setBackgroundImage:[UIImage imageNamed:@"statusButton_Active"] forState:UIControlStateHighlighted];
 	[snapButton addTarget:self action:@selector(_goUserChallenge) forControlEvents:UIControlEventTouchUpInside];
 	snapButton.hidden = isUser;
 	[self addSubview:snapButton];
 	
-//	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	addFriendButton.frame = CGRectMake(168.0, 179.0, 129.0, 44.0);
-//	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
-//	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
-//	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
-//	addFriendButton.hidden = isUser;
-//	[self addSubview:addFriendButton];
+	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	addFriendButton.frame = CGRectMake(168.0, 179.0, 129.0, 44.0);
+	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
+	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
+	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
+	addFriendButton.hidden = isUser;
+	[self addSubview:addFriendButton];
 }
 
 - (void)updateCell {

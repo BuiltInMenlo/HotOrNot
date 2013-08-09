@@ -395,7 +395,7 @@
 	_findFriendsScrollView.showsVerticalScrollIndicator = YES;
 	_findFriendsScrollView.showsHorizontalScrollIndicator = NO;
 	_findFriendsScrollView.backgroundColor = [UIColor whiteColor];
-	[self.view addSubview:_findFriendsScrollView];
+	//[self.view addSubview:_findFriendsScrollView];
 	
 	UIImageView *findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
 	findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-568h@2x" : @"findFriends"];
