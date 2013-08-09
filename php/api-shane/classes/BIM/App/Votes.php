@@ -339,9 +339,11 @@ class BIM_App_Votes extends BIM_App_Base{
 		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
 		
         $query = "
-        	SELECT id, is_private, creator_id, challenger_id 
-        	FROM `hotornot-dev`.`tblChallenges` as tc 
-        	WHERE tc.status_id IN (1,4) 
+        	SELECT tc.id, tc.is_private, tc.creator_id, tc.challenger_id 
+        	FROM `hotornot-dev`.`tblChallenges` as tc
+				JOIN `hotornot-dev`.tblChallengeSubjects as tcs
+				ON tc.subject_id = tcs.id
+        	WHERE tc.status_id IN (1,2,4) and tcs.title not like '%verifyme'
         		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tc.`challenger_id` IN ( $fIdPlaceholders ) ) 
         	ORDER BY tc.`updated` DESC LIMIT 50
         ";

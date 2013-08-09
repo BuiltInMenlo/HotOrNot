@@ -93,6 +93,16 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     /*
      * returns all challeneges including those without an opponent
      */
+    public function getVerifyList(){
+        $input = (object) ( $_POST ? $_POST : $_GET );
+        if ( !empty( $input->userID ) ){
+            return $this->challenges->getVerifyChallenges( $input->userID );
+        }
+    }
+    
+    /*
+     * returns all challeneges including those without an opponent
+     */
     public function getPrivate(){
         $input = (object) ( $_POST ? $_POST : $_GET );
         if ( !empty( $input->userID ) ){

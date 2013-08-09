@@ -741,6 +741,38 @@ class BIM_App_Challenges extends BIM_App_Base{
 	}
 	
 	/** 
+	 * Gets all the public challenges for a user
+	 * @param $user_id The ID of the user (integer)
+	 * @return The list of challenges (array)
+	**/
+	public function getVerifyChallenges($user_id ) {
+		$this->dbConnect();
+		
+		$user_id = mysql_escape_string($user_id);
+		// get challenges for user
+		
+		$query = "
+			SELECT tc.`id` 
+			FROM `tblChallenges` as tc 
+				JOIN tblChallengeSubjects as tcs
+				ON tc.subject_id = tcs.id 
+			WHERE tc.`status_id` in ( 1,2,4 ) and tcs.title like '%verifyme'
+				AND (tc.`creator_id` = $user_id  OR tc.`challenger_id` = $user_id )
+			ORDER BY tc.`updated` DESC;
+		";
+		
+		$result = mysql_query($query);
+		
+		// loop thru the rows
+		$challenge_arr = array();
+		while ($row = mysql_fetch_assoc($result)){
+			array_push($challenge_arr, $this->getChallengeObj($row['id']));
+		}
+		// return
+		return $challenge_arr;
+	}
+	
+	/** 
 	 * Gets the latest list of challenges for a user and the challengers
 	 * @param $user_id The ID of the user (integer)
 	 * @param $private - boolean inducating whether or not to get private messgaes or public mesages
