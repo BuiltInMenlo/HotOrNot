@@ -243,13 +243,13 @@ class BIM_App_Votes extends BIM_App_Base{
 			if( $challenge_row['is_private'] == 'N' || $isForUser ){
 		        	$co = $this->getChallengeObj( $challenge_row['id'] );
     				if( $co->expires != 0 ){
-        				array_push( $challenge_arr, $co );
+        				$challenge_arr[ $co->id ] = $co;
     				}
 			}
 		}
             
 		// return
-		return $challenge_arr;
+		return array_values($challenge_arr);
 	}
 	
 	/** 
