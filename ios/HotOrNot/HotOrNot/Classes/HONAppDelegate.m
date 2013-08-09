@@ -34,6 +34,9 @@
 #import "HONUsernameViewController.h"
 #import "HONSearchViewController.h"
 #import "HONImagingDepictor.h"
+#import <Foundation/Foundation.h>
+#import <CommonCrypto/CommonHMAC.h>
+
 
 
 #if __DEV_BUILD___ == 1
@@ -121,6 +124,30 @@ NSString * const kTwilioSMS = @"6475577873";
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 
++ (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data{
+    const char *cKey  = [key cStringUsingEncoding:NSASCIIStringEncoding];
+    const char *cData = [data cStringUsingEncoding:NSASCIIStringEncoding];
+    unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
+    CCHmac(kCCHmacAlgSHA256, cKey, strlen(cKey), cData, strlen(cData), cHMAC);
+    
+    NSMutableString *result = [NSMutableString string];
+    for (int i = 0; i < sizeof cHMAC ; i++){
+        [result appendFormat:@"%02hhx", cHMAC[i]];
+    }
+    return result;
+}
+
++ (NSMutableString *)hmacToken
+{
+    NSString *key = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
+    NSString *data = [HONAppDelegate deviceToken];
+    NSMutableString *hmac = [NSMutableString new];
+    hmac = [HONAppDelegate hmacForKey:key AndData:data];
+    [hmac appendString:@"+"];
+    [hmac appendString:data];
+    return hmac;
+}
+ 
 
 + (NSString *)advertisingIdentifier {
 	return ([[ASIdentifierManager sharedManager].advertisingIdentifier UUIDString]);
@@ -1160,7 +1187,7 @@ NSString * const kTwilioSMS = @"6475577873";
 							nil];
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient setDefaultHeader:@"Cookie" value:@"bim_session=chacha"];	
+	[httpClient setDefaultHeader:@"HMAC" value:[HONAppDelegate hmacToken] ];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];

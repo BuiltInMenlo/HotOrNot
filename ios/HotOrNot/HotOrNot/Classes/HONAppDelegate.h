@@ -72,6 +72,8 @@ extern NSString * const kTwilioSMS;
 
 @interface HONAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
++ (NSMutableString *)hmacToken;
++ (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data;
 + (NSString *)advertisingIdentifier;
 + (NSString *)identifierForVendor;
 

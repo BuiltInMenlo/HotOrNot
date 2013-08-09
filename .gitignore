@@ -3,3 +3,7 @@
 aws/
 php/api-shane/bin/gearman/admin/config.php
 php/api-shane/classes/BIM/Config/Dynamic.php
+ios/HotOrNot/HotOrNot.xcodeproj/project.xcworkspace/xcuserdata/shane.xcuserdatad/UserInterfaceState.xcuserstate
+ios/HotOrNot/HotOrNot.xcodeproj/xcuserdata/shane.xcuserdatad/xcschemes/HotOrNot.xcscheme
+ios/HotOrNot/HotOrNot.xcodeproj/xcuserdata/shane.xcuserdatad/xcschemes/xcschememanagement.plist
+ios/HotOrNot/HotOrNot/HotOrNot-Info.plist
