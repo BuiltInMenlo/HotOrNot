@@ -31,6 +31,7 @@
 #import "HONPopularViewController.h"
 #import "HONVerifyViewController.h"
 #import "HONImagingDepictor.h"
+#import "HONChallengeDetailsViewController.h"
 
 
 @interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONUserProfileRequestViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate>
@@ -356,7 +357,7 @@
 	}
 	
 	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
+	createChallengeButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
 	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -381,7 +382,7 @@
 	_findFriendsScrollView.showsVerticalScrollIndicator = YES;
 	_findFriendsScrollView.showsHorizontalScrollIndicator = NO;
 	_findFriendsScrollView.backgroundColor = [UIColor whiteColor];
-	_findFriendsScrollView.hidden = ([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
+	_findFriendsScrollView.hidden = YES;//([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
 	[self.view addSubview:_findFriendsScrollView];
 	
 	UIImageView *findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
@@ -660,6 +661,15 @@
 
 
 #pragma mark - TimelineItemCell Delegates
+- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Timeline - Show Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	
+	[self.navigationController pushViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO] animated:YES];
+}
+
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell acceptChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Timeline - Accept Challenge"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -683,7 +693,7 @@
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Vote Wall - Comments"
+	[[Mixpanel sharedInstance] track:@"Timeline - Comments"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];

@@ -252,9 +252,9 @@ const CGFloat kFocusInterval = 0.5f;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], (_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:(_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -953,10 +953,8 @@ const CGFloat kFocusInterval = 0.5f;
 									   _challengerName, @"username",
 									   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
 		
-		if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin) {
+		if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin)
 			_challengeSubmitType = HONChallengeSubmitTypeAccept;
-			//[params setObject:((HONUserVO *)[_addFollowing firstObject]).username forKey:@"username"];
-		}
 		
 		if ([_addFollowing count] > 1) {
 			_challengeSubmitType = HONChallengeSubmitTypeJoin;

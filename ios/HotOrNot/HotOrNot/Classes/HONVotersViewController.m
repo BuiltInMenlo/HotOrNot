@@ -10,7 +10,6 @@
 #import "AFHTTPRequestOperation.h"
 
 #import "HONVotersViewController.h"
-#import "HONHeaderView.h"
 #import "HONGenericRowViewCell.h"
 #import "HONVoterViewCell.h"
 #import "HONVoterVO.h"
@@ -25,7 +24,6 @@
 @property (nonatomic, strong) HONVoterVO *voterVO;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *voters;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @end
 
 @implementation HONVotersViewController
@@ -96,22 +94,10 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	bgImageView.frame = self.view.bounds;
-	[self.view addSubview:bgImageView];
-	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Likes"];
-	[_headerView hideRefreshing];
-	[self.view addSubview:_headerView];
-	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:backButton];
-		
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 81.0)) style:UITableViewStylePlain];
+	self.view.backgroundColor = [UIColor whiteColor];
+	self.navigationController.navigationBar.topItem.title = @"Likes";
+
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 81.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;

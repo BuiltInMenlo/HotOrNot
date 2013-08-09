@@ -11,7 +11,6 @@
 #import "MBProgressHUD.h"
 
 #import "HONCommentsViewController.h"
-#import "HONHeaderView.h"
 #import "HONGenericRowViewCell.h"
 #import "HONCommentViewCell.h"
 #import "HONCommentVO.h"
@@ -21,7 +20,6 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *comments;
-@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) UIImageView *bgTextImageView;
 @property (nonatomic, strong) UITextField *commentTextField;
@@ -192,22 +190,10 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	bgImageView.frame = self.view.bounds;
-	[self.view addSubview:bgImageView];
+	self.view.backgroundColor = [UIColor whiteColor];
+	self.navigationController.navigationBar.topItem.title = @"Comments";
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Comments"];
-	[_headerView hideRefreshing];
-	[self.view addSubview:_headerView];
-	
-	UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	backButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_nonActive"] forState:UIControlStateNormal];
-	[backButton setBackgroundImage:[UIImage imageNamed:@"backButtonArrow_Active"] forState:UIControlStateHighlighted];
-	[backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
-	[_headerView addSubview:backButton];
-	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 236.0 + 53.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (236.0 + 53.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -251,18 +237,33 @@
 	[super viewDidLoad];
 	[HONAppDelegate offsetSubviewsForIOS7:self.view];
 	
-	//[_commentTextField becomeFirstResponder];
 	[UIView beginAnimations:nil context:nil];
 	[UIView setAnimationDuration:0.0];
 	[UIView setAnimationDelay:0.0];
 	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
-	[_commentTextField becomeFirstResponder];  // <---- Only edit this line
+	[_commentTextField becomeFirstResponder];
 	[UIView commitAnimations];
 }
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"USER_CHALLENGE" object:nil];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline Comments - Back"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	_isGoingBack = YES;
+	//[_commentTextField resignFirstResponder];
+	[UIView beginAnimations:nil context:nil];
+	[UIView setAnimationDuration:0.0];
+	[UIView setAnimationDelay:0.0];
+	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
+	[_commentTextField resignFirstResponder];
+	[UIView commitAnimations];
+	
+	_commentTextField.text = @"";
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -283,7 +284,7 @@
 	[UIView setAnimationDuration:0.0];
 	[UIView setAnimationDelay:0.0];
 	[UIView setAnimationCurve:UIViewAnimationCurveLinear];
-	[_commentTextField resignFirstResponder];  // <---- Only edit this line
+	[_commentTextField resignFirstResponder];
 	[UIView commitAnimations];
 	
 	_commentTextField.text = @"";

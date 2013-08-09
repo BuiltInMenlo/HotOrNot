@@ -22,11 +22,11 @@
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UIImageView *lChallengeImageView;
-@property (nonatomic, strong) UIImageView *rChallenge1ImageView;
-@property (nonatomic, strong) UIImageView *rChallenge2ImageView;
-@property (nonatomic, strong) UIImageView *rChallenge3ImageView;
-@property (nonatomic, strong) UILabel *lScoreLabel;
-@property (nonatomic, strong) UILabel *rScoreLabel;
+@property (nonatomic, strong) NSTimer *tapTimer;
+@property (nonatomic) BOOL isDoubleTap;
+@property (nonatomic, strong) UITapGestureRecognizer *r1ChallengeGestureRecognizer;
+@property (nonatomic, strong) UITapGestureRecognizer *r2ChallengeGestureRecognizer;
+@property (nonatomic, strong) UITapGestureRecognizer *r3ChallengeGestureRecognizer;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIImageView *upvoteImageView;
@@ -58,12 +58,12 @@
 
 
 #pragma mark - Data Calls
-- (void)_upvoteChallengeCreator:(BOOL)isCreator {
+- (void)_upvoteChallenge:(int)userID {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 6], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
-							(isCreator) ? @"Y" : @"N", @"creator",
+							[NSString stringWithFormat:@"%d", userID], @"challengerID",
 							nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
@@ -163,106 +163,75 @@
 	
 	int opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim * opponentCounter, kSnapMediumDim, kSnapMediumDim)];
-//		opponentHolderView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
+		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (kSnapMediumDim + 5.0) * opponentCounter, kSnapMediumDim, kSnapMediumDim)];
 		[_rHolderView addSubview:opponentHolderView];
 		
 		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix length] > 0)
 			[opponentHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(0.0, 0.0)]];
 		
-		if (opponentCounter == 0) {
-			_rChallenge1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-			_rChallenge1ImageView.alpha = [_rChallenge1ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
-			_rChallenge1ImageView.userInteractionEnabled = YES;
-			[opponentHolderView addSubview:_rChallenge1ImageView];
-			
-			[_rChallenge1ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
-																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-											 weakSelf.rChallenge1ImageView.image = image;
-											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge1ImageView.alpha = 1.0; } completion:nil];
-										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-			
-			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			rightButton.frame = _rChallenge1ImageView.frame;
-			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			[rightButton addTarget:self action:@selector(_goTapOpponent) forControlEvents:UIControlEventTouchUpInside];
-			[opponentHolderView addSubview:rightButton];
-			
-			UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 38.0, 38.0, 38.0)];
-			[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
-			challengerAvatarImageView.userInteractionEnabled = YES;
-			challengerAvatarImageView.clipsToBounds = YES;
-			[opponentHolderView addSubview:challengerAvatarImageView];
-			
-			UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			challengerAvatarButton.frame = challengerAvatarImageView.frame;
-			[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
-			[opponentHolderView addSubview:challengerAvatarButton];
-			
-		} else if (opponentCounter == 1) {
-			_rChallenge2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-			_rChallenge2ImageView.alpha = [_rChallenge2ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
-			_rChallenge2ImageView.userInteractionEnabled = YES;
-			[opponentHolderView addSubview:_rChallenge1ImageView];
-			
-			[_rChallenge2ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
-																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-											 weakSelf.rChallenge2ImageView.image = image;
-											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge2ImageView.alpha = 1.0; } completion:nil];
-										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-			
-			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			rightButton.frame = _rChallenge2ImageView.frame;
-			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			[rightButton addTarget:self action:@selector(_goTapOpponent) forControlEvents:UIControlEventTouchUpInside];
-			[opponentHolderView addSubview:rightButton];
-			
-			UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 38.0, 38.0, 38.0)];
-			[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
-			challengerAvatarImageView.userInteractionEnabled = YES;
-			challengerAvatarImageView.clipsToBounds = YES;
-			[opponentHolderView addSubview:challengerAvatarImageView];
-			
-			UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			challengerAvatarButton.frame = challengerAvatarImageView.frame;
-			[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
-			[opponentHolderView addSubview:challengerAvatarButton];
-			
-		} else if (opponentCounter == 2) {
-			_rChallenge3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-			_rChallenge3ImageView.alpha = [_rChallenge3ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
-			_rChallenge3ImageView.userInteractionEnabled = YES;
-			[opponentHolderView addSubview:_rChallenge1ImageView];
-			
-			[_rChallenge3ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
-																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-											 weakSelf.rChallenge3ImageView.image = image;
-											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge3ImageView.alpha = 1.0; } completion:nil];
-										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-			
-			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			rightButton.frame = _rChallenge3ImageView.frame;
-			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			[rightButton addTarget:self action:@selector(_goTapOpponent) forControlEvents:UIControlEventTouchUpInside];
-			[opponentHolderView addSubview:rightButton];
-			
-			UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 38.0, 38.0, 38.0)];
-			[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
-			challengerAvatarImageView.userInteractionEnabled = YES;
-			challengerAvatarImageView.clipsToBounds = YES;
-			[opponentHolderView addSubview:challengerAvatarImageView];
-			
-			UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			challengerAvatarButton.frame = challengerAvatarImageView.frame;
-			[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline) forControlEvents:UIControlEventTouchUpInside];
-			[opponentHolderView addSubview:challengerAvatarButton];
-		}
+		UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+		[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]] placeholderImage:nil];
+		[opponentHolderView addSubview:opponentImageView];
+		
+//		if (opponentCounter == 0) {
+//			_rChallenge1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+//			_rChallenge1ImageView.alpha = [_rChallenge1ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
+//			_rChallenge1ImageView.userInteractionEnabled = YES;
+//			[opponentHolderView addSubview:_rChallenge1ImageView];
+//			
+//			[_rChallenge1ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
+//																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+//										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//											 weakSelf.rChallenge1ImageView.image = image;
+//											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge1ImageView.alpha = 1.0; } completion:nil];
+//										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+//			
+//		} else if (opponentCounter == 1) {
+//			_rChallenge2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+//			_rChallenge2ImageView.alpha = [_rChallenge2ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
+//			_rChallenge2ImageView.userInteractionEnabled = YES;
+//			[opponentHolderView addSubview:_rChallenge1ImageView];
+//			
+//			[_rChallenge2ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
+//																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+//										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//											 weakSelf.rChallenge2ImageView.image = image;
+//											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge2ImageView.alpha = 1.0; } completion:nil];
+//										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+//						
+//		} else if (opponentCounter == 2) {
+//			_rChallenge3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+//			_rChallenge3ImageView.alpha = [_rChallenge3ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
+//			_rChallenge3ImageView.userInteractionEnabled = YES;
+//			[opponentHolderView addSubview:_rChallenge1ImageView];
+//			
+//			[_rChallenge3ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
+//																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+//										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+//											 weakSelf.rChallenge3ImageView.image = image;
+//											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge3ImageView.alpha = 1.0; } completion:nil];
+//										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+//			
+//		}
+		
+		UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		rightButton.frame = opponentImageView.frame;
+		[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+		[rightButton addTarget:self action:@selector(_goTapOpponent:) forControlEvents:UIControlEventTouchUpInside];
+		[rightButton setTag:opponentCounter];
+		[opponentHolderView addSubview:rightButton];
+		
+		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 38.0, 38.0, 38.0)];
+		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
+		challengerAvatarImageView.userInteractionEnabled = YES;
+		challengerAvatarImageView.clipsToBounds = YES;
+		[opponentHolderView addSubview:challengerAvatarImageView];
+		
+		UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		challengerAvatarButton.frame = challengerAvatarImageView.frame;
+		[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+		[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline:) forControlEvents:UIControlEventTouchUpInside];
+		[opponentHolderView addSubview:challengerAvatarButton];
  		
 		opponentCounter++;
 	}
@@ -320,45 +289,47 @@
 
 
 #pragma mark - Navigation
+- (void)_tapTimeout {
+	_isDoubleTap = NO;
+	[self _goChallengeDetails];
+}
+
 - (void)_goTapCreator {
-	[[Mixpanel sharedInstance] track:@"Timeline - Tap Creator"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	if (!_isDoubleTap) {
+		_isDoubleTap = YES;
+		_tapTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_tapTimeout) userInfo:nil repeats:NO];
 	
-	if (_hasOponentRetorted)
-		[self _goUpvoteCreator];
-	
-	else {
-		if (!_isChallengeCreator) {
-			if (_isChallengeOpponent)
-				[self _goAcceptChallenge];
-			
-			else
-				[self _goCreatorChallenge];
+	} else {
+		if (_tapTimer != nil) {
+			[_tapTimer invalidate];
+			_tapTimer = nil;
 		}
-			
-	}
-}
-
-- (void)_goTapOpponent {
-	[[Mixpanel sharedInstance] track:@"Timeline - Tap Challenger"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
-	if (_hasOponentRetorted)
-		[self _goUpvoteChallenger];
-	
-	else {		
-		if (_isChallengeOpponent)
-			[self  _goAcceptChallenge];
 		
-		else
-			[self _goJoinChallenge];
+		_isDoubleTap = NO;
+		[self _goUpvoteCreator];
 	}
 }
 
+- (void)_goTapOpponent:(id)sender {
+	if (!_isDoubleTap) {
+		_isDoubleTap = YES;
+		_tapTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_tapTimeout) userInfo:nil repeats:NO];
+		
+	} else {
+		if (_tapTimer != nil) {
+			[_tapTimer invalidate];
+			_tapTimer = nil;
+		}
+		
+		_isDoubleTap = NO;
+		[self _goUpvoteChallenger:[(UIButton *)sender tag]];
+	}
+}
+
+
+- (void)_goChallengeDetails {
+	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
+}
 
 - (void)_goNewSubjectChallenge {
 	[self.delegate timelineItemViewCell:self snapWithSubject:_challengeVO.subjectName];
@@ -402,14 +373,14 @@
 	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.creatorVO.username];
 }
 
-- (void)_goChallengerTimeline {
+- (void)_goChallengerTimeline:(id)sender {
 	[[Mixpanel sharedInstance] track:@"Timeline - Show Challenger Timeline"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID, ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username], @"challenger", nil]];
+									  [NSString stringWithFormat:@"%d - %@", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).userID, ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username], @"challenger", nil]];
 	
-	[self.delegate timelineItemViewCell:self showUserChallenges:((HONOpponentVO *)[_challengeVO.challengers lastObject]).username];
+	[self.delegate timelineItemViewCell:self showUserChallenges:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).username];
 }
 
 - (void)_goUpvoteCreator {
@@ -437,14 +408,13 @@
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
-		[self _upvoteChallengeCreator:YES];
+		[self _upvoteChallenge:_challengeVO.creatorVO.userID];
 	}
 	
 	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
-	_lScoreLabel.text = [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.score];
 }
 
-- (void)_goUpvoteChallenger {
+- (void)_goUpvoteChallenger:(int)index {
 	_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
 	_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
 	[_rHolderView addSubview:_upvoteImageView];
@@ -469,11 +439,10 @@
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
-		[self _upvoteChallengeCreator:NO];
+		[self _upvoteChallenge:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).userID];
 	}
 	
 	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
-	_rScoreLabel.text = [NSString stringWithFormat:@"%d", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score];
 
 }
 
@@ -483,17 +452,6 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 	
-//	if (_hasOponentRetorted) {
-//		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-//																 delegate:self
-//														cancelButtonTitle:@"Cancel"
-//												   destructiveButtonTitle:@"Report Abuse"
-//														otherButtonTitles:@"View Likes", @"Join Volley", nil];
-//		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-//		[actionSheet setTag:0];
-//		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-//
-//	} else {
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
@@ -502,7 +460,6 @@
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-//	}
 }
 
 

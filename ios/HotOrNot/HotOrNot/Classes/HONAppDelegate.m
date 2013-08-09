@@ -337,6 +337,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	return (0);
 }
 
++ (void)setVote:(int)challengeID forCreator:(BOOL)isCreator {
+	NSMutableArray *voteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
+	[voteArray addObject:[NSNumber numberWithInt:(isCreator) ? challengeID : -challengeID]];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:voteArray forKey:@"votes"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
 + (NSArray *)fillDiscoverChallenges:(NSArray *)challenges {
 	//NSLog(@"challenges:\n%@[%d]", challenges, [challenges count]);
 	
@@ -382,15 +390,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	return (newChallenges);
 }
-
-+ (void)setVote:(int)challengeID forCreator:(BOOL)isCreator {
-	NSMutableArray *voteArray = [[[NSUserDefaults standardUserDefaults] objectForKey:@"votes"] mutableCopy];
-	[voteArray addObject:[NSNumber numberWithInt:(isCreator) ? challengeID : -challengeID]];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:voteArray forKey:@"votes"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-}
-
 
 + (UIViewController *)appTabBarController {
 	return ([[UIApplication sharedApplication] keyWindow].rootViewController);
