@@ -115,7 +115,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	//self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Explore"];
 	[[_headerView refreshButton] addTarget:self action:@selector(_goRefresh) forControlEvents:UIControlEventTouchUpInside];
