@@ -134,6 +134,10 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         return $subject;
     }
     
+    public function getHashTag($tagId) {
+        return $this->getSubject($tagId);
+    }
+    
     /**
      * Helper function to get the total # of comments for a challenge
      * @param $challenge_id The ID of the challenge (integer)
@@ -563,6 +567,40 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 		$params = array( $volleyId );
         $stmt = $this->prepareAndExecute( $query, $params );
         $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        return $ids;
+    }
+    
+    public function getTopHashTags( $subjectName ){
+		$query = '
+			SELECT tc.subject_id as id, tc.title, count(*) as score
+			FROM tblChallenges as tc
+				JOIN `hotornot-dev`.tblChallengeSubjects as tcs
+				ON tc.subject_id = tcs.id
+			WHERE tcs.title LIKE ?
+			GROUP BY subject_id
+		';
+		$params = array( "%$subjectName%" );
+        $stmt = $this->prepareAndExecute( $query, $params );
+        return $stmt->fetchAll( PDO::FETCH_OBJ );
+    }
+    
+    public function getTopVolleysByVotes(){
+        $startDate = time() - ( 86400 * 90 );
+        $startDate = new DateTime( "@$startDate" );
+        $startDate = $startDate->format('Y-m-d H:i:s');
+        $query = '
+        	SELECT `id` 
+        	FROM `hotornot-dev`.tblChallenges
+        	WHERE `status_id` = 4 
+        		AND `started` > ? 
+        	ORDER BY `votes` DESC LIMIT 256
+        ';
+		$params = array( $startDate );
+        $stmt = $this->prepareAndExecute( $query, $params );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
         return $ids;
     }
 }

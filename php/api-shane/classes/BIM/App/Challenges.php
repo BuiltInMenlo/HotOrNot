@@ -548,16 +548,8 @@ class BIM_App_Challenges extends BIM_App_Base{
         }
     }
     
-    public static function getSubject($subject_id) {
-        $subject = '';
-        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
-        $query = 'SELECT `title` FROM `hotornot-dev`.`tblChallengeSubjects` WHERE `id` = ?';
-        $params = array( $subject_id );
-        $stmt = $dao->prepareAndExecute( $query, $params );
-        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
-        if( $data ){
-            $subject = $data[0]->title;
-        }
-        return $subject;
+    public static function getSubject($tagId) {
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        return $dao->getHashTagId($tagId);
     }
 }

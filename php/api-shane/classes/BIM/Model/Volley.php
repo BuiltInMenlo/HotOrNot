@@ -65,6 +65,14 @@ class BIM_Model_Volley{
         }
     }
     
+    public function comment( $userId, $text ){
+        $comment = BIM_Model_Comments::create( $this->id, $userId, $text );
+    }
+    
+    public function getComments(){
+        return BIM_Model_Comments::getForVolley( $this->id );
+    }
+    
     public function isExpired(){
         $expires = -1;
         if( !empty( $this->expires ) && $this->expires > -1 ){
@@ -81,8 +89,7 @@ class BIM_Model_Volley{
         $hashTagId = self::getHashTagId($userId, $hashTag);
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires );
-        $volley = new self( $volleyId );
-        return $volley;
+        return self::get( $volleyId );
     }
     
     public static function getHashTagId( $userId, $hashTag = 'N/A' ) {
@@ -304,6 +311,17 @@ class BIM_Model_Volley{
         $friendIds[] = $userId;
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $ids = $dao->getVolleysWithFriends($userId, $friendIds);
+        return self::getMulti($ids);
+    }
+    
+    public static function getTopHashTags( $subjectName ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        return $dao->getTopHashTags($subjectName);
+    }
+    
+    public static function getTopVolleysByVotes( ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $ids = $dao->getTopVolleysByVotes();
         return self::getMulti($ids);
     }
     

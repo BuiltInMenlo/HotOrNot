@@ -182,6 +182,18 @@ class BIM_User{
         return BIM_Model_Volley::getMulti($ids);
     }
     
+    public function getOpponenetsWithSnaps(){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $userData = $dao->getOpponentsWithSnaps($this->id);
+        $ids = array();
+        foreach( $userData as $user ){
+            $ids[] = $user->creator_id;
+            $ids[] = $user->user_id;
+        }
+        $ids = array_unique($ids);
+        return self::getMulti($ids);
+    }
+    
     public static function makeCacheKeys( $ids ){
         if( $ids ){
             $return1 = false;
@@ -260,5 +272,12 @@ class BIM_User{
             $me = self::get( $id, $forceDb );
         }
         return $me;
+    }
+    
+    public static function getUsersWithSimilarName( $username ){
+        $me = null;
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $ids = $dao->getUsersWithSimilarName( $username );
+        return self::getMulti($ids);
     }
 }

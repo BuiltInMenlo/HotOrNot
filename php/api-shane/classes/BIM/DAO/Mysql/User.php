@@ -248,4 +248,31 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         }
         return $ids;		
     }
+    
+    public function getUsersWithSimilarName( $username ){
+		$query = 'SELECT id FROM tblUsers WHERE username LIKE ?';
+		$params = array( "%$username%" );
+        $stmt = $this->prepareAndExecute($query, $params);
+        $ids = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        return $ids;		
+    }
+    
+    public function getOpponentsWithSnaps( $userId ){
+        $sql = "
+        	select tc.creator_id, tcp.user_id, max(tcp.img) as img
+        	from tblChallengeParticipants as tcp
+        		join tblChallenges as tc
+        		on tc.id = tcp.challenge_id
+        	where (tc.creator_id = ? OR tcp.user_id = ?)
+        		AND tcp.img != ''
+        		AND tcp.img not null
+        	group by creator_id, user_id, img
+        ";
+		$params = array( $userId, $userId );
+        return $this->prepareAndExecute($sql, $params);
+    }
+    
 }

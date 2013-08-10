@@ -89,7 +89,6 @@ class BIM_App_Votes extends BIM_App_Base{
 	}
 	
 	public function getChallengesWithFriends($input) {
-		$this->dbConnect();
 	    $challenge_arr = array();
         $volleys = BIM_Model_Volley::getVolleysWithFriends( $input->userID );
         foreach( $volleys as $volley ){
