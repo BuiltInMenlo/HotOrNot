@@ -99,40 +99,60 @@ class BIM_User{
     
     public function poke( $targetId ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        return $dao->poke( $this->id, $targetId );
+        $pokeId = $dao->poke( $this->id, $targetId );
+        if( $pokeId ){
+            $this->pokes += 1;
+            $this->purgeFromCache();
+        }
     }
     
     public function updateUsernameAvatar( $username, $imgUrl ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $dao->updateUsernameAvatar( $this->id, $username, $imgUrl );
+        $this->username = $username;
+        $this->img_url = $imgUrl;
+        $this->purgeFromCache();
+    }
+    
+    public function purgeFromCache(){
+        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
+        $key = self::makeCacheKeys($this->id);
+        $cache->delete( $key );
     }
     
     public function updatePaiid( $isPaid ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $dao->updatePaid( $this->id, $isPaid );
         $this->paid = $isPaid;
+        $this->purgeFromCache();
     }
     
     public function updateNotifications( $isNotifications ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $dao->updateNotifications( $this->id, $isNotifications );
         $this->notifications = $isNotifications;
+        $this->purgeFromCache();
     }
     
     public function updateUsername( $username ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $dao->updateUsername( $this->id, $username );
         $this->username = $username;
+        $this->purgeFromCache();
     }
     
     public function updateFBUsername( $fbId, $username, $gender ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $dao->updateFBUsername($this->id, $fbId, $username, $gender );
+        $this->username = $username;
+        $this->purgeFromCache();
     }
     
     public function updateFB( $fbId, $gender ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $dao->updateFB($this->id, $fbId, $gender );
+        $this->gender = $gender;
+        $this->purgeFromCache();
     }
     
     public function getFBInviteId( $fbId ){
@@ -142,7 +162,9 @@ class BIM_User{
     
     public function updateLastLogin( ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $dao->updateLastLogin( $this->id );
+        $lastLogin = $dao->updateLastLogin( $this->id );
+        $this->last_login = $lastLogin;
+        $this->purgeFromCache();
     }
     
     public function acceptFbInviteToVolley( $inviteId ){

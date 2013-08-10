@@ -128,9 +128,12 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     }
     
     public function updateLastLogin( $userId ){
-		$query = 'UPDATE `hotornot-dev`.tblUsers SET last_login = CURRENT_TIMESTAMP WHERE id = ?';
-		$params = array( $userId );
+        $date = new DateTime();
+        $date = $date->format( 'Y-m-d H:i:s' );
+		$query = 'UPDATE `hotornot-dev`.tblUsers SET last_login = ? WHERE id = ?';
+		$params = array( $date, $userId );
         $stmt = $this->prepareAndExecute( $query, $params );
+        return $date;
     }
     
     public function updateUsernameAvatar( $userId, $username, $imgUrl ){

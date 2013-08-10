@@ -5,16 +5,6 @@ require_once 'BIM/App/Base.php';
 class BIM_App_Users extends BIM_App_Base{
 
 	/**
-	 * Helper function to retrieve a user's info
-	 * @param $user_id The ID of the user to get (integer)
-	 * @param $meta Any extra info to include (string)
-	 * @return An associative object for a user (array)
-	**/ 
-	public function userObject($user_id, $meta="") {
-	    return BIM_User::get($user_id);
-	}
-	
-	/**
 	 * Helper function to send an email to a facebook user
 	 * @param $username The facebook username to send to (string)
 	 * @param $msg The message body (string)
