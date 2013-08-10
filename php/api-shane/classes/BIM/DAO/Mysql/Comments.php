@@ -39,13 +39,13 @@ class BIM_DAO_Mysql_Comments extends BIM_DAO_Mysql{
     }
     
     public function delete( $commentId ){
-		$query = 'UPDATE `tblComments` SET `status_id` = 3 WHERE `id` = ?';
+		$query = 'UPDATE `hotornot-dev`.`tblComments` SET `status_id` = 3 WHERE `id` = ?';
         $params = array( $commentId );
         $this->prepareAndExecute($sql, $params);
     }
     
     public function flag( $commentId ){
-		$query = 'UPDATE `tblComments` SET `status_id` = 2 WHERE `id` = ?';
+		$query = 'UPDATE `hotornot-dev`.`tblComments` SET `status_id` = 2 WHERE `id` = ?';
         $params = array( $commentId );
         $this->prepareAndExecute($query, $params);
     }

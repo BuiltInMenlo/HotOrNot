@@ -573,7 +573,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     public function getTopHashTags( $subjectName ){
 		$query = '
 			SELECT tc.subject_id as id, tc.title, count(*) as score
-			FROM tblChallenges as tc
+			from `hotornot-dev`.tblChallenges as tc
 				JOIN `hotornot-dev`.tblChallengeSubjects as tcs
 				ON tc.subject_id = tcs.id
 			WHERE tcs.title LIKE ?

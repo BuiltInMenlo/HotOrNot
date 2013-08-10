@@ -198,7 +198,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     }
     
     public function poke( $pokerId, $pokeeId ){
-		$query = 'INSERT IGNORE INTO tblUserPokes (user_id, poker_id, added) VALUES ( ?, ?, NOW() )';
+		$query = 'INSERT IGNORE INTO `hotornot-dev`.tblUserPokes (user_id, poker_id, added) VALUES ( ?, ?, NOW() )';
 		$params = array( $pokeeId, $pokerId );
         $stmt = $this->prepareAndExecute($query, $params);
         return $this->lastInsertId;
@@ -220,7 +220,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     
     public function getFbInviteId( $fbId ){
         $id = null;
-		$query = "SELECT `id` FROM `tblInvitedUsers` WHERE `fb_id` = ?";
+		$query = "SELECT `id` FROM `hotornot-dev`.`tblInvitedUsers` WHERE `fb_id` = ?";
 		$params = array( $fbId );
         $stmt = $this->prepareAndExecute($sql, $params);
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
@@ -234,8 +234,8 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 		// get any pending challenges for this invited user
 		$query = "
 			SELECT tc.`id` 
-			FROM tblChallenges as tc
-				JOIN tblChallengeParticipants as tcp
+			from `hotornot-dev`.tblChallenges as tc
+				JOIN `hotornot-dev`.tblChallengeParticipants as tcp
 				ON tc.id = tcp.challenge_id
 			WHERE tc.`status_id` = 7 
 				AND tcp.user_id = ?;
@@ -250,7 +250,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     }
     
     public function getUsersWithSimilarName( $username ){
-		$query = 'SELECT id FROM tblUsers WHERE username LIKE ?';
+		$query = 'SELECT id from `hotornot-dev`.tblUsers WHERE username LIKE ?';
 		$params = array( "%$username%" );
         $stmt = $this->prepareAndExecute($query, $params);
         $ids = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
@@ -263,8 +263,8 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     public function getOpponentsWithSnaps( $userId ){
         $sql = "
         	select tc.creator_id, tcp.user_id, max(tcp.img) as img
-        	from tblChallengeParticipants as tcp
-        		join tblChallenges as tc
+        	from `hotornot-dev`.tblChallengeParticipants as tcp
+        		join `hotornot-dev`.tblChallenges as tc
         		on tc.id = tcp.challenge_id
         	where (tc.creator_id = ? OR tcp.user_id = ?)
         		AND tcp.img != ''
