@@ -38,10 +38,6 @@ class BIM_DAO_Mysql_Comments extends BIM_DAO_Mysql{
         return $comment;
     }
     
-    
-    public function upVote( $commentId, $userId, $targetId ){
-    }
-    
     public function delete( $commentId ){
 		$query = 'UPDATE `tblComments` SET `status_id` = 3 WHERE `id` = ?';
         $params = array( $commentId );

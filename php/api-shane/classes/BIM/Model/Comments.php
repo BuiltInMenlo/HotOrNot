@@ -3,7 +3,6 @@
 class BIM_Model_Comments{
     
     public function __construct($commentId) {
-        
         $dao = new BIM_DAO_Mysql_Comments( BIM_Config::db() );
 		$comment = $dao->get( $commentId );
 		$challenge = BIM_Model_Volley::get( $comment->challenge_id );
@@ -25,12 +24,6 @@ class BIM_Model_Comments{
         $dao = new BIM_DAO_Mysql_Comments( BIM_Config::db() );
         $comment = $dao->add( $volleyId, $userId, $text );
         return self::get($commentId);
-    }
-    
-    public function upVote( $targetId, $userId ){
-        $dao = new BIM_DAO_Mysql_Comments( BIM_Config::db() );
-        $dao->upVote( $this->id, $userId, $targetId  );
-        $this->purgeFromCache();
     }
     
     public function purgeFromCache(){
