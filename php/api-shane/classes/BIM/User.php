@@ -39,6 +39,12 @@ class BIM_User{
 	    $this->sms_verified = BIM_User::isVerified( $this->id );
 	}
     
+    public function setAgeRange( $ageRange ){
+        $this->age = $ageRange;
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->setAgeRange( $this->id, $ageRange );        
+    }
+	
     public static function isVerified( $userId ){
         $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
         $res = $dao->getPhoneList( (object) array('id' => $userId ) );
@@ -118,6 +124,17 @@ class BIM_User{
         $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
         $key = self::makeCacheKeys($this->id);
         $cache->delete( $key );
+        if( !empty($this->device_token) ){
+            $cache->delete( $this->device_token );
+        }
+    }
+    
+    public function cacheByToken(){
+        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
+        $key = self::makeCacheKeys($this->id);
+        if( !empty($this->device_token) ){
+            $cache->set( $this->device_token, $this );
+        }
     }
     
     public function updatePaiid( $isPaid ){
@@ -267,9 +284,14 @@ class BIM_User{
     public static function getByToken( $token, $forceDb = false ){
         $me = null;
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        
         $id = $dao->getIdByToken( $token );
         if( $id ){
             $me = self::get( $id, $forceDb );
+            if( $me->isExtant() ){
+                // this puts us in the cache
+                $me->cacheByToken();
+            }
         }
         return $me;
     }

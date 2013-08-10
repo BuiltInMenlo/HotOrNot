@@ -196,4 +196,14 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		}
 		return $v;
     }
+    
+    public function setAge( ){
+        $input = ( object ) ($_POST ? $_POST : $_GET);
+        if( !empty( $input->userID ) && property_exists( $input, 'age' ) ){
+            $users = new BIM_App_Users();
+            $users->setAge( $input->userID, $input->age );
+            return true;
+        }
+        return false;
+    }
 }
