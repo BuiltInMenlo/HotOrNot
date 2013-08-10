@@ -6,70 +6,74 @@ class BIM_Model_Volley{
         
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volley = $dao->get( $volleyId );
-        
+        if( $volley ){
+            $creator = BIM_User::get( $volley->creator_id );
+            $creator = (object) array(
+                'id' => $creator->id, 
+                'fb_id' => $creator->fb_id,
+                'username' => $creator->username,
+                'avatar' => $creator->getAvatarUrl(),
+                'img' => $volley->creator_img,
+                'score' => 0
+            );
+            
+            $challengers = array();
+            foreach( $volley->challengers as $challenger ){
+                $target = BIM_User::get( $challenger->challenger_id );
+                $joined = new DateTime( "@$challenger->joined" );
+                $joined = $joined->format('Y-m-d H:i:s');
+                $target = (object) array(
+                    'id' => $target->id, 
+                    'fb_id' => $target->fb_id,
+                    'username' => $target->username,
+                    'avatar' => $target->getAvatarUrl(),
+                    'img' => $challenger->challenger_img,
+                    'score' => 0,
+                    'joined' => $joined
+                );
+                
+                $usersInChallenge = array( $creator, $target );
+                $likes = $dao->getLikes($volleyId);
+                foreach( $likes as $likeData ){
+                    foreach( $usersInChallenge as $user ){
+                        if( $user->id == $likeData->uid ){
+                            $user->score = $likeData->count;
+                            break;
+                        }
+                    }
+                }
+                $challengers[] = $target;            
+            }
+            
+            $this->id = $volley->id; 
+            $this->status = ($userId != 0 && $userId == $volley->challenger_id && $volley->status_id == "2") ? "0" : $volley->status_id; 
+            $this->subject = $dao->getSubject($volley->subject_id); 
+            $this->comments = $dao->commentCount( $volley->id ); 
+            $this->has_viewed = $volley->hasPreviewed; 
+            $this->started = $volley->started; 
+            $this->added = $volley->added; 
+            $this->updated = $volley->updated;
+            $this->creator = $creator;
+            // legacy versions of client do not support multiple challengers
+            if( defined( 'IS_LEGACY' ) && IS_LEGACY ){
+                $this->challenger = $challengers[0];
+            } else{
+                $this->challengers = $challengers;
+            }
+            $this->expires = $volley->expires;
+            $this->is_private = $volley->is_private;
+        }
+    }
+    
+    public function isExpired(){
         $expires = -1;
-        if( !empty( $volley->expires ) && $volley->expires > -1 ){
-            $expires = $volley->expires - time();
+        if( !empty( $this->expires ) && $this->expires > -1 ){
+            $expires = $this->expires - time();
             if( $expires < 0 ){
                 $expires = 0;
             }
         }
-        
-        $creator = new BIM_User( $volley->creator_id );
-        $creator = (object) array(
-            'id' => $creator->id, 
-            'fb_id' => $creator->fb_id,
-            'username' => $creator->username,
-            'avatar' => $creator->getAvatarUrl(),
-            'img' => $volley->creator_img,
-            'score' => 0
-        );
-        
-        $challengers = array();
-        foreach( $volley->challengers as $challenger ){
-            $target = new BIM_User( $challenger->challenger_id );
-            $joined = new DateTime( "@$challenger->joined" );
-            $joined = $joined->format('Y-m-d H:i:s');
-            $target = (object) array(
-                'id' => $target->id, 
-                'fb_id' => $target->fb_id,
-                'username' => $target->username,
-                'avatar' => $target->getAvatarUrl(),
-                'img' => $challenger->challenger_img,
-                'score' => 0,
-                'joined' => $joined
-            );
-            
-            $usersInChallenge = array( $creator, $target );
-            $likes = $dao->getLikes($volleyId);
-            foreach( $likes as $likeData ){
-                foreach( $usersInChallenge as $user ){
-                    if( $user->id == $likeData->uid ){
-                        $user->score = $likeData->count;
-                        break;
-                    }
-                }
-            }
-            $challengers[] = $target;            
-        }
-        
-        $this->id = $volley->id; 
-        $this->status = ($userId != 0 && $userId == $volley->challenger_id && $volley->status_id == "2") ? "0" : $volley->status_id; 
-        $this->subject = $dao->getSubject($volley->subject_id); 
-        $this->comments = $dao->commentCount( $volley->id ); 
-        $this->has_viewed = $volley->hasPreviewed; 
-        $this->started = $volley->started; 
-        $this->added = $volley->added; 
-        $this->updated = $volley->updated;
-        $this->creator = $creator;
-        // legacy versions of client do not support multiple challengers
-        if( defined( 'IS_LEGACY' ) && IS_LEGACY ){
-            $this->challenger = $challengers[0];
-        } else{
-            $this->challengers = $challengers;
-        }
-        $this->expires = $expires;
-        $this->is_private = $volley->is_private;
+        return ($expires == 0);
     }
     
     public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires ) {
@@ -96,6 +100,18 @@ class BIM_Model_Volley{
         $dao->join( $this->id, $userId, $imgUrl );
     }
     
+    public function upVote( $targetId, $userId ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao->upVote( $this->id, $userId, $targetId  );
+        $this->purgeFromCache();
+    }
+    
+    public function purgeFromCache(){
+        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
+        $key = self::makeCacheKeys($this->id);
+        $cache->delete( $key );
+    }
+    
     public function accept( $userId, $imgUrl ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->accept( $this->id, $userId, $imgUrl );
@@ -114,6 +130,31 @@ class BIM_Model_Volley{
     public function setPreviewed( $userId ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->setPreviewed( $this->id );
+    }
+    
+    public function isExtant(){
+        return !empty( $this->id );
+    }
+    
+    public function hasChallenger( $userId ){
+        $has = false;
+        if( !empty( $this->challengers ) ){
+            foreach( $this->challengers as $challenger ){
+                if( $challenger->id == $userId ){
+                    $has = true;
+                    break;
+                }
+            }
+        }
+        return $has;
+    }
+    
+    public function hasUser( $userId ){
+        $has = ($this->creator->id == $userId);
+        if( !$has ){
+            $has = $this->hasChallenger($userId);
+        }
+        return $has;
     }
     
     public static function getRandomAvailableByHashTag( $hashTag, $userId = null ){
@@ -183,5 +224,75 @@ class BIM_Model_Volley{
             $volleyArr[] = new self($volleyId->id);
         }
         return $volleyArr;
+    }
+    
+    public static function makeCacheKeys( $ids ){
+        if( $ids ){
+            $return1 = false;
+            if( !is_array( $ids ) ){
+                $ids = array( $ids );
+                $return1 = true;
+            }
+            foreach( $ids as &$id ){
+                $id = "volley_$id";
+            }
+            if( $return1 ){
+                $ids = $ids[0];
+            }
+        }
+        return $ids;
+    }
+    
+    /** 
+     * 
+     * do a multifetch to memcache
+     * if there are any missing objects
+     * get them from the db, one a t a time
+     * 
+    **/
+    public static function getMulti( $ids ) {
+        $volleyKeys = self::makeCacheKeys( $ids );
+        $cache = new BIM_Cache_Memcache( BIM_Config::memcached() );
+        $volleys = $cache->getMulti( $ids );
+        
+        // now we determine which things were not in memcache dn get those
+        $retrievedKeys = array_keys( $volleys );
+        $missedKeys = array_diff( $volleyKeys, $retrievedKeys );
+        if( $missedKeys ){
+            foreach( $missedKeys as $volleyKey ){
+                list($prefix,$volleyId) = explode('_',$volleyKey);
+                $volley = self::get( $volleyId, true );
+                if( $volley->isExtant() ){
+                    $volleys[ $volley->id ] = $volley;
+                }
+            }
+        }
+        return array_values( $volleys );        
+    }
+    
+    public static function get( $volleyId, $forceDb = false ){
+        $cacheKey = self::makeCacheKeys($volleyId);
+        $volley = null;
+        $cache = new BIM_Cache_Memcache( BIM_Config::memcached() );
+        if( !$forceDb ){
+            $volley = $cache->get( $cacheKey );
+        }
+        if( !$volley ){
+            $volley = new self($volleyId);
+            if( $volley->isExtant() ){
+                $cache->set( $cacheKey, $volley );
+            }
+        }
+        return $volley;
+    }
+    
+    public static function getVolleysWithFriends( $userId ){
+        $friends = BIM_App_Social::getFriends( (object) array('userID' => $userId ) );
+        $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
+        // we add our own id here so we will include our challenges as well, not just our friends
+        $friendIds[] = $userId;
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $ids = $dao->getVolleysWithFriends($userId, $friendIds);
+        return self::getMulti($ids);
     }
 }

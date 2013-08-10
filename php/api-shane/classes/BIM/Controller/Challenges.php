@@ -223,4 +223,18 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         }
         return $challenge;
     }
+    
+    /**
+     * returns a list of verifyme volleys
+     */
+    public function getVerifyList(){
+        $input = $_POST ? $_POST : $_GET;
+        $challenge = array();
+        if( isset( $input['userID'] ) ){
+            $challenges = new BIM_App_Challenges();
+            $challenge = $challenges->getVerifyList( $input['challengeID'] );
+        }
+        return $challenge;
+    }
+    
 }

@@ -28,6 +28,19 @@ class BIM_App_Challenges extends BIM_App_Base{
         return new BIM_Model_Volley($volleyId, $userId);
     }
 
+    /**
+     * 
+     * return a list of awaiting verification objects
+     * 
+     * @param unknown_type $volleyId
+     * @param unknown_type $userId
+    **/
+    public function getVerifyList ($userId) {
+        $dao = BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $ids = $dao->getVerificationVolleyIds( $userId );
+        return BIM_Model_Volley::getMulti( $ids );
+    }
+    
     /** 
      * Helper function to build a list of challenges between two users
      * @param $user_id The ID of the 1st user to get challenges (integer)

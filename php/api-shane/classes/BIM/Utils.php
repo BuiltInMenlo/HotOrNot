@@ -95,6 +95,19 @@ class BIM_Utils{
 	// in a cookie named as named in the onfig
 	public static function getSessionUser(){
 	    if( ! self::$user ){
+	        $hmac = !empty($_SERVER['HTTP_HMAC']) ? $_SERVER['HTTP_HMAC'] : '';
+	        if( $hmac ){
+	            list( $hmac, $token ) = explode('+',$hmac);
+	            $hash = hash_hmac('sha256', $token, "YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ");
+	            if( $hash == $hmac ){
+	                $user = BIM_User::getByToken($token);
+    	            if( !$user->isExtant() ){
+    	                $user = null;
+    	            }
+                    self::$user = $user;    	            
+	            }
+	        }
+	        /*
     	    $conf = BIM_Config::session();
     	    if( !empty( $_COOKIE[ $conf->cookie->name ] ) ){
     	        // decrypt the userId
@@ -107,6 +120,7 @@ class BIM_Utils{
                     self::$user = $user;    	            
     	        }
     	    }
+    	    */
 	    }
 	    return self::$user;
 	}

@@ -7,6 +7,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             from `hotornot-dev`.tblChallenges 
             where started < DATE( FROM_UNIXTIME( ? ) )
                 and expires = -1
+                and is_verify != 1
                 and status_id in (1,2)
             order by added desc
         ";
@@ -183,6 +184,22 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute($sql, $params);
     }
     
+    public function upVote( $volleyId, $userId, $targetId ){
+		$query = "
+            INSERT IGNORE INTO `hotornot-dev`.`tblChallengeVotes` 
+            (`challenge_id`, `user_id`, `challenger_id`, `added`) 
+            VALUES ( ?, ?, ?, NOW() )
+		";
+		$params = array( $volleyId, $userId, $targetId );
+        $stmt = $this->prepareAndExecute($query, $params);
+		
+        if( $this->lastInsertId ){
+            $sql = 'UPDATE `hotornot-dev`.tblChallenges SET votes = votes + 1 where id = ?';
+            $params = array( $volleyId );
+            $stmt = $this->prepareAndExecute($sql, $params);
+        }
+    }
+    
     public function cancel( $volleyId ){
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 3 WHERE id = ?';
         $params = array( $volleyId );
@@ -218,7 +235,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             FROM `hotornot-dev`.tblChallenges as tc
                 JOIN `hotornot-dev`.tblChallengeSubjects as tcs
                 ON tc.subject_id = tcs.id
-            WHERE tc.status_id = 1 
+            WHERE tc.status_id = 1  and is_verify != 1
                 AND tcs.title = ? 
                 $userSql
             ORDER BY RAND()
@@ -239,7 +256,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         	FROM `hotornot-dev`.tblChallenges as tc
             	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
-        	WHERE (tc.status_id NOT IN (2,3,6,8) )
+        	WHERE (tc.status_id NOT IN (2,3,6,8) )  and is_verify != 1
         		AND (tc.creator_id = ? OR tcp.user_id = ? ) 
         	ORDER BY tc.updated DESC
         ';
@@ -258,7 +275,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             FROM `hotornot-dev`.tblChallenges as tc
             	JOIN  `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
-            WHERE ( tc.status_id NOT IN (3,6,8) $privateSql ) 
+            WHERE ( tc.status_id NOT IN (3,6,8) $privateSql  and is_verify != 1 ) 
               AND (tc.creator_id = ? OR tcp.user_id = ? ) 
             ORDER BY tc.updated DESC
         ";
@@ -284,7 +301,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             FROM `hotornot-dev`.tblChallenges as tc
             	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
-            WHERE ( tc.status_id NOT IN (3,6,8) $privateSql )
+            WHERE ( tc.status_id NOT IN (3,6,8) $privateSql and is_verify != 1 )
                 AND ( (tc.creator_id = ? OR tcp.user_id = ?) AND (tc.creator_id = ? OR tcp.user_id = ? ) ) 
                 AND tc.updated < ? 
             ORDER BY tc.updated DESC
@@ -306,7 +323,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             FROM `hotornot-dev`.tblChallenges as tc
             	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
-            WHERE tc.status_id in ( 1,2,4 ) 
+            WHERE tc.status_id in ( 1,2,4 ) and is_verify != 1
                 AND (tc.creator_id = ?  OR tcp.user_id = ? )
                 $pSql
             ORDER BY tc.updated DESC
@@ -315,5 +332,225 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $params = array( $userId, $userId );
         $stmt = $this->prepareAndExecute( $sql, $params );
         return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+    }
+    
+    public function getVerificationVolleyIds( $userId ){
+        
+        $sql = "
+            SELECT tc.id 
+            FROM `hotornot-dev`.tblChallenges as tc
+            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+            	ON tc.id = tcp.challenge_id
+            WHERE tc.status_id in ( 1,2,4 ) and is_verify = 1 
+                AND (tc.creator_id = ?  OR tcp.user_id = ? )
+            ORDER BY tc.updated DESC
+        ";
+        
+        $params = array( $userId, $userId );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        if( $data ){
+            foreach( $data as &$id ){
+                $id = $id->id;
+            }
+        }
+        return $data;
+    }
+    
+    public function getVolleysWithFriends( $userId, $friendIds ){
+	    
+	    $fIdct = count( $friendIds );
+		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
+		
+        $query = "
+        	SELECT tc.id
+        	FROM `hotornot-dev`.`tblChallenges` as tc 
+            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+            	ON tc.id = tcp.challenge_id
+        	WHERE (tc.status_id IN (1,4) 
+        		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tcp.`user_id` IN ( $fIdPlaceholders ) ) )
+        		OR ( tc.status_id = 2 AND tcp.user_id = ? )
+        	ORDER BY tc.`updated` DESC LIMIT 50
+        ";
+        
+		$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        
+        $params = $friendIds;
+        foreach( $friendIds as $friendId ){
+            $params[] = $friendId;
+        }
+        $params[] = $userId;
+
+        $stmt = $dao->prepareAndExecute( $query, $params );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        return array_unique($ids);
+    }
+    
+    /**
+     * userId is the friend with which we want the volleys
+     * Enter description here ...
+     * @param unknown_type $userId
+     */
+    public function getVolleysWithAFriend( $userId, $friendId, $private  ){
+	    $privateSql = ' AND `is_private` != "Y" ';
+	    if( $private ){
+	        $privateSql = ' AND `is_private` = "Y" ';
+	    }
+	    // get challenges with these two users
+		$query = "
+			SELECT tc.`id` 
+			FROM `hotornot-dev`.`tblChallenges` as tc
+            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+            	ON tc.id = tcp.challenge_id
+			WHERE (`status_id` IN (1,2,4) ) 
+				$privateSql
+				AND ( (tc.`creator_id` = ? AND tcp.user_id = ? ) 
+					OR (tc.`creator_id` = ? AND tcp.user_id = ? ) )
+			ORDER BY tc.`updated` DESC LIMIT 50";
+				
+		$params = array( $userId, $friendId, $friendId, $userId );
+        $stmt = $this->prepareAndExecute( $query, $params );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        $ids = array_unique($ids);
+        return $ids;        
+    }
+    
+    public function getVolleysForUserId( $userId, $private ){
+		// get latest 10 challenges for user
+	    $privateSql = ' AND tc.`is_private` != "Y" ';
+	    if( $private ){
+	        $privateSql = ' AND tc.`is_private` = "Y" ';
+	    }
+		
+        $query = "
+			SELECT tc.id 
+			FROM `hotornot-dev`.`tblChallenges` as tc
+            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+            	ON tc.id = tcp.challenge_id
+			WHERE ( tc.status_id IN (1,4) ) 
+				$privateSql
+				AND (tc.`creator_id` = ? OR tcp.`user_id` = ? ) 
+			ORDER BY tc.`updated` DESC LIMIT 50;";
+				
+		$params = array( $userId, $userId );
+        $stmt = $this->prepareAndExecute( $query, $params );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        $ids = array_unique($ids);
+        return $ids;        
+    }
+    
+    public function getVolleysForHashTag( $hashTag, $private = false  ){
+	    $privateSql = ' AND `is_private` != "Y" ';
+	    if( $private ){
+	        $privateSql = ' AND `is_private` = "Y" ';
+	    }
+	    
+		// get challenges based on subject
+		$query = "
+			SELECT tc.id 
+			FROM `hotornot-dev`.tblChallenges as tc
+            	JOIN `hotornot-dev`.tblChallengeSubjects as tcs
+            	ON tc.subject_id = tcs.id	
+			WHERE (tc.`status_id` = 1 OR tc.`status_id` = 4) 
+		        $privateSql 
+				AND tcs.title = ?
+			ORDER BY tc.`updated` DESC
+			LIMIT 100
+		";
+		$params = array( $hashTag );
+        $stmt = $this->prepareAndExecute( $query, $params );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        $ids = array_unique($ids);
+        return $ids;        
+    }
+    
+    public function getVolleysForHashTagId( $hashTagId, $private = false  ){
+	    $privateSql = ' AND `is_private` != "Y" ';
+	    if( $private ){
+	        $privateSql = ' AND `is_private` = "Y" ';
+	    }
+	    
+		// get challenges based on subject
+		$query = "
+			SELECT tc.id 
+			FROM `hotornot-dev`.tblChallenges as tc
+            	JOIN `hotornot-dev`.tblChallengeSubjects as tcs
+            	ON tc.subject_id = tcs.id	
+			WHERE tc.`status_id` in (1, 4) 
+		        $privateSql 
+				AND tcs.id = ?
+			ORDER BY tc.`updated` DESC
+			LIMIT 100
+		";
+		$params = array( $hashTagId );
+        $stmt = $this->prepareAndExecute( $query, $params );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        $ids = array_unique($ids);
+        return $ids;        
+    }
+    
+    public function getChallengesByDate(){
+		$query = '
+			SELECT id 
+			FROM `hotornot-dev`.`tblChallenges` 
+			WHERE `is_private` != "Y" 
+				AND (`status_id` = 1 OR `status_id` = 4) 
+			ORDER BY `updated` 
+			DESC LIMIT 250;'; 
+        $stmt = $this->prepareAndExecute( $query );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        $ids = array_unique($ids);
+        return $ids;
+    }
+    
+    public function getChallengesByActivity(){
+		// get vote rows for challenges
+		$query = '
+			SELECT tc.id 
+			FROM `hotornot-dev`.tblChallenges as tc
+				JOIN `hotornot-dev`.tblChallengeVotes as tcv
+				ON tc.id = tcv.challenge_id 
+			WHERE tc.status_id in (1,4)
+			LIMIT 100
+		';
+        $stmt = $this->prepareAndExecute( $query );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        $ids = array_unique($ids);
+        return $ids;
+		
+    }
+    
+    public function getVoterCounts( $volleyId ){
+		$query = "
+			select user_id as id, count(*) as count 
+			from `hotornot-dev`.tblChallengeVotes 
+			where challenge_id = ? 
+			group by user_id;";
+		
+		$params = array( $volleyId );
+        $stmt = $this->prepareAndExecute( $query, $params );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        return $ids;
     }
 }

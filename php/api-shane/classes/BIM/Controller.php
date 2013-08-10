@@ -86,7 +86,8 @@ class BIM_Controller{
 	 */
 	protected function sessionOK(){
         
-        $newUser = false;
+        $newUser = true;
+        /*
         $request = BIM_Utils::getRequest();
         
         if( strtolower( $request->controllerClass ) == 'bim_controller_users' 
@@ -95,6 +96,7 @@ class BIM_Controller{
         {
             $newUser = true;
         }
+        */
         
         $sessionConf = BIM_Config::session();
         
