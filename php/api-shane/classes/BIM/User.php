@@ -69,6 +69,97 @@ class BIM_User{
         return ($this->img_url);
     }
     
+    public static function create( $token ){
+			// default names
+			$defaultName_arr = array(
+				"snap4snap",
+				"picchampX",
+				"swagluver",
+				"coolswagger",
+				"yoloswag",
+				"tumblrSwag",
+				"instachallenger",
+				"hotbitchswaglove",
+				"lovepeaceswaghot",
+				"hotswaglover",
+				"snapforsnapper",
+				"snaphard",
+				"snaphardyo",
+				"yosnaper",
+				"yoosnapyoo"
+			);
+			
+			$rnd_ind = mt_rand(0, count($defaultName_arr) - 1);
+			$username = $defaultName_arr[$rnd_ind] . time();
+        
+			$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+			$id = $dao->create($username, $token);
+			return self::get($id);
+    }
+    
+    public function poke( $targetId ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        return $dao->poke( $this->id, $targetId );
+    }
+    
+    public function updateUsernameAvatar( $username, $imgUrl ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updateUsernameAvatar( $this->id, $username, $imgUrl );
+    }
+    
+    public function updatePaiid( $isPaid ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updatePaid( $this->id, $isPaid );
+        $this->paid = $isPaid;
+    }
+    
+    public function updateNotifications( $isNotifications ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updateNotifications( $this->id, $isNotifications );
+        $this->notifications = $isNotifications;
+    }
+    
+    public function updateUsername( $username ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updateUsername( $this->id, $username );
+        $this->username = $username;
+    }
+    
+    public function updateFBUsername( $fbId, $username, $gender ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updateFBUsername($this->id, $fbId, $username, $gender );
+    }
+    
+    public function updateFB( $fbId, $gender ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updateFB($this->id, $fbId, $gender );
+    }
+    
+    public function getFBInviteId( $fbId ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        return $dao->getFbInviteId( $fbId );
+    }
+    
+    public function updateLastLogin( ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updateLastLogin( $this->id );
+    }
+    
+    public function acceptFbInviteToVolley( $inviteId ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $volleys = $this->getFbInvitesToVolley( $inviteId );
+		// loop thru the challenges
+		foreach ( $volleys as $volley ) {
+			$volley->acceptFbInviteToVolley( $this->id, $inviteId );
+		}
+    }
+    
+    public function getFbInvitesToVolley( $inviteId ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $ids = $dao->getFbInvitesToVolley( $inviteId );
+        return BIM_Model_Volley::getMulti($ids);
+    }
+    
     public static function makeCacheKeys( $ids ){
         if( $ids ){
             $return1 = false;

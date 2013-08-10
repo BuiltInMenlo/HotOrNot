@@ -200,6 +200,18 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         }
     }
     
+    public function acceptFbInviteToVolley( $volleyId, $userId, $inviteId ){
+        $query = "UPDATE tblChallengeParticipants SET user_id = ?  WHERE challenge_id = ? and user_id = ?";
+        $params = array( $userId, $volleyId, $inviteId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
+    public function updateStatus( $volleyId, $status ){
+        $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = ? WHERE id = ?';
+        $params = array( $status, $volleyId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
     public function cancel( $volleyId ){
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 3 WHERE id = ?';
         $params = array( $volleyId );

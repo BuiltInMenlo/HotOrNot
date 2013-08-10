@@ -100,6 +100,17 @@ class BIM_Model_Volley{
         $dao->join( $this->id, $userId, $imgUrl );
     }
     
+    public function updateStatus( $status ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao->updateStatus( $this->id, $status );
+    }
+    
+    public function acceptFbInviteToVolley( $userId, $inviteId ){
+        $this->updateStatus(2);
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao->acceptFbInviteToVolley( $this->id, $userId, $inviteId );
+    }
+    
     public function upVote( $targetId, $userId ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->upVote( $this->id, $userId, $targetId  );
@@ -294,5 +305,40 @@ class BIM_Model_Volley{
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $ids = $dao->getVolleysWithFriends($userId, $friendIds);
         return self::getMulti($ids);
+    }
+    
+    public static function autoVolley( $userId ){
+		// starting users & snaps
+        $snap_arr = array(
+        	array(// @Team Volley #welcomeVolley
+        		'user_id' => "2394", 
+        		'subject_id' => "1367", 
+        		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000000"),
+        	
+        	array(// @Team Volley #teamVolleyRules
+        		'user_id' => "2394", 
+        		'subject_id' => "1368", 
+        		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000001"),
+        		
+        	array(// @Team Volley #teamVolley
+        		'user_id' => "2394", 
+        		'subject_id' => "1369", 
+        		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000002"),
+        		
+        	array(// @Team Volley #teamVolleygirls
+        		'user_id' => "2394", 
+        		'subject_id' => "1370", 
+        		'img_prefix' => "https://hotornot-challenges.s3.amazonaws.com/fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb_0000000003")
+        );
+        // choose random snap
+        $snap = $snap_arr[ array_rand( $snap_arr ) ];
+		$subjectId = $snap['subject_id'];
+		$autoUserId = $snap['user_id'];
+		$img = $snap['img_prefix'];
+
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+		$hashTag = $dao->getSubject($subjectId);
+		
+		BIM_Model_Volley::create($userId, $hashTag, $img, array( $userId ), 'N', -1);
     }
 }

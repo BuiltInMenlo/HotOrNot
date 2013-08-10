@@ -2,45 +2,52 @@
 
 class BIM_Controller_Users extends BIM_Controller_Base {
     
-    public function init(){
-        $this->users = new BIM_App_Users;
-    }
-    
     public function test(){
-		return $this->users->test();
+        $users = new BIM_App_Users();
+        return $users->test();
     }
     
     public function flagUser(){
-		if (isset($_POST['userID'])){
-			return $this->users->flagUser($_POST['userID']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID'])){
+            $users = new BIM_App_Users();
+		    return $users->flagUser($input['userID']);
 		}
 		return array();
     }
     
     public function updateUsernameAvatar(){
-		if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['imgURL'])){
-			return $this->users->updateUsernameAvatar($_POST['userID'], $_POST['username'], $_POST['imgURL']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID']) && isset($input['username']) && isset($input['imgURL'])){
+            $users = new BIM_App_Users();
+			return $users->updateUsernameAvatar($input['userID'], $input['username'], $input['imgURL']);
 		}
 		return array();
     }
     
     public function getUserFromName(){
-		if (isset($_POST['username'])){
-			return $this->users->getUserFromName($_POST['username']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['username'])){
+            $users = new BIM_App_Users();
+		    return $users->getUserFromName($input['username']);
 		}
 		return array();
     }
     
     public function updateName(){
-		if (isset($_POST['userID']) && isset($_POST['username'])){
-			return $this->users->updateName($_POST['userID'], $_POST['username']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID']) && isset($input['username'])){
+            $users = new BIM_App_Users();
+		    return $users->updateName($input['userID'], $input['username']);
 		}
 		return array();
     }
     
     public function pokeUser(){
-		if (isset($_POST['pokerID']) && isset($_POST['pokeeID'])){
-			return $this->users->pokeUser($_POST['pokerID'], $_POST['pokeeID']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['pokerID']) && isset($input['pokeeID'])){
+            $users = new BIM_App_Users();
+		    return $users->pokeUser($input['pokerID'], $input['pokeeID']);
 		}
 		return array();
     }
@@ -48,45 +55,55 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function getUser(){
         $input = $_POST ? $_POST : $_GET;
         if (isset($input['userID'])){
-			return $this->users->getUserObj($input['userID']);
+            $users = new BIM_App_Users();
+            return $users->getUserObj($input['userID']);
         }
 		return array();
     }
     
     public function updateNotifications(){
-		if (isset($_POST['userID']) && isset($_POST['isNotifications'])){
-			return $this->users->updateNotifications($_POST['userID'], $_POST['isNotifications']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID']) && isset($input['isNotifications'])){
+            $users = new BIM_App_Users();
+		    return $users->updateNotifications($input['userID'], $input['isNotifications']);
 		}
 		return array();
     }
     
     public function updatePaid(){
-		if (isset($_POST['userID']) && isset($_POST['isPaid'])){
-			return $this->users->updatePaid($_POST['userID'], $_POST['isPaid']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID']) && isset($input['isPaid'])){
+            $users = new BIM_App_Users();
+		    return $users->updatePaid($input['userID'], $input['isPaid']);
         }
 		return array();
     }
     
     public function updateFB(){
-		if (isset($_POST['userID']) && isset($_POST['username']) && isset($_POST['fbID']) && isset($_POST['gender'])){
-			return $this->users->updateFB($_POST['userID'], $_POST['username'], $_POST['fbID'], $_POST['gender']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['userID']) && isset($input['username']) && isset($input['fbID']) && isset($input['gender'])){
+            $users = new BIM_App_Users();
+		    return $users->updateFB($input['userID'], $input['username'], $input['fbID'], $input['gender']);
 		}
 		return array();
     }
     
     public function submitNewUser(){
-    	if (isset($_POST['token'])){
-    		return $this->users->submitNewUser($_POST['token']);
+        $input = $_POST ? $_POST : $_GET;
+        if (isset($input['token'])){
+            $users = new BIM_App_Users();
+    	    return $users->submitNewUser($input['token']);
     	}
 		return array();
     }
     
     public function matchFriends(){
-	    $friends = array();
-		if ( isset( $_POST['userID'] ) && isset( $_POST['phone'] ) ){
-		    $hashedList = explode('|', $_POST['phone'] );
+        $input = $_POST ? $_POST : $_GET;
+        $friends = array();
+		if ( isset( $input['userID'] ) && isset( $input['phone'] ) ){
+		    $hashedList = explode('|', $input['phone'] );
 		    $params = (object) array(
-		        'id' => $_POST['userID'],
+		        'id' => $input['userID'],
 		        'hashed_list' => $hashedList,
 		    );
 		    $users = new BIM_App_Users();
@@ -97,10 +114,12 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     }
     
     public function twilioCallback(){
-        $linked = $this->users->linkMobileNumber( (object) $_POST );
+        $input = $_POST ? $_POST : $_GET;
+        $users = new BIM_App_Users();
+        $linked = $users->linkMobileNumber( (object) $_POST );
         if( $linked ){
-            $to = $_POST['From']; // we switch the meaning of to and from so we can send an sms back
-            $from = $_POST['To']; // we switch the meaning of to and from so we can send an sms back
+            $to = $input['From']; // we switch the meaning of to and from so we can send an sms back
+            $from = $input['To']; // we switch the meaning of to and from so we can send an sms back
             echo "<?xml version='1.0' encoding='UTF-8'?><Response><Sms from='$from' to='$to'>Volley On!</Sms></Response>";
             exit();
         }
@@ -142,7 +161,8 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		        'user_id' => $input['userID'],
 		        'email' => $input['email'] ,
 		    );
-		    $v = $this->users->verifyEmail( $params );
+            $users = new BIM_App_Users();
+		    $v = $users->verifyEmail( $params );
 		}
 		return $v;
     }
@@ -156,7 +176,8 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		        'id' => $input['userID'],
 		        'email_list' => $emailList,
 		    );
-			$friends = $this->users->matchFriendsEmail( $params );
+            $users = new BIM_App_Users();
+		    $friends = $users->matchFriendsEmail( $params );
 		}
 		return $friends;
     }
@@ -170,7 +191,8 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		        'user_id' => $userId,
 		        'phone' => $input['phone'] ,
 		    );
-		    $v = $this->users->verifyPhone( $params );
+            $users = new BIM_App_Users();
+		    $v = $users->verifyPhone( $params );
 		}
 		return $v;
     }
