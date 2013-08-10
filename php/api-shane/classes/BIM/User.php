@@ -129,12 +129,16 @@ class BIM_User{
         }
     }
     
-    public function cacheByToken(){
+    public function cacheIdByToken(){
         $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
-        $key = self::makeCacheKeys($this->id);
         if( !empty($this->device_token) ){
-            $cache->set( $this->device_token, $this );
+            $cache->set( $this->device_token, $this->id );
         }
+    }
+    
+    public static function getCachedIdFromToken( $token ){
+        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
+        return $cache->get( $token );
     }
     
     public function updatePaiid( $isPaid ){
@@ -285,12 +289,15 @@ class BIM_User{
         $me = null;
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         
-        $id = $dao->getIdByToken( $token );
+        $id = self::getCachedIdFromToken($token);
         if( $id ){
+            $me = self::get( $id, $forceDb );
+        } else {
+            $id = $dao->getIdByToken( $token );
             $me = self::get( $id, $forceDb );
             if( $me->isExtant() ){
                 // this puts us in the cache
-                $me->cacheByToken();
+                $me->cacheIdByToken();
             }
         }
         return $me;

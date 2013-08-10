@@ -469,7 +469,7 @@ class BIM_App_Users extends BIM_App_Base{
 	}
 	
     public function setAge( $userId, $ageRange ){
-        $user = new BIM_User( $userId );
+        $user = BIM_User::get( $userId );
         if( $user->isExtant() ){
             $user->setAgeRange( $ageRange );
         }
