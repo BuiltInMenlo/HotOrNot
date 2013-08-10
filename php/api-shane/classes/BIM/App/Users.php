@@ -311,7 +311,7 @@ class BIM_App_Users extends BIM_App_Base{
             if(! isset( $list->hashed_number ) ) $list->hashed_number = '';
             if(! isset( $list->hashed_list ) ) $list->hashed_list = array();
     	    
-            $user = new BIM_User( $list->id );
+            $user = BIM_User::get( $list->id );
             if( $user->isExtant() ){
                 $list->avatar_url = $user->getAvatarUrl();
                 $list->username = $user->username;
@@ -340,7 +340,7 @@ class BIM_App_Users extends BIM_App_Base{
             if(! isset( $list->email ) ) $list->email = '';
             if(! isset( $list->email_list ) ) $list->email_list = array();
     	    
-            $user = new BIM_User( $list->id );
+            $user = BIM_User::get( $list->id );
             if( $user->isExtant() ){
                 $list->avatar_url = $user->getAvatarUrl();
                 $list->username = $user->username;

@@ -113,7 +113,7 @@ class BIM_Utils{
     	        // decrypt the userId
     	        $userId = BIM_Utils::getIdForSMSCode(  $_COOKIE[ $conf->cookie->name ]  );
     	        if( $userId ){
-    	            $user = new BIM_User( $userId );
+    	            $user = BIM_User::get( $userId );
     	            if( !$user->isExtant() ){
     	                $user = null;
     	            }
