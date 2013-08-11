@@ -185,7 +185,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray new];
 			
@@ -257,11 +257,7 @@
 				}
 			}
 			
-			if (!_isProfileViewable)
-				self.navigationController.navigationBar.topItem.title = @"Sending Request…";
-			
 			_backButton.hidden = !_isProfileViewable;
-			
 			[_tableView reloadData];
 		}
 		
@@ -871,12 +867,16 @@
 //		return (bgView);
 //	}
 	
-	return ([[HONTimelineHeaderView alloc] initWithChallenge:(HONChallengeVO *)[_challenges objectAtIndex:section]]);
+	if (_timelineType == HONTimelineTypeSingleUser && section == 0)
+		return (nil);
+	
+	else
+		return ([[HONTimelineHeaderView alloc] initWithChallenge:(HONChallengeVO *)[_challenges objectAtIndex:section - ((int)_timelineType == HONTimelineTypeSingleUser)]]);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (_timelineType == HONTimelineTypeSingleUser && _userVO != nil) {
-		if (indexPath.row == 0) {
+		if (indexPath.section == 0) {
 			if (_isProfileViewable) {
 				HONUserProfileViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 				
@@ -906,7 +906,7 @@
 			HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 			
 			if (cell == nil) {
-				HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row - 1];
+				HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section - 1];
 				cell = [[HONTimelineItemViewCell alloc] initAsStartedCell:(vo.statusID == 4)];
 				cell.challengeVO = vo;
 			}
@@ -934,8 +934,8 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.row == 0) {
-		return ((_timelineType == HONTimelineTypeSingleUser) ? (_isProfileViewable) ? 237.0 : 620.0 : 290.0);
+	if (indexPath.section == 0) {
+		return ((_timelineType == HONTimelineTypeSingleUser) ? 247.0 : 290.0);
 		
 	} else
 		return (290.0);
@@ -943,6 +943,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	return ((([[HONAppDelegate timelineBannerURL] length] > 0) && !_isPushView) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 50.0 : 50.0);
+	
+	//return ((_timelineType == HONTimelineTypeSingleUser && section == 0) ? 0.0 : 50.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

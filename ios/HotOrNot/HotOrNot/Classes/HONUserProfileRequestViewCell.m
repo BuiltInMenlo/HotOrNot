@@ -38,18 +38,11 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(100.0, 17.0, 120.0, 120.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 20.0, 109.0, 109.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
-//	[avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
-//															  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-//														  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
 	[self addSubview:avatarImageView];
 	
-//	UIImageView *avatar1MaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
-//	avatar1MaskImageView.frame = avatarImageView.frame;
-//	[self addSubview:avatar1MaskImageView];
-	
-	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(150.0, 145.0, 20.0, 64.0)];
+	_animationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(138.0, 52.0, 44.0, 44.0)];
 	_animationImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"profileAnimation_001"],
 										   [UIImage imageNamed:@"profileAnimation_002"],
 										   [UIImage imageNamed:@"profileAnimation_003"], nil];
@@ -59,31 +52,27 @@
 	[self addSubview:_animationImageView];
 	
 	
-	UIImageView *avatar2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(100.0, 217.0, 120.0, 120.0)];
+	UIImageView *avatar2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(195.0, 20.0, 109.0, 109.0)];
 	[avatar2ImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:avatar2ImageView];
-	
-//	UIImageView *avatar2MaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
-//	avatar2MaskImageView.frame = avatar2ImageView.frame;
-//	[self addSubview:avatar2MaskImageView];
 	
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	float yPos = 351.0;
+	float yPos = 148.0;
 	
 	//_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, yPos, 80.0, 16.0)];
 	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, yPos, 80.0, 16.0)];
-	votesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	votesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	votesLabel.textColor = kStatsColor;
-	votesLabel.backgroundColor = [UIColor clearColor];
+	votesLabel.backgroundColor = [UIColor redColor];
 	votesLabel.textAlignment = NSTextAlignmentCenter;
 	votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:votesLabel];
 	
-	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(105.0, yPos - 2.0, 20.0, 20.0)];
-	dots1Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:14];
+	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(90.0, yPos, 20.0, 20.0)];
+	dots1Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	dots1Label.textColor = kStatsColor;
 	dots1Label.backgroundColor = [UIColor clearColor];
 	dots1Label.textAlignment = NSTextAlignmentCenter;
@@ -91,15 +80,15 @@
 	[self addSubview:dots1Label];
 	
 	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, yPos, 80.0, 16.0)];
-	snapsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	snapsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	snapsLabel.textColor = kStatsColor;
-	snapsLabel.backgroundColor = [UIColor clearColor];
+	snapsLabel.backgroundColor = [UIColor greenColor];
 	snapsLabel.textAlignment = NSTextAlignmentCenter;
 	snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:snapsLabel];
 	
-	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(195.0, yPos - 2.0, 20.0, 20.0)];
-	dots2Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:14];
+	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(201.0, yPos, 20.0, 20.0)];
+	dots2Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	dots2Label.textColor = kStatsColor;
 	dots2Label.backgroundColor = [UIColor clearColor];
 	dots2Label.textAlignment = NSTextAlignmentCenter;
@@ -107,57 +96,71 @@
 	[self addSubview:dots2Label];
 	
 	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(211.0, yPos, 80.0, 16.0)];
-	ptsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	ptsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	ptsLabel.textColor = kStatsColor;
-	ptsLabel.backgroundColor = [UIColor clearColor];
+	ptsLabel.backgroundColor = [UIColor blueColor];
 	ptsLabel.textAlignment = NSTextAlignmentCenter;
 	ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:ptsLabel];
 	
-	UIButton *abuseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	abuseButton.frame = CGRectMake(20.0, 380.0, 279.0, 44.0);
-	[abuseButton setBackgroundImage:[UIImage imageNamed:@"reportAbuseButton_nonActive"] forState:UIControlStateNormal];
-	[abuseButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateHighlighted];
-	[abuseButton addTarget:self action:@selector(_goAbuse) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:abuseButton];
+	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 206.0, 180.0, 20.0)];
+	ageLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
+	ageLabel.textColor = [HONAppDelegate honOrthodoxGreenColor];
+	ageLabel.backgroundColor = [UIColor clearColor];
+	ageLabel.text = @"Requesting verification…";
+	[self addSubview:ageLabel];
 	
-	UIImageView *wompImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < _userVO.age) ? @"tooYoung" : @"tooOld"]];
-	wompImageView.frame = CGRectOffset(wompImageView.frame, 30.0, 455.0);
-	[self addSubview:wompImageView];
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(254.0, 194.0, 59.0, 44.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:moreButton];
 	
-	[self performSelector:@selector(_animateUp) withObject:nil afterDelay:3.0];
+//	UIButton *abuseButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	abuseButton.frame = CGRectMake(20.0, 380.0, 279.0, 44.0);
+//	[abuseButton setBackgroundImage:[UIImage imageNamed:@"reportAbuseButton_nonActive"] forState:UIControlStateNormal];
+//	[abuseButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateHighlighted];
+//	[abuseButton addTarget:self action:@selector(_goAbuse) forControlEvents:UIControlEventTouchUpInside];
+//	[self addSubview:abuseButton];
+//	
+//	UIImageView *wompImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < _userVO.age) ? @"tooYoung" : @"tooOld"]];
+//	wompImageView.frame = CGRectOffset(wompImageView.frame, 30.0, 455.0);
+//	[self addSubview:wompImageView];
+//	
+	[self performSelector:@selector(_showAlert) withObject:nil afterDelay:3.0];
 }
 
 
 #pragma mark - UI Presentation
-- (void)_animateUp {
-	[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
-		self.frame = CGRectOffset(self.frame, 0.0, -203.0);
-	} completion:^(BOOL finished) {
-		[_animationImageView stopAnimating];
-		[self.delegate profileRequestViewCellDoneAnimating:self];
+- (void)_showAlert {
+	[_animationImageView stopAnimating];
+	[self.delegate profileRequestViewCellDoneAnimating:self];
+	
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < _userVO.age) {
+		[[[UIAlertView alloc] initWithTitle:@"Womp, you're too young!"
+									message:@"This profile is age range protected, send your selfie for approval!"
+								   delegate:self
+						  cancelButtonTitle:@"Cancel"
+						  otherButtonTitles:@"OK", nil] show];
 		
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < _userVO.age) {
-			[[[UIAlertView alloc] initWithTitle:@"Womp, you're too young!"
-										message:@"This profile is age range protected, send your selfie for approval!"
-									   delegate:self
-							  cancelButtonTitle:@"Cancel"
-							  otherButtonTitles:@"OK", nil] show];
-			
-		} else {
-			[[[UIAlertView alloc] initWithTitle:@"Womp, you're too old!"
-										message:@"This profile is age range protected, send your selfie for approval!"
-									   delegate:self
-							  cancelButtonTitle:@"Cancel"
-							  otherButtonTitles:@"OK", nil] show];
-		}
-	}];
+	} else {
+		[[[UIAlertView alloc] initWithTitle:@"Womp, you're too old!"
+									message:@"This profile is age range protected, send your selfie for approval!"
+								   delegate:self
+						  cancelButtonTitle:@"Cancel"
+						  otherButtonTitles:@"OK", nil] show];
+	}
 }
 
 
 #pragma mark - Navigation
 - (void)_goAbuse {
 	[self.delegate profileRequestViewCell:self reportAbuse:_userVO];
+}
+
+- (void)_goMore {
+	
 }
 
 

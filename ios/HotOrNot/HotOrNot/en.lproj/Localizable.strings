@@ -74,8 +74,8 @@
 "settings_changeUsername" = "Change Username";
 "settings_support" = "Support";
 "settings_privacy" = "Privacy Policy";
-"profile_snap" = "%@ photo";
-"profile_snaps" = "%@ photos";
+"profile_snap" = "%@ Volley";
+"profile_snaps" = "%@ Volleys";
 "profile_vote" = "%@ vote";
 "profile_votes" = "%@ likes";
 "profile_point" = "%@ rating";

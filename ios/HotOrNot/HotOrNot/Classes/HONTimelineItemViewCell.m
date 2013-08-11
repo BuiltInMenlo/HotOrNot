@@ -221,7 +221,11 @@
 		[rightButton setTag:opponentCounter];
 		[opponentHolderView addSubview:rightButton];
 		
-		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 38.0, 38.0, 38.0)];
+		UIImageView *strokeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 30.0, 30.0, 30.0)];
+		strokeImageView.image = [UIImage imageNamed:@"avatarStroke"];
+		[opponentHolderView addSubview:strokeImageView];
+		
+		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 28.0, 28.0, 28.0)];
 		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
 		challengerAvatarImageView.userInteractionEnabled = YES;
 		challengerAvatarImageView.clipsToBounds = YES;
@@ -231,6 +235,7 @@
 		challengerAvatarButton.frame = challengerAvatarImageView.frame;
 		[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 		[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline:) forControlEvents:UIControlEventTouchUpInside];
+		[challengerAvatarButton setTag:opponentCounter];
 		[opponentHolderView addSubview:challengerAvatarButton];
  		
 		opponentCounter++;
