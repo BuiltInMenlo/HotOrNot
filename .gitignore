@@ -3,3 +3,4 @@
 aws/
 php/api-shane/bin/gearman/admin/config.php
 php/api-shane/classes/BIM/Config/Dynamic.php
+*.xcuserdata*
