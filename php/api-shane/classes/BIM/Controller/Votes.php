@@ -2,11 +2,6 @@
 
 class BIM_Controller_Votes extends BIM_Controller_Base {
     
-    public function test(){
-		$votes = new BIM_App_Votes();
-        return $votes->test();
-    }
-    
     public function getChallengesForSubjectID(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->subjectID)){
@@ -96,7 +91,7 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     }
     
     public function getChallengesWithFriends(){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if( !empty( $input->userID ) ){
             $votes = new BIM_App_Votes();
             return $votes->getChallengesWithFriends( $input );

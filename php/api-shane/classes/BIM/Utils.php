@@ -96,7 +96,8 @@ class BIM_Utils{
 	public static function getSessionUser(){
 	    if( ! self::$user ){
 	        $hmac = !empty($_SERVER['HTTP_HMAC']) ? $_SERVER['HTTP_HMAC'] : '';
-	        if( $hmac ){
+	        $sessionConf = BIM_Config::session();
+	        if( $hmac && $sessionConf->use ){
 	            list( $hmac, $token ) = explode('+',$hmac);
 	            $hash = hash_hmac('sha256', $token, "YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ");
 	            if( $hash == $hmac ){

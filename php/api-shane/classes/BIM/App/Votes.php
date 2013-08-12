@@ -187,13 +187,4 @@ class BIM_App_Votes extends BIM_App_Base{
 	    }
 		return BIM_Model_Volley::get( $volleyId );
 	}
-	
-	/**
-	 * Debugging function
-	**/
-	public function test() {
-		return array(
-			'result' => true
-		);
-	}
 }

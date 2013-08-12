@@ -56,14 +56,4 @@ class BIM_App_Search extends BIM_App_Base{
 		}
 		return $users;
 	}
-	
-	
-	/**
-	 * Debugging function
-	**/
-	public function test() {
-		return array(
-			'result' => true
-		);
-	}
 }

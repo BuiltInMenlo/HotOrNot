@@ -2,37 +2,35 @@
 
 class BIM_Controller_Search extends BIM_Controller_Base {
     
-    public function test(){
-        $search = new BIM_App_Search;
-        $search->test();
-    }
-
     public function getUsersLikeUsername(){
-        $input = $_POST ? $_POST : $_GET;
-		if (isset($input['username'])){
+        $input = (object) ($_POST ? $_POST : $_GET);
+		if (!empty($input->username)){
             $search = new BIM_App_Search;
-		    return $search->getUsersLikeUsername($input['username']);
+		    return $search->getUsersLikeUsername($input->username);
 		}
     }
     
     public function getSubjectsLikeSubject(){
-        if (isset($_POST['subjectName'])){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (!empty($input->subjectName)){
             $search = new BIM_App_Search;
-            return $search->getSubjectsLikeSubject($_POST['subjectName']);
+            return $search->getSubjectsLikeSubject($input->subjectName);
         }
     }
     
     public function getDefaultUsers(){
-		if (isset($_POST['usernames'])){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (!empty($input->usernames)){
             $search = new BIM_App_Search;
-		    return $search->getDefaultUsers($_POST['usernames']);
+		    return $search->getDefaultUsers($input->usernames);
 		}
     }
     
     public function getSnappedUsers(){
-        $search = new BIM_App_Search;
-		if (isset($_POST['userID'])){
-			return $search->getSnappedUsers($_POST['userID']);
+        $input = (object) ($_POST ? $_POST : $_GET);
+		if (!empty($input->userID)){
+            $search = new BIM_App_Search;
+		    return $search->getSnappedUsers($input->userID);
 		}
     }
 }

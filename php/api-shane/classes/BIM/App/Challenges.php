@@ -475,15 +475,6 @@ class BIM_App_Challenges extends BIM_App_Base{
         );
     }
 
-    /** 
-     * Debugging function
-    **/
-    public function test() {
-        return array(
-            'result' => true
-        );
-    }
-    
     /**
      * 
      * this function will look for old unjoined volleys and redirect them

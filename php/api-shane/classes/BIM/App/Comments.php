@@ -85,15 +85,5 @@ class BIM_App_Comments extends BIM_App_Base{
 			'id' => $commentId
 		);
 	}
-	
-	
-	/**
-	 * Debugging function
-	**/
-    public function test() {
-		return array(
-			'result' => true
-		);
-	}
 }
 

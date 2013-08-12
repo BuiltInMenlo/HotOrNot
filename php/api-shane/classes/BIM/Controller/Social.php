@@ -3,7 +3,7 @@
 class BIM_Controller_Social extends BIM_Controller_Base {
     
     public function addFriend( ){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if( ( !empty($input->target ) && !empty( $input->userID ) ) && ( $input->target != $input->userID ) ){
             return BIM_App_Social::addFriend( $input );
         }
@@ -11,7 +11,7 @@ class BIM_Controller_Social extends BIM_Controller_Base {
     }
     
     public function acceptFriend( ){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if( !empty($input->source ) && !empty( $input->userID ) ){
             return BIM_App_Social::acceptFriend( $input );
         }
@@ -19,7 +19,7 @@ class BIM_Controller_Social extends BIM_Controller_Base {
     }
     
     public function removeFriend( ){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if( !empty($input->target ) && !empty( $input->userID ) ){
             return BIM_App_Social::removeFriend( $input );
         }
@@ -27,7 +27,7 @@ class BIM_Controller_Social extends BIM_Controller_Base {
     }
     
     public function getFriends( ){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if( !empty( $input->userID ) ){
             return BIM_App_Social::getFriends( $input );
         }

@@ -2,35 +2,32 @@
 
 class BIM_Controller_Challenges extends BIM_Controller_Base {
     
-    public function test(){
-        $challenges = new BIM_App_Challenges();
-        return $challenges->test();
-    }
-    
     public function getChallengesForUserBeforeDate(){
-        $input = $_POST ? $_POST : $_GET;
-        if (isset($input['userID']) && isset($input['prevIDs']) && isset($input['datetime'])){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset($input->userID) && isset($input->prevIDs) && isset($input->datetime)){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            return $challenges->getChallengesForUserBeforeDate($input['userID'], $input['prevIDs'], $input['datetime']);
+            return $challenges->getChallengesForUserBeforeDate( $userId, $input->prevIDs, $input->datetime);
         }
     }    
     
     public function submitChallengeWithChallenger(){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && isset($input->challengerID)){
             $challengerIds = explode('|', $input->challengerID );
             $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N';
             $expires = $this->resolveExpires();
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges;
-            return $challenges->submitChallengeWithChallenger($input->userID, $input->subject, $input->imgURL, $challengerIds, $isPrivate, $expires );
+            return $challenges->submitChallengeWithChallenger( $userId, $input->subject, $input->imgURL, $challengerIds, $isPrivate, $expires );
         }
     }
     
     public function updatePreviewed(){
-        $input = $_POST ? $_POST : $_GET;
-        if (isset($input['challengeID'])){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset($input->challengeID)){
             $challenges = new BIM_App_Challenges();
-            $volley = $challenges->updatePreviewed($input['challengeID']);
+            $volley = $challenges->updatePreviewed($input->challengeID);
             return array(
                 'id' => $volley->id
             );
@@ -38,34 +35,37 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     }
     
     public function getPreviewForSubject(){
-        $input = $_POST ? $_POST : $_GET;
-        if (isset($input['subjectName'])){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset($input->subjectName)){
             $challenges = new BIM_App_Challenges();
-            return $challenges->getPreviewForSubject($input['subjectName']);
+            return $challenges->getPreviewForSubject($input->subjectName);
         }
     }
     
     public function getAllChallengesForUser(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if ( isset( $input->userID ) ){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            return $challenges->getAllChallengesForUser( $input->userID );
+            return $challenges->getAllChallengesForUser( $userId );
         }
     }
 
     public function getChallengesForUser(){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if ( !empty( $input->userID ) ){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            return $challenges->getChallengesForUser( $input->userID );
+            return $challenges->getChallengesForUser( $userId );
         }
     }
     
     public function getPrivateChallengesForUser(){
-        $input = ( $_POST ? $_POST : $_GET );
-        if (isset($input['userID'])){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset($input->userID)){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            return $challenges->getChallengesForUser($input['userID'], TRUE); // true means get private challenge only
+            return $challenges->getChallengesForUser($userId, TRUE); // true means get private challenge only
         }
     }
     
@@ -88,10 +88,11 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
      * returns all challeneges including those without an opponent
      */
     public function getPublic(){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if ( !empty( $input->userID ) ){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            return $challenges->getChallenges( $input->userID );
+            return $challenges->getChallenges( $userId );
         }
     }
     
@@ -99,34 +100,37 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
      * returns all challeneges including those without an opponent
      */
     public function getPrivate(){
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if ( !empty( $input->userID ) ){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            return $challenges->getChallenges( $input->userID, TRUE ); // true means get private challenge only
+            return $challenges->getChallenges( $userId, TRUE ); // true means get private challenge only
         }
     }
     
     public function getPrivateChallengesForUserBeforeDate(){
-        $input = ( $_POST ? $_POST : $_GET );
-        if (isset($input['userID']) && isset($input['prevIDs']) && isset($input['datetime'])){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset($input->userID) && isset($input->prevIDs) && isset($input->datetime)){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            return $challenges->getChallengesForUserBeforeDate($input['userID'], $input['prevIDs'], $input['datetime'], TRUE); // true means get private challenges only
+            return $challenges->getChallengesForUserBeforeDate($userId, $input->prevIDs, $input->datetime, TRUE); // true means get private challenges only
         }
     }
     
     public function submitMatchingChallenge(){
         $uv = null;
-        $input = (object) ( $_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         if (!empty($input->userID) && !empty($input->subject) && !empty($input->imgURL)){
+            $userId = $this->resolveUserId( $input->userID );
             $expires = $this->resolveExpires();
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->submitMatchingChallenge( $input->userID, $input->subject, $input->imgURL, $expires );
+            $uv = $challenges->submitMatchingChallenge( $userId, $input->subject, $input->imgURL, $expires );
         }
         return $uv;
     }
     
     protected function resolveExpires(){
-        $input = (object) ($_POST ? $_POST : $_GET );
+        $input = (object) ($_POST ? $_POST : $_GET);
         $expires = !empty( $input->expires ) ? $input->expires : 1;
         $expireTime = -1;
         $time = time();
@@ -140,19 +144,21 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function flagChallenge(){
         $uv = null;
-        if ( isset($_POST['userID']) && isset($_POST['challengeID']) ){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if ( !empty($input->userID) && !empty($input->challengeID) ){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->flagChallenge( $_POST['userID'], $_POST['challengeID'] );
+            $uv = $challenges->flagChallenge( $userId, $input->challengeID );
         }
         return $uv;
     }
     
     public function cancelChallenge(){
         $uv = null;
-        $input = $_POST ? $_POST : $_GET;
-        if (isset($input['challengeID'])) {
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset($input->challengeID)) {
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->cancelChallenge( $input['challengeID'] );
+            $uv = $challenges->cancelChallenge( $input->challengeID );
         }
         if( $uv ){
             return array(
@@ -163,10 +169,11 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function acceptChallenge(){
         $uv = null;
-        $input = $_POST ? $_POST : $_GET;
-        if (isset( $input['userID']) && isset($input['challengeID']) && isset($input['imgURL'])) {
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset( $input->userID) && isset($input->challengeID) && isset($input->imgURL)) {
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->acceptChallenge( $input['userID'], $input['challengeID'], $input['imgURL'] );
+            $uv = $challenges->acceptChallenge( $userId, $input->challengeID, $input->imgURL );
         }
         if( $uv ){
             return array(
@@ -177,10 +184,11 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     
     public function join(){
         $uv = null;
-        $input = $_POST ? $_POST : $_GET;
-        if (isset( $input['userID']) && isset($input['challengeID']) && isset($input['imgURL'])) {
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (isset( $input->userID) && isset($input->challengeID) && isset($input->imgURL)) {
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->join( $input['userID'], $input['challengeID'], $input['imgURL'] );
+            $uv = $challenges->join( $userId, $input->challengeID, $input->imgURL );
         }
         if( $uv ){
             return array(
@@ -193,33 +201,35 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         $uv = null;
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && isset($input->usernames)){
+            $userId = $this->resolveUserId( $input->userID );
             $usernames = explode('|', $input->usernames );
             $expires = $this->resolveExpires();
             $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N' ;
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->submitChallengeWithUsername( $input->userID, $input->subject, $input->imgURL, $usernames, $isPrivate, $expires );
+            $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $usernames, $isPrivate, $expires );
         }
         return $uv;
     }
     
     public function submitChallengeWithUsername(){
-        $input = $_POST ? $_POST : $_GET;
+        $input = (object) ($_POST ? $_POST : $_GET);
         $uv = null;
-        if (isset($input['userID']) && isset($input['subject']) && isset($input['imgURL']) && isset($input['username'])){
-            $isPrivate = !empty( $input['isPrivate'] ) ? $input['isPrivate'] : 'N' ;
+        if (isset($input->userID) && isset($input->subject) && isset($input->imgURL) && isset($input->username)){
+            $userId = $this->resolveUserId( $input->userID );
+            $isPrivate = !empty( $input->isPrivate ) ? $input->isPrivate : 'N' ;
             $expires = $this->resolveExpires();
             $challenges = new BIM_App_Challenges();
-            $uv = $challenges->submitChallengeWithUsername( $input['userID'], $input['subject'], $input['imgURL'], $input['username'], $isPrivate, $expires  );
+            $uv = $challenges->submitChallengeWithUsername( $userId, $input->subject, $input->imgURL, $input->username, $isPrivate, $expires  );
         }
         return $uv;
     }
     
     public function get(){
-        $input = $_POST ? $_POST : $_GET;
+        $input = (object) ($_POST ? $_POST : $_GET);
         $challenge = array();
-        if( isset( $input['challengeID'] ) ){
+        if( isset( $input->challengeID ) ){
             $challenges = new BIM_App_Challenges();
-            $challenge = BIM_Model_Volley::get( $input['challengeID'] );
+            $challenge = BIM_Model_Volley::get( $input->challengeID );
         }
         return $challenge;
     }
@@ -228,11 +238,12 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
      * returns a list of verifyme volleys
      */
     public function getVerifyList(){
-        $input = $_POST ? $_POST : $_GET;
+        $input = (object) ($_POST ? $_POST : $_GET);
         $challenge = array();
-        if( isset( $input['userID'] ) ){
+        if( isset( $input->userID ) ){
+            $userId = $this->resolveUserId( $input->userID );
             $challenges = new BIM_App_Challenges();
-            $challenge = $challenges->getVerifyList( $input['userID'] );
+            $challenge = $challenges->getVerifyList( $userId );
         }
         return $challenge;
     }

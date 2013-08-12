@@ -475,14 +475,5 @@ class BIM_App_Users extends BIM_App_Base{
         }
         return $this->userObject( $userId );
     }
-	
-	/**
-	 * Debugging function
-	**/
-	public function test() {
-		return array(
-			'result' => true
-		);
-	}
 }
 

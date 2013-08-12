@@ -3,6 +3,7 @@
 class BIM_Controller_Base{
     
     protected $actionMethods = null;
+    public $user = null;
     
     public function __construct(){
         $this->staticFuncs = BIM_Config::staticFuncs();
@@ -27,5 +28,17 @@ class BIM_Controller_Base{
         return isset( $this->staticFuncs[ $class ][ $method ]['redirect'] ) 
                         && $this->staticFuncs[ $class ][ $method ]['redirect'] 
                         && isset( $this->staticFuncs[ $class ][ $method ]['url'] );
+    }
+    
+    public function resolveUserId( $userId ){
+        $userId = !empty( $this->user ) ? $this->user->id : $userId;
+        return $userId;
+    }
+    
+    public function getInput(){
+        if( empty( $this->input ) ){
+             $this->input = (object) ( $_POST ? $_POST : $_GET );
+        }
+        return $this->input;
     }
 }
