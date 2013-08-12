@@ -12,5 +12,5 @@
 
 
 @interface HONChallengeDetailsViewController : UIViewController
-//- (id)initWit
+- (id)initWithChallenge:(HONChallengeVO *)vo;
 @end
