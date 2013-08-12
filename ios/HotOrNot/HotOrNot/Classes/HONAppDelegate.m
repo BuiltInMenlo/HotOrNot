@@ -139,13 +139,23 @@ NSString * const kTwilioSMS = @"6475577873";
 
 + (NSMutableString *)hmacToken
 {
-    NSString *key = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
-    NSString *data = [HONAppDelegate deviceToken];
     NSMutableString *hmac = [NSMutableString new];
-    hmac = [HONAppDelegate hmacForKey:key AndData:data];
-    [hmac appendString:@"+"];
-    [hmac appendString:data];
+    hmac = @"unknown";
+
+    NSString *data = [HONAppDelegate deviceToken];
+	if( data != nil ){
+	    NSString *key = @"YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ";
+	    hmac = [HONAppDelegate hmacForKey:key AndData:data];
+	    [hmac appendString:@"+"];
+	    [hmac appendString:data];
+    }
     return hmac;
+}
+
++ (AFHTTPClient *)getHttpClientWithHMAC {
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient setDefaultHeader:@"HMAC" value:[HONAppDelegate hmacToken] ];
+	return httpClient;
 }
  
 
@@ -622,7 +632,7 @@ NSString * const kTwilioSMS = @"6475577873";
 							[NSString stringWithFormat:@"%d", challengeID], @"challengeID", nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallengeObject);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIChallengeObject parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -702,7 +712,7 @@ NSString * const kTwilioSMS = @"6475577873";
 							[NSString stringWithFormat:@"%d", vo.userID], @"pokeeID",
 							nil];
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -1185,9 +1195,8 @@ NSString * const kTwilioSMS = @"6475577873";
 							[HONAppDelegate deviceToken], @"token",
 							nil];
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-	[httpClient setDefaultHeader:@"HMAC" value:[HONAppDelegate hmacToken] ];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+		[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
