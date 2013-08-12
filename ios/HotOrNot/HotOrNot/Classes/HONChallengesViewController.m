@@ -54,6 +54,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removePreview:) name:@"REMOVE_PREVIEW" object:nil];
 	}
 	
 	return (self);
@@ -470,6 +471,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		
 		if (indexPath != nil) {
 			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
+			[[Mixpanel sharedInstance] track:@"Activity - Long Press Challenge"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
+			
 			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:vo];
 			[self.view addSubview:_snapPreviewViewController.view];
 		}
@@ -491,6 +497,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[_headerView toggleRefresh:YES];
 	[self _retrieveChallenges];
 //	[self _retrieveUser];
+}
+
+- (void)_removePreview:(NSNotification *)notification {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
 }
 
 

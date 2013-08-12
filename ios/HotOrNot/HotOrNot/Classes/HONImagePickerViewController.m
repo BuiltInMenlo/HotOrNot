@@ -39,6 +39,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic, strong) NSString *fbID;
 @property (readonly, nonatomic, assign) HONChallengeSubmitType challengeSubmitType;
 @property (nonatomic) BOOL isPrivate;
+@property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic) HONUserVO *userVO;
 @property (nonatomic) int uploadCounter;
 @property (readonly, nonatomic, assign) HONChallengeExpireType challengeExpireType;
@@ -251,6 +252,8 @@ const CGFloat kFocusInterval = 0.5f;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	_hasSubmitted = NO;
+	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
 	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -269,8 +272,10 @@ const CGFloat kFocusInterval = 0.5f;
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
 			
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
+			if (_uploadCounter == 4) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
 			
 			if ([[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				if (_progressHUD == nil)
@@ -294,13 +299,16 @@ const CGFloat kFocusInterval = 0.5f;
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:@"Y"];
 				}
 				
-				if (_imagePicker.parentViewController != nil) {
-					[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+				_hasSubmitted = YES;
+				if (_uploadCounter == 4) {
+					if (_imagePicker.parentViewController != nil) {
+						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+						}];
+						
+					} else
 						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-					}];
-					
-				} else
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+				}
 			}
 		}
 		
@@ -328,6 +336,8 @@ const CGFloat kFocusInterval = 0.5f;
 	_isPrivate = NO;
 	_addContacts = [NSMutableArray array];
 	_addFollowing = [NSMutableArray array];
+	
+	self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)viewDidLoad {
@@ -995,6 +1005,16 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 		
 		[_previewView uploadComplete];
+		
+		if (_hasSubmitted) {
+			if (_imagePicker.parentViewController != nil) {
+				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+				}];
+				
+			} else
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+		}
 	}
 }
 
