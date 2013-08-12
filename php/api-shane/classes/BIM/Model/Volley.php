@@ -105,17 +105,20 @@ class BIM_Model_Volley{
     public function join( $userId, $imgUrl ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->join( $this->id, $userId, $imgUrl );
+        $this->purgeFromCache();
     }
     
     public function updateStatus( $status ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->updateStatus( $this->id, $status );
+        $this->purgeFromCache();
     }
     
     public function acceptFbInviteToVolley( $userId, $inviteId ){
         $this->updateStatus(2);
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->acceptFbInviteToVolley( $this->id, $userId, $inviteId );
+        $this->purgeFromCache();
     }
     
     public function upVote( $targetId, $userId ){
@@ -133,21 +136,25 @@ class BIM_Model_Volley{
     public function accept( $userId, $imgUrl ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->accept( $this->id, $userId, $imgUrl );
+        $this->purgeFromCache();
     }
     
     public function cancel(){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->cancel( $this->id );
+        $this->purgeFromCache();
     }
     
     public function flag( $userId ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->flag( $this->id, $userId );
+        $this->purgeFromCache();
     }
     
     public function setPreviewed( $userId ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->setPreviewed( $this->id );
+        $this->purgeFromCache();
     }
     
     public function isExtant(){

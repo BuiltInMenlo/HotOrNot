@@ -35,11 +35,13 @@ class BIM_Model_Comments{
     public function delete(){
         $dao = new BIM_DAO_Mysql_Comments( BIM_Config::db() );
         $dao->delete( $this->id );
+        $this->purgeFromCache();
     }
     
     public function flag( ){
         $dao = new BIM_DAO_Mysql_Comments( BIM_Config::db() );
         $dao->flag( $this->id  );
+        $this->purgeFromCache();
     }
     
     public function isExtant(){

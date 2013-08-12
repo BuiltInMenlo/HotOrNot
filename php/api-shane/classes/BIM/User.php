@@ -42,7 +42,8 @@ class BIM_User{
     public function setAgeRange( $ageRange ){
         $this->age = $ageRange;
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $dao->setAgeRange( $this->id, $ageRange );        
+        $dao->setAgeRange( $this->id, $ageRange );
+        $this->purgeFromCache();
     }
 	
     public static function isVerified( $userId ){
@@ -109,6 +110,7 @@ class BIM_User{
         if( $pokeId ){
             $this->pokes += 1;
             $this->purgeFromCache();
+            $this->purgeFromCache( $targetId );
         }
     }
     
@@ -120,9 +122,10 @@ class BIM_User{
         $this->purgeFromCache();
     }
     
-    public function purgeFromCache(){
+    public function purgeFromCache( $id = null ){
         $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
-        $key = self::makeCacheKeys($this->id);
+        if(!$id) $id = $this->id; 
+        $key = self::makeCacheKeys($id);
         $cache->delete( $key );
         if( !empty($this->device_token) ){
             $cache->delete( $this->device_token );
@@ -195,6 +198,7 @@ class BIM_User{
 		foreach ( $volleys as $volley ) {
 			$volley->acceptFbInviteToVolley( $this->id, $inviteId );
 		}
+		$this->purgeFromCache();
     }
     
     public function getFbInvitesToVolley( $inviteId ){
