@@ -36,7 +36,7 @@ class BIM_User{
 		$this->meta = '';
 	    $this->sms_code = BIM_Utils::getSMSCodeForId( $this->id );
 	    $this->friends = BIM_App_Social::getFriends( (object) array( 'userID' => $this->id ) );
-	    $this->sms_verified = BIM_User::isVerified( $this->id );
+	    $this->sms_verified = self::isVerified( $this->id );
 	}
     
     public function setAgeRange( $ageRange ){

@@ -186,7 +186,7 @@ class BIM_Model_Volley{
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $v = $dao->getRandomAvailableByHashTag( $hashTag, $userId );
         if( $v ){
-            $v = new self( $v->id );
+            $v = self::get( $v->id );
         }
         return $v;
     }
@@ -194,11 +194,7 @@ class BIM_Model_Volley{
     public static function getAllForUser( $userId ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volleyIds = $dao->getAllIdsForUser( $userId );
-        $volleys = array();
-        foreach( $volleyIds as $volleyId ){
-            $volleys[] = new BIM_Model_Volley($volleyId);
-        }
-        return $volleys;
+        return self::getMulti($volleyIds);
     }
     
     /** 
@@ -244,11 +240,7 @@ class BIM_Model_Volley{
     public static function getVolleys($userId, $private = false ) {
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volleyIds = $dao->getIds($userId, $private);
-        $volleyArr = array();
-        foreach( $volleyIds as $volleyId ){
-            $volleyArr[] = new self($volleyId->id);
-        }
-        return $volleyArr;
+        $volleyArr = self::getMulti($volleyIds);
     }
     
     public static function makeCacheKeys( $ids ){
@@ -364,6 +356,6 @@ class BIM_Model_Volley{
 		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
 		$hashTag = $dao->getSubject($subjectId);
 		
-		BIM_Model_Volley::create($userId, $hashTag, $img, array( $userId ), 'N', -1);
+		self::create($userId, $hashTag, $img, array( $userId ), 'N', -1);
     }
 }

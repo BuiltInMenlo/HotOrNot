@@ -19,16 +19,6 @@ Challenges
 class BIM_App_Challenges extends BIM_App_Base{
     
     /**
-     * Helper function that returns a challenge based on ID
-     * @param $challenge_id The ID of the challenge to get (integer)
-     * @param $user_id The ID of a user for this challenge (integer)
-     * @return An associative object for a challenge (array)
-    **/
-    public function getChallengeObj ($volleyId, $userId = 0) {
-        return new BIM_Model_Volley($volleyId, $userId);
-    }
-
-    /**
      * 
      * return a list of awaiting verification objects
      * 
@@ -288,7 +278,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $cnt = 0;
         $challenge_arr = array();
         foreach ($challengeID_arr as $key => $val) {
-            $co = $this->getChallengeObj( $val );
+            $co = BIM_Model_Volley::get( $val );
             if( $co->expires != 0 ){
                 array_push( $challenge_arr, $co );
             }
@@ -350,8 +340,8 @@ class BIM_App_Challenges extends BIM_App_Base{
         $cnt = 0;
         $challenge_arr = array();
         foreach ($challengeID_arr as $key => $val) {
-            $co = $this->getChallengeObj( $val );
-            if( $co['expires'] != 0 ){
+            $co = BIM_Model_Volley::get( $val );
+            if( $co->expires != 0 ){
                 array_push( $challenge_arr, $co );
             }
             
@@ -372,7 +362,7 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return The ID of the challenge (integer)
     **/
     public function join($userId, $volleyId, $imgUrl ) {
-        $volley = new BIM_Model_Volley( $volleyId );
+        $volley = BIM_Model_Volley::get( $volleyId );
         if( $volley ){
             $OK = false;
             if( $volley->is_private == 'N' ){
@@ -390,7 +380,7 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return The ID of the challenge (integer)
     **/
     public function acceptChallenge($userId, $volleyId, $imgUrl ) {
-        $volley = new BIM_Model_Volley( $volleyId );
+        $volley = BIM_Model_Volley::get( $volleyId );
         if( $volley ){
             $OK = true;
             if( $volley->is_private == 'Y' ){
@@ -415,7 +405,7 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return The ID of the challenge (integer)
     **/
     public function cancelChallenge ($volleyId) {
-        $volley = new BIM_Model_Volley( $volleyId );
+        $volley = BIM_Model_Volley::get( $volleyId );
         $volley->cancel();
         return $volley;
     }
@@ -427,7 +417,7 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return An associative object (array)
     **/
     public function flagChallenge ($userId, $volleyId) {
-        $volley = new BIM_Model_Volley($volleyId);
+        $volley = BIM_Model_Volley::get($volleyId);
         $volley->flag( $userId );
         $this->sendFlagEmail($volleyId, $userId);
         return array(
@@ -461,7 +451,7 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return An associative array with the challenge's ID
     **/
     public function updatePreviewed ($volleyId) {
-        $volley = new BIM_Model_Volley($volleyId);
+        $volley = BIM_Model_Volley::get($volleyId);
         $volley->setPreviewed();
         return $volley;
     }

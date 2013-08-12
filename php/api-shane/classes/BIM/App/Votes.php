@@ -17,15 +17,6 @@ action 10 - ( getChallengesWithFriends ),
 
 class BIM_App_Votes extends BIM_App_Base{
     
-	/**
-	 * Helper function that returns a challenge based on ID
-	 * @param $challenge_id The ID of the challenge to get (integer)
-	 * @return An associative object for a challenge (array)
-	**/
-	public function getChallengeObj ( $volleyId ) {
-	    return BIM_Model_Volley::get( $volleyId );
-	}
-	
 	/** 
 	 * Gets the list of challenges sorted by total votes
 	 * @param $user_id The ID of the user (integer)
@@ -117,12 +108,8 @@ class BIM_App_Votes extends BIM_App_Base{
 	 * @param $subject_id The ID of the subject (integer)
 	 * @return An associative object of a challenge (array)
 	**/
-	public function getChallengeForChallengeID($challenge_id) {
-		$challenge_arr = array();
-		
-		// get challenge & return
-		array_push($challenge_arr, $this->getChallengeObj($challenge_id));
-		return $challenge_arr;
+	public function getChallengeForChallengeID($volleyId) {
+		return array( BIM_Model_Volley::get( $volleyId ) );
 	}
 	
 	
@@ -198,7 +185,7 @@ class BIM_App_Votes extends BIM_App_Base{
 		    );
     	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
 	    }
-		return $this->getChallengeObj($volleyId);
+		return BIM_Model_Volley::get( $volleyId );
 	}
 	
 	/**

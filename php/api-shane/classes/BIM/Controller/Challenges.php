@@ -219,7 +219,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         $challenge = array();
         if( isset( $input['challengeID'] ) ){
             $challenges = new BIM_App_Challenges();
-            $challenge = $challenges->getChallengeObj( $input['challengeID'] );
+            $challenge = BIM_Model_Volley::get( $input['challengeID'] );
         }
         return $challenge;
     }
@@ -232,7 +232,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
         $challenge = array();
         if( isset( $input['userID'] ) ){
             $challenges = new BIM_App_Challenges();
-            $challenge = $challenges->getVerifyList( $input['challengeID'] );
+            $challenge = $challenges->getVerifyList( $input['userID'] );
         }
         return $challenge;
     }
