@@ -253,7 +253,7 @@ const CGFloat kFocusInterval = 0.5f;
 	_progressHUD.taskInProgress = YES;
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], (_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:(_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {

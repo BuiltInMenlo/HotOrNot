@@ -10,6 +10,7 @@
 
 #import "MBProgressHUD.h"
 #import "HONChallengeVO.h"
+#import "AFHTTPClient.h"
 
 
 #define __DEV_BUILD___ 1
@@ -74,6 +75,7 @@ extern NSString * const kTwilioSMS;
 
 + (NSMutableString *)hmacToken;
 + (NSMutableString *)hmacForKey:(NSString *)key AndData:(NSString *)data;
++ (AFHTTPClient *)getHttpClientWithHMAC;
 + (NSString *)advertisingIdentifier;
 + (NSString *)identifierForVendor;
 

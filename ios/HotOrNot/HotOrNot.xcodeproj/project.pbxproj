@@ -670,7 +670,7 @@
 		4C02601B172B4703001CC476 /* HONContactUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONContactUserVO.h; sourceTree = "<group>"; };
 		4C02601C172B4703001CC476 /* HONContactUserVO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONContactUserVO.m; sourceTree = "<group>"; };
 		4C03962E17B3350700AECD97 /* HONChallengeDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONChallengeDetailsViewController.h; sourceTree = "<group>"; };
-		4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeDetailsViewController.m; sourceTree = "<group>"; };
+		4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONChallengeDetailsViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4C04DAA217A635FB0059DB70 /* HONUserProfileRequestViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileRequestViewCell.h; sourceTree = "<group>"; };
 		4C04DAA317A635FB0059DB70 /* HONUserProfileRequestViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileRequestViewCell.m; sourceTree = "<group>"; };
 		4C068A9F170267850019428A /* commentsInputField_Active.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = commentsInputField_Active.jpg; sourceTree = "<group>"; };
