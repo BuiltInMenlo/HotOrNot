@@ -96,8 +96,9 @@ const CGFloat kHUDErrorTime = 1.5f;
 // image sizes
 const CGFloat kSnapThumbDim = 37.0f;
 const CGFloat kSnapMediumDim = 73.0f;
-const CGFloat kSnapLargeDim = 210.0f;
-const CGFloat kAvatarDim = 200.0;
+const CGFloat kSnapLargeDim = 249.0f;
+const CGSize kSnapLargeSize = {210.0f, 249.0f};
+const CGFloat kAvatarDim = 200.0f;
 
 const BOOL kIsImageCacheEnabled = YES;
 const NSUInteger kRecentOpponentsDisplayTotal = 10;

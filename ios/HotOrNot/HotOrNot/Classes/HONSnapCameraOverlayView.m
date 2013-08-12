@@ -68,6 +68,17 @@
 		//_addFriendsButton.hidden = ([_username length] == 0);
 		//[self addSubview:_addFriendsButton];
 		
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 33.0, 33.0)];
+		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
+		[self addSubview:avatarImageView];
+		
+		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 220.0, 16.0)];
+		usernameLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
+		usernameLabel.textColor = [UIColor whiteColor];
+		usernameLabel.backgroundColor = [UIColor clearColor];
+		usernameLabel.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+		[self addSubview:usernameLabel];
+		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_cancelButton.frame = CGRectMake(384.0, -64.0, 64.0, 64.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];

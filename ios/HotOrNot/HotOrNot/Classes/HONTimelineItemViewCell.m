@@ -120,7 +120,7 @@
 	__weak typeof(self) weakSelf = self;
 	//NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasOponentRetorted);
 	
-	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, kSnapLargeDim, kSnapLargeDim)];
+	_lHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 0.0, kSnapLargeSize.width, kSnapLargeSize.height)];
 	_lHolderView.clipsToBounds = YES;
 	[self addSubview:_lHolderView];
 	
@@ -147,23 +147,20 @@
 	[_lHolderView addSubview:leftButton];
 	
 	
-	UIView *joinHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 44.0, kSnapLargeDim)];
-	[_lHolderView addSubview:joinHolderView];
-	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(0.0, kSnapLargeDim - 44.0, 44.0, 44.0);
+	joinButton.frame = CGRectMake(0.0, kSnapLargeSize.height - 52.0, 57.0, 52.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:(_isChallengeOpponent) ? @selector(_goAcceptChallenge) : @selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[joinHolderView addSubview:joinButton];
+	[_lHolderView addSubview:joinButton];
 	
-	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(20.0 + kSnapLargeDim, 10.0, kSnapLargeDim, kSnapLargeDim)];
+	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(22.0 + kSnapLargeSize.width, 0.0, kSnapMediumDim, kSnapLargeSize.height)];
 	_rHolderView.clipsToBounds = YES;
 	[self addSubview:_rHolderView];
 	
 	int opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (kSnapMediumDim + 5.0) * opponentCounter, kSnapMediumDim, kSnapMediumDim)];
+		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (kSnapMediumDim + 15.0) * opponentCounter, kSnapMediumDim, kSnapMediumDim)];
 		[_rHolderView addSubview:opponentHolderView];
 		
 		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix length] > 0)
@@ -241,37 +238,17 @@
 		opponentCounter++;
 	}
 	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 230.0, 320.0, 44.0)];
+	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 257.0, 320.0, 44.0)];
 	[self addSubview:footerHolderView];
 	
-	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(79.0, 10.0, 24.0, 24.0);
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateNormal];
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateHighlighted];
-	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:likesButton];
-	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(108.0, 11.0, 40.0, 22.0)];
-	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
-	_likesLabel.textColor = [HONAppDelegate honBlueTextColor];
-	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
-	[footerHolderView addSubview:_likesLabel];
-	
-	UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesLabelButton.frame = _likesLabel.frame;
-	[likesLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:likesLabelButton];
-	
 	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	commentsButton.frame = CGRectMake(16.0, 10.0, 24.0, 24.0);
+	commentsButton.frame = CGRectMake(8.0, 10.0, 24.0, 24.0);
 	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateNormal];
 	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateHighlighted];
 	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:commentsButton];
 	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, 11.0, 40.0, 22.0)];
+	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 11.0, 40.0, 22.0)];
 	_commentsLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	_commentsLabel.textColor = [HONAppDelegate honBlueTextColor];
 	_commentsLabel.backgroundColor = [UIColor clearColor];
@@ -284,12 +261,37 @@
 	[commentsLabelButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:commentsLabelButton];
 	
+	
+	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	likesButton.frame = CGRectMake(71.0, 10.0, 24.0, 24.0);
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateNormal];
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateHighlighted];
+	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+	[footerHolderView addSubview:likesButton];
+	
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 11.0, 40.0, 22.0)];
+	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+	_likesLabel.textColor = [HONAppDelegate honBlueTextColor];
+	_likesLabel.backgroundColor = [UIColor clearColor];
+	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
+	[footerHolderView addSubview:_likesLabel];
+	
+	UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	likesLabelButton.frame = _likesLabel.frame;
+	[likesLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+	[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+	[footerHolderView addSubview:likesLabelButton];
+	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(244.0, 0.0, 64.0, 44.0);
+	moreButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:moreButton];
+	
+	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 308.0);
+	[self addSubview:dividerImageView];
 }
 
 

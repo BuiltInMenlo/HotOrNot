@@ -62,6 +62,7 @@ const CGFloat kHUDErrorTime;
 const CGFloat kSnapThumbDim;
 const CGFloat kSnapMediumDim;
 const CGFloat kSnapLargeDim;
+const CGSize kSnapLargeSize;
 const CGFloat kAvatarDim;
 
 

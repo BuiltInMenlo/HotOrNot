@@ -18,6 +18,7 @@
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONRefreshButtonView.h"
+#import "HONCreateSnapButtonView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONInviteNetworkViewController.h"
 #import "HONAddContactsViewController.h"
@@ -305,17 +306,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	bgImageView.frame = self.view.bounds;
 //	[self.view addSubview:bgImageView];
 	
-	UIButton *createChallengeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	createChallengeButton.frame = CGRectMake(270.0, 0.0, 44.0, 44.0);
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
-	[createChallengeButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
-	[createChallengeButton addTarget:self action:@selector(_goCreateChallenge) forControlEvents:UIControlEventTouchUpInside];
-	
 	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 	
 	self.navigationController.navigationBar.topItem.title = @"Messages";
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:createChallengeButton];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];

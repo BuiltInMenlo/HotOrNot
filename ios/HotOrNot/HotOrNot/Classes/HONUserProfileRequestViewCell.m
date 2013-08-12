@@ -60,18 +60,17 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	float yPos = 148.0;
+	float yPos = 143.0;
 	
-	//_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, yPos, 80.0, 16.0)];
-	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, yPos, 80.0, 16.0)];
+	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, yPos, 80.0, 16.0)];
 	votesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	votesLabel.textColor = kStatsColor;
-	votesLabel.backgroundColor = [UIColor redColor];
+	votesLabel.backgroundColor = [UIColor clearColor];
 	votesLabel.textAlignment = NSTextAlignmentCenter;
 	votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 	[self addSubview:votesLabel];
 	
-	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(90.0, yPos, 20.0, 20.0)];
+	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(96.0, yPos, 20.0, 20.0)];
 	dots1Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	dots1Label.textColor = kStatsColor;
 	dots1Label.backgroundColor = [UIColor clearColor];
@@ -82,12 +81,12 @@
 	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, yPos, 80.0, 16.0)];
 	snapsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	snapsLabel.textColor = kStatsColor;
-	snapsLabel.backgroundColor = [UIColor greenColor];
+	snapsLabel.backgroundColor = [UIColor clearColor];
 	snapsLabel.textAlignment = NSTextAlignmentCenter;
 	snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 	[self addSubview:snapsLabel];
 	
-	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(201.0, yPos, 20.0, 20.0)];
+	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(204.0, yPos, 20.0, 20.0)];
 	dots2Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	dots2Label.textColor = kStatsColor;
 	dots2Label.backgroundColor = [UIColor clearColor];
@@ -95,13 +94,17 @@
 	dots2Label.text = @"•";
 	[self addSubview:dots2Label];
 	
-	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(211.0, yPos, 80.0, 16.0)];
+	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(227.0, yPos, 80.0, 16.0)];
 	ptsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	ptsLabel.textColor = kStatsColor;
-	ptsLabel.backgroundColor = [UIColor blueColor];
+	ptsLabel.backgroundColor = [UIColor clearColor];
 	ptsLabel.textAlignment = NSTextAlignmentCenter;
 	ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 	[self addSubview:ptsLabel];
+	
+	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 186.0);
+	[self addSubview:divider1ImageView];
 	
 	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 206.0, 180.0, 20.0)];
 	ageLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
@@ -116,6 +119,10 @@
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:moreButton];
+	
+	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 246.0);
+	[self addSubview:divider2ImageView];
 	
 //	UIButton *abuseButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	abuseButton.frame = CGRectMake(20.0, 380.0, 279.0, 44.0);
@@ -155,12 +162,12 @@
 
 
 #pragma mark - Navigation
-- (void)_goAbuse {
-	[self.delegate profileRequestViewCell:self reportAbuse:_userVO];
-}
+//- (void)_goAbuse {
+//	[self.delegate profileRequestViewCell:self reportAbuse:_userVO];
+//}
 
 - (void)_goMore {
-	
+	[self.delegate profileRequestViewCell:self showMore:_userVO];
 }
 
 

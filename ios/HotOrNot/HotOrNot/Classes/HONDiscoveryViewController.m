@@ -12,7 +12,7 @@
 
 #import "HONDiscoveryViewController.h"
 #import "HONRefreshButtonView.h"
-#import "HONRefreshButtonView.h"
+#import "HONCreateSnapButtonView.h"
 #import "HONSearchBarHeaderView.h"
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"

@@ -285,7 +285,7 @@ const CGFloat kFocusInterval = 0.5f;
 				_progressHUD = nil;
 				
 			} else {
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				
 				if (![_subjectName isEqualToString:@"#verifyMe"])
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
@@ -456,10 +456,10 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 		
 	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-		//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	}
 	
+	///[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	[self presentViewController:_imagePicker animated:NO completion:^(void) {
 	}];
 }
@@ -644,7 +644,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_challangeImage = _rawImage;
 	
 	
-	
+	///[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	[self dismissViewControllerAnimated:NO completion:^(void) {
 		_usernames = [NSMutableArray array];
 		for (HONUserVO *vo in _addFollowing)
@@ -662,34 +662,7 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		[_previewView showKeyboard];
 		[_previewView setUsernames:[_usernames copy]];
-		
-		//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	}];
-	
-//	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
-//		[self dismissViewControllerAnimated:NO completion:^(void) {
-//			_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:_challangeImage];
-//			
-//			_usernames = [NSMutableArray array];
-//			for (HONUserVO *vo in _addFollowing)
-//				[_usernames addObject:vo.username];
-//			
-//			for (HONContactUserVO *vo in _addContacts)
-//				[_usernames addObject:vo.fullName];
-//			
-//			_previewView.delegate = self;
-//			[_previewView setIsPrivate:_isPrivate];
-//			[self.view addSubview:_previewView];
-//			
-//			[_cameraOverlayView removePreview];
-//			[self _uploadPhoto:_challangeImage];
-//			
-//			//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//		}];
-//		
-//	} else {
-//		[_cameraOverlayView addMirroredPreview:_rawImage];
-//	}
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -700,7 +673,7 @@ const CGFloat kFocusInterval = 0.5f;
 
 	else {
 		[self dismissViewControllerAnimated:YES completion:^(void) {
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 		}];
 	}
@@ -709,7 +682,7 @@ const CGFloat kFocusInterval = 0.5f;
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayViewAcceptPhoto:(HONSnapCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Accept Photo"
+	/*[[Mixpanel sharedInstance] track:@"Create Snap - Accept Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -731,6 +704,7 @@ const CGFloat kFocusInterval = 0.5f;
 		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[self _uploadPhoto:_challangeImage];
 	}];
+	 */
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -778,7 +752,7 @@ const CGFloat kFocusInterval = 0.5f;
 	}
 	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	}];
 }

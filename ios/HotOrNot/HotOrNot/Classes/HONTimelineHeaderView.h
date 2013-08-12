@@ -18,5 +18,5 @@
 
 
 @protocol HONTimelineHeaderViewDelegate
-- (void)timelineHeaderView:(HONTimelineHeaderView *)cell showSubjectChallenges:(NSString *)subjectName;
+- (void)timelineHeaderView:(HONTimelineHeaderView *)cell showDetails:(HONChallengeVO *)challengeVO;
 @end

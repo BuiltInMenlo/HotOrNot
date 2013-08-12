@@ -22,6 +22,6 @@
 
 @protocol HONUserProfileRequestViewCellDelegate
 - (void)profileRequestViewCellDoneAnimating:(HONUserProfileRequestViewCell *)profileRequestViewCell;
-- (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell reportAbuse:(HONUserVO *)vo;
+- (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell showMore:(HONUserVO *)vo;
 - (void)profileRequestViewCell:(HONUserProfileRequestViewCell *)profileRequestViewCell sendRequest:(HONUserVO *)vo;
 @end

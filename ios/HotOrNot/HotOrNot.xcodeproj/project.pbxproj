@@ -105,6 +105,9 @@
 		4C15E85D17AADB9B0062C657 /* sendVolleyMessageButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C15E85917AADB9B0062C657 /* sendVolleyMessageButton_nonActive@2x.png */; };
 		4C19BF0D168E811E006D241E /* chevron.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0B168E811E006D241E /* chevron.png */; };
 		4C19BF0E168E811E006D241E /* chevron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0C168E811E006D241E /* chevron@2x.png */; };
+		4C225CC017B83F3C00330EB3 /* divider.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C225CBE17B83F3C00330EB3 /* divider.png */; };
+		4C225CC117B83F3C00330EB3 /* divider@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C225CBF17B83F3C00330EB3 /* divider@2x.png */; };
+		4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */; };
 		4C31AFB01638745100358022 /* mainBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C31AFAD1638745100358022 /* mainBG.png */; };
 		4C31AFB11638745100358022 /* mainBG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C31AFAE1638745100358022 /* mainBG@2x.png */; };
 		4C32B99B15FA6F720023A0EE /* HONChallengeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C32B99A15FA6F720023A0EE /* HONChallengeViewCell.m */; };
@@ -809,6 +812,10 @@
 		4C15E85917AADB9B0062C657 /* sendVolleyMessageButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sendVolleyMessageButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C19BF0B168E811E006D241E /* chevron.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron.png; sourceTree = "<group>"; };
 		4C19BF0C168E811E006D241E /* chevron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron@2x.png"; sourceTree = "<group>"; };
+		4C225CBE17B83F3C00330EB3 /* divider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = divider.png; sourceTree = "<group>"; };
+		4C225CBF17B83F3C00330EB3 /* divider@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "divider@2x.png"; sourceTree = "<group>"; };
+		4C225CC217B8593B00330EB3 /* HONCreateSnapButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateSnapButtonView.h; sourceTree = "<group>"; };
+		4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCreateSnapButtonView.m; sourceTree = "<group>"; };
 		4C2F33A11780C92E0094257A /* CameraOverlays */ = {isa = PBXFileReference; lastKnownFileType = text; path = CameraOverlays; sourceTree = "<group>"; };
 		4C2F33A21780C92E0094257A /* sorting */ = {isa = PBXFileReference; lastKnownFileType = text; path = sorting; sourceTree = "<group>"; };
 		4C31AFAD1638745100358022 /* mainBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mainBG.png; sourceTree = "<group>"; };
@@ -2248,6 +2255,8 @@
 				4C43C8D31772127800983BE8 /* HONAvatarCameraOverlayView.m */,
 				4CC6AD0C17B0AA98004E7A3F /* HONRefreshButtonView.h */,
 				4CC6AD0D17B0AA98004E7A3F /* HONRefreshButtonView.m */,
+				4C225CC217B8593B00330EB3 /* HONCreateSnapButtonView.h */,
+				4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -2884,6 +2893,8 @@
 		4C824FBF16124D7D00C34FD9 /* Global */ = {
 			isa = PBXGroup;
 			children = (
+				4C225CBE17B83F3C00330EB3 /* divider.png */,
+				4C225CBF17B83F3C00330EB3 /* divider@2x.png */,
 				4C72C63517A9B10D00A3CBA9 /* checkmarkButton_Active.png */,
 				4C72C63617A9B10D00A3CBA9 /* checkmarkButton_Active@2x.png */,
 				4C72C63717A9B10D00A3CBA9 /* checkmarkButton_nonActive.png */,
@@ -4100,6 +4111,8 @@
 				4C0396BD17B7038300AECD97 /* backButtonIcon_nonActive@2x.png in Resources */,
 				4C0396F617B7049900AECD97 /* avatarStroke.png in Resources */,
 				4C0396F717B7049900AECD97 /* avatarStroke@2x.png in Resources */,
+				4C225CC017B83F3C00330EB3 /* divider.png in Resources */,
+				4C225CC117B83F3C00330EB3 /* divider@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4234,6 +4247,7 @@
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
 				4CC6AD1417B1F267004E7A3F /* HONTimelineHeaderView.m in Sources */,
 				4C03963017B3350800AECD97 /* HONChallengeDetailsViewController.m in Sources */,
+				4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

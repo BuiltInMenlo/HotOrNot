@@ -20,9 +20,6 @@
 
 @interface HONUserProfileViewCell()
 @property (nonatomic, strong) UIImageView *avatarImageView;
-@property (nonatomic, strong) UILabel *snapsLabel;
-@property (nonatomic, strong) UILabel *votesLabel;
-@property (nonatomic, strong) UILabel *ptsLabel;
 @end
 
 @implementation HONUserProfileViewCell
@@ -47,14 +44,10 @@
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	[self addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(127.0, 31.0)]];
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(104.0, 20.0, 109.0, 109.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 10.0, 109.0, 109.0)];
 	_avatarImageView.userInteractionEnabled = YES;
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:(isUser) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : _userVO.imageURL] placeholderImage:nil];
 	[self addSubview:_avatarImageView];
-	
-//	UIImageView *avatarMaskImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mask"]];
-//	avatarMaskImageView.frame = _avatarImageView.frame;
-//	[self addSubview:avatarMaskImageView];
 	
 //	if (isUser) {
 //		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
@@ -79,7 +72,7 @@
 	}
 	
 	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profilePicButton.frame = CGRectMake(170.0, 60.0, 44.0, 44.0);
+	profilePicButton.frame = CGRectMake(190.0, 42.0, 44.0, 44.0);
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
 	profilePicButton.hidden = !isUser;
@@ -88,18 +81,17 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	float yPos = 148.0;
+	float yPos = 143.0;
 	
-	//_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, yPos, 80.0, 16.0)];
-	_votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, yPos, 80.0, 16.0)];
-	_votesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
-	_votesLabel.textColor = kStatsColor;
-	_votesLabel.backgroundColor = [UIColor redColor];
-	_votesLabel.textAlignment = NSTextAlignmentCenter;
-	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
-	[self addSubview:_votesLabel];
+	UILabel *votesLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, yPos, 80.0, 16.0)];
+	votesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	votesLabel.textColor = kStatsColor;
+	votesLabel.backgroundColor = [UIColor clearColor];
+	votesLabel.textAlignment = NSTextAlignmentCenter;
+	votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
+	[self addSubview:votesLabel];
 	
-	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(90.0, yPos, 20.0, 20.0)];
+	UILabel *dots1Label = [[UILabel alloc] initWithFrame:CGRectMake(96.0, yPos, 20.0, 20.0)];
 	dots1Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	dots1Label.textColor = kStatsColor;
 	dots1Label.backgroundColor = [UIColor clearColor];
@@ -107,15 +99,15 @@
 	dots1Label.text = @"•";
 	[self addSubview:dots1Label];
 	
-	_snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, yPos, 80.0, 16.0)];
-	_snapsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
-	_snapsLabel.textColor = kStatsColor;
-	_snapsLabel.backgroundColor = [UIColor greenColor];
-	_snapsLabel.textAlignment = NSTextAlignmentCenter;
-	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
-	[self addSubview:_snapsLabel];
+	UILabel *snapsLabel = [[UILabel alloc] initWithFrame:CGRectMake(120.0, yPos, 80.0, 16.0)];
+	snapsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	snapsLabel.textColor = kStatsColor;
+	snapsLabel.backgroundColor = [UIColor clearColor];
+	snapsLabel.textAlignment = NSTextAlignmentCenter;
+	snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
+	[self addSubview:snapsLabel];
 	
-	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(201.0, yPos, 20.0, 20.0)];
+	UILabel *dots2Label = [[UILabel alloc] initWithFrame:CGRectMake(204.0, yPos, 20.0, 20.0)];
 	dots2Label.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	dots2Label.textColor = kStatsColor;
 	dots2Label.backgroundColor = [UIColor clearColor];
@@ -123,13 +115,17 @@
 	dots2Label.text = @"•";
 	[self addSubview:dots2Label];
 	
-	_ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(211.0, yPos, 80.0, 16.0)];
-	_ptsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
-	_ptsLabel.textColor = kStatsColor;
-	_ptsLabel.backgroundColor = [UIColor blueColor];
-	_ptsLabel.textAlignment = NSTextAlignmentCenter;
-	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
-	[self addSubview:_ptsLabel];
+	UILabel *ptsLabel = [[UILabel alloc] initWithFrame:CGRectMake(227.0, yPos, 80.0, 16.0)];
+	ptsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	ptsLabel.textColor = kStatsColor;
+	ptsLabel.backgroundColor = [UIColor clearColor];
+	ptsLabel.textAlignment = NSTextAlignmentCenter;
+	ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
+	[self addSubview:ptsLabel];
+	
+	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 186.0);
+	[self addSubview:divider1ImageView];
 	
 	NSString *ageRange = @"ANY";
 	switch ((isUser) ? [[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] : _userVO.age) {
@@ -157,7 +153,6 @@
 	ageLabel.text = [NSString stringWithFormat:@"Age range: %@", ageRange];
 	[self addSubview:ageLabel];
 	
-	
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	snapButton.frame = CGRectMake(188.0, 194.0, 59.0, 44.0);
 	[snapButton setBackgroundImage:[UIImage imageNamed:@"sendVolleyButton_nonActive"] forState:UIControlStateNormal];
@@ -166,12 +161,24 @@
 	snapButton.hidden = isUser;
 	[self addSubview:snapButton];
 	
+	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	friendsButton.frame = CGRectMake(188.0, 194.0, 59.0, 44.0);
+	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
+	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
+	[friendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
+	friendsButton.hidden = !isUser;
+	[self addSubview:friendsButton];
+	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	moreButton.frame = CGRectMake(254.0, 194.0, 59.0, 44.0);
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_nonActive"] forState:UIControlStateNormal];
 	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButton_Active"] forState:UIControlStateHighlighted];
 	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:moreButton];
+	
+	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 246.0);
+	[self addSubview:divider2ImageView];
 	
 	/*
 	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -212,19 +219,15 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
-	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
-	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
+//	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
+//	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
+//	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
 }
 
 
 #pragma mark - Navigation
 - (void)_goProfilePic {
 	[self.delegate userProfileViewCellTakeNewAvatar:self];
-}
-
-- (void)_goNewSnap {
-	[self.delegate userProfileViewCellNewSnap:self];
 }
 
 - (void)_goSettings {
@@ -250,7 +253,7 @@
 }
 
 - (void)_goMore {
-	
+	[self.delegate userProfileViewCellMore:self asProfile:([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID)];
 }
 
 

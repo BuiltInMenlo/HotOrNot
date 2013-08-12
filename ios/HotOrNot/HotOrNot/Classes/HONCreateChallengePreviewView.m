@@ -6,21 +6,24 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import "UIImageView+AFNetworking.h"
 
 #import "HONCreateChallengePreviewView.h"
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 
 @interface HONCreateChallengePreviewView () <UIAlertViewDelegate, UITextFieldDelegate>
+@property (nonatomic, strong) UIImageView *avatarImageView;
+@property (nonatomic, strong) UILabel *usernameLabel;
 @property (nonatomic, strong) UILabel *usernamesLabel;
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic, strong) UIView *subjectBGView;
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *privateToggleButton;
 @property (nonatomic, strong) UIButton *addFriendsButton;
 @property (nonatomic, strong) UIButton *backButton;
+@property (nonatomic, retain) UIButton *submitButton;
 @property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
 @end
 
@@ -112,7 +115,27 @@
 	[_addFriendsButton setBackgroundImage:[UIImage imageNamed:@"addButton_Active"] forState:UIControlStateHighlighted];
 	[_addFriendsButton addTarget:self action:@selector(_goAddChallengers) forControlEvents:UIControlEventTouchUpInside];
 	_addFriendsButton.alpha = 0.0;
-	[self addSubview:_addFriendsButton];
+	//[self addSubview:_addFriendsButton];
+	
+	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 21.0, 210.0, 24.0)];
+	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+	_usernamesLabel.textColor = [UIColor whiteColor];
+	_usernamesLabel.backgroundColor = [UIColor clearColor];
+	_usernamesLabel.text = @"";
+	//[self addSubview:_usernamesLabel];
+	
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 33.0, 33.0)];
+	[_avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
+	_avatarImageView.alpha = 0.0;
+	[self addSubview:_avatarImageView];
+	
+	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 220.0, 16.0)];
+	_usernameLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
+	_usernameLabel.textColor = [UIColor whiteColor];
+	_usernameLabel.backgroundColor = [UIColor clearColor];
+	_usernameLabel.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"username"]];
+	_usernameLabel.alpha = 0.0;
+	[self addSubview:_usernameLabel];
 	
 	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_backButton.frame = CGRectMake(253.0, 5.0, 64.0, 64.0);
@@ -122,43 +145,33 @@
 	_backButton.alpha = 0.0;
 	[self addSubview:_backButton];
 	
-	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 21.0, 210.0, 24.0)];
-	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
-	_usernamesLabel.textColor = [UIColor whiteColor];
-	_usernamesLabel.backgroundColor = [UIColor clearColor];
-	_usernamesLabel.text = @"";
-	[self addSubview:_usernamesLabel];
+//	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	usernameButton.frame = _usernamesLabel.frame;
+//	[usernameButton addTarget:self action:@selector(_goAddChallengers) forControlEvents:UIControlEventTouchUpInside];
+//	[self addSubview:usernameButton];
 	
-	UIButton *usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	usernameButton.frame = _usernamesLabel.frame;
-	[usernameButton addTarget:self action:@selector(_goAddChallengers) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:usernameButton];
+//	_privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	_privateToggleButton.frame = CGRectMake(184.0, self.frame.size.height - 335.0, 134.0, 44.0);
+//	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_nonActive" : @"privateOff_nonActive"] forState:UIControlStateNormal];
+//	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_Active" : @"privateOff_Active"] forState:UIControlStateHighlighted];
+//	[_privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
+//	_privateToggleButton.alpha = 0.0;
+//	[self addSubview:_privateToggleButton];
 	
-	_imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(12.0, 50.0)];
-	_imageLoadingView.alpha = 0.0;
-	[self addSubview:_imageLoadingView];
+//	_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 67.0, 320.0, 47.0)];
+//	_subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.93];
+//	_subjectBGView.hidden = YES;
+//	[self addSubview:_subjectBGView];
 	
-	_privateToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_privateToggleButton.frame = CGRectMake(184.0, self.frame.size.height - 335.0, 134.0, 44.0);
-	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_nonActive" : @"privateOff_nonActive"] forState:UIControlStateNormal];
-	[_privateToggleButton setBackgroundImage:[UIImage imageNamed:(_isPrivate) ? @"privateOn_Active" : @"privateOff_Active"] forState:UIControlStateHighlighted];
-	[_privateToggleButton addTarget:self action:@selector(_goPrivateToggle) forControlEvents:UIControlEventTouchUpInside];
-	_privateToggleButton.alpha = 0.0;
-	[self addSubview:_privateToggleButton];
-	
-	_subjectBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.frame.size.height - 67.0, 320.0, 47.0)];
-	_subjectBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.93];
-	_subjectBGView.hidden = YES;
-	[self addSubview:_subjectBGView];
-	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 7.0, 298.0, 30.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 80.0, 298.0, 30.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];;
 	_placeholderLabel.textColor = [HONAppDelegate honGrey455Color];
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"what's on your mind?" : @"";
-	[_subjectBGView addSubview:_placeholderLabel];
+	_placeholderLabel.alpha = 0.0;
+	[self addSubview:_placeholderLabel];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(13.0, 7.0, 298.0, 30.0)];
+	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -168,16 +181,29 @@
 	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = _subjectName;
+	_subjectTextField.alpha = 0.0;
 	_subjectTextField.delegate = self;
-	[_subjectBGView addSubview:_subjectTextField];
+	[self addSubview:_subjectTextField];
 	
-	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	sendButton.frame = CGRectMake(255.0, 2.0, 64.0, 44.0);
-	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
-	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
-	[sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	[_subjectBGView addSubview:sendButton];
+	_imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(128.0, 110.0)];
+	_imageLoadingView.alpha = 0.0;
+	[self addSubview:_imageLoadingView];
+	
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 73.0, 320.0, 53.0);
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	_submitButton.hidden = YES;
+	[self addSubview:_submitButton];
+	
+//	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	sendButton.frame = CGRectMake(255.0, 2.0, 64.0, 44.0);
+//	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
+//	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
+//	[sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//	[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+//	[_subjectBGView addSubview:sendButton];
 }
 
 
@@ -243,16 +269,22 @@
 
 #pragma mark - UI Presentation
 - (void)_raiseKeyboard {
-	_subjectBGView.hidden = NO;
+	_submitButton.hidden = NO;
+//	_subjectBGView.hidden = NO;
 	[_subjectTextField becomeFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_imageLoadingView.alpha = 1.0;
-		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
-		_subjectBGView.alpha = 1.0;
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
+//		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
+//		_subjectBGView.alpha = 1.0;
+		_placeholderLabel.alpha = 1.0;
+		_subjectTextField.alpha = 1.0;
 		_privateToggleButton.alpha = 1.0;
 		_addFriendsButton.alpha = 1.0;
 		_backButton.alpha = 1.0;
 		_usernamesLabel.alpha = 1.0;
+		_avatarImageView.alpha = 1.0;
+		_usernameLabel.alpha = 1.0;
 	}completion:^(BOOL finished) {
 	}];
 }
@@ -261,14 +293,20 @@
 	[_subjectTextField resignFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_imageLoadingView.alpha = 0.0;
-		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
-		_subjectBGView.alpha = 0.0;
+//		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
+//		_subjectBGView.alpha = 0.0;
+		_placeholderLabel.alpha = 0.0;
+		_subjectTextField.alpha = 0.0;
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
 		_privateToggleButton.alpha = 0.0;
 		_addFriendsButton.alpha = 0.0;
 		_backButton.alpha = 0.0;
 		_usernamesLabel.alpha = 0.0;
+		_avatarImageView.alpha = 0.0;
+		_usernameLabel.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		_subjectBGView.hidden = YES;
+//		_subjectBGView.hidden = YES;
+		_submitButton.hidden = YES;
 		
 		if (isRemoved)
 			[self removeFromSuperview];

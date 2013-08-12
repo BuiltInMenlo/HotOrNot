@@ -19,11 +19,11 @@
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 50.0, 44.0)])) {
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-		_activityIndicatorView.frame = CGRectMake(6.0, 10.0, 24.0, 24.0);
+		_activityIndicatorView.frame = CGRectMake(6.0, 11.0, 24.0, 24.0);
 		[self addSubview:_activityIndicatorView];
 		
 		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_refreshButton.frame = CGRectMake(-5.0, -1.0, 50.0, 44.0);
+		_refreshButton.frame = CGRectMake(-5.0, 0.0, 50.0, 44.0);
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
 		[_refreshButton addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
