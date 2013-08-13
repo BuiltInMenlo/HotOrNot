@@ -6,7 +6,7 @@ class BIM_Model_Comments{
         $dao = new BIM_DAO_Mysql_Comments( BIM_Config::db() );
 		$comment = $dao->get( $commentId );
 		$challenge = BIM_Model_Volley::get( $comment->challenge_id );
-		$user = BIM_User::get( $comment->user_id  );
+		$user = BIM_Model_User::get( $comment->user_id  );
         
 		$this->id = $comment->id;
 		$this->challenge_id = $comment->challenge_id; 
@@ -27,7 +27,7 @@ class BIM_Model_Comments{
     }
     
     public function purgeFromCache(){
-        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         $key = self::makeCacheKeys($this->id);
         $cache->delete( $key );
     }
@@ -74,7 +74,7 @@ class BIM_Model_Comments{
     **/
     public static function getMulti( $ids ) {
         $commentKeys = self::makeCacheKeys( $ids );
-        $cache = new BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         $comments = $cache->getMulti( $ids );
         
         // now we determine which things were not in memcache dn get those
@@ -95,7 +95,7 @@ class BIM_Model_Comments{
     public static function get( $commentId, $forceDb = false ){
         $cacheKey = self::makeCacheKeys($commentId);
         $comment = null;
-        $cache = new BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         if( !$forceDb ){
             $comment = $cache->get( $cacheKey );
         }

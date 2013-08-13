@@ -1,6 +1,6 @@
 <?php 
 
-class BIM_User{
+class BIM_Model_User{
     
     public function __construct( $params = null ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
@@ -123,7 +123,7 @@ class BIM_User{
     }
     
     public function purgeFromCache( $id = null ){
-        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         if(!$id) $id = $this->id; 
         $key = self::makeCacheKeys($id);
         $cache->delete( $key );
@@ -133,14 +133,14 @@ class BIM_User{
     }
     
     public function cacheIdByToken(){
-        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         if( !empty($this->device_token) ){
             $cache->set( $this->device_token, $this->id );
         }
     }
     
     public static function getCachedIdFromToken( $token ){
-        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         return $cache->get( $token );
     }
     
@@ -245,7 +245,7 @@ class BIM_User{
     **/
     public static function getMulti( $ids ) {
         $userKeys = self::makeCacheKeys( $ids );
-        $cache = new BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         $users = $cache->getMulti( $ids );
         
         // now we determine which things were not in memcache dn get those
@@ -266,7 +266,7 @@ class BIM_User{
     public static function get( $id, $forceDb = false ){
         $cacheKey = self::makeCacheKeys($id);
         $user = null;
-        $cache = new BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         if( !$forceDb ){
             $user = $cache->get( $cacheKey );
         }

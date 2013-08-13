@@ -101,11 +101,19 @@ class BIM_Utils{
 	            list( $hmac, $token ) = explode('+',$hmac);
 	            $hash = hash_hmac('sha256', $token, "YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ");
 	            if( $hash == $hmac ){
-	                $user = BIM_User::getByToken($token);
-    	            if( !$user->isExtant() ){
-    	                $user = null;
-    	            }
-                    self::$user = $user;    	            
+	                list( $deviceToken, $advertisingId ) = explode('+', $token );
+	                $user = BIM_Model_User::getByAdvertidingId($advertisingId);
+	                if( ! $user->isExtant() ){
+    	                $user = BIM_Model_User::getByToken($deviceToken);
+    	                if( !$user->isExtant() ){
+        	                $user = null;
+        	            } else {
+        	                // we are here because our new identifier was not recognized
+        	                // so we add it
+        	                $user->updateAdvertisingId( $advertisingId );
+        	            }
+	                }
+                    self::$user = $user;
 	            }
 	        }
 	        /*
@@ -114,7 +122,7 @@ class BIM_Utils{
     	        // decrypt the userId
     	        $userId = BIM_Utils::getIdForSMSCode(  $_COOKIE[ $conf->cookie->name ]  );
     	        if( $userId ){
-    	            $user = BIM_User::get( $userId );
+    	            $user = BIM_Model_User::get( $userId );
     	            if( !$user->isExtant() ){
     	                $user = null;
     	            }

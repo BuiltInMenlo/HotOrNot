@@ -42,7 +42,7 @@ class BIM_Jobs_Instagram extends BIM_Jobs{
     }
 	
     public function linkInBio( $workload ){
-        $user = new BIM_User( $workload->data->volley_user_id );
+        $user = new BIM_Model_User( $workload->data->volley_user_id );
         $persona = (object) array(
             'name' => $user->username,
             'type' => 'volley',

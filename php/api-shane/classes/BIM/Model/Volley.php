@@ -7,7 +7,7 @@ class BIM_Model_Volley{
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volley = $dao->get( $volleyId );
         if( $volley ){
-            $creator = BIM_User::get( $volley->creator_id );
+            $creator = BIM_Model_User::get( $volley->creator_id );
             $creator = (object) array(
                 'id' => $creator->id, 
                 'fb_id' => $creator->fb_id,
@@ -19,7 +19,7 @@ class BIM_Model_Volley{
             
             $challengers = array();
             foreach( $volley->challengers as $challenger ){
-                $target = BIM_User::get( $challenger->challenger_id );
+                $target = BIM_Model_User::get( $challenger->challenger_id );
                 $joined = new DateTime( "@$challenger->joined" );
                 $joined = $joined->format('Y-m-d H:i:s');
                 $target = (object) array(
@@ -128,8 +128,8 @@ class BIM_Model_Volley{
     }
     
     public function purgeFromCache(){
-        $cache = BIM_Cache_Memcache( BIM_Config::memcached() );
         $key = self::makeCacheKeys($this->id);
+        $cache = new BIM_Cache( BIM_Config::cache() );
         $cache->delete( $key );
     }
     
@@ -269,14 +269,16 @@ class BIM_Model_Volley{
     **/
     public static function getMulti( $ids ) {
         $volleyKeys = self::makeCacheKeys( $ids );
-        $cache = new BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         $volleys = $cache->getMulti( $ids );
-        
         // now we determine which things were not in memcache dn get those
         $retrievedKeys = array_keys( $volleys );
         $missedKeys = array_diff( $volleyKeys, $retrievedKeys );
         if( $missedKeys ){
             foreach( $missedKeys as $volleyKey ){
+                if( preg_match('@6801@', $volleyKey)){
+                    continue;
+                }
                 list($prefix,$volleyId) = explode('_',$volleyKey);
                 $volley = self::get( $volleyId, true );
                 if( $volley->isExtant() ){
@@ -284,13 +286,13 @@ class BIM_Model_Volley{
                 }
             }
         }
-        return array_values( $volleys );        
+        return $volleys;        
     }
     
     public static function get( $volleyId, $forceDb = false ){
         $cacheKey = self::makeCacheKeys($volleyId);
         $volley = null;
-        $cache = new BIM_Cache_Memcache( BIM_Config::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         if( !$forceDb ){
             $volley = $cache->get( $cacheKey );
         }

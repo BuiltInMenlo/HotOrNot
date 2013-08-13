@@ -179,7 +179,7 @@ class BIM_Config{
     public static function getBootConf( $type = 'live' ){
         $bootConf = null;
         $cackeKey = self::bootConfCacheKey( $type );
-        $cache = new BIM_Cache_Memcache( self::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         $data = $cache->get( $cackeKey );
         if( !$data ){
             $dao = new BIM_DAO_Mysql_Config( self::db() );
@@ -195,7 +195,7 @@ class BIM_Config{
         $dao->saveBootConf( $data, $type );
         
         $cackeKey = self::bootConfCacheKey( $type );
-        $cache = new BIM_Cache_Memcache( self::memcached() );
+        $cache = new BIM_Cache( BIM_Config::cache() );
         $cache->set( $cackeKey, $data );
     }
     

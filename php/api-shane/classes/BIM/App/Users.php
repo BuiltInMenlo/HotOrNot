@@ -36,12 +36,12 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @return An associative object representing a user (array)
 	**/
 	public function submitNewUser($device_token) {
-	    $user = BIM_User::getByToken( $device_token );
+	    $user = BIM_Model_User::getByToken( $device_token );
 	    
 		if ( $user && $user->isExtant() ) {
 		    $user->updateLastLogin();
 		} else {
-			$user = BIM_User::create( $device_token );
+			$user = BIM_Model_User::create( $device_token );
 			if( $user->isExtant() ){
                 BIM_Model_Volley::autoVolley($user->id);
                 
@@ -65,7 +65,7 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @return An associative object representing a user (array)
 	**/
 	public function updateUsernameAvatar($userId, $username, $imgUrl) {
-        $user = BIM_User::get($userId);
+        $user = BIM_Model_User::get($userId);
         $user->updateUsernameAvatar( $username, $imgUrl );
         return $user;
 	}
@@ -80,7 +80,7 @@ class BIM_App_Users extends BIM_App_Base{
 	**/
 	public function updateFB($userId, $username, $fbId, $gender) {
 		
-        $user = BIM_User::get( $userId );		
+        $user = BIM_Model_User::get( $userId );		
 		
 		if (strtotime($user->last_login) == strtotime($user->added)) {
 		    // first time logged in, send email
@@ -97,7 +97,7 @@ class BIM_App_Users extends BIM_App_Base{
 		    $user->acceptFbInviteToVolley( $inviteId );
 		}
 		
-        return BIM_User::get($userId);
+        return BIM_Model_User::get($userId);
 	}
 	
 	/**
@@ -108,9 +108,9 @@ class BIM_App_Users extends BIM_App_Base{
 	**/
 	public function updateName($userId, $username) {
 		$user = (object) array('result' => "fail");
-	    $existingUser = BIM_User::getByUsername($username);
+	    $existingUser = BIM_Model_User::getByUsername($username);
 		if ( ! $existingUser->isExtant() ) {
-            $user = BIM_User::get($userId);
+            $user = BIM_Model_User::get($userId);
             $user->updateUsername( $username );
 		}
         return $user;
@@ -123,7 +123,7 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @return An associative object representing a user (array)
 	**/
 	public function updatePaid( $userId, $isPaid ) {
-	    $user = BIM_User::get($userId);
+	    $user = BIM_Model_User::get($userId);
 		if ( $user->isExtant() ) {
             $user->updatePaid( $isPaid );
 		}
@@ -136,7 +136,7 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @return An associative object representing a user (array)
 	**/
 	public function getUserObj($user_id) {
-		return BIM_User::get($user_id);
+		return BIM_Model_User::get($user_id);
 	}
 	
 	/**
@@ -145,7 +145,7 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @return An associative object representing a user (array)
 	**/
 	public function getUserFromName($username) {
-        return BIM_User::getByUsername($username);
+        return BIM_Model_User::getByUsername($username);
 	}
 	
 	/**
@@ -155,7 +155,7 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @return An associative object representing a user (array)
 	**/
 	public function updateNotifications($userId, $isNotifications) {
-	    $user = BIM_User::get($userId);
+	    $user = BIM_Model_User::get($userId);
 		if ( $user->isExtant() ) {
             $user->updateNotifications( $isNotifications );
 		}
@@ -169,10 +169,10 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @return An associative object representing a user (array)
 	**/
 	public function pokeUser($pokerId, $targetId) {
-	    $poker = BIM_User::get( $targetId );
+	    $poker = BIM_Model_User::get( $targetId );
 	    $pokeId = $poker->poke( $targetId );
 	    
-	    $target = BIM_User::get( $targetId );
+	    $target = BIM_Model_User::get( $targetId );
 		if ($pokeId && $target->notifications == "Y"){
             $msg = "@$poker->username has poked you!";
 			$push = array(
@@ -198,7 +198,7 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @return An associative object (array)
 	**/
 	public function flagUser ($userId) {
-	    $user = BIM_User::get( $userId );
+	    $user = BIM_Model_User::get( $userId );
 					
 		// send email
 		$to = "bim.picchallenge@gmail.com";
@@ -311,7 +311,7 @@ class BIM_App_Users extends BIM_App_Base{
             if(! isset( $list->hashed_number ) ) $list->hashed_number = '';
             if(! isset( $list->hashed_list ) ) $list->hashed_list = array();
     	    
-            $user = BIM_User::get( $list->id );
+            $user = BIM_Model_User::get( $list->id );
             if( $user->isExtant() ){
                 $list->avatar_url = $user->getAvatarUrl();
                 $list->username = $user->username;
@@ -340,7 +340,7 @@ class BIM_App_Users extends BIM_App_Base{
             if(! isset( $list->email ) ) $list->email = '';
             if(! isset( $list->email_list ) ) $list->email_list = array();
     	    
-            $user = BIM_User::get( $list->id );
+            $user = BIM_Model_User::get( $list->id );
             if( $user->isExtant() ){
                 $list->avatar_url = $user->getAvatarUrl();
                 $list->username = $user->username;
@@ -412,7 +412,7 @@ class BIM_App_Users extends BIM_App_Base{
 	    
 	    if( $code ){
 	        $userId = BIM_Utils::getIdForSMSCode($code);
-	        $user = BIM_User::get( $userId );
+	        $user = BIM_Model_User::get( $userId );
     	    if( $user->isExtant() ){
     	        $list = (object) array(
     	            'hashed_number' => BIM_Utils::hashMobileNumber( $params->From ),
@@ -469,7 +469,7 @@ class BIM_App_Users extends BIM_App_Base{
 	}
 	
     public function setAge( $userId, $ageRange ){
-        $user = BIM_User::get( $userId );
+        $user = BIM_Model_User::get( $userId );
         if( $user->isExtant() ){
             $user->setAgeRange( $ageRange );
         }

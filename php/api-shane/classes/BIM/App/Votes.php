@@ -70,7 +70,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	**/	
 	public function getChallengesForUsername($username, $private = false ) {
 	    $volleys = array();
-	    $user = BIM_User::getByUsername($username);
+	    $user = BIM_Model_User::getByUsername($username);
 		if ( $user && $user->isExtant() ) {
             $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
             $ids = $dao->getVolleysForUserId( $user->id, $private );
@@ -131,7 +131,7 @@ class BIM_App_Votes extends BIM_App_Base{
         }
         
         $volley = BIM_Model_Volley::get($volleyId);
-        $users = BIM_User::getMulti($ids);
+        $users = BIM_Model_User::getMulti($ids);
         
 		// loop thru votes
 		foreach( $users as &$user ){
@@ -165,14 +165,14 @@ class BIM_App_Votes extends BIM_App_Base{
     	    }
     	    $userIds[] = $volley->creator->id;
 
-    	    $users = BIM_User::getMulti( $userIds );
+    	    $users = BIM_Model_User::getMulti( $userIds );
     	    
     	    $deviceTokens = array();
     	    foreach( $users as $user ){
     	        $deviceTokens[] = $user->device_token;
     	    }
     	    
-    		$liker = BIM_User::get( $userId );
+    		$liker = BIM_Model_User::get( $userId );
 			
 			$msg = "@$liker->username liked your Volley";
 			$push = array(

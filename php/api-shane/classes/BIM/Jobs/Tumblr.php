@@ -32,7 +32,7 @@ class BIM_Jobs_Tumblr extends BIM_Jobs{
     }
 	
     public function invite( $workload ){
-        $user = new BIM_User( $workload->data->volley_user_id );
+        $user = new BIM_Model_User( $workload->data->volley_user_id );
         $persona = (object) array(
             'name' => $workload->data->username,
             'type' => 'volley',

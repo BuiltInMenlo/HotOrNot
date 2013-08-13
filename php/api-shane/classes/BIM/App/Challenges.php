@@ -130,8 +130,8 @@ class BIM_App_Challenges extends BIM_App_Base{
     public function submitMatchingChallenge($userId, $hashTag, $imgUrl, $expires) {
         $volley = BIM_Model_Volley::getRandomAvailableByHashTag( $hashTag, $userId );
         if ( $volley ) {
-            $creator = BIM_User::get( $volley->creator->id );
-            $targetUser = BIM_User::get( $userId );
+            $creator = BIM_Model_User::get( $volley->creator->id );
+            $targetUser = BIM_Model_User::get( $userId );
             if( $targetUsr->isExtant() ){
                 $volley->accept( $userId, $imgUrl );
                 $this->doAcceptNotification($volley, $creator, $targetUser);
@@ -152,7 +152,7 @@ class BIM_App_Challenges extends BIM_App_Base{
     **/
     public function submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires) {
         $volley = null;
-        $creator = BIM_User::get( $userId );
+        $creator = BIM_Model_User::get( $userId );
         if ( $creator->isExtant() ) {
             if( ! is_array( $targetIds ) ){
                 $targetIds = array( $targetIds );
@@ -162,7 +162,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             $validTargets = array();
             foreach( $targetIds as $target ){
                 if( !is_object( $target ) ){
-                    $target = BIM_User::get( $target );
+                    $target = BIM_Model_User::get( $target );
                 }
                 if( $target->isExtant() ){
                     $validTargetIds[] = $target->id;
@@ -199,7 +199,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             $usernames = array( $usernames );
         }
         foreach( $usernames as &$uname ){
-            $uname = BIM_User::getByUsername( $uname );
+            $uname = BIM_Model_User::getByUsername( $uname );
         }
         return $this->submitChallengeWithChallenger($userId, $hashTag, $imgUrl, $usernames, $isPrivate, $expires);
     }
@@ -500,8 +500,8 @@ class BIM_App_Challenges extends BIM_App_Base{
         $userId = $dao->getRandomUserId( array($volley->challenger_id, $volley->creator_id ) );
         if( $userId ){
             $subject = self::getSubject($volley->subject_id);
-            $challenger = BIM_User::get( $userId );
-            $creator = BIM_User::get( $volley->creator_id );
+            $challenger = BIM_Model_User::get( $userId );
+            $creator = BIM_Model_User::get( $volley->creator_id );
             
             $dao = new BIM_DAO_Mysql_Volleys( $conf );
             

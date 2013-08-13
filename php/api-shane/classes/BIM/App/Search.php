@@ -10,7 +10,7 @@ class BIM_App_Search extends BIM_App_Base{
 	 * @return The list of challenges (array)
 	**/
 	public function getUsersLikeUsername($username) {
-	    $users = BIM_User::getUsersWithSimilarName( $username );
+	    $users = BIM_Model_User::getUsersWithSimilarName( $username );
 		foreach( $users as &$user ){
 		    $user->avatar_url = $user->getAvatarUrl();
 		}
@@ -38,7 +38,7 @@ class BIM_App_Search extends BIM_App_Base{
 	public function getDefaultUsers($usernames) {
 		$users = explode('|', $usernames);
 		foreach ( $users as &$username ) {			
-			$username = BIM_User::getByUsername( $username );
+			$username = BIM_Model_User::getByUsername( $username );
 		}
 		return $users;
 	}
@@ -49,7 +49,7 @@ class BIM_App_Search extends BIM_App_Base{
 	 * @return The list of users (array)
 	**/
 	public function getSnappedUsers( $userId ) {
-        $user = BIM_User::get($userId);
+        $user = BIM_Model_User::get($userId);
 		$users = $user->getOpponenetsWithSnaps();
 		foreach( $users as &$user ){
 		    $user->avatar_url = $user->getAvatarUrl();

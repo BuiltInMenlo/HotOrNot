@@ -81,7 +81,7 @@ class BIM_Jobs_Growth extends BIM_Jobs{
     }
     
     public function emailVerifyPush( $workload ){
-        $user = new BIM_User( $workload->data->user_id );
+        $user = new BIM_Model_User( $workload->data->user_id );
         $msg = "Volley on! Your Volley account has been verified!";
         BIM_Push_UrbanAirship_Iphone::send( $user->device_token, $msg );
     }
@@ -108,8 +108,8 @@ class BIM_Jobs_Growth extends BIM_Jobs{
     	
      */
     public function matchPush( $workload ){
-        $user = new BIM_User( $workload->data->user_id );
-        $friend = new BIM_User( $workload->data->friend_id );
+        $user = new BIM_Model_User( $workload->data->user_id );
+        $friend = new BIM_Model_User( $workload->data->friend_id );
         $msg = "Your friend $user->username joined Volley!";
         BIM_Push_UrbanAirship_Iphone::send( $friend->device_token, $msg );
     }

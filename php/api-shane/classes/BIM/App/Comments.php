@@ -26,8 +26,8 @@ class BIM_App_Comments extends BIM_App_Base{
     public function submitCommentForChallenge($challengeId, $userId, $text) {
         
         $volley = BIM_Model_Volley::get($volleyId);
-        $commenter = BIM_User::get($userId);
-        $creator = BIM_User::get( $volley->creator->id );
+        $commenter = BIM_Model_User::get($userId);
+        $creator = BIM_Model_User::get( $volley->creator->id );
         $comment = $volley->comment( $userId, $text );
 
 	    $userIds = array();
@@ -36,7 +36,7 @@ class BIM_App_Comments extends BIM_App_Base{
 	    }
 	    $userIds[] = $volley->creator->id;
 
-	    $users = BIM_User::getMulti( $userIds );
+	    $users = BIM_Model_User::getMulti( $userIds );
 	    
 	    $deviceTokens = array();
 	    foreach( $users as $user ){

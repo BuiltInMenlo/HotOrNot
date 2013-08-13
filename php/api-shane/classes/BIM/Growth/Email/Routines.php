@@ -33,7 +33,7 @@ www.letsvolley.com
         $emailData = BIM_Config::growthEmailInvites();
         $emailData->text = !empty($msgs['email']) ? $msgs['email'] : '';
         
-        $user = new BIM_User( $this->persona->email->userId );
+        $user = new BIM_Model_User( $this->persona->email->userId );
         $emailData->text = preg_replace('@\[\[USERNAME\]\]@', $user->username, $emailData->text);
         
         foreach( $addys as $addy ){

@@ -2,7 +2,7 @@
 
 class BIM_Controller{
     
-    protected $user = null;
+    public $user = null;
     
     public function handleReq(){
         $res = null;
