@@ -56,33 +56,22 @@
 //	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
 //	[challengeImgHolderView addSubview:challengeImageView];
 	
-	//UILabel *challengerLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 15.0, 180.0, 20.0)];
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 5.0, 200.0, 20.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
-	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = _challengeVO.subjectName;
-	[self addSubview:subjectLabel];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 23.0, 160.0, 16.0)];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
+	timeLabel.backgroundColor = [UIColor clearColor];
+	timeLabel.textAlignment = NSTextAlignmentRight;
+	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
+	[self addSubview:timeLabel];
 	
-	NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
-	NSTimeZone *utcTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-	
-	NSTimeInterval gmtInterval = [currentTimeZone secondsFromGMTForDate:_challengeVO.updatedDate] - [utcTimeZone secondsFromGMTForDate:_challengeVO.updatedDate];
-	NSDate *localDate = [[NSDate alloc] initWithTimeInterval:gmtInterval sinceDate:_challengeVO.updatedDate];
-	
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"GMT"]];
-	[dateFormatter setDateFormat:@"h:mma"];
-		
-	//UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 31.0, 200.0, 18.0)];
-	UILabel *opponentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 23.0, 180.0, 18.0)];
+	UILabel *opponentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 13.0, 280.0, 18.0)];
 	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
 	opponentsLabel.textColor = [HONAppDelegate honGrey455Color];
 	opponentsLabel.backgroundColor = [UIColor clearColor];
-	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username], [[dateFormatter stringFromDate:localDate] lowercaseString]];
+	opponentsLabel.text = [NSString stringWithFormat:(isCreator) ? @"You asked for approval @%@" : @"@%@ asked for approval", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
 	[self addSubview:opponentsLabel];
 	
-	UILabel *tapLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 40.0, 120.0, 18.0)];
+	UILabel *tapLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 30.0, 120.0, 18.0)];
 	tapLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
 	tapLabel.textColor = [HONAppDelegate honGrey710Color];
 	tapLabel.backgroundColor = [UIColor clearColor];
@@ -91,20 +80,11 @@
 	
 	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(265.0, 9.0, 44.0, 44.0)];
 	_hasSeenImageView.image = [UIImage imageNamed:(_challengeVO.hasViewed) ? @"viewedSnapCheck" : @"newSnapDot"];
-	[self addSubview:_hasSeenImageView];
-	
-	
+	//[self addSubview:_hasSeenImageView];
 	
 	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(69.0, 34.0, 18.0, 18.0)];
 	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
 	//[self addSubview:arrowImageView];
-	
-	if ([_challengeVO.status isEqualToString:@"Created"]) {
-	} else if ([_challengeVO.status isEqualToString:@"Waiting"]) {
-	} else if ([_challengeVO.status isEqualToString:@"Accept"]) {
-	} else if ([_challengeVO.status isEqualToString:@"Flagged"]) {
-	} else if ([_challengeVO.status isEqualToString:@"Started"] || [_challengeVO.status isEqualToString:@"Completed"]) {
-	}
 }
 
 - (void)toggleLoadMore:(BOOL)isEnabled {

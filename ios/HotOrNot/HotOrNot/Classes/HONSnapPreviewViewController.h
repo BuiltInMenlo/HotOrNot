@@ -9,8 +9,10 @@
 #import <UIKit/UIKit.h>
 
 #import "HONChallengeVO.h"
+#import "HONOpponentVO.h"
 
 @interface HONSnapPreviewViewController : UIViewController
 - (id)initWithChallenge:(HONChallengeVO *)vo;
+- (id)initWithOpponent:(HONOpponentVO *)vo;
 - (id)initWithImageURL:(NSString *)url;
 @end

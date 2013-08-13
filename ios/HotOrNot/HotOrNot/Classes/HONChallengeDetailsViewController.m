@@ -15,9 +15,12 @@
 #import "HONImagePickerViewController.h"
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
+#import "HONSnapPreviewViewController.h"
 
 @interface HONChallengeDetailsViewController () <UIActionSheetDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
+@property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *creatorChallengeImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
@@ -112,15 +115,19 @@
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
 	_isChallengeOpponent = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID);
 	
-	UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	scrollView.contentSize = CGSizeMake(320.0, 520.0 + ((kSnapMediumDim + 1.0) * ([_challengeVO.challengers count] / 3)));
-	scrollView.pagingEnabled = NO;
-	scrollView.showsVerticalScrollIndicator = YES;
-	scrollView.showsHorizontalScrollIndicator = NO;
-	[self.view addSubview:scrollView];
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
+	_scrollView.contentSize = CGSizeMake(320.0, 520.0 + ((kSnapMediumDim + 1.0) * ([_challengeVO.challengers count] / 3)));
+	_scrollView.pagingEnabled = NO;
+	_scrollView.showsVerticalScrollIndicator = YES;
+	_scrollView.showsHorizontalScrollIndicator = NO;
+	[self.view addSubview:_scrollView];
 	
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-	[scrollView addSubview:headerView];
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	[_scrollView addGestureRecognizer:lpGestureRecognizer];
+	
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 61.0)];
+	headerView.backgroundColor = [UIColor whiteColor];
+	[_scrollView addSubview:headerView];
 	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 38.0, 38.0)];
 	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
@@ -154,7 +161,7 @@
 	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 56.0, 294.0, 348.0)];
 	_creatorChallengeImageView.userInteractionEnabled = YES;
 	_creatorChallengeImageView.alpha = [_creatorChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]]];
-	[scrollView addSubview:_creatorChallengeImageView];
+	[_scrollView addSubview:_creatorChallengeImageView];
 	
 	[_creatorChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]
 																  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -167,18 +174,18 @@
 	leftButton.frame = _creatorChallengeImageView.frame;
 	[leftButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 	[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
-	[scrollView addSubview:leftButton];
+	[_scrollView addSubview:leftButton];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	joinButton.frame = CGRectMake(10.0, 198.0, 57.0, 52.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:(_isChallengeOpponent) ? @selector(_goAcceptChallenge) : @selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[scrollView addSubview:joinButton];
+	[_scrollView addSubview:joinButton];
 	
 	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 250.0, 320.0, 200.0)];
 	footerHolderView.backgroundColor = [UIColor whiteColor];
-	[scrollView addSubview:footerHolderView];
+	[_scrollView addSubview:footerHolderView];
 	
 	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	commentsButton.frame = CGRectMake(16.0, 10.0, 24.0, 24.0);
@@ -229,18 +236,18 @@
 	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
 	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 299.0);
-	[scrollView addSubview:dividerImageView];
+	[_scrollView addSubview:dividerImageView];
 	
 	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 309.0, 300.0, 20.0)];
 	challengersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	challengersLabel.textColor = [HONAppDelegate honGrey455Color];
 	challengersLabel.backgroundColor = [UIColor clearColor];
 	challengersLabel.text = [NSString stringWithFormat:@"%d Voley%@", [_challengeVO.challengers count], ([_challengeVO.challengers count] != 1) ? @"s" : @""];
-	[scrollView addSubview:challengersLabel];
+	[_scrollView addSubview:challengersLabel];
 	
 	UIView *gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 341.0, 320.0, (kSnapMediumDim + 1.0) * (([_challengeVO.challengers count] + 1) / 3))];
 	gridHolderView.backgroundColor = [UIColor whiteColor];
-	[scrollView addSubview:gridHolderView];
+	[_scrollView addSubview:gridHolderView];
 	
 	int opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
@@ -280,6 +287,24 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 }
+
+
+#pragma mark - UI Presentation
+-(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		//CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
+		
+		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO];
+		[self.view addSubview:_snapPreviewViewController.view];
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+		if (_snapPreviewViewController != nil) {
+			[_snapPreviewViewController.view removeFromSuperview];
+			_snapPreviewViewController = nil;
+		}
+	}
+}
+
 
 
 #pragma mark - Navigation

@@ -13,12 +13,14 @@
 
 #import "HONSnapPreviewViewController.h"
 #import "HONImageLoadingView.h"
-#import "HONOpponentVO.h"
+#import "HONUserVO.h"
 
 @interface HONSnapPreviewViewController ()
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
+@property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) UILabel *ageLabel;
 @end
 
 
@@ -40,6 +42,14 @@
 	return (self);
 }
 
+- (id)initWithOpponent:(HONOpponentVO *)vo {
+	if ((self = [super init])) {
+		_opponentVO = vo;
+	}
+	
+	return (self);
+}
+
 - (void)didReceiveMemoryWarning {
 	[super didReceiveMemoryWarning];
 }
@@ -54,7 +64,55 @@
 
 
 #pragma mark - Data Calls
+- (void)_retrieveUser:(NSString *)username {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 8], @"action",
+							username, @"username",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
+			
+			if (userVO.age == 1)
+				_ageLabel.text = @"13-17";
+			
+			else if (userVO.age == 2)
+				_ageLabel.text = @"18-25";
+			
+			else if (userVO.age == 3)
+				_ageLabel.text = @"26-35";
+			
+			else if (userVO.age == 3)
+				_ageLabel.text = @"36+";
+			
+			else
+				_ageLabel.text = @"ANY";
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
 
+
+#pragma mark - Touch Handlers
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+	//UITouch *touch = [touches anyObject];
+	//CGPoint location = [touch locationInView:self.view];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_PREVIEW" object:nil];
+}
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -62,50 +120,76 @@
 	
 	//NSLog(@"VERSION:[%d][%@]", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]);
 	
+	__weak typeof(self) weakSelf = self;
 	self.view.backgroundColor = [UIColor blackColor];
 	self.view.frame = CGRectOffset(self.view.frame, 0.0, -(20.0));
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	NSTimeInterval diff = [_challengeVO.addedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-03 00:00:00"]];
-	
-	BOOL isCreator = _challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue];
 	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 10500 && diff > 0);
-	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 5.0, 200.0, 20.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
-	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
-	subjectLabel.backgroundColor = [UIColor clearColor];
-	subjectLabel.text = _challengeVO.subjectName;
-	[self.view addSubview:subjectLabel];
-	
-	
-	NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
-	NSTimeZone *utcTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-	
-	NSTimeInterval gmtInterval = [currentTimeZone secondsFromGMTForDate:_challengeVO.updatedDate] - [utcTimeZone secondsFromGMTForDate:_challengeVO.updatedDate];
-	NSDate *localDate = [[NSDate alloc] initWithTimeInterval:gmtInterval sinceDate:_challengeVO.updatedDate];
-	
-	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	[dateFormatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"GMT"]];
-	[dateFormatter setDateFormat:@"h:mma"];
-	
-	//UILabel *subjectTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 31.0, 200.0, 18.0)];
-	UILabel *opponentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 23.0, 180.0, 18.0)];
-	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
-	opponentsLabel.textColor = [HONAppDelegate honGrey455Color];
-	opponentsLabel.backgroundColor = [UIColor clearColor];
-	opponentsLabel.text = [NSString stringWithFormat:@"%@ at %@", ([_challengeVO.status isEqualToString:@"Created"]) ? @"You snapped…" : [NSString stringWithFormat:@"@%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username], [[dateFormatter stringFromDate:localDate] lowercaseString]];
-	[self.view addSubview:opponentsLabel];
-
+	BOOL isCreator = (_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(128.0, ([UIScreen mainScreen].bounds.size.height - 64.0) * 0.5)];
 	[self.view addSubview:imageLoadingView];
 	
-	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim)];
-	[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_%@.jpg", (isCreator && _challengeVO.statusID == 4) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).imagePrefix : _challengeVO.creatorVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"]] placeholderImage:nil];
+	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(0.0, 0.0, self.view.frame.size.width, self.view.frame.size.height) : CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
+	_imageView = [[UIImageView alloc] initWithFrame:frame];
+	_imageView.alpha = 0.0;
 	
+	
+	NSString *imageURL;
+	NSString *avatarURL;
+	NSString *username;
+	
+	if (_challengeVO != nil) {
+		imageURL = [NSString stringWithFormat:@"%@_%@.jpg", (isCreator && _challengeVO.statusID == 4) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).imagePrefix : _challengeVO.creatorVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"];
+		avatarURL = [NSString stringWithFormat:@"%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).avatarURL : _challengeVO.creatorVO.avatarURL];
+		username = [NSString stringWithFormat:@"@%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
+		
+		[self _retrieveUser:(_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
+	}
+	
+	if (_opponentVO != nil) {
+		imageURL = [NSString stringWithFormat:@"%@_%@.jpg", (isCreator && _challengeVO.statusID == 4) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).imagePrefix : _challengeVO.creatorVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"];
+		avatarURL = [NSString stringWithFormat:@"%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).avatarURL : _challengeVO.creatorVO.avatarURL];
+		username = [NSString stringWithFormat:@"@%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
+		
+		[self _retrieveUser:(_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
+	}
+		
+		
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL]
+														cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+						  weakSelf.imageView.image = image;
+						  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.imageView.alpha = 1.0; } completion:nil];
+					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 	[self.view addSubview:_imageView];
+	
+	
+	
+	UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSnapThumbDim + 30.0)];
+	headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	[self.view addSubview:headerBGView];
+	
+	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 15.0, kSnapThumbDim, kSnapThumbDim)];
+	[challengeImageView setImageWithURL:[NSURL URLWithString:avatarURL] placeholderImage:nil];
+	[self.view addSubview:challengeImageView];
+	
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(65.0, 27.0, 200.0, 20.0)];
+	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	nameLabel.textColor = [UIColor whiteColor];
+	nameLabel.backgroundColor = [UIColor clearColor];
+	nameLabel.text = username;
+	[self.view addSubview:nameLabel];
+	
+	_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(155.0, 27.0, 150.0, 20.0)];
+	_ageLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	_ageLabel.textAlignment = NSTextAlignmentRight;
+	_ageLabel.textColor = [UIColor whiteColor];
+	_ageLabel.backgroundColor = [UIColor clearColor];
+	[self.view addSubview:_ageLabel];
 }
 
 - (void)viewDidLoad {

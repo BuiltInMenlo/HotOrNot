@@ -75,6 +75,7 @@
 	profilePicButton.frame = CGRectMake(190.0, 42.0, 44.0, 44.0);
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
+	[profilePicButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
 	profilePicButton.hidden = !isUser;
 	[self addSubview:profilePicButton];
 	

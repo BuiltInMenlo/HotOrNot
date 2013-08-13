@@ -140,8 +140,8 @@ NSString * const kTwilioSMS = @"6475577873";
 
 + (NSMutableString *)hmacToken
 {
-    NSMutableString *hmac = [NSMutableString new];
-    hmac = @"unknown";
+    NSMutableString *hmac = [NSMutableString stringWithString:@"unknown"];
+	//hmac = @"unknown";
 
     NSString *data = [HONAppDelegate deviceToken];
 	if( data != nil ){
