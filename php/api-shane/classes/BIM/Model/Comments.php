@@ -85,7 +85,7 @@ class BIM_Model_Comments{
                 list($prefix,$commentId) = explode('_',$commentKey);
                 $comment = self::get( $commentId, true );
                 if( $comment->isExtant() ){
-                    $comments[ $comment->id ] = $comment;
+                    $comments[ $commentKey ] = $comment;
                 }
             }
         }

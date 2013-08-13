@@ -12,50 +12,61 @@ class BIM_Cache {
 		}
 	}
 	
-    public function set( $key, &$data, $exp = 0 ){
+    public function set( $key, &$data, $exp = 0, $local = true ){
         $return = false;
         if( $this->cacheObj ){
             $return = $this->cacheObj->set( $key, $data, $exp );
-            self::$cache[$key] = $data;
+            if( $local ){
+                self::$cache[$key] = $data;
+            }
         }
         return $return;
     }
     
-    public function delete( $key ){
+    public function delete( $key, $local = true ){
         $return = false;
         if( $this->cacheObj ){
             $return = $this->cacheObj->delete( $key );
-            unset( self::$cache[ $key ] );
+            if( $local ){
+                unset( self::$cache[ $key ] );
+            }
         }
         return $return;
     }
     
-    public function get( $key ){
+    public function get( $key, $local = true ){
         $data = false;
-        if( !empty( self::$cache[$key] ) ){
+        if( !empty( self::$cache[$key] ) && $local ){
             $data = self::$cache[$key];
         }
         if( !$data && $this->cacheObj ){
             $data = $this->cacheObj->get( $key );
-            self::$cache[$key] = $data;
+            if( $local ){
+                self::$cache[$key] = $data;
+            }
         }
         return $data;
     }
     
-    public function getMulti( $keys ){
+    public function getMulti( $keys, $local = true ){
         $return = array();
-        $newKeys = array();
-        foreach( $keys as $key ){
-            if( !empty( self::$cache[$key] ) ){
-                $return[] = self::$cache[$key];
-            } else {
-                $newKeys[] = $key;
+        if( $local ){
+            $newKeys = array();
+            foreach( $keys as $key ){
+                if( !empty( self::$cache[$key] ) ){
+                    $return[] = self::$cache[$key];
+                } else {
+                    $newKeys[] = $key;
+                }
             }
+            $keys = &$newKeys;
         }
-        if( $newKeys && $this->cacheObj ){
-            $data = $this->cacheObj->getMulti( $newKeys );
+        if( $keys && $this->cacheObj ){
+            $data = $this->cacheObj->getMulti( $keys );
             $return = array_merge( $return, $data );
-            self::$cache = array_merge( self::$cache, $data );
+            if($local){
+                self::$cache = array_merge( self::$cache, $data );
+            }
         }
         return $return;
     }

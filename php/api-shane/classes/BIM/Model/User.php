@@ -256,7 +256,7 @@ class BIM_Model_User{
                 list($prefix,$userId) = explode('_',$userKey);
                 $user = self::get( $userId, true );
                 if( $user->isExtant() ){
-                    $users[ $user->id ] = $user;
+                    $users[ $userKey ] = $user;
                 }
             }
         }

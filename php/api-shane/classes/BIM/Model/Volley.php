@@ -279,11 +279,11 @@ class BIM_Model_Volley{
                 list($prefix,$volleyId) = explode('_',$volleyKey);
                 $volley = self::get( $volleyId, true );
                 if( $volley->isExtant() ){
-                    $volleys[ $volley->id ] = $volley;
+                    $volleys[ $volleyKey ] = $volley;
                 }
             }
         }
-        return $volleys;        
+        return array_values($volleys);        
     }
     
     public static function get( $volleyId, $forceDb = false ){
