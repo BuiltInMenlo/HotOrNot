@@ -240,7 +240,7 @@ class BIM_Model_Volley{
     public static function getVolleys($userId, $private = false ) {
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volleyIds = $dao->getIds($userId, $private);
-        $volleyArr = self::getMulti($volleyIds);
+        return self::getMulti($volleyIds);
     }
     
     public static function makeCacheKeys( $ids ){

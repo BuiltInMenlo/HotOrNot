@@ -347,7 +347,14 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         
         $params = array( $userId, $userId );
         $stmt = $this->prepareAndExecute( $sql, $params );
-        return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        $ids = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        
+        if( $ids ){
+            foreach( $ids as &$id ){
+                $id = $id->id;
+            }
+        }
+        return $ids;
     }
     
     public function getVerificationVolleyIds( $userId ){
