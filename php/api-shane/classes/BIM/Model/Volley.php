@@ -270,15 +270,12 @@ class BIM_Model_Volley{
     public static function getMulti( $ids ) {
         $volleyKeys = self::makeCacheKeys( $ids );
         $cache = new BIM_Cache( BIM_Config::cache() );
-        $volleys = $cache->getMulti( $ids );
+        $volleys = $cache->getMulti( $volleyKeys );
         // now we determine which things were not in memcache dn get those
         $retrievedKeys = array_keys( $volleys );
         $missedKeys = array_diff( $volleyKeys, $retrievedKeys );
         if( $missedKeys ){
             foreach( $missedKeys as $volleyKey ){
-                if( preg_match('@6801@', $volleyKey)){
-                    continue;
-                }
                 list($prefix,$volleyId) = explode('_',$volleyKey);
                 $volley = self::get( $volleyId, true );
                 if( $volley->isExtant() ){

@@ -54,8 +54,8 @@ class BIM_Cache {
         }
         if( $newKeys && $this->cacheObj ){
             $data = $this->cacheObj->getMulti( $newKeys );
-            $return = array_merge($return,$data);
-            self::$cache = array_merge(self::$cache,$data);
+            $return = array_merge( $return, $data );
+            self::$cache = array_merge( self::$cache, $data );
         }
         return $return;
     }

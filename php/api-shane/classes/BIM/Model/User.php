@@ -246,7 +246,7 @@ class BIM_Model_User{
     public static function getMulti( $ids ) {
         $userKeys = self::makeCacheKeys( $ids );
         $cache = new BIM_Cache( BIM_Config::cache() );
-        $users = $cache->getMulti( $ids );
+        $users = $cache->getMulti( $userKeys );
         
         // now we determine which things were not in memcache dn get those
         $retrievedKeys = array_keys( $users );

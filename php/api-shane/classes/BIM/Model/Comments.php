@@ -75,7 +75,7 @@ class BIM_Model_Comments{
     public static function getMulti( $ids ) {
         $commentKeys = self::makeCacheKeys( $ids );
         $cache = new BIM_Cache( BIM_Config::cache() );
-        $comments = $cache->getMulti( $ids );
+        $comments = $cache->getMulti( $commentKeys );
         
         // now we determine which things were not in memcache dn get those
         $retrievedKeys = array_keys( $comments );
