@@ -153,7 +153,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         	SET username = ?
         	WHERE id = ?';
         $params = array( $username, $userId );
-        $stmt = $this->prepareAndExecute( $query );
+        $stmt = $this->prepareAndExecute( $query, $params );
     }
     
     public function updatePaid( $userId, $isPaid ){

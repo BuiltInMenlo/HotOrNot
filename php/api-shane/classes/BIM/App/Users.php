@@ -109,7 +109,7 @@ class BIM_App_Users extends BIM_App_Base{
 	public function updateName($userId, $username) {
 		$user = (object) array('result' => "fail");
 	    $existingUser = BIM_Model_User::getByUsername($username);
-		if ( ! $existingUser->isExtant() ) {
+		if ( !$existingUser || !$existingUser->isExtant() || $existingUser->id == $userId ) {
             $user = BIM_Model_User::get($userId);
             $user->updateUsername( $username );
 		}
