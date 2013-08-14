@@ -80,7 +80,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
 			
@@ -122,7 +122,7 @@
 	
 	__weak typeof(self) weakSelf = self;
 	self.view.backgroundColor = [UIColor blackColor];
-	self.view.frame = CGRectOffset(self.view.frame, 0.0, -(20.0));
+	//self.view.frame = CGRectOffset(self.view.frame, 0.0, -(20.0));
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
@@ -151,11 +151,11 @@
 	}
 	
 	if (_opponentVO != nil) {
-		imageURL = [NSString stringWithFormat:@"%@_%@.jpg", (isCreator && _challengeVO.statusID == 4) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).imagePrefix : _challengeVO.creatorVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"];
-		avatarURL = [NSString stringWithFormat:@"%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).avatarURL : _challengeVO.creatorVO.avatarURL];
-		username = [NSString stringWithFormat:@"@%@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
+		imageURL = [NSString stringWithFormat:@"%@_%@.jpg", _opponentVO.imagePrefix, (isOriginalImageAvailable) ? @"o" : @"l"];
+		avatarURL = [NSString stringWithFormat:@"%@", _opponentVO.avatarURL];
+		username = [NSString stringWithFormat:@"@%@", _opponentVO.username];
 		
-		[self _retrieveUser:(_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
+		[self _retrieveUser:_opponentVO.username];
 	}
 		
 		

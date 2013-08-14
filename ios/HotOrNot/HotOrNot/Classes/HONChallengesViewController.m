@@ -27,7 +27,7 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *recentChallenges;
 @property (nonatomic, strong) NSMutableArray *olderChallenges;
@@ -55,6 +55,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removePreview:) name:@"REMOVE_PREVIEW" object:nil];
 	}
 	
 	return (self);
@@ -145,7 +146,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			
 			_recentChallenges = [NSMutableArray array];
 			_olderChallenges = [NSMutableArray array];
@@ -296,6 +297,31 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	}];
 }
 
+- (void)_addFriend:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", userID], @"target",
+							@"1", @"auto", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriends);
+	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	[httpClient postPath:kAPIAddFriends parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil)
+				[HONAppDelegate writeFriendsList:result];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -312,7 +338,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 140.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - 140.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -433,6 +459,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 //	[self _retrieveChallenges];
 //}
 
+
+#pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_tableView];
@@ -441,7 +469,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		if (indexPath != nil) {
 			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
 			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:vo];
-			[self.view addSubview:_snapPreviewViewController.view];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SNAP_PREVIEW" object:_snapPreviewViewController];
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
@@ -450,7 +478,14 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			_snapPreviewViewController = nil;
 		}
 		
-	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateEnded) {
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																 delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:@"Report Abuse"
+														otherButtonTitles:@"Approve", nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:1];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 	}
 }
 
@@ -461,6 +496,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 //	[self _retrieveUser];
+}
+
+- (void)_removePreview:(NSNotification *)notification {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
 }
 
 
@@ -597,57 +639,15 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[self _updateChallengeAsSeen];
 	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
 	
-	if (vo.statusID == 1) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithSubject:vo.subjectName]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:NO completion:nil];
 	
-	} else if (vo.statusID == 2) {
-		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorVO.userID) {
-			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-															   [NSString stringWithFormat:@"%d", ((HONOpponentVO *)[vo.challengers lastObject]).userID], @"id",
-															   [NSString stringWithFormat:@"%d", 0], @"points",
-															   [NSString stringWithFormat:@"%d", 0], @"votes",
-															   [NSString stringWithFormat:@"%d", 0], @"pokes",
-															   [NSString stringWithFormat:@"%d", 0], @"pics",
-															   [NSString stringWithFormat:@"%d", 0], @"age",
-															   ((HONOpponentVO *)[vo.challengers lastObject]).username, @"username",
-															   ((HONOpponentVO *)[vo.challengers lastObject]).fbID, @"fb_id",
-															   ((HONOpponentVO *)[vo.challengers lastObject]).avatarURL, @"avatar_url", nil]];
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		
-		} else {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:vo]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		}
-	
-	} else if (vo.statusID == 4) {
-//		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorID) {
-			HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-															   [NSString stringWithFormat:@"%d", ((HONOpponentVO *)[vo.challengers lastObject]).userID], @"id",
-															   [NSString stringWithFormat:@"%d", 0], @"points",
-															   [NSString stringWithFormat:@"%d", 0], @"votes",
-															   [NSString stringWithFormat:@"%d", 0], @"pokes",
-															   [NSString stringWithFormat:@"%d", 0], @"pics",
-															   [NSString stringWithFormat:@"%d", 0], @"age",
-															   ((HONOpponentVO *)[vo.challengers lastObject]).username, @"username",
-															   ((HONOpponentVO *)[vo.challengers lastObject]).fbID, @"fb_id",
-															   ((HONOpponentVO *)[vo.challengers lastObject]).avatarURL, @"avatar_url", nil]];
-			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:vo.subjectName]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:NO completion:nil];
-		
-//		} else {
-//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithJoinChallenge:vo]];
-//			[navigationController setNavigationBarHidden:YES];
-//			[self presentViewController:navigationController animated:NO completion:nil];
-//		}
-	}
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:@"Report Abuse"
+													otherButtonTitles:@"Approve", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:1];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
 
@@ -670,10 +670,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		_idxPath = indexPath;
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete Challenge"
-																		message:@"Do you want to remove this challenge?"
-																	  delegate:self
-														  cancelButtonTitle:@"Report Abuse"
-														  otherButtonTitles:@"Yes", @"No", nil];
+															message:@"Do you want to remove this challenge?"
+														   delegate:self
+												  cancelButtonTitle:@"Report Abuse"
+												  otherButtonTitles:@"Yes", @"No", nil];
 		[alertView setTag:indexPath.section];
 		[alertView show];
 	}
@@ -847,5 +847,61 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	}
 }
 
+
+#pragma mark - ActionSheet Delegates
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID;
+	
+	switch (buttonIndex) {
+		case 0:{
+			[[Mixpanel sharedInstance] track:@"Activity Approve - Flag"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID : _challengeVO.creatorVO.userID, (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username], @"challenger", nil]];
+			
+			[_olderChallenges removeObjectAtIndex:_idxPath.row];
+			[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
+			
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 11], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+									nil];
+			
+			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+					
+				} else {
+					[self _goRefresh];
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+				
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+			}];
+			break;}
+			
+		case 1:
+			[[Mixpanel sharedInstance] track:@"Activity Approve - Approve"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID : _challengeVO.creatorVO.userID, (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username], @"challenger", nil]];
+			
+			
+			[self _addFriend:(isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID : _challengeVO.creatorVO.userID];
+			break;
+	}
+}
 
 @end

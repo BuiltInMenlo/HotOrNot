@@ -24,7 +24,7 @@
 @property (nonatomic, strong) UIButton *addFriendsButton;
 @property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, retain) UIButton *submitButton;
-@property (nonatomic, strong) HONImageLoadingView *imageLoadingView;
+@property (nonatomic, strong) UIImageView *uploadingImageView;
 @end
 
 @implementation HONCreateChallengePreviewView
@@ -79,8 +79,8 @@
 
 #pragma mark - Puplic APIs
 - (void)uploadComplete {
-	[_imageLoadingView stopAnimating];
-	[_imageLoadingView removeFromSuperview];
+	[_uploadingImageView stopAnimating];
+	[_uploadingImageView removeFromSuperview];
 }
 
 - (void)setUsernames:(NSArray *)usernameList {
@@ -138,7 +138,7 @@
 	[self addSubview:_usernameLabel];
 	
 	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_backButton.frame = CGRectMake(253.0, 5.0, 64.0, 64.0);
+	_backButton.frame = CGRectMake(273.0, 5.0, 44.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
@@ -185,10 +185,15 @@
 	_subjectTextField.delegate = self;
 	[self addSubview:_subjectTextField];
 	
-	_imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(128.0, 110.0)];
-	_imageLoadingView.alpha = 0.0;
-	[self addSubview:_imageLoadingView];
-	
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 110.0, 64.0, 14.0)];
+	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
+										   [UIImage imageNamed:@"cameraUpload_002"],
+										   [UIImage imageNamed:@"cameraUpload_003"], nil];
+	_uploadingImageView.animationDuration = 0.5f;
+	_uploadingImageView.animationRepeatCount = 0;
+	_uploadingImageView.alpha = 0.0;
+	[self addSubview:_uploadingImageView];
+		
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 73.0, 320.0, 53.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
@@ -244,7 +249,12 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if ((_isPrivate && ![_usernamesLabel.text isEqualToString:@"add friends"]) || !_isPrivate) {
-		[self _dropKeyboardAndRemove:YES];
+		int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		[self _dropKeyboardAndRemove:([[HONAppDelegate friendsList] count] > 1 && friend_total > 0)];
+		//[self _dropKeyboardAndRemove:NO];
 	
 		[self.delegate previewView:self changeSubject:_subjectName];
 		[self.delegate previewViewSubmit:self];
@@ -273,7 +283,7 @@
 //	_subjectBGView.hidden = NO;
 	[_subjectTextField becomeFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_imageLoadingView.alpha = 1.0;
+		_uploadingImageView.alpha = 1.0;
 		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
 //		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, -216.0);
 //		_subjectBGView.alpha = 1.0;
@@ -292,7 +302,7 @@
 - (void)_dropKeyboardAndRemove:(BOOL)isRemoved {
 	[_subjectTextField resignFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_imageLoadingView.alpha = 0.0;
+		_uploadingImageView.alpha = 0.0;
 //		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
 //		_subjectBGView.alpha = 0.0;
 		_placeholderLabel.alpha = 0.0;

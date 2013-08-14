@@ -12,6 +12,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <FacebookSDK/FacebookSDK.h>
 #import <HockeySDK/HockeySDK.h>
+#import <Foundation/Foundation.h>
+#import <CommonCrypto/CommonHMAC.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -34,14 +36,13 @@
 #import "HONUsernameViewController.h"
 #import "HONSearchViewController.h"
 #import "HONImagingDepictor.h"
-#import <Foundation/Foundation.h>
-#import <CommonCrypto/CommonHMAC.h>
+#import "HONSnapPreviewViewController.h"
 
 
 
 #if __DEV_BUILD___ == 1
-NSString * const kConfigURL = @"http://54.221.205.30/hotornot";
-NSString * const kConfigJSON = @"boot.json";
+NSString * const kConfigURL = @"http://stage.letsvolley.com/hotornot";//54.221.205.30";
+NSString * const kConfigJSON = @"boot_123.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
@@ -99,7 +100,7 @@ const CGFloat kHUDErrorTime = 1.5f;
 // image sizes
 const CGFloat kSnapThumbDim = 37.0f;
 const CGFloat kSnapMediumDim = 73.0f;
-const CGFloat kSnapLargeDim = 249.0f;
+const CGFloat kSnapLargeDim = 215.0f;
 const CGSize kSnapLargeSize = {210.0f, 249.0f};
 const CGFloat kAvatarDim = 200.0f;
 
@@ -224,6 +225,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"promote_images"] objectAtIndex:type]);
 }
 
+
++ (NSString *)bannerTimelineURL {
+	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_timeline"]);
+}
 
 + (NSString *)timelineBannerType {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_banner"] objectForKey:@"type"]);
@@ -663,6 +668,14 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 #pragma mark - Notifications
+- (void)_showSnapPreview:(NSNotification *)notification {
+	[self.window addSubview:((HONSnapPreviewViewController *)[notification object]).view];
+}
+
+- (void)_hideSnapPreview:(NSNotification *)notification {
+	
+}
+
 - (void)_showSearchTable:(NSNotification *)notification {
 	if (_searchViewController != nil) {
 		[_searchViewController.view removeFromSuperview];
@@ -797,6 +810,7 @@ NSString * const kTwilioSMS = @"6475577873";
 														  [[HONAppDelegate cartoGothicBook] fontWithSize:15], UITextAttributeFont,nil] forState:UIControlStateNormal];
 	
 	_isFromBackground = NO;
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSnapPreview:) name:@"SHOW_SNAP_PREVIEW" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];
@@ -1097,6 +1111,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
+			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_timeline"] forKey:@"banner_timeline"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],

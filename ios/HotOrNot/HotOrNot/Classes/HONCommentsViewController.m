@@ -204,7 +204,7 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0)];
+	_bgTextImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 73.0, 320.0, 53.0)];
 	_bgTextImageView.image = [UIImage imageNamed:@"commentsInput"];
 	_bgTextImageView.userInteractionEnabled = YES;
 	[self.view addSubview:_bgTextImageView];
@@ -376,7 +376,8 @@
 
 #pragma mark - TextField Delegates
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-	_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - (236.0 + 53.0), _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+	//_bgTextImageView.frame = CGRectMake(_bgTextImageView.frame.origin.x, [UIScreen mainScreen].bounds.size.height - (236.0 + 53.0), _bgTextImageView.frame.size.width, _bgTextImageView.frame.size.height);
+	_bgTextImageView.frame = CGRectOffset(_bgTextImageView.frame, 0.0, -216.0);
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

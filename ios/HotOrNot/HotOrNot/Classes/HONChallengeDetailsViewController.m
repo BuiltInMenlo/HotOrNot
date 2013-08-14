@@ -22,9 +22,11 @@
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *creatorChallengeImageView;
+@property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) NSTimer *tapTimer;
+@property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic) BOOL isDoubleTap;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
@@ -35,6 +37,8 @@
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		_challengeVO = vo;
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removePreview:) name:@"REMOVE_PREVIEW" object:nil];
 	}
 	
 	return (self);
@@ -104,6 +108,54 @@
 	}];
 }
 
+- (void)_flagUser:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", userID], @"userID", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
+- (void)_addFriend:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", userID], @"target",
+							@"1", @"auto", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriends);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIAddFriends parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil)
+				[HONAppDelegate writeFriendsList:result];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
+
 
 #pragma mark - View Lifecycle
 - (void)loadView {
@@ -133,6 +185,12 @@
 	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 	creatorAvatarImageView.userInteractionEnabled = YES;
 	[self.view addSubview:creatorAvatarImageView];
+	
+	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	avatarButton.frame = creatorAvatarImageView.frame;
+	[avatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+	[avatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:avatarButton];
 	
 	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(57.0, 15.0, 180.0, 20.0)];
 	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
@@ -245,16 +303,16 @@
 	challengersLabel.text = [NSString stringWithFormat:@"%d Voley%@", [_challengeVO.challengers count], ([_challengeVO.challengers count] != 1) ? @"s" : @""];
 	[_scrollView addSubview:challengersLabel];
 	
-	UIView *gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 341.0, 320.0, (kSnapMediumDim + 1.0) * (([_challengeVO.challengers count] + 1) / 3))];
-	gridHolderView.backgroundColor = [UIColor whiteColor];
-	[_scrollView addSubview:gridHolderView];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 341.0, 320.0, (kSnapMediumDim + 1.0) * (([_challengeVO.challengers count] / 4) + 1))];
+	_gridHolderView.backgroundColor = [UIColor whiteColor];
+	[_scrollView addSubview:_gridHolderView];
 	
 	int opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (opponentCounter % 3), (kSnapMediumDim + 1.0) * (opponentCounter / 3));
+		CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (opponentCounter % 4), (kSnapMediumDim + 1.0) * (opponentCounter / 4));
 		
 		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
-		[gridHolderView addSubview:opponentHolderView];
+		[_gridHolderView addSubview:opponentHolderView];
 		
 		UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 		opponentImageView.userInteractionEnabled = YES;
@@ -267,18 +325,18 @@
 		[rightButton addTarget:self action:@selector(_goTapOpponent:) forControlEvents:UIControlEventTouchUpInside];
 		[opponentHolderView addSubview:rightButton];
 		
-		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 38.0, 38.0, 38.0)];
-		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
-		challengerAvatarImageView.userInteractionEnabled = YES;
-		challengerAvatarImageView.clipsToBounds = YES;
-		[opponentHolderView addSubview:challengerAvatarImageView];
-		
-		UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		challengerAvatarButton.frame = challengerAvatarImageView.frame;
-		[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-		[challengerAvatarButton addTarget:self action:@selector(_goOpponentTimeline:) forControlEvents:UIControlEventTouchUpInside];
-		[challengerAvatarButton setTag:opponentCounter];
-		[opponentHolderView addSubview:challengerAvatarButton];
+//		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 38.0, 38.0, 38.0)];
+//		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
+//		challengerAvatarImageView.userInteractionEnabled = YES;
+//		challengerAvatarImageView.clipsToBounds = YES;
+//		[opponentHolderView addSubview:challengerAvatarImageView];
+//		
+//		UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		challengerAvatarButton.frame = challengerAvatarImageView.frame;
+//		[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+//		[challengerAvatarButton addTarget:self action:@selector(_goOpponentTimeline:) forControlEvents:UIControlEventTouchUpInside];
+//		[challengerAvatarButton setTag:opponentCounter];
+//		[opponentHolderView addSubview:challengerAvatarButton];
 		
 		opponentCounter++;
 	}
@@ -292,16 +350,38 @@
 #pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		//CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
+		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
+		NSLog(@"FRAME:%@", NSStringFromCGRect(_gridHolderView.frame));
+		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
 		
-		_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO];
-		[self.view addSubview:_snapPreviewViewController.view];
+		CGRect creatorFrame = CGRectMake(_creatorChallengeImageView.frame.origin.x, _creatorChallengeImageView.frame.origin.y, _creatorChallengeImageView.frame.size.width, _creatorChallengeImageView.frame.size.height * 0.5);
+		if (CGRectContainsPoint(creatorFrame, touchPoint))
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO];
+		
+		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
+			int col = touchPoint.x / (kSnapMediumDim + 1.0);
+			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
+			_opponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:(row * 4) + col];
+			
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_opponentVO];
+		}
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SNAP_PREVIEW" object:_snapPreviewViewController];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 		if (_snapPreviewViewController != nil) {
 			[_snapPreviewViewController.view removeFromSuperview];
 			_snapPreviewViewController = nil;
 		}
+		
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+																 delegate:self
+														cancelButtonTitle:@"Cancel"
+												   destructiveButtonTitle:@"Report Abuse"
+														otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
+		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+		[actionSheet setTag:0];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 	}
 }
 
@@ -389,7 +469,13 @@
 
 
 - (void)_goCreatorTimeline {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Show Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"creator", nil]];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_challengeVO.creatorVO.username];
 }
 
 - (void)_goOpponentTimeline:(id)sender {
@@ -487,21 +573,85 @@
 }
 
 
+#pragma mark - Notifications
+- (void)_removePreview:(NSNotification *)notification {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:@"Report Abuse"
+													otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:0];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
+
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	switch (buttonIndex) {
-		case 0: {
-			[[Mixpanel sharedInstance] track:@"Timeline Details - Flag"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-			
-			[self _flagChallenge];
-			break;}
-			
-		case 1:
-			[self _goJoinChallenge];
-			break;
+	if (actionSheet.tag == 0) {
+		switch (buttonIndex) {
+			case 0: {
+				[[Mixpanel sharedInstance] track:@"Timeline Details - Flag User"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+				
+				[self _flagUser:_opponentVO.userID];
+				break;}
+				
+			case 1:
+				[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote Challenge"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+				
+				[self _upvoteChallenge:_opponentVO.userID];
+				break;
+				
+			case 2:
+				[[Mixpanel sharedInstance] track:@"Timeline Details - Show Profile"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"creator", nil]];
+				
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
+				break;
+				
+				
+			case 3:
+				[[Mixpanel sharedInstance] track:@"Timeline Details - Add Friend"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+				
+				[self _addFriend:_opponentVO.userID];
+				break;
+		}
+		
+	} else if (actionSheet.tag == 1) {
+		switch (buttonIndex) {
+			case 0: {
+				[[Mixpanel sharedInstance] track:@"Timeline Details - Flag Challenge"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+				
+				[self _flagChallenge];
+				break;}
+				
+			case 1:
+				[self _goJoinChallenge];
+				break;
+		}
 	}
 }
 

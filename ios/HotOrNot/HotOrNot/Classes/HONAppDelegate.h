@@ -94,6 +94,8 @@ extern NSString * const kTwilioSMS;
 + (NSString *)tutorialImageForPage:(int)page;
 + (NSString *)promoteInviteImageForType:(int)type;
 
++ (NSString *)bannerTimelineURL;
+
 + (NSString *)timelineBannerType;
 + (NSString *)timelineBannerURL;
 

@@ -21,6 +21,7 @@
 #import "HONSnapCameraOverlayView.h"
 #import "HONAddChallengersViewController.h"
 #import "HONCreateChallengePreviewView.h"
+#import "HONAddContactsViewController.h"
 #import "HONUserVO.h"
 #import "HONOpponentVO.h"
 #import "HONContactUserVO.h"
@@ -662,6 +663,17 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		[_previewView showKeyboard];
 		[_previewView setUsernames:[_usernames copy]];
+		
+		int friend_total = 0;
+		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+		} else {
+			friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+		}
 	}];
 }
 
@@ -916,6 +928,22 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
+	int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	//if ([[HONAppDelegate friendsList] count] > 1) {
+	if ([[HONAppDelegate friendsList] count] == 1 && friend_total == 0) {
+		UIAlertView *alertView = [[UIAlertView alloc]
+								  initWithTitle:@"Find Friends"
+								  message:@"Volley is more fun with friends! Find some now?"
+								  delegate:self
+								  cancelButtonTitle:@"Yes"
+								  otherButtonTitles:@"No", nil];
+		[alertView setTag:2];
+		[alertView show];
+	
+	} else {
 		if ([_subjectName length] == 0)
 			_subjectName = [HONAppDelegate rndDefaultSubject];
 		
@@ -953,6 +981,7 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		NSLog(@"PARAMS:[%@]", params);
 		[self _submitChallenge:params];
+	}
 }
 
 
@@ -985,6 +1014,56 @@ const CGFloat kFocusInterval = 0.5f;
 		if (buttonIndex == 0) {
 			_clockCounter = 0;
 			_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+		}
+	
+	} else if (alertView.tag == 2) {
+		if (buttonIndex == 0) {
+			int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+			[[NSUserDefaults standardUserDefaults] synchronize];
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+		
+		} else if (buttonIndex == 1) {
+			if ([_subjectName length] == 0)
+				_subjectName = [HONAppDelegate rndDefaultSubject];
+			
+			NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+										   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+										   [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+										   [NSString stringWithFormat:@"%d", _challengeExpireType], @"expires",
+										   _subjectName, @"subject",
+										   _challengerName, @"username",
+										   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
+			
+			if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin)
+				_challengeSubmitType = HONChallengeSubmitTypeAccept;
+			
+			if ([_addFollowing count] > 1) {
+				_challengeSubmitType = HONChallengeSubmitTypeJoin;
+				
+				NSString *usernames = @"";
+				for (HONUserVO *vo in _addFollowing)
+					usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
+				
+				[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
+			}
+			
+			if (_challengeVO != nil)
+				[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
+			
+			if (_userVO != nil)
+				[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
+			
+			if (_fbID != nil)
+				[params setObject:_fbID forKey:@"fbID"];
+			
+			[params setObject:[NSString stringWithFormat:@"%d", _challengeSubmitType] forKey:@"action"];
+			
+			NSLog(@"PARAMS:[%@]", params);
+			[self _submitChallenge:params];
 		}
 	}
 }

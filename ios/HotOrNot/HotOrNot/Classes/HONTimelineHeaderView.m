@@ -55,6 +55,12 @@
 		detailsButton.frame = self.frame;
 		[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:detailsButton];
+		
+		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		avatarButton.frame = creatorAvatarImageView.frame;
+		[avatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+		[avatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:avatarButton];
 	}
 	
 	return (self);
@@ -77,6 +83,10 @@
 #pragma mark - Navigation
 - (void)_goDetails {
 	[self.delegate timelineHeaderView:self showDetails:_challengeVO];
+}
+
+- (void)_goCreatorTimeline {
+	[self.delegate timelineHeaderView:self showCreatorTimeline:_challengeVO];
 }
 
 @end

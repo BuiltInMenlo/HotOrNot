@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "HONChallengeVO.h"
-
+#import "HONOpponentVO.h"
 
 @protocol HONTimelineItemViewCellDelegate;
 @interface HONTimelineItemViewCell : UITableViewCell
@@ -32,4 +32,6 @@
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell joinChallenge:(HONChallengeVO *)challengeVO;
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO;
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showVoters:(HONChallengeVO *)challengeVO;
+- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showPreview:(HONOpponentVO *)opponentVO;
+- (void)timelineItemViewCellHidePreview:(HONTimelineItemViewCell *)cell;
 @end

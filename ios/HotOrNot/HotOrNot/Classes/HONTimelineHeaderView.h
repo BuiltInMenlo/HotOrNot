@@ -19,4 +19,5 @@
 
 @protocol HONTimelineHeaderViewDelegate
 - (void)timelineHeaderView:(HONTimelineHeaderView *)cell showDetails:(HONChallengeVO *)challengeVO;
+- (void)timelineHeaderView:(HONTimelineHeaderView *)cell showCreatorTimeline:(HONChallengeVO *)challengeVO;
 @end
