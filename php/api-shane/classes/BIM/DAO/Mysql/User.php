@@ -136,14 +136,24 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         return $date;
     }
     
-    public function updateUsernameAvatar( $userId, $username, $imgUrl ){
-        $query = '
+    public function updateUsernameAvatar( $userId, $username, $imgUrl, $birthdate ){
+        $sql = '';
+        $params = array( $username, $imgUrl, $userId );
+        if( $birthdate ){
+            $birthdate = new DateTime( $birthdate );
+            $birthdate = $birthdate->format('U');
+            $sql = ' age = ?,';
+            $params = array( $username, $imgUrl, $birthdate, $userId );
+        }
+        
+        $query = "
         	UPDATE `hotornot-dev`.tblUsers 
         	SET username = ?, 
         		img_url = ?, 
-        		last_login = CURRENT_TIMESTAMP 
-        	WHERE id = ?';
-        $params = array( $username, $imgUrl, $userId );
+        		$sql
+        		last_login = CURRENT_TIMESTAMP
+        	WHERE id = ?
+        ";
         $stmt = $this->prepareAndExecute( $query, $params );
     }
     

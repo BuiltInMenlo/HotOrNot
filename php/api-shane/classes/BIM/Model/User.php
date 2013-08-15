@@ -17,6 +17,11 @@ class BIM_Model_User{
                 $this->$prop = $value;
             }
         }
+
+        if( !empty( $this->age ) ){
+            $birthdate = new DateTime( "@$this->age" );
+            $this->age = $birthdate->format('Y-m-d H:i:s');
+        }
         
 		// get total votes
         $votes = $dao->getTotalVotes( $this->id );
@@ -114,9 +119,9 @@ class BIM_Model_User{
         }
     }
     
-    public function updateUsernameAvatar( $username, $imgUrl ){
+    public function updateUsernameAvatar( $username, $imgUrl, $birthdate = null ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $dao->updateUsernameAvatar( $this->id, $username, $imgUrl );
+        $dao->updateUsernameAvatar( $this->id, $username, $imgUrl, $birthdate );
         $this->username = $username;
         $this->img_url = $imgUrl;
         $this->purgeFromCache();

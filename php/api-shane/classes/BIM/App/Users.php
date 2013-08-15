@@ -64,9 +64,9 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @param $img_url The url to the avatar (string)
 	 * @return An associative object representing a user (array)
 	**/
-	public function updateUsernameAvatar($userId, $username, $imgUrl) {
+	public function updateUsernameAvatar($userId, $username, $imgUrl, $birthdate = null ) {
         $user = BIM_Model_User::get($userId);
-        $user->updateUsernameAvatar( $username, $imgUrl );
+        $user->updateUsernameAvatar( $username, $imgUrl, $birthdate  );
         return $user;
 	}
 	
