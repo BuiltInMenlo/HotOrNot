@@ -144,7 +144,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         		last_login = CURRENT_TIMESTAMP 
         	WHERE id = ?';
         $params = array( $username, $imgUrl, $userId );
-        $stmt = $this->prepareAndExecute( $query );
+        $stmt = $this->prepareAndExecute( $query, $params );
     }
     
     public function updateUsername( $userId, $username ){
