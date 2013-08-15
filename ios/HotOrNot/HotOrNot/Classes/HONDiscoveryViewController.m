@@ -9,6 +9,7 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "HONDiscoveryViewController.h"
 #import "HONRefreshButtonView.h"
@@ -26,6 +27,7 @@
 @property(nonatomic, strong) NSMutableDictionary *allChallenges;
 @property(nonatomic, strong) NSMutableArray *currChallenges;
 @property(nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
+@property (nonatomic, strong) UIView *bannerView;
 @end
 
 @implementation HONDiscoveryViewController
@@ -132,7 +134,19 @@
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 140.0, 320.0, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - 140.0) style:UITableViewStylePlain];
+	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+	[self.view addSubview:_bannerView];
+	
+	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:1]] placeholderImage:nil];
+	[_bannerView addSubview:bannerImageView];
+	
+	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	bannerButton.frame = bannerImageView.frame;
+	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
+	[_bannerView addSubview:bannerButton];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_discover"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
@@ -187,6 +201,19 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)_goCloseBanner {
+	[[Mixpanel sharedInstance] track:@"Discover - Close Banner"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
+		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
+	} completion:^(BOOL finished) {
+//		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"discover_banner"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
+	}];
 }
 
 

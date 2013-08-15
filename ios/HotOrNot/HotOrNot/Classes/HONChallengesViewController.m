@@ -10,6 +10,7 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
+#import "UIImageView+AFNetworking.h"
 
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
@@ -42,6 +43,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) int blockCounter;
 @property (nonatomic, strong) UIImageView *togglePrivateImageView;
+@property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic) BOOL isPrivate;
 @end
 
@@ -338,7 +340,19 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 140.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - 140.0) style:UITableViewStylePlain];
+	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+	[self.view addSubview:_bannerView];
+	
+	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:2]] placeholderImage:nil];
+	[_bannerView addSubview:bannerImageView];
+	
+	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	bannerButton.frame = bannerImageView.frame;
+	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
+	[_bannerView addSubview:bannerButton];
+	
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - 50.0 - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -417,6 +431,19 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
+}
+
+- (void)_goCloseBanner {
+	[[Mixpanel sharedInstance] track:@"Activity - Close Banner"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
+		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
+	} completion:^(BOOL finished) {
+//		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
+	}];
 }
 
 //- (void)_goPublicChallenges {

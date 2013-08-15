@@ -14,6 +14,7 @@
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIView *controlsHolderView;
 @property (nonatomic, strong) UIView *previewHolderView;
+@property (nonatomic, strong) UIImageView *circleFillImageView;
 @property (nonatomic, strong) UILabel *headerLabel;
 @end
 
@@ -57,13 +58,17 @@
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(96.0, self.frame.size.height - 150.0, 128.0, 128.0)];
+		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_001"];
+		[_controlsHolderView addSubview:_circleFillImageView];
+		
 		UIButton *captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		captureButton.frame = CGRectMake(123.0, [UIScreen mainScreen].bounds.size.height - 100.0, 74.0, 74.0);
 		//captureButton.frame = CGRectMake(128.0, offset, 64.0, 64.0);
 		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
 		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
 		[captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:captureButton];
+		//[_controlsHolderView addSubview:captureButton];
 		
 		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		retakeButton.frame = CGRectMake(340.0, offset + 24.0, 128.0, 49.0);
@@ -80,7 +85,7 @@
 		[_controlsHolderView addSubview:submitButton];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(253.0, 5.0, 44.0, 44.0);
+		skipButton.frame = CGRectMake(273.0, 5.0, 44.0, 44.0);
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -194,6 +199,10 @@
 	} completion:^(BOOL finished){}];
 }
 
+- (void)updateClock:(int)tick {
+	//NSLog(@"IMG:[cameraAnimation_%03d]", tick);
+	_circleFillImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"cameraAnimation_%03d", tick]];
+}
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

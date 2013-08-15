@@ -146,13 +146,6 @@
 	[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_lHolderView addSubview:leftButton];
 	
-	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(0.0, kSnapLargeDim - 52.0, 57.0, 52.0);
-	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
-	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-	[joinButton addTarget:self action:(_isChallengeOpponent) ? @selector(_goAcceptChallenge) : @selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[_lHolderView addSubview:joinButton];
-	
 	_rHolderView = [[UIView alloc] initWithFrame:CGRectMake(1.0 + _lHolderView.frame.origin.x + kSnapLargeDim, 0.0, kSnapMediumDim, kSnapLargeDim)];
 	_rHolderView.clipsToBounds = YES;
 	[self addSubview:_rHolderView];
@@ -285,12 +278,19 @@
 	[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:likesLabelButton];
 	
-	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	moreButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
-	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:moreButton];
+	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	joinButton.frame = CGRectMake(240.0, 2.0, 64.0, 39.0);
+	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
+	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
+	[joinButton addTarget:self action:(_isChallengeOpponent) ? @selector(_goAcceptChallenge) : @selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[footerHolderView addSubview:joinButton];
+	
+//	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	moreButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
+//	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+//	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+//	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+//	[footerHolderView addSubview:moreButton];
 	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
 	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 308.0);

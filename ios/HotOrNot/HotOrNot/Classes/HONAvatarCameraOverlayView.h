@@ -13,6 +13,7 @@
 - (void)showPreview:(UIImage *)image;
 - (void)showPreviewAsFlipped:(UIImage *)image;
 - (void)hidePreview;
+- (void)updateClock:(int)tick;
 
 @property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
 @end

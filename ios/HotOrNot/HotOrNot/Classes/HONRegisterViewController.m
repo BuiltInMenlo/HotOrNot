@@ -18,12 +18,13 @@
 #import "HONImagingDepictor.h"
 #import "HONAvatarCameraOverlayView.h"
 #import "HONHeaderView.h"
-#import "HONProfileRangeViewController.h"
+#import "HONUserBirthdayViewController.h"
 
-@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, UIScrollViewDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
+@interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic, strong) HONAvatarCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
@@ -32,8 +33,11 @@
 @property (nonatomic, strong) UITextField *usernameTextField;
 @property (nonatomic, retain) UIButton *submitButton;
 @property (nonatomic, strong) UIView *tutorialHolderView;
-@property (nonatomic, strong) UIScrollView *tutorialScrollView;
-@property (nonatomic, strong) UIPageControl *pageControl;
+@property (nonatomic, strong) UIDatePicker *datePicker;
+@property (nonatomic, strong) UILabel *birthdayLabel;
+@property (nonatomic, strong) NSString *birthday;
+@property (nonatomic, strong) NSTimer *clockTimer;
+@property (nonatomic) int clockCounter;
 @end
 
 @implementation HONRegisterViewController
@@ -80,11 +84,6 @@
 	if ([[_username substringToIndex:1] isEqualToString:@"@"])
 		_username = [_username substringFromIndex:1];
 	
-	[[Mixpanel sharedInstance] track:@"Submit username"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  @"organic", @"user_type",
-									  _username, @"username", nil]];
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 7], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -124,18 +123,14 @@
 				
 				[HONAppDelegate writeUserInfo:userResult];
 				
+				[[[UIAlertView alloc] initWithTitle:@"Take your profile photo!"
+											message:@"Your profile photo is how people will know you're real!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
 				
-				[self.navigationController pushViewController:[[HONProfileRangeViewController alloc] init] animated:YES];
 				
-				
-//				[[[UIAlertView alloc] initWithTitle:@"Take your profile photo!"
-//											message:@"Your profile photo is how people will know you're real!"
-//										   delegate:nil
-//								  cancelButtonTitle:@"OK"
-//								  otherButtonTitles:nil] show];
-//				
-//				
-//				[self _presentCamera];
+				[self _presentCamera];
 				
 			} else {
 				if (_progressHUD == nil)
@@ -210,6 +205,9 @@
 }
 
 - (void)_finalizeUser {
+	if ([[_username substringToIndex:1] isEqualToString:@"@"])
+		_username = [_username substringFromIndex:1];
+	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 9], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -253,18 +251,17 @@
 				[HONAppDelegate writeUserInfo:userResult];
 				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
 				
-				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-					[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-					
-					// normal
-//					[self.navigationController pushViewController:[[HONVerifyMobileViewController alloc] init] animated:YES];
-					
-					// apple review fix
-					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-				}];
+				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+				[[NSUserDefaults standardUserDefaults] synchronize];
 				
-//				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+					//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+					
+					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
+					}];
+				}];
 				
 			} else {
 				if (_progressHUD == nil)
@@ -299,31 +296,33 @@
 - (void)loadView {
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor whiteColor];
+	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	
-	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
-	bgImageView.frame = [UIScreen mainScreen].bounds;
-	[self.view addSubview:bgImageView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Register"];
+	[_headerView hideRefreshing];
+	[self.view addSubview:_headerView];
+	
+//	UIImageView *bgImageView =[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunBackground-568h" : @"firstRunBackground"]];
+//	bgImageView.frame = [UIScreen mainScreen].bounds;
+//	[self.view addSubview:bgImageView];
+	
 	
 	_usernameHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -[UIScreen mainScreen].bounds.size.height, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	[self.view addSubview:_usernameHolderView];
 	
-	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, 15.0, 254.0, ([HONAppDelegate isRetina5]) ? 144.0 : 124.0)];
-	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunCopy_username-568h@2x" : @"firstRunCopy_username"];
-	[_usernameHolderView addSubview:captionImageView];
+//	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(33.0, 15.0, 254.0, ([HONAppDelegate isRetina5]) ? 144.0 : 124.0)];
+//	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunCopy_username-568h@2x" : @"firstRunCopy_username"];
+//	[_usernameHolderView addSubview:captionImageView];
 	
-	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 147.0, 244.0, 44.0)];
-	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
-	inputBGImageView.userInteractionEnabled = YES;
-	[_usernameHolderView addSubview:inputBGImageView];
-	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(6.0, 8.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 90.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_usernameTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_usernameTextField setReturnKeyType:UIReturnKeyDone];
-	[_usernameTextField setTextColor:[HONAppDelegate honGrey710Color]];
+	[_usernameTextField setTextColor:[UIColor blackColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
@@ -331,61 +330,62 @@
 	_usernameTextField.placeholder = @"@username";
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
 	_usernameTextField.delegate = self;
-	[inputBGImageView addSubview:_usernameTextField];
+	[self.view addSubview:_usernameTextField];
 	
-	_tutorialHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
-	[self.view addSubview:_tutorialHolderView];
+	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 130.0);
+	[self.view addSubview:divider1ImageView];
 	
-	_tutorialScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - 20.0)];
-	_tutorialScrollView.contentSize = CGSizeMake(960.0, [UIScreen mainScreen].bounds.size.height - (20.0));
-	_tutorialScrollView.pagingEnabled = YES;
-	_tutorialScrollView.showsHorizontalScrollIndicator = NO;
-	_tutorialScrollView.delegate = self;
-	[_tutorialHolderView addSubview:_tutorialScrollView];
+	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 158.0, 230.0, 30.0)];
+	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
+	_birthdayLabel.textColor = [HONAppDelegate honGrey518Color];
+	_birthdayLabel.backgroundColor = [UIColor clearColor];
+	_birthdayLabel.text = @"What is your birthday?";
+	[self.view addSubview:_birthdayLabel];
 	
-	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
-	[page1ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:0], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
-	page1ImageView.userInteractionEnabled = YES;
-	[_tutorialScrollView addSubview:page1ImageView];
+	UIButton *birthdayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	birthdayButton.frame = _birthdayLabel.frame;
+	[birthdayButton addTarget:self action:@selector(_goPicker) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:birthdayButton];
 	
-	UIButton *skipTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	skipTutorialButton.frame = CGRectMake(247.0, 4.0, 64.0, 44.0);
-	[skipTutorialButton setBackgroundImage:[UIImage imageNamed:@"skipTutorialButton_nonActive"] forState:UIControlStateNormal];
-	[skipTutorialButton setBackgroundImage:[UIImage imageNamed:@"skipTutorialButton_Active"] forState:UIControlStateHighlighted];
-	[skipTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialHolderView addSubview:skipTutorialButton];
-	
-	UIImageView *page2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(320.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
-	[page2ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:1], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
-	page2ImageView.userInteractionEnabled = YES;
-	[_tutorialScrollView addSubview:page2ImageView];
-	
-	UIImageView *page3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(636.0, 0.0, 320.0, _tutorialScrollView.frame.size.height)];
-	[page3ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:2], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
-	[_tutorialScrollView addSubview:page3ImageView];
-	
-	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = CGRectMake(682.0, _tutorialScrollView.frame.size.height - 135.0, 237.0, 67.0);
-	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
-	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
-	[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
-	[_tutorialScrollView addSubview:closeTutorialButton];
+	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 200.0);
+	[self.view addSubview:divider2ImageView];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"nextStepButton_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"nextStepButton_Active"] forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(_goNext) forControlEvents:UIControlEventTouchUpInside];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitUsernameButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	_submitButton.hidden = YES;
 	[self.view addSubview:_submitButton];
 	
-	_pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(60.0, [UIScreen mainScreen].bounds.size.height - 48.0, 200.0, 10.0)];
-	_pageControl.currentPage = 0;
-	_pageControl.userInteractionEnabled = NO;
-	_pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-	_pageControl.currentPageIndicatorTintColor = [HONAppDelegate honDarkGreenColor];
-	_pageControl.numberOfPages = 3;
-	[_tutorialHolderView addSubview:_pageControl];
+	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	[dateFormat setDateFormat:@"yyyy-MM-dd"];
+	
+	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
+	_datePicker.date = [dateFormat dateFromString:@"2000-01-01"];
+	_datePicker.datePickerMode = UIDatePickerModeDate;
+	_datePicker.minimumDate = [dateFormat dateFromString:@"1900-01-01"];
+	_datePicker.maximumDate = [dateFormat dateFromString:@"2000-01-01"];
+	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
+	
+	[self.view addSubview:_datePicker];
+	
+	_tutorialHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+	[self.view addSubview:_tutorialHolderView];
+	
+	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialHolderView.frame.size.height)];
+	[page1ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:0], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
+	page1ImageView.userInteractionEnabled = YES;
+	[_tutorialHolderView addSubview:page1ImageView];
+	
+	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeTutorialButton.frame = CGRectMake(42.0, _tutorialHolderView.frame.size.height - 77.0, 237.0, 67.0);
+	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
+	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
+	[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+	[_tutorialHolderView addSubview:closeTutorialButton];
 }
 
 - (void)viewDidLoad {
@@ -404,33 +404,19 @@
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
 		[self _removeIris];
 	
-	//[self performSelector:@selector(_showOverlay) withObject:nil afterDelay:2.5];
 	[self _showOverlay];
 	
-	
+	_clockCounter = 0;
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
 }
 
 
 #pragma mark - Navigation
-- (void)_goNext {
-	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
-		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-									message:@"You need to enter a username to start snapping"
-								   delegate:nil
-						  cancelButtonTitle:@"OK"
-						  otherButtonTitles:nil] show];
-	[_usernameTextField becomeFirstResponder];
-		
-	} else {
-		[_usernameTextField resignFirstResponder];//[self _submitUsername];
-	}
-}
-
 - (void)_goCloseTutorial {
 	[[Mixpanel sharedInstance] track:@"Register - Close Scroll"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[[Mixpanel sharedInstance] track:@"Sign up now button (first run)"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -453,6 +439,42 @@
 	[UIView commitAnimations];
 }
 
+- (void)_goPicker {
+	[_usernameTextField resignFirstResponder];
+	
+	_submitButton.hidden = NO;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
+		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
+	}];
+}
+
+//- (void)_goNext {
+//	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
+//		[[[UIAlertView alloc] initWithTitle:@"No Username!"
+//									message:@"You need to enter a username to start snapping"
+//								   delegate:nil
+//						  cancelButtonTitle:@"OK"
+//						  otherButtonTitles:nil] show];
+//	[_usernameTextField becomeFirstResponder];
+//
+//	} else {
+//		[_usernameTextField resignFirstResponder];
+//	}
+//}
+
+- (void)_goSubmit {
+	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
+		[[[UIAlertView alloc] initWithTitle:@"No Username!"
+									message:@"You need to enter a username to start snapping"
+								   delegate:nil
+						  cancelButtonTitle:@"OK"
+						  otherButtonTitles:nil] show];
+		[_usernameTextField becomeFirstResponder];
+	
+	} else
+		[self _submitUsername];
+}
 
 #pragma mark - UI Presentation
 - (void)_presentCamera {
@@ -516,6 +538,26 @@
 			}
 		}
 	}
+}
+
+- (void)_pickerValueChanged {
+	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	[dateFormat setDateFormat:@"yyyy-MM-dd"];
+	
+	_birthdayLabel.text = [dateFormat stringFromDate:_datePicker.date];
+}
+
+- (void)_updateClock {
+	_clockCounter++;
+	
+	if (_clockCounter >= 10) {
+		[_clockTimer invalidate];
+		_clockTimer = nil;
+		
+		[_imagePicker takePicture];
+		
+	} else
+		[_cameraOverlayView updateClock:_clockCounter];
 }
 
 
@@ -582,7 +624,7 @@
 		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
+				//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
 			}];
 		}];
 	}
@@ -593,9 +635,11 @@
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
 	textField.text = @"@";
 	
-	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
+		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0);
+		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
+	} completion:^(BOOL finished) {
+		_submitButton.hidden = YES;
 	}];
 }
 
@@ -616,10 +660,11 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
+	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
+		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
 	} completion:^(BOOL finished) {
-		_submitButton.hidden = YES;
 	}];
 }
 
@@ -630,30 +675,9 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												 _username, @"username", nil]];
-	
-	[[Mixpanel sharedInstance] track:@"Change username (first run)"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  @"organic", @"user_type",
-									  _username, @"username", nil]];
-	
-	//[self _goNext];
-	[self _submitUsername];
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
-}
-
-#pragma mark - ScrollView Delegates
-- (void)scrollViewDidScroll:(UIScrollView *)sender {
-	NSInteger page = _tutorialScrollView.contentOffset.x / _tutorialScrollView.frame.size.width;
-	_pageControl.currentPage = page;
-}
-
-- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-	[[Mixpanel sharedInstance] track:@"Register - Scroll Page"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 [NSString stringWithFormat:@"%d", (int)(scrollView.contentOffset.x / 320.0) + 1], @"page", nil]];
 }
 
 
@@ -712,10 +736,8 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[Mixpanel sharedInstance] track:@"User retakes photo (first run)"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  @"organic", @"user_type",
-									  _username, @"username", nil]];
+	_clockCounter = 0;
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView {
@@ -735,9 +757,6 @@
 	[[Mixpanel sharedInstance] track:@"Register - Submit"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	[self _finalizeUser];
 }

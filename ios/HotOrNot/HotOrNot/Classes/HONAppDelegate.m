@@ -42,7 +42,7 @@
 
 #if __DEV_BUILD___ == 1
 NSString * const kConfigURL = @"http://stage.letsvolley.com/hotornot";//54.221.205.30";
-NSString * const kConfigJSON = @"boot_123.json";
+NSString * const kConfigJSON = @"boot.json";
 NSString * const kAPIHost = @"data_api-dev";
 NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 #else
@@ -228,8 +228,8 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 
-+ (NSString *)bannerTimelineURL {
-	return ([[NSUserDefaults standardUserDefaults] objectForKey:@"banner_timeline"]);
++ (NSString *)bannerForSection:(int)section {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"section_banners"] objectAtIndex:section]);
 }
 
 + (NSString *)timelineBannerType {
@@ -838,6 +838,17 @@ NSString * const kTwilioSMS = @"6475577873";
 //	//config.secureUdid = @"<SecureUDID value goes here>";
 //	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
 	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
+	
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"activity_banner"];
+	
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	
 	if ([HONAppDelegate hasNetwork]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
@@ -1085,6 +1096,10 @@ NSString * const kTwilioSMS = @"6475577873";
 			for (NSString *tutorialImage in [result objectForKey:@"tutorial_images"])
 				[tutorialImages addObject:tutorialImage];
 			
+			NSMutableArray *sectionBanners = [NSMutableArray array];
+			for (NSString *sectionBanner in [result objectForKey:@"section_banners"])
+				[sectionBanners addObject:sectionBanner];
+			
 			NSMutableArray *promoteImages = [NSMutableArray array];
 			for (NSString *promoteImage in [result objectForKey:@"promote_images"])
 				[promoteImages addObject:promoteImage];
@@ -1113,14 +1128,13 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[[result objectForKey:@"endpts"] objectForKey:kAPIHost] forKey:@"server_api"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"service_url"] forKey:@"service_url"];
 			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"twilio_sms"] forKey:@"twilio_sms"];
-			[[NSUserDefaults standardUserDefaults] setObject:[result objectForKey:@"banner_timeline"] forKey:@"banner_timeline"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSArray arrayWithObjects:
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-															  [[result objectForKey:@"timeline_banner"] objectForKey:@"type"], @"type",
-															  [[result objectForKey:@"timeline_banner"] objectForKey:@"url"], @"url", nil] forKey:@"timeline_banner"];
+//			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+//															  [[result objectForKey:@"timeline_banner"] objectForKey:@"type"], @"type",
+//															  [[result objectForKey:@"timeline_banner"] objectForKey:@"url"], @"url", nil] forKey:@"timeline_banner"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 															  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
 															  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
@@ -1145,6 +1159,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
 			[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
 			[[NSUserDefaults standardUserDefaults] setObject:[tutorialImages copy] forKey:@"tutorial_images"];
+			[[NSUserDefaults standardUserDefaults] setObject:[sectionBanners copy] forKey:@"section_banners"];
 			[[NSUserDefaults standardUserDefaults] setObject:[promoteImages copy] forKey:@"promote_images"];
 			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];
 			[[NSUserDefaults standardUserDefaults] setObject:[subjects copy] forKey:@"search_subjects"];
@@ -1258,14 +1273,14 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)_initTabs {
 	[_bgImageView removeFromSuperview];
 	
-	UIViewController *challengesViewController, *voteViewController, *discoveryViewController, *profileViewController;
-	challengesViewController = [[HONChallengesViewController alloc] init];
-	voteViewController = [[HONTimelineViewController alloc] initWithFriends];
+	UIViewController *timelineViewController, *discoveryViewController, *challengesViewController, *profileViewController;
+	timelineViewController = [[HONTimelineViewController alloc] initWithFriends];
 	discoveryViewController = [[HONDiscoveryViewController alloc] init];
+	challengesViewController = [[HONChallengesViewController alloc] init];
 	//profileViewController = [[HONProfileViewController alloc] init];
 	profileViewController = [[HONTimelineViewController alloc] initWithUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	
-	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:voteViewController];
+	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:timelineViewController];
 	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
 	UINavigationController *navigationController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
 	UINavigationController *navigationController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];

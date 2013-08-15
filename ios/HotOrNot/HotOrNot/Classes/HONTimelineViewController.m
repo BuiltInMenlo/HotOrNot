@@ -34,9 +34,10 @@
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
+#import "HONChangeAvatarViewController.h"
 
 
-@interface HONTimelineViewController() <UIScrollViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONUserProfileRequestViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONTimelineHeaderViewDelegate>
+@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONUserProfileRequestViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONTimelineHeaderViewDelegate>
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
@@ -254,13 +255,13 @@
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
 			
-			_isProfileViewable = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] == _userVO.age || [[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] <= 0 || _userVO.age <= 0);
-			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
-				if (vo.userID == _userVO.userID) {
-					_isProfileViewable = YES;
-					break;
-				}
-			}
+//			_isProfileViewable = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] == _userVO.age || [[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] <= 0 || _userVO.age <= 0);
+//			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+//				if (vo.userID == _userVO.userID) {
+//					_isProfileViewable = YES;
+//					break;
+//				}
+//			}
 			
 			_backButton.hidden = !_isProfileViewable;
 			[_tableView reloadData];
@@ -377,7 +378,7 @@
 		} else if (_timelineType == HONTimelineTypeSingleUser)
 			title = [NSString stringWithFormat:@"@%@", _username];
 		
-		self.navigationController.navigationBar.topItem.title = title;
+		self.navigationController.navigationBar.topItem.title = (_timelineType == HONTimelineTypeSingleUser && [[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]) ? @"Me" : title;
 		
 	} else {
 		_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
@@ -387,15 +388,19 @@
 	
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
-	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 140.0)];
+	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
 	[self.view addSubview:_bannerView];
 	
 	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:_bannerView.frame];
-	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerTimelineURL]] placeholderImage:nil];
+	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:(_timelineType == HONTimelineTypeFriends) ? 0 : 3]] placeholderImage:nil];
 	[_bannerView addSubview:bannerImageView];
 	
+	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	bannerButton.frame = bannerImageView.frame;
+	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
+	[_bannerView addSubview:bannerButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 140.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
 	//[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor whiteColor]];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -459,7 +464,7 @@
 			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
 				_tooltipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(72.0, 0.0, 244.0, 94.0)];
 				_tooltipImageView.image = [UIImage imageNamed:@"tapTheCameraOverlay"];
-				[self.view addSubview:_tooltipImageView];
+				//[self.view addSubview:_tooltipImageView];
 				
 				[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
 			}
@@ -526,6 +531,19 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 	}
+}
+
+- (void)_goCloseBanner {
+	[[Mixpanel sharedInstance] track:@"Timeline - Close Banner"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
+		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
+	} completion:^(BOOL finished) {
+//		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"timeline2_banner"];
+//		[[NSUserDefaults standardUserDefaults] synchronize];
+	}];
 }
 
 - (void)_goTimelineBanner {
@@ -894,6 +912,16 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)userProfileViewCellTakeNewAvatar:(HONUserProfileViewCell *)cell {
+	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
 
 #pragma mark - ProfileRequestView Delegates
 - (void)profileRequestViewCellDoneAnimating:(HONUserProfileRequestViewCell *)profileRequestViewCell {
@@ -939,14 +967,6 @@
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
-
-
-#pragma mark - ScrollView Delegates
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	_bannerView.frame = CGRectMake(_bannerView.frame.origin.x, -scrollView.contentOffset.y, _bannerView.frame.size.width, _bannerView.frame.size.height);
-	_tableView.frame = CGRectMake(_tableView.frame.origin.x, -scrollView.contentOffset.y + 140.0, _tableView.frame.size.width, _tableView.frame.size.height);
-}
-
 
 
 #pragma mark - TableView DataSource Delegates

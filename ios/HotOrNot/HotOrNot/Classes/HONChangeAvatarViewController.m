@@ -24,6 +24,8 @@
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) NSString *filename;
+@property (nonatomic, strong) NSTimer *clockTimer;
+@property (nonatomic) int clockCounter;
 @end
 
 @implementation HONChangeAvatarViewController
@@ -235,6 +237,8 @@
 	_cameraOverlayView.delegate = self;
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
+	_clockCounter = 0;
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
 
@@ -264,6 +268,19 @@
 			}
 		}
 	}
+}
+
+- (void)_updateClock {
+	_clockCounter++;
+	
+	if (_clockCounter >= 10) {
+		[_clockTimer invalidate];
+		_clockTimer = nil;
+		
+		[_imagePicker takePicture];
+		
+	} else
+		[_cameraOverlayView updateClock:_clockCounter];
 }
 
 
@@ -405,7 +422,12 @@
 }
 
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Change Avatar - Retake"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	_clockCounter = 0;
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {

@@ -1985,6 +1985,8 @@
 				4C68937A171A1BFE005F8D0A /* HONRestrictedLocaleViewController.m */,
 				4C6A3E1317669ADC00B6CD4D /* HONAddFriendsViewController.h */,
 				4C6A3E1417669ADC00B6CD4D /* HONAddFriendsViewController.m */,
+				4C08036517A4ACE6001FF5DE /* HONProfileRangeViewController.h */,
+				4C08036617A4ACE6001FF5DE /* HONProfileRangeViewController.m */,
 			);
 			name = registration;
 			sourceTree = "<group>";
@@ -3496,8 +3498,6 @@
 			children = (
 				4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */,
 				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
-				4C08036517A4ACE6001FF5DE /* HONProfileRangeViewController.h */,
-				4C08036617A4ACE6001FF5DE /* HONProfileRangeViewController.m */,
 			);
 			name = Splash;
 			sourceTree = "<group>";
