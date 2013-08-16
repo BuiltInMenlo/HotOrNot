@@ -122,14 +122,6 @@
 				_progressHUD = nil;
 				
 				[HONAppDelegate writeUserInfo:userResult];
-				
-				[[[UIAlertView alloc] initWithTitle:@"Take your profile photo!"
-											message:@"Your profile photo is how people will know you're real!"
-										   delegate:nil
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-				
-				
 				[self _presentCamera];
 				
 			} else {
@@ -209,11 +201,13 @@
 		_username = [_username substringFromIndex:1];
 	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 9], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									_username, @"username",
-									[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename], @"imgURL",
-									nil];
+							[NSString stringWithFormat:@"%d", 9], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							_username, @"username",
+							@"1", @"firstRun",
+							_birthday, @"age",
+							[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename], @"imgURL",
+							nil];
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
@@ -316,7 +310,7 @@
 //	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunCopy_username-568h@2x" : @"firstRunCopy_username"];
 //	[_usernameHolderView addSubview:captionImageView];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(14.0, 90.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 65.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -325,7 +319,7 @@
 	[_usernameTextField setTextColor:[UIColor blackColor]];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
+	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
 	_usernameTextField.placeholder = @"@username";
 	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
@@ -333,11 +327,11 @@
 	[self.view addSubview:_usernameTextField];
 	
 	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 130.0);
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 108.0);
 	[self.view addSubview:divider1ImageView];
 	
-	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(14.0, 158.0, 230.0, 30.0)];
-	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:20];
+	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 127.0, 230.0, 30.0)];
+	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_birthdayLabel.textColor = [HONAppDelegate honGrey518Color];
 	_birthdayLabel.backgroundColor = [UIColor clearColor];
 	_birthdayLabel.text = @"What is your birthday?";
@@ -349,7 +343,7 @@
 	[self.view addSubview:birthdayButton];
 	
 	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 200.0);
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 173.0);
 	[self.view addSubview:divider2ImageView];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -366,8 +360,8 @@
 	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
 	_datePicker.date = [dateFormat dateFromString:@"2000-01-01"];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
-	_datePicker.minimumDate = [dateFormat dateFromString:@"1900-01-01"];
-	_datePicker.maximumDate = [dateFormat dateFromString:@"2000-01-01"];
+	_datePicker.minimumDate = [dateFormat dateFromString:@"1930-01-01"];
+	_datePicker.maximumDate = [NSDate date];// [dateFormat dateFromString:@"2012-01-01"];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
 	
 	[self.view addSubview:_datePicker];
@@ -405,9 +399,6 @@
 		[self _removeIris];
 	
 	[self _showOverlay];
-	
-	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
 }
 
@@ -449,20 +440,6 @@
 	}];
 }
 
-//- (void)_goNext {
-//	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
-//		[[[UIAlertView alloc] initWithTitle:@"No Username!"
-//									message:@"You need to enter a username to start snapping"
-//								   delegate:nil
-//						  cancelButtonTitle:@"OK"
-//						  otherButtonTitles:nil] show];
-//	[_usernameTextField becomeFirstResponder];
-//
-//	} else {
-//		[_usernameTextField resignFirstResponder];
-//	}
-//}
-
 - (void)_goSubmit {
 	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
@@ -472,8 +449,17 @@
 						  otherButtonTitles:nil] show];
 		[_usernameTextField becomeFirstResponder];
 	
-	} else
-		[self _submitUsername];
+	} else {
+		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > 630720000) {
+			[[[UIAlertView alloc] initWithTitle:@"Too Old!"
+										message:@"This app is for kids!"
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+		
+		} else
+			[self _submitUsername];
+	}
 }
 
 #pragma mark - UI Presentation
@@ -541,10 +527,17 @@
 }
 
 - (void)_pickerValueChanged {
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	[dateFormatter setDateStyle:NSDateFormatterLongStyle];
+	[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+	_birthdayLabel.text = [dateFormatter stringFromDate:_datePicker.date];
+	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
+	_birthday = [dateFormat stringFromDate:_datePicker.date];
 	
-	_birthdayLabel.text = [dateFormat stringFromDate:_datePicker.date];
+	
+	//NSLog(@"DIFF:[%f]", [[NSDate date] timeIntervalSinceDate:_datePicker.date]);
 }
 
 - (void)_updateClock {
@@ -682,6 +675,11 @@
 
 
 #pragma mark - CameraOverlayView Delegates
+- (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	_clockCounter = 0;
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+}
+
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	NSLog(@"cameraOverlayViewCloseCamera:[%@] cameraOverlayView", [cameraOverlayView description]);
 	

@@ -83,21 +83,7 @@
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-			
-			if (userVO.age == 1)
-				_ageLabel.text = @"13-17";
-			
-			else if (userVO.age == 2)
-				_ageLabel.text = @"18-25";
-			
-			else if (userVO.age == 3)
-				_ageLabel.text = @"26-35";
-			
-			else if (userVO.age == 3)
-				_ageLabel.text = @"36+";
-			
-			else
-				_ageLabel.text = @"ANY";
+			_ageLabel.text = [NSString stringWithFormat:@"%d", [HONAppDelegate ageForDate:userVO.birthday]];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

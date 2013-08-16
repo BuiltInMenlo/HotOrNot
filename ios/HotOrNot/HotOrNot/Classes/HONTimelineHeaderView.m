@@ -24,26 +24,26 @@
 		
 		self.backgroundColor = [UIColor whiteColor];
 		
-		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 11.0, 38.0, 38.0)];
+		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 38.0, 38.0)];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:creatorAvatarImageView];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(57.0, 15.0, 180.0, 20.0)];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 13.0, 180.0, 20.0)];
 		subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
 		subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _challengeVO.subjectName;
 		[self addSubview:subjectLabel];
 		
-		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(57.0, 30.0, 150.0, 19.0)];
+		UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 28.0, 150.0, 19.0)];
 		creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 		creatorNameLabel.textColor = [HONAppDelegate honGrey518Color];
 		creatorNameLabel.backgroundColor = [UIColor clearColor];
 		creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
 		[self addSubview:creatorNameLabel];
 		
-		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 27.0, 160.0, 16.0)];
+		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 24.0, 160.0, 16.0)];
 		timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
 		timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
 		timeLabel.backgroundColor = [UIColor clearColor];

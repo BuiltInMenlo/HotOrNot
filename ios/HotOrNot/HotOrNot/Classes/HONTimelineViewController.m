@@ -288,9 +288,34 @@
 							[NSString stringWithFormat:@"%d", userID], @"target",
 							@"1", @"auto", nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriends);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIAddFriends parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIAddFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			
+			if (result != nil)
+				[HONAppDelegate writeFriendsList:result];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+	}];
+}
+
+- (void)_removeFriend:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", userID], @"target", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIRemoveFriend);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIRemoveFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -310,7 +335,11 @@
 
 - (void)_flagUser:(int)userID {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", userID], @"userID", nil];
+							[NSString stringWithFormat:@"%d", 10], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", userID], @"targetID",
+							[NSString stringWithFormat:@"%d", 0], @"approves",
+							nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -668,13 +697,15 @@
 }
 
 - (void)_showAddContacts:(NSNotification *)notification {
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find Friends?"
-														message:@"Would you like to find friends from your contacts list?"
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:1];
-	[alertView show];
+	//if (_timelineType == HONTimelineTypeFriends) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find Friends?"
+															message:@"Would you like to find friends from your contacts list?"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:1];
+		[alertView show];
+	//}
 }
 
 - (void)_refreshVoteTab:(NSNotification *)notification {
@@ -857,6 +888,15 @@
 									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
 	
 	[self _addFriend:userVO.userID];
+}
+
+- (void)userProfileViewCell:(HONUserProfileViewCell *)cell removeFriend:(HONUserVO *)userVO {
+	[[Mixpanel sharedInstance] track:@"Timeline Profile - Remove Friend"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
+	
+	[self _removeFriend:userVO.userID];
 }
 
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell snapAtUser:(HONUserVO *)userVO {
@@ -1073,15 +1113,15 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {
-		return ((_timelineType == HONTimelineTypeSingleUser) ? 252.0 : 309.0);
+		return ((_timelineType == HONTimelineTypeSingleUser) ? 252.0 : 286.0);
 		
 	} else
-		return (309.0);
+		return (286.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	//return ((([[HONAppDelegate timelineBannerURL] length] > 0) && !_isPushView) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 58.0 : 58.0);
-	return ((_timelineType == HONTimelineTypeSingleUser && section == 0) ? 0.0 : 58.0);
+	return ((_timelineType == HONTimelineTypeSingleUser && section == 0) ? 0.0 : 56.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

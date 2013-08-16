@@ -144,20 +144,20 @@
 	[_animationImageView stopAnimating];
 	[self.delegate profileRequestViewCellDoneAnimating:self];
 	
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < _userVO.age) {
-		[[[UIAlertView alloc] initWithTitle:@"Womp, you're too young!"
-									message:@"This profile is age range protected, send your selfie for approval!"
-								   delegate:self
-						  cancelButtonTitle:@"Cancel"
-						  otherButtonTitles:@"OK", nil] show];
-		
-	} else {
-		[[[UIAlertView alloc] initWithTitle:@"Womp, you're too old!"
-									message:@"This profile is age range protected, send your selfie for approval!"
-								   delegate:self
-						  cancelButtonTitle:@"Cancel"
-						  otherButtonTitles:@"OK", nil] show];
-	}
+//	if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < _userVO.age) {
+//		[[[UIAlertView alloc] initWithTitle:@"Womp, you're too young!"
+//									message:@"This profile is age range protected, send your selfie for approval!"
+//								   delegate:self
+//						  cancelButtonTitle:@"Cancel"
+//						  otherButtonTitles:@"OK", nil] show];
+//		
+//	} else {
+//		[[[UIAlertView alloc] initWithTitle:@"Womp, you're too old!"
+//									message:@"This profile is age range protected, send your selfie for approval!"
+//								   delegate:self
+//						  cancelButtonTitle:@"Cancel"
+//						  otherButtonTitles:@"OK", nil] show];
+//	}
 }
 
 

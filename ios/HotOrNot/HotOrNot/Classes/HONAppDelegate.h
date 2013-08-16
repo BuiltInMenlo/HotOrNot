@@ -14,7 +14,7 @@
 
 
 #define __DEV_BUILD___ 1
-#define __ALWAYS_REGISTER__ 0
+#define __ALWAYS_REGISTER__ 1
 #define __ALWAYS_VERIFY__ 0
 
 
@@ -30,7 +30,8 @@ extern NSString * const kAPISearch;
 extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
 extern NSString * const kAPIGetFriends;
-extern NSString * const kAPIAddFriends;
+extern NSString * const kAPIAddFriend;
+extern NSString * const kAPIRemoveFriend;
 extern NSString * const kAPISMSInvites;
 extern NSString * const kAPIEmailInvites;
 extern NSString * const kAPITumblrLogin;
@@ -63,7 +64,6 @@ const CGFloat kHUDErrorTime;
 const CGFloat kSnapThumbDim;
 const CGFloat kSnapMediumDim;
 const CGFloat kSnapLargeDim;
-const CGSize kSnapLargeSize;
 const CGFloat kAvatarDim;
 
 
@@ -116,6 +116,7 @@ extern NSString * const kTwilioSMS;
 + (void)writeUserInfo:(NSDictionary *)userInfo;
 + (NSDictionary *)infoForUser;
 + (UIImage *)avatarImage;
++ (int)ageForDate:(NSDate *)date;
 
 + (NSArray *)friendsList;
 + (void)addFriendToList:(NSDictionary *)friend;

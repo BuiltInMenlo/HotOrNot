@@ -37,6 +37,7 @@
 #import "HONSearchViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONSnapPreviewViewController.h"
+#import "HONChallengeDetailsViewController.h"
 
 
 
@@ -67,7 +68,8 @@ NSString * const kAPISearch = @"Search.php";
 NSString * const kAPIUsers = @"Users.php";
 NSString * const kAPIVotes = @"Votes.php";
 NSString * const kAPIGetFriends = @"social/getfriends";
-NSString * const kAPIAddFriends = @"social/addfriend";
+NSString * const kAPIAddFriend = @"social/addfriend";
+NSString * const kAPIRemoveFriend = @"social/removefriend";
 NSString * const kAPISMSInvites = @"g/smsinvites";
 NSString * const kAPIEmailInvites = @"g/emailinvites";
 NSString * const kAPITumblrLogin = @"users/invitetumblr";
@@ -100,8 +102,7 @@ const CGFloat kHUDErrorTime = 1.5f;
 // image sizes
 const CGFloat kSnapThumbDim = 37.0f;
 const CGFloat kSnapMediumDim = 73.0f;
-const CGFloat kSnapLargeDim = 215.0f;
-const CGSize kSnapLargeSize = {210.0f, 249.0f};
+const CGFloat kSnapLargeDim = 221.0f;
 const CGFloat kAvatarDim = 200.0f;
 
 const BOOL kIsImageCacheEnabled = YES;
@@ -320,6 +321,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
+}
+
++ (int)ageForDate:(NSDate *)date {
+	return ([date timeIntervalSinceNow] / -31536000);
 }
 
 + (NSArray *)friendsList {
@@ -649,8 +654,9 @@ NSString * const kTwilioSMS = @"6475577873";
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengeResult);
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
-			[navigationController setNavigationBarHidden:YES];
+			//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
+			//[navigationController setNavigationBarHidden:YES];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
 			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 		}
 		
@@ -803,7 +809,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate cartoGothicBook] fontWithSize:20], UITextAttributeFont, nil]];
+														  [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18], UITextAttributeFont, nil]];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:

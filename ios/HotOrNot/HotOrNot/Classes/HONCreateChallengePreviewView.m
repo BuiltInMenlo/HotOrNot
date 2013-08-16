@@ -88,8 +88,12 @@
 	for (NSString *username in usernameList)
 		usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
 	
-	//NSLog(@"USERNAMES:[%@][%@]", usernameList, usernames);
-	_usernamesLabel.text = ([usernames length] == 0) ? @"add friends" : [usernames substringToIndex:[usernames length] - 2];
+	NSLog(@"USERNAMES:[%@][%@]", usernameList, usernames);
+	
+	//_usernamesLabel.text = ([usernames length] == 0) ? @"add friends" : [usernames substringToIndex:[usernames length] - 2];
+	CGSize size = [usernames sizeWithFont:_usernamesLabel.font constrainedToSize:CGSizeMake(300.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
+	_usernamesLabel.frame = CGRectMake(_usernamesLabel.frame.origin.x, _usernamesLabel.frame.origin.y, size.width, size.height);
+	_usernamesLabel.text = ([usernames length] >= 2) ? [usernames substringToIndex:[usernames length] - 2] : usernames;
 }
 
 - (void)showKeyboard {
@@ -117,12 +121,13 @@
 	_addFriendsButton.alpha = 0.0;
 	//[self addSubview:_addFriendsButton];
 	
-	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(66.0, 21.0, 210.0, 24.0)];
+	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 130.0, 300.0, 24.0)];
 	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 	_usernamesLabel.textColor = [UIColor whiteColor];
 	_usernamesLabel.backgroundColor = [UIColor clearColor];
+	_usernamesLabel.numberOfLines = 0;
 	_usernamesLabel.text = @"";
-	//[self addSubview:_usernamesLabel];
+	[self addSubview:_usernamesLabel];
 	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 33.0, 33.0)];
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];

@@ -19,7 +19,7 @@
 @property (nonatomic) int pokes;
 @property (nonatomic) int score;
 @property (nonatomic) int pics;
-@property (nonatomic) int age;
+@property (nonatomic, retain) NSDate *birthday;
 @property (nonatomic, retain) NSString *username;
 @property (nonatomic, retain) NSString *fbID;
 @property (nonatomic, retain) NSString *imageURL;

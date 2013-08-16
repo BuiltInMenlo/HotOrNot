@@ -14,6 +14,8 @@
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIView *controlsHolderView;
 @property (nonatomic, strong) UIView *previewHolderView;
+@property (nonatomic, strong) UIImageView *infoHolderImageView;
+@property (nonatomic, strong) UIImageView *submitHolderImageView;
 @property (nonatomic, strong) UIImageView *circleFillImageView;
 @property (nonatomic, strong) UILabel *headerLabel;
 @end
@@ -70,26 +72,45 @@
 		[captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];
 		//[_controlsHolderView addSubview:captureButton];
 		
-		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		retakeButton.frame = CGRectMake(340.0, offset + 24.0, 128.0, 49.0);
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_nonActive"] forState:UIControlStateNormal];
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_Active"] forState:UIControlStateHighlighted];
-		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:retakeButton];
+		_infoHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whySelfie"]];
+		_infoHolderImageView.frame = CGRectOffset(_infoHolderImageView.frame, 33.0, ([UIScreen mainScreen].bounds.size.height - 414.0) * 0.5);
+		_infoHolderImageView.userInteractionEnabled = YES;
+		[self addSubview:_infoHolderImageView];
+		
+		UIButton *okInfoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		okInfoButton.frame = CGRectMake(30.0, 355.0, 194.0, 49.0);
+		[okInfoButton setBackgroundImage:[UIImage imageNamed:@"okGetItButton_nonActive"] forState:UIControlStateNormal];
+		[okInfoButton setBackgroundImage:[UIImage imageNamed:@"okGetItButton_Active"] forState:UIControlStateHighlighted];
+		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
+		[_infoHolderImageView addSubview:okInfoButton];
+		
+		_submitHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"submitOverlayBG"]];
+		_submitHolderImageView.frame = CGRectOffset(_submitHolderImageView.frame, 33.0, ([UIScreen mainScreen].bounds.size.height - 244.0) * 0.5);
+		_submitHolderImageView.alpha = 0.0;
+		_submitHolderImageView.userInteractionEnabled = YES;
+		[self addSubview:_submitHolderImageView];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(496.0, offset + 24.0, 128.0, 49.0);
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_nonActive"] forState:UIControlStateNormal];
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_Active"] forState:UIControlStateHighlighted];
+		submitButton.frame = CGRectMake(30.0, 30.0, 194.0, 49.0);
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:submitButton];
+		[_submitHolderImageView addSubview:submitButton];
+		
+		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		retakeButton.frame = CGRectMake(30.0, 97.0, 194.0, 49.0);
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_nonActive"] forState:UIControlStateNormal];
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_Active"] forState:UIControlStateHighlighted];
+		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
+		[_submitHolderImageView addSubview:retakeButton];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(273.0, 5.0, 44.0, 44.0);
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-		[skipButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
+		skipButton.frame = CGRectMake(30.0, 162.0, 194.0, 49.0);
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_nonActive"] forState:UIControlStateNormal];
+		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:skipButton];
+		[_submitHolderImageView addSubview:skipButton];
+
 	}
 	
 	return (self);
@@ -97,15 +118,22 @@
 
 
 #pragma mark - Navigation
+- (void)_goOKInfo {
+	[UIView animateWithDuration:0.25 animations:^(void){
+		_infoHolderImageView.alpha = 0.0;
+	}];
+	
+	[[Mixpanel sharedInstance] track:@"Register - OK Selfie"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self.delegate cameraOverlayViewStartClock:self];
+}
+
 - (void)_goCancel {
 	[[Mixpanel sharedInstance] track:@"Register - Skip Photo"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[[Mixpanel sharedInstance] track:@"Cancel button (first run)"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  @"organic", @"user_type",
-									  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
@@ -146,7 +174,11 @@
 	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
-	} completion:nil];
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_submitHolderImageView.alpha = 1.0;
+		}];
+	}];
 	
 	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
 	
@@ -167,7 +199,11 @@
 	
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
-	} completion:nil];
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_submitHolderImageView.alpha = 1.0;
+		}];
+	}];
 	
 	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
 	
@@ -190,6 +226,10 @@
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 320.0, 0.0);
 	} completion:nil];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitHolderImageView.alpha = 0.0;
+	}];
 }
 
 - (void)_animateShutter {

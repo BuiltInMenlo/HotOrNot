@@ -23,6 +23,7 @@
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONAvatarCameraOverlayView *)previewView;
 - (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)previewView;

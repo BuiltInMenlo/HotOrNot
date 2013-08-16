@@ -424,17 +424,37 @@ const CGFloat kFocusInterval = 0.5f;
 																	_challengeVO.creatorVO.fbID, @"fb_id",
 																	_challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
 		}
-		if (_challengeVO.statusID != 1 && [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID) {
-			[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																	[NSString stringWithFormat:@"%d", ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID], @"id",
-																	[NSString stringWithFormat:@"%d", 0], @"points",
-																	[NSString stringWithFormat:@"%d", 0], @"votes",
-																	[NSString stringWithFormat:@"%d", 0], @"pokes",
-																	[NSString stringWithFormat:@"%d", 0], @"pics",
-																	[NSString stringWithFormat:@"%d", 0], @"age",
-																	((HONOpponentVO *)[_challengeVO.challengers lastObject]).username, @"username",
-																	((HONOpponentVO *)[_challengeVO.challengers lastObject]).fbID, @"fb_id",
-																	((HONOpponentVO *)[_challengeVO.challengers lastObject]).avatarURL, @"avatar_url", nil]]];
+		if (_challengeVO.statusID != 1) {
+			for (HONOpponentVO *vo in _challengeVO.challengers) {
+				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
+					[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																			[NSString stringWithFormat:@"%d", vo.userID], @"id",
+																			[NSString stringWithFormat:@"%d", 0], @"points",
+																			[NSString stringWithFormat:@"%d", 0], @"votes",
+																			[NSString stringWithFormat:@"%d", 0], @"pokes",
+																			[NSString stringWithFormat:@"%d", 0], @"pics",
+																			[NSString stringWithFormat:@"%d", 0], @"age",
+																			vo.username, @"username",
+																			vo.fbID, @"fb_id",
+																			vo.avatarURL, @"avatar_url", nil]]];
+				}
+			}
+		}
+	
+	} else if (_challengeSubmitType == HONChallengeSubmitTypeMatch) {
+		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+			if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
+				[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[NSString stringWithFormat:@"%d", vo.userID], @"id",
+																		[NSString stringWithFormat:@"%d", 0], @"points",
+																		[NSString stringWithFormat:@"%d", 0], @"votes",
+																		[NSString stringWithFormat:@"%d", 0], @"pokes",
+																		[NSString stringWithFormat:@"%d", 0], @"pics",
+																		[NSString stringWithFormat:@"%d", 0], @"age",
+																		vo.username, @"username",
+																		vo.fbID, @"fb_id",
+																		vo.imageURL, @"avatar_url", nil]]];
+			}
 		}
 	}
 	
