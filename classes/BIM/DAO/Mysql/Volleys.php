@@ -46,12 +46,11 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     public function add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify = false ){
         $isVerify = (int) $isVerify;
         // add the new challenge
-        $joined = time();
         $sql = '
             INSERT INTO `hotornot-dev`.tblChallenges 
-                ( status_id, subject_id, creator_id, creator_img, hasPreviewed, votes, updated, started, added, is_private, expires, is_verify, joined )
+                ( status_id, subject_id, creator_id, creator_img, hasPreviewed, votes, updated, started, added, is_private, expires, is_verify )
             VALUES 
-                ("2", ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ?, ?, ? )
+                ("2", ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ?, ? )
         ';
         $params = array($hashTagId, $userId, $imgUrl, $isPrivate, $expires, $isVerify);
         $this->prepareAndExecute( $sql, $params );
@@ -62,15 +61,16 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             $params = array();
             $insertSql = array();
             foreach( $targetIds as $targetId ){
-                $insertSql[] = '(?,?)';
+                $insertSql[] = '(?,?,?)';
                 $params[] = $volleyId;
                 $params[] = $targetId;
+                $params[] = time();
             }
             $insertSql = join( ',' , $insertSql );
             
             $sql = "
-                INSERT INTO `hotornot-dev`.tblChallengeParticipants
-                    ( challenge_id, user_id )
+                INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants
+                    ( challenge_id, user_id, joined )
                 VALUES 
                 	$insertSql;
             ";
