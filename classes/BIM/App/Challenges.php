@@ -26,7 +26,7 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @param unknown_type $userId
     **/
     public function getVerifyList ($userId) {
-        $dao = BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $ids = $dao->getVerificationVolleyIds( $userId );
         return BIM_Model_Volley::getMulti( $ids );
     }

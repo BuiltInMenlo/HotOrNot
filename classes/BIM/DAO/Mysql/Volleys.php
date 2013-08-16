@@ -1,6 +1,19 @@
 <?php
 
 class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
+    
+    public function getVerifyVolleyIdForUser( $userId ){
+        $sql = "
+            select id
+            from `hotornot-dev`.tblChallenges
+            where is_verify = 1
+            	and creator_id = ?
+        ";
+        $params = array( $userId );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        return $stmt->fetchColumn();
+    }
+    
     public function getUnjoined( ){
         $sql = "
             select * 
@@ -30,15 +43,17 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
     }
     
-    public function add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires ){
+    public function add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify = false ){
+        $isVerify = (int) $isVerify;
         // add the new challenge
+        $joined = time();
         $sql = '
             INSERT INTO `hotornot-dev`.tblChallenges 
-                ( status_id, subject_id, creator_id, creator_img, hasPreviewed, votes, updated, started, added, is_private, expires)
+                ( status_id, subject_id, creator_id, creator_img, hasPreviewed, votes, updated, started, added, is_private, expires, is_verify, joined )
             VALUES 
-                ("2", ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ? )
+                ("2", ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ?, ?, ? )
         ';
-        $params = array($hashTagId, $userId, $imgUrl, $isPrivate, $expires);
+        $params = array($hashTagId, $userId, $imgUrl, $isPrivate, $expires, $isVerify);
         $this->prepareAndExecute( $sql, $params );
         $volleyId = $this->lastInsertId;
         
@@ -364,12 +379,13 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             FROM `hotornot-dev`.tblChallenges as tc
             	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
-            WHERE tc.status_id in ( 1,2,4 ) and is_verify = 1 
-                AND (tc.creator_id = ?  OR tcp.user_id = ? )
+            WHERE tc.status_id in ( 1,2,4 ) 
+            	AND is_verify = 1 
+                AND tcp.user_id = ? 
             ORDER BY tc.updated DESC
         ";
         
-        $params = array( $userId, $userId );
+        $params = array( $userId );
         $stmt = $this->prepareAndExecute( $sql, $params );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
         if( $data ){

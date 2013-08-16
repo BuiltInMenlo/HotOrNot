@@ -1,8 +1,8 @@
 #-- no .DS_Store files
 **/.DS_Store
 aws/
-php/api-shane/bin/gearman/admin/config*
-php/api-shane/classes/BIM/Config/Dynamic.php
-php/api-shane/bin/admin/.htaccess
-php/api-shane/test/quotes.sql
-php/api-shane/test/tumblr.o
+bin/gearman/admin/config*
+classes/BIM/Config/Dynamic.php
+bin/admin/.htaccess
+test/quotes.sql
+test/tumblr.o

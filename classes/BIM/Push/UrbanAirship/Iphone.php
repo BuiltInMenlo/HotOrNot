@@ -13,8 +13,6 @@ class BIM_Push_UrbanAirship_Iphone{
                 "sound" => "push_01.caf"
             )
         );
-        
-        print_r( $push );
         self::sendPush($push);
     }
     
