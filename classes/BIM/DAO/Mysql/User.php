@@ -2,6 +2,19 @@
 
 class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     
+    public function getRandomIds( $total = 1, $exclude = array() ){
+        $sql = "SELECT id FROM `hotornot-dev`.`tblUsers` ";
+        if( $exclude ){
+            $placeHolders = join('',array_fill(0, count( $exclude ), '?') );
+            $sql = "$sql where id not in ($placeHolders)";
+        }
+        $total = (int) $total;
+        $sql = "$sql ORDER BY RAND() limit $total";
+        
+		$stmt = $this->prepareAndExecute($sql,$exclude);
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+    }
+    
     public function getData( $id ){
         $sql = "select * from `hotornot-dev`.tblUsers where id = ?";
         $params = array( $id );
@@ -13,6 +26,13 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
             $data = $data[0];
         }
         return $data;
+    }
+    
+    public function flag( $userId, $count ){
+        $count = (int) $count;
+		$sql = "update `hotornot-dev`.tblUsers set abuse_ct = abuse_ct + ? where id = ?";
+		$params = array( $count, $userId );
+		$stmt = $this->prepareAndExecute($sql,$params);
     }
     
     public function getTotalVotes( $userId ){

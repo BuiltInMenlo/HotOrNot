@@ -84,12 +84,36 @@ class BIM_Model_Volley{
         return ($expires == 0);
     }
     
-    public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires ) {
+    public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires, $isVerify = false ) {
         $volleyId = null;
         $hashTagId = self::getHashTagId($userId, $hashTag);
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires );
+        $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify );
         return self::get( $volleyId );
+    }
+    
+    public static function getVerifyVolley( $targetId ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $id = $dao->getVerifyVolleyIdForUser( $targetId );
+        return BIM_Model_Volley::get( $id );
+    }
+    
+    public static function createVerifyVolley( $targetId, $returnFriends = false ){
+	    $target = BIM_Model_User::get( $targetId );
+	    
+        $friends = BIM_App_Social::getFriends( (object) array('userID' => $targetId, 'from' => 0, 'size' => 50 ) );
+        $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
+        $totalFriends = count( $friendIds );
+        $userIds = $friendIds;
+        if( $totalFriends < 50 ){
+            $usersNeeded = 50 - $totalFriends;
+            $userIds = array_merge( $userIds, BIM_Model_User::getRandomIds( $usersNeeded, array( $targetId ) ) );
+        }
+        $returnVolley = BIM_Model_Volley::create($targetId, '#__verifyMe__', $target->getAvatarUrl(), $userIds, 'N', -1, true);
+        if( $returnFriends ){
+            $returnVolley = (object) array( 'volley' => $returnVolley, 'friendIds' => $friendIds );
+        }
+        return $returnVolley;
     }
     
     public static function getHashTagId( $userId, $hashTag = 'N/A' ) {
@@ -159,6 +183,10 @@ class BIM_Model_Volley{
     
     public function isExtant(){
         return !empty( $this->id );
+    }
+    
+    public function isNotExtant(){
+        return (!$this->isExtant());
     }
     
     public function hasChallenger( $userId ){

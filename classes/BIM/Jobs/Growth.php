@@ -14,7 +14,7 @@ class BIM_Jobs_Growth extends BIM_Jobs{
         	'data' => array( 'userId' => $userId, 'addresses' => $addresses ),
         );
         
-        return $this->enqueueBackground( $job, 'growth' );
+        return $this->enqueueBackground( $job, 'smsinvites' );
     }
 	
     public function emailInvites( $workload ){
@@ -39,7 +39,7 @@ class BIM_Jobs_Growth extends BIM_Jobs{
             ),
         );
         
-        return $this->enqueueBackground( $job, 'growth' );
+        return $this->enqueueBackground( $job, 'smsinvites' );
     }
 	
     public function smsInvites( $workload ){

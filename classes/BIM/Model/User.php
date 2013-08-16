@@ -39,6 +39,19 @@ class BIM_Model_User{
 	    $this->sms_verified = self::isVerified( $this->id );
 	}
     
+	/**
+	 * increments or decrements the flag count for the user
+	 * 
+	 * @param boolean $approves
+	 */
+	public function flag( $count ){
+        $count = (int) $count;
+        $this->abuse_ct += $count;
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->flag( $this->id, $count );
+        $this->purgeFromCache();
+	}
+	
     public function setAgeRange( $ageRange ){
         $this->age = $ageRange;
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
@@ -219,6 +232,11 @@ class BIM_Model_User{
         return self::getMulti($ids);
     }
     
+    public static function getRandomIds( $total = 1, $exclude = array() ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        return $dao->getRandomIds( $total, $exclude );
+    }
+    
     public static function makeCacheKeys( $ids ){
         if( $ids ){
             $return1 = false;
@@ -243,7 +261,7 @@ class BIM_Model_User{
      * get them from the db, one a t a time
      * 
     **/
-    public static function getMulti( $ids ) {
+    public static function getMulti( $ids, $assoc = false ) {
         $userKeys = self::makeCacheKeys( $ids );
         $cache = new BIM_Cache( BIM_Config::cache() );
         $users = $cache->getMulti( $userKeys );
@@ -260,7 +278,7 @@ class BIM_Model_User{
                 }
             }
         }
-        return array_values( $users );        
+        return $assoc ? $users : array_values( $users );        
     }
         
     public static function get( $id, $forceDb = false ){
@@ -312,5 +330,13 @@ class BIM_Model_User{
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $ids = $dao->getUsersWithSimilarName( $username );
         return self::getMulti($ids);
+    }
+    
+    public function canPush(){
+        return (!empty($this->notifications) && $this->notifications == 'Y');
+    }
+    
+    public function hasSelfie(){
+        return !empty($this->img_url);
     }
 }

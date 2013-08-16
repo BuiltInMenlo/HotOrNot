@@ -4,9 +4,9 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     
     public function flagUser(){
         $input = (object) ($_POST ? $_POST : $_GET);
-        if (isset($input->userID)){
+        if ( !empty( $input->userID ) && property_exists($input, 'approves' ) && !empty( $input->targetID ) ){
             $users = new BIM_App_Users();
-		    return $users->flagUser($input->userID);
+		    return $users->flagUser( $input->userID, $input->approves, $input->targetID );
 		}
 		return array();
     }
