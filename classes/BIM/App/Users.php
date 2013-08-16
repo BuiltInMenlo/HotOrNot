@@ -350,9 +350,9 @@ class BIM_App_Users extends BIM_App_Base{
 	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
 	    $hits = $dao->findFriends( $list, $assoc );
 	    $hits = json_decode($hits);
+        $matches = array();
 	    if( isset( $hits->hits->hits ) && is_array($hits->hits->hits) ){
 	        $hits = &$hits->hits->hits;
-	        $matches = array();
 	        foreach( $hits as $hit ){
 	            $hit = $hit->fields->_source;
                 $user = self::getUser( $hit->id );
@@ -366,7 +366,7 @@ class BIM_App_Users extends BIM_App_Base{
                 }
 	        }
 	    }
-	    return $hits;
+	    return $matches;
 	}
 	
 	public function findfriendsEmail( $list ){
