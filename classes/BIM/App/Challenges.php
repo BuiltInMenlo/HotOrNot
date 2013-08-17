@@ -48,18 +48,18 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return An associative object for a challenge (array)
     **/
     public function acceptChallengeAsDefaultUser($volleyObject, $creator, $targetUser) {
-        $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824 );
+        $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824, 881 );
         if ( in_array($targetUser->id, $defaultUserID_arr) ) {
             $time = time() + mt_rand(30, 120);
             $this->createTimedAccept( $volleyObject, $creator, $targetUser, $time );
         }
     }
     
-    public function doAcceptChallemgeAsDefaultUser( $volleyObject, $creator, $targetUser ){
+    public function doAcceptChallemgeAsDefaultUser( $volley, $creator, $targetUser ){
         $imgUrl = "https://hotornot-challenges.s3.amazonaws.com/". $targetUser->device_token ."_000000000". mt_rand(0, 2);
-        $volleyObject->accept( $targetUser->id, $imgUrl );
+        $volley->accept( $targetUser->id, $imgUrl );
         if ($creator->notifications == "Y"){
-            $this->doAcceptNotification($volleyObject, $creator, $targetUser);
+            $this->doAcceptNotification($volley, $creator, $targetUser);
         }
     }
     
