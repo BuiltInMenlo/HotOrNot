@@ -30,7 +30,6 @@ class BIM_Model_Volley{
                     'img' => $challenger->challenger_img,
                     'score' => 0,
                     'joined' => $joined,
-                    'approved_creator' => $challenger->approved_creator
                 );
                 
                 $usersInChallenge = array( $creator, $target );

@@ -418,7 +418,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		AND
         		( 
             		(
-            			tc.status_id IN (1,4) 
+            			tc.status_id IN (1,2,4)
             			AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tcp.`user_id` IN ( $fIdPlaceholders ) ) 
             		)
             		OR 
