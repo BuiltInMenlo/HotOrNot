@@ -73,22 +73,21 @@
 		//[_controlsHolderView addSubview:captureButton];
 		
 		_infoHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whySelfie"]];
-		_infoHolderImageView.frame = CGRectOffset(_infoHolderImageView.frame, 33.0, ([UIScreen mainScreen].bounds.size.height - 414.0) * 0.5);
+		_infoHolderImageView.frame = CGRectOffset(_infoHolderImageView.frame, 27.0, ([UIScreen mainScreen].bounds.size.height - 409.0) * 0.5);
 		_infoHolderImageView.userInteractionEnabled = YES;
 		[self addSubview:_infoHolderImageView];
 		
 		UIButton *okInfoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		okInfoButton.frame = CGRectMake(30.0, 355.0, 194.0, 49.0);
+		okInfoButton.frame = CGRectMake(40.0, 320.0, 194.0, 49.0);
 		[okInfoButton setBackgroundImage:[UIImage imageNamed:@"okGetItButton_nonActive"] forState:UIControlStateNormal];
 		[okInfoButton setBackgroundImage:[UIImage imageNamed:@"okGetItButton_Active"] forState:UIControlStateHighlighted];
 		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
 		[_infoHolderImageView addSubview:okInfoButton];
 		
 		_submitHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"submitOverlayBG"]];
-		_submitHolderImageView.frame = CGRectOffset(_submitHolderImageView.frame, 33.0, ([UIScreen mainScreen].bounds.size.height - 244.0) * 0.5);
-		_submitHolderImageView.alpha = 0.0;
+		_submitHolderImageView.frame = CGRectOffset(_submitHolderImageView.frame, 353.0, ([UIScreen mainScreen].bounds.size.height - 244.0) * 0.5);
 		_submitHolderImageView.userInteractionEnabled = YES;
-		[self addSubview:_submitHolderImageView];
+		[_controlsHolderView addSubview:_submitHolderImageView];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		submitButton.frame = CGRectMake(30.0, 30.0, 194.0, 49.0);
@@ -137,7 +136,7 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"Your profile photo is how other people will know you're real!"
+														message:@"Not having a selfie can make you look fake! Please update your profile soon in your profile section.!"
 													   delegate:self
 											  cancelButtonTitle:@"Skip"
 											  otherButtonTitles:@"Take Photo", nil];
@@ -175,9 +174,6 @@
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
 	} completion:^(BOOL finished) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_submitHolderImageView.alpha = 1.0;
-		}];
 	}];
 	
 	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
@@ -200,9 +196,6 @@
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
 	} completion:^(BOOL finished) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_submitHolderImageView.alpha = 1.0;
-		}];
 	}];
 	
 	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
@@ -226,10 +219,6 @@
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 320.0, 0.0);
 	} completion:nil];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitHolderImageView.alpha = 0.0;
-	}];
 }
 
 - (void)_animateShutter {

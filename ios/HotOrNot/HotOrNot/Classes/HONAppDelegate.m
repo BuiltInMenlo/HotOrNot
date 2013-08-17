@@ -802,7 +802,8 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	self.window.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	self.window.backgroundColor = [UIColor whiteColor];
+	//self.window.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	//self.window.frame = CGRectOffset(self.window.frame, 0.0, 20.0);
 	
 	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
@@ -810,12 +811,16 @@ NSString * const kTwilioSMS = @"6475577873";
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
 														  [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18], UITextAttributeFont, nil]];
-	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:20.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
+	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate cartoGothicBook] fontWithSize:15], UITextAttributeFont,nil] forState:UIControlStateNormal];
+														  [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateNormal];
+	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+														  [UIColor whiteColor], UITextAttributeTextColor,
+														  [UIColor clearColor], UITextAttributeTextShadowColor,
+														  [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateHighlighted];
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSnapPreview:) name:@"SHOW_SNAP_PREVIEW" object:nil];

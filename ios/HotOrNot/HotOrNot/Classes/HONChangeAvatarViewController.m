@@ -237,8 +237,6 @@
 	_cameraOverlayView.delegate = self;
 	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
-	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
 
@@ -378,6 +376,11 @@
 
 
 #pragma mark - CameraOverlayView Delegates
+- (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	_clockCounter = 0;
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+}
+
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Change Avatar - Cancel"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:

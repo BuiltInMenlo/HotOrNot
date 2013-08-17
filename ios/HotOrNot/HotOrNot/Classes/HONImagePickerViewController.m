@@ -46,6 +46,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (readonly, nonatomic, assign) HONChallengeExpireType challengeExpireType;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic) BOOL isFirstAppearance;
+@property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic, strong) NSTimer *focusTimer;
 @property (nonatomic, strong) NSTimer *clockTimer;
 @property (nonatomic) int clockCounter;
@@ -253,6 +254,8 @@ const CGFloat kFocusInterval = 0.5f;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
+	_hasSubmitted = NO;
+	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], (_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:(_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -269,10 +272,12 @@ const CGFloat kFocusInterval = 0.5f;
 			
 		} else {
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
+			VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
 			
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
+			if (_uploadCounter == 4) {
+				[_progressHUD hide:YES];
+				_progressHUD = nil;
+			}
 			
 			if ([[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
 				if (_progressHUD == nil)
@@ -287,22 +292,26 @@ const CGFloat kFocusInterval = 0.5f;
 				
 			} else {
 				///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 				
-				if (![_subjectName isEqualToString:@"#verifyMe"])
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+//				if (![_subjectName isEqualToString:@"#verifyMe"])
+//					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
+//				
+//				else {
+//					if (_challengeSubmitType == HONChallengeSubmitTypeAccept)
+//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:@"Y"];
+//				}
 				
-				else {
-					if (_challengeSubmitType == HONChallengeSubmitTypeAccept)
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:@"Y"];
-				}
-				
-				if (_imagePicker.parentViewController != nil) {
-					[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+				_hasSubmitted = YES;
+				if (_uploadCounter == 4) {
+					if (_imagePicker.parentViewController != nil) {
+						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+						}];
+						
+					} else
 						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-					}];
-					
-				} else
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+				}
 			}
 		}
 		
@@ -561,8 +570,8 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	if (camera_total == 0) {
 		UIAlertView *alertView = [[UIAlertView alloc]
-								  initWithTitle:@"Automatic Camera"
-								  message:@"Volley uses an automatic camera."
+								  initWithTitle:@""
+								  message:@"Please note that Volley uses an automatic camera to help speed up your posts. Volley on!"
 								  delegate:self
 								  cancelButtonTitle:@"OK"
 								  otherButtonTitles:nil];
@@ -852,16 +861,20 @@ const CGFloat kFocusInterval = 0.5f;
 		[usernames addObject:vo.fullName];
 	
 	
-	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil) && _challengeSubmitType != HONChallengeSubmitTypeJoin)
-		_challengeSubmitType = HONChallengeSubmitTypeMatch;
-	
-	if ([_addFollowing count] == 1) {
-		_challengeSubmitType = HONChallengeSubmitTypeOpponentName;
-		_challengerName = ((HONUserVO *)[_addFollowing objectAtIndex:0]).username;
-	
-	} else if ([_addFollowing count] > 1)
-		_challengeSubmitType = HONChallengeSubmitTypeJoin;
-	
+//	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil) && _challengeSubmitType != HONChallengeSubmitTypeJoin)
+//		_challengeSubmitType = HONChallengeSubmitTypeMatch;
+//	
+//	if ([_addFollowing count] == 1) {
+//		_challengeSubmitType = HONChallengeSubmitTypeOpponentName;
+//		_challengerName = ((HONUserVO *)[_addFollowing objectAtIndex:0]).username;
+//	
+//	} else
+//
+//	if ([_addFollowing count] > 1 && _challengeVO != nil)
+//		_challengeSubmitType = HONChallengeSubmitTypeJoin;
+//	
+//	else
+//		_challengeSubmitType = HONChallengeSubmitTypeMatch;
 	
 	[_cameraOverlayView updateChallengers:[usernames copy]];
 	[_previewView setUsernames:[usernames copy]];
@@ -973,11 +986,11 @@ const CGFloat kFocusInterval = 0.5f;
 									   _challengerName, @"username",
 									   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
 		
-		if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin)
-			_challengeSubmitType = HONChallengeSubmitTypeAccept;
+//		if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin)
+//			_challengeSubmitType = HONChallengeSubmitTypeAccept;
 		
 		if ([_addFollowing count] > 1) {
-			_challengeSubmitType = HONChallengeSubmitTypeJoin;
+//			_challengeSubmitType = HONChallengeSubmitTypeJoin;
 			
 			NSString *usernames = @"";
 			for (HONUserVO *vo in _addFollowing)
@@ -1015,6 +1028,18 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 		
 		[_previewView uploadComplete];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+		
+		
+		if (_hasSubmitted) {
+			if (_imagePicker.parentViewController != nil) {
+				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+				}];
+				
+			} else
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+		}
 	}
 }
 
@@ -1056,11 +1081,11 @@ const CGFloat kFocusInterval = 0.5f;
 										   _challengerName, @"username",
 										   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
 			
-			if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin)
-				_challengeSubmitType = HONChallengeSubmitTypeAccept;
+//			if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin)
+//				_challengeSubmitType = HONChallengeSubmitTypeAccept;
 			
 			if ([_addFollowing count] > 1) {
-				_challengeSubmitType = HONChallengeSubmitTypeJoin;
+//				_challengeSubmitType = HONChallengeSubmitTypeJoin;
 				
 				NSString *usernames = @"";
 				for (HONUserVO *vo in _addFollowing)

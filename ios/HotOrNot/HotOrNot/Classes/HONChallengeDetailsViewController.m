@@ -16,8 +16,9 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONSnapPreviewViewController.h"
+#import "HONChallengeOverlayView.h"
 
-@interface HONChallengeDetailsViewController () <UIActionSheetDelegate>
+@interface HONChallengeDetailsViewController () <UIActionSheetDelegate, HONChallengeOverlayViewDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -27,6 +28,7 @@
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) NSTimer *tapTimer;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
+@property (nonatomic, strong) HONChallengeOverlayView *challengeOverlayView;
 @property (nonatomic) BOOL isDoubleTap;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
@@ -37,6 +39,8 @@
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		_challengeVO = vo;
+		
+		NSLog(@"CHALLENGE DETAILS:[%@]", _challengeVO.dictionary);
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removePreview:) name:@"REMOVE_PREVIEW" object:nil];
 	}
@@ -169,10 +173,22 @@
 	self.navigationController.navigationBar.topItem.title = _challengeVO.subjectName;
 	
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
-	_isChallengeOpponent = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID);
+	_isChallengeOpponent = NO;
+	for (HONOpponentVO *vo in _challengeVO.challengers) {
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.userID) {
+			_isChallengeOpponent = YES;
+			break;
+		}
+	}
 	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, 520.0 + ((kSnapMediumDim + 1.0) * ([_challengeVO.challengers count] / 3)));
+	int respondedOpponents = 0;
+	for (HONOpponentVO *vo in _challengeVO.challengers) {
+		if ([vo.imagePrefix length] > 0)
+			respondedOpponents++;
+	}
+	
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 61.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
+	_scrollView.contentSize = CGSizeMake(320.0, 570.0 + (kSnapMediumDim * (respondedOpponents / 5)));
 	_scrollView.pagingEnabled = NO;
 	_scrollView.showsVerticalScrollIndicator = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
@@ -183,7 +199,7 @@
 	
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 61.0)];
 	headerView.backgroundColor = [UIColor whiteColor];
-	[_scrollView addSubview:headerView];
+	[self.view addSubview:headerView];
 	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 38.0, 38.0)];
 	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
@@ -219,7 +235,7 @@
 	[headerView addSubview:avatarButton];
 
 	__weak typeof(self) weakSelf = self;
-	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 56.0, 294.0, 348.0)];
+	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 0.0, 294.0, 348.0)];
 	_creatorChallengeImageView.userInteractionEnabled = YES;
 	_creatorChallengeImageView.alpha = [_creatorChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]]];
 	[_scrollView addSubview:_creatorChallengeImageView];
@@ -237,7 +253,7 @@
 	[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:leftButton];
 	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 279.0, 320.0, 200.0)];
+	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 223.0, 320.0, 200.0)];
 	footerHolderView.backgroundColor = [UIColor whiteColor];
 	[_scrollView addSubview:footerHolderView];
 	
@@ -292,41 +308,46 @@
 	joinButton.frame = CGRectMake(244.0, 8.0, 64.0, 39.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-	[joinButton addTarget:self action:(_isChallengeOpponent) ? @selector(_goAcceptChallenge) : @selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:joinButton];
 	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 334.0);
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 278.0);
 	[_scrollView addSubview:dividerImageView];
 	
-	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 344.0, 300.0, 20.0)];
+	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 288.0, 300.0, 20.0)];
 	challengersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	challengersLabel.textColor = [HONAppDelegate honGrey455Color];
 	challengersLabel.backgroundColor = [UIColor clearColor];
-	challengersLabel.text = [NSString stringWithFormat:@"%d Volley%@", [_challengeVO.challengers count], ([_challengeVO.challengers count] != 1) ? @"s" : @""];
+	challengersLabel.text = [NSString stringWithFormat:@"%d Volley%@ - Tap and Hold to view", respondedOpponents, (respondedOpponents != 1) ? @"s" : @""];
 	[_scrollView addSubview:challengersLabel];
 	
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 375.0, 320.0, (kSnapMediumDim + 1.0) * (([_challengeVO.challengers count] / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 319.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor whiteColor];
 	[_scrollView addSubview:_gridHolderView];
 	
 	int opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (opponentCounter % 4), (kSnapMediumDim + 1.0) * (opponentCounter / 4));
-		
-		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
-		[_gridHolderView addSubview:opponentHolderView];
-		
-		UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-		opponentImageView.userInteractionEnabled = YES;
-		[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]] placeholderImage:nil];
-		[opponentHolderView addSubview:opponentImageView];
-		
-		UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		rightButton.frame = opponentImageView.frame;
-		[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-		[rightButton addTarget:self action:@selector(_goTapOpponent:) forControlEvents:UIControlEventTouchUpInside];
-		[opponentHolderView addSubview:rightButton];
+		if ([vo.imagePrefix length] > 0) {
+			CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (opponentCounter % 4), (kSnapMediumDim + 1.0) * (opponentCounter / 4));
+			
+			UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
+			[_gridHolderView addSubview:opponentHolderView];
+			
+			UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+			opponentImageView.userInteractionEnabled = YES;
+			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]] placeholderImage:nil];
+			[opponentHolderView addSubview:opponentImageView];
+			
+			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			rightButton.frame = opponentImageView.frame;
+			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+			[rightButton addTarget:self action:@selector(_goTapOpponent:) forControlEvents:UIControlEventTouchUpInside];
+			[rightButton setTag:vo.userID];
+			[opponentHolderView addSubview:rightButton];
+			
+			opponentCounter++;
+		}
 		
 //		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 38.0, 38.0, 38.0)];
 //		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
@@ -340,8 +361,6 @@
 //		[challengerAvatarButton addTarget:self action:@selector(_goOpponentTimeline:) forControlEvents:UIControlEventTouchUpInside];
 //		[challengerAvatarButton setTag:opponentCounter];
 //		[opponentHolderView addSubview:challengerAvatarButton];
-		
-		opponentCounter++;
 	}
 }
 
@@ -354,11 +373,10 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
-		NSLog(@"FRAME:%@", NSStringFromCGRect(_gridHolderView.frame));
-		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
 		
 		CGRect creatorFrame = CGRectMake(_creatorChallengeImageView.frame.origin.x, _creatorChallengeImageView.frame.origin.y, _creatorChallengeImageView.frame.size.width, _creatorChallengeImageView.frame.size.height * 0.5);
 		if (CGRectContainsPoint(creatorFrame, touchPoint))
+			_opponentVO = _challengeVO.creatorVO;
 			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO];
 		
 		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
@@ -377,6 +395,11 @@
 			_snapPreviewViewController = nil;
 		}
 		
+		_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
+		_challengeOverlayView.delegate = self;
+		[self.view addSubview:_challengeOverlayView];
+		
+		/*
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
@@ -384,7 +407,7 @@
 														otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:0];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+		[actionSheet showInView:[HONAppDelegate appTabBarController].view];*/
 	}
 }
 
@@ -544,7 +567,7 @@
 	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
 }
 
-- (void)_goUpvoteChallenger:(int)index {
+- (void)_goUpvoteChallenger:(int)userID {
 //	_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
 //	_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
 //	[_rHolderView addSubview:_upvoteImageView];
@@ -569,7 +592,7 @@
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 		
 		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
-		[self _upvoteChallenge:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).userID];
+		[self _upvoteChallenge:userID];
 	}
 	
 	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
@@ -593,6 +616,57 @@
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
 
+
+#pragma mark - ChallengeOverlay Delegates
+- (void)challengeOverlayViewClose:(HONChallengeOverlayView *)challengeOverlayView {
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
+	}
+}
+
+- (void)challengeOverlayViewUpvote:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_opponentVO = opponentVO;
+	
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
+	}
+	
+	if (_opponentVO.userID == _challengeVO.creatorVO.userID)
+		[self _goUpvoteCreator];
+	
+	else
+		[self _goUpvoteChallenger:_opponentVO.userID];
+}
+
+- (void)challengeOverlayViewShowMore:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Show More"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
+	}
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:@"Report Abuse"
+													otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:0];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {

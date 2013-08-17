@@ -118,6 +118,8 @@
 - (void)loadView {
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor whiteColor];
+	
 	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 	self.navigationController.navigationBar.topItem.title = @"Explore";
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
@@ -205,8 +207,8 @@
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
 		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
-//		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"discover_banner"];
-//		[[NSUserDefaults standardUserDefaults] synchronize];
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"discover_banner"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
 }
 

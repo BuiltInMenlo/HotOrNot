@@ -14,11 +14,11 @@
 const CGFloat kFocusInterval;
 
 typedef enum {
-	HONChallengeSubmitTypeMatch			= 1,	/** Pairs w/ existing or creates new */
+	HONChallengeSubmitTypeMatch			= 14,	/** Pairs w/ existing or creates new */
 	HONChallengeSubmitTypeAccept		= 4,	/** Accepts */
 	HONChallengeSubmitTypeOpponentID	= 9,	/** Directed at a user */
 	HONChallengeSubmitTypeOpponentName	= 7,	/** Directed at a user */
-	HONChallengeSubmitTypeJoin			= 14	/** Joins an in-progress challenge */
+	HONChallengeSubmitTypeJoin			= 69	/** Joins an in-progress challenge */
 } HONChallengeSubmitType;
 
 typedef enum {

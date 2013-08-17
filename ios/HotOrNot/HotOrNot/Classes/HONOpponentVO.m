@@ -21,7 +21,7 @@
 	vo.fbID = [dictionary objectForKey:@"fb_id"];
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.avatarURL = [dictionary objectForKey:@"avatar"];
-	vo.imagePrefix = [dictionary objectForKey:@"img"];
+	vo.imagePrefix = ([dictionary objectForKey:@"img"] != [NSNull null]) ? [dictionary objectForKey:@"img"] : @"";
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];

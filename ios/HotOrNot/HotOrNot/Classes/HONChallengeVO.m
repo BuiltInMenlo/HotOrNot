@@ -77,7 +77,7 @@
 														  [dictionary objectForKey:@"added"], @"joined", nil]];
 	
 	vo.challengers = [NSMutableArray array];
-	for (NSDictionary *challenger in [dictionary objectForKey:@"challengers"]) {
+	for (NSDictionary *challenger in [[[dictionary objectForKey:@"challengers"] reverseObjectEnumerator] allObjects]) {
 		[vo.challengers addObject:[HONOpponentVO opponentWithDictionary:challenger]];
 	}
 	

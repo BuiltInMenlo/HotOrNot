@@ -143,8 +143,8 @@
 	
 	_friendButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_friendButton.frame = CGRectMake(106.0, 194.0, 144.0, 44.0);
-	[_friendButton setBackgroundImage:[UIImage imageNamed:(isFriend) ? @"removeFriendButton_Active" : @"addFriendButton_nonActive"] forState:UIControlStateNormal];
-	[_friendButton setBackgroundImage:[UIImage imageNamed:(isFriend) ? @"removeFriendButton_nonActive" : @"addFriendButton_Active"] forState:UIControlStateHighlighted];
+	[_friendButton setBackgroundImage:[UIImage imageNamed:(isFriend) ? @"removeFriendButton_nonActive" : @"addFriendButton_nonActive"] forState:UIControlStateNormal];
+	[_friendButton setBackgroundImage:[UIImage imageNamed:(isFriend) ? @"removeFriendButton_Active" : @"addFriendButton_Active"] forState:UIControlStateHighlighted];
 	[_friendButton addTarget:self action:(isFriend) ? @selector(_goRemoveFriend) : @selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
 	_friendButton.hidden = isUser;
 	[self addSubview:_friendButton];
@@ -158,7 +158,7 @@
 //	[self addSubview:snapButton];
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(186.0, 194.0, 64.0, 44.0);
+	friendsButton.frame = CGRectMake(106.0, 194.0, 144.0, 44.0);
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
 	[friendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
@@ -205,8 +205,8 @@
 }
 
 - (void)_goAddFriend {
-	[_friendButton setBackgroundImage:[UIImage imageNamed:@"removeFriendButton_Active"] forState:UIControlStateNormal];
-	[_friendButton setBackgroundImage:[UIImage imageNamed:@"removeFriendButton_nonActive"] forState:UIControlStateHighlighted];
+	[_friendButton setBackgroundImage:[UIImage imageNamed:@"removeFriendButton_nonActive"] forState:UIControlStateNormal];
+	[_friendButton setBackgroundImage:[UIImage imageNamed:@"removeFriendButton_Active"] forState:UIControlStateHighlighted];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
 	

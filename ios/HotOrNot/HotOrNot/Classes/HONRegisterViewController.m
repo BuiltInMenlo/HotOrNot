@@ -363,8 +363,8 @@
 	_datePicker.minimumDate = [dateFormat dateFromString:@"1930-01-01"];
 	_datePicker.maximumDate = [NSDate date];// [dateFormat dateFromString:@"2012-01-01"];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
-	
 	[self.view addSubview:_datePicker];
+	_birthday = @"2000-01-01";
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[self.view addSubview:_tutorialHolderView];
@@ -375,7 +375,7 @@
 	[_tutorialHolderView addSubview:page1ImageView];
 	
 	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = CGRectMake(42.0, _tutorialHolderView.frame.size.height - 77.0, 237.0, 67.0);
+	closeTutorialButton.frame = CGRectMake(42.0, _tutorialHolderView.frame.size.height - (([HONAppDelegate isRetina5]) ? 93.0 : 82.0), 237.0, 67.0);
 	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
 	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
 	[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
@@ -451,8 +451,8 @@
 	
 	} else {
 		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > 630720000) {
-			[[[UIAlertView alloc] initWithTitle:@"Too Old!"
-										message:@"This app is for kids!"
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:@"Womp! Womp! You are a little too old to join Volley at this time. We are building a fun & safe community that empowers users with the mechanics to keep themselves safe. To tackle these privacy issues head on we will be only excepting younger members at this time. Please check back soon as the network matures. support@letsvolley.com"
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];

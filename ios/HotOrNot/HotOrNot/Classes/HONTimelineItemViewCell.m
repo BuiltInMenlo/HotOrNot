@@ -114,7 +114,13 @@
 	_challengeVO = challengeVO;
 	
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
-	_isChallengeOpponent = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID);
+	_isChallengeOpponent = NO;
+	for (HONOpponentVO *vo in _challengeVO.challengers) {
+		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.userID) {
+			_isChallengeOpponent = YES;
+			break;
+		}
+	}
 	
 	
 	__weak typeof(self) weakSelf = self;
@@ -282,7 +288,7 @@
 	joinButton.frame = CGRectMake(244.0, 0.0, 64.0, 39.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-	[joinButton addTarget:self action:(_isChallengeOpponent) ? @selector(_goAcceptChallenge) : @selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:joinButton];
 	
 //	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -392,7 +398,7 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).userID, ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username], @"challenger", nil]];
+									  [NSString stringWithFormat:@"%d - %@", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).userID, ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).username], @"challenger", nil]];
 	
 	[self.delegate timelineItemViewCell:self showUserChallenges:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).username];
 }
@@ -487,11 +493,11 @@
 		
 		CGRect creatorFrame = CGRectMake(_lHolderView.frame.origin.x, _lHolderView.frame.origin.y, _lHolderView.frame.size.width, _lHolderView.frame.size.height);
 		if (CGRectContainsPoint(creatorFrame, touchPoint))
-			[self.delegate timelineItemViewCell:self showPreview:_challengeVO.creatorVO];
+			[self.delegate timelineItemViewCell:self showPreview:_challengeVO.creatorVO forChallenge:_challengeVO];
 		
 		if (CGRectContainsPoint(_rHolderView.frame, touchPoint)) {
 			int index = touchPoint.y / (kSnapMediumDim + 1.0);
-			[self.delegate timelineItemViewCell:self showPreview:(HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]];
+			[self.delegate timelineItemViewCell:self showPreview:(HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index] forChallenge:_challengeVO];
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
@@ -536,10 +542,10 @@
 				break;}
 				
 			case 1:
-				if (_isChallengeOpponent)
-					[self  _goAcceptChallenge];
-				
-				else
+//				if (_isChallengeOpponent)
+//					[self  _goAcceptChallenge];
+//				
+//				else
 					[self _goJoinChallenge];
 				
 				break;

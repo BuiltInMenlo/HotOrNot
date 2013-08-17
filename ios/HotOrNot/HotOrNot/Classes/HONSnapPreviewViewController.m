@@ -112,9 +112,11 @@
 	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-	NSTimeInterval diff = [_challengeVO.addedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-03 00:00:00"]];
+	NSTimeInterval diff = [(_challengeVO != nil) ? _challengeVO.addedDate : _opponentVO.joinedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-03 00:00:00"]];
 	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 10500 && diff > 0);
 	BOOL isCreator = (_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
+	
+	NSLog(@"ORIGINAL:[%@][%d] DIFF:[%f]", [dateFormat stringFromDate:_challengeVO.updatedDate], isOriginalImageAvailable, diff);
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(128.0, ([UIScreen mainScreen].bounds.size.height - 64.0) * 0.5)];
 	[self.view addSubview:imageLoadingView];

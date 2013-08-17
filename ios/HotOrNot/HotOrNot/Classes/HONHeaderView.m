@@ -22,9 +22,9 @@
 		
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 13.0, 290.0, 24.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 11.0, 290.0, 20.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:20];
+		_titleLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;
@@ -68,9 +68,9 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 13.0, 290.0, 24.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 11.0, 290.0, 20.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:20];
+		_titleLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		_titleLabel.textColor = [UIColor whiteColor];
 		_titleLabel.textAlignment = NSTextAlignmentCenter;
 		_titleLabel.text = _title;

@@ -121,14 +121,6 @@
 	_addFriendsButton.alpha = 0.0;
 	//[self addSubview:_addFriendsButton];
 	
-	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 130.0, 300.0, 24.0)];
-	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
-	_usernamesLabel.textColor = [UIColor whiteColor];
-	_usernamesLabel.backgroundColor = [UIColor clearColor];
-	_usernamesLabel.numberOfLines = 0;
-	_usernamesLabel.text = @"";
-	[self addSubview:_usernamesLabel];
-	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 33.0, 33.0)];
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
 	_avatarImageView.alpha = 0.0;
@@ -190,14 +182,23 @@
 	_subjectTextField.delegate = self;
 	[self addSubview:_subjectTextField];
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 110.0, 64.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 115.0, 64.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
 	_uploadingImageView.animationDuration = 0.5f;
 	_uploadingImageView.animationRepeatCount = 0;
 	_uploadingImageView.alpha = 0.0;
+	[_uploadingImageView startAnimating];
 	[self addSubview:_uploadingImageView];
+	
+	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 135.0, 300.0, 24.0)];
+	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+	_usernamesLabel.textColor = [UIColor whiteColor];
+	_usernamesLabel.backgroundColor = [UIColor clearColor];
+	_usernamesLabel.numberOfLines = 0;
+	_usernamesLabel.text = @"";
+	[self addSubview:_usernamesLabel];
 		
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 73.0, 320.0, 53.0);
@@ -206,14 +207,6 @@
 	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
 	_submitButton.hidden = YES;
 	[self addSubview:_submitButton];
-	
-//	UIButton *sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	sendButton.frame = CGRectMake(255.0, 2.0, 64.0, 44.0);
-//	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_nonActive"] forState:UIControlStateNormal];
-//	[sendButton setBackgroundImage:[UIImage imageNamed:@"sendButton_Active"] forState:UIControlStateHighlighted];
-//	[sendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//	[sendButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-//	[_subjectBGView addSubview:sendButton];
 }
 
 

@@ -24,11 +24,12 @@
 #import "HONInviteNetworkViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONSnapPreviewViewController.h"
+#import "HONVerifyOverlayView.h"
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate, HONVerifyOverlayViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *recentChallenges;
 @property (nonatomic, strong) NSMutableArray *olderChallenges;
@@ -36,6 +37,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 @property (nonatomic, strong) NSDate *lastDate;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
+@property (nonatomic, strong) HONVerifyOverlayView *verifyOverlayView;
 @property (nonatomic, strong) NSIndexPath *idxPath;
 @property (nonatomic, strong) NSMutableArray *friends;
 //@property (nonatomic, strong) UIButton *publicButton;
@@ -73,6 +75,22 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 - (BOOL)shouldAutorotate {
 	return (NO);
+}
+
+
+#pragma mark - Touch Handlers
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//	UITouch *touch = [touches anyObject];
+//	CGPoint location = [touch locationInView:self.view];
+	
+	CGPoint touchPoint = [[[event touchesForView:self.view] anyObject] locationInView:self.view];
+	
+	NSLog(@"TOUCH:[%@][%@]", NSStringFromCGPoint(touchPoint), NSStringFromCGRect(_verifyOverlayView.frame));
+	
+	if (!CGRectContainsPoint(_verifyOverlayView.frame, touchPoint)) {
+		[_verifyOverlayView removeFromSuperview];
+		_verifyOverlayView = nil;
+	}
 }
 
 
@@ -329,6 +347,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 - (void)loadView {
 	[super loadView];
 	
+	self.view.backgroundColor = [UIColor whiteColor];
+	
 	_isPrivate = NO;
 	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 	bgImageView.frame = self.view.bounds;
@@ -336,7 +356,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	
 	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 	
-	self.navigationController.navigationBar.topItem.title = @"Messages";
+	self.navigationController.navigationBar.topItem.title = @"Verify";
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
@@ -353,7 +373,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[_bannerView addSubview:bannerButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - 50.0 - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
 	_tableView.delegate = self;
@@ -362,6 +382,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
+	
+	UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goTap:)];
+	[self.view addGestureRecognizer:tapGestureRecognizer];
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	[_tableView addGestureRecognizer:lpGestureRecognizer];
@@ -441,8 +464,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
 		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
-//		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];
-//		[[NSUserDefaults standardUserDefaults] synchronize];
+		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
 }
 
@@ -488,11 +511,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 
 #pragma mark - UI Presentation
+- (void)_goTap:(UITapGestureRecognizer *)tapGestureRecognizer {
+	//CGPoint touchPoint =
+}
+
+
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	CGPoint touchPoint = [lpGestureRecognizer locationInView:_tableView];
+	NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:touchPoint];
+	
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
-		CGPoint touchPoint = [lpGestureRecognizer locationInView:_tableView];
-		NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:touchPoint];
-		
 		if (indexPath != nil) {
 			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
 			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:vo];
@@ -505,6 +533,15 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			_snapPreviewViewController = nil;
 		}
 		
+		if (indexPath != nil) {
+			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
+			_verifyOverlayView = [[HONVerifyOverlayView alloc] initWithChallenge:vo];
+			_verifyOverlayView.delegate = self;
+			
+			[self.view addSubview:_verifyOverlayView];
+		}
+		
+		/*
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
@@ -513,6 +550,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+		 */
 	}
 }
 
@@ -556,6 +594,49 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[self _retrieveNextChallengeBlock];
 }
 
+
+#pragma mark - VerfiyOverlay Delegates
+- (void)verifyOverlayView:(HONVerifyOverlayView *)cameraOverlayView approve:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"APPROVE:[%@]", challengeVO.dictionary);
+	
+	_challengeVO = challengeVO;
+	
+	if (isApproved) {
+		[[Mixpanel sharedInstance] track:@"Activity - Approve"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@"This person will be approved"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:4];
+		[alertView show];
+		
+	} else {
+		[[Mixpanel sharedInstance] track:@"Activity - Disprove"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@"This person will be flagged"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:3];
+		[alertView show];
+	}
+}
+
+- (void)verifyOverlayViewClose:(HONVerifyOverlayView *)verifyOverlayView {
+	if (_verifyOverlayView != nil) {
+		[_verifyOverlayView removeFromSuperview];
+		_verifyOverlayView = nil;
+	}
+}
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -870,6 +951,89 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					_progressHUD = nil;
 				}];
 				break;
+		}
+	
+		// flag
+	} else if (alertView.tag == 3) {
+		if (buttonIndex == 1) {
+			if (_verifyOverlayView != nil) {
+				[_verifyOverlayView removeFromSuperview];
+				_verifyOverlayView = nil;
+			}
+			
+			[[Mixpanel sharedInstance] track:@"Activity - Disprove Alert"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+			
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 10], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"targetID",
+									[NSString stringWithFormat:@"%d", 0], @"approves",
+									nil];
+			
+			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+					
+				} else {
+					[self _goRefresh];
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+				
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+			}];
+		}
+		
+		// approve
+	} else if (alertView.tag == 4) {
+		if (buttonIndex == 1) {
+			[[Mixpanel sharedInstance] track:@"Activity - Approve Alert"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+			
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 10], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"targetID",
+									[NSString stringWithFormat:@"%d", 1], @"approves",
+									nil];
+			
+			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+					
+				} else {
+					[self _goRefresh];
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+				
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+			}];
 		}
 	}
 }
