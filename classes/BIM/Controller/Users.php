@@ -14,11 +14,17 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function updateUsernameAvatar(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) ){
-            $users = new BIM_App_Users();
+            $userId = $this->resolveUserId( $input->userID );
             $birthdate = !empty( $input->age ) ? $input->age : null;
-			return $users->updateUsernameAvatar($input->userID, $input->username, $input->imgURL, $birthdate );
+            if( !$birthdate || ($birthdate && BIM_Utils::ageOK( $birthdate ) ) ){
+                $users = new BIM_App_Users();
+                if( !empty( $input->firstRun ) ){
+                    $users->firstRunComplete($userId);
+                }
+			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $birthdate );
+            }
 		}
-		return array();
+		return false;
     }
     
     public function getUserFromName(){

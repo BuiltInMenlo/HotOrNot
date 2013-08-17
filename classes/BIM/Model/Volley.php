@@ -29,7 +29,8 @@ class BIM_Model_Volley{
                     'avatar' => $target->getAvatarUrl(),
                     'img' => $challenger->challenger_img,
                     'score' => 0,
-                    'joined' => $joined
+                    'joined' => $joined,
+                    'approved_creator' => $challenger->approved_creator
                 );
                 
                 $usersInChallenge = array( $creator, $target );
@@ -62,6 +63,7 @@ class BIM_Model_Volley{
             }
             $this->expires = $volley->expires;
             $this->is_private = $volley->is_private;
+            $this->is_verify = $volley->is_verify;
         }
     }
     
@@ -82,6 +84,39 @@ class BIM_Model_Volley{
             }
         }
         return ($expires == 0);
+    }
+    
+    /**
+     * 
+     * returns true or false depending
+     * if the passed user id can cast an approve vote
+     * for the creator of this volley
+     * 
+     * This ONLY anly applies to a verification volley
+     * 
+     * if this IS NOT a verification volley then this 
+     * function will always return true
+     * 
+     * @param int $userId
+     */
+    public function canApproveCreator( $userId ){
+        $OK = true;
+        if( !empty($this->is_verify) ){
+            $OK = false;
+            if( ! $this->isCreator($userId) && ! $this->hasApproved( $userId ) ){
+                $OK = true;
+            }
+        }
+        return $OK;
+    }
+    
+    public function isCreator( $userId ){
+        return ($this->creator->id == $userId );
+    }
+    
+    public function hasApproved( $userId ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        return $dao->hasApproved( $this->id, $userId );
     }
     
     public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires, $isVerify = false ) {

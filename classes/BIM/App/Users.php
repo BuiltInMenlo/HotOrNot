@@ -194,26 +194,36 @@ class BIM_App_Users extends BIM_App_Base{
 	/** 
 	 * Flags the challenge for abuse / inappropriate content
 	 * @param $user_id The user's ID who is claiming abuse (integer)
-	 * @param $challenge The ID of the challenge to flag (integer)
+	 * @param $approves integer for inc / dec the abuse count
+	 * @param $targetId - integer the id opf the allegedly abusive user
+	 * 
 	 * @return An associative object (array)
 	**/
 	public function flagUser ( $userId, $approves, $targetId ) {
     	$target = BIM_Model_User::get( $targetId );
+    	$user = BIM_Model_User::get( $userId );
 	    if( $target->isExtant() ){
     	    $verifyVolley = BIM_Model_Volley::getVerifyVolley( $targetId );
-    	    $approves = ($approves ? -1 : 1);
-    	    if( $verifyVolley->isNotExtant() && $approves > 0 ){
-                $volleyData = BIM_Model_Volley::createVerifyVolley( $targetId, true );
-        	    $target->flag( $approves );
-                if( !empty( $volleyData->friendIds ) ){
-                    $this->sendVerifyPush( $targetId, $volleyData->friendIds );
-                }
-                $this->sendFlaggedEmail($userId);
-    	    } else if( $verifyVolley->isExtant() ){
-        	    $target->flag( $approves );
-        	    if( $approves < 0 ){
-    	            $this->sendApprovePush( $targetId );
+    	    // make sure the flagged user cannot 
+    	    // upvote or downvote themselves
+    	    if( $verifyVolley->canApproveCreator( $userId ) ){
+        	    $approves = ($approves ? -1 : 1);
+        	    if( $verifyVolley->isNotExtant() && $approves > 0 ){
+                    $volleyData = BIM_Model_Volley::createVerifyVolley( $targetId, true );
+            	    $target->flag( $verifyVolley->id, $userId, $approves );
+                    if( !empty( $volleyData->friendIds ) ){
+                        $this->sendVerifyPush( $targetId, $volleyData->friendIds );
+                    }
+                    $this->sendFlaggedEmail($userId);
+        	    } else if( $verifyVolley->isExtant() ){
+            	    $target->flag( $verifyVolley->id, $userId, $approves );
+            	    if( $approves < 0 ){
+        	            $this->sendApprovePush( $targetId );
+            	    }
         	    }
+        	    $target->purgeFromCache();
+        	    $user->purgeFromCache();
+        	    $verifyVolley->purgeFromCache();
     	    }
 	    }
 		return array(
@@ -560,7 +570,7 @@ class BIM_App_Users extends BIM_App_Base{
             if( ! $user->hasSelfie() ){
                 // flag them 5 times
                 // since they refused to give a selfie
-                $user->flag(5);
+                $this->flagUser(2394, 5, $userId);
             }
             BIM_Model_Volley::createVerifyVolley($userId);
         }

@@ -2,6 +2,14 @@
 
 class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     
+    public function hasApproved( $volleyId, $userId ){
+        $sql = "select flag from `hotornot-dev`.tblFlaggedUserApprovals where user_id = ? and challenge_id = ?";
+        $params = array( $userId, $volleyId );
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        return $data ? true : false;
+    }
+    
     public function getVerifyVolleyIdForUser( $userId ){
         $sql = "
             select id
@@ -371,29 +379,28 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         }
         return $ids;
     }
-    
+    /**
+     * @param unknown_type $userId
+     */
     public function getVerificationVolleyIds( $userId ){
         
         $sql = "
-            SELECT tc.id 
+            SELECT tc.id
             FROM `hotornot-dev`.tblChallenges as tc
-            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
-            	ON tc.id = tcp.challenge_id
-            WHERE tc.status_id in ( 1,2,4 ) 
-            	AND is_verify = 1 
-                AND tcp.user_id = ? 
-            ORDER BY tc.updated DESC
+                JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+                ON tc.id = tcp.challenge_id
+            	LEFT JOIN `hotornot-dev`.tblFlaggedUserApprovals as u
+               	ON tcp.challenge_id = u.challenge_id  
+            WHERE tc.status_id in ( 1,2,4 )    
+                AND is_verify = 1  
+                AND tcp.user_id = ?  
+                AND u.challenge_id is null
+            ORDER BY tc.updated DESC;
         ";
         
         $params = array( $userId );
         $stmt = $this->prepareAndExecute( $sql, $params );
-        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
-        if( $data ){
-            foreach( $data as &$id ){
-                $id = $id->id;
-            }
-        }
-        return $data;
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
     
     public function getVolleysWithFriends( $userId, $friendIds ){

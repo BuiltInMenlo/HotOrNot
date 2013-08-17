@@ -147,4 +147,19 @@ class BIM_Utils{
 	    
 	    setcookie($conf->cookie->name,$value,$expires,$path,$domain,$secure,$httpOnly);
 	}
+	
+	/**
+	 * 
+	 * @param string $birthdate a date in the format: Y-m-d H:i:s
+	 */
+	public static function ageOK( $birthdate ){
+	    $OK = false;
+        $birthdate = new DateTime( $birthdate );
+        $cutoffBirthdate = new DateTime();
+        $cutoffBirthdate->sub( new DateInterval('P19Y') );
+        if( $cutoffBirthdate < $birthdate ){
+            $OK = true;
+        }
+	    return $OK;
+	}
 }

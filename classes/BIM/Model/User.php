@@ -49,11 +49,11 @@ class BIM_Model_User{
 	 * 
 	 * @param boolean $approves
 	 */
-	public function flag( $count ){
+	public function flag( $volleyId, $userId, $count ){
         $count = (int) $count;
         $this->abuse_ct += $count;
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $dao->flag( $this->id, $count );
+        $dao->flag( $volleyId, $this->id, $userId, $count );
         $this->purgeFromCache();
 	}
 	

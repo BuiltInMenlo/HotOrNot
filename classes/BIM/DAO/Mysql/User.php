@@ -28,10 +28,27 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         return $data;
     }
     
-    public function flag( $userId, $count ){
+    /**
+     * 
+     * @param unknown_type $volleyId - the verify volley id
+     * @param unknown_type $targetId - the creator iof the volley
+     * @param unknown_type $userId - a participant in the vollry
+     * @param unknown_type $count - the number of flag ticks to give to the target
+     */
+    public function flag( $volleyId, $targetId, $userId, $count ){
+        // give the target the appropriate nu,ber of flags
         $count = (int) $count;
 		$sql = "update `hotornot-dev`.tblUsers set abuse_ct = abuse_ct + ? where id = ?";
-		$params = array( $count, $userId );
+		$params = array( $count, $targetId );
+		$stmt = $this->prepareAndExecute($sql,$params);
+		
+        // update the users participant record that they have voted
+		$sql = "
+			INSERT IGNORE INTO `hotornot-dev`.tblFlaggedUserApprovals
+			 (flag, user_id, challenge_id, added)
+			 VALUES (?,?,?,?)
+		";
+		$params = array( $count, $userId, $volleyId, time() );
 		$stmt = $this->prepareAndExecute($sql,$params);
     }
     
