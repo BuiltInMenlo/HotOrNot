@@ -413,9 +413,20 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         	FROM `hotornot-dev`.`tblChallenges` as tc 
             	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
-        	WHERE (tc.status_id IN (1,4) 
-        		AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tcp.`user_id` IN ( $fIdPlaceholders ) ) )
-        		OR ( tc.status_id = 2 AND tcp.user_id = ? )
+        	WHERE
+        		is_verify != 1
+        		AND
+        		( 
+            		(
+            			tc.status_id IN (1,4) 
+            			AND (tc.`creator_id` IN ( $fIdPlaceholders ) OR tcp.`user_id` IN ( $fIdPlaceholders ) ) 
+            		)
+            		OR 
+            		( 
+            			tc.status_id = 2 
+            			AND tcp.user_id = ? 
+            		)
+        		)
         	ORDER BY tc.`updated` DESC LIMIT 50
         ";
         
