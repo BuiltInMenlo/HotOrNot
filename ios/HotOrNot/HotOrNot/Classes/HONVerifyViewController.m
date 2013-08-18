@@ -99,7 +99,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(44.0, ([HONAppDelegate isRetina5]) ? 54.0 : 19.0, 231.0, ([HONAppDelegate isRetina5]) ? 99.0 : 89.0)];
 	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? (_isEmail) ? @"verifyEmailText-568h@2x" : @"verifyPhoneText-568h@2x" : (_isEmail) ? @"verifyEmailText" : @"verifyPhoneText"];

@@ -150,9 +150,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID", nil];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], (_isPrivate) ? kAPIGetPrivateMessages : kAPIGetPublicMessages);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetVerifyList);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:(_isPrivate) ? kAPIGetPrivateMessages : kAPIGetPublicMessages parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIGetVerifyList parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -464,6 +464,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
 		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
+		[_bannerView removeFromSuperview];
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
@@ -966,6 +967,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
 			
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
+									   delegate:self
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+			
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 10], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
@@ -1041,14 +1048,14 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID;
+	//BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID;
 	
 	switch (buttonIndex) {
 		case 0:{
 			[[Mixpanel sharedInstance] track:@"Activity Approve - Flag"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID : _challengeVO.creatorVO.userID, (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username], @"challenger", nil]];
+											  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"challenger", nil]];
 			
 			[_olderChallenges removeObjectAtIndex:_idxPath.row];
 			[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -1088,7 +1095,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			[[Mixpanel sharedInstance] track:@"Activity Approve - Approve"
 								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID : _challengeVO.creatorVO.userID, (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username], @"challenger", nil]];
+											  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"challenger", nil]];
 			
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 10], @"action",

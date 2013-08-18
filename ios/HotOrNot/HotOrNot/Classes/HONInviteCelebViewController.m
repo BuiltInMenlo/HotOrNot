@@ -49,7 +49,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_celebs = [NSMutableArray array];
 	_selectedCelebs = [NSMutableArray array];

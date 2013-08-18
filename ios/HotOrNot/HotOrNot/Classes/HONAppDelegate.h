@@ -14,7 +14,7 @@
 
 
 #define __DEV_BUILD___ 1
-#define __ALWAYS_REGISTER__ 1
+#define __ALWAYS_REGISTER__ 0
 #define __ALWAYS_VERIFY__ 0
 
 
@@ -43,6 +43,7 @@ extern NSString * const kAPIGetPublicMessages;
 extern NSString * const kAPIGetPrivateMessages;
 extern NSString * const kAPISetUserAgeGroup;
 extern NSString * const kAPIJoinChallenge;
+extern NSString * const kAPIGetVerifyList;
 
 
 // view heights

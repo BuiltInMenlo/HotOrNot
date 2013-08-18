@@ -38,7 +38,7 @@
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)viewDidLoad {

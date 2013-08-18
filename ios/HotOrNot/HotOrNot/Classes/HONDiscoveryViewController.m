@@ -207,6 +207,7 @@
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
 		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
+		[_bannerView removeFromSuperview];
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"discover_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];

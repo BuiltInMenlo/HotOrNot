@@ -182,7 +182,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	BOOL isFUE = ([UIScreen mainScreen].bounds.size.height == self.view.frame.size.height);
 	
 	_selectedContacts = [NSMutableArray array];

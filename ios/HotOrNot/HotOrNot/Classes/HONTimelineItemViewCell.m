@@ -110,6 +110,28 @@
 
 
 #pragma mark - Public APIs
+- (void)upvoteUser:(int)userID {
+	if (_challengeVO.creatorVO.userID == userID)
+		_challengeVO.creatorVO.score++;
+	
+	else {
+		int index = -1;
+		int counter = 0;
+		for (HONOpponentVO *vo in _challengeVO.challengers) {
+			if (vo.userID == userID) {
+				index = counter;
+				break;
+			}
+			
+			counter++;
+		}
+
+		((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
+	}
+	
+	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
+}
+
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
@@ -161,79 +183,39 @@
 		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (kSnapMediumDim + 1.0) * opponentCounter, kSnapMediumDim, kSnapMediumDim)];
 		[_rHolderView addSubview:opponentHolderView];
 		
-		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix length] > 0)
+		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix length] > 0) {
 			[opponentHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(0.0, 0.0)]];
 		
-		UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-		[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]] placeholderImage:nil];
-		[opponentHolderView addSubview:opponentImageView];
+			UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]] placeholderImage:nil];
+			[opponentHolderView addSubview:opponentImageView];
 		
-//		if (opponentCounter == 0) {
-//			_rChallenge1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-//			_rChallenge1ImageView.alpha = [_rChallenge1ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
-//			_rChallenge1ImageView.userInteractionEnabled = YES;
-//			[opponentHolderView addSubview:_rChallenge1ImageView];
-//			
-//			[_rChallenge1ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
-//																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-//										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//											 weakSelf.rChallenge1ImageView.image = image;
-//											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge1ImageView.alpha = 1.0; } completion:nil];
-//										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-//			
-//		} else if (opponentCounter == 1) {
-//			_rChallenge2ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-//			_rChallenge2ImageView.alpha = [_rChallenge2ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
-//			_rChallenge2ImageView.userInteractionEnabled = YES;
-//			[opponentHolderView addSubview:_rChallenge1ImageView];
-//			
-//			[_rChallenge2ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
-//																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-//										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//											 weakSelf.rChallenge2ImageView.image = image;
-//											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge2ImageView.alpha = 1.0; } completion:nil];
-//										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-//						
-//		} else if (opponentCounter == 2) {
-//			_rChallenge3ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-//			_rChallenge3ImageView.alpha = [_rChallenge3ImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]]];
-//			_rChallenge3ImageView.userInteractionEnabled = YES;
-//			[opponentHolderView addSubview:_rChallenge1ImageView];
-//			
-//			[_rChallenge3ImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]]
-//																		   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
-//										 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//											 weakSelf.rChallenge3ImageView.image = image;
-//											 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rChallenge3ImageView.alpha = 1.0; } completion:nil];
-//										 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-//			
-//		}
-		
-		UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		rightButton.frame = opponentImageView.frame;
-		[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-		[rightButton addTarget:self action:@selector(_goTapOpponent:) forControlEvents:UIControlEventTouchUpInside];
-		[rightButton setTag:opponentCounter];
-		[opponentHolderView addSubview:rightButton];
-		
-		UIImageView *strokeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 30.0, 30.0, 30.0)];
-		strokeImageView.image = [UIImage imageNamed:@"avatarStroke"];
-		//[opponentHolderView addSubview:strokeImageView];
-		
-		UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 28.0, 28.0, 28.0)];
-		[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
-		challengerAvatarImageView.userInteractionEnabled = YES;
-		challengerAvatarImageView.clipsToBounds = YES;
-		//[opponentHolderView addSubview:challengerAvatarImageView];
-		
-		UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		challengerAvatarButton.frame = challengerAvatarImageView.frame;
-		[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-		[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline:) forControlEvents:UIControlEventTouchUpInside];
-		[challengerAvatarButton setTag:opponentCounter];
-		//[opponentHolderView addSubview:challengerAvatarButton];
- 		
-		opponentCounter++;
+			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			rightButton.frame = opponentImageView.frame;
+			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+			[rightButton addTarget:self action:@selector(_goTapOpponent:) forControlEvents:UIControlEventTouchUpInside];
+			[rightButton setTag:opponentCounter];
+			[opponentHolderView addSubview:rightButton];
+			
+			UIImageView *strokeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 30.0, 30.0, 30.0)];
+			strokeImageView.image = [UIImage imageNamed:@"avatarStroke"];
+			//[opponentHolderView addSubview:strokeImageView];
+			
+			UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 28.0, 28.0, 28.0)];
+			[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
+			challengerAvatarImageView.userInteractionEnabled = YES;
+			challengerAvatarImageView.clipsToBounds = YES;
+			//[opponentHolderView addSubview:challengerAvatarImageView];
+			
+			UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			challengerAvatarButton.frame = challengerAvatarImageView.frame;
+			[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+			[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline:) forControlEvents:UIControlEventTouchUpInside];
+			[challengerAvatarButton setTag:opponentCounter];
+			//[opponentHolderView addSubview:challengerAvatarButton];
+			
+			opponentCounter++;
+		}
 	}
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
@@ -275,7 +257,7 @@
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	_likesLabel.textColor = [HONAppDelegate honBlueTextColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
+	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
 	[footerHolderView addSubview:_likesLabel];
 	
 	UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -285,11 +267,11 @@
 	[footerHolderView addSubview:likesLabelButton];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(244.0, 0.0, 64.0, 39.0);
+	joinButton.frame = CGRectMake(244.0, 231.0 - ((opponentCounter == 0) * 141.0), 64.0, 39.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:joinButton];
+	[self addSubview:joinButton];
 	
 //	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //	moreButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
@@ -431,7 +413,7 @@
 		[self _upvoteChallenge:_challengeVO.creatorVO.userID];
 	}
 	
-	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
+	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
 }
 
 - (void)_goUpvoteChallenger:(int)index {
@@ -450,7 +432,7 @@
 		_upvoteImageView = nil;
 	}];
 	
-	((HONOpponentVO *)[_challengeVO.challengers lastObject]).score++;
+	((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
 	
 	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
 		[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenger"
@@ -462,7 +444,7 @@
 		[self _upvoteChallenge:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).userID];
 	}
 	
-	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
+	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
 
 }
 
@@ -503,6 +485,14 @@
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 		[self.delegate timelineItemViewCellHidePreview:self];
 	}
+}
+
+- (int)_calcScore {
+	int score = _challengeVO.creatorVO.score;
+	for (HONOpponentVO *vo in _challengeVO.challengers)
+		score += vo.score;
+	
+	return (score);
 }
 
 

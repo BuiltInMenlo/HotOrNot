@@ -15,6 +15,7 @@
 
 + (NSString *)cellReuseIdentifier;
 - (id)initAsStartedCell:(BOOL)hasStarted;
+- (void)upvoteUser:(int)userID;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, assign) id <HONTimelineItemViewCellDelegate> delegate;
