@@ -204,7 +204,7 @@
 							[NSString stringWithFormat:@"%d", 9], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							_username, @"username",
-							@"1", @"firstRun",
+							//@"1", @"firstRun",
 							_birthday, @"age",
 							[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename], @"imgURL",
 							nil];
@@ -219,7 +219,7 @@
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIUsersFirstRunComplete parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);

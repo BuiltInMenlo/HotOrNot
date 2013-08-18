@@ -41,6 +41,7 @@ extern NSString * const kAPIEmailContacts;
 extern NSString * const kAPIChallengeObject;
 extern NSString * const kAPIGetPublicMessages;
 extern NSString * const kAPIGetPrivateMessages;
+extern NSString * const kAPIUsersFirstRunComplete;
 extern NSString * const kAPISetUserAgeGroup;
 extern NSString * const kAPIJoinChallenge;
 
