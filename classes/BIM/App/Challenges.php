@@ -129,10 +129,10 @@ class BIM_App_Challenges extends BIM_App_Base{
     **/
     public function submitMatchingChallenge($userId, $hashTag, $imgUrl, $expires) {
         $volley = BIM_Model_Volley::getRandomAvailableByHashTag( $hashTag, $userId );
-        if ( $volley ) {
+        if ( $volley && $volley->isExtant() ) {
             $creator = BIM_Model_User::get( $volley->creator->id );
             $targetUser = BIM_Model_User::get( $userId );
-            if( $targetUsr->isExtant() ){
+            if( $targetUser->isExtant() ){
                 $volley->accept( $userId, $imgUrl );
                 $this->doAcceptNotification($volley, $creator, $targetUser);
             }
@@ -384,13 +384,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         if( $volley ){
             $OK = true;
             if( $volley->is_private == 'Y' ){
-                $OK = false;
-                foreach( $volley->challengers as $challenger ){
-                    if( $challenger->id == $userId ){
-                        $OK = true;
-                        break;
-                    }
-                }
+                $OK = $volley->hasChallenger($userId);
             }
             if( $OK ){
                 $volley->accept($userId, $imgUrl);

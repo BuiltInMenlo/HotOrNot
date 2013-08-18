@@ -52,6 +52,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     }
     
     public function add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify = false ){
+        if( !is_array($targetIds) ) $targetIds = array();
         $isVerify = (int) $isVerify;
         // add the new challenge
         $sql = '

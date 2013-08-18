@@ -5,18 +5,20 @@ class BIM_Model_Comments{
     public function __construct($commentId) {
         $dao = new BIM_DAO_Mysql_Comments( BIM_Config::db() );
 		$comment = $dao->get( $commentId );
-		$challenge = BIM_Model_Volley::get( $comment->challenge_id );
-		$user = BIM_Model_User::get( $comment->user_id  );
-        
-		$this->id = $comment->id;
-		$this->challenge_id = $comment->challenge_id; 
-		$this->user_id = $comment->user_id; 
-		$this->fb_id = $user->fb_id;
-		$this->username = $user->username;
-		$this->img_url = $user->getAvatarUrl();
-		$this->score = $user->votes; 
-		$this->text = $comment->text;
-		$this->added = $comment->added;
+		if( $comment ){
+    		$challenge = BIM_Model_Volley::get( $comment->challenge_id );
+    		$user = BIM_Model_User::get( $comment->user_id  );
+            
+    		$this->id = $comment->id;
+    		$this->challenge_id = $comment->challenge_id; 
+    		$this->user_id = $comment->user_id; 
+    		$this->fb_id = $user->fb_id;
+    		$this->username = $user->username;
+    		$this->img_url = $user->getAvatarUrl();
+    		$this->score = $user->votes; 
+    		$this->text = $comment->text;
+    		$this->added = $comment->added;
+		}
     }
     
     public static function create( $volleyId, $userId, $text ) {
