@@ -82,6 +82,7 @@ NSString * const kAPIGetPrivateMessages = @"challenges/getprivate";
 NSString * const kAPISetUserAgeGroup = @"users/setage";
 NSString * const kAPIUsersFirstRunComplete = @"users/firstruncomplete";
 NSString * const kAPIJoinChallenge = @"challenges/join";
+NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
 
 
 // view heights
@@ -803,7 +804,8 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	self.window.backgroundColor = [UIColor whiteColor];
+	//self.window.backgroundColor = [UIColor whiteColor];
+	
 	//self.window.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
 	//self.window.frame = CGRectOffset(self.window.frame, 0.0, 20.0);
 	
@@ -927,7 +929,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		
 		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
 		_bgImageView.frame = CGRectMake(0.0, [[UIApplication sharedApplication] statusBarFrame].size.height, 320.0, [UIScreen mainScreen].bounds.size.height);
-		//[self.tabBarController.view addSubview:_bgImageView];
+		[self.tabBarController.view addSubview:_bgImageView];
 		
 		self.window.rootViewController = self.tabBarController;
 		[self.window makeKeyAndVisible];

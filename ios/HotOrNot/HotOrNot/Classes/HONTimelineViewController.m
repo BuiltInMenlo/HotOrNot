@@ -51,6 +51,7 @@
 @property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic) BOOL isPushView;
 @property (nonatomic) BOOL isPublic;
 @property (nonatomic) BOOL isProfileViewable;
@@ -398,7 +399,9 @@
 	
 	_userVO = nil;
 	_isProfileViewable = YES;
+	
 	_challenges = [NSMutableArray array];
+	_cells = [NSMutableArray array];
 	
 	if (_isPushView) {
 		NSString *title = @"";
@@ -549,25 +552,25 @@
 	
 	[self _removeToolTip];
 	
-	if (_userVO == nil) {
+//	if (_userVO == nil) {
 		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] init]];
 		[navigationController setNavigationBarHidden:YES];
 		[self presentViewController:navigationController animated:NO completion:nil];
 		
-	} else {
-		if ([_userVO.username isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"name"]]) {
-			[[[UIAlertView alloc] initWithTitle:@"Snap Problem!"
-										message:@"You cannot snap at yourself!"
-									   delegate:nil
-							  cancelButtonTitle:@"OK"
-							  otherButtonTitles:nil] show];
-			
-		} else {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		}
-	}
+//	} else {
+//		if ([_userVO.username isEqualToString:[[HONAppDelegate infoForUser] objectForKey:@"name"]]) {
+//			[[[UIAlertView alloc] initWithTitle:@"Snap Problem!"
+//										message:@"You cannot snap at yourself!"
+//									   delegate:nil
+//							  cancelButtonTitle:@"OK"
+//							  otherButtonTitles:nil] show];
+//			
+//		} else {
+//			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:_userVO]];
+//			[navigationController setNavigationBarHidden:YES];
+//			[self presentViewController:navigationController animated:YES completion:nil];
+//		}
+//	}
 }
 
 - (void)_goCloseBanner {
@@ -913,6 +916,7 @@
 
 #pragma mark - ChallengeOverlay Delegates
 - (void)challengeOverlayViewUpvote:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote"
@@ -926,10 +930,18 @@
 		_challengeOverlayView = nil;
 	}
 	
+	for (HONTimelineItemViewCell *cell in _cells) {
+		if (cell.challengeVO.challengeID == challengeVO.challengeID)
+			[cell upvoteUser:opponentVO.userID];
+	}
+	
 	[self _upvoteChallenge:_opponentVO.userID];
 }
 
 - (void)challengeOverlayViewShowMore:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	_opponentVO = opponentVO;
+	
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Show More"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -944,8 +956,8 @@
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 															 delegate:self
 													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:@"Report Abuse"
-													otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
+											   destructiveButtonTitle:@"Flag user"
+													otherButtonTitles:@"Like photo", @"View profile", @"Add friend", nil];
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:3];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -1168,6 +1180,7 @@
 				cell.challengeVO = vo;
 			}
 			
+			[_cells addObject:cell];
 			cell.delegate = self;
 			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 			return (cell);
@@ -1182,6 +1195,7 @@
 			cell.challengeVO = vo;
 		}
 		
+		[_cells addObject:cell];
 		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
@@ -1267,6 +1281,12 @@
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
+				[[[UIAlertView alloc] initWithTitle:@""
+										   message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _userVO.username]
+										  delegate:self
+								 cancelButtonTitle:@"OK"
+								 otherButtonTitles:nil] show];
+				
 				[self _flagUser:_userVO.userID];
 				break;}
 				
@@ -1297,6 +1317,12 @@
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _userVO.username]
+										   delegate:self
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+				
 				[self _flagUser:_userVO.userID];
 				break;}
 		}
@@ -1310,6 +1336,12 @@
 												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 				
+				[[[UIAlertView alloc] initWithTitle:@""
+											message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _opponentVO.username]
+										   delegate:self
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+				
 				[self _flagUser:_opponentVO.userID];
 				break;}
 				
@@ -1320,17 +1352,20 @@
 												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 				
+				for (HONTimelineItemViewCell *cell in _cells) {
+					if (cell.challengeVO.challengeID == _challengeVO.challengeID)
+						[cell upvoteUser:_opponentVO.userID];
+				}
+				
 				[self _upvoteChallenge:_opponentVO.userID];
 				break;
 				
 			case 2:
-				[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenge"
+				[[Mixpanel sharedInstance] track:@"Timeline - User Profile"
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-				
-				[self _upvoteChallenge:_opponentVO.userID];
 				
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
 				break;

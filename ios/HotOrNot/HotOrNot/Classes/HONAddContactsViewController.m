@@ -371,7 +371,7 @@
 	ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, NULL);
 	
 	CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
-	CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
+	CFIndex nPeople = MIN(100, ABAddressBookGetPersonCount(addressBook));
 	
 	for (int i=0; i<nPeople; i++) {
 		ABRecordRef ref = CFArrayGetValueAtIndex(allPeople, i);
@@ -483,7 +483,7 @@
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
-	self.view.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 	self.view.frame = CGRectOffset(self.view.frame, 0.0, 20.0);
 	
 	_smsRecipients = @"";
@@ -599,13 +599,11 @@
 		[self _sendInvites];
 	
 	if ([_selectedInAppContacts count] == 0 && [_selectedNonAppContacts count] == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-															message:@"Your home feed will be empty until you add friends. (you can always add them later if you wish)"
-														   delegate:self
-												  cancelButtonTitle:@"Yes"
-												  otherButtonTitles:@"No", nil];
-		[alertView setTag:0];
-		[alertView show];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
+		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+		[self dismissViewControllerAnimated:YES completion:^(void){
+			//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
+		}];
 	}
 }
 
@@ -792,28 +790,7 @@
 
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 0) {
-		switch(buttonIndex) {
-			case 0:
-				[[Mixpanel sharedInstance] track:@"Add Contacts - Confirm Done"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[self dismissViewControllerAnimated:YES completion:^(void){
-					//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_POPULAR_USERS" object:nil];
-				}];
-				break;
-				
-			case 1:
-				[[Mixpanel sharedInstance] track:@"Add Contacts - Cancel Done"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-				break;
-		}
-	
-	} else if (alertView.tag == 1) {
+	if (alertView.tag == 1) {
 		switch(buttonIndex) {
 			case 1:
 				[[Mixpanel sharedInstance] track:@"Add Contacts - Select All"
