@@ -164,7 +164,9 @@ class BIM_App_Votes extends BIM_App_Base{
     	    
     	    $deviceTokens = array();
     	    foreach( $users as $user ){
-    	        $deviceTokens[] = $user->device_token;
+    	        if( $user->canPush() ){
+        	        $deviceTokens[] = $user->device_token;
+    	        }
     	    }
     	    
     		$liker = BIM_Model_User::get( $userId );
@@ -178,7 +180,7 @@ class BIM_App_Votes extends BIM_App_Base{
 		    		"sound" =>  "push_01.caf"
 		        )
 		    );
-    	    BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+    	    BIM_Jobs_Utils::queuePush( $push );
 	    }
 		return BIM_Model_Volley::get( $volleyId );
 	}
