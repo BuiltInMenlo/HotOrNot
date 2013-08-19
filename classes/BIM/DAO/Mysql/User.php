@@ -173,14 +173,15 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         return $date;
     }
     
-    public function updateUsernameAvatar( $userId, $username, $imgUrl, $birthdate ){
+    public function updateUsernameAvatar( $userId, $username, $imgUrl, $birthdate, $password = null ){
         $sql = '';
-        $params = array( $username, $imgUrl, $userId );
+        $password = $password?:'';
+        $params = array( $username, $imgUrl, $userId, $password );
         if( $birthdate ){
             $birthdate = new DateTime( $birthdate );
             $birthdate = $birthdate->format('U');
             $sql = ' age = ?,';
-            $params = array( $username, $imgUrl, $birthdate, $userId );
+            $params = array( $username, $imgUrl, $birthdate, $userId, $password );
         }
         
         $query = "
@@ -188,7 +189,8 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         	SET username = ?, 
         		img_url = ?, 
         		$sql
-        		last_login = CURRENT_TIMESTAMP
+        		last_login = CURRENT_TIMESTAMP,
+        		password = ?
         	WHERE id = ?
         ";
         $stmt = $this->prepareAndExecute( $query, $params );

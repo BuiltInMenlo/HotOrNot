@@ -42,7 +42,16 @@ class BIM_Model_User{
 	    $this->sms_code = BIM_Utils::getSMSCodeForId( $this->id );
 	    $this->friends = BIM_App_Social::getFriends( (object) array( 'userID' => $this->id ) );
 	    $this->sms_verified = self::isVerified( $this->id );
-	}
+        $this->is_suspended = $this->isSuspended();
+    }
+    
+    public function isSuspended(){
+        $suspended = false;
+        if( !empty( $this->abuse_ct ) && $this->abuse_ct >= 10 ){
+            $suspended = true;
+        }
+        return $suspended;
+    }
     
 	/**
 	 * increments or decrements the flag count for the user
@@ -132,9 +141,9 @@ class BIM_Model_User{
         }
     }
     
-    public function updateUsernameAvatar( $username, $imgUrl, $birthdate = null ){
+    public function updateUsernameAvatar( $username, $imgUrl, $birthdate = null, $password = null ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $dao->updateUsernameAvatar( $this->id, $username, $imgUrl, $birthdate );
+        $dao->updateUsernameAvatar( $this->id, $username, $imgUrl, $birthdate, $password );
         $this->username = $username;
         $this->img_url = $imgUrl;
         $this->purgeFromCache();

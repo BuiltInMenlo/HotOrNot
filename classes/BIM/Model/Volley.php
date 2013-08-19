@@ -63,16 +63,7 @@ class BIM_Model_Volley{
             $this->expires = $volley->expires;
             $this->is_private = $volley->is_private;
             $this->is_verify = $volley->is_verify;
-            $this->is_suspended = $this->isSuspended();
         }
-    }
-    
-    public function isSuspended(){
-        $suspended = false;
-        if( !empty( $this->abuse_ct ) && $this->abuse_ct >= 10 ){
-            $suspended = true;
-        }
-        return $suspended;
     }
     
     // returns true if the requesting client
