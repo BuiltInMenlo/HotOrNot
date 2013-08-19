@@ -352,6 +352,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_isFirstAppearance = NO;
 		
 		[self _showCamera];
+		//[self performSelector:@selector(_showCamera) withObject:nil afterDelay:0.25];
 	}
 }
 

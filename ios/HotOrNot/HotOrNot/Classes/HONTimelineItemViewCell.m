@@ -48,7 +48,7 @@
 - (id)initAsStartedCell:(BOOL)hasStarted {
 	if ((self = [super init])) {
 		_hasOponentRetorted = hasStarted;
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]]];
+		//[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]]];
 	}
 	
 	return (self);
@@ -225,46 +225,46 @@
 	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 231.0, 320.0, 44.0)];
 	[self addSubview:footerHolderView];
 	
-	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	commentsButton.frame = CGRectMake(8.0, 6.0, 24.0, 24.0);
-	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateNormal];
-	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateHighlighted];
-	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:commentsButton];
-	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 7.0, 40.0, 22.0)];
-	_commentsLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
-	_commentsLabel.textColor = [HONAppDelegate honBlueTextColor];
-	_commentsLabel.backgroundColor = [UIColor clearColor];
-	_commentsLabel.text = (_challengeVO.commentTotal >= 99) ? @"99+" : [NSString stringWithFormat:@"%d", _challengeVO.commentTotal];
-	[footerHolderView addSubview:_commentsLabel];
-	
-	UIButton *commentsLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	commentsLabelButton.frame = _commentsLabel.frame;
-	[commentsLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[commentsLabelButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:commentsLabelButton];
+//	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	commentsButton.frame = CGRectMake(8.0, 6.0, 24.0, 24.0);
+//	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateNormal];
+//	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateHighlighted];
+//	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+//	[footerHolderView addSubview:commentsButton];
+//	
+//	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 7.0, 40.0, 22.0)];
+//	_commentsLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+//	_commentsLabel.textColor = [HONAppDelegate honBlueTextColor];
+//	_commentsLabel.backgroundColor = [UIColor clearColor];
+//	_commentsLabel.text = (_challengeVO.commentTotal >= 99) ? @"99+" : [NSString stringWithFormat:@"%d", _challengeVO.commentTotal];
+//	[footerHolderView addSubview:_commentsLabel];
+//	
+//	UIButton *commentsLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	commentsLabelButton.frame = _commentsLabel.frame;
+//	[commentsLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+//	[commentsLabelButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+//	[footerHolderView addSubview:commentsLabelButton];
 	
 	
 	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(71.0, 6.0, 24.0, 24.0);
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateNormal];
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateHighlighted];
-	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+	likesButton.frame = CGRectMake(8.0, 6.0, 24.0, 24.0);
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
+//	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:likesButton];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 7.0, 40.0, 22.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 7.0, 40.0, 22.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
-	_likesLabel.textColor = [HONAppDelegate honBlueTextColor];
+	_likesLabel.textColor = [HONAppDelegate honGrey710Color];
 	_likesLabel.backgroundColor = [UIColor clearColor];
 	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
 	[footerHolderView addSubview:_likesLabel];
 	
-	UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesLabelButton.frame = _likesLabel.frame;
-	[likesLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:likesLabelButton];
+//	UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	likesLabelButton.frame = _likesLabel.frame;
+//	[likesLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+//	[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+//	[footerHolderView addSubview:likesLabelButton];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	joinButton.frame = CGRectMake(244.0, 231.0 - ((opponentCounter == 0) * 141.0), 64.0, 39.0);

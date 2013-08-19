@@ -36,9 +36,7 @@
 #import "HONUsernameViewController.h"
 #import "HONSearchViewController.h"
 #import "HONImagingDepictor.h"
-#import "HONSnapPreviewViewController.h"
 #import "HONChallengeDetailsViewController.h"
-
 
 
 #if __DEV_BUILD___ == 1
@@ -678,11 +676,11 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 #pragma mark - Notifications
-- (void)_showSnapPreview:(NSNotification *)notification {
-	[self.window addSubview:((HONSnapPreviewViewController *)[notification object]).view];
+- (void)_addViewToWindow:(NSNotification *)notification {
+	[self.window addSubview:(UIView *)[notification object]];
 }
 
-- (void)_hideSnapPreview:(NSNotification *)notification {
+- (void)_removeViewFromWindow:(NSNotification *)notification {
 	
 }
 
@@ -813,7 +811,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18], UITextAttributeFont, nil]];
+														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18], UITextAttributeFont, nil]];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -826,7 +824,7 @@ NSString * const kTwilioSMS = @"6475577873";
 														  [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateHighlighted];
 	
 	_isFromBackground = NO;
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSnapPreview:) name:@"SHOW_SNAP_PREVIEW" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_hideSearchTable:) name:@"HIDE_SEARCH_TABLE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSubjectSearchTimeline:) name:@"SHOW_SUBJECT_SEARCH_TIMELINE" object:nil];

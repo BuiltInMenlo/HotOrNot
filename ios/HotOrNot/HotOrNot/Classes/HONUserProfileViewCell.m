@@ -73,7 +73,7 @@
 	}
 	
 	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profilePicButton.frame = CGRectMake(190.0, 42.0, 44.0, 44.0);
+	profilePicButton.frame = CGRectMake(195.0, 47.0, 34.0, 34.0);
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
 	[profilePicButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
@@ -141,29 +141,30 @@
 	ageLabel.text = [NSString stringWithFormat:@"Age: %d", [HONAppDelegate ageForDate:birthday]];
 	[self addSubview:ageLabel];
 	
-	_friendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_friendButton.frame = CGRectMake(106.0, 194.0, 144.0, 44.0);
-	[_friendButton setBackgroundImage:[UIImage imageNamed:(isFriend) ? @"removeFriendButton_nonActive" : @"addFriendButton_nonActive"] forState:UIControlStateNormal];
-	[_friendButton setBackgroundImage:[UIImage imageNamed:(isFriend) ? @"removeFriendButton_Active" : @"addFriendButton_Active"] forState:UIControlStateHighlighted];
-	[_friendButton addTarget:self action:(isFriend) ? @selector(_goRemoveFriend) : @selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
-	_friendButton.hidden = isUser;
-	[self addSubview:_friendButton];
-	
-//	UIButton *snapButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	snapButton.frame = CGRectMake(186.0, 194.0, 64.0, 44.0);
-//	[snapButton setBackgroundImage:[UIImage imageNamed:@"sendVolleyButton_nonActive"] forState:UIControlStateNormal];
-//	[snapButton setBackgroundImage:[UIImage imageNamed:@"sendVolleyButton_Active"] forState:UIControlStateHighlighted];
-//	[snapButton addTarget:self action:@selector(_goUserChallenge) forControlEvents:UIControlEventTouchUpInside];
-//	snapButton.hidden = isUser;
-//	[self addSubview:snapButton];
-	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(106.0, 194.0, 144.0, 44.0);
+	friendsButton.frame = CGRectMake(126.0, 194.0, 124.0, 44.0);
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
 	[friendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
 	friendsButton.hidden = !isUser;
 	[self addSubview:friendsButton];
+	
+	
+	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	addFriendButton.frame = CGRectMake(45.0, 194.0, 144.0, 44.0);
+	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
+	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
+	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
+	addFriendButton.hidden = isUser || isFriend;
+	[self addSubview:addFriendButton];
+	
+	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	flagButton.frame = CGRectMake(191.0, 194.0, 59.0, 44.0);
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagUser_nonActive"] forState:UIControlStateNormal];
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagUser_Active"] forState:UIControlStateHighlighted];
+	[flagButton addTarget:self action:@selector(_goFlagUser) forControlEvents:UIControlEventTouchUpInside];
+	flagButton.hidden = isUser;
+	[self addSubview:flagButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	moreButton.frame = CGRectMake(250.0, 194.0, 64.0, 44.0);
@@ -205,23 +206,20 @@
 }
 
 - (void)_goAddFriend {
-	[_friendButton setBackgroundImage:[UIImage imageNamed:@"removeFriendButton_nonActive"] forState:UIControlStateNormal];
-	[_friendButton setBackgroundImage:[UIImage imageNamed:@"removeFriendButton_Active"] forState:UIControlStateHighlighted];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];
-	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:nil];	
 	[self.delegate userProfileViewCell:self addFriend:_userVO];
 }
 
 - (void)_goRemoveFriend {
-	[_friendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
-	[_friendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
-	
 	[self.delegate userProfileViewCell:self removeFriend:_userVO];
 }
 
 - (void)_goUserChallenge {
 	[self.delegate userProfileViewCell:self snapAtUser:_userVO];
+}
+
+- (void)_goFlagUser {
+	[self.delegate userProfileViewCell:self flagUser:_userVO];
 }
 
 - (void)_goMore {

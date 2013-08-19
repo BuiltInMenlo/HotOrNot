@@ -188,7 +188,7 @@
 	}
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 61.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, 570.0 + (kSnapMediumDim * (respondedOpponents / 5)));
+	_scrollView.contentSize = CGSizeMake(320.0, 569.0 + (kSnapMediumDim * (respondedOpponents / 5)));
 	_scrollView.pagingEnabled = NO;
 	_scrollView.showsVerticalScrollIndicator = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
@@ -253,38 +253,38 @@
 	[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:leftButton];
 	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 223.0, 320.0, 200.0)];
+	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 187.0, 320.0, 200.0)];
 	footerHolderView.backgroundColor = [UIColor whiteColor];
 	[_scrollView addSubview:footerHolderView];
 	
-	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	commentsButton.frame = CGRectMake(8.0, 14.0, 24.0, 24.0);
-	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateNormal];
-	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateHighlighted];
-	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:commentsButton];
-	
-	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 15.0, 40.0, 22.0)];
-	_commentsLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
-	_commentsLabel.textColor = [HONAppDelegate honBlueTextColor];
-	_commentsLabel.backgroundColor = [UIColor clearColor];
-	_commentsLabel.text = (_challengeVO.commentTotal >= 99) ? @"99+" : [NSString stringWithFormat:@"%d", _challengeVO.commentTotal];
-	[footerHolderView addSubview:_commentsLabel];
-	
-	UIButton *commentsLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	commentsLabelButton.frame = _commentsLabel.frame;
-	[commentsLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[commentsLabelButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:commentsLabelButton];
+//	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	commentsButton.frame = CGRectMake(8.0, 14.0, 24.0, 24.0);
+//	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateNormal];
+//	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateHighlighted];
+//	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+//	[footerHolderView addSubview:commentsButton];
+//	
+//	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 15.0, 40.0, 22.0)];
+//	_commentsLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+//	_commentsLabel.textColor = [HONAppDelegate honBlueTextColor];
+//	_commentsLabel.backgroundColor = [UIColor clearColor];
+//	_commentsLabel.text = (_challengeVO.commentTotal >= 99) ? @"99+" : [NSString stringWithFormat:@"%d", _challengeVO.commentTotal];
+//	[footerHolderView addSubview:_commentsLabel];
+//	
+//	UIButton *commentsLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	commentsLabelButton.frame = _commentsLabel.frame;
+//	[commentsLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
+//	[commentsLabelButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
+//	[footerHolderView addSubview:commentsLabelButton];
 	
 	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(71.0, 14.0, 24.0, 24.0);
+	likesButton.frame = CGRectMake(8.0, 14.0, 24.0, 24.0);
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateNormal];
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateHighlighted];
 	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:likesButton];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(100.0, 15.0, 40.0, 22.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 15.0, 40.0, 22.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	_likesLabel.textColor = [HONAppDelegate honBlueTextColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
@@ -312,17 +312,17 @@
 	[footerHolderView addSubview:joinButton];
 	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 278.0);
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 242.0);
 	[_scrollView addSubview:dividerImageView];
 	
-	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 288.0, 300.0, 20.0)];
+	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 252.0, 300.0, 20.0)];
 	challengersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	challengersLabel.textColor = [HONAppDelegate honGrey455Color];
 	challengersLabel.backgroundColor = [UIColor clearColor];
 	challengersLabel.text = [NSString stringWithFormat:@"%d Volley%@ - Tap and Hold to view", respondedOpponents, (respondedOpponents != 1) ? @"s" : @""];
 	[_scrollView addSubview:challengersLabel];
 	
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 319.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 283.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor whiteColor];
 	[_scrollView addSubview:_gridHolderView];
 	
@@ -387,7 +387,7 @@
 			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_opponentVO];
 		}
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SNAP_PREVIEW" object:_snapPreviewViewController];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 		if (_snapPreviewViewController != nil) {
@@ -397,17 +397,7 @@
 		
 		_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
 		_challengeOverlayView.delegate = self;
-		[self.view addSubview:_challengeOverlayView];
-		
-		/*
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																 delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:@"Report Abuse"
-														otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:0];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];*/
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
 	}
 }
 
@@ -646,75 +636,46 @@
 		[self _goUpvoteChallenger:_opponentVO.userID];
 }
 
-- (void)challengeOverlayViewShowMore:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Show More"
+- (void)challengeOverlayViewFlag:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Flag User"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
+	[[[UIAlertView alloc] initWithTitle:@""
+								message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _opponentVO.username]
+							   delegate:self
+					  cancelButtonTitle:@"OK"
+					  otherButtonTitles:nil] show];
+	
+	[self _flagUser:_opponentVO.userID];
+	
 	if (_challengeOverlayView != nil) {
 		[_challengeOverlayView removeFromSuperview];
 		_challengeOverlayView = nil;
 	}
-	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-															 delegate:self
-													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:@"Report Abuse"
-													otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:0];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 }
+
+- (void)challengeOverlayViewProfile:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Show Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"creator", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
+	
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
+	}
+}
+
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	if (actionSheet.tag == 0) {
-		switch (buttonIndex) {
-			case 0: {
-				[[Mixpanel sharedInstance] track:@"Timeline Details - Flag User"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-				
-				[self _flagUser:_opponentVO.userID];
-				break;}
-				
-			case 1:
-				[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote Challenge"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-				
-				[self _upvoteChallenge:_opponentVO.userID];
-				break;
-				
-			case 2:
-				[[Mixpanel sharedInstance] track:@"Timeline Details - Show Profile"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"creator", nil]];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
-				break;
-				
-				
-			case 3:
-				[[Mixpanel sharedInstance] track:@"Timeline Details - Add Friend"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-				
-				[self _addFriend:_opponentVO.userID];
-				break;
-		}
-		
-	} else if (actionSheet.tag == 1) {
+	if (actionSheet.tag == 1) {
 		switch (buttonIndex) {
 			case 0: {
 				[[Mixpanel sharedInstance] track:@"Timeline Details - Flag Challenge"

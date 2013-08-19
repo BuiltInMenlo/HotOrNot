@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "HONChallengeVO.h"
+#import "HONOpponentVO.h"
 
 @protocol HONVerifyOverlayViewDelegate;
 @interface HONVerifyOverlayView : UIView
@@ -18,6 +19,7 @@
 @end
 
 @protocol HONVerifyOverlayViewDelegate
+- (void)verifyOverlayView:(HONVerifyOverlayView *)verifyOverlayView showProfile:(HONOpponentVO *)opponentVO;
 - (void)verifyOverlayView:(HONVerifyOverlayView *)cameraOverlayView approve:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO;
 - (void)verifyOverlayViewClose:(HONVerifyOverlayView *)verifyOverlayView;
 @end

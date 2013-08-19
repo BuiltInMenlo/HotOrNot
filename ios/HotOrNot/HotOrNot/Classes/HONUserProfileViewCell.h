@@ -27,6 +27,7 @@
 - (void)userProfileViewCellShowSettings:(HONUserProfileViewCell *)cell;
 - (void)userProfileViewCellFindFriends:(HONUserProfileViewCell *)cell;
 - (void)userProfileViewCellTakeNewAvatar:(HONUserProfileViewCell *)cell;
+- (void)userProfileViewCell:(HONUserProfileViewCell *)cell flagUser:(HONUserVO *)userVO;
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell showUserTimeline:(HONUserVO *)userVO;
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell addFriend:(HONUserVO *)userVO;
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell removeFriend:(HONUserVO *)userVO;

@@ -92,14 +92,6 @@
 }
 
 
-#pragma mark - Touch Handlers
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	//UITouch *touch = [touches anyObject];
-	//CGPoint location = [touch locationInView:self.view];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_PREVIEW" object:nil];
-}
-
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];

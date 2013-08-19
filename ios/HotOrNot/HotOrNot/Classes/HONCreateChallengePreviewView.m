@@ -121,12 +121,12 @@
 	_addFriendsButton.alpha = 0.0;
 	//[self addSubview:_addFriendsButton];
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 33.0, 33.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, kSnapThumbDim, kSnapThumbDim)];
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
 	_avatarImageView.alpha = 0.0;
 	[self addSubview:_avatarImageView];
 	
-	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 220.0, 16.0)];
+	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(55.0, 22.0, 220.0, 16.0)];
 	_usernameLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	_usernameLabel.textColor = [UIColor whiteColor];
 	_usernameLabel.backgroundColor = [UIColor clearColor];
@@ -135,7 +135,7 @@
 	[self addSubview:_usernameLabel];
 	
 	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_backButton.frame = CGRectMake(273.0, 5.0, 44.0, 44.0);
+	_backButton.frame = CGRectMake(263.0, 11.0, 44.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
@@ -160,11 +160,11 @@
 //	_subjectBGView.hidden = YES;
 //	[self addSubview:_subjectBGView];
 	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(13.0, 80.0, 298.0, 30.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(22.0, 70.0, 298.0, 30.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];;
 	_placeholderLabel.textColor = [HONAppDelegate honGrey455Color];
-	_placeholderLabel.text = ([_subjectName length] == 0) ? @"what's on your mind?" : @"";
+	_placeholderLabel.text = ([_subjectName length] == 0) ? @"What's happening?" : @"";
 	_placeholderLabel.alpha = 0.0;
 	[self addSubview:_placeholderLabel];
 	
@@ -182,7 +182,7 @@
 	_subjectTextField.delegate = self;
 	[self addSubview:_subjectTextField];
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 115.0, 64.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 175.0, 64.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
@@ -192,8 +192,8 @@
 	[_uploadingImageView startAnimating];
 	[self addSubview:_uploadingImageView];
 	
-	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 135.0, 300.0, 24.0)];
-	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
+	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(22.0, 108.0, 300.0, 24.0)];
+	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:21];
 	_usernamesLabel.textColor = [UIColor whiteColor];
 	_usernamesLabel.backgroundColor = [UIColor clearColor];
 	_usernamesLabel.numberOfLines = 0;
@@ -300,12 +300,10 @@
 - (void)_dropKeyboardAndRemove:(BOOL)isRemoved {
 	[_subjectTextField resignFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
 		_uploadingImageView.alpha = 0.0;
-//		_subjectBGView.frame = CGRectOffset(_subjectBGView.frame, 0.0, 216.0);
-//		_subjectBGView.alpha = 0.0;
 		_placeholderLabel.alpha = 0.0;
 		_subjectTextField.alpha = 0.0;
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
 		_privateToggleButton.alpha = 0.0;
 		_addFriendsButton.alpha = 0.0;
 		_backButton.alpha = 0.0;
@@ -313,7 +311,6 @@
 		_avatarImageView.alpha = 0.0;
 		_usernameLabel.alpha = 0.0;
 	} completion:^(BOOL finished) {
-//		_subjectBGView.hidden = YES;
 		_submitButton.hidden = YES;
 		
 		if (isRemoved)

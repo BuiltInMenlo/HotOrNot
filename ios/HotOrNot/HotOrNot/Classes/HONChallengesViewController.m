@@ -14,7 +14,6 @@
 
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
-#import "HONEmptyChallengeViewCell.h"
 #import "HONChallengeVO.h"
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
@@ -26,11 +25,12 @@
 #import "HONSnapPreviewViewController.h"
 #import "HONVerifyOverlayView.h"
 
-const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
+const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, HONEmptyChallengeViewCellDelegate, HONChallengeViewCellDelegate, HONVerifyOverlayViewDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONChallengeViewCellDelegate, HONVerifyOverlayViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *recentChallenges;
 @property (nonatomic, strong) NSMutableArray *olderChallenges;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -40,8 +40,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 @property (nonatomic, strong) HONVerifyOverlayView *verifyOverlayView;
 @property (nonatomic, strong) NSIndexPath *idxPath;
 @property (nonatomic, strong) NSMutableArray *friends;
-//@property (nonatomic, strong) UIButton *publicButton;
-//@property (nonatomic, strong) UIButton *privateButton;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) int blockCounter;
 @property (nonatomic, strong) UIImageView *togglePrivateImageView;
@@ -53,6 +51,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 
 - (id)init {
 	if ((self = [super init])) {
+		_challenges = [NSMutableArray array];
 		_recentChallenges = [NSMutableArray array];
 		_olderChallenges = [NSMutableArray array];
 		_blockCounter = 0;
@@ -180,6 +179,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 					else
 						[_olderChallenges addObject:vo];
 				}
+				
+				[_challenges addObject:vo];
 			}
 
 			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
@@ -261,8 +262,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
 			[_tableView reloadData];
 			
-			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
-			[cell toggleLoadMore:([parsedLists count] > 1)];
+//			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
+//			[cell toggleLoadMore:([parsedLists count] > 1)];
 			
 			[_refreshButtonView toggleRefresh:NO];
 			if (_progressHUD != nil) {
@@ -389,24 +390,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
-//	UIView *toggleHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0)];
-//	[self.view addSubview:toggleHolderView];
-//	
-//	_togglePrivateImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-//	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
-//	[toggleHolderView addSubview:_togglePrivateImageView];
-//	
-//	_publicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	_publicButton.frame = CGRectMake(0.0, 0.0, 160.0, 44.0);
-//	[_publicButton addTarget:self action:@selector(_goPublicChallenges) forControlEvents:UIControlEventTouchUpInside];
-//	[_publicButton setSelected:YES];
-//	[toggleHolderView addSubview:_publicButton];
-//	
-//	_privateButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	_privateButton.frame = CGRectMake(160.0, 0.0, 160.0, 44.0);
-//	[_privateButton addTarget:self action:@selector(_goPrivateChallenges) forControlEvents:UIControlEventTouchUpInside];
-//	[_privateButton setSelected:NO];
-//	[toggleHolderView addSubview:_privateButton];
+	[_refreshButtonView toggleRefresh:YES];
 }
 
 - (void)viewDidLoad {
@@ -525,7 +509,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		if (indexPath != nil) {
 			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
 			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:vo];
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SNAP_PREVIEW" object:_snapPreviewViewController];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
@@ -539,19 +523,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 			_verifyOverlayView = [[HONVerifyOverlayView alloc] initWithChallenge:vo];
 			_verifyOverlayView.delegate = self;
 			
-			[self.view addSubview:_verifyOverlayView];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_verifyOverlayView];
 		}
-		
-		/*
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																 delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:@"Report Abuse"
-														otherButtonTitles:@"Approve", nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:1];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-		 */
 	}
 }
 
@@ -569,14 +542,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		[_snapPreviewViewController.view removeFromSuperview];
 		_snapPreviewViewController = nil;
 	}
-}
-
-
-#pragma mark - EmptyChallengeCell Delegates
-- (void)emptyChallengeViewCellShowFrinds:(HONEmptyChallengeViewCell *)cell {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 
@@ -639,9 +604,24 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 	}
 }
 
+- (void)verifyOverlayView:(HONVerifyOverlayView *)verifyOverlayView showProfile:(HONOpponentVO *)opponentVO {
+	[[Mixpanel sharedInstance] track:@"Activity - Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+	
+	if (_verifyOverlayView != nil) {
+		[_verifyOverlayView removeFromSuperview];
+		_verifyOverlayView = nil;
+	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:opponentVO.username];
+}
+
+
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_recentChallenges count] : [_olderChallenges count] + 1);
+	return ((section == 0) ? [_recentChallenges count] : [_olderChallenges count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -674,40 +654,28 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 		return (cell);
 		
 	} else {
-		if ([_olderChallenges count] == 0) {
-			HONEmptyChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-			
-			if (cell == nil)
-				cell = [[HONEmptyChallengeViewCell alloc] init];
-			
-			cell.delegate = self;
-			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-			return (cell);
+		HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 		
-		} else {
-			HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-			
-			if (cell == nil)
-				cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:([_olderChallenges count] > 0 && indexPath.row == [_olderChallenges count])];
-			
-			if (indexPath.row < [_olderChallenges count])
-				cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
-			
-			cell.delegate = self;
-			[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-			return (cell);
-		}
+		if (cell == nil)
+			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
+		
+		if (indexPath.row < [_olderChallenges count])
+			cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
+		
+		cell.delegate = self;
+		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+		return (cell);
 	}
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == 1 && [_olderChallenges count] == 0) ? kOrthodoxTableCellHeight * 2.0 : kOrthodoxTableCellHeight);
+	return (kOrthodoxTableCellHeight);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kOrthodoxTableHeaderHeight);
+	return (kOrthodoxTableHeaderHeight * ([_challenges count] > 0));
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -1042,94 +1010,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) * 2;;
 				_progressHUD = nil;
 			}];
 		}
-	}
-}
-
-
-#pragma mark - ActionSheet Delegates
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-	//BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID;
-	
-	switch (buttonIndex) {
-		case 0:{
-			[[Mixpanel sharedInstance] track:@"Activity Approve - Flag"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"challenger", nil]];
-			
-			[_olderChallenges removeObjectAtIndex:_idxPath.row];
-			[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
-			
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 10], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"targetID",
-									[NSString stringWithFormat:@"%d", 0], @"approves",
-									nil];
-			
-			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-					
-				} else {
-					[self _goRefresh];
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-				
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
-			}];
-			break;}
-			
-		case 1:
-			[[Mixpanel sharedInstance] track:@"Activity Approve - Approve"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"challenger", nil]];
-			
-			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 10], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"targetID",
-									[NSString stringWithFormat:@"%d", 1], @"approves",
-									nil];
-			
-			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
-			[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-				NSError *error = nil;
-				if (error != nil) {
-					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-					
-				} else {
-					[self _goRefresh];
-				}
-				
-			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-				
-				_progressHUD.minShowTime = kHUDTime;
-				_progressHUD.mode = MBProgressHUDModeCustomView;
-				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-				[_progressHUD show:NO];
-				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-				_progressHUD = nil;
-			}];
-			break;
-			
-			//[self _addFriend:(isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).userID : _challengeVO.creatorVO.userID];
-			break;
 	}
 }
 

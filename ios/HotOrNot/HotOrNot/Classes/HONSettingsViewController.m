@@ -39,7 +39,6 @@
 		
 		_captions = [NSArray arrayWithObjects:
 						 NSLocalizedString(@"settings_notifications", nil),
-						 NSLocalizedString(@"settings_myPhotos", nil),
 						 NSLocalizedString(@"settings_inviteSMS", nil),
 						 NSLocalizedString(@"settings_inviteEmail", nil),
 						 NSLocalizedString(@"settings_changeUsername", nil),
@@ -247,12 +246,11 @@
 				[self presentViewController:messageComposeViewController animated:YES completion:^(void) {}];
 				
 			} else {
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"SMS Error"
-																					 message:@"Cannot send SMS from this device!"
-																					delegate:nil
-																		cancelButtonTitle:@"OK"
-																		otherButtonTitles:nil];
-				[alertView show];
+				[[[UIAlertView alloc] initWithTitle:@"SMS Error"
+											message:@"Cannot send SMS from this device!"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
 			}
 			break;}
 			
@@ -280,16 +278,6 @@
 			break;}
 
 		case 4:
-			[[Mixpanel sharedInstance] track:@"Settings - Change Username"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-			
-			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-			break;
-			
-		case 5:
 			[[Mixpanel sharedInstance] track:@"Settings - Show Support"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -299,7 +287,7 @@
 			[self presentViewController:navigationController animated:YES completion:nil];
 			break;
 			
-		case 6:
+		case 5:
 			[[Mixpanel sharedInstance] track:@"Settings - Show Privacy"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];

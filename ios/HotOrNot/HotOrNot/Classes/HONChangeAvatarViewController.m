@@ -59,7 +59,7 @@
 	NSLog(@"FILENAME: https://hotornot-avatars.s3.amazonaws.com/%@", _filename);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_uploadPhoto", nil);
+	_progressHUD.labelText = @"Loading";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -448,6 +448,8 @@
 	
 	[_progressHUD hide:YES];
 	_progressHUD = nil;
+	
+	[_cameraOverlayView animateSubmit];
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {

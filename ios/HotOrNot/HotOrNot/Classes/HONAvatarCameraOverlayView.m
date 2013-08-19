@@ -52,7 +52,7 @@
 		captionImageView.image = [UIImage imageNamed:@"takePhotoOverlay"];
 		//[_controlsHolderView addSubview:captionImageView];
 		
-		float offset = ([HONAppDelegate isRetina5]) ? 469.0 : 389.0;
+//		float offset = ([HONAppDelegate isRetina5]) ? 469.0 : 389.0;
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_nonActive"] forState:UIControlStateNormal];
@@ -171,11 +171,6 @@
 - (void)showPreview:(UIImage *)image {
 	//NSLog(@"PARENT:[%@]", [[self.superview class] description]);
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
-	} completion:^(BOOL finished) {
-	}];
-	
 	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
 	
 	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
@@ -192,11 +187,6 @@
 
 - (void)showPreviewAsFlipped:(UIImage *)image {
 	//NSLog(@"PARENT:[%@]", [[self.superview.superview.superview class] description]);
-	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
-	} completion:^(BOOL finished) {
-	}];
 	
 	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
 	
@@ -219,6 +209,13 @@
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 320.0, 0.0);
 	} completion:nil];
+}
+
+- (void)animateSubmit {
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
+	} completion:^(BOOL finished) {
+	}];
 }
 
 - (void)_animateShutter {

@@ -161,7 +161,7 @@
 	NSLog(@"FILENAME: https://hotornot-avatars.s3.amazonaws.com/%@", _filename);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_uploadPhoto", nil);
+	_progressHUD.labelText = @"Loading";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -330,7 +330,7 @@
 	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 108.0);
 	[self.view addSubview:divider1ImageView];
 	
-	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 127.0, 230.0, 30.0)];
+	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 127.0, 296.0, 30.0)];
 	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_birthdayLabel.textColor = [HONAppDelegate honGrey518Color];
 	_birthdayLabel.backgroundColor = [UIColor clearColor];
@@ -450,9 +450,9 @@
 		[_usernameTextField becomeFirstResponder];
 	
 	} else {
-		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > 630720000) {
+		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 23) {
 			[[[UIAlertView alloc] initWithTitle:@""
-										message:@"Womp! Womp! You are a little too old to join Volley at this time. We are building a fun & safe community that empowers users with the mechanics to keep themselves safe. To tackle these privacy issues head on we will be only excepting younger members at this time. Please check back soon as the network matures. support@letsvolley.com"
+										message:@"Womp Womp! You appear to be too old or too young for Volley at this time. Please check back soon as we open up to additional age ranges. support@letsvolley.com"
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -767,6 +767,8 @@
 	
 	[_progressHUD hide:YES];
 	_progressHUD = nil;
+	
+	[_cameraOverlayView animateSubmit];
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {

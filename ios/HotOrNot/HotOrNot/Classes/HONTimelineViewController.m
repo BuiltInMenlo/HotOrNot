@@ -720,7 +720,7 @@
 }
 
 - (void)_refreshVoteTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
+	//[_tableView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
@@ -889,7 +889,7 @@
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO];
 	
 	_opponentVO = opponentVO;
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SNAP_PREVIEW" object:_snapPreviewViewController];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
 - (void)timelineItemViewCellHidePreview:(HONTimelineItemViewCell *)cell {
@@ -900,18 +900,7 @@
 	
 	_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
 	_challengeOverlayView.delegate = self;
-	[self.view addSubview:_challengeOverlayView];
-	
-	/*
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-															 delegate:self
-													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:@"Report Abuse"
-													otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:3];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-	 */
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
 }
 
 #pragma mark - ChallengeOverlay Delegates
@@ -919,7 +908,7 @@
 	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote"
+	[[Mixpanel sharedInstance] track:@"Timeline - Upvote"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
@@ -938,29 +927,46 @@
 	[self _upvoteChallenge:_opponentVO.userID];
 }
 
-- (void)challengeOverlayViewShowMore:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)challengeOverlayViewFlag:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Show More"
+	[[Mixpanel sharedInstance] track:@"Timeline - Flag"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
+	[[[UIAlertView alloc] initWithTitle:@""
+								message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _opponentVO.username]
+							   delegate:self
+					  cancelButtonTitle:@"OK"
+					  otherButtonTitles:nil] show];
+	
+	[self _flagUser:_opponentVO.userID];
+	
 	if (_challengeOverlayView != nil) {
 		[_challengeOverlayView removeFromSuperview];
 		_challengeOverlayView = nil;
 	}
+}
+
+- (void)challengeOverlayViewProfile:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	_opponentVO = opponentVO;
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-															 delegate:self
-													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:@"Flag user"
-													otherButtonTitles:@"Like photo", @"View profile", @"Add friend", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:3];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	[[Mixpanel sharedInstance] track:@"Timeline - User Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
+	
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
+	}
 }
 
 - (void)challengeOverlayViewClose:(HONChallengeOverlayView *)challengeOverlayView {
@@ -972,6 +978,15 @@
 
 
 #pragma mark - UserProfileCell Delegates
+- (void)userProfileViewCell:(HONUserProfileViewCell *)cell flagUser:(HONUserVO *)userVO {
+	[[Mixpanel sharedInstance] track:@"Timeline Profile - Flag User"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
+	
+	[self _flagUser:userVO.userID];
+}
+
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell addFriend:(HONUserVO *)userVO {
 	[[Mixpanel sharedInstance] track:@"Timeline Profile - Add Friend"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -997,9 +1012,6 @@
 									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"opponent", nil]];
 	
 	[self _goNewChallengeAtUser:userVO];
-	//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO]];
-	//	[navigationController setNavigationBarHidden:YES];
-	//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell showUserTimeline:(HONUserVO *)userVO {
@@ -1017,6 +1029,14 @@
 		[self presentViewController:navigationController animated:YES completion:nil];
 	
 	} else {
+		BOOL isFriend = NO;
+		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+			if (vo.userID == _userVO.userID) {
+				isFriend = YES;
+				break;
+			}
+		}
+		
 		[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -1025,8 +1045,8 @@
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:@"Report abuse"
-														otherButtonTitles:@"Send Volley", @"Add friend", nil];
+												   destructiveButtonTitle:@"Flag"
+														otherButtonTitles:(isFriend) ? @"Remove friend" : @"Add friend", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -1208,8 +1228,11 @@
 	if (indexPath.section == 0) {
 		return ((_timelineType == HONTimelineTypeSingleUser) ? 252.0 : 286.0);
 		
-	} else
-		return (286.0);
+	} else {
+		return ((indexPath.section == [_challenges count] -1) ? 330.0 : 286);
+		
+		//return (286.0);
+	}
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -1291,21 +1314,21 @@
 				break;}
 				
 			case 1:{
-				[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self Snap At User"
+				BOOL isFriend = NO;
+				for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+					if (vo.userID == _userVO.userID) {
+						isFriend = YES;
+						break;
+					}
+				}
+				
+				
+				[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Profile - %@ Friend", (isFriend) ? @"Remove" : @"Add"]
 									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
-				[self _goNewChallengeAtUser:_userVO];
-				break;}
-				
-			case 2:{
-				[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self Follow User"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
-				
-				[self _addFriend:_userVO.userID];
+				(isFriend) ? [self _removeFriend:_userVO.userID] : [self _addFriend:_userVO.userID];
 				break;}
 		}
 	
@@ -1325,60 +1348,6 @@
 				
 				[self _flagUser:_userVO.userID];
 				break;}
-		}
-	
-	} else if (actionSheet.tag == 3) {
-		switch (buttonIndex) {
-			case 0: {
-				[[Mixpanel sharedInstance] track:@"Timeline - Flag User"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-				
-				[[[UIAlertView alloc] initWithTitle:@""
-											message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _opponentVO.username]
-										   delegate:self
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
-				
-				[self _flagUser:_opponentVO.userID];
-				break;}
-				
-			case 1:
-				[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenge"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-				
-				for (HONTimelineItemViewCell *cell in _cells) {
-					if (cell.challengeVO.challengeID == _challengeVO.challengeID)
-						[cell upvoteUser:_opponentVO.userID];
-				}
-				
-				[self _upvoteChallenge:_opponentVO.userID];
-				break;
-				
-			case 2:
-				[[Mixpanel sharedInstance] track:@"Timeline - User Profile"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-				
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
-				break;
-				
-			case 3:
-				[[Mixpanel sharedInstance] track:@"Timeline - Add Friend"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-												  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-				
-				[self _addFriend:_opponentVO.userID];
-				break;
 		}
 	}
 }
