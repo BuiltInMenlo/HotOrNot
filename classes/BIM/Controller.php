@@ -5,6 +5,12 @@ class BIM_Controller{
     public $user = null;
     
     public function handleReq(){
+        // set the environment to support legacy versions of the app.
+        $legacyKey = 'IS_LEGACY';
+        if( !empty( $_SERVER[ $legacyKey ] ) ){
+            define($legacyKey,TRUE);
+        }
+        
         $res = null;
         if( $this->sessionOK() ){
             $request = BIM_Utils::getRequest();

@@ -83,7 +83,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	    $challenge_arr = array();
         $volleys = BIM_Model_Volley::getVolleysWithFriends( $input->userID );
         foreach( $volleys as $volley ){
-	    	$isForUser = ( $volley->creator->id == $input->userID || in_array( $input->userID, $volley->challengers ) );
+	    	$isForUser = $volley->hasUser( $input->userID );
 			if( $volley->is_private == 'N' || $isForUser && ( ! $volley->isExpired() ) ){
 				array_push( $challenge_arr, $volley );
 			}
@@ -159,12 +159,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	        $volley->upVote( $targetId, $userId );
     	    $volley = BIM_Model_Volley::get($volleyId);
 
-    	    $userIds = array();
-    	    foreach( $volley->challengers as $challenger ){
-    	        $userIds[] = $challenger->id;
-    	    }
-    	    $userIds[] = $volley->creator->id;
-
+            $userIds = $volley->getUsers();
     	    $users = BIM_Model_User::getMulti( $userIds );
     	    
     	    $deviceTokens = array();

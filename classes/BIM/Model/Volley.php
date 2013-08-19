@@ -55,7 +55,7 @@ class BIM_Model_Volley{
             $this->updated = $volley->updated;
             $this->creator = $creator;
             // legacy versions of client do not support multiple challengers
-            if( defined( 'IS_LEGACY' ) && IS_LEGACY ){
+            if( $this->isLegacy() ){
                 $this->challenger = $challengers[0];
             } else{
                 $this->challengers = $challengers;
@@ -75,8 +75,32 @@ class BIM_Model_Volley{
         return $suspended;
     }
     
+    // returns true if the requesting client
+    // is a legacy client
+    public function isLegacy(){
+        return (defined( 'IS_LEGACY' ) && IS_LEGACY );
+    }
+    
+    /**
+     * return the list of users
+     * in the volley including the creator
+     */
+    public function getUsers(){
+        $userIds = array();
+        if( $this->isLegacy() ){
+            $userIds[] = $this->challenger->id;
+	} else {
+            foreach( $this->challengers as $challenger ){
+    	        $userIds[] = $challenger->id;
+    	    }
+	}
+	$userIds[] = $this->creator->id;
+	return $userIds;
+    }
+    
     public function comment( $userId, $text ){
         $comment = BIM_Model_Comments::create( $this->id, $userId, $text );
+        $this->purgeFromCache();
     }
     
     public function getComments(){
@@ -234,11 +258,15 @@ class BIM_Model_Volley{
     
     public function hasChallenger( $userId ){
         $has = false;
-        if( !empty( $this->challengers ) ){
-            foreach( $this->challengers as $challenger ){
-                if( $challenger->id == $userId ){
-                    $has = true;
-                    break;
+        if( $this->isLegacy() ){
+            $has = ( $this->challenger->id == $userId );
+        } else {
+            if( !empty( $this->challengers ) ){
+                foreach( $this->challengers as $challenger ){
+                    if( $challenger->id == $userId ){
+                        $has = true;
+                        break;
+                    }
                 }
             }
         }

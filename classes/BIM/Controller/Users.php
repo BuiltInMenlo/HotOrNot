@@ -27,6 +27,19 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		return false;
     }
     
+    public function firstRunComplete(){
+        $input = (object) ($_POST ? $_POST : $_GET);
+        if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) && !empty( $input->age ) ){
+            $userId = $this->resolveUserId( $input->userID );
+            if( BIM_Utils::ageOK( $input->age ) ){
+                $users = new BIM_App_Users();
+                $users->firstRunComplete($userId);
+			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age );
+            }
+		}
+		return false;
+    }
+    
     public function getUserFromName(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->username)){

@@ -15,7 +15,7 @@ class BIM_DAO_Mysql_Comments extends BIM_DAO_Mysql{
     }
     
     public function getIdsForVolley( $volleyId ){
-        $sql = "SELECT disitinct(id) as id from `hotornot-dev`.tblComments where challenge_id = ? and status_id not in (3)";
+        $sql = "SELECT distinct(id) as id from `hotornot-dev`.tblComments where challenge_id = ? and status_id not in (3)";
         $params = array( $volleyId );
         $stmt = $this->prepareAndExecute( $sql, $params );
         $ids = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );

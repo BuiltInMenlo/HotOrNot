@@ -23,19 +23,14 @@ class BIM_App_Comments extends BIM_App_Base{
 	 * @param $challenge_id The user submitting the challenge (integer)
 	 * @return An associative object for a challenge (array)
 	**/
-    public function submitCommentForChallenge($challengeId, $userId, $text) {
+    public function submitCommentForChallenge($volleyId, $userId, $text) {
         
         $volley = BIM_Model_Volley::get($volleyId);
         $commenter = BIM_Model_User::get($userId);
         $creator = BIM_Model_User::get( $volley->creator->id );
         $comment = $volley->comment( $userId, $text );
 
-	    $userIds = array();
-	    foreach( $volley->challengers as $challenger ){
-	        $userIds[] = $challenger->id;
-	    }
-	    $userIds[] = $volley->creator->id;
-
+        $userIds = $volley->getUsers();
 	    $users = BIM_Model_User::getMulti( $userIds );
 	    
 	    $deviceTokens = array();

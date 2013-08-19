@@ -315,11 +315,12 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         		on tc.id = tcp.challenge_id
         	where (tc.creator_id = ? OR tcp.user_id = ?)
         		AND tcp.img != ''
-        		AND tcp.img not null
+        		AND tcp.img is not null
         	group by creator_id, user_id, img
         ";
 		$params = array( $userId, $userId );
-        return $this->prepareAndExecute($sql, $params);
+        $stmt = $this->prepareAndExecute($sql, $params);
+        return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
     }
     
 	public function setAgeRange( $userId, $ageRange ){
