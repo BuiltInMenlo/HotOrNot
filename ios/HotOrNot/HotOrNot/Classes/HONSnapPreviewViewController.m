@@ -16,6 +16,7 @@
 #import "HONUserVO.h"
 
 @interface HONSnapPreviewViewController ()
+- (void)_reloadImage;
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
@@ -91,6 +92,25 @@
 	}];
 }
 
+- (void)_reloadImage {
+	NSLog(@"RELOADING:[%@]", [NSString stringWithFormat:@"%@_l.jpg", _opponentVO.imagePrefix]);
+	[_imageView removeFromSuperview];
+	_imageView = nil;
+	
+	__weak typeof(self) weakSelf = self;
+	_imageView = [[UIImageView alloc] initWithFrame:CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim)];
+	_imageView.alpha = 0.0;
+	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _opponentVO.imagePrefix]]
+														cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+						  weakSelf.imageView.image = image;
+						  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.imageView.alpha = 1.0; } completion:nil];
+					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+	[self.view addSubview:_imageView];
+	
+	//[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _opponentVO.imagePrefix]] placeholderImage:nil];
+}
+
 
 #pragma mark - View lifecycle
 - (void)loadView {
@@ -145,7 +165,7 @@
 						  weakSelf.imageView.image = image;
 						  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.imageView.alpha = 1.0; } completion:nil];
 					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-						  [weakSelf.imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", weakSelf.opponentVO.imagePrefix]] placeholderImage:nil];
+						  [weakSelf _reloadImage];
 					  }];
 	[self.view addSubview:_imageView];
 	

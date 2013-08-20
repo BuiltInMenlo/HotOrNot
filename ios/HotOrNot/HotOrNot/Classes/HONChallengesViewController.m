@@ -38,6 +38,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) HONVerifyOverlayView *verifyOverlayView;
+@property (nonatomic, strong) UIImageView *emptyImageView;
 @property (nonatomic, strong) NSIndexPath *idxPath;
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
@@ -77,20 +78,20 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 
-#pragma mark - Touch Handlers
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-//	UITouch *touch = [touches anyObject];
-//	CGPoint location = [touch locationInView:self.view];
-	
-	CGPoint touchPoint = [[[event touchesForView:self.view] anyObject] locationInView:self.view];
-	
-	NSLog(@"TOUCH:[%@][%@]", NSStringFromCGPoint(touchPoint), NSStringFromCGRect(_verifyOverlayView.frame));
-	
-	if (!CGRectContainsPoint(_verifyOverlayView.frame, touchPoint)) {
-		[_verifyOverlayView removeFromSuperview];
-		_verifyOverlayView = nil;
-	}
-}
+//#pragma mark - Touch Handlers
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+////	UITouch *touch = [touches anyObject];
+////	CGPoint location = [touch locationInView:self.view];
+//	
+//	CGPoint touchPoint = [[[event touchesForView:self.view] anyObject] locationInView:self.view];
+//	
+//	NSLog(@"TOUCH:[%@][%@]", NSStringFromCGPoint(touchPoint), NSStringFromCGRect(_verifyOverlayView.frame));
+//	
+//	if (!CGRectContainsPoint(_verifyOverlayView.frame, touchPoint)) {
+//		[_verifyOverlayView removeFromSuperview];
+//		_verifyOverlayView = nil;
+//	}
+//}
 
 
 #pragma mark - Data Calls
@@ -183,7 +184,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				[_challenges addObject:vo];
 			}
 
-			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
+			_lastDate = ([_recentChallenges count] > 0) ? ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate : ((HONChallengeVO *)[_recentChallenges lastObject]).addedDate;
 			[_tableView reloadData];
 			
 			[_refreshButtonView toggleRefresh:NO];
@@ -191,6 +192,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				[_progressHUD hide:YES];
 				_progressHUD = nil;
 			}
+			
+			_emptyImageView.hidden = [_challenges count] > 0;
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -373,8 +376,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
 	[_bannerView addSubview:bannerButton];
 	
+	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
+	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 90.0);
+	[self.view addSubview:_emptyImageView];
+	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - 50.0 - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor whiteColor]];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
 	_tableView.delegate = self;
@@ -453,46 +460,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}];
 }
-
-//- (void)_goPublicChallenges {
-//	_isPrivate = NO;
-//	
-//	[[Mixpanel sharedInstance] track:@"Activity - Public Toggle"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	[_publicButton setSelected:YES];
-//	[_privateButton setSelected:NO];
-//	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-//	
-//	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleA"];
-//	[self _retrieveChallenges];
-//}
-//
-//- (void)_goPrivateChallenges {
-//	_isPrivate = YES;
-//	
-//	[[Mixpanel sharedInstance] track:@"Activity - Private Toggle"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-//	
-//	[_publicButton setSelected:NO];
-//	[_privateButton setSelected:YES];
-//	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-//	
-//	_togglePrivateImageView.image = [UIImage imageNamed:@"publicPrivate_toggleB"];
-//	[self _retrieveChallenges];
-//}
 
 
 #pragma mark - UI Presentation
@@ -675,7 +642,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kOrthodoxTableHeaderHeight * ([_challenges count] > 0));
+	return (kOrthodoxTableHeaderHeight);// * ([_challenges count] > 0));
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

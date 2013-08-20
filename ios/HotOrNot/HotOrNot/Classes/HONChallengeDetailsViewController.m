@@ -633,7 +633,7 @@
 	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, (([UIScreen mainScreen].bounds.size.height - 108.0) * 0.5) + 10.0);
 	[self.view addSubview:heartImageView];
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		heartImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[heartImageView removeFromSuperview];

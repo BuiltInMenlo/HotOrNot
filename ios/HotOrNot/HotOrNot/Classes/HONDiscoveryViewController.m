@@ -226,15 +226,23 @@
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, -kNavBarHeaderHeight);
 			self.view.frame = CGRectOffset(self.view.frame, 0.0, -kNavBarHeaderHeight);
+			_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]);
+			_bannerView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			_bannerView.hidden = YES;
 		}];
 	}
 }
 
 - (void)_hideSearchTable:(NSNotification *)notification {
 	if (self.view.frame.origin.y < 0) {
+		_bannerView.hidden = NO;
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, kNavBarHeaderHeight);
 			self.view.frame = CGRectOffset(self.view.frame, 0.0, kNavBarHeaderHeight);
+			_tableView.frame = CGRectOffset(_tableView.frame, 0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]);
+			_bannerView.alpha = 1.0;
+		} completion:^(BOOL finished) {
 		}];
 	}
 }

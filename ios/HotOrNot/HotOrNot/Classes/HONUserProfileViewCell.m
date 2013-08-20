@@ -47,19 +47,19 @@
 	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 9.0, 109.0, 109.0)];
 	_avatarImageView.userInteractionEnabled = YES;
-	[_avatarImageView setImageWithURL:[NSURL URLWithString:(isUser) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : _userVO.imageURL] placeholderImage:nil];
+//	[_avatarImageView setImageWithURL:[NSURL URLWithString:(isUser) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : _userVO.imageURL] placeholderImage:nil];
 	[self addSubview:_avatarImageView];
 	
-//	if (isUser) {
-//		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
-//																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-//															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
-//	
-//	} else {
-//		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
-//																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-//															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-//	}
+	if (isUser) {
+		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
+																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
+	
+	} else {
+		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
+																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+	}
 	
 	
 	BOOL isFriend = NO;
@@ -142,7 +142,7 @@
 	[self addSubview:ageLabel];
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(126.0, 194.0, 124.0, 44.0);
+	friendsButton.frame = CGRectMake(181.0, 194.0, 69.0, 44.0);
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
 	[friendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
@@ -151,7 +151,7 @@
 	
 	
 	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	addFriendButton.frame = CGRectMake(45.0, 194.0, 144.0, 44.0);
+	addFriendButton.frame = CGRectMake(120.0, 194.0, 69.0, 44.0);
 	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
 	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
 	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];

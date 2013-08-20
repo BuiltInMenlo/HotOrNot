@@ -236,7 +236,7 @@
 			
 		} else {
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			[HONAppDelegate writeFriendsList:result];
 			

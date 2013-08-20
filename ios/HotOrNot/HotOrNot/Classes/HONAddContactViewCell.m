@@ -36,7 +36,7 @@
 		[self addSubview:_checkButton];
 		
 		_inviteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_inviteButton.frame = CGRectMake(246.0, 9.0, 64.0, 44.0);
+		_inviteButton.frame = CGRectMake(226.0, 9.0, 84.0, 44.0);
 		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_nonActive"] forState:UIControlStateNormal];
 		[_inviteButton setBackgroundImage:[UIImage imageNamed:@"inviteButton_Active"] forState:UIControlStateHighlighted];
 		[_inviteButton addTarget:self action:@selector(_goInvite) forControlEvents:UIControlEventTouchUpInside];

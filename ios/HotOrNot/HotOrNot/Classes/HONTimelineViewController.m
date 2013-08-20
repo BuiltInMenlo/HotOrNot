@@ -182,7 +182,7 @@
 	} else if (_timelineType == HONTimelineTypeFriends) {
 	}
 	
-	//NSLog(@"PARAMS:[%@]", params);
+	NSLog(@"PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -456,8 +456,8 @@
 	_findFriendsScrollView.showsVerticalScrollIndicator = YES;
 	_findFriendsScrollView.showsHorizontalScrollIndicator = NO;
 	_findFriendsScrollView.backgroundColor = [UIColor whiteColor];
-	_findFriendsScrollView.hidden = YES;//([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
-	[self.view addSubview:_findFriendsScrollView];
+	_findFriendsScrollView.hidden = YES; //([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
+	//[self.view addSubview:_findFriendsScrollView];
 	
 	UIImageView *findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
 	findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-568h@2x" : @"findFriends"];
@@ -923,7 +923,7 @@
 	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, (([UIScreen mainScreen].bounds.size.height - 108.0) * 0.5) + 10.0);
 	[self.view addSubview:heartImageView];
 	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		heartImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[heartImageView removeFromSuperview];
@@ -994,6 +994,21 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline - Flag"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+														message:@"This person will be flagged"
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	
+	[alertView setTag:2];
+	[alertView show];
 	
 	[self _flagUser:userVO.userID];
 }

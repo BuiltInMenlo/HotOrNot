@@ -79,7 +79,7 @@
 	[self addSubview:tapLabel];
 	
 	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(265.0, 9.0, 44.0, 44.0)];
-	_hasSeenImageView.image = [UIImage imageNamed:(_challengeVO.hasViewed) ? @"viewedSnapCheck" : @"newSnapDot"];
+	_hasSeenImageView.image = [UIImage imageNamed:(_challengeVO.hasViewed) ? @"viewedSnapCheck_nonActive" : @"newSnapDot"];
 	//[self addSubview:_hasSeenImageView];
 	
 	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(69.0, 34.0, 18.0, 18.0)];
@@ -99,7 +99,7 @@
 }
 
 - (void)updateHasSeen {
-	_hasSeenImageView.image = [UIImage imageNamed:@"viewedSnapCheck"];
+	_hasSeenImageView.image = [UIImage imageNamed:@"viewedSnapCheck_nonActive"];
 }
 
 

@@ -1258,7 +1258,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@ %@", [[self class] description], userResult, httpClient.baseURL);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				[HONAppDelegate writeUserInfo:userResult];

@@ -404,7 +404,8 @@
 	[self.view addSubview:_tutorialHolderView];
 	
 	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialHolderView.frame.size.height)];
-	[page1ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:0], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
+	page1ImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fue_dynamicImage_A-568h@2x" : @"fue_dynamicImage_A"];
+	//[page1ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:0], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
 	page1ImageView.userInteractionEnabled = YES;
 	page1ImageView.backgroundColor = [UIColor whiteColor];
 	[_tutorialHolderView addSubview:page1ImageView];
@@ -690,8 +691,7 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	_usernameLabel.hidden = !(textField.tag == 0 && [textField.text length] == 0);
-	//_usernameLabel.hidden = ([_usernameTextField.text length] > 0);
+	_usernameLabel.hidden = ([_usernameTextField.text length] > 0);
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);

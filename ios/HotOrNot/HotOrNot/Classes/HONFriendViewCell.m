@@ -32,8 +32,8 @@
 		
 		_checkButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_checkButton.frame = CGRectMake(266.0, 9.0, 44.0, 44.0);
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateNormal];
-		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck"] forState:UIControlStateHighlighted];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck_nonActive"] forState:UIControlStateNormal];
+		[_checkButton setBackgroundImage:[UIImage imageNamed:@"viewedSnapCheck_Active"] forState:UIControlStateHighlighted];
 		[_checkButton addTarget:self action:@selector(_goUnfollow) forControlEvents:UIControlEventTouchUpInside];
 		_checkButton.hidden = YES;
 		[self addSubview:_checkButton];

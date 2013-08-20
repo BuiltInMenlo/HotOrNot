@@ -182,7 +182,7 @@
 	_subjectTextField.delegate = self;
 	[self addSubview:_subjectTextField];
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 175.0, 64.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 150.0, 64.0, 64.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
