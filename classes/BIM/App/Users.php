@@ -277,7 +277,8 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @param array[int] $userIds - list of users to push
 	 */
 	public function sendVerifyPush( $targetId, $userIds ){
-	    
+
+	    /**
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
             $msg = "You have been flagged as a fake. Log in to prove you are real!";
@@ -292,6 +293,7 @@ class BIM_App_Users extends BIM_App_Base{
             
             BIM_Jobs_Utils::queuePush($push);
         }
+	    **/
 	    
         $friends = BIM_Model_User::getMulti($userIds);
         $deviceTokens = array();

@@ -29,3 +29,4 @@ CREATE TABLE `tblFlaggedUserApprovals` (
 
 alter table tblChallenges drop column challenger_id, drop column challenger_img, add column is_verify tinyint not null default 0;
 alter table tblUsers add column adid varchar(36) unique null, add column abuse_ct int not null default 0, add column password varchar(100) not null;
+update tblUsers set age = UNIX_TIMESTAMP( DATE_SUB(now(), INTERVAL 16 YEAR) );

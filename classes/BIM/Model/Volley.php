@@ -80,13 +80,13 @@ class BIM_Model_Volley{
         $userIds = array();
         if( $this->isLegacy() ){
             $userIds[] = $this->challenger->id;
-	} else {
+        } else {
             foreach( $this->challengers as $challenger ){
     	        $userIds[] = $challenger->id;
     	    }
-	}
-	$userIds[] = $this->creator->id;
-	return $userIds;
+    	}
+    	$userIds[] = $this->creator->id;
+    	return $userIds;
     }
     
     public function comment( $userId, $text ){

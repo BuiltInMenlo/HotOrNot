@@ -48,7 +48,7 @@ class BIM_App_Challenges extends BIM_App_Base{
      * @return An associative object for a challenge (array)
     **/
     public function acceptChallengeAsDefaultUser($volleyObject, $creator, $targetUser) {
-        $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824, 881 );
+        $defaultUserID_arr = array( 2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824 );
         if ( in_array($targetUser->id, $defaultUserID_arr) ) {
             $time = time() + mt_rand(30, 120);
             $this->createTimedAccept( $volleyObject, $creator, $targetUser, $time );
@@ -64,9 +64,19 @@ class BIM_App_Challenges extends BIM_App_Base{
     }
     
     public function doAcceptNotification( $volleyObject, $creator, $targetUser, $delay = 0 ){
-        $msg = "$targetUser->username has accepted your $volleyObject->subject snap!";
+        $msg = "$targetUser->username has joined your Volley!";
+        
+        $deviceTokens = array();
+        $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
+        foreach( $users as $user ){
+            if( $user->canPush() ){
+                $deviceTokens[] = $user->device_token;
+            }
+        }
+        $deviceTokens = array_unique($deviceTokens);
+        
         $push = array(
-            "device_tokens" =>  array( $creator->device_token ), 
+            "device_tokens" =>  $deviceTokens, 
             "type" => "3", 
             "aps" =>  array(
                 "alert" =>  $msg,
@@ -367,6 +377,12 @@ class BIM_App_Challenges extends BIM_App_Base{
             $OK = false;
             if( $volley->is_private == 'N' ){
                 $volley->join( $userId, $imgUrl );
+                if( $userId != $volley->creator->id ){
+                    $users = BIM_Model_User::getMulti(array( $volley->creator->id, $userId ), TRUE);
+                    $creator = $users[ $volley->creator->id ];
+                    $joiner = $users[ $userId ];
+                    $this->doAcceptNotification($volley, $creator, $joiner);
+                }
             }
         }
         return $volley;        
@@ -388,6 +404,12 @@ class BIM_App_Challenges extends BIM_App_Base{
             }
             if( $OK ){
                 $volley->accept($userId, $imgUrl);
+                if( $userId != $volley->creator->id ){
+                    $users = BIM_Model_User::getMulti(array( $volley->creator->id, $userId ), TRUE);
+                    $creator = $users[ $volley->creator->id ];
+                    $joiner = $users[ $userId ];
+                    $this->doAcceptNotification($volley, $creator, $joiner);
+                }
             }
         }
         return $volley;        
@@ -521,6 +543,70 @@ class BIM_App_Challenges extends BIM_App_Base{
             }
             echo "Volley $volley->id was re-vollied to $challenger->username : $challenger->id\n";
         }
+    }
+    
+    /**
+     * get 25% of the volleys for user 2349
+     * 
+     * for a given set of challenge_ids
+     * 
+select s.id, c.subject_id, s.title, count(*) from tblChallenges as c join tblChallengeParticipants as p on c.id = p.challenge_id join tblChallengeSubjects as s on c.subject_id = s.id where c.creator_id = 2394 group by s.id;
+
++------+------------+------------------+----------+
+| id   | subject_id | title            | count(*) |
++------+------------+------------------+----------+
+|  753 |        753 | #snapAtMe        |     2761 |
+| 1367 |       1367 | #welcomeVolley   |     1148 |
+| 1368 |       1368 | #teamVolleyRules |     1116 |
+| 1369 |       1369 | #teamVolley      |     1117 |
+| 1370 |       1370 | #teamVolleygirls |     1170 |
++------+------------+------------------+----------+
+     
+select id from tblChallenges where subject_id = 1368 limit 30
+
+select id from tblChallenges where subject_id = 1369 limit 30
+
+select id from tblChallenges where subject_id = 1370 limit 30;
+
+
+select p.user_id, c.subject_id, p.challenge_id 
+from tblChallenges as c 
+	join tblChallengeParticipants as p 
+	on c.id = p.challenge_id  
+where c.subject_id = 1368  
+limit 10
+
+      update 
+      	tblChallenges as c 
+      	join tblChallengeParticipants as p 
+      	on c.id = p.challemge_id
+      
+     	set c.updated = now(),
+     		p.challenge_id = 16893
+     
+       where c.subject_id = 1368
+		and p.user_id in ( )
+		       
+       limit 10
+       
+       		and p.challemge_id not in (?)
+       
+       limit 10
+========       
+      select c.subject_id, p.challenge_id
+      from  
+          tblChallenges as c 
+          join tblChallengeParticipants as p 
+          on c.id = p.challenge_id
+      
+       where c.subject_id = 1368
+	   limit 10
+	   
+     *  
+     * 
+     */
+    public static function redistributeVolleys(){
+        
     }
     
     public static function getSubject($tagId) {

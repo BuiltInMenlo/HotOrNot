@@ -162,15 +162,14 @@ class BIM_App_Votes extends BIM_App_Base{
             $userIds = $volley->getUsers();
     	    $users = BIM_Model_User::getMulti( $userIds );
     	    
+    		$liker = BIM_Model_User::get( $userId );
     	    $deviceTokens = array();
     	    foreach( $users as $user ){
     	        if( $user->canPush() ){
         	        $deviceTokens[] = $user->device_token;
     	        }
     	    }
-    	    
-    		$liker = BIM_Model_User::get( $userId );
-			
+    		
 			$msg = "@$liker->username liked your Volley";
 			$push = array(
 		    	"device_tokens" =>  $deviceTokens, 

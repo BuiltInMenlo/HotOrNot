@@ -18,7 +18,9 @@ class BIM_Model_User{
             }
         }
 
-        if( !empty( $this->age ) ){
+        if( $this->age <= 0 ){
+            $this->age = '0000-00-00 00:00:00';
+        } else if( !empty( $this->age ) ){
             $birthdate = new DateTime( "@$this->age" );
             $this->age = $birthdate->format('Y-m-d H:i:s');
         }
