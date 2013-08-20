@@ -102,7 +102,17 @@
 															   @"", @"pics",
 															   @"", @"age",
 															   @"", @"fb_id", nil]];
-				[_inAppContacts addObject:vo];
+				
+				BOOL isFound = NO;
+				for (HONUserVO *searchVO in _inAppContacts) {
+					if (searchVO.userID == vo.userID) {
+						isFound = YES;
+						break;
+					}
+				}
+				
+				if (!isFound)
+					[_inAppContacts addObject:vo];
 			}
 			
 			if (_progressHUD != nil) {
@@ -169,7 +179,16 @@
 															   @"", @"pics",
 															   @"", @"age",
 															   @"", @"fb_id", nil]];
-				[_inAppContacts addObject:vo];
+				BOOL isFound = NO;
+				for (HONUserVO *searchVO in _inAppContacts) {
+					if (searchVO.userID == vo.userID) {
+						isFound = YES;
+						break;
+					}
+				}
+				
+				if (!isFound)
+					[_inAppContacts addObject:vo];
 			}
 			
 			if (_progressHUD != nil) {

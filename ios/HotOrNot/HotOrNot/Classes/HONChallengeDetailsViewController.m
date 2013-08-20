@@ -18,7 +18,7 @@
 #import "HONSnapPreviewViewController.h"
 #import "HONChallengeOverlayView.h"
 
-@interface HONChallengeDetailsViewController () <UIActionSheetDelegate, HONChallengeOverlayViewDelegate>
+@interface HONChallengeDetailsViewController () <UIActionSheetDelegate, UIActionSheetDelegate, HONChallengeOverlayViewDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -206,8 +206,8 @@
 	creatorAvatarImageView.userInteractionEnabled = YES;
 	[headerView addSubview:creatorAvatarImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 13.0, 180.0, 20.0)];
-	subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 11.0, 180.0, 20.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
@@ -629,6 +629,16 @@
 		_challengeOverlayView = nil;
 	}
 	
+	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, (([UIScreen mainScreen].bounds.size.height - 108.0) * 0.5) + 10.0);
+	[self.view addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		heartImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[heartImageView removeFromSuperview];
+	}];
+	
 	if (_opponentVO.userID == _challengeVO.creatorVO.userID)
 		[self _goUpvoteCreator];
 	
@@ -637,19 +647,22 @@
 }
 
 - (void)challengeOverlayViewFlag:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_opponentVO = opponentVO;
+	
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Flag User"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	[[[UIAlertView alloc] initWithTitle:@""
-								message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _opponentVO.username]
-							   delegate:self
-					  cancelButtonTitle:@"OK"
-					  otherButtonTitles:nil] show];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+														message:@"This person will be flagged"
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
 	
-	[self _flagUser:_opponentVO.userID];
+	[alertView setTag:0];
+	[alertView show];
 	
 	if (_challengeOverlayView != nil) {
 		[_challengeOverlayView removeFromSuperview];
@@ -669,6 +682,15 @@
 	if (_challengeOverlayView != nil) {
 		[_challengeOverlayView removeFromSuperview];
 		_challengeOverlayView = nil;
+	}
+}
+
+
+#pragma mark - AlertView Delegates
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (alertView.tag == 0) {
+		if (buttonIndex == 1)
+			[self _flagUser:_opponentVO.userID];
 	}
 }
 

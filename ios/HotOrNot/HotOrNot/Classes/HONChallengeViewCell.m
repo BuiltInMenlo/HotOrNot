@@ -50,11 +50,11 @@
 	
 	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(12.0, 12.0, kSnapThumbDim, kSnapThumbDim)];
 	challengeImgHolderView.clipsToBounds = YES;
-	//[self addSubview:challengeImgHolderView];
+	[self addSubview:challengeImgHolderView];
 	
-//	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
-//	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", (isCreator && (![_challengeVO.status isEqualToString:@"Created"] && ![_challengeVO.status isEqualToString:@"Waiting"])) ? _challengeVO.challengerImgPrefix : _challengeVO.creatorImgPrefix]] placeholderImage:nil];
-//	[challengeImgHolderView addSubview:challengeImageView];
+	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
+	[challengeImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL]];
+	[challengeImgHolderView addSubview:challengeImageView];
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 23.0, 160.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
@@ -64,14 +64,14 @@
 	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 	[self addSubview:timeLabel];
 	
-	UILabel *opponentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 13.0, 280.0, 18.0)];
-	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:15];
+	UILabel *opponentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0 + kSnapThumbDim, 13.0, 210.0, 18.0)];
+	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 	opponentsLabel.textColor = [HONAppDelegate honGrey455Color];
 	opponentsLabel.backgroundColor = [UIColor clearColor];
-	opponentsLabel.text = [NSString stringWithFormat:(isCreator) ? @"You asked for approval @%@" : @"@%@ asked for approval", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
+	opponentsLabel.text = [NSString stringWithFormat:(isCreator) ? @"You asked for approval @%@" : @"@%@ needs to be verified", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
 	[self addSubview:opponentsLabel];
 	
-	UILabel *tapLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 30.0, 120.0, 18.0)];
+	UILabel *tapLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0 + kSnapThumbDim, 30.0, 120.0, 18.0)];
 	tapLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
 	tapLabel.textColor = [HONAppDelegate honGrey710Color];
 	tapLabel.backgroundColor = [UIColor clearColor];

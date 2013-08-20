@@ -15,7 +15,6 @@
 @property (nonatomic, strong) UIView *controlsHolderView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
-@property (nonatomic, strong) UIImageView *submitHolderImageView;
 @property (nonatomic, strong) UIImageView *circleFillImageView;
 @property (nonatomic, strong) UILabel *headerLabel;
 @end
@@ -72,43 +71,39 @@
 		[captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];
 		//[_controlsHolderView addSubview:captureButton];
 		
-		_infoHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whySelfie"]];
-		_infoHolderImageView.frame = CGRectOffset(_infoHolderImageView.frame, 27.0, ([UIScreen mainScreen].bounds.size.height - 409.0) * 0.5);
+		_infoHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"]];
+		_infoHolderImageView.frame = [UIScreen mainScreen].bounds;
 		_infoHolderImageView.userInteractionEnabled = YES;
 		[self addSubview:_infoHolderImageView];
 		
 		UIButton *okInfoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		okInfoButton.frame = CGRectMake(40.0, 320.0, 194.0, 49.0);
-		[okInfoButton setBackgroundImage:[UIImage imageNamed:@"okGetItButton_nonActive"] forState:UIControlStateNormal];
-		[okInfoButton setBackgroundImage:[UIImage imageNamed:@"okGetItButton_Active"] forState:UIControlStateHighlighted];
+		okInfoButton.frame = _infoHolderImageView.frame;
 		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
 		[_infoHolderImageView addSubview:okInfoButton];
 		
-		_submitHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"submitOverlayBG"]];
-		_submitHolderImageView.frame = CGRectOffset(_submitHolderImageView.frame, 353.0, ([UIScreen mainScreen].bounds.size.height - 244.0) * 0.5);
-		_submitHolderImageView.userInteractionEnabled = YES;
-		[_controlsHolderView addSubview:_submitHolderImageView];
+		UIView *submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(320.0, ([UIScreen mainScreen].bounds.size.height - 64.0) * 0.5, 320.0, 64.0)];
+		[_controlsHolderView addSubview:submitHolderView];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(30.0, 30.0, 194.0, 49.0);
+		submitButton.frame = CGRectMake(0.0, 0.0, 105.0, 64.0);
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-		[_submitHolderImageView addSubview:submitButton];
+		[submitHolderView addSubview:submitButton];
 		
 		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		retakeButton.frame = CGRectMake(30.0, 97.0, 194.0, 49.0);
+		retakeButton.frame = CGRectMake(108.0, 0.0, 105.0, 64.0);
 		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_nonActive"] forState:UIControlStateNormal];
 		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_Active"] forState:UIControlStateHighlighted];
 		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
-		[_submitHolderImageView addSubview:retakeButton];
+		[submitHolderView addSubview:retakeButton];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(30.0, 162.0, 194.0, 49.0);
+		skipButton.frame = CGRectMake(215.0, 0.0, 105.0, 64.0);
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_nonActive"] forState:UIControlStateNormal];
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-		[_submitHolderImageView addSubview:skipButton];
+		[submitHolderView addSubview:skipButton];
 
 	}
 	
@@ -212,7 +207,7 @@
 }
 
 - (void)animateSubmit {
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
 	} completion:^(BOOL finished) {
 	}];

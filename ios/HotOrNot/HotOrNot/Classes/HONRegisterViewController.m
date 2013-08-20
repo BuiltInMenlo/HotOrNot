@@ -27,10 +27,13 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *username;
+@property (nonatomic, strong) NSString *password;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UIView *usernameHolderView;
 @property (nonatomic, strong) UITextField *usernameTextField;
+@property (nonatomic, strong) UILabel *usernameLabel;
+@property (nonatomic, strong) UITextField *passwordTextField;
 @property (nonatomic, retain) UIButton *submitButton;
 @property (nonatomic, strong) UIView *tutorialHolderView;
 @property (nonatomic, strong) UIDatePicker *datePicker;
@@ -204,10 +207,12 @@
 							[NSString stringWithFormat:@"%d", 9], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							_username, @"username",
-							//@"1", @"firstRun",
+							_password, @"password",
 							_birthday, @"age",
 							[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename], @"imgURL",
 							nil];
+	
+	NSLog(@"PARAMS:[%@]", params);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
@@ -217,7 +222,7 @@
 	
 	[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsersFirstRunComplete parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
@@ -310,6 +315,13 @@
 //	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunCopy_username-568h@2x" : @"firstRunCopy_username"];
 //	[_usernameHolderView addSubview:captionImageView];
 	
+	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 65.0, 230.0, 26.0)];
+	_usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_usernameLabel.textColor = [HONAppDelegate honGrey710Color];
+	_usernameLabel.backgroundColor = [UIColor clearColor];
+	_usernameLabel.text = @"Enter username";
+	[self.view addSubview:_usernameLabel];
+	
 	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 65.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
@@ -321,8 +333,8 @@
 	[_usernameTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_usernameTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_usernameTextField.keyboardType = UIKeyboardTypeAlphabet;
-	_usernameTextField.placeholder = @"@username";
-	_usernameTextField.text = @"";//[NSString stringWithFormat:([[_username substringToIndex:1] isEqualToString:@"@"]) ? @"%@" : @"@%@", _username];
+	_usernameTextField.text = @"";
+	[_usernameTextField setTag:0];
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
@@ -330,9 +342,31 @@
 	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 108.0);
 	[self.view addSubview:divider1ImageView];
 	
-	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 127.0, 296.0, 30.0)];
+	_passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 131.0, 230.0, 30.0)];
+	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+	[_passwordTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+	[_passwordTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
+	_passwordTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+	[_passwordTextField setReturnKeyType:UIReturnKeyDone];
+	[_passwordTextField setTextColor:[UIColor blackColor]];
+	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEnd:) forControlEvents:UIControlEventEditingDidEnd];
+	[_passwordTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
+	_passwordTextField.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	_passwordTextField.keyboardType = UIKeyboardTypeAlphabet;
+	_passwordTextField.secureTextEntry = YES;
+	_passwordTextField.placeholder = @"Enter password";
+	_passwordTextField.text = @"";
+	[_passwordTextField setTag:1];
+	_passwordTextField.delegate = self;
+	[self.view addSubview:_passwordTextField];
+	
+	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 173.0);
+	[self.view addSubview:divider2ImageView];
+	
+	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 191.0, 296.0, 30.0)];
 	_birthdayLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
-	_birthdayLabel.textColor = [HONAppDelegate honGrey518Color];
+	_birthdayLabel.textColor = [HONAppDelegate honGrey710Color];
 	_birthdayLabel.backgroundColor = [UIColor clearColor];
 	_birthdayLabel.text = @"What is your birthday?";
 	[self.view addSubview:_birthdayLabel];
@@ -342,9 +376,9 @@
 	[birthdayButton addTarget:self action:@selector(_goPicker) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:birthdayButton];
 	
-	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 173.0);
-	[self.view addSubview:divider2ImageView];
+	UIImageView *divider3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 5.0, 238.0);
+	[self.view addSubview:divider3ImageView];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0);
@@ -372,10 +406,11 @@
 	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialHolderView.frame.size.height)];
 	[page1ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:0], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
 	page1ImageView.userInteractionEnabled = YES;
+	page1ImageView.backgroundColor = [UIColor whiteColor];
 	[_tutorialHolderView addSubview:page1ImageView];
 	
 	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = CGRectMake(42.0, _tutorialHolderView.frame.size.height - (([HONAppDelegate isRetina5]) ? 93.0 : 82.0), 237.0, 67.0);
+	closeTutorialButton.frame = CGRectMake(53.0, _tutorialHolderView.frame.size.height - (([HONAppDelegate isRetina5]) ? 89.0 : 78.0), 214.0, 49.0);
 	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
 	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
 	[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
@@ -432,6 +467,7 @@
 
 - (void)_goPicker {
 	[_usernameTextField resignFirstResponder];
+	[_passwordTextField resignFirstResponder];
 	
 	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
@@ -476,6 +512,7 @@
 		
 		_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
+		//_imagePicker.cameraOverlayView = _cameraOverlayView;
 		
 		// these two fuckers don't work in ios7 right now!!
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
@@ -625,9 +662,7 @@
 
 
 #pragma mark - TextField Delegates
--(void)textFieldDidBeginEditing:(UITextField *)textField {
-	textField.text = @"@";
-	
+-(void)textFieldDidBeginEditing:(UITextField *)textField {	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0);
 		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
@@ -645,6 +680,8 @@
 	if (textField.tag == 0) {
 		if ([textField.text isEqualToString:@""])
 			textField.text = @"@";
+		
+		_usernameLabel.hidden = (textField.tag == 0);
 	}
 	
 	return (YES);
@@ -653,7 +690,9 @@
 -(void)textFieldDidEndEditing:(UITextField *)textField {
 	[textField resignFirstResponder];
 	
-	_submitButton.hidden = NO;
+	_usernameLabel.hidden = !(textField.tag == 0 && [textField.text length] == 0);
+	//_usernameLabel.hidden = ([_usernameTextField.text length] > 0);
+	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
@@ -662,7 +701,8 @@
 }
 
 - (void)_onTextEditingDidEnd:(id)sender {
-	_username = ([[_usernameTextField.text substringToIndex:1] isEqualToString:@"@"]) ? [_usernameTextField.text substringFromIndex:1] : _usernameTextField.text;
+	_username = ([_usernameTextField.text length] > 0 && [[_usernameTextField.text substringToIndex:1] isEqualToString:@"@"]) ? [_usernameTextField.text substringFromIndex:1] : _usernameTextField.text;
+	_password = _passwordTextField.text;
 	
 	[[Mixpanel sharedInstance] track:@"Register - Change Username"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:

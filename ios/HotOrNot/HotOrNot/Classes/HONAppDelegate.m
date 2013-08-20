@@ -1239,6 +1239,7 @@ NSString * const kTwilioSMS = @"6475577873";
 							nil];
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 		AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	
 		[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
@@ -1257,7 +1258,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			_progressHUD = nil;
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@ %@", [[self class] description], userResult, httpClient.baseURL);
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				[HONAppDelegate writeUserInfo:userResult];

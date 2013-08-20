@@ -25,24 +25,24 @@
 	if ((self = [super initWithFrame:[UIScreen mainScreen].bounds])) {
 		_challengeVO = vo;
 		
-		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = self.frame;
 		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:closeButton];
 		
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 172.0) * 0.5, 320.0, 128.0)];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 108.0) * 0.5, 320.0, 128.0)];
 		[self addSubview:holderView];
 		
 		UIImageView *blueBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"blueBackground"]];
 		[holderView addSubview:blueBGImageView];
 		
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 44.0, 44.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 37.0, 37.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 		[holderView addSubview:avatarImageView];
 		
-		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(64.0, 14.0, 300.0, 35.0)];
+		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(62.0, 15.0, 300.0, 35.0)];
 		captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		captionLabel.textColor = [UIColor whiteColor];
 		captionLabel.backgroundColor = [UIColor clearColor];
@@ -50,7 +50,7 @@
 		captionLabel.text = [NSString stringWithFormat:@"Does @%@\nmatch their age?", _challengeVO.creatorVO.username];
 		[holderView addSubview:captionLabel];
 		
-		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(250.0, 25.0, 50.0, 14.0)];
+		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 25.0, 50.0, 14.0)];
 		_ageLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		_ageLabel.textColor = [UIColor whiteColor];
 		_ageLabel.backgroundColor = [UIColor clearColor];
@@ -65,14 +65,14 @@
 		[holderView addSubview:yayButton];
 		
 		UIButton *nayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		nayButton.frame = CGRectMake(107.0, 64.0, 105.0, 64.0);
+		nayButton.frame = CGRectMake(108.0, 64.0, 105.0, 64.0);
 		[nayButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 		[nayButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 		[nayButton addTarget:self action:@selector(_goNay) forControlEvents:UIControlEventTouchUpInside];
 		[holderView addSubview:nayButton];
 		
 		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		profileButton.frame = CGRectMake(214.0, 64.0, 105.0, 64.0);
+		profileButton.frame = CGRectMake(215.0, 64.0, 105.0, 64.0);
 		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
 		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
 		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];

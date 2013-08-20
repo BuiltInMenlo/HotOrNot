@@ -24,13 +24,13 @@
 		
 		self.backgroundColor = [UIColor whiteColor];
 		
-		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 38.0, 38.0)];
+		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 11.0, 38.0, 38.0)];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:creatorAvatarImageView];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 13.0, 180.0, 20.0)];
-		subjectLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:18];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 12.0, 180.0, 20.0)];
+		subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 		subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
 		subjectLabel.text = _challengeVO.subjectName;

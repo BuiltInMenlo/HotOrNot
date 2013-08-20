@@ -439,7 +439,7 @@
 	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
 	[_bannerView addSubview:bannerButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((20.0 + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((14.0 + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
 	//[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor whiteColor]];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -919,6 +919,16 @@
 		_challengeOverlayView = nil;
 	}
 	
+	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, (([UIScreen mainScreen].bounds.size.height - 108.0) * 0.5) + 10.0);
+	[self.view addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		heartImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[heartImageView removeFromSuperview];
+	}];
+	
 	for (HONTimelineItemViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == challengeVO.challengeID)
 			[cell upvoteUser:opponentVO.userID];
@@ -937,13 +947,14 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	[[[UIAlertView alloc] initWithTitle:@""
-								message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _opponentVO.username]
-							   delegate:self
-					  cancelButtonTitle:@"OK"
-					  otherButtonTitles:nil] show];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+														message:@"This person will be flagged"
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
 	
-	[self _flagUser:_opponentVO.userID];
+	[alertView setTag:2];
+	[alertView show];
 	
 	if (_challengeOverlayView != nil) {
 		[_challengeOverlayView removeFromSuperview];
@@ -1228,11 +1239,8 @@
 	if (indexPath.section == 0) {
 		return ((_timelineType == HONTimelineTypeSingleUser) ? 252.0 : 286.0);
 		
-	} else {
-		return ((indexPath.section == [_challenges count] -1) ? 330.0 : 286);
-		
-		//return (286.0);
-	}
+	} else
+		return ((indexPath.section == [_challenges count] - 1) ? 333.0 : 286);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -1275,6 +1283,10 @@
 			[navigationController setNavigationBarHidden:YES];
 			[self presentViewController:navigationController animated:YES completion:nil];
 		}
+	
+	} else if (alertView.tag == 2) {
+		if (buttonIndex == 1)
+			[self _flagUser:(_userVO != nil) ? _userVO.userID : _opponentVO.userID];
 	}
 }
 
@@ -1304,13 +1316,14 @@
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
-				[[[UIAlertView alloc] initWithTitle:@""
-										   message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _userVO.username]
-										  delegate:self
-								 cancelButtonTitle:@"OK"
-								 otherButtonTitles:nil] show];
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+																	message:@"This person will be flagged"
+																   delegate:self
+														  cancelButtonTitle:@"No"
+														  otherButtonTitles:@"Yes", nil];
 				
-				[self _flagUser:_userVO.userID];
+				[alertView setTag:2];
+				[alertView show];
 				break;}
 				
 			case 1:{
@@ -1340,13 +1353,14 @@
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
-				[[[UIAlertView alloc] initWithTitle:@""
-											message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _userVO.username]
-										   delegate:self
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil] show];
+				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+																	message:@"This person will be flagged"
+																   delegate:self
+														  cancelButtonTitle:@"No"
+														  otherButtonTitles:@"Yes", nil];
 				
-				[self _flagUser:_userVO.userID];
+				[alertView setTag:2];
+				[alertView show];
 				break;}
 		}
 	}

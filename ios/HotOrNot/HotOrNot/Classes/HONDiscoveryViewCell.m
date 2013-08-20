@@ -50,7 +50,7 @@
 	HONImageLoadingView *rImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0 + kSnapMediumDim, 4.0)];
 	[holderView addSubview:rImageLoadingView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim + 1.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_lChallengeVO.challengers lastObject]).imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:rImageView];
 	
@@ -78,18 +78,21 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(164.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(163.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
 	holderView.clipsToBounds = YES;
 	[self addSubview:holderView];
 		
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(41.0, 4.0)];
-	[holderView addSubview:imageLoadingView];
+	HONImageLoadingView *lImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0, 4.0)];
+	[holderView addSubview:lImageLoadingView];
 
 	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorVO.imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:lImageView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
+	HONImageLoadingView *rImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0 + kSnapMediumDim, 4.0)];
+	[holderView addSubview:rImageLoadingView];
+	
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim + 1.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_rChallengeVO.challengers lastObject]).imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:rImageView];
 	

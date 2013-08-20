@@ -108,7 +108,7 @@
 	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 10500 && diff > 0);
 	BOOL isCreator = (_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]);
 	
-	NSLog(@"ORIGINAL:[%@][%d] DIFF:[%f]", [dateFormat stringFromDate:_challengeVO.updatedDate], isOriginalImageAvailable, diff);
+	NSLog(@"ORIGINAL:[%d] DIFF:[%f][%@]\n", isOriginalImageAvailable, diff, _opponentVO.dictionary);
 	
 	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(128.0, ([UIScreen mainScreen].bounds.size.height - 64.0) * 0.5)];
 	[self.view addSubview:imageLoadingView];
@@ -144,7 +144,9 @@
 					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 						  weakSelf.imageView.image = image;
 						  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.imageView.alpha = 1.0; } completion:nil];
-					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+						  [weakSelf.imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", weakSelf.opponentVO.imagePrefix]] placeholderImage:nil];
+					  }];
 	[self.view addSubview:_imageView];
 	
 	
