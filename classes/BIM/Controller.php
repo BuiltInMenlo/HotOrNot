@@ -25,6 +25,9 @@ class BIM_Controller{
                 }
             }
         }
+        if( !empty($_GET['profile']) ){
+            file_put_contents('/tmp/sql_profile', print_r(BIM_DAO_Mysql::$profile ,1) );
+        }
         $this->sendResponse( 200, $res );
     }
         

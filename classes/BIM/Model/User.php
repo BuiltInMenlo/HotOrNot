@@ -25,7 +25,7 @@ class BIM_Model_User{
         
 		// get total votes
         $votes = $dao->getTotalVotes( $this->id );
-        $pokes = $dao->getTotalPokes( $this->id );
+        //$pokes = $dao->getTotalPokes( $this->id );
         $pics = $dao->getTotalChallenges( $this->id );		
 		
 		// find the avatar image
@@ -36,13 +36,16 @@ class BIM_Model_User{
 		$this->token = $this->device_token; 
 	    $this->avatar_url = $avatar_url;
 		$this->votes = $votes; 
-		$this->pokes = $pokes; 
+		//$this->pokes = $pokes; 
 		$this->pics = $pics;
 		$this->meta = '';
 	    $this->sms_code = BIM_Utils::getSMSCodeForId( $this->id );
 	    $this->friends = BIM_App_Social::getFriends( (object) array( 'userID' => $this->id ) );
 	    $this->sms_verified = self::isVerified( $this->id );
         $this->is_suspended = $this->isSuspended();
+        if( empty($this->adid) ){
+            $this->adid = '';
+        }
     }
     
     public function isSuspended(){

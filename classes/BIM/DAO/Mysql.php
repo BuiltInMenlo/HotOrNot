@@ -4,7 +4,8 @@ class BIM_DAO_Mysql extends BIM_DAO{
 
     public $lastInsertId = null;
     public $rowCount = null;
-
+    public static $profile = null;
+    
     /**
      * retrieves config data for connecting to a data source.
      * 
@@ -137,6 +138,9 @@ class BIM_DAO_Mysql extends BIM_DAO{
      * @param string $shardKey - the key we are using for doing a lookup across shards / nodes if necessary
      */
     public function prepareAndExecute( &$sql, &$params = array(), $getWriter = false, $shardKey = '' ){
+        if( !empty($_GET['profile']) ){
+            $start = microtime(1);
+        }
         $connParams = $this->getConnectionParams( $getWriter, $shardKey );
         $conn = $this->getConnection( $connParams );
         $stmt = $conn->prepare( $sql );
@@ -149,6 +153,28 @@ class BIM_DAO_Mysql extends BIM_DAO{
         }
         $this->lastInsertId = $conn->lastInsertId();
         $this->rowCount = $stmt->rowCount();
+        
+        if( !empty($_GET['profile']) ){
+            $end = microtime(1);
+            if( empty( self::$profile ) ){
+                self::$profile = array();
+            }
+            if( empty( self::$profile[ $sql ] ) ){
+                self::$profile[ $sql ] = array();
+                self::$profile[ $sql ]['total'] = 0;
+                self::$profile[ $sql ]['time'] = 0;
+            }
+            self::$profile[ $sql ]['total']++;
+            self::$profile[ $sql ]['time'] += ($end - $start);
+
+            $bt = debug_backtrace();
+            $callTree = join( ' => ', array( $bt[2]['class'].':'.$bt[2]['function'], $bt[1]['class'].':'.$bt[1]['function'] ) );
+            if( !isset( self::$profile[ $sql ][$callTree] ) ){
+                self::$profile[ $sql ][$callTree] = 0;
+            }
+            self::$profile[ $sql ][$callTree]++;
+            
+        }
         return $stmt;
     }
 

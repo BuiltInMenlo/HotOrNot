@@ -79,17 +79,29 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     public function getTotalChallenges( $userId ){
         $count = 0;
         $sql = "
+            (select count(*) as count
+            from `hotornot-dev`.tblChallenges as tc
+            where tc.creator_id = ?
+            ) union (
+            select count(*) as count
+            from `hotornot-dev`.tblChallengeParticipants as tcp
+            where tcp.user_id = ?)
+        ";
+        /*
+        $sql = "
 			select count(*) as count
 			from `hotornot-dev`.tblChallenges as tc
 				join `hotornot-dev`.tblChallengeParticipants as tcp
 				on tc.id = tcp.challenge_id
 			where tc.creator_id = ? OR tcp.user_id = ?
         ";
+        */
         $params = array( $userId, $userId );
 		$stmt = $this->prepareAndExecute($sql,$params);
-        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        $data = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
         if( $data ){
-            $count = $data[0]->count;
+            $count = array_sum($data);
+            //$count = $data[0]->count;
         }
         return $count;
     }
