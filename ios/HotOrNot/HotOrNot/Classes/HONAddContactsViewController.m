@@ -770,6 +770,20 @@
 			cell.userVO = (HONUserVO *)[_inAppContacts objectAtIndex:indexPath.row];
 		}
 		
+		for (HONUserVO *vo in _selectedInAppContacts) {
+			if (cell.userVO.userID == vo.userID) {
+				[cell toggleSelected:YES];
+				break;
+			}
+		}
+		
+//		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+//			if (cell.userVO.userID == vo.userID) {
+//				[cell toggleSelected:YES];
+//				break;
+//			}
+//		}
+		
 		cell.delegate = self;
 		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 		return (cell);
@@ -780,6 +794,13 @@
 		if (cell == nil) {
 			cell = [[HONAddContactViewCell alloc] init];
 			cell.userVO = (HONContactUserVO *)[_nonAppContacts objectAtIndex:indexPath.row];
+		}
+		
+		for (HONContactUserVO *vo in _selectedNonAppContacts) {
+			if ([cell.userVO.fullName isEqualToString:vo.fullName]) {
+				[cell toggleSelected:YES];
+				break;
+			}
 		}
 		
 		cell.delegate = self;

@@ -143,7 +143,7 @@
 	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
 	[_bannerView addSubview:bannerButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - 100.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline_discover"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - 10.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
@@ -229,22 +229,24 @@
 
 - (void)_showSearchTable:(NSNotification *)notification {
 	if (self.view.frame.origin.y >= 0) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, -kNavBarHeaderHeight);
+		[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveLinear animations:^(void) {
+			//self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, -kNavBarHeaderHeight);
 			self.view.frame = CGRectOffset(self.view.frame, 0.0, -kNavBarHeaderHeight);
 			_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]);
 			_bannerView.alpha = 0.0;
 		} completion:^(BOOL finished) {
 			_bannerView.hidden = YES;
+			[self.navigationController setNavigationBarHidden:YES animated:YES];
 		}];
 	}
 }
 
 - (void)_hideSearchTable:(NSNotification *)notification {
-	if (self.view.frame.origin.y < 0) {
+	if (self.view.frame.origin.y <= 0) {
 		_bannerView.hidden = NO;
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, kNavBarHeaderHeight);
+		[self.navigationController setNavigationBarHidden:NO animated:YES];
+		[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveLinear animations:^(void) {
+			//self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, kNavBarHeaderHeight);
 			self.view.frame = CGRectOffset(self.view.frame, 0.0, kNavBarHeaderHeight);
 			_tableView.frame = CGRectOffset(_tableView.frame, 0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]);
 			_bannerView.alpha = 1.0;
