@@ -118,7 +118,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		tcp.img AS challenger_img,
         		tcp.joined as joined
         	FROM `hotornot-dev`.tblChallenges AS tc 
-        		JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
+        		LEFT JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
         		ON tc.id = tcp.challenge_id 
         	WHERE tc.id = ?
         	ORDER BY challenge_id';
@@ -130,7 +130,11 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
         if( $data ){
             $volley = array_shift( $data );
-            $volley->challengers = array( ( object ) array( 'challenger_id' => $volley->challenger_id, 'challenger_img' => $volley->challenger_img,  'joined' => $volley->joined ) );
+            if( !empty( $volley->challenger_id ) ){
+                $volley->challengers = array( ( object ) array( 'challenger_id' => $volley->challenger_id, 'challenger_img' => $volley->challenger_img,  'joined' => $volley->joined ) );
+            } else {
+                $volley->challengers = array();
+            }
             unset( $volley->challenger_id );
             unset( $volley->challenger_img );
             unset( $volley->joined );
@@ -386,17 +390,18 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     public function getVerificationVolleyIds( $userId ){
         
         $sql = "
-            SELECT tc.id
-            FROM `hotornot-dev`.tblChallenges as tc
-                JOIN `hotornot-dev`.tblChallengeParticipants as tcp
-                ON tc.id = tcp.challenge_id
-            	LEFT JOIN `hotornot-dev`.tblFlaggedUserApprovals as u
-               	ON tcp.challenge_id = u.challenge_id  
-            WHERE tc.status_id in ( 1,2,4 )    
-                AND is_verify = 1  
-                AND tcp.user_id = ?  
-                AND u.challenge_id is null
-            ORDER BY tc.updated DESC;
+			SELECT tc.id 
+			FROM `hotornot-dev`.tblChallenges as tc 
+				LEFT JOIN `hotornot-dev`.tblFlaggedUserApprovals as u 
+				ON tc.id = u.challenge_id AND u.user_id = ? 
+				
+			WHERE tc.status_id in ( 1,2,4 ) 
+				AND tc.is_verify = 1 
+				AND u.user_id is null 
+				
+			GROUP BY tc.id
+			ORDER BY tc.updated DESC 
+			LIMIT 100
         ";
         
         $params = array( $userId );

@@ -550,7 +550,27 @@ class BIM_App_Challenges extends BIM_App_Base{
      * 
      * for a given set of challenge_ids
      * 
-select s.id, c.subject_id, s.title, count(*) from tblChallenges as c join tblChallengeParticipants as p on c.id = p.challenge_id join tblChallengeSubjects as s on c.subject_id = s.id where c.creator_id = 2394 group by s.id;
+
+foreach( subjectids )
+
+get 90 challenge ids for the subject
+foreach challenge id
+    update 10 users in the participants table 
+	where the img is not empty 
+		  and the challenge id is not one of our ids
+	limit 10
+	
+
+select s.id, c.subject_id, s.title, count(*) 
+from tblChallenges as c 
+join tblChallengeParticipants as p 
+on c.id = p.challenge_id 
+
+join tblChallengeSubjects as s 
+on c.subject_id = s.id 
+
+where c.creator_id = 2394 
+group by s.id;
 
 +------+------------+------------------+----------+
 | id   | subject_id | title            | count(*) |
@@ -606,7 +626,44 @@ limit 10
      * 
      */
     public static function redistributeVolleys(){
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $challengeIds = array(); 
+        foreach( array( 1368, 1369, 1370)  as $subjectId ){
+            $sql = "select id from `hotornot-dev`.tblChallenges where subject_id = ? and id not in (16893,16890,16905,16898,16892,16924) limit 30";
+    		$params = array( $subjectId );
+            $stmt = $dao->prepareAndExecute( $sql, $params );
+            $ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+            array_splice($challengeIds, count( $challengeIds ), 0, $ids);
+        }
         
+	    $chIdCt = count( $challengeIds );
+		$placeHolders = trim( str_repeat('?,', $chIdCt ), ',' );
+		$challengeIdsForQuery = $challengeIds;
+        foreach( $challengeIds as $challengeId ){
+            
+            $sql = "
+            	update `hotornot-dev`.tblChallengeParticipants
+            	set challenge_id = ?, joined = UNIX_TIMESTAMP( NOW() )
+            	where img != '' and 
+            		img is not null 
+            		and challenge_id not in ( $placeHolders )
+            		and user_id not in (2408,2454,2456,3932,2383,2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824, 1)
+            	limit 10
+            ";
+		    array_unshift($challengeIdsForQuery, $challengeId);
+            $stmt = $dao->prepareAndExecute($sql,$challengeIdsForQuery);
+		    array_shift($challengeIdsForQuery);
+		    
+		    $sql = "delete from `hotornot-dev`.tblChallengeParticipants where challenge_id = ? and ( img = '' OR img is null )";
+		    $params = array($challengeId);
+		    $stmt = $dao->prepareAndExecute($sql,$params);
+		    
+		    $sql = "update `hotornot-dev`.tblChallenges set updated = now() where id = ?";
+		    $params = array($challengeId);
+		    $stmt = $dao->prepareAndExecute($sql,$params);
+        }
+        
+        print_r( $challengeIds );
     }
     
     public static function getSubject($tagId) {

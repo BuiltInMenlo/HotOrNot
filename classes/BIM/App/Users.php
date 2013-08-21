@@ -202,29 +202,32 @@ class BIM_App_Users extends BIM_App_Base{
 	public function flagUser ( $userId, $approves, $targetId ) {
     	$target = BIM_Model_User::get( $targetId );
     	$user = BIM_Model_User::get( $userId );
-	    if( $target->isExtant() ){
+	    if( $target->isExtant() && $userId != $targetId ){
     	    $verifyVolley = BIM_Model_Volley::getVerifyVolley( $targetId );
     	    // make sure the flagged user cannot 
     	    // upvote or downvote themselves
-    	    if( $verifyVolley->canApproveCreator( $userId ) ){
-        	    $approves = ($approves ? -1 : 1);
-        	    if( $verifyVolley->isNotExtant() && $approves > 0 ){
-                    $volleyData = BIM_Model_Volley::createVerifyVolley( $targetId, true );
-            	    $target->flag( $verifyVolley->id, $userId, $approves );
-                    if( !empty( $volleyData->friendIds ) ){
-                        $this->sendVerifyPush( $targetId, $volleyData->friendIds );
-                    }
-                    $this->sendFlaggedEmail($userId);
-        	    } else if( $verifyVolley->isExtant() ){
-            	    $target->flag( $verifyVolley->id, $userId, $approves );
-            	    if( $approves < 0 ){
-        	            $this->sendApprovePush( $targetId );
-            	    }
+    	    $approves = ($approves ? -1 : 1);
+    	    if( $verifyVolley->isNotExtant() && $approves > 0 ){
+    	        
+                $verifyVolley = BIM_Model_Volley::createVerifyVolley( $targetId );
+        	    $target->flag( $verifyVolley->id, $userId, $approves );
+        	    
+                $friends = BIM_App_Social::getFriends( (object) array('userID' => $targetId, 'from' => 0, 'size' => 50 ) );
+                $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
+        	    if( $friendIds ){
+                    $this->sendVerifyPush( $targetId, $friendIds );
+                }
+                $this->sendFlaggedEmail($userId);
+                
+    	    } else if( $verifyVolley->isExtant() ){
+        	    $target->flag( $verifyVolley->id, $userId, $approves );
+        	    if( $approves < 0 ){
+    	            $this->sendApprovePush( $targetId );
         	    }
-        	    $target->purgeFromCache();
-        	    $user->purgeFromCache();
-        	    $verifyVolley->purgeFromCache();
     	    }
+    	    $target->purgeFromCache();
+    	    $user->purgeFromCache();
+    	    $verifyVolley->purgeFromCache();
 	    }
 		return array(
 			'id' => $userId,
