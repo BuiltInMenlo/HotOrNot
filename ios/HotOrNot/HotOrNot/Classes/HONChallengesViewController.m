@@ -28,7 +28,7 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, HONChallengeViewCellDelegate, HONVerifyOverlayViewDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONChallengeViewCellDelegate, HONVerifyOverlayViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *recentChallenges;
@@ -194,6 +194,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			}
 			
 			_emptyImageView.hidden = [_challenges count] > 0;
+			_bannerView.hidden = ([_challenges count] == 0 || ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"]);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -365,6 +366,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
 	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+	_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"];
 	[self.view addSubview:_bannerView];
 	
 	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
@@ -377,7 +379,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_bannerView addSubview:bannerButton];
 	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
-	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 90.0);
+	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 140.0);
 	[self.view addSubview:_emptyImageView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - 50.0 - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
@@ -471,11 +473,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	CGPoint touchPoint = [lpGestureRecognizer locationInView:_tableView];
 	NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:touchPoint];
-	
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		if (indexPath != nil) {
-			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:vo];
+			_challengeVO = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:_challengeVO];
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		}
 		
@@ -486,8 +487,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		}
 		
 		if (indexPath != nil) {
-			HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
-			_verifyOverlayView = [[HONVerifyOverlayView alloc] initWithChallenge:vo];
+			_verifyOverlayView = [[HONVerifyOverlayView alloc] initWithChallenge:_challengeVO];
 			_verifyOverlayView.delegate = self;
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_verifyOverlayView];

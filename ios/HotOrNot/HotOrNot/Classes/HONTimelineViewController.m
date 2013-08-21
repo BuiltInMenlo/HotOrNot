@@ -139,6 +139,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showAddContacts:) name:@"SHOW_ADD_CONTACTS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_killTooltip:) name:@"KILL_TOOLTIP" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removePreview:) name:@"REMOVE_PREVIEW" object:nil];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -182,7 +183,7 @@
 	} else if (_timelineType == HONTimelineTypeFriends) {
 	}
 	
-	NSLog(@"PARAMS:[%@]", params);
+	//NSLog(@"PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -733,6 +734,17 @@
 	[self _removeToolTip];
 }
 
+- (void)_removePreview:(NSNotification *)notification {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
+	_challengeOverlayView.delegate = self;
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
+}
+
 
 #pragma mark - TimelineHeader Delegates
 - (void)timelineHeaderView:(HONTimelineHeaderView *)cell showDetails:(HONChallengeVO *)challengeVO {
@@ -741,7 +753,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
-	[self.navigationController pushViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO] animated:YES];
+	[self.navigationController pushViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO asModal:NO] animated:YES];
 }
 
 - (void)timelineHeaderView:(HONTimelineHeaderView *)cell showCreatorTimeline:(HONChallengeVO *)challengeVO {
@@ -765,7 +777,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
-	[self.navigationController pushViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO] animated:YES];
+	[self.navigationController pushViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO asModal:NO] animated:YES];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell acceptChallenge:(HONChallengeVO *)challengeVO {
@@ -886,9 +898,9 @@
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showPreview:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
-	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO];
-	
 	_opponentVO = opponentVO;
+	
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 

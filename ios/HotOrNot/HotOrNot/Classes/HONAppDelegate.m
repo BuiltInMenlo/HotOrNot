@@ -656,7 +656,8 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
 			//[navigationController setNavigationBarHidden:YES];
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult] asModal:YES]];
+			[navigationController setNavigationBarHidden:YES];
 			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 		}
 		

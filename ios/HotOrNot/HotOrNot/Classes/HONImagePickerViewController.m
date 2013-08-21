@@ -959,6 +959,14 @@ const CGFloat kFocusInterval = 0.5f;
 									  [NSString stringWithFormat:@"%d", _isPrivate], @"private", nil]];
 }
 
+- (void)previewViewClose:(HONCreateChallengePreviewView *)previewView {
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+//	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+//		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+//	}];
+}
+
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
 	int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];

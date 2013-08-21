@@ -25,7 +25,7 @@
 	if ((self = [super initWithFrame:[UIScreen mainScreen].bounds])) {
 		_challengeVO = vo;
 		
-		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
+		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.8];
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = self.frame;
@@ -42,12 +42,17 @@
 		[avatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 		[holderView addSubview:avatarImageView];
 		
+		UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		avatarButton.frame = avatarImageView.frame;
+		[avatarButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchDown];
+		[holderView addSubview:avatarButton];
+		
 		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(62.0, 15.0, 300.0, 35.0)];
 		captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:14];
 		captionLabel.textColor = [UIColor whiteColor];
 		captionLabel.backgroundColor = [UIColor clearColor];
 		captionLabel.numberOfLines = 2;
-		captionLabel.text = [NSString stringWithFormat:@"Does @%@\nmatch their age?", _challengeVO.creatorVO.username];
+		captionLabel.text = [NSString stringWithFormat:@"is @%@\nbetween 14 & 24?", _challengeVO.creatorVO.username];
 		[holderView addSubview:captionLabel];
 		
 		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 25.0, 50.0, 14.0)];
@@ -58,25 +63,18 @@
 		[holderView addSubview:_ageLabel];
 		
 		UIButton *yayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		yayButton.frame = CGRectMake(0.0, 64.0, 105.0, 64.0);
+		yayButton.frame = CGRectMake(0.0, 64.0, 159.0, 64.0);
 		[yayButton setBackgroundImage:[UIImage imageNamed:@"verifyButton_nonActive"] forState:UIControlStateNormal];
 		[yayButton setBackgroundImage:[UIImage imageNamed:@"verifyButton_Active"] forState:UIControlStateHighlighted];
 		[yayButton addTarget:self action:@selector(_goYay) forControlEvents:UIControlEventTouchUpInside];
 		[holderView addSubview:yayButton];
 		
 		UIButton *nayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		nayButton.frame = CGRectMake(108.0, 64.0, 105.0, 64.0);
-		[nayButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
-		[nayButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+		nayButton.frame = CGRectMake(160.0, 64.0, 159.0, 64.0);
+		[nayButton setBackgroundImage:[UIImage imageNamed:@"noButton_nonActive"] forState:UIControlStateNormal];
+		[nayButton setBackgroundImage:[UIImage imageNamed:@"noButton_Active"] forState:UIControlStateHighlighted];
 		[nayButton addTarget:self action:@selector(_goNay) forControlEvents:UIControlEventTouchUpInside];
 		[holderView addSubview:nayButton];
-		
-		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		profileButton.frame = CGRectMake(215.0, 64.0, 105.0, 64.0);
-		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
-		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
-		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-		[holderView addSubview:profileButton];
 		
 		[self _retrieveUser:_challengeVO.creatorVO.username];
 	}
@@ -105,7 +103,7 @@
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-			_ageLabel.text = [NSString stringWithFormat:@"%d", [HONAppDelegate ageForDate:userVO.birthday]];
+			_ageLabel.text = ([userVO.birthday timeIntervalSince1970] == 0.0) ? @"" : [NSString stringWithFormat:@"%d", [HONAppDelegate ageForDate:userVO.birthday]];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

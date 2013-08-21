@@ -11,6 +11,7 @@
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
+#import "HONHeaderView.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONImagePickerViewController.h"
 #import "HONVotersViewController.h"
@@ -30,15 +31,17 @@
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) HONChallengeOverlayView *challengeOverlayView;
 @property (nonatomic) BOOL isDoubleTap;
+@property (nonatomic) BOOL isModal;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
 @end
 
 @implementation HONChallengeDetailsViewController
 
-- (id)initWithChallenge:(HONChallengeVO *)vo {
+- (id)initWithChallenge:(HONChallengeVO *)vo asModal:(BOOL)isModal {
 	if ((self = [super init])) {
 		_challengeVO = vo;
+		_isModal = isModal;
 		
 		NSLog(@"CHALLENGE DETAILS:[%@]", _challengeVO.dictionary);
 		
@@ -172,6 +175,20 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	self.navigationController.navigationBar.topItem.title = _challengeVO.subjectName;
 	
+	int offset = (_isModal * kNavBarHeaderHeight);
+	
+	if (_isModal) {
+		HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:_challengeVO.subjectName];
+		[self.view addSubview:headerView];
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = CGRectMake(-7.0, 0.0, 64.0, 44.0);
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+		[self.view addSubview:closeButton];
+	}
+	
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
 	_isChallengeOpponent = NO;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
@@ -187,17 +204,8 @@
 			respondedOpponents++;
 	}
 	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 61.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, 569.0 + (kSnapMediumDim * (respondedOpponents / 5)));
-	_scrollView.pagingEnabled = NO;
-	_scrollView.showsVerticalScrollIndicator = YES;
-	_scrollView.showsHorizontalScrollIndicator = NO;
-	[self.view addSubview:_scrollView];
 	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	[_scrollView addGestureRecognizer:lpGestureRecognizer];
-	
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 61.0)];
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0 + offset, 320.0, 61.0)];
 	headerView.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:headerView];
 	
@@ -233,7 +241,18 @@
 	[avatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 	[avatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:avatarButton];
-
+	
+	
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 61.0 + offset, 320.0, [UIScreen mainScreen].bounds.size.height)];
+	_scrollView.contentSize = CGSizeMake(320.0, 569.0 + (kSnapMediumDim * (respondedOpponents / 5)) - (_isModal * 100.0));
+	_scrollView.pagingEnabled = NO;
+	_scrollView.showsVerticalScrollIndicator = YES;
+	_scrollView.showsHorizontalScrollIndicator = NO;
+	[self.view addSubview:_scrollView];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	[_scrollView addGestureRecognizer:lpGestureRecognizer];
+	
 	__weak typeof(self) weakSelf = self;
 	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 0.0, 294.0, 348.0)];
 	_creatorChallengeImageView.userInteractionEnabled = YES;
@@ -328,6 +347,7 @@
 	
 	int opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
+		NSLog(@"IMG:(%d)[%@]", [vo.imagePrefix length], vo.imagePrefix);
 		if ([vo.imagePrefix length] > 0) {
 			CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (opponentCounter % 4), (kSnapMediumDim + 1.0) * (opponentCounter / 4));
 			
@@ -406,6 +426,16 @@
 #pragma mark - Navigation
 - (void)_tapTimeout {
 	_isDoubleTap = NO;
+}
+
+- (void)_goClose {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Go Close"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
+	
+	[self dismissViewControllerAnimated:YES completion:nil];
+
 }
 
 - (void)_goBack {
@@ -596,14 +626,9 @@
 		_snapPreviewViewController = nil;
 	}
 	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-															 delegate:self
-													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:@"Report Abuse"
-													otherButtonTitles:@"Like", @"Profile", @"Add friend", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:0];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
+	_challengeOverlayView.delegate = self;
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
 }
 
 

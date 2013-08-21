@@ -41,6 +41,7 @@
 @property (nonatomic, strong) NSString *birthday;
 @property (nonatomic, strong) NSTimer *clockTimer;
 @property (nonatomic) int clockCounter;
+@property (nonatomic) int uploadCounter;
 @end
 
 @implementation HONRegisterViewController
@@ -160,7 +161,8 @@
 - (void)_uploadPhoto:(UIImage *)image {
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	
-	_filename = [NSString stringWithFormat:@"%@.jpg", [HONAppDelegate deviceToken]];
+	_uploadCounter = 0;
+	_filename = [HONAppDelegate deviceToken];
 	NSLog(@"FILENAME: https://hotornot-avatars.s3.amazonaws.com/%@", _filename);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -172,16 +174,24 @@
 	@try {
 		float avatarSize = kSnapLargeDim;
 		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
+		UIImage *oImage = image;
 		
 		UIImage *lImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
 		lImage = [HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
-		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:_filename inBucket:@"hotornot-avatars"];
-		por.contentType = @"image/jpeg";
-		por.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
-		por.delegate = self;
-		[s3 putObject:por];
+		
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@.jpg", _filename] inBucket:@"hotornot-avatars"];
+		por1.contentType = @"image/jpeg";
+		por1.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+		por1.delegate = self;
+		[s3 putObject:por1];
+		
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-avatars"];
+		por2.contentType = @"image/jpeg";
+		por2.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+		por2.delegate = self;
+		[s3 putObject:por2];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -805,10 +815,13 @@
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
-	[_progressHUD hide:YES];
-	_progressHUD = nil;
-	
-	[_cameraOverlayView animateSubmit];
+	_uploadCounter++;
+	if (_uploadCounter == 2) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
+		
+		[_cameraOverlayView animateSubmit];
+	}
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {

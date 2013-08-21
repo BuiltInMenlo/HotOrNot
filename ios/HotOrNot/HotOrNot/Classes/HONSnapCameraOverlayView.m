@@ -70,21 +70,21 @@
 		
 		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 10.0, 33.0, 33.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
-		[self addSubview:avatarImageView];
+		//[self addSubview:avatarImageView];
 		
 		UILabel *usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 19.0, 220.0, 16.0)];
 		usernameLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 		usernameLabel.textColor = [UIColor whiteColor];
 		usernameLabel.backgroundColor = [UIColor clearColor];
 		usernameLabel.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"username"]];
-		[self addSubview:usernameLabel];
+		//[self addSubview:usernameLabel];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_cancelButton.frame = CGRectMake(273.0, 5.0, 44.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_cancelButton];
+		//[self addSubview:_cancelButton];
 		
 		NSString *usernames = @"";
 		for (NSString *username in _usernames)

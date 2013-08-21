@@ -12,5 +12,5 @@
 
 
 @interface HONChallengeDetailsViewController : UIViewController
-- (id)initWithChallenge:(HONChallengeVO *)vo;
+- (id)initWithChallenge:(HONChallengeVO *)vo asModal:(BOOL)isModal;
 @end

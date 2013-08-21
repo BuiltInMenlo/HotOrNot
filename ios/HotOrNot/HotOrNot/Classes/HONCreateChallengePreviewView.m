@@ -19,6 +19,7 @@
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) UILabel *placeholderLabel;
+@property (nonatomic, strong) UIImageView *usernameArrowImageView;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *privateToggleButton;
 @property (nonatomic, strong) UIButton *addFriendsButton;
@@ -85,15 +86,28 @@
 
 - (void)setUsernames:(NSArray *)usernameList {
 	NSString *usernames = @"";
-	for (NSString *username in usernameList)
+	int counter = 0;
+	int threshold = 5;
+	for (NSString *username in usernameList) {
 		usernames = [usernames stringByAppendingFormat:@"@%@, ", username];
+		counter++;
+		
+		if (counter == threshold) {
+			break;
+		}
+	}
+	
+	usernames = [usernames substringToIndex:[usernames length] - 2];
+	if ([usernameList count] > threshold)
+		usernames = [usernames stringByAppendingFormat:@", and %d other%@", ([usernameList count] - threshold), ([usernameList count] - threshold == 1) ? @"" : @"s"];
+		
 	
 	NSLog(@"USERNAMES:[%@][%@]", usernameList, usernames);
 	
 	//_usernamesLabel.text = ([usernames length] == 0) ? @"add friends" : [usernames substringToIndex:[usernames length] - 2];
 	CGSize size = [usernames sizeWithFont:_usernamesLabel.font constrainedToSize:CGSizeMake(300.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
 	_usernamesLabel.frame = CGRectMake(_usernamesLabel.frame.origin.x, _usernamesLabel.frame.origin.y, size.width, size.height);
-	_usernamesLabel.text = ([usernames length] >= 2) ? [usernames substringToIndex:[usernames length] - 2] : usernames;
+	_usernamesLabel.text = usernames;
 }
 
 - (void)showKeyboard {
@@ -138,7 +152,7 @@
 	_backButton.frame = CGRectMake(263.0, 11.0, 44.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-	[_backButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchUpInside];
+	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	_backButton.alpha = 0.0;
 	[self addSubview:_backButton];
 	
@@ -163,12 +177,13 @@
 	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(22.0, 70.0, 298.0, 30.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];;
-	_placeholderLabel.textColor = [HONAppDelegate honGrey455Color];
+	_placeholderLabel.textColor = [UIColor whiteColor];
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"What's happening?" : @"";
 	_placeholderLabel.alpha = 0.0;
 	[self addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
+	_subjectTextField.frame = CGRectOffset(_subjectTextField.frame, -10.0, 0.0);
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
@@ -182,7 +197,20 @@
 	_subjectTextField.delegate = self;
 	[self addSubview:_subjectTextField];
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(128.0, 150.0, 64.0, 64.0)];
+	_usernameArrowImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraArrow"]];
+	_usernameArrowImageView.frame = CGRectOffset(_usernameArrowImageView.frame, 15.0, 108.0);
+	_usernameArrowImageView.alpha = 0.0;
+	[self addSubview:_usernameArrowImageView];
+	
+	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, 108.0, 300.0, 24.0)];
+	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:21];
+	_usernamesLabel.textColor = [HONAppDelegate honGrey518Color];
+	_usernamesLabel.backgroundColor = [UIColor clearColor];
+	_usernamesLabel.numberOfLines = 0;
+	_usernamesLabel.text = @"";
+	[self addSubview:_usernamesLabel];
+	
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(246.0, [UIScreen mainScreen].bounds.size.height - 340.0, 64.0, 64.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
@@ -191,14 +219,6 @@
 	_uploadingImageView.alpha = 0.0;
 	[_uploadingImageView startAnimating];
 	[self addSubview:_uploadingImageView];
-	
-	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(22.0, 108.0, 300.0, 24.0)];
-	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:21];
-	_usernamesLabel.textColor = [UIColor whiteColor];
-	_usernamesLabel.backgroundColor = [UIColor clearColor];
-	_usernamesLabel.numberOfLines = 0;
-	_usernamesLabel.text = @"";
-	[self addSubview:_usernamesLabel];
 		
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 73.0, 320.0, 53.0);
@@ -232,6 +252,15 @@
 	[self.delegate previewViewBackToCamera:self];
 }
 
+- (void)_goClose {
+	[[Mixpanel sharedInstance] track:@"Camera Preview - Close"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	[self _dropKeyboardAndRemove:YES];
+	[self.delegate previewViewClose:self];
+}
+
 - (void)_goPrivateToggle {
 	_isPrivate = !_isPrivate;
 	
@@ -246,21 +275,19 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	if ((_isPrivate && ![_usernamesLabel.text isEqualToString:@"add friends"]) || !_isPrivate) {
+	if ([_subjectTextField.text length] > 0) {
 		int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
 		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		[self _dropKeyboardAndRemove:([[HONAppDelegate friendsList] count] > 1 && friend_total > 0)];
-		//[self _dropKeyboardAndRemove:NO];
-	
+		[self _dropKeyboardAndRemove:YES];
 		[self.delegate previewView:self changeSubject:_subjectName];
 		[self.delegate previewViewSubmit:self];
 	
 	} else {
 		[self _dropKeyboardAndRemove:NO];
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Cannot Send Private Message"
-															message:@"You must select a friend to send a private photo message."
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Need to enter a hashtag"
+															message:@"Enter hashtag before submitting."
 														   delegate:self
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];
@@ -293,6 +320,7 @@
 		_usernamesLabel.alpha = 1.0;
 		_avatarImageView.alpha = 1.0;
 		_usernameLabel.alpha = 1.0;
+		_usernameArrowImageView.alpha = 1.0;
 	}completion:^(BOOL finished) {
 	}];
 }
@@ -310,6 +338,7 @@
 		_usernamesLabel.alpha = 0.0;
 		_avatarImageView.alpha = 0.0;
 		_usernameLabel.alpha = 0.0;
+		_usernameArrowImageView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_submitButton.hidden = YES;
 		
