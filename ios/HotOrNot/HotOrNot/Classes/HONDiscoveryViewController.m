@@ -35,6 +35,7 @@
 - (id)init {
 	if ((self = [super init])) {
 		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedDiscoveryTab:) name:@"SELECTED_DISCOVERY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_DISCOVERY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
@@ -215,8 +216,13 @@
 
 
 #pragma mark - Notifications
-- (void)_refreshDiscoveryTab:(NSNotification *)notification {
+- (void)_selectedDiscoveryTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_refreshButtonView toggleRefresh:YES];
+	[self _goRefresh];
+}
+
+- (void)_refreshDiscoveryTab:(NSNotification *)notification {
 	[_refreshButtonView toggleRefresh:YES];
 	[self _goRefresh];
 }

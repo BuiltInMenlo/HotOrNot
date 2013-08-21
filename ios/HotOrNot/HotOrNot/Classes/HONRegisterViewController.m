@@ -213,7 +213,7 @@
 	if ([[_username substringToIndex:1] isEqualToString:@"@"])
 		_username = [_username substringFromIndex:1];
 	
-	_filename = ([[[HONAppDelegate infoForUser] objectForKey:@"token"] isEqualToString:@"0000000000000000000000000000000000000000000000000000000000000000"]) ? @"https://graph.facebook.com/1149169958/picture?type=square" : [NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename];
+	_filename = ([[[HONAppDelegate infoForUser] objectForKey:@"token"] isEqualToString:@"0000000000000000000000000000000000000000000000000000000000000000"]) ? @"https://graph.facebook.com/1149169958/picture?type=square" : [NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@.jpg", _filename];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 9], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",

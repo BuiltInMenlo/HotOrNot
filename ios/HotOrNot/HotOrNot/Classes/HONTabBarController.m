@@ -285,7 +285,7 @@
 			[_settingsButton setSelected:NO];
 			
 			mixPanelTrack = @"Tab Bar - Timeline";
-			notificationName = @"REFRESH_VOTE_TAB";
+			notificationName = @"SELECTED_VOTE_TAB";
 			break;
 			
 		case 1:
@@ -295,7 +295,7 @@
 			[_settingsButton setSelected:NO];
 			
 			mixPanelTrack = @"Tab Bar - Discover";
-			notificationName = @"REFRESH_DISCOVERY_TAB";
+			notificationName = @"SELECTED_DISCOVERY_TAB";
 			break;
 			
 		case 2:
@@ -307,7 +307,7 @@
 			[_settingsButton setSelected:NO];
 			
 			mixPanelTrack = @"Tab Bar - Activity";
-			notificationName = @"REFRESH_CHALLENGES_TAB";
+			notificationName = @"SELECTED_CHALLENGES_TAB";
 			break;
 			
 		case 3:
@@ -317,7 +317,8 @@
 			[_settingsButton setSelected:YES];
 			
 			mixPanelTrack = @"Tab Bar - Settings";
-			notificationName = @"REFRESH_PROFILE_TAB";
+			//notificationName = @"SELECTED_PROFILE_TAB";
+			notificationName = @"SELECTED_VOTE_TAB";
 			break;
 	}
 	

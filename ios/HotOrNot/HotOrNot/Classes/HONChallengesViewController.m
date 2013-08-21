@@ -57,6 +57,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		_olderChallenges = [NSMutableArray array];
 		_blockCounter = 0;
 		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedChallengesTab:) name:@"SELECTED_CHALLENGES_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_CHALLENGES_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshChallengesTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removePreview:) name:@"REMOVE_PREVIEW" object:nil];
@@ -497,8 +498,14 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 #pragma mark - Notifications
-- (void)_refreshChallengesTab:(NSNotification *)notification {
+- (void)_selectedChallengesTab:(NSNotification *)notification {
 	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_refreshButtonView toggleRefresh:YES];
+	[self _retrieveChallenges];
+	//	[self _retrieveUser];
+}
+
+- (void)_refreshChallengesTab:(NSNotification *)notification {
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 //	[self _retrieveUser];

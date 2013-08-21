@@ -133,6 +133,7 @@
 
 - (void)_registerNotifications {
 	//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showRegistration:) name:@"SHOW_REGISTRATION" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"SELECTED_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeVerify:) name:@"REMOVE_VERIFY" object:nil];
@@ -707,8 +708,17 @@
 	}
 }
 
+- (void)_selectedVoteTab:(NSNotification *)notification {
+	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_refreshButtonView toggleRefresh:YES];
+	
+	if (_timelineType == HONTimelineTypeSingleUser)
+		[self _retrieveUser];
+	
+	[self _retrieveChallenges];
+}
+
 - (void)_refreshVoteTab:(NSNotification *)notification {
-	//[_tableView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
