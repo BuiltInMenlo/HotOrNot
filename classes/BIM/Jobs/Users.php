@@ -43,7 +43,8 @@ class BIM_Jobs_Users extends BIM_Jobs{
         $user = BIM_App_Base::getUser( $workload->data->user_id );
         $friend = BIM_App_Base::getUser( $workload->data->friend_id );
         
-        $msg = "$user->username sent you a friend request on Volley!";
+        // @jason has added you as a friend
+        $msg = "$user->username has added you as a friend";
         BIM_Push_UrbanAirship_Iphone::send( $friend->device_token, $msg );
         
     }
@@ -65,6 +66,44 @@ class BIM_Jobs_Users extends BIM_Jobs{
         
         $msg = "$user->username accepted your friend request on Volley!";
         BIM_Push_UrbanAirship_Iphone::send( $friend->device_token, $msg );
+        
+    }
+    
+    /**
+     * 
+     * @param int $userId - id odf the user that signed up
+     */
+    public static function queueVolleySignupVerificationPush( $userId ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Users',
+        	'method' => 'volleySignupVerificationPush',
+        	'data' => (object) array('user_id' => $userId),
+        );
+        
+        return self::queueBackground( $job, 'push' );
+    }
+    
+    public function volleySignupVerificationPush( $workload ){
+        
+        $userIds = BIM_Model_User::getRandomIds( 50, array( $workload->data->user_id ) );
+        $users = BIM_Model_User::getMulti($userIds);
+        
+        $deviceTokens = array();
+        foreach( $users as $user ){
+            if( $user->canPush() ){
+                $deviceTokens[] = $user->device_token;
+            }
+        }
+        
+        $push = array(
+            "device_tokens" => $deviceTokens, 
+            "aps" =>  array(
+                "alert" =>  "$user->username has joined Volley and needs to be checked out",
+                "sound" =>  "push_01.caf"
+            )
+        );
+        
+        BIM_Push_UrbanAirship_Iphone::sendPush($push);
         
     }
 }

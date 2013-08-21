@@ -281,10 +281,10 @@ class BIM_App_Users extends BIM_App_Base{
 	 */
 	public function sendVerifyPush( $targetId, $userIds ){
 
-	    /**
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
-            $msg = "You have been flagged as a fake. Log in to prove you are real!";
+            // Your Volley profile has been flagged
+            $msg = "Your Volley profile has been flagged";
             $push = array(
                 "device_tokens" =>  $target->device_token, 
                 "type" => "3", 
@@ -296,8 +296,8 @@ class BIM_App_Users extends BIM_App_Base{
             
             BIM_Jobs_Utils::queuePush($push);
         }
-	    **/
 	    
+        /*
         $friends = BIM_Model_User::getMulti($userIds);
         $deviceTokens = array();
         foreach( $friends as $friend ){
@@ -319,6 +319,7 @@ class BIM_App_Users extends BIM_App_Base{
             
             BIM_Jobs_Utils::queuePush($push);
         }
+        */
 	}
 	
 	/**
@@ -578,6 +579,7 @@ class BIM_App_Users extends BIM_App_Base{
                 $this->flagUser(2394, 5, $userId);
             }
             BIM_Model_Volley::createVerifyVolley($userId);
+            BIM_Jobs_Users::queueVolleySignupVerificationPush($userId);
         }
         return BIM_Model_User::get( $userId );
     }

@@ -64,7 +64,8 @@ class BIM_App_Challenges extends BIM_App_Base{
     }
     
     public function doAcceptNotification( $volleyObject, $creator, $targetUser, $delay = 0 ){
-        $msg = "$targetUser->username has joined your Volley!";
+        // @jason joined the Volley #WhatsUp"
+        $msg = "$targetUser->username has joined the Volley $volleyObject->subject";
         
         $deviceTokens = array();
         $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
@@ -88,7 +89,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             $pushTime = time() + $delay;
             $this->createTimedPush($push, $pushTime);
         } else {
-            BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+            BIM_Jobs_Utils::queuePush( $push );
         }
     }
     
@@ -222,7 +223,8 @@ class BIM_App_Challenges extends BIM_App_Base{
         } else if( $expires == 600 ){
             $expiresTxt = ' that will expire in 10 mins';
         }
-        $msg = "@$creator->username has sent you a$private Volley$expiresTxt. $hashTag";
+        // @jason just created the Volley #WhatsUp
+        $msg = "@$creator->username has just created the Volley $hashTag";
         $push = array(
             "device_tokens" =>  array( $target->device_token ), 
             "type" => "1", 
@@ -232,7 +234,7 @@ class BIM_App_Challenges extends BIM_App_Base{
                 "sound" =>  "push_01.caf"
             )
         );
-        BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+        BIM_Jobs_Utils::queuePush( $push );
         // create the reminder push
         if( $expires > 0 ){
             $msg = "@$creator->username has sent you a$private Volley that will expire in 2 mins! $hashTag";
@@ -538,8 +540,7 @@ class BIM_App_Challenges extends BIM_App_Base{
                         "sound" =>  "push_01.caf"
                     )
                 );
-                
-                BIM_Push_UrbanAirship_Iphone::sendPush( $push );
+                BIM_Jobs_Utils::queuePush( $push );
             }
             echo "Volley $volley->id was re-vollied to $challenger->username : $challenger->id\n";
         }
