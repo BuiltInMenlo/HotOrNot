@@ -104,6 +104,39 @@ class BIM_Jobs_Users extends BIM_Jobs{
         );
         
         BIM_Push_UrbanAirship_Iphone::sendPush($push);
+    }    
+
+    public static function queueFirstRunComplete( $userId ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Users',
+        	'method' => 'firstRunComplete',
+        	'data' => (object) array('user_id' => $userId ),
+        );
         
+        return self::queueBackground( $job, 'firstruncomplete' );
+    }
+    
+    public function firstRunComplete( $workload ){
+        $u = new BIM_App_Users();
+        $u->firstRunComplete( $workload->data->user_id );
+    }
+    
+    public static function queueFlagUser( $userId, $approves, $targetId ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Users',
+        	'method' => 'flagUser',
+        	'input' => (object) array(
+        					'user_id' => $userId,
+                            'approves' => $approves,
+                            'targetID' => $targetId
+                        ),
+        );
+        return self::queueBackground( $job, 'firstruncomplete' );
+    }
+    
+    public function flagUser( $workload ){
+        $input = $workload->input;
+        $users = new BIM_App_Users();
+	    return $users->flagUser( $input->userID, $input->approves, $input->targetID );
     }
 }

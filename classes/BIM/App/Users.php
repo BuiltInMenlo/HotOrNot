@@ -229,10 +229,6 @@ class BIM_App_Users extends BIM_App_Base{
     	    $user->purgeFromCache();
     	    $verifyVolley->purgeFromCache();
 	    }
-		return array(
-			'id' => $userId,
-			'mail' => true
-		);
 	}
 	
 	protected function sendApprovePush( $targetId ){
@@ -320,6 +316,40 @@ class BIM_App_Users extends BIM_App_Base{
             BIM_Jobs_Utils::queuePush($push);
         }
         */
+	}
+	
+	/**
+	 * 
+	 * @param int $targetId usr bring flagged
+	 * @param array[int] $userIds - list of users to push
+	 */
+	public function sendFirstRunPush( $userIds, $targetId ){
+	    
+	    $userIds[] = $targetId;
+        $users = BIM_Model_User::getMulti($userIds);
+        $target = $users[ $targetId ];
+        unset( $users[ $targetId ] );
+        
+        $deviceTokens = array();
+        foreach( $users as $user ){
+            if( $user->canPush() ){
+                $deviceTokens[] = $user->device-token;
+            }
+        }
+        
+        if( $deviceTokens ){
+            $msg = "A new user just joined Volley, can you verify them? @$target->username";
+            $push = array(
+                "device_tokens" => $deviceTokens, 
+                "type" => "3", 
+                "aps" =>  array(
+                    "alert" =>  $msg,
+                    "sound" =>  "push_01.caf"
+                )
+            );
+            
+            BIM_Jobs_Utils::queuePush($push);
+        }
 	}
 	
 	/**
@@ -573,6 +603,7 @@ class BIM_App_Users extends BIM_App_Base{
     public function firstRunComplete( $userId ){
         $user = BIM_Model_User::get( $userId );
         if( $user->isExtant() ){
+            $approves = 0;
             if( ! $user->hasSelfie() ){
                 // flag them 5 times
                 // since they refused to give a selfie
