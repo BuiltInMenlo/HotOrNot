@@ -188,12 +188,12 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     public function updateUsernameAvatar( $userId, $username, $imgUrl, $birthdate, $password = null ){
         $sql = '';
         $password = $password?:'';
-        $params = array( $username, $imgUrl, $userId, $password );
+        $params = array( $username, $imgUrl, $password, $userId );
         if( $birthdate ){
             $birthdate = new DateTime( $birthdate );
             $birthdate = $birthdate->format('U');
             $sql = ' age = ?,';
-            $params = array( $username, $imgUrl, $birthdate, $userId, $password );
+            $params = array( $username, $imgUrl, $birthdate, $password, $userId );
         }
         
         $query = "

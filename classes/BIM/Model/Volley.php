@@ -386,6 +386,9 @@ class BIM_Model_Volley{
         $friendIds[] = $userId;
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $ids = $dao->getVolleysWithFriends($userId, $friendIds);
+
+//        print_r( array($ids,$friendIds) );
+        
         return self::getMulti($ids);
     }
     

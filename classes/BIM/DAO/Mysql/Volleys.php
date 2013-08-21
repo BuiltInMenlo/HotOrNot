@@ -65,7 +65,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
         $volleyId = $this->lastInsertId;
         
-        if( $volleyId ){
+        if( $volleyId && $targetIds ){
             // now we create the insert statement for all of the users in this volley
             $params = array();
             $insertSql = array();
@@ -76,7 +76,6 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
                 $params[] = time();
             }
             $insertSql = join( ',' , $insertSql );
-            
             $sql = "
                 INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants
                     ( challenge_id, user_id, joined )
@@ -409,6 +408,29 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
     
+    /*
+ 881, 2454, 2, 2383, 2379, 2456, 882, 2457, 2394, 3932, 1, 881, 881,
+
+SELECT tc.id 
+FROM `hotornot-dev`.`tblChallenges` as tc 
+    JOIN `hotornot-dev`.tblChallengeParticipants as tcp 
+    ON tc.id = tcp.challenge_id 
+WHERE is_verify != 1 
+       AND (
+            ( 
+                tc.status_id IN (1,2,4) 
+                    AND 
+                (tc.`creator_id` IN ( 881, 2454, 2, 2383, 2379, 2456, 882, 2457, 2394, 3932, 1, 881 ) OR tcp.`user_id` IN ( 881, 2454, 2, 2383, 2379, 2456, 882, 2457, 2394, 3932, 1, 881 ) ) 
+            ) 
+            OR 
+            ( 
+                tc.status_id = 2 AND tcp.user_id = 881 
+            ) 
+        ) 
+        ORDER BY tc.`updated` DESC 
+        LIMIT 50 
+     * 
+     */
     public function getVolleysWithFriends( $userId, $friendIds ){
 	    
 	    $fIdct = count( $friendIds );
@@ -417,7 +439,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $query = "
         	SELECT tc.id
         	FROM `hotornot-dev`.`tblChallenges` as tc 
-            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+            	LEFT JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
         	WHERE
         		is_verify != 1
@@ -433,6 +455,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             			AND tcp.user_id = ? 
             		)
         		)
+        	GROUP BY tc.id
         	ORDER BY tc.`updated` DESC LIMIT 50
         ";
         
@@ -444,6 +467,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         }
         $params[] = $userId;
 
+//        print_r( array( $query, $params ) ); exit;
+        
         $stmt = $dao->prepareAndExecute( $query, $params );
         $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
         foreach( $ids as &$id ){

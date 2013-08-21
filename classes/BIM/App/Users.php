@@ -576,10 +576,13 @@ class BIM_App_Users extends BIM_App_Base{
             if( ! $user->hasSelfie() ){
                 // flag them 5 times
                 // since they refused to give a selfie
-                $this->flagUser(2394, 5, $userId);
+                $this->flagUser(2394, $userId, 5);
             }
-            BIM_Model_Volley::createVerifyVolley($userId);
-            BIM_Jobs_Users::queueVolleySignupVerificationPush($userId);
+            $volley = BIM_Model_Volley::getVerifyVolley($userId);
+            if( $volley->isNotExtant() ){
+                $volley = BIM_Model_Volley::createVerifyVolley($userId);
+                //BIM_Jobs_Users::queueVolleySignupVerificationPush($userId);
+            }
         }
         return BIM_Model_User::get( $userId );
     }
