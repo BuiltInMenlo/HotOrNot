@@ -255,7 +255,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
 			
@@ -496,22 +496,9 @@
 #if __ALWAYS_VERIFY__ == 1
 		[self _goVerify];
 #endif
-		
-//		if ([[[HONAppDelegate infoForUser] objectForKey:@"sms_verified"] intValue] == 0 && [[HONAppDelegate friendsList] count] == 0)
-//			[self _goVerify];
-		
-//		if ([HONAppDelegate isLocaleEnabled]) {
-			if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
-				_tooltipImageView = [[UIImageView alloc] initWithFrame:CGRectMake(72.0, 0.0, 244.0, 94.0)];
-				_tooltipImageView.image = [UIImage imageNamed:@"tapTheCameraOverlay"];
-				//[self.view addSubview:_tooltipImageView];
-				
-				[self _goRegistration];
-				//[self performSelector:@selector(_goRegistration) withObject:self afterDelay:0.25];
-			}
-			
-//		} else
-//			[self performSelector:@selector(_goLocaleRestriction) withObject:self afterDelay:0.33];
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
+			[self _goRegistration];
+		}
 	}
 }
 

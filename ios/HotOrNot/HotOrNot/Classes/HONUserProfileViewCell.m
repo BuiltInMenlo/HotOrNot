@@ -126,7 +126,7 @@
 	[self addSubview:ptsLabel];
 	
 	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 186.0);
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 186.0);
 	[self addSubview:divider1ImageView];
 	
 	
@@ -142,7 +142,7 @@
 	[self addSubview:ageLabel];
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	friendsButton.frame = CGRectMake(181.0, 194.0, 69.0, 44.0);
+	friendsButton.frame = CGRectMake(136.0, 194.0, 114.0, 44.0);
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
 	[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
 	[friendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
@@ -151,7 +151,7 @@
 	
 	
 	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	addFriendButton.frame = CGRectMake(120.0, 194.0, 69.0, 44.0);
+	addFriendButton.frame = CGRectMake(115.0, 194.0, 74.0, 44.0);
 	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
 	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
 	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
@@ -174,7 +174,7 @@
 	[self addSubview:moreButton];
 	
 	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 246.0);
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 0.0, 246.0);
 	[self addSubview:divider2ImageView];
 }
 

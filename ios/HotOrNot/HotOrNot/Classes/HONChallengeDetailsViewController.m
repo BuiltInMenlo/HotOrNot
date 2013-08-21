@@ -244,7 +244,7 @@
 	
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 61.0 + offset, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, 569.0 + (kSnapMediumDim * (respondedOpponents / 5)) - (_isModal * 100.0));
+	_scrollView.contentSize = CGSizeMake(320.0, 569.0 + (kSnapMediumDim * (respondedOpponents / 5)) - (_isModal * 85.0));
 	_scrollView.pagingEnabled = NO;
 	_scrollView.showsVerticalScrollIndicator = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
@@ -331,7 +331,7 @@
 	[footerHolderView addSubview:joinButton];
 	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 242.0);
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 242.0);
 	[_scrollView addSubview:dividerImageView];
 	
 	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 252.0, 300.0, 20.0)];

@@ -281,7 +281,7 @@
 //	[footerHolderView addSubview:moreButton];
 	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 5.0, 282.0);
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 282.0);
 	[self addSubview:dividerImageView];
 }
 

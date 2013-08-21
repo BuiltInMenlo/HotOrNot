@@ -103,7 +103,7 @@
 	[self addSubview:ptsLabel];
 	
 	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 186.0);
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 186.0);
 	[self addSubview:divider1ImageView];
 	
 	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 206.0, 180.0, 20.0)];
@@ -121,7 +121,7 @@
 	[self addSubview:moreButton];
 	
 	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 246.0);
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 0.0, 246.0);
 	[self addSubview:divider2ImageView];
 	
 //	UIButton *abuseButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -224,15 +224,7 @@
 	//HONSettingsViewCell *cell = (HONSettingsViewCell *)[tableView cellForRowAtIndexPath:indexPath];
 	
 	switch (indexPath.row) {
-		case 1:
-			[[Mixpanel sharedInstance] track:@"Settings - My Snaps"
-										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-			
-			[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]] animated:YES];
-			break;
-			
-		case 2: {
+		case 1:{
 			[[Mixpanel sharedInstance] track:@"Settings - Invite via SMS"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -254,7 +246,7 @@
 			}
 			break;}
 			
-		case 3: {
+		case 2: {
 			[[Mixpanel sharedInstance] track:@"Settings - Invite via Email"
 										 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -276,6 +268,16 @@
 				[alertView show];
 			}
 			break;}
+			
+		case 3:
+			[[Mixpanel sharedInstance] track:@"Settings - Change Username"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+			
+			navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONUsernameViewController alloc] init]];
+			[navigationController setNavigationBarHidden:YES];
+			[self presentViewController:navigationController animated:YES completion:nil];
+			break;
 
 		case 4:
 			[[Mixpanel sharedInstance] track:@"Settings - Show Support"

@@ -213,13 +213,14 @@
 	if ([[_username substringToIndex:1] isEqualToString:@"@"])
 		_username = [_username substringFromIndex:1];
 	
+	_filename = ([[[HONAppDelegate infoForUser] objectForKey:@"token"] isEqualToString:@"0000000000000000000000000000000000000000000000000000000000000000"]) ? @"https://graph.facebook.com/1149169958/picture?type=square" : [NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename];
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 9], @"action",
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							_username, @"username",
 							_password, @"password",
 							_birthday, @"age",
-							[NSString stringWithFormat:@"https://hotornot-avatars.s3.amazonaws.com/%@", _filename], @"imgURL",
+							_filename, @"imgURL",
 							nil];
 	
 	NSLog(@"PARAMS:[%@]", params);
@@ -349,7 +350,7 @@
 	[self.view addSubview:_usernameTextField];
 	
 	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 5.0, 108.0);
+	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 108.0);
 	[self.view addSubview:divider1ImageView];
 	
 	_passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 131.0, 230.0, 30.0)];
@@ -371,7 +372,7 @@
 	[self.view addSubview:_passwordTextField];
 	
 	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 5.0, 173.0);
+	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 0.0, 173.0);
 	[self.view addSubview:divider2ImageView];
 	
 	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 191.0, 296.0, 30.0)];
@@ -387,7 +388,7 @@
 	[self.view addSubview:birthdayButton];
 	
 	UIImageView *divider3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 5.0, 238.0);
+	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 238.0);
 	[self.view addSubview:divider3ImageView];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -662,12 +663,13 @@
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
-			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-				//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
-			}];
-		}];
+		[self _finalizeUser];
+//		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
+//			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+//				//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
+//			}];
+//		}];
 	}
 }
 
