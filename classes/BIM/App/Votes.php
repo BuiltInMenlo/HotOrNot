@@ -174,6 +174,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	    if( $volley->isExtant() && ( $volley->hasUser( $targetId ) ) ){
 	        $volley->upVote( $targetId, $userId );
     		$liker = BIM_Model_User::get( $userId );
+    		$target = BIM_Model_User::get( $targetId );
     		// @jason your Volley #WhatsUp"
 			$msg = "@$liker->username liked your Volley $volley->subject";
 			$push = array(

@@ -214,8 +214,9 @@ class BIM_App_Users extends BIM_App_Base{
     	    // make sure the flagged user cannot 
     	    // upvote or downvote themselves
     	    $approves = ($approves ? -1 : 1);
+    	    $purge = false;
     	    if( $verifyVolley->isNotExtant() && $approves > 0 ){
-    	        
+    	        $purge = true;
                 $verifyVolley = BIM_Model_Volley::createVerifyVolley( $targetId );
         	    $target->flag( $verifyVolley->id, $userId, $approves );
         	    
@@ -226,15 +227,18 @@ class BIM_App_Users extends BIM_App_Base{
                 }
                 $this->sendFlaggedEmail($userId);
                 
-    	    } else if( $verifyVolley->isExtant() ){
+    	    } else if( $verifyVolley->isExtant() && !$verifyVolley->hasApproved($userId) ){
+    	        $purge = true;
         	    $target->flag( $verifyVolley->id, $userId, $approves );
         	    if( $approves < 0 ){
     	            $this->sendApprovePush( $targetId );
         	    }
     	    }
-    	    $target->purgeFromCache();
-    	    $user->purgeFromCache();
-    	    $verifyVolley->purgeFromCache();
+    	    if( $purge ){
+        	    $target->purgeFromCache();
+        	    $user->purgeFromCache();
+        	    $verifyVolley->purgeFromCache();
+    	    }
 	    }
 	}
 	

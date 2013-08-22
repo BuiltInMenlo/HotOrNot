@@ -509,6 +509,7 @@ WHERE is_verify != 1
             	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
 			WHERE (`status_id` IN (1,2,4) ) 
+				AND tc.is_verify != 1
 				$privateSql
 				AND ( (tc.`creator_id` = ? AND tcp.user_id = ? ) 
 					OR (tc.`creator_id` = ? AND tcp.user_id = ? ) )
@@ -538,17 +539,14 @@ WHERE is_verify != 1
             	ON tc.id = tcp.challenge_id
 			WHERE ( tc.status_id IN (1,4) ) 
 				$privateSql
-				AND (tc.`creator_id` = ? OR tcp.`user_id` = ? ) 
+				AND (tc.`creator_id` = ? OR tcp.`user_id` = ? )
+				AND is_verify != 1 
 			ORDER BY tc.`updated` DESC LIMIT 50;";
 				
 		$params = array( $userId, $userId );
         $stmt = $this->prepareAndExecute( $query, $params );
-        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
-        foreach( $ids as &$id ){
-            $id = $id->id;
-        }
-        $ids = array_unique($ids);
-        return $ids;        
+        $ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        return array_unique($ids);        
     }
     
     public function getVolleysForProfile( $userId, $private ){
@@ -564,7 +562,8 @@ WHERE is_verify != 1
 			WHERE ( tc.status_id IN (1,2,4) ) 
 				$privateSql
 				AND tc.`creator_id` = ?
-			ORDER BY tc.`updated` DESC LIMIT 3";
+				AND is_verify != 1
+			ORDER BY tc.`updated` DESC LIMIT 10";
 				
 		$params = array( $userId );
         $stmt = $this->prepareAndExecute( $query, $params );
@@ -633,7 +632,8 @@ WHERE is_verify != 1
 			SELECT id 
 			FROM `hotornot-dev`.`tblChallenges` 
 			WHERE `is_private` != "Y" 
-				AND (`status_id` = 1 OR `status_id` = 4) 
+				AND (`status_id` = 1 OR `status_id` = 4)
+				AND is_verify != 1
 			ORDER BY `updated` 
 			DESC LIMIT 250;'; 
         $stmt = $this->prepareAndExecute( $query );
@@ -653,6 +653,7 @@ WHERE is_verify != 1
 				JOIN `hotornot-dev`.tblChallengeVotes as tcv
 				ON tc.id = tcv.challenge_id 
 			WHERE tc.status_id in (1,4)
+				AND is_verify != 1
 			LIMIT 100
 		';
         $stmt = $this->prepareAndExecute( $query );
@@ -701,6 +702,7 @@ WHERE is_verify != 1
         	FROM `hotornot-dev`.tblChallenges
         	WHERE `status_id` = 4 
         		AND `started` > ? 
+				AND is_verify != 1
         	ORDER BY `votes` DESC LIMIT 256
         ';
 		$params = array( $startDate );

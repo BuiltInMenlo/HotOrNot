@@ -37,7 +37,8 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) && !empty( $input->age ) && !empty( $input->password ) ){
             if( BIM_Utils::ageOK( $input->age ) ){
                 $userId = $this->resolveUserId( $input->userID );
-                $this->firstRunComplete();
+                $users = new BIM_App_Users();
+                $users->firstRunComplete( $input->userID );
                 // BIM_Jobs_Users::queueFirstRunComplete($userId);
                 $users = new BIM_App_Users();
 			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age, $input->password );
