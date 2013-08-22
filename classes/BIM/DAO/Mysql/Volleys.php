@@ -196,9 +196,23 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     }
     
     public function join( $volleyId, $userId, $imgUrl ){
-        $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img, joined ) VALUES (?, ?, ?, ?)';
-        $params = array( $volleyId, $userId, $imgUrl, time() );
-        $this->prepareAndExecute($sql, $params);
+        
+        $sql = '
+        	update `hotornot-dev`.tblChallengeParticipants 
+            	set img = ?, 
+            	joined = ? 
+        	where challenge_id = ? 
+        		  and user_id = ?
+        		  and ( img = "" or img is null )
+        ';
+        $params = array( $imgUrl, time(), $volleyId, $userId );
+        $stmt = $this->prepareAndExecute($sql, $params);
+        
+        if( $this->rowCount == 0 ){
+            $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img, joined ) VALUES (?, ?, ?, ?)';
+            $params = array( $volleyId, $userId, $imgUrl, time() );
+            $this->prepareAndExecute($sql, $params);
+        }
         
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
         $params = array( $volleyId );
@@ -547,20 +561,14 @@ WHERE is_verify != 1
         $query = "
 			SELECT tc.id 
 			FROM `hotornot-dev`.`tblChallenges` as tc
-            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
-            	ON tc.id = tcp.challenge_id
-			WHERE ( tc.status_id IN (1,4) ) 
+			WHERE ( tc.status_id IN (1,2,4) ) 
 				$privateSql
 				AND tc.`creator_id` = ?
 			ORDER BY tc.`updated` DESC LIMIT 3";
 				
 		$params = array( $userId );
         $stmt = $this->prepareAndExecute( $query, $params );
-        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
-        foreach( $ids as &$id ){
-            $id = $id->id;
-        }
-        $ids = array_unique($ids);
+        $ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
         return $ids;        
     }
     
