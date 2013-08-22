@@ -89,11 +89,12 @@ extern NSString * const kTwilioSMS;
 + (BOOL)isInviteCodeValid:(NSString *)code;
 + (BOOL)isLocaleEnabled;
 
++ (NSString *)s3BucketForType:(NSString *)bucketType;
+
 + (int)createPointMultiplier;
 + (int)votePointMultiplier;
 + (int)pokePointMultiplier;
 
-+ (NSString *)tutorialImageForPage:(int)page;
 + (NSString *)promoteInviteImageForType:(int)type;
 
 + (NSString *)bannerForSection:(int)section;

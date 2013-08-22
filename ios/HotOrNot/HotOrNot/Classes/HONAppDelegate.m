@@ -220,14 +220,13 @@ NSString * const kTwilioSMS = @"6475577873";
 	return ([[[[NSUserDefaults standardUserDefaults] objectForKey:@"point_mult"] objectAtIndex:1] intValue]);
 }
 
-+ (NSString *)tutorialImageForPage:(int)page {
-	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"tutorial_images"] objectAtIndex:page]);
-}
-
 + (NSString *)promoteInviteImageForType:(int)type {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"promote_images"] objectAtIndex:type]);
 }
 
++ (NSString *)s3BucketForType:(NSString *)bucketType {
+	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"s3_buckets"] objectForKey:bucketType]);
+}
 
 + (NSString *)bannerForSection:(int)section {
 	return ([[[NSUserDefaults standardUserDefaults] objectForKey:@"section_banners"] objectAtIndex:section]);
@@ -840,8 +839,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	//	[TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
 	//	[TestFlight takeOff:@"139f9073-a4d0-4ecd-9bb8-462a10380218"];
 	
-//	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
-//	[[BITHockeyManager sharedHockeyManager] startManager];
+	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
+	[[BITHockeyManager sharedHockeyManager] startManager];
 	
 //	TSConfig *config = [TSConfig configWithDefaults];
 //	config.collectWifiMac = NO;
@@ -854,14 +853,19 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
-	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
+	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"activity_banner"];
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	
+#if __ALWAYS_REGISTER__ == 1
+	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+#endif
+
 	
 	if ([HONAppDelegate hasNetwork]) {
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"votes"])
@@ -900,16 +904,16 @@ NSString * const kTwilioSMS = @"6475577873";
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"install_date"])
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDate new] forKey:@"install_date"];
 		
-		if (boot_total == 5) {
-			UIAlertView *alertView = [[UIAlertView alloc]
-									  initWithTitle:@"Rate Volley"
-									  message:@"Why not rate Volley in the app store!"
-									  delegate:self
-									  cancelButtonTitle:nil
-									  otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
-			[alertView setTag:2];
-			[alertView show];
-		}
+//		if (boot_total == 5) {
+//			UIAlertView *alertView = [[UIAlertView alloc]
+//									  initWithTitle:@"Rate Volley"
+//									  message:@"Why not rate Volley in the app store!"
+//									  delegate:self
+//									  cancelButtonTitle:nil
+//									  otherButtonTitles:@"No Thanks", @"Ask Me Later", @"Visit App Store", nil];
+//			[alertView setTag:2];
+//			[alertView show];
+//		}
 		
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"fb_posting"])
 			[HONAppDelegate setAllowsFBPosting:NO];
@@ -1105,10 +1109,6 @@ NSString * const kTwilioSMS = @"6475577873";
 			for (NSString *code in [result objectForKey:@"invite_codes"])
 				[inviteCodes addObject:code];
 			
-			NSMutableArray *tutorialImages = [NSMutableArray array];
-			for (NSString *tutorialImage in [result objectForKey:@"tutorial_images"])
-				[tutorialImages addObject:tutorialImage];
-			
 			NSMutableArray *sectionBanners = [NSMutableArray array];
 			for (NSString *sectionBanner in [result objectForKey:@"section_banners"])
 				[sectionBanners addObject:sectionBanner];
@@ -1145,9 +1145,9 @@ NSString * const kTwilioSMS = @"6475577873";
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"vote"],
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"poke"],
 															  [[result objectForKey:@"point_multipliers"] objectForKey:@"create"], nil] forKey:@"point_mult"];
-//			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
-//															  [[result objectForKey:@"timeline_banner"] objectForKey:@"type"], @"type",
-//															  [[result objectForKey:@"timeline_banner"] objectForKey:@"url"], @"url", nil] forKey:@"timeline_banner"];
+			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
+															  [[result objectForKey:@"s3_buckets"] objectForKey:@"challenges"], @"challenges",
+															  [[result objectForKey:@"s3_buckets"] objectForKey:@"avatars"], @"avatars", nil] forKey:@"s3_buckets"];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:
 															  [[result objectForKey:@"invite_sms"] objectForKey:@"en"], @"en",
 															  [[result objectForKey:@"invite_sms"] objectForKey:@"id"], @"id",
@@ -1171,7 +1171,6 @@ NSString * const kTwilioSMS = @"6475577873";
 															  [[result objectForKey:@"insta_profile"] objectForKey:@"zn-Hant"], @"zn-Hant", nil] forKey:@"insta_profile"];
 			[[NSUserDefaults standardUserDefaults] setObject:[locales copy] forKey:@"enabled_locales"];
 			[[NSUserDefaults standardUserDefaults] setObject:[inviteCodes copy] forKey:@"invite_codes"];
-			[[NSUserDefaults standardUserDefaults] setObject:[tutorialImages copy] forKey:@"tutorial_images"];
 			[[NSUserDefaults standardUserDefaults] setObject:[sectionBanners copy] forKey:@"section_banners"];
 			[[NSUserDefaults standardUserDefaults] setObject:[promoteImages copy] forKey:@"promote_images"];
 			[[NSUserDefaults standardUserDefaults] setObject:[hashtags copy] forKey:@"default_subjects"];

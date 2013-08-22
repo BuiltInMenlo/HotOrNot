@@ -195,7 +195,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			}
 			
 			_emptyImageView.hidden = [_challenges count] > 0;
-			_bannerView.hidden = ([_challenges count] == 0 || ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"]);
+			//_bannerView.hidden = ([_challenges count] == 0 || ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"]);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -367,7 +367,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
 	
 	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
-	_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"];
+	//_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"];
 	[self.view addSubview:_bannerView];
 	
 	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
@@ -381,9 +381,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
 	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 140.0);
+	_emptyImageView.hidden = YES;
 	[self.view addSubview:_emptyImageView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kTabSize.height) - 50.0 - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 10.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
@@ -456,7 +457,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
+		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
 		[_bannerView removeFromSuperview];
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];
@@ -595,62 +596,73 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ((section == 0) ? [_recentChallenges count] : [_olderChallenges count]);
+	//return ((section == 0) ? [_recentChallenges count] : [_olderChallenges count]);
+	return ([_challenges count]);
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (2);
+	return (1);
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	UIImageView *headerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
-	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
-	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-	label.textColor = [HONAppDelegate honGreenTextColor];
-	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Recent" : @"Older";
-	[headerView addSubview:label];
-	
-	return (headerView);
-}
+//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+//	UIImageView *headerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
+//	
+//	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
+//	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+//	label.textColor = [HONAppDelegate honGreenTextColor];
+//	label.backgroundColor = [UIColor clearColor];
+//	label.text = (section == 0) ? @"Recent" : @"Older";
+//	[headerView addSubview:label];
+//	
+//	return (headerView);
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 0) {
-		HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-		
-		if (cell == nil)
-			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
-		
-		cell.delegate = self;
-		cell.challengeVO = [_recentChallenges objectAtIndex:indexPath.row];
-		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-		return (cell);
-		
-	} else {
-		HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-		
-		if (cell == nil)
-			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
-		
-		if (indexPath.row < [_olderChallenges count])
-			cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
-		
-		cell.delegate = self;
-		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-		return (cell);
-	}
+//	if (indexPath.section == 0) {
+//		HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+//		
+//		if (cell == nil)
+//			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
+//		
+//		cell.delegate = self;
+//		cell.challengeVO = [_recentChallenges objectAtIndex:indexPath.row];
+//		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+//		return (cell);
+//		
+//	} else {
+//		HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+//		
+//		if (cell == nil)
+//			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
+//		
+//		if (indexPath.row < [_olderChallenges count])
+//			cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
+//		
+//		cell.delegate = self;
+//		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+//		return (cell);
+//	}
+	
+	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	
+	if (cell == nil)
+		cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
+	
+	cell.delegate = self;
+	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return ((indexPath.section == [_challenges count] - 1) ? 333.0 : 286.0);//return ((indexPath.section == 1 && indexPath.row == [_olderChallenges count] - 1) ? kOrthodoxTableCellHeight * 2.0 : kOrthodoxTableCellHeight);
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kOrthodoxTableHeaderHeight);// * ([_challenges count] > 0));
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+//	return (kOrthodoxTableHeaderHeight);
+//}
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0) {

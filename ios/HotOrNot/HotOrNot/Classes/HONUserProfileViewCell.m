@@ -45,7 +45,7 @@
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	[self addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(127.0, 31.0)]];
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 9.0, 109.0, 109.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 17.0, 109.0, 109.0)];
 	_avatarImageView.userInteractionEnabled = YES;
 //	[_avatarImageView setImageWithURL:[NSURL URLWithString:(isUser) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : _userVO.imageURL] placeholderImage:nil];
 	[self addSubview:_avatarImageView];
@@ -73,7 +73,7 @@
 	}
 	
 	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profilePicButton.frame = CGRectMake(195.0, 47.0, 34.0, 34.0);
+	profilePicButton.frame = CGRectMake(195.0, 55.0, 34.0, 34.0);
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
 	[profilePicButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];

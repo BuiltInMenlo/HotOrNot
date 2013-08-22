@@ -16,7 +16,6 @@
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
 @property (nonatomic, strong) UIImageView *circleFillImageView;
-@property (nonatomic, strong) UILabel *headerLabel;
 @end
 
 @implementation HONAvatarCameraOverlayView
@@ -37,14 +36,7 @@
 		
 		//hide overlay - [self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
 		
-		_headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 18.0, 200.0, 24.0)];
-		_headerLabel.backgroundColor = [UIColor clearColor];
-		_headerLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:18];
-		_headerLabel.textColor = [UIColor whiteColor];
-		_headerLabel.text = NSLocalizedString(@"header_register2", nil);
-		//[self addSubview:_headerLabel];
-		
-		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
+		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height * 2.0)];
 		[self addSubview:_controlsHolderView];
 		
 		UIImageView *captionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, (self.frame.size.height - 12.0) * 0.5, 320.0, 24.0)];
@@ -81,7 +73,7 @@
 		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
 		[_infoHolderImageView addSubview:okInfoButton];
 		
-		UIView *submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(320.0, ([UIScreen mainScreen].bounds.size.height - 64.0) * 0.5, 320.0, 64.0)];
+		UIView *submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height + (([UIScreen mainScreen].bounds.size.height - 64.0) * 0.5), 320.0, 64.0)];
 		[_controlsHolderView addSubview:submitHolderView];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -164,10 +156,6 @@
 
 #pragma mark - UI Presentation
 - (void)showPreview:(UIImage *)image {
-	//NSLog(@"PARENT:[%@]", [[self.superview class] description]);
-	
-	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
-	
 	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
 	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
@@ -181,10 +169,6 @@
 }
 
 - (void)showPreviewAsFlipped:(UIImage *)image {
-	//NSLog(@"PARENT:[%@]", [[self.superview.superview.superview class] description]);
-	
-	_headerLabel.text = NSLocalizedString(@"header_register3", nil);
-	
 	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83f];
 	//image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
@@ -199,16 +183,14 @@
 	for (UIView *subview in _previewHolderView.subviews)
 		[subview removeFromSuperview];
 	
-	
-	_headerLabel.text = NSLocalizedString(@"header_register2", nil);
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 320.0, 0.0);
+		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
 	} completion:nil];
 }
 
 - (void)animateSubmit {
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
 	} completion:^(BOOL finished) {
 	}];
 }

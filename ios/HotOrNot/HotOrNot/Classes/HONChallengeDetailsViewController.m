@@ -347,7 +347,6 @@
 	
 	int opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		NSLog(@"IMG:(%d)[%@]", [vo.imagePrefix length], vo.imagePrefix);
 		if ([vo.imagePrefix length] > 0) {
 			CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (opponentCounter % 4), (kSnapMediumDim + 1.0) * (opponentCounter / 4));
 			

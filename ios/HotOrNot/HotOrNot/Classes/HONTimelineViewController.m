@@ -441,7 +441,7 @@
 	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
 	[_bannerView addSubview:bannerButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - ((14.0 + kTabSize.height) * (int)(![[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]))) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 63.0 - kTabSize.height * (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	//[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor whiteColor]];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -473,33 +473,24 @@
 	[ctaButton addTarget:self action:@selector(_goAddContactsAlert) forControlEvents:UIControlEventTouchUpInside];
 	[findFriendsImageView addSubview:ctaButton];
 	
-//	[self.view addSubview:_headerView];
-	
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 //	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 //	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 //	_progressHUD.minShowTime = kHUDTime;
 //	_progressHUD.taskInProgress = YES;
 	
-		[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.25];
+	[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.5];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
 		[self _retrieveUser];
-	//[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.5];
-	
-#if __ALWAYS_REGISTER__ == 1
-	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-#endif
-	
 	
 	if (!_isPushView) {
 #if __ALWAYS_VERIFY__ == 1
 		[self _goVerify];
 #endif
-		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil) {
+		
+		if ([[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] == nil)
 			[self _goRegistration];
-		}
 	}
 }
 
@@ -698,8 +689,8 @@
 
 - (void)_showAddContacts:(NSNotification *)notification {
 	if (_timelineType == HONTimelineTypeFriends) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find Friends?"
-															message:@"Would you like to find friends from your contacts list?"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find friends who Volley"
+															message:@"Would you like to find friends who Volley?"
 														   delegate:self
 												  cancelButtonTitle:@"No"
 												  otherButtonTitles:@"Yes", nil];
@@ -1170,24 +1161,6 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	if (_timelineType == HONTimelineTypeSingleUser)
-//		return (nil);
-//	
-//	else {
-//		UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 50.0)];
-//		
-//		UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:bgView.frame];
-//		[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate timelineBannerURL]] placeholderImage:nil];
-//		[bgView addSubview:bannerImageView];
-//		
-//		UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//		bannerButton.frame = bannerImageView.frame;
-//		[bannerButton addTarget:self action:@selector(_goTimelineBanner) forControlEvents:UIControlEventTouchUpInside];
-//		[bgView addSubview:bannerButton];
-//		
-//		return (bgView);
-//	}
-	
 	if (_timelineType == HONTimelineTypeSingleUser && section == 0)
 		return (nil);
 	
@@ -1260,15 +1233,19 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 0) {
+	if (indexPath.section == 0)
 		return ((_timelineType == HONTimelineTypeSingleUser) ? 252.0 : 286.0);
 		
-	} else
-		return ((indexPath.section == [_challenges count] - 1) ? 333.0 : 286);
+	else {
+		if (_timelineType == HONTimelineTypeSingleUser)
+			return ((indexPath.section == [_challenges count]) ? 333.0 : 286.0);
+		
+		else
+			return ((indexPath.section == [_challenges count] - 1) ? 333.0 : 286.0);
+	}
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	//return ((([[HONAppDelegate timelineBannerURL] length] > 0) && !_isPushView) ? (int)!(_timelineType == HONTimelineTypeSingleUser) * 58.0 : 58.0);
 	return ((_timelineType == HONTimelineTypeSingleUser && section == 0) ? 0.0 : 56.0);
 }
 

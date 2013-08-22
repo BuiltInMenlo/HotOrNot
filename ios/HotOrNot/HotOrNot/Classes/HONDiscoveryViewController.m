@@ -228,10 +228,9 @@
 }
 
 - (void)_showSearchTable:(NSNotification *)notification {
-	if (self.view.frame.origin.y >= 0) {
+	if (_tableView.frame.origin.y > 0) {
 		[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-			//self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, -kNavBarHeaderHeight);
-			self.view.frame = CGRectOffset(self.view.frame, 0.0, -kNavBarHeaderHeight);
+			//self.view.frame = CGRectOffset(self.view.frame, 0.0, -kNavBarHeaderHeight);
 			_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]);
 			_bannerView.alpha = 0.0;
 		} completion:^(BOOL finished) {
@@ -242,12 +241,11 @@
 }
 
 - (void)_hideSearchTable:(NSNotification *)notification {
-	if (self.view.frame.origin.y <= 0) {
+	if (_tableView.frame.origin.y == 0) {
 		_bannerView.hidden = NO;
 		[self.navigationController setNavigationBarHidden:NO animated:YES];
-		[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-			//self.navigationController.navigationBar.frame = CGRectOffset(self.navigationController.navigationBar.frame, 0.0, kNavBarHeaderHeight);
-			self.view.frame = CGRectOffset(self.view.frame, 0.0, kNavBarHeaderHeight);
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^(void) {
+			//self.view.frame = CGRectOffset(self.view.frame, 0.0, kNavBarHeaderHeight);
 			_tableView.frame = CGRectOffset(_tableView.frame, 0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]);
 			_bannerView.alpha = 1.0;
 		} completion:^(BOOL finished) {

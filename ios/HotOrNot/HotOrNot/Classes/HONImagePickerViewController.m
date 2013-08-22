@@ -191,7 +191,7 @@ const CGFloat kFocusInterval = 0.5f;
 	_uploadCounter = 0;
 	
 	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
-	NSLog(@"FILE PREFIX: https://hotornot-challenges.s3.amazonaws.com/%@", _filename);
+	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 //	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 //	_progressHUD.labelText = NSLocalizedString(@"hud_uploadPhoto", nil);
@@ -989,7 +989,7 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									   [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
 									   [NSString stringWithFormat:@"%d", _challengeExpireType], @"expires",
 									   _subjectName, @"subject",
 									   _challengerName, @"username",
@@ -1084,7 +1084,7 @@ const CGFloat kFocusInterval = 0.5f;
 			
 			NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 										   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-										   [NSString stringWithFormat:@"https://hotornot-challenges.s3.amazonaws.com/%@", _filename], @"imgURL",
+										   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
 										   [NSString stringWithFormat:@"%d", _challengeExpireType], @"expires",
 										   _subjectName, @"subject",
 										   _challengerName, @"username",
