@@ -120,7 +120,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		LEFT JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
         		ON tc.id = tcp.challenge_id 
         	WHERE tc.id = ?
-        	ORDER BY challenge_id';
+        	ORDER BY tcp.joined';
         
         $params = array( $id );
         
@@ -396,14 +396,15 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 				
 			WHERE tc.status_id in ( 1,2,4 ) 
 				AND tc.is_verify = 1 
-				AND u.user_id is null 
+				AND u.user_id is null
+				AND tc.creator_id != ?
 				
 			GROUP BY tc.id
 			ORDER BY tc.updated DESC 
 			LIMIT 100
         ";
         
-        $params = array( $userId );
+        $params = array( $userId, $userId );
         $stmt = $this->prepareAndExecute( $sql, $params );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
@@ -456,7 +457,7 @@ WHERE is_verify != 1
             		)
         		)
         	GROUP BY tc.id
-        	ORDER BY tc.`updated` DESC LIMIT 50
+        	ORDER BY tc.`updated` DESC LIMIT 10
         ";
         
 		$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
@@ -527,6 +528,33 @@ WHERE is_verify != 1
 			ORDER BY tc.`updated` DESC LIMIT 50;";
 				
 		$params = array( $userId, $userId );
+        $stmt = $this->prepareAndExecute( $query, $params );
+        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
+        foreach( $ids as &$id ){
+            $id = $id->id;
+        }
+        $ids = array_unique($ids);
+        return $ids;        
+    }
+    
+    public function getVolleysForProfile( $userId, $private ){
+		// get latest 10 challenges for user
+	    $privateSql = ' AND tc.`is_private` != "Y" ';
+	    if( $private ){
+	        $privateSql = ' AND tc.`is_private` = "Y" ';
+	    }
+		
+        $query = "
+			SELECT tc.id 
+			FROM `hotornot-dev`.`tblChallenges` as tc
+            	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
+            	ON tc.id = tcp.challenge_id
+			WHERE ( tc.status_id IN (1,4) ) 
+				$privateSql
+				AND tc.`creator_id` = ?
+			ORDER BY tc.`updated` DESC LIMIT 3";
+				
+		$params = array( $userId );
         $stmt = $this->prepareAndExecute( $query, $params );
         $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
         foreach( $ids as &$id ){
