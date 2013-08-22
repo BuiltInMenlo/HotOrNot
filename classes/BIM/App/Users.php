@@ -48,7 +48,8 @@ class BIM_App_Users extends BIM_App_Base{
                 // have @teamvolley friend the new user			
     			$friendRelation = (object) array( 
     				'target' => $user->id, 
-    				'userID' => 2394 /*team volley id */ 
+    				'userID' => 2394, /*team volley id */
+    			    'auto' => 1,
     			);
     			$s = new BIM_App_Social();
     			$s->addFriend($friendRelation);

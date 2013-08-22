@@ -12,6 +12,7 @@ class BIM_Jobs_Utils extends BIM_Jobs{
     }
     
     public function doPush( $workload ){
+        //print_r( $workload );
         BIM_Push_UrbanAirship_Iphone::sendPush( $workload->push );
     }
 }

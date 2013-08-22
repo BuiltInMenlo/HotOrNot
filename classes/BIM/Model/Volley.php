@@ -158,7 +158,15 @@ class BIM_Model_Volley{
     
     public static function createVerifyVolley( $targetId ){
 	    $target = BIM_Model_User::get( $targetId );
-        return self::create($targetId, '#__verifyMe__', $target->getAvatarUrl(), array(), 'N', -1, true);
+	    $imgUrl = trim($target->getAvatarUrl());
+	    // now we get our avatar image and 
+	    // create the a url that points to the large version
+	    if( preg_match('/defaultAvatar/',$imgUrl) ){
+	        $imgUrl = preg_replace('/defaultAvatar\.png/i', 'defaultAvatar_o.jpg', $imgUrl);
+	    } else {
+    	    $imgUrl = preg_replace('/^(.*?)\.jpg$/', '$1_o.jpg', $imgUrl);
+	    }
+	    return self::create($targetId, '#__verifyMe__', $imgUrl, array(), 'N', -1, true);
     }
     
     public static function getHashTagId( $userId, $hashTag = 'N/A' ) {
