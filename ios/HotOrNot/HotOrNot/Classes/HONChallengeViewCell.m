@@ -10,10 +10,11 @@
 
 #import "HONChallengeViewCell.h"
 #import "HONOpponentVO.h"
+#import "HONImageLoadingView.h"
 
 @interface HONChallengeViewCell()
-@property (nonatomic, strong) UIButton *loadMoreButton;
-@property (nonatomic, strong) UIImageView *hasSeenImageView;
+@property (nonatomic, strong) UIView *imageHolderView;
+@property (nonatomic, strong) UIImageView *challengeImageView;
 @end
 
 @implementation HONChallengeViewCell
@@ -24,107 +25,101 @@
 	return (NSStringFromClass(self));
 }
 
-- (id)initAsLoadMoreCell:(BOOL)isMoreLoadable {
+- (id)init {
 	if ((self = [super init])) {
-		if (isMoreLoadable) {
-			_loadMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			_loadMoreButton.frame = CGRectMake(0.0, 0.0, 320.0, 63.0);
-			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_nonActive"] forState:UIControlStateNormal];
-			[_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"loadMoreButton_Active"] forState:UIControlStateHighlighted];
-			[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-			[self addSubview:_loadMoreButton];
-		}
-		
-		[self hideChevron];
+		self.backgroundColor = [UIColor whiteColor];
 	}
 	
 	return (self);
 }
 
 
+- (void)_imageLoadFallback {
+	[_challengeImageView removeFromSuperview];
+	_challengeImageView = nil;
+	
+	__weak typeof(self) weakSelf = self;
+	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(([UIScreen mainScreen].bounds.size.width - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.width - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim)];
+	_challengeImageView.userInteractionEnabled = YES;
+	_challengeImageView.alpha = [_challengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL]]];
+	[_imageHolderView addSubview:_challengeImageView];
+	
+	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							   placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+								   weakSelf.challengeImageView.image = image;
+								   [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.challengeImageView.alpha = 1.0; } completion:nil];
+							   } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+							   }];
+}
+
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[self hideChevron];
-	BOOL isCreator = [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID;
+	__weak typeof(self) weakSelf = self;
 	
-	UIView *challengeImgHolderView = [[UIView alloc] initWithFrame:CGRectMake(12.0, 12.0, kSnapThumbDim, kSnapThumbDim)];
-	challengeImgHolderView.clipsToBounds = YES;
-	[self addSubview:challengeImgHolderView];
+	_imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(12.0, 0.0, kSnapLargeDim, kSnapLargeDim)];
+	_imageHolderView.clipsToBounds = YES;
+	[self addSubview:_imageHolderView];
 	
-	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapThumbDim, kSnapThumbDim)];
-	[challengeImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL]];
-	[challengeImgHolderView addSubview:challengeImageView];
+	HONImageLoadingView *lImageLoading = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
+	[_imageHolderView addSubview:lImageLoading];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 23.0, 160.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	timeLabel.textColor = [HONAppDelegate honGreyTimeColor];
-	timeLabel.backgroundColor = [UIColor clearColor];
-	timeLabel.textAlignment = NSTextAlignmentRight;
-	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
-	[self addSubview:timeLabel];
 	
-	UILabel *opponentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0 + kSnapThumbDim, 13.0, 210.0, 18.0)];
-	opponentsLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-	opponentsLabel.textColor = [HONAppDelegate honGrey455Color];
-	opponentsLabel.backgroundColor = [UIColor clearColor];
-	opponentsLabel.text = [NSString stringWithFormat:(isCreator) ? @"You asked for approval @%@" : @"@%@ needs to be verified", (isCreator) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username];
-	[self addSubview:opponentsLabel];
+	CGSize size = CGSizeMake(kSnapLargeDim, kSnapLargeDim * (1 + (1/3)));
+	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];//CGRectMake(0.0, (size.height - size.width) * -0.5, size.width, size.height)];
+	_challengeImageView.userInteractionEnabled = YES;
+	_challengeImageView.alpha = [_challengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL]]];
+	[_imageHolderView addSubview:_challengeImageView];
 	
-	UILabel *tapLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0 + kSnapThumbDim, 30.0, 120.0, 18.0)];
-	tapLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
-	tapLabel.textColor = [HONAppDelegate honGrey710Color];
-	tapLabel.backgroundColor = [UIColor clearColor];
-	tapLabel.text = @"tap & hold to view";
-	[self addSubview:tapLabel];
+	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:challengeVO.creatorVO.avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+									weakSelf.challengeImageView.image = image;
+									[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.challengeImageView.alpha = 1.0; } completion:nil];
+								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+									[weakSelf _imageLoadFallback];
+								}];
 	
-	_hasSeenImageView = [[UIImageView alloc] initWithFrame:CGRectMake(265.0, 9.0, 44.0, 44.0)];
-	_hasSeenImageView.image = [UIImage imageNamed:(_challengeVO.hasViewed) ? @"viewedSnapCheck_nonActive" : @"newSnapDot"];
-	//[self addSubview:_hasSeenImageView];
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
 	
-	UIImageView *arrowImageView = [[UIImageView alloc] initWithFrame:CGRectMake(69.0, 34.0, 18.0, 18.0)];
-	arrowImageView.image = [UIImage imageNamed:(isCreator) ? @"outboundArrow" : @"inboundArrow"];
-	//[self addSubview:arrowImageView];
-}
-
-- (void)toggleLoadMore:(BOOL)isEnabled {
-	if (isEnabled) {
-		[_loadMoreButton addTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_loadMoreButton];
+	UIButton *yayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	yayButton.frame = CGRectMake(256.0, 46.0, 44.0, 44.0);
+	[yayButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_nonActive"] forState:UIControlStateNormal];
+	[yayButton setBackgroundImage:[UIImage imageNamed:@"verifyYayButton_Active"] forState:UIControlStateHighlighted];
+	[yayButton addTarget:self action:@selector(_goYay) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:yayButton];
 	
-	} else {
-		[_loadMoreButton removeTarget:self action:@selector(_goLoadMore) forControlEvents:UIControlEventTouchUpInside];
-		[_loadMoreButton removeFromSuperview];
-	}
-}
-
-- (void)updateHasSeen {
-	_hasSeenImageView.image = [UIImage imageNamed:@"viewedSnapCheck_nonActive"];
+	UIButton *nayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	nayButton.frame = CGRectMake(256.0, 126.0, 44.0, 44.0);
+	[nayButton setBackgroundImage:[UIImage imageNamed:@"verifyNayButton_nonActive"] forState:UIControlStateNormal];
+	[nayButton setBackgroundImage:[UIImage imageNamed:@"verifyNayButton_Active"] forState:UIControlStateHighlighted];
+	[nayButton addTarget:self action:@selector(_goNay) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:nayButton];
+	
+	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 233.0);
+	[self addSubview:dividerImageView];
 }
 
 
 #pragma mark - Navigation
-- (void)_goLoadMore {
-	[self.delegate challengeViewCellLoadMore:self];
+- (void)_goYay {
+	[self.delegate challengeViewCell:self approveUser:YES forChallenge:_challengeVO];
+}
+
+- (void)_goNay {
+	[self.delegate challengeViewCell:self approveUser:NO forChallenge:_challengeVO];
 }
 
 
+#pragma mark - UI Presentation
+-(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan)
+		[self.delegate challengeViewCellShowPreview:self forChallenge:_challengeVO];
+		
+	else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized)
+		[self.delegate challengeViewCellHidePreview:self];
+}
 
-
-//- (void)willTransitionToState:(UITableViewCellStateMask)state {
-//	[super willTransitionToState:state];
-//
-//	NSLog(@"willTransitionToState");
-//
-//	if ((state & UITableViewCellStateShowingDeleteConfirmationMask) == UITableViewCellStateShowingDeleteConfirmationMask) {
-//		for (UIView *subview in self.subviews) {
-//			if ([NSStringFromClass([subview class]) isEqualToString:@"UITableViewCellDeleteConfirmationControl"]) {
-//				UIImageView *deleteBtn = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 80, 40)];
-//				[deleteBtn setImage:[UIImage imageNamed:@"genericGrayButton_nonActive"]];
-//				[[subview.subviews objectAtIndex:0] addSubview:deleteBtn];
-//			}
-//		}
-//	}
-//}
 
 @end

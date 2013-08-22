@@ -13,17 +13,15 @@
 
 
 @protocol HONChallengeViewCellDelegate;
-@interface HONChallengeViewCell : HONGenericRowViewCell
+@interface HONChallengeViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
-
-- (id)initAsLoadMoreCell:(BOOL)isMoreLoadable;
-- (void)toggleLoadMore:(BOOL)isEnabled;
-- (void)updateHasSeen;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, assign) id <HONChallengeViewCellDelegate> delegate;
 @end
 
 @protocol HONChallengeViewCellDelegate
-- (void)challengeViewCellLoadMore:(HONChallengeViewCell *)cell;
+- (void)challengeViewCellShowPreview:(HONChallengeViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)challengeViewCellHidePreview:(HONChallengeViewCell *)cell;
+- (void)challengeViewCell:(HONChallengeViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO;
 @end

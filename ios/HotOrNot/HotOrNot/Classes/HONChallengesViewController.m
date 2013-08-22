@@ -24,11 +24,12 @@
 #import "HONAddContactsViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONVerifyOverlayView.h"
+#import "HONVerifyHeaderView.h"
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONChallengeViewCellDelegate, HONVerifyOverlayViewDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONVerifyOverlayViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *recentChallenges;
@@ -167,7 +168,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
 			
 			_recentChallenges = [NSMutableArray array];
 			_olderChallenges = [NSMutableArray array];
@@ -204,83 +205,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[_refreshButtonView toggleRefresh:NO];
 		if (_progressHUD == nil)
 			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.mode = MBProgressHUDModeCustomView;
-		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
-		[_progressHUD show:NO];
-		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
-		_progressHUD = nil;
-	}];
-}
-
-- (void)_retrieveNextChallengeBlock {
-	NSString *prevIDs = @"";
-	for (HONChallengeVO *vo in _recentChallenges)
-		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorVO.userID) ? ((HONOpponentVO *)[vo.challengers lastObject]).userID : vo.creatorVO.userID]];
-	
-	
-	for (HONChallengeVO *vo in _olderChallenges)
-		prevIDs = [prevIDs stringByAppendingString:[NSString stringWithFormat:@"%d|", ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == vo.creatorVO.userID) ? ((HONOpponentVO *)[vo.challengers lastObject]).userID : vo.creatorVO.userID]];
-	
-	
-	//NSLog(@"NEXT\n%@\n%@", [prevIDs substringToIndex:[prevIDs length] - 1], _lastDate);
-	
-	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-									[NSString stringWithFormat:@"%d", 12], @"action",
-									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
-									[prevIDs substringToIndex:[prevIDs length] - 1], @"prevIDs",
-									_lastDate, @"datetime",
-									nil];
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [params objectForKey:@"action"]);
-	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
-		NSError *error = nil;
-		if (error != nil) {
-			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
-			
-			[_refreshButtonView toggleRefresh:NO];
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-			
-		} else {
-			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
-			
-			//[_challenges removeLastObject];
-			for (NSDictionary *serverList in parsedLists) {
-				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
-				
-				if (vo != nil) {
-					if ([[NSDate date] timeIntervalSinceDate:vo.updatedDate] < 172800)
-						[_recentChallenges addObject:vo];
-					
-					else
-						[_olderChallenges addObject:vo];
-				}
-			}
-			
-			_lastDate = ((HONChallengeVO *)[_olderChallenges lastObject]).addedDate;
-			[_tableView reloadData];
-			
-//			HONChallengeViewCell *cell = (HONChallengeViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:([_olderChallenges count] - 1) inSection:0]];
-//			[cell toggleLoadMore:([parsedLists count] > 1)];
-			
-			[_refreshButtonView toggleRefresh:NO];
-			if (_progressHUD != nil) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
-			}
-		}
-		
-	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
-		
-		[_refreshButtonView toggleRefresh:NO];
 		_progressHUD.minShowTime = kHUDTime;
 		_progressHUD.mode = MBProgressHUDModeCustomView;
 		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -384,8 +308,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_emptyImageView.hidden = YES;
 	[self.view addSubview:_emptyImageView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 10.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 14.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
 	_tableView.delegate = self;
@@ -395,11 +319,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_goTap:)];
-	[self.view addGestureRecognizer:tapGestureRecognizer];
-	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	[_tableView addGestureRecognizer:lpGestureRecognizer];
+//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//	[_tableView addGestureRecognizer:lpGestureRecognizer];
 	
 	[_refreshButtonView toggleRefresh:YES];
 }
@@ -467,11 +388,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 #pragma mark - UI Presentation
-- (void)_goTap:(UITapGestureRecognizer *)tapGestureRecognizer {
-	//CGPoint touchPoint =
-}
-
-
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	CGPoint touchPoint = [lpGestureRecognizer locationInView:_tableView];
 	NSIndexPath *indexPath = [_tableView indexPathForRowAtPoint:touchPoint];
@@ -520,19 +436,72 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 
-#pragma mark - ChallengeCell Delegates
-- (void)challengeViewCellLoadMore:(HONChallengeViewCell *)cell {
-	[[Mixpanel sharedInstance] track:@"Activity - Load More"
+#pragma mark - VerifiyHeader Delegates
+- (void)verifyHeaderView:(HONVerifyHeaderView *)cell showCreatorTimeline:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	[[Mixpanel sharedInstance] track:@"Verify Header - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"creator", nil]];
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:challengeVO.creatorVO.username];
+}
+
+#pragma mark - ChallengeCell Delegates
+- (void)challengeViewCellShowPreview:(HONChallengeViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
 	
-	[self _retrieveNextChallengeBlock];
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:_challengeVO];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+}
+
+- (void)challengeViewCellHidePreview:(HONChallengeViewCell *)cell {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
+	}
+	
+	_verifyOverlayView = [[HONVerifyOverlayView alloc] initWithChallenge:_challengeVO];
+	_verifyOverlayView.delegate = self;
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_verifyOverlayView];
+}
+
+- (void)challengeViewCell:(HONChallengeViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
+	NSLog(@"APPROVE:[%@]", challengeVO.dictionary);
+	
+	_challengeVO = challengeVO;
+	
+	if (isApproved) {
+		[[Mixpanel sharedInstance] track:@"Activity - Approve"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@"This person will be approved"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:4];
+		[alertView show];
+		
+	} else {
+		[[Mixpanel sharedInstance] track:@"Activity - Disprove"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+		
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+															message:@"This person will be flagged"
+														   delegate:self
+												  cancelButtonTitle:@"No"
+												  otherButtonTitles:@"Yes", nil];
+		[alertView setTag:3];
+		[alertView show];
+	}
 }
 
 
@@ -596,154 +565,48 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	//return ((section == 0) ? [_recentChallenges count] : [_olderChallenges count]);
-	return ([_challenges count]);
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return (1);
 }
 
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	UIImageView *headerView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableHeaderBackground"]];
-//	
-//	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 6.0, 310.0, 20.0)];
-//	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-//	label.textColor = [HONAppDelegate honGreenTextColor];
-//	label.backgroundColor = [UIColor clearColor];
-//	label.text = (section == 0) ? @"Recent" : @"Older";
-//	[headerView addSubview:label];
-//	
-//	return (headerView);
-//}
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return ([_challenges count]);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	HONVerifyHeaderView *headerView = [[HONVerifyHeaderView alloc] initWithChallenge:(HONChallengeVO *)[_challenges objectAtIndex:section]];
+	headerView.delegate = self;
+	
+	return (headerView);
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-//	if (indexPath.section == 0) {
-//		HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-//		
-//		if (cell == nil)
-//			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
-//		
-//		cell.delegate = self;
-//		cell.challengeVO = [_recentChallenges objectAtIndex:indexPath.row];
-//		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-//		return (cell);
-//		
-//	} else {
-//		HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-//		
-//		if (cell == nil)
-//			cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
-//		
-//		if (indexPath.row < [_olderChallenges count])
-//			cell.challengeVO = [_olderChallenges objectAtIndex:indexPath.row];
-//		
-//		cell.delegate = self;
-//		[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
-//		return (cell);
-//	}
-	
 	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONChallengeViewCell alloc] initAsLoadMoreCell:NO];
+		cell = [[HONChallengeViewCell alloc] init];
 	
 	cell.delegate = self;
-	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
-	[cell setSelectionStyle:UITableViewCellSelectionStyleGray];
+	cell.challengeVO = [_challenges objectAtIndex:indexPath.section];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	return (cell);
 }
 
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == [_challenges count] - 1) ? 333.0 : 286.0);//return ((indexPath.section == 1 && indexPath.row == [_olderChallenges count] - 1) ? kOrthodoxTableCellHeight * 2.0 : kOrthodoxTableCellHeight);
+	return ((indexPath.section == [_challenges count] - 1) ? 283.0 : 236.0);
 }
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//	return (kOrthodoxTableHeaderHeight);
-//}
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (56.0);
+}
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (indexPath.section == 0) {
-		HONChallengeVO *vo = [_recentChallenges objectAtIndex:indexPath.row];
-		if ([vo.status isEqualToString:@"Created"] || [vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"])
-			return (indexPath);
-		
-		else
-			return (nil);
-		
-	} else {
-		if (indexPath.row < [_olderChallenges count]) {
-			HONChallengeVO *vo = [_olderChallenges objectAtIndex:indexPath.row];
-			if ([vo.status isEqualToString:@"Created"] || [vo.status isEqualToString:@"Waiting"] || [vo.status isEqualToString:@"Accept"] || [vo.status isEqualToString:@"Started"] || [vo.status isEqualToString:@"Completed"])
-				return (indexPath);
-			
-			else
-				return (nil);
-		}
-	}
-	
 	return (nil);
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:YES];
-	
-	HONChallengeVO *vo = (indexPath.section == 0) ? [_recentChallenges objectAtIndex:indexPath.row] : [_olderChallenges objectAtIndex:indexPath.row];
-	_challengeVO = vo;
-	//NSLog(@"STATUS:[%@]", vo.status);
-	
-	[[Mixpanel sharedInstance] track:@"Activity - Select Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
-	
-	[self _updateChallengeAsSeen];
-	[(HONChallengeViewCell *)[tableView cellForRowAtIndexPath:indexPath] updateHasSeen];
-	
-	
-	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-															 delegate:self
-													cancelButtonTitle:@"Cancel"
-											   destructiveButtonTitle:@"Report Abuse"
-													otherButtonTitles:@"Approve", nil];
-	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-	[actionSheet setTag:1];
-	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-}
 
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-	// return YES if you want the specified item to be editable.
-	return ((indexPath.section == 0) || (indexPath.section == 1 && indexPath.row < [_olderChallenges count]));
-}
-
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		
-		HONChallengeVO *vo = (indexPath.section == 0) ? (HONChallengeVO *)[_recentChallenges objectAtIndex:indexPath.row] : (HONChallengeVO *)[_olderChallenges objectAtIndex:indexPath.row];
-		
-		[[Mixpanel sharedInstance] track:@"Activity - Swipe Row"
-									 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-													 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-													 [NSString stringWithFormat:@"%d - %@", vo.challengeID, vo.subjectName], @"challenge", nil]];
-		
-		_idxPath = indexPath;
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Delete Challenge"
-															message:@"Do you want to remove this challenge?"
-														   delegate:self
-												  cancelButtonTitle:@"Report Abuse"
-												  otherButtonTitles:@"Yes", @"No", nil];
-		[alertView setTag:indexPath.section];
-		[alertView show];
-	}
-}
-
-
-#pragma mark - AlerView Delegates
+#pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 	NSLog(@"BUTTON INDEX:[%d]", buttonIndex);
 	

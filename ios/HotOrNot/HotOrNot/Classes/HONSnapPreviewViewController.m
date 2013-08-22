@@ -146,15 +146,12 @@
 	__weak typeof(self) weakSelf = self;
 	self.view.backgroundColor = [UIColor blackColor];
 	
-	NSMutableString *imgPrefix = [_opponentVO.imagePrefix mutableCopy];
-	[imgPrefix replaceOccurrencesOfString:@".jpg" withString:@"" options:0 range:NSMakeRange(0, [imgPrefix length])];
-	
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	NSTimeInterval diff = [_challengeVO.addedDate timeIntervalSinceDate:[dateFormat dateFromString:@"2013-08-20 00:00:00"]];
 	BOOL isOriginalImageAvailable = ([[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue] >= 11595 && diff > 0);
 	
-	NSString *imageURL = [NSString stringWithFormat:@"%@%@.jpg", imgPrefix, (isOriginalImageAvailable) ? @"_o" : @""];
+	NSString *imageURL = (isOriginalImageAvailable) ? _opponentVO.imagePrefix : _opponentVO.avatarURL;
 	CGRect frame = (isOriginalImageAvailable) ? CGRectMake(((self.view.frame.size.height * 0.75) - self.view.frame.size.width) * -0.5, 0.0, (self.view.frame.size.height * 0.75), self.view.frame.size.height) : CGRectMake((320.0 - kSnapLargeDim) * 0.5, ([UIScreen mainScreen].bounds.size.height - kSnapLargeDim) * 0.5, kSnapLargeDim, kSnapLargeDim);
 	
 	_imageView = [[UIImageView alloc] initWithFrame:frame];

@@ -24,12 +24,12 @@
 		
 		self.backgroundColor = [UIColor whiteColor];
 		
-		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 11.0, 38.0, 38.0)];
+		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 9.0, 38.0, 38.0)];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:creatorAvatarImageView];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 12.0, 180.0, 20.0)];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 10.0, 180.0, 20.0)];
 		subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 		subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
@@ -74,19 +74,6 @@
 	}
 	
 	return (self);
-}
-
-- (id)initWithFrame:(CGRect)frame {
-	if ((self = [super initWithFrame:frame])) {
-		
-	}
-	
-	return (self);
-}
-
-
-#pragma mark - public APIs
-- (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 }
 
 

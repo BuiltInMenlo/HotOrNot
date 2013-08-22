@@ -179,10 +179,73 @@
 		// a user's
 	} else if (_timelineType == HONTimelineTypeSingleUser) {
 		[params setObject:_username forKey:@"username"];
+		[params setObject:@"1" forKey:@"p"];
 		
 		// a user's friends
 	} else if (_timelineType == HONTimelineTypeFriends) {
 	}
+	
+	//NSLog(@"PARAMS:[%@]", params);
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			
+			_challenges = [NSMutableArray new];
+			
+			for (NSDictionary *serverList in challengesResult) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+				
+				if (vo != nil) {
+					if (vo.expireSeconds != 0)
+						[_challenges addObject:vo];
+				}
+			}
+			
+			if (_timelineType == HONTimelineTypeOpponents) {
+				HONChallengeVO *vo = (HONChallengeVO *)[_challenges lastObject];
+				self.navigationController.navigationBar.topItem.title = [NSString stringWithFormat:@"@%@", ([((HONOpponentVO *)[vo.challengers lastObject]).username length] == 0) ? vo.creatorVO.username : (vo.creatorVO.userID == [[_challengerDict objectForKey:@"user1"] intValue] && vo.creatorVO.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? vo.creatorVO.username : ((HONOpponentVO *)[vo.challengers lastObject]).username];
+			}
+			
+			[_tableView reloadData];
+		}
+		
+		[_refreshButtonView toggleRefresh:NO];
+		if (_progressHUD != nil) {
+			[_progressHUD hide:YES];
+			_progressHUD = nil;
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
+		
+		[_refreshButtonView toggleRefresh:NO];
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)retrieveAllSingleUserChallenges {
+	NSMutableDictionary *params = [NSMutableDictionary dictionary];
+	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[params setObject:[NSString stringWithFormat:@"%d", _timelineType] forKey:@"action"];
+	[params setObject:_username forKey:@"username"];
+	[params setObject:(_isPublic) ? @"N" : @"Y" forKey:@"isPrivate"];
 	
 	//NSLog(@"PARAMS:[%@]", params);
 	

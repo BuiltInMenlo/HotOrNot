@@ -856,7 +856,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
 	
-	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"activity_banner"];
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
