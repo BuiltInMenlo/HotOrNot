@@ -32,9 +32,10 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function getChallengesWithChallenger(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if ( !empty( $input->userID ) && !empty( $input->challengerID ) ){
+            $userId = $this->resolveUserId($input->userID);
 		    $isPrivate = !empty( $input->isPrivate ) ? true : false;
 		    $votes = new BIM_App_Votes();
-            return $votes->getChallengesWithChallenger($input->userID, $input->challengerID, $isPrivate );
+            return $votes->getChallengesWithChallenger($userId, $input->challengerID, $isPrivate );
 		}
 		return array();
     }
@@ -52,8 +53,11 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function getChallengesForProfile(){
         $input = (object) ($_POST ? $_POST : $_GET);
 		if (isset($input->username)){
-		    $votes = new BIM_App_Votes();
-			return $votes->getChallengesForProfile($input->username);
+		    $user = BIM_Model_User::getByUsername( $input->username );
+		    if( $user && $user->isExtant() ){
+    		    $votes = new BIM_App_Votes();
+    			return $votes->getChallengesForProfile($input->username);
+		    }
 		}
 		return array();
     }
@@ -84,8 +88,9 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
         $uv = null;
         $input = (object) ($_POST ? $_POST : $_GET);
 		if ( !empty( $input->challengeID ) && !empty( $input->userID ) && !empty( $input->challengerID ) ){
+            $userId = $this->resolveUserId($input->userID);
 		    $votes = new BIM_App_Votes();
-		    $uv = $votes->upvoteChallenge( $input->challengeID, $input->userID, $input->challengerID );
+		    $uv = $votes->upvoteChallenge( $input->challengeID, $userId, $input->challengerID );
 		}
 		return $uv;
     }
@@ -105,6 +110,7 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
     public function getChallengesWithFriends(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if( !empty( $input->userID ) ){
+            $input->userID = $this->resolveUserId($input->userID);
             $votes = new BIM_App_Votes();
             return $votes->getChallengesWithFriends( $input );
         }

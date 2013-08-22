@@ -24,6 +24,7 @@ class BIM_Controller_Challenges extends BIM_Controller_Base {
     }
     
     public function updatePreviewed(){
+        // SECHOLE : needs a userid check
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->challengeID)){
             $challenges = new BIM_App_Challenges();

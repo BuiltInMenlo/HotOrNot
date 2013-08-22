@@ -29,7 +29,8 @@ class BIM_Controller_Search extends BIM_Controller_Base {
     public function getSnappedUsers(){
         $input = (object) ($_POST ? $_POST : $_GET);
 		if (!empty($input->userID)){
-            $search = new BIM_App_Search;
+            $input->userID = $this->resolveUserId( $input->userID );
+		    $search = new BIM_App_Search;
 		    return $search->getSnappedUsers($input->userID);
 		}
     }

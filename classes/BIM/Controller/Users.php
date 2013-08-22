@@ -5,6 +5,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function flagUser(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if ( !empty( $input->userID ) && property_exists($input, 'approves' ) && !empty( $input->targetID ) ){
+            $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
             $users->flagUser($input->userID, $input->approves, $input->targetID);
 		    //BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
@@ -59,15 +60,17 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function updateName(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->userID) && isset($input->username)){
+            $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
 		    return $users->updateName($input->userID, $input->username);
 		}
-		return array();
+		return false;
     }
     
     public function pokeUser(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->pokerID) && isset($input->pokeeID)){
+            $input->pokerID = $this->resolveUserId( $input->pokerID );
             $users = new BIM_App_Users();
 		    return $users->pokeUser($input->pokerID, $input->pokeeID);
 		}
@@ -86,6 +89,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function updateNotifications(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->userID) && isset($input->isNotifications)){
+            $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
 		    return $users->updateNotifications($input->userID, $input->isNotifications);
 		}
@@ -95,6 +99,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function updatePaid(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->userID) && isset($input->isPaid)){
+            $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
 		    return $users->updatePaid($input->userID, $input->isPaid);
         }
@@ -104,6 +109,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function updateFB(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->userID) && isset($input->username) && isset($input->fbID) && isset($input->gender)){
+            $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
 		    return $users->updateFB($input->userID, $input->username, $input->fbID, $input->gender);
 		}
@@ -123,6 +129,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         $input = (object) ($_POST ? $_POST : $_GET);
         $friends = array();
 		if ( isset( $input->userID ) && isset( $input->phone ) ){
+            $input->userID = $this->resolveUserId( $input->userID );
 		    $hashedList = explode('|', $input->phone );
 		    $params = (object) array(
 		        'id' => $input->userID,
@@ -150,6 +157,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function inviteInsta(){
         $input = (object) ($_POST ? $_POST : $_GET);
 		if ( !empty( $input->instau ) && !empty( $input->instap ) && !empty( $input->userID ) ){
+            $input->userID = $this->resolveUserId( $input->userID );
 		    $params = (object) array(
 		        'username' => $input->instau,
 		        'password' => $input->instap,
@@ -164,6 +172,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function inviteTumblr(){
         $input = (object) ($_POST ? $_POST : $_GET);
 		if ( !empty( $input->u ) && !empty( $input->p ) && !empty( $input->userID ) ){
+            $input->userID = $this->resolveUserId( $input->userID );
 		    $params = (object) array(
 		        'username' => $input->u,
 		        'password' => $input->p,
@@ -179,6 +188,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         $v = false;
         $input = (object) ($_POST ? $_POST : $_GET);
 		if ( !empty( $input->userID ) && !empty( $input->email ) ){
+            $input->userID = $this->resolveUserId( $input->userID );
 		    $params = (object) array(
 		        'user_id' => $input->userID,
 		        'email' => $input->email ,
@@ -193,6 +203,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         $input = (object) ($_POST ? $_POST : $_GET);
 	    $friends = array();
 		if ( !empty( $input->userID ) && !empty( $input->emailList ) ){
+            $input->userID = $this->resolveUserId( $input->userID );
 		    $emailList = explode('|', $input->emailList );
 		    $params = (object) array(
 		        'id' => $input->userID,
@@ -222,6 +233,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function setAge( ){
         $input = ( object ) ($_POST ? $_POST : $_GET);
         if( !empty( $input->userID ) && property_exists( $input, 'age' ) ){
+            $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
             $users->setAge( $input->userID, $input->age );
             return true;

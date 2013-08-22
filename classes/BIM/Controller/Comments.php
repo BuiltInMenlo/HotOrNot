@@ -3,6 +3,7 @@
 class BIM_Controller_Comments extends BIM_Controller_Base {
     
     public function deleteComment(){
+        return true; // needs a user id check
         $input = (object) ($_POST ? $_POST : $_GET);
 		if (isset($input->commentID)){
 		    $comments = new BIM_App_Comments();
@@ -11,6 +12,7 @@ class BIM_Controller_Comments extends BIM_Controller_Base {
     }
     
     public function flagComment(){
+        return true; // needs a user id check
         $input = (object) ($_POST ? $_POST : $_GET);
         if (isset($input->commentID)){
 		    $comments = new BIM_App_Comments();
@@ -30,6 +32,7 @@ class BIM_Controller_Comments extends BIM_Controller_Base {
         $uv = null;
         $input = (object) ($_POST ? $_POST : $_GET);
 		if (isset($input->challengeID) && isset($input->userID) && isset($input->text)){
+		    $input->userID = $this->resolveUserId($input->userID);
 		    $comments = new BIM_App_Comments();
 		    $uv = $comments->submitCommentForChallenge( $input->challengeID, $input->userID, $input->text );
 		}
