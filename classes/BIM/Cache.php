@@ -36,6 +36,8 @@ class BIM_Cache {
     
     public function get( $key, $local = true ){
         $data = false;
+        //$d = debug_backtrace();
+        //error_log( print_r( array($key, $d[2]['function'], $d[1]['function'] ), 1) );
         if( !empty( self::$cache[$key] ) && $local ){
             $data = self::$cache[$key];
         }

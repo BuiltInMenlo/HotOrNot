@@ -3,6 +3,8 @@ class BIM_Utils{
     
     protected static $user = null;
     protected static $request = null;
+    protected static $adid = null;
+    protected static $deviceToken = null;
     
     public static function hashMobileNumber( $number ){
         $c = BIM_Config::sms();
@@ -95,26 +97,16 @@ class BIM_Utils{
 	// in a cookie named as named in the onfig
 	public static function getSessionUser(){
 	    if( ! self::$user ){
-	        $hmac = !empty($_SERVER['HTTP_HMAC']) ? $_SERVER['HTTP_HMAC'] : '';
 	        $sessionConf = BIM_Config::session();
-	        if( $hmac && $sessionConf->use ){
-	            list( $hmac, $token ) = explode('+',$hmac);
-	            $hash = hash_hmac('sha256', $token, "YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ");
-	            if( $hash == $hmac ){
-	                list( $deviceToken, $advertisingId ) = explode('+', $token );
-	                $user = BIM_Model_User::getByAdvertidingId($advertisingId);
-	                if( ! $user->isExtant() ){
-    	                $user = BIM_Model_User::getByToken($deviceToken);
-    	                if( !$user->isExtant() ){
-        	                $user = null;
-        	            } else {
-        	                // we are here because our new identifier was not recognized
-        	                // so we add it
-        	                $user->updateAdvertisingId( $advertisingId );
-        	            }
-	                }
-                    self::$user = $user;
-	            }
+	        if( $sessionConf->use ){
+                $user = BIM_Model_User::getByToken( self::getAdvertisingId() );
+                if( !$user || !$user->isExtant() ){
+	                $user = BIM_Model_User::getByToken( self::getDeviceToken() );
+	                if( !$user->isExtant() ){
+    	                $user = null;
+    	            }
+                }
+                self::$user = $user;
 	        }
 	        /*
     	    $conf = BIM_Config::session();
@@ -132,6 +124,33 @@ class BIM_Utils{
     	    */
 	    }
 	    return self::$user;
+	}
+	
+	public static function getAdvertisingId(){
+	    if( !self::$adid ){
+	        self::processHMAC();
+	    }
+        return self::$adid;
+	}
+	
+	public static function getDeviceToken(){
+	    if( !self::$deviceToken ){
+	        self::processHMAC();
+	    }
+        return self::$deviceToken;
+	}
+	
+	protected static function processHMAC(){
+        $hmac = !empty($_SERVER['HTTP_HMAC']) ? $_SERVER['HTTP_HMAC'] : '';
+        if( $hmac ){
+            list( $hmac, $token ) = explode('+', $hmac, 2);
+            $hash = hash_hmac('sha256', $token, "YARJSuo6/r47LczzWjUx/T8ioAJpUKdI/ZshlTUP8q4ujEVjC0seEUAAtS6YEE1Veghz+IDbNQ");
+            if( $hash == $hmac ){
+                list( $deviceToken, $advertisingId ) = explode('+', $token, 2 );
+                self::$adid = $advertisingId;
+                self::$deviceToken = $deviceToken;
+            }
+        }
 	}
 	
 	public static function setSession( $userId ){

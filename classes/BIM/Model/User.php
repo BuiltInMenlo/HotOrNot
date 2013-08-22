@@ -77,7 +77,14 @@ class BIM_Model_User{
         $dao->setAgeRange( $this->id, $ageRange );
         $this->purgeFromCache();
     }
-	
+    
+    public function setAdvertisingId( $adId ){
+        $this->adid = $adId;
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->setAdvertisingId( $this->id, $adId );
+        $this->purgeFromCache();
+    }
+    
     public static function isVerified( $userId ){
         $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
         $res = $dao->getPhoneList( (object) array('id' => $userId ) );
@@ -108,7 +115,7 @@ class BIM_Model_User{
         return ($this->img_url);
     }
     
-    public static function create( $token ){
+    public static function create( $token, $adId ){
 			// default names
 			$defaultName_arr = array(
 				"snap4snap",
@@ -132,7 +139,7 @@ class BIM_Model_User{
 			$username = $defaultName_arr[$rnd_ind] . time();
         
 			$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-			$id = $dao->create($username, $token);
+			$id = $dao->create($username, $token, $adId);
 			return self::get($id);
     }
     
@@ -165,10 +172,13 @@ class BIM_Model_User{
         }
     }
     
-    public function cacheIdByToken(){
+    public function cacheIdByToken( $token = null){
         $cache = new BIM_Cache( BIM_Config::cache() );
-        if( !empty($this->device_token) ){
-            $cache->set( $this->device_token, $this->id );
+        if(!$token && !empty($this->device_token) ){
+            $token = $this->device_token;
+        }
+        if( $token ){
+            $cache->set( $token, $this->id );
         }
     }
     
@@ -336,10 +346,12 @@ class BIM_Model_User{
             $me = self::get( $id, $forceDb );
         } else {
             $id = $dao->getIdByToken( $token );
-            $me = self::get( $id, $forceDb );
-            if( $me->isExtant() ){
-                // this puts us in the cache
-                $me->cacheIdByToken();
+            if( $id ){
+                $me = self::get( $id, $forceDb );
+                if( $me->isExtant() ){
+                    // this puts us in the cache
+                    $me->cacheIdByToken( $token );
+                }
             }
         }
         return $me;

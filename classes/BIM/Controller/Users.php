@@ -5,7 +5,9 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function flagUser(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if ( !empty( $input->userID ) && property_exists($input, 'approves' ) && !empty( $input->targetID ) ){
-		    BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
+            $users = new BIM_App_Users();
+            $users->flagUser($input->userID, $input->approves, $input->targetID);
+		    //BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
     		return array(
     			'id' => $input->userID,
     			'mail' => true
@@ -35,7 +37,8 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) && !empty( $input->age ) && !empty( $input->password ) ){
             if( BIM_Utils::ageOK( $input->age ) ){
                 $userId = $this->resolveUserId( $input->userID );
-                BIM_Jobs_Users::queueFirstRunComplete($userId);
+                $this->firstRunComplete();
+                // BIM_Jobs_Users::queueFirstRunComplete($userId);
                 $users = new BIM_App_Users();
 			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age, $input->password );
             }

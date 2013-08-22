@@ -133,12 +133,15 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     
     public function getIdByToken( $token ){
         $id = null;
-        $sql = "select id from `hotornot-dev`.tblUsers where device_token = ?";
+        $sql = "select id from `hotornot-dev`.tblUsers where adid = ?";
         $params = array( $token );
+        
         $stmt = $this->prepareAndExecute( $sql, $params );
-        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
-        if( $data ){
-            $id = $data[0]->id;
+        $id = $stmt->fetchColumn( 0 );
+        if( !$id ){
+            $sql = "select id from `hotornot-dev`.tblUsers where device_token = ?";
+            $stmt = $this->prepareAndExecute( $sql, $params );
+            $id = $stmt->fetchColumn( 0 );
         }
         return $id;
     }
@@ -265,15 +268,15 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         return $this->lastInsertId;
     }
     
-    public function create( $username, $deviceToken ){
+    public function create( $username, $deviceToken, $adId ){
 		// add new user			
 		$query = "
 			INSERT INTO `hotornot-dev`.tblUsers 
-			( username, device_token, fb_id, gender, bio, website, paid, points, notifications, last_login, added) 
-			VALUES ( ?, ?, '', 'N', '', '', 'N', '0', 'Y', CURRENT_TIMESTAMP, NOW() )
+			( username, device_token, fb_id, gender, bio, website, paid, points, notifications, last_login, added, adid ) 
+			VALUES ( ?, ?, '', 'N', '', '', 'N', '0', 'Y', CURRENT_TIMESTAMP, NOW(), ? )
 		";
 		
-        $params = array( $username, $deviceToken );
+        $params = array( $username, $deviceToken, $adId );
         $stmt = $this->prepareAndExecute($query, $params);
         
 		return $this->lastInsertId;
@@ -340,6 +343,12 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 	public function setAgeRange( $userId, $ageRange ){
 	    $sql = 'update `hotornot-dev`.tblUsers set age = ? where id = ? ';
 	    $params = array( $ageRange, $userId );
+	    $this->prepareAndExecute( $sql, $params );
+	}
+	
+	public function setAdvertisingId( $userId, $adId ){
+	    $sql = 'update `hotornot-dev`.tblUsers set adid = ? where id = ? ';
+	    $params = array( $adId, $userId );
 	    $this->prepareAndExecute( $sql, $params );
 	}
 }

@@ -94,22 +94,19 @@ class BIM_Controller{
 	 * 		OR we find a valid session user 
 	 */
 	protected function sessionOK(){
-        
-        $newUser = true;
-        /*
-        $request = BIM_Utils::getRequest();
-        
-        if( strtolower( $request->controllerClass ) == 'bim_controller_users' 
-                && strtolower( $request->method ) == 'submitnewuser' 
-        )
-        {
-            $newUser = true;
-        }
-        */
-        
+	    $OK = true;
         $sessionConf = BIM_Config::session();
-        
-        return ( $newUser || empty( $sessionConf->use ) || BIM_Utils::getSessionUser() );
+	    if( !empty( $sessionConf->use ) ){
+	        
+            $request = BIM_Utils::getRequest();
+            $newUser = (strtolower( $request->controllerClass ) == 'bim_controller_users') 
+                            && ( strtolower( $request->method ) == 'submitnewuser' );
+                            
+            if( $newUser || BIM_Utils::getSessionUser() ){
+                $OK = true;
+            }
+	    }
+        return $OK;
 	}
 
 }
