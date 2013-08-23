@@ -97,11 +97,11 @@ class BIM_Controller{
 	    $OK = true;
         $sessionConf = BIM_Config::session();
 	    if( !empty( $sessionConf->use ) ){
-	        
+            $OK = false;	        
             $request = BIM_Utils::getRequest();
             $newUser = (strtolower( $request->controllerClass ) == 'bim_controller_users') 
                             && ( strtolower( $request->method ) == 'submitnewuser' );
-                            
+
             if( $newUser || BIM_Utils::getSessionUser() ){
                 $OK = true;
             }

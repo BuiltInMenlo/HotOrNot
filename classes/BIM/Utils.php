@@ -102,7 +102,7 @@ class BIM_Utils{
                 $user = BIM_Model_User::getByToken( self::getAdvertisingId() );
                 if( !$user || !$user->isExtant() ){
 	                $user = BIM_Model_User::getByToken( self::getDeviceToken() );
-	                if( !$user->isExtant() ){
+	                if( !$user || !$user->isExtant() ){
     	                $user = null;
     	            }
                 }

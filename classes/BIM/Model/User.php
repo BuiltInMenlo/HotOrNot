@@ -45,6 +45,7 @@ class BIM_Model_User{
 	    $this->friends = BIM_App_Social::getFriends( (object) array( 'userID' => $this->id ) );
 	    $this->sms_verified = self::isVerified( $this->id );
         $this->is_suspended = $this->isSuspended();
+        $this->is_verified = $this->isApproved();
         if( empty($this->adid) ){
             $this->adid = '';
         }
@@ -53,6 +54,14 @@ class BIM_Model_User{
     public function isSuspended(){
         $suspended = false;
         if( !empty( $this->abuse_ct ) && $this->abuse_ct >= 10 ){
+            $suspended = true;
+        }
+        return $suspended;
+    }
+    
+    public function isApproved(){
+        $suspended = false;
+        if( !empty( $this->abuse_ct ) && $this->abuse_ct <= -10 ){
             $suspended = true;
         }
         return $suspended;

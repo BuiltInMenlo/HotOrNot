@@ -245,15 +245,18 @@ class BIM_App_Users extends BIM_App_Base{
 	protected function sendApprovePush( $targetId ){
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
-            $msg = "Someone thinks you are Real! ";
+            if( $target->isApproved() ){
+                $msg = "The network has approved you!";
+            } else {
+                $msg = "Someone thinks you are Real!";
+            }
             $push = array(
-                "device_tokens" =>  $target->device_token, 
+                "device_tokens" => $target->device_token, 
                 "aps" =>  array(
-                    "alert" =>  $msg,
-                    "sound" =>  "push_01.caf"
+                    "alert" => $msg,
+                    "sound" => "push_01.caf"
                 )
             );
-            
             BIM_Jobs_Utils::queuePush($push);
         }
 	}
