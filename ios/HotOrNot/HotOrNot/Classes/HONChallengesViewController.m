@@ -23,13 +23,13 @@
 #import "HONInviteNetworkViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONSnapPreviewViewController.h"
-#import "HONVerifyOverlayView.h"
+#import "HONChallengeOverlayView.h"
 #import "HONVerifyHeaderView.h"
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONVerifyOverlayViewDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONChallengeOverlayViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *cells;
@@ -37,7 +37,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic, strong) NSDate *lastDate;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
-@property (nonatomic, strong) HONVerifyOverlayView *verifyOverlayView;
+@property (nonatomic, strong) HONChallengeOverlayView *challengeOverlayView;
 @property (nonatomic, strong) UIImageView *emptyImageView;
 @property (nonatomic, strong) NSIndexPath *idxPath;
 @property (nonatomic, strong) NSMutableArray *friends;
@@ -168,6 +168,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
 			
+			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
 				
@@ -233,6 +234,31 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+	}];
+}
+
+- (void)_upvoteChallenge:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 6], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
+							[NSString stringWithFormat:@"%d", userID], @"challengerID",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
 	}];
 }
 
@@ -425,10 +451,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		_snapPreviewViewController = nil;
 	}
 	
-	_verifyOverlayView = [[HONVerifyOverlayView alloc] initWithChallenge:_challengeVO];
-	_verifyOverlayView.delegate = self;
+	_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_challengeVO.creatorVO];
+	_challengeOverlayView.delegate = self;
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_verifyOverlayView];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
 }
 
 - (void)challengeViewCell:(HONChallengeViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
@@ -452,8 +478,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-															message:@"This person will be approved"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[NSString stringWithFormat:@"Are you sure @%@ matches their age?", _challengeVO.creatorVO.username]
 														   delegate:self
 												  cancelButtonTitle:@"No"
 												  otherButtonTitles:@"Yes", nil];
@@ -466,8 +492,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-															message:@"This person will be flagged"
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+															message:[NSString stringWithFormat:@"Are you sure @%@ does not match their age?", _challengeVO.creatorVO.username]
 														   delegate:self
 												  cancelButtonTitle:@"No"
 												  otherButtonTitles:@"Yes", nil];
@@ -477,61 +503,76 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 
-#pragma mark - VerfiyOverlay Delegates
-- (void)verifyOverlayView:(HONVerifyOverlayView *)cameraOverlayView approve:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
-	NSLog(@"APPROVE:[%@]", challengeVO.dictionary);
-	
+#pragma mark - ChallengeOverlay Delegates
+- (void)challengeOverlayViewClose:(HONChallengeOverlayView *)challengeOverlayView {
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
+	}
+}
+
+- (void)challengeOverlayViewFlag:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	if (isApproved) {
-		[[Mixpanel sharedInstance] track:@"Activity - Approve"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-															message:@"This person will be approved"
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:4];
-		[alertView show];
-		
-	} else {
-		[[Mixpanel sharedInstance] track:@"Activity - Disprove"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
-		
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-															message:@"This person will be flagged"
-														   delegate:self
-												  cancelButtonTitle:@"No"
-												  otherButtonTitles:@"Yes", nil];
-		[alertView setTag:3];
-		[alertView show];
+	[[Mixpanel sharedInstance] track:@"Activity - Disprove"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+														message:[NSString stringWithFormat:@"Are you sure @%@ does not match their age?", _challengeVO.creatorVO.username]
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:3];
+	[alertView show];
+	
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
 	}
 }
 
-- (void)verifyOverlayViewClose:(HONVerifyOverlayView *)verifyOverlayView {
-	if (_verifyOverlayView != nil) {
-		[_verifyOverlayView removeFromSuperview];
-		_verifyOverlayView = nil;
-	}
-}
-
-- (void)verifyOverlayView:(HONVerifyOverlayView *)verifyOverlayView showProfile:(HONOpponentVO *)opponentVO {
+- (void)challengeOverlayViewProfile:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
 	[[Mixpanel sharedInstance] track:@"Activity - Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	if (_verifyOverlayView != nil) {
-		[_verifyOverlayView removeFromSuperview];
-		_verifyOverlayView = nil;
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
 	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:opponentVO.username];
+}
+
+- (void)challengeOverlayViewUpvote:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	[[Mixpanel sharedInstance] track:@"Activity - Upvote"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
+	
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
+	}
+	
+	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, (([UIScreen mainScreen].bounds.size.height - 108.0) * 0.5) + 10.0);
+	[self.view addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		heartImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[heartImageView removeFromSuperview];
+	}];
+	
+	[self _upvoteChallenge:_challengeVO.creatorVO.userID];
 }
 
 
@@ -593,9 +634,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		// flag
 	} else if (alertView.tag == 3) {
 		if (buttonIndex == 1) {
-			if (_verifyOverlayView != nil) {
-				[_verifyOverlayView removeFromSuperview];
-				_verifyOverlayView = nil;
+			if (_challengeOverlayView != nil) {
+				[_challengeOverlayView removeFromSuperview];
+				_challengeOverlayView = nil;
 			}
 			
 			[[Mixpanel sharedInstance] track:@"Activity - Disprove Alert"

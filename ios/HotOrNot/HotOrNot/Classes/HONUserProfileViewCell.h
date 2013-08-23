@@ -15,6 +15,7 @@
 @interface HONUserProfileViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (void)updateCell;
+- (void)updateFriendButton:(BOOL)isFriend;
 
 @property (nonatomic, assign) id <HONUserProfileViewCellDelegate> delegate;
 @property (nonatomic, retain) HONUserVO *userVO;

@@ -43,6 +43,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic) BOOL isPrivate;
 @property (nonatomic) HONUserVO *userVO;
 @property (nonatomic) int uploadCounter;
+@property (nonatomic, strong) NSArray *s3Uploads;
 @property (readonly, nonatomic, assign) HONChallengeExpireType challengeExpireType;
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
 @property (nonatomic) BOOL isFirstAppearance;
@@ -229,6 +230,8 @@ const CGFloat kFocusInterval = 0.5f;
 		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
 		por4.delegate = self;
 		[s3 putObject:por4];
+		
+		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, nil];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -482,8 +485,6 @@ const CGFloat kFocusInterval = 0.5f;
 		if (_cameraOverlayView == nil) {
 			_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
 			_cameraOverlayView.delegate = self;
-			
-			//[_cameraOverlayView updateChallengers:[NSArray arrayWithObjects:_challengeVO.creatorName, _challengeVO.challengerName, nil]];
 		}
 		
 	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
@@ -690,7 +691,7 @@ const CGFloat kFocusInterval = 0.5f;
 		[self _uploadPhoto:_challangeImage];
 		
 		[_previewView showKeyboard];
-		[_previewView setUsernames:[_usernames copy]];
+		[_previewView setUsernames:[_usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
 		
 		int friend_total = 0;
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
@@ -812,13 +813,6 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)cameraOverlayViewMakeChallengeNonExpire:(HONSnapCameraOverlayView *)cameraOverlayView {
-//	_challengeSubmitType = HONChallengeSubmitTypeMatch;
-//	
-//	[_addFollowing removeAllObjects];
-//	[_addContacts removeAllObjects];
-//	
-//	[_cameraOverlayView updateChallengers:[NSArray array]];
-	
 	_challengeExpireType = HONChallengeExpireTypeNone;
 }
 
@@ -862,23 +856,8 @@ const CGFloat kFocusInterval = 0.5f;
 		[usernames addObject:vo.fullName];
 	
 	
-//	if ([_addFollowing count] == 0 && (_challengeVO != nil || _userVO != nil) && _challengeSubmitType != HONChallengeSubmitTypeJoin)
-//		_challengeSubmitType = HONChallengeSubmitTypeMatch;
-//	
-//	if ([_addFollowing count] == 1) {
-//		_challengeSubmitType = HONChallengeSubmitTypeOpponentName;
-//		_challengerName = ((HONUserVO *)[_addFollowing objectAtIndex:0]).username;
-//	
-//	} else
-//
-//	if ([_addFollowing count] > 1 && _challengeVO != nil)
-//		_challengeSubmitType = HONChallengeSubmitTypeJoin;
-//	
-//	else
-//		_challengeSubmitType = HONChallengeSubmitTypeMatch;
-	
-	[_cameraOverlayView updateChallengers:[usernames copy]];
-	[_previewView setUsernames:[usernames copy]];
+	[_cameraOverlayView updateChallengers:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
+	[_previewView setUsernames:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
 }
 
 - (void)addChallengers:(HONAddChallengersViewController *)viewController selectContacts:(NSArray *)contacts forAppending:(BOOL)isAppend {
@@ -910,8 +889,8 @@ const CGFloat kFocusInterval = 0.5f;
 	for (HONContactUserVO *vo in _addContacts)
 		[usernames addObject:vo.fullName];
 	
-	[_cameraOverlayView updateChallengers:[usernames copy]];
-	[_previewView setUsernames:[usernames copy]];
+	[_cameraOverlayView updateChallengers:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
+	[_previewView setUsernames:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
 }
 
 
@@ -960,11 +939,10 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)previewViewClose:(HONCreateChallengePreviewView *)previewView {
+	for (S3PutObjectRequest *por in _s3Uploads)
+		[por.urlConnection cancel];
+	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-//	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-//		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-//	}];
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {

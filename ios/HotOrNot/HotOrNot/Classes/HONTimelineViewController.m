@@ -55,6 +55,7 @@
 @property (nonatomic) BOOL isPushView;
 @property (nonatomic) BOOL isPublic;
 @property (nonatomic) BOOL isProfileViewable;
+@property (nonatomic) BOOL isProfileFiltered;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) UIScrollView *findFriendsScrollView;
@@ -107,6 +108,7 @@
 	if ((self = [super init])) {
 		_isPushView = YES;
 		_isPublic = YES;
+		_isProfileFiltered = YES;
 		_timelineType = HONTimelineTypeSingleUser;
 		_username = username;
 		
@@ -168,24 +170,24 @@
 	if (_timelineType == HONTimelineTypePublic) {
 		
 		// between two users
-	} else if (_timelineType == HONTimelineTypeOpponents) {
-		[params setObject:[_challengerDict objectForKey:@"user1"] forKey:@"userID"];
-		[params setObject:[_challengerDict objectForKey:@"user2"] forKey:@"challengerID"];
-		
-		// with hashtag
+//	} else if (_timelineType == HONTimelineTypeOpponents) {
+//		[params setObject:[_challengerDict objectForKey:@"user1"] forKey:@"userID"];
+//		[params setObject:[_challengerDict objectForKey:@"user2"] forKey:@"challengerID"];
+//		
+//		// with hashtag
 	} else if (_timelineType == HONTimelineTypeSubject) {
 		[params setObject:_subjectName forKey:@"subjectName"];
 		
 		// a user's
 	} else if (_timelineType == HONTimelineTypeSingleUser) {
 		[params setObject:_username forKey:@"username"];
-		[params setObject:@"1" forKey:@"p"];
+		[params setObject:[NSString stringWithFormat:@"%d", _isProfileFiltered] forKey:@"p"];
 		
 		// a user's friends
-	} else if (_timelineType == HONTimelineTypeFriends) {
+//	} else if (_timelineType == HONTimelineTypeFriends) {
 	}
 	
-	//NSLog(@"PARAMS:[%@]", params);
+	NSLog(@"PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -199,7 +201,7 @@
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
-			_challenges = [NSMutableArray new];
+			_challenges = [NSMutableArray array];
 			
 			for (NSDictionary *serverList in challengesResult) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
@@ -216,6 +218,11 @@
 			}
 			
 			[_tableView reloadData];
+			
+//			if (_isProfileFiltered && _timelineType == HONTimelineTypeSingleUser) {
+//				_isProfileFiltered = NO;
+//				[self _retrieveChallenges];
+//			}
 		}
 		
 		[_refreshButtonView toggleRefresh:NO];
@@ -504,8 +511,7 @@
 	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
 	[_bannerView addSubview:bannerButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 63.0 - kTabSize.height * (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
-	//[_tableView setBackgroundColor:(_isPushView) ? [UIColor colorWithWhite:0.900 alpha:1.0] : [UIColor whiteColor]];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 63.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -622,7 +628,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -90.0);
+		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"timeline2_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1077,21 +1083,37 @@
 }
 
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell addFriend:(HONUserVO *)userVO {
+	_userVO = userVO;
+	
 	[[Mixpanel sharedInstance] track:@"Timeline Profile - Add Friend"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
 	
-	[self _addFriend:userVO.userID];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+														message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", userVO.username]
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:3];
+	[alertView show];
 }
 
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell removeFriend:(HONUserVO *)userVO {
+	_userVO = userVO;
+	
 	[[Mixpanel sharedInstance] track:@"Timeline Profile - Remove Friend"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
 	
-	[self _removeFriend:userVO.userID];
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+														message:[NSString stringWithFormat:@"You will no longer receive Volley updates from @%@", userVO.username]
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes", nil];
+	[alertView setTag:4];
+	[alertView show];
 }
 
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell snapAtUser:(HONUserVO *)userVO {
@@ -1351,6 +1373,21 @@
 	} else if (alertView.tag == 2) {
 		if (buttonIndex == 1)
 			[self _flagUser:(_userVO != nil) ? _userVO.userID : _opponentVO.userID];
+	
+	} else if (alertView.tag == 3) {
+		if (buttonIndex == 1) {
+			[self _addFriend:_userVO.userID];
+			HONUserProfileViewCell *cell = (HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+			[cell updateFriendButton:YES];
+		}
+		
+	} else if (alertView.tag == 4) {
+		if (buttonIndex == 1) {
+			[self _removeFriend:_userVO.userID];
+			HONUserProfileViewCell *cell = (HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+			[cell updateFriendButton:NO];
+		}
+		
 	}
 }
 
@@ -1405,7 +1442,25 @@
 												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
-				(isFriend) ? [self _removeFriend:_userVO.userID] : [self _addFriend:_userVO.userID];
+				if (isFriend) {;
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+																		message:[NSString stringWithFormat:@"You will no longer receive Volley updates from @%@", _userVO.username]
+																	   delegate:self
+															  cancelButtonTitle:@"No"
+															  otherButtonTitles:@"Yes", nil];
+					[alertView setTag:4];
+					[alertView show];
+				
+				} else {
+					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+																		message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
+																	   delegate:self
+															  cancelButtonTitle:@"No"
+															  otherButtonTitles:@"Yes", nil];
+					[alertView setTag:3];
+					[alertView show];
+				}
+				
 				break;}
 		}
 	

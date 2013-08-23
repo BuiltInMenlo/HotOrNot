@@ -156,10 +156,10 @@
 	}];
 }
 
-- (void)updateChallengers:(NSArray *)challengers {
+- (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
 	_usernames = challengers;
 	
-	NSString *usernames = @"";
+	NSString *usernames = (isJoining) ? @"joining " : @"";
 	for (NSString *username in _usernames) {
 		if ([username length] > 0)
 			usernames = [usernames stringByAppendingFormat:@"@%@, ", username];

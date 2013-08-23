@@ -1029,60 +1029,57 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	NSLog(@"alert:(%d)[%@]", [[userInfo objectForKey:@"type"] intValue], [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);
 	
-	if (!_isFromBackground) {
-		// sms sound
-		AudioServicesPlaySystemSound(1007);
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
-		
-		int type_id = [[userInfo objectForKey:@"type"] intValue];
-		switch (type_id) {
-				
-			// challenge request
-			case 1:{
-				_challengeID = [[userInfo objectForKey:@"challenge"] intValue];
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Snap Update"
-																	message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-																   delegate:self
-														  cancelButtonTitle:@"Cancel"
-														  otherButtonTitles:@"OK", nil];
-				[alertView setTag:3];
-				[alertView show];
-				break;}
-				
-				// poke
-			case 2:
-				[self _showOKAlert:@"Poke"
-					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-				break;
-				
-				// accpeted challenge
-			case 3:
-				[self _showOKAlert:@"Snap Update"
-					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-				break;
-				
-			default:
+	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
+		if (!_isFromBackground) {
+			// sms sound
+			AudioServicesPlaySystemSound(1007);
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+			
+			if ([userInfo objectForKey:@"type"] != nil) {
+				int type_id = [[userInfo objectForKey:@"type"] intValue];
+				switch (type_id) {
+						
+					// challenge request
+					case 1:{
+						_challengeID = [[userInfo objectForKey:@"challenge"] intValue];
+						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+																			message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+																		   delegate:self
+																  cancelButtonTitle:@"Cancel"
+																  otherButtonTitles:@"OK", nil];
+						[alertView setTag:3];
+						[alertView show];
+						break;}
+						
+						// poke
+					case 2:
+						[self _showOKAlert:@"Poke"
+							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+						break;
+						
+						// accpeted challenge
+					case 3:
+						[self _showOKAlert:@""
+							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+						break;
+						
+					default:
+						[self _showOKAlert:@""
+							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+						break;
+				}
+			
+			} else {
 				[self _showOKAlert:@""
 					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
-				break;
+			}
+			
+		} else {
+			if ([[userInfo objectForKey:@"type"] intValue] == 1)
+				[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
 		}
-		
-	} else {
-		if ([[userInfo objectForKey:@"type"] intValue] == 1)
-			[self _challengeObjectFromPush:[[userInfo objectForKey:@"challenge"] intValue]];
 	}
-	
-//	UILocalNotification *localNotification = [[UILocalNotification alloc] init];
-//	localNotification.fireDate = [[NSDate alloc] initWithTimeIntervalSinceNow:1];
-//	localNotification.alertBody = [NSString stringWithFormat:@"%d", [[userInfo objectForKey:@"type"] intValue]];;
-//	localNotification.soundName = UILocalNotificationDefaultSoundName;
-//	[[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-	
 }
-
-//- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-//	return [FBSession.activeSession handleOpenURL:url];
-//}
 
 
 #pragma mark - Startup Operations

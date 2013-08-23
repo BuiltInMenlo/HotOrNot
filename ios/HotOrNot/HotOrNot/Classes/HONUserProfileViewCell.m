@@ -150,13 +150,13 @@
 	[self addSubview:friendsButton];
 	
 	
-	UIButton *addFriendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	addFriendButton.frame = CGRectMake(115.0, 194.0, 74.0, 44.0);
-	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
-	[addFriendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
-	[addFriendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
-	addFriendButton.hidden = isUser || isFriend;
-	[self addSubview:addFriendButton];
+	_friendButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_friendButton.frame = CGRectMake(85.0, 194.0, 104.0, 44.0);
+	[_friendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
+	[_friendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
+	[_friendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
+	_friendButton.hidden = isUser || isFriend;
+	[self addSubview:_friendButton];
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(191.0, 194.0, 59.0, 44.0);
@@ -185,6 +185,10 @@
 //	_snapsLabel.text = [NSString stringWithFormat:(_userVO.pics == 1) ? NSLocalizedString(@"profile_snap", nil) : NSLocalizedString(@"profile_snaps", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]]];
 //	_votesLabel.text = [NSString stringWithFormat:(_userVO.votes == 1) ? NSLocalizedString(@"profile_vote", nil) : NSLocalizedString(@"profile_votes", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]]];
 //	_ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? NSLocalizedString(@"profile_point", nil) : NSLocalizedString(@"profile_points", nil), [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.score]]];
+}
+
+- (void)updateFriendButton:(BOOL)isFriend {
+	_friendButton.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID) || isFriend;
 }
 
 

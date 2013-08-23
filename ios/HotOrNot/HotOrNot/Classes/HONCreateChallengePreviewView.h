@@ -13,7 +13,7 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image;
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image;
 - (void)uploadComplete;
-- (void)setUsernames:(NSArray *)usernameList;
+- (void)setUsernames:(NSArray *)usernameList asJoining:(BOOL)isJoining;
 - (void)showKeyboard;
 
 @property (nonatomic) int isPrivate;

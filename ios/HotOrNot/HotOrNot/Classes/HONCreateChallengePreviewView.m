@@ -84,8 +84,9 @@
 	[_uploadingImageView removeFromSuperview];
 }
 
-- (void)setUsernames:(NSArray *)usernameList {
-	NSString *usernames = @"";
+- (void)setUsernames:(NSArray *)usernameList asJoining:(BOOL)isJoining {
+	NSString *usernames = (isJoining) ? @"joining " : @"";
+	
 	int counter = 0;
 	int threshold = 5;
 	for (NSString *username in usernameList) {
@@ -202,9 +203,9 @@
 	_usernameArrowImageView.alpha = 0.0;
 	[self addSubview:_usernameArrowImageView];
 	
-	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, 108.0, 300.0, 24.0)];
+	_usernamesLabel = [[UILabel alloc] initWithFrame:CGRectMake(45.0, 108.0, 265.0, 24.0)];
 	_usernamesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:21];
-	_usernamesLabel.textColor = [HONAppDelegate honGrey518Color];
+	_usernamesLabel.textColor = [UIColor whiteColor];
 	_usernamesLabel.backgroundColor = [UIColor clearColor];
 	_usernamesLabel.numberOfLines = 0;
 	_usernamesLabel.text = @"";
@@ -287,7 +288,7 @@
 	} else {
 		[self _dropKeyboardAndRemove:NO];
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Need to enter a hashtag"
-															message:@"Enter hashtag before submitting."
+															message:@"Enter hashtag before submitting!"
 														   delegate:self
 												  cancelButtonTitle:@"OK"
 												  otherButtonTitles:nil];

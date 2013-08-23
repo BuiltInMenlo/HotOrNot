@@ -270,7 +270,7 @@
 	joinButton.frame = CGRectMake(245.0, 231.0 - ((opponentCounter == 0) * 141.0), 64.0, 39.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchDown];
 	[self addSubview:joinButton];
 	
 //	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];

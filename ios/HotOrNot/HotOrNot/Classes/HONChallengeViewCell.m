@@ -65,7 +65,6 @@
 	[_imageHolderView addSubview:lImageLoading];
 	
 	
-	CGSize size = CGSizeMake(kSnapLargeDim, kSnapLargeDim * (1 + (1/3)));
 	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapLargeDim, kSnapLargeDim)];//CGRectMake(0.0, (size.height - size.width) * -0.5, size.width, size.height)];
 	_challengeImageView.userInteractionEnabled = YES;
 	_challengeImageView.alpha = [_challengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL]]];
@@ -78,6 +77,12 @@
 								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 									[weakSelf _imageLoadFallback];
 								}];
+	
+	UIButton *tapButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	tapButton.frame = _challengeImageView.frame;
+	[tapButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+	//[tapButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
+	[_imageHolderView addSubview:tapButton];
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];

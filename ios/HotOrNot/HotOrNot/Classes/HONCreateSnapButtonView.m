@@ -20,7 +20,7 @@
 		_createSnapButton.frame = CGRectMake(5.0, 0.0, 44.0, 44.0);
 		[_createSnapButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];
 		[_createSnapButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_Active"] forState:UIControlStateHighlighted];
-		[_createSnapButton addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
+		[_createSnapButton addTarget:target action:action forControlEvents:UIControlEventTouchDown];
 		[self addSubview:_createSnapButton];
 	}
 	

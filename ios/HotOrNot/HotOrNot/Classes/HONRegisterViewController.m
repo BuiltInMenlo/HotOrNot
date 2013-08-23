@@ -231,7 +231,7 @@
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
 	
-	[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
+	[HONImagingDepictor writeImageFromWeb:_filename withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -485,11 +485,12 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
+	} completion:^(BOOL finished) {
 	}];
 }
 
 - (void)_goSubmit {
-	if ([_usernameTextField.text isEqualToString:@"@"] || [_usernameTextField.text isEqualToString:NSLocalizedString(@"register_username", nil)]) {
+	if ([_usernameTextField.text isEqualToString:@""] || [_usernameTextField.text isEqualToString:@"@"]) {
 		[[[UIAlertView alloc] initWithTitle:@"No Username!"
 									message:@"You need to enter a username to start snapping"
 								   delegate:nil
@@ -500,13 +501,23 @@
 	} else {
 		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 23) {
 			[[[UIAlertView alloc] initWithTitle:@""
-										message:@"Womp Womp! You appear to be too old or too young for Volley at this time. Please check back soon as we open up to additional age ranges. support@letsvolley.com"
+										message:@"Volley is only available to young adults. Check back soon as we scale up and support your age range. support@letsvolley.com"
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
 		
-		} else
-			[self _submitUsername];
+		} else {
+			if ([_passwordTextField.text length] == 0) {
+				[[[UIAlertView alloc] initWithTitle:@"No Password!"
+											message:@"You need to enter a password to start snapping"
+										   delegate:nil
+								  cancelButtonTitle:@"OK"
+								  otherButtonTitles:nil] show];
+				[_passwordTextField becomeFirstResponder];
+			
+			} else
+				[self _submitUsername];
+		}
 	}
 }
 
@@ -705,6 +716,7 @@
 	
 	_usernameLabel.hidden = ([_usernameTextField.text length] > 0);
 	
+	_submitButton.hidden = NO;
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
