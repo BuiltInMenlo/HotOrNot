@@ -226,7 +226,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         	SET paid = ?
         	WHERE id = ?';
         $params = array( $isPaid, $userId );
-        $stmt = $this->prepareAndExecute( $query );
+        $stmt = $this->prepareAndExecute( $query, $params );
     }
     
     public function updateNotifications( $userId, $isNotifications ){
@@ -235,7 +235,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         	SET notifications = ?
         	WHERE id = ?';
         $params = array( $isNotifications, $userId );
-        $stmt = $this->prepareAndExecute( $query );
+        $stmt = $this->prepareAndExecute( $query,$params );
     }
     
     public function updateFBUsername( $userId, $fbId, $username, $gender ){
@@ -247,7 +247,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 			 WHERE id = ?
 		";
         $params = array( $username, $fbId, $gender, $userId );
-        $stmt = $this->prepareAndExecute( $query );
+        $stmt = $this->prepareAndExecute( $query, $params );
     }
     
     public function updateFB( $userId, $fbId, $gender ){
@@ -258,7 +258,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 			 WHERE id = ?
 		";
         $params = array( $fbId, $gender, $userId );
-        $stmt = $this->prepareAndExecute( $query );
+        $stmt = $this->prepareAndExecute( $query, $params );
     }
     
     public function poke( $pokerId, $pokeeId ){

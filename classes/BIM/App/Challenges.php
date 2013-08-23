@@ -70,10 +70,11 @@ class BIM_App_Challenges extends BIM_App_Base{
         $deviceTokens = array();
         $users = BIM_Model_User::getMulti( $volleyObject->getUsers() );
         foreach( $users as $user ){
-            if( $user->canPush() && $targetUser->id != $user->id ){
+            if( $user->canPush() && ($targetUser->id != $user->id) ){
                 $deviceTokens[] = $user->device_token;
             }
         }
+        
         $deviceTokens = array_unique($deviceTokens);
         
         $push = array(
