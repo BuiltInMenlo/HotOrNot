@@ -179,6 +179,9 @@ class BIM_Model_User{
         if( !empty($this->device_token) ){
             $cache->delete( $this->device_token );
         }
+        if( !empty($this->adid) ){
+            $cache->delete( $this->adid );
+        }
     }
     
     public function cacheIdByToken( $token = null){
