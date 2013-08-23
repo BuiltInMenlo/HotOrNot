@@ -169,6 +169,7 @@ class BIM_Model_User{
         $this->img_url = $imgUrl;
         $this->age = $birthdate;
         $this->purgeFromCache();
+        $this->purgeVolleys();
     }
     
     public function purgeFromCache( $id = null ){
@@ -218,6 +219,16 @@ class BIM_Model_User{
         $dao->updateUsername( $this->id, $username );
         $this->username = $username;
         $this->purgeFromCache();
+        $this->purgeVolleys();
+    }
+    
+    public function purgeVolleys(){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $ids = $dao->getAllIdsForUser( $this->id, true );
+        $volleys = BIM_Model_Volley::getMulti($ids);
+        foreach( $volleys as $volley ){
+            $volley->purgeFromCache();
+        }
     }
     
     public function updateFBUsername( $fbId, $username, $gender ){

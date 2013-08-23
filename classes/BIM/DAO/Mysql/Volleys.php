@@ -307,7 +307,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         return $v;
     }
     
-    public function getAllIdsForUser( $userId ){
+    public function getAllIdsForUser( $userId, $returnArray = false ){
         $sql = '
         	SELECT tc.id 
         	FROM `hotornot-dev`.tblChallenges as tc
@@ -319,7 +319,11 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         ';
         $params = array( $userId, $userId );
         $stmt = $this->prepareAndExecute( $sql, $params );
-        return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        if( $returnArray ){
+            return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        } else {
+            return $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        }
     }
     
     public function getOpponents( $userId, $private ){
@@ -537,7 +541,7 @@ WHERE is_verify != 1
 			FROM `hotornot-dev`.`tblChallenges` as tc
             	JOIN `hotornot-dev`.tblChallengeParticipants as tcp
             	ON tc.id = tcp.challenge_id
-			WHERE ( tc.status_id IN (1,4) ) 
+			WHERE ( tc.status_id IN (1,2,4) ) 
 				$privateSql
 				AND (tc.`creator_id` = ? OR tcp.`user_id` = ? )
 				AND is_verify != 1 
