@@ -18,6 +18,7 @@
 #import "HONContactUserVO.h"
 
 @interface HONSnapCameraOverlayView() <HONCreateChallengeOptionsViewDelegate, HONSnapCameraOptionsViewDelegate>
+@property (nonatomic, strong) UIImageView *infoImageView;
 @property (nonatomic, strong) UIImageView *irisImageView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *blackMatteView;
@@ -97,7 +98,7 @@
 		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		//[self addSubview:_usernamesLabel];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(96.0, self.frame.size.height - 150.0, 128.0, 128.0)];
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 100.0, 74.0, 74.0)];
 		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_001"];
 		[_controlsHolderView addSubview:_circleFillImageView];
 				
@@ -122,20 +123,20 @@
 		[cameraOptionsButton addTarget:self action:@selector(_goCameraOptions) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraOptionsButton];
 		
-		float offset = ([HONAppDelegate isRetina5]) ? 469.0 : 389.0;
-		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		retakeButton.frame = CGRectMake(340.0, offset + 24.0, 128.0, 49.0);
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_nonActive"] forState:UIControlStateNormal];
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_Active"] forState:UIControlStateHighlighted];
-		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:retakeButton];
-		
-		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(496.0, offset + 24.0, 128.0, 49.0);
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_nonActive"] forState:UIControlStateNormal];
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_Active"] forState:UIControlStateHighlighted];
-		[submitButton addTarget:self action:@selector(_goAcceptPhoto) forControlEvents:UIControlEventTouchUpInside];
-		[_controlsHolderView addSubview:submitButton];
+//		float offset = ([HONAppDelegate isRetina5]) ? 469.0 : 389.0;
+//		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		retakeButton.frame = CGRectMake(340.0, offset + 24.0, 128.0, 49.0);
+//		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_nonActive"] forState:UIControlStateNormal];
+//		[retakeButton setBackgroundImage:[UIImage imageNamed:@"previewRetakeButton_Active"] forState:UIControlStateHighlighted];
+//		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
+//		[_controlsHolderView addSubview:retakeButton];
+//		
+//		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		submitButton.frame = CGRectMake(496.0, offset + 24.0, 128.0, 49.0);
+//		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_nonActive"] forState:UIControlStateNormal];
+//		[submitButton setBackgroundImage:[UIImage imageNamed:@"previewSubmitButton_Active"] forState:UIControlStateHighlighted];
+//		[submitButton addTarget:self action:@selector(_goAcceptPhoto) forControlEvents:UIControlEventTouchUpInside];
+//		[_controlsHolderView addSubview:submitButton];
 		
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_blackMatteView.backgroundColor = [UIColor blackColor];
@@ -154,6 +155,17 @@
 	} completion:^(BOOL fininshed){
 		[_blackMatteView removeFromSuperview];
 	}];
+}
+
+- (void)toggleInfoOverlay:(BOOL)isIntro {
+	if (isIntro) {
+		_infoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"]];
+		[self addSubview:_infoImageView];
+	
+	} else {
+		[_infoImageView removeFromSuperview];
+		_infoImageView = nil;
+	}
 }
 
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
@@ -263,17 +275,8 @@
 	[UIView commitAnimations];
 }
 
-- (void)_goAcceptPhoto {
-	[self _animateShutter];
-	[self.delegate cameraOverlayViewAcceptPhoto:self];
-}
-
 - (void)_goToggleFlash {
 	[self.delegate cameraOverlayViewChangeFlash:self];
-}
-
-- (void)_goCameraBack {
-	[self.delegate cameraOverlayViewCameraBack:self];
 }
 
 - (void)_goCloseCamera {
@@ -284,12 +287,12 @@
 #pragma mark - ChallengeOptionsView Delegates
 - (void)challengeOptionsViewMakePublic:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
 	_isPrivate = NO;
-	[self.delegate cameraOverlayView:self challengeIsPublic:YES];
+//	[self.delegate cameraOverlayView:self challengeIsPublic:YES];
 }
 
 - (void)challengeOptionsViewMakePrivate:(HONCreateChallengeOptionsView *)createChallengeOptionsView {
 	_isPrivate = YES;
-	[self.delegate cameraOverlayView:self challengeIsPublic:NO];
+//	[self.delegate cameraOverlayView:self challengeIsPublic:NO];
 }
 
 - (void)challengeOptionsViewMakeNonExpire:(HONCreateChallengeOptionsView *)createChallengeOptionsView {

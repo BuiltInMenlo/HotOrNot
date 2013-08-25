@@ -134,12 +134,24 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	NSDate *birthday = (isUser) ? [dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]] : _userVO.birthday;
 	
-	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 206.0, 180.0, 20.0)];
+	UILabel *ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(11.0, 196.0, 180.0, 20.0)];
 	ageLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	ageLabel.textColor = [HONAppDelegate honOrthodoxGreenColor];
 	ageLabel.backgroundColor = [UIColor clearColor];
 	ageLabel.text = [NSString stringWithFormat:@"Age: %d", [HONAppDelegate ageForDate:birthday]];
 	[self addSubview:ageLabel];
+	
+	BOOL isVerified = (isUser) ? ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < 0) : (_userVO.abuseCount < 0);
+	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(isVerified) ? @"verified" : @"notVerified"]];
+	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 9.0, 218.0);
+	[self addSubview:verifiedImageView];
+	
+	UILabel *verifiedLabel = [[UILabel alloc] initWithFrame:CGRectMake(30.0, 218.0, 180.0, 20.0)];
+	verifiedLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
+	verifiedLabel.textColor = (isVerified) ? [HONAppDelegate honOrthodoxGreenColor] : [UIColor redColor];
+	verifiedLabel.backgroundColor = [UIColor clearColor];
+	verifiedLabel.text = (isVerified) ? @"Verified" : @"Not Verified";
+	[self addSubview:verifiedLabel];
 	
 	UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	friendsButton.frame = CGRectMake(136.0, 194.0, 114.0, 44.0);
@@ -151,9 +163,9 @@
 	
 	
 	_friendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_friendButton.frame = CGRectMake(85.0, 194.0, 104.0, 44.0);
-	[_friendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_nonActive"] forState:UIControlStateNormal];
-	[_friendButton setBackgroundImage:[UIImage imageNamed:@"addFriendButton_Active"] forState:UIControlStateHighlighted];
+	_friendButton.frame = CGRectMake(146.0, 194.0, 104.0, 44.0);
+	[_friendButton setBackgroundImage:[UIImage imageNamed:@"subscribe_nonActive"] forState:UIControlStateNormal];
+	[_friendButton setBackgroundImage:[UIImage imageNamed:@"subscribe_Active"] forState:UIControlStateHighlighted];
 	[_friendButton addTarget:self action:@selector(_goAddFriend) forControlEvents:UIControlEventTouchUpInside];
 	_friendButton.hidden = isUser || isFriend;
 	[self addSubview:_friendButton];
@@ -164,7 +176,7 @@
 	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagUser_Active"] forState:UIControlStateHighlighted];
 	[flagButton addTarget:self action:@selector(_goFlagUser) forControlEvents:UIControlEventTouchUpInside];
 	flagButton.hidden = isUser;
-	[self addSubview:flagButton];
+	//[self addSubview:flagButton];
 	
 	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	moreButton.frame = CGRectMake(250.0, 194.0, 64.0, 44.0);

@@ -144,7 +144,7 @@
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[NSString stringWithFormat:@"%d", userID], @"target",
-							@"1", @"auto", nil];
+							@"0", @"auto", nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -209,12 +209,12 @@
 	headerView.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:headerView];
 	
-	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 11.0, 38.0, 38.0)];
+	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 9.0, 38.0, 38.0)];
 	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 	creatorAvatarImageView.userInteractionEnabled = YES;
 	[headerView addSubview:creatorAvatarImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 11.0, 180.0, 20.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 10.0, 180.0, 20.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -227,6 +227,16 @@
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
 	[headerView addSubview:creatorNameLabel];
+	
+	if ([_challengeVO.challengers count] > 0) {
+		UILabel *lastJoinedLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 5.0, 160.0, 19.0)];
+		lastJoinedLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+		lastJoinedLabel.textColor = [HONAppDelegate honOrthodoxGreenColor];
+		lastJoinedLabel.backgroundColor = [UIColor clearColor];
+		lastJoinedLabel.textAlignment = NSTextAlignmentRight;
+		lastJoinedLabel.text = [NSString stringWithFormat:@"@%@", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).username];
+		[headerView addSubview:lastJoinedLabel];
+	}
 	
 	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 24.0, 160.0, 16.0)];
 	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];

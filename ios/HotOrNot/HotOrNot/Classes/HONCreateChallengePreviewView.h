@@ -8,22 +8,23 @@
 
 #import <UIKit/UIKit.h>
 
+#import "HONUserVO.h"
+
 @protocol HONCreateChallengePreviewViewDelegate;
 @interface HONCreateChallengePreviewView : UIView
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withImage:(UIImage *)image;
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withMirroredImage:(UIImage *)image;
 - (void)uploadComplete;
-- (void)setUsernames:(NSArray *)usernameList asJoining:(BOOL)isJoining;
+- (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw;
 - (void)showKeyboard;
 
-@property (nonatomic) int isPrivate;
 @property(nonatomic, assign) id <HONCreateChallengePreviewViewDelegate> delegate;
 @end
 
 @protocol HONCreateChallengePreviewViewDelegate
 - (void)previewViewAddChallengers:(HONCreateChallengePreviewView *)previewView;
+- (void)previewView:(HONCreateChallengePreviewView *)previewView removeChallenger:(HONUserVO *)userVO;
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView;
-- (void)previewView:(HONCreateChallengePreviewView *)cameraOverlayView challengeIsPublic:(BOOL)isPublic;
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject;
 - (void)previewViewClose:(HONCreateChallengePreviewView *)previewView;
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView;

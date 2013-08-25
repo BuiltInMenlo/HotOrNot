@@ -225,11 +225,11 @@
 	
 	NSLog(@"PARAMS:[%@]", params);
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+//	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
+//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
+//	_progressHUD.minShowTime = kHUDTime;
+//	_progressHUD.taskInProgress = YES;
 	
 	[HONImagingDepictor writeImageFromWeb:_filename withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
@@ -255,8 +255,10 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
+				if (_progressHUD != nil) {
+					[_progressHUD hide:YES];
+					_progressHUD = nil;
+				}
 				
 				[HONAppDelegate writeUserInfo:userResult];
 				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];

@@ -12,7 +12,7 @@
 @implementation HONUserVO
 
 @synthesize dictionary;
-@synthesize userID, fbID, username, points, votes, pokes, score, pics, imageURL, birthday, friends;
+@synthesize userID, fbID, username, points, votes, pokes, abuseCount, score, pics, imageURL, birthday, friends;
 
 + (HONUserVO *)userWithDictionary:(NSDictionary *)dictionary {
 	HONUserVO *vo = [[HONUserVO alloc] init];
@@ -23,6 +23,7 @@
 	vo.votes = [[dictionary objectForKey:@"votes"] intValue];
 	vo.pokes = [[dictionary objectForKey:@"pokes"] intValue];
 	vo.pics = [[dictionary objectForKey:@"pics"] intValue];
+	vo.abuseCount = [[dictionary objectForKey:@"abuse_ct"] intValue];
 	vo.score = (vo.points * [HONAppDelegate createPointMultiplier]) + (vo.votes * [HONAppDelegate votePointMultiplier]) + (vo.pokes * [HONAppDelegate pokePointMultiplier]);
 	vo.username = [dictionary objectForKey:@"username"];
 	vo.fbID = [dictionary objectForKey:@"fb_id"];

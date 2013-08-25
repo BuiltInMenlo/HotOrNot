@@ -46,7 +46,7 @@
 		if ([_challengeVO.challengers count] > 0) {
 			UILabel *lastJoinedLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 5.0, 160.0, 19.0)];
 			lastJoinedLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-			lastJoinedLabel.textColor = [HONAppDelegate honGrey518Color];
+			lastJoinedLabel.textColor = [HONAppDelegate honOrthodoxGreenColor];
 			lastJoinedLabel.backgroundColor = [UIColor clearColor];
 			lastJoinedLabel.textAlignment = NSTextAlignmentRight;
 			lastJoinedLabel.text = [NSString stringWithFormat:@"@%@", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).username];

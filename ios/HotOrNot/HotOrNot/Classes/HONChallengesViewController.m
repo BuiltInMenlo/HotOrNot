@@ -166,7 +166,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		} else {
 			NSArray *unsortedChallenges = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
@@ -266,7 +266,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[NSString stringWithFormat:@"%d", userID], @"target",
-							@"1", @"auto", nil];
+							@"0", @"auto", nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];

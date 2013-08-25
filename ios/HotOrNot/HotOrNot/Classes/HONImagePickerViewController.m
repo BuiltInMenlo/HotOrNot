@@ -297,14 +297,6 @@ const CGFloat kFocusInterval = 0.5f;
 				///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 				
-//				if (![_subjectName isEqualToString:@"#verifyMe"])
-//					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:nil];
-//				
-//				else {
-//					if (_challengeSubmitType == HONChallengeSubmitTypeAccept)
-//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_VERIFY" object:@"Y"];
-//				}
-				
 				_hasSubmitted = YES;
 				if (_uploadCounter == 4) {
 					if (_imagePicker.parentViewController != nil) {
@@ -537,6 +529,12 @@ const CGFloat kFocusInterval = 0.5f;
 
 
 #pragma mark - Navigation
+- (void)_goCloseInfoOverlay {
+	[_cameraOverlayView toggleInfoOverlay:NO];
+	
+	_clockCounter = 0;
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+}
 
 
 #pragma mark - Notifications
@@ -571,14 +569,12 @@ const CGFloat kFocusInterval = 0.5f;
 	}
 	
 	if (camera_total == 0) {
-		UIAlertView *alertView = [[UIAlertView alloc]
-								  initWithTitle:@""
-								  message:@"Please note that Volley uses an automatic camera to help speed up your posts. Volley on!"
-								  delegate:self
-								  cancelButtonTitle:@"OK"
-								  otherButtonTitles:nil];
-		[alertView setTag:1];
-		[alertView show];
+		[_cameraOverlayView toggleInfoOverlay:YES];
+		
+		UIButton *infoOverlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		infoOverlayButton.frame = _cameraOverlayView.frame;
+		[infoOverlayButton addTarget:self action:@selector(_goCloseInfoOverlay) forControlEvents:UIControlEventTouchUpInside];
+		[_cameraOverlayView addSubview:infoOverlayButton];
 		
 	} else {
 		_clockCounter = 0;
@@ -685,13 +681,12 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
 		_previewView.delegate = self;
-		[_previewView setIsPrivate:_isPrivate];
 		[self.view addSubview:_previewView];
 		
 		[self _uploadPhoto:_challangeImage];
 		
 		[_previewView showKeyboard];
-		[_previewView setUsernames:[_usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
+		[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 		
 		int friend_total = 0;
 		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
@@ -722,32 +717,6 @@ const CGFloat kFocusInterval = 0.5f;
 
 
 #pragma mark - CameraOverlay Delegates
-- (void)cameraOverlayViewAcceptPhoto:(HONSnapCameraOverlayView *)cameraOverlayView {
-	/*[[Mixpanel sharedInstance] track:@"Create Snap - Accept Photo"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[_cameraOverlayView removePreview];
-	[self dismissViewControllerAnimated:NO completion:^(void) {
-		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
-		 
-		_previewView.delegate = self;
-		_usernames = [NSMutableArray array];
-		for (HONUserVO *vo in _addFollowing)
-			[_usernames addObject:vo.username];
-		 
-		for (HONContactUserVO *vo in _addContacts)
-			[_usernames addObject:vo.fullName];
-		
-		[_previewView setIsPrivate:_isPrivate];
-		[self.view addSubview:_previewView];
-		
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[self _uploadPhoto:_challangeImage];
-	}];
-	 */
-}
-
 - (void)cameraOverlayViewShowCameraRoll:(HONSnapCameraOverlayView *)cameraOverlayView {
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
@@ -808,10 +777,6 @@ const CGFloat kFocusInterval = 0.5f;
 	[_imagePicker presentViewController:addChallengersViewController animated:YES completion:nil];
 }
 
-- (void)cameraOverlayView:(HONSnapCameraOverlayView *)cameraOverlayView challengeIsPublic:(BOOL)isPublic {
-	_isPrivate = !isPublic;
-}
-
 - (void)cameraOverlayViewMakeChallengeNonExpire:(HONSnapCameraOverlayView *)cameraOverlayView {
 	_challengeExpireType = HONChallengeExpireTypeNone;
 }
@@ -857,7 +822,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	
 	[_cameraOverlayView updateChallengers:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
-	[_previewView setUsernames:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
+	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 }
 
 - (void)addChallengers:(HONAddChallengersViewController *)viewController selectContacts:(NSArray *)contacts forAppending:(BOOL)isAppend {
@@ -890,11 +855,30 @@ const CGFloat kFocusInterval = 0.5f;
 		[usernames addObject:vo.fullName];
 	
 	[_cameraOverlayView updateChallengers:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
-	[_previewView setUsernames:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
+	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 }
 
 
 #pragma mark - PreviewView Delegates
+- (void)previewView:(HONCreateChallengePreviewView *)previewView removeChallenger:(HONUserVO *)userVO {
+	[[Mixpanel sharedInstance] track:@"Create Snap - Remove User"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	NSMutableArray *removeVOs = [NSMutableArray array];
+	for (HONUserVO *vo in _addFollowing) {
+		if (vo.userID == userVO.userID) {
+			[removeVOs addObject:vo];
+			break;
+		}
+	}
+	
+	[_addFollowing removeObjectsInArray:removeVOs];
+	removeVOs = nil;
+	
+	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
+}
+
 - (void)previewViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Snap - Add Friends"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -927,15 +911,6 @@ const CGFloat kFocusInterval = 0.5f;
 		_challengerName = (_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username;
 		_challengeSubmitType = HONChallengeSubmitTypeOpponentName;
 	}
-}
-
-- (void)previewView:(HONCreateChallengePreviewView *)cameraOverlayView challengeIsPublic:(BOOL)isPublic {
-	_isPrivate = !isPublic;
-	
-	[[Mixpanel sharedInstance] track:@"Create Snap Options - Public / Private Toggle"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d", _isPrivate], @"private", nil]];
 }
 
 - (void)previewViewClose:(HONCreateChallengePreviewView *)previewView {
@@ -973,12 +948,7 @@ const CGFloat kFocusInterval = 0.5f;
 									   _challengerName, @"username",
 									   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
 		
-//		if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin)
-//			_challengeSubmitType = HONChallengeSubmitTypeAccept;
-		
 		if ([_addFollowing count] > 1) {
-//			_challengeSubmitType = HONChallengeSubmitTypeJoin;
-			
 			NSString *usernames = @"";
 			for (HONUserVO *vo in _addFollowing)
 				usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
@@ -1040,12 +1010,6 @@ const CGFloat kFocusInterval = 0.5f;
 	if (alertView.tag == 0) {
 		[_previewView showKeyboard];
 	
-	} else if (alertView.tag == 1) {
-		if (buttonIndex == 0) {
-			_clockCounter = 0;
-			_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
-		}
-	
 	} else if (alertView.tag == 2) {
 		if (buttonIndex == 0) {
 			int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
@@ -1068,12 +1032,7 @@ const CGFloat kFocusInterval = 0.5f;
 										   _challengerName, @"username",
 										   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
 			
-//			if ([_addFollowing count] == 1 && _challengeSubmitType == HONChallengeSubmitTypeJoin)
-//				_challengeSubmitType = HONChallengeSubmitTypeAccept;
-			
 			if ([_addFollowing count] > 1) {
-//				_challengeSubmitType = HONChallengeSubmitTypeJoin;
-				
 				NSString *usernames = @"";
 				for (HONUserVO *vo in _addFollowing)
 					usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];

@@ -24,9 +24,6 @@
 @property (nonatomic, strong) UIImageView *lChallengeImageView;
 @property (nonatomic, strong) NSTimer *tapTimer;
 @property (nonatomic) BOOL isDoubleTap;
-@property (nonatomic, strong) UITapGestureRecognizer *r1ChallengeGestureRecognizer;
-@property (nonatomic, strong) UITapGestureRecognizer *r2ChallengeGestureRecognizer;
-@property (nonatomic, strong) UITapGestureRecognizer *r3ChallengeGestureRecognizer;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIImageView *upvoteImageView;

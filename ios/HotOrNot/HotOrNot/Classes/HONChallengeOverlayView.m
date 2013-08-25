@@ -78,7 +78,7 @@
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 		[holderView addSubview:flagButton];
 		
-		[self _retrieveUser:_opponentVO.username];
+		[self _retrieveUser:_opponentVO.userID];
 	}
 	
 	return (self);
@@ -86,10 +86,10 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveUser:(NSString *)username {
+- (void)_retrieveUser:(int)userID {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 8], @"action",
-							username, @"username",
+							[NSString stringWithFormat:@"%d", 5], @"action",
+							[NSString stringWithFormat:@"%d", userID], @"userID",
 							nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);

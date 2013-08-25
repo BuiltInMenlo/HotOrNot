@@ -54,7 +54,7 @@
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							[NSString stringWithFormat:@"%d", userID], @"target",
-							@"1", @"auto", nil];
+							@"0", @"auto", nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];

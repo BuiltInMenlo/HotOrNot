@@ -76,7 +76,7 @@
 		[nayButton addTarget:self action:@selector(_goNay) forControlEvents:UIControlEventTouchUpInside];
 		[holderView addSubview:nayButton];
 		
-		[self _retrieveUser:_challengeVO.creatorVO.username];
+		[self _retrieveUser:_challengeVO.creatorVO.userID];
 	}
 	
 	return (self);
@@ -84,10 +84,10 @@
 
 
 #pragma mark - Data Calls
-- (void)_retrieveUser:(NSString *)username {
+- (void)_retrieveUser:(int)userID {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-							[NSString stringWithFormat:@"%d", 8], @"action",
-							username, @"username",
+							[NSString stringWithFormat:@"%d", 5], @"action",
+							[NSString stringWithFormat:@"%d", userID], @"userID",
 							nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);

@@ -16,6 +16,7 @@
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
 @property (nonatomic, strong) UIImageView *circleFillImageView;
+@property (nonatomic, strong) UIImageView *overlayImageView;
 @end
 
 @implementation HONAvatarCameraOverlayView
@@ -51,7 +52,7 @@
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(96.0, self.frame.size.height - 150.0, 128.0, 128.0)];
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 100.0, 74.0, 74.0)];
 		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_001"];
 		[_controlsHolderView addSubview:_circleFillImageView];
 		
@@ -132,7 +133,51 @@
 }
 
 - (void)_goSubmit {
-	[self.delegate cameraOverlayViewSubmit:self];
+	UIView *blackMatteView = [[UIView alloc] initWithFrame:self.frame];
+	blackMatteView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	blackMatteView.alpha = 0.0;
+	[self addSubview:blackMatteView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		blackMatteView.alpha = 1.0;
+		_controlsHolderView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_controlsHolderView removeFromSuperview];
+		_overlayImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 157.0) * 0.5, 157.0, 157.0)];
+		_overlayImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
+											 [UIImage imageNamed:@"overlayLoader002"],
+											 [UIImage imageNamed:@"overlayLoader003"],
+											 [UIImage imageNamed:@"overlayLoader004"],
+											 [UIImage imageNamed:@"overlayLoader005"],
+											 [UIImage imageNamed:@"overlayLoader006"],
+											 [UIImage imageNamed:@"overlayLoader007"],
+											 [UIImage imageNamed:@"overlayLoader008"],
+											 nil];
+		_overlayImageView.animationDuration = 1.125f;
+		_overlayImageView.animationRepeatCount = 0;
+		_overlayImageView.alpha = 0.0;
+		[_overlayImageView startAnimating];
+		[self addSubview:_overlayImageView];
+		
+		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 120.0, 157.0, 24.0)];
+		captionLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:21];
+		captionLabel.textColor = [UIColor whiteColor];
+		captionLabel.backgroundColor = [UIColor clearColor];
+		captionLabel.textAlignment = NSTextAlignmentCenter;
+		captionLabel.text = @"Verifying…";
+		[_overlayImageView addSubview:captionLabel];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_overlayImageView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+			
+			[UIView animateWithDuration:0.25 delay:3.375 options:UIViewAnimationOptionCurveLinear animations:^(void) {
+				_overlayImageView.alpha = 0.0;
+			} completion:^(BOOL finished) {
+				[self.delegate cameraOverlayViewSubmit:self];
+			}];
+		}];
+	}];
 }
 
 - (void)_goCapture {
