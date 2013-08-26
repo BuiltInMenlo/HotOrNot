@@ -4,8 +4,14 @@ class BIM_Model_Volley{
     
     public function __construct($volleyId, $userId = 0) {
         
-        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $volley = $dao->get( $volleyId );
+        $volley = null;
+        if( is_object($volleyId) ){
+            $volley = $volleyId;
+        } else {
+            $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+            $volley = $dao->get( $volleyId );
+        }
+        
         if( $volley ){
             $creator = BIM_Model_User::get( $volley->creator_id );
             $creator = (object) array(
@@ -47,8 +53,8 @@ class BIM_Model_Volley{
             
             $this->id = $volley->id; 
             $this->status = ($userId != 0 && $userId == $volley->challenger_id && $volley->status_id == "2") ? "0" : $volley->status_id; 
-            $this->subject = $dao->getSubject($volley->subject_id); 
-            $this->comments = $dao->commentCount( $volley->id ); 
+            $this->subject = 'foo'; // $dao->getSubject($volley->subject_id); 
+            $this->comments = 0; // $dao->commentCount( $volley->id ); 
             $this->has_viewed = $volley->hasPreviewed; 
             $this->started = $volley->started; 
             $this->added = $volley->added; 
@@ -360,9 +366,15 @@ class BIM_Model_Volley{
         $retrievedKeys = array_keys( $volleys );
         $missedKeys = array_diff( $volleyKeys, $retrievedKeys );
         if( $missedKeys ){
+            $missingVolleys = array();
             foreach( $missedKeys as $volleyKey ){
                 list($prefix,$volleyId) = explode('_',$volleyKey);
-                $volley = self::get( $volleyId, true );
+                $missingVolleys[] = $volleyId;
+            }
+            $dao = new BIM_Model_Volley($volleyId);
+            $missingVolleyData = $dao->getMulti($missingVolleys);
+            foreach( $missingVolleyData as $volleyData ){
+                $volley = new self( $volleyData, true );
                 if( $volley->isExtant() ){
                     $volleys[ $volleyKey ] = $volley;
                 }
