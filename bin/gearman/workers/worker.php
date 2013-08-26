@@ -48,3 +48,5 @@ function tumblr( $job, &$config ){ any_job($job, $config); }
 function smsinvites( $job, &$config ){ any_job($job, $config); }
 function acceptchallengeasdefaultuser( $job, &$config ){ any_job($job, $config); }
 function firstruncomplete( $job, &$config ){ any_job($job, $config); }
+function flaguser( $job, &$config ){ any_job($job, $config); }
+function purgeuservolleys( $job, &$config ){ any_job($job, $config); }

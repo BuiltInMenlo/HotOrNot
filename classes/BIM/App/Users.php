@@ -49,7 +49,7 @@ class BIM_App_Users extends BIM_App_Base{
 		} else {
 			$user = BIM_Model_User::create( $device_token, BIM_Utils::getAdvertisingId() );
 			if( $user->isExtant() ){
-                BIM_Model_Volley::autoVolley($user->id);
+                // BIM_Model_Volley::autoVolley($user->id);
                 
                 // have @teamvolley friend the new user			
     			$friendRelation = (object) array( 

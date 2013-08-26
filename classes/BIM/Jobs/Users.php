@@ -126,17 +126,33 @@ class BIM_Jobs_Users extends BIM_Jobs{
         	'class' => 'BIM_Jobs_Users',
         	'method' => 'flagUser',
         	'input' => (object) array(
-        					'user_id' => $userId,
+        					'userID' => $userId,
                             'approves' => $approves,
                             'targetID' => $targetId
                         ),
         );
-        return self::queueBackground( $job, 'firstruncomplete' );
+        return self::queueBackground( $job, 'flaguser' );
     }
     
     public function flagUser( $workload ){
         $input = $workload->input;
         $users = new BIM_App_Users();
-	    return $users->flagUser( $input->userID, $input->approves, $input->targetID );
+	    $users->flagUser( $input->userID, $input->approves, $input->targetID );
+    }
+    
+    public static function queuePurgeUserVolleys( $userId ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Users',
+        	'method' => 'purgeUserVolleys',
+        	'input' => (object) array(
+        					'userID' => $userId,
+                        ),
+        );
+        return self::queueBackground( $job, 'purgeuservolleys' );
+    }
+    
+    public function purgeUserVolleys( $workload ){
+        $user = BIM_Model_User::get( $workload->input->userID );
+        $user->purgeVolleys();
     }
 }

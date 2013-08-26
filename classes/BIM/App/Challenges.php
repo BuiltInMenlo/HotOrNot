@@ -184,7 +184,7 @@ class BIM_App_Challenges extends BIM_App_Base{
             $volley = BIM_Model_Volley::create($creator->id, $hashTag, $imgUrl, $validTargetIds, $isPrivate, $expires);
             if( $volley ){
                 foreach( $validTargets as $targetUser ){
-                    $this->acceptChallengeAsDefaultUser( $volley, $creator, $targetUser );
+                    // $this->acceptChallengeAsDefaultUser( $volley, $creator, $targetUser );
                     if ($targetUser->notifications == "Y"){
                         $this->doNotification( $creator, $targetUser, $volley->id, $hashTag, $expires, $isPrivate );
                     }
