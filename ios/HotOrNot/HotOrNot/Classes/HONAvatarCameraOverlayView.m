@@ -52,7 +52,7 @@
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 100.0, 74.0, 74.0)];
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 74.0, 74.0)];
 		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_001"];
 		[_controlsHolderView addSubview:_circleFillImageView];
 		
@@ -124,9 +124,9 @@
 	
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"Not having a selfie can make you look fake! Please update your profile soon in your profile section.!"
+														message:@"Your profile photo helps the Volley community know your real."
 													   delegate:self
-											  cancelButtonTitle:@"Skip"
+											  cancelButtonTitle:@"No Thanks"
 											  otherButtonTitles:@"Take Photo", nil];
 	[alertView setTag:0];
 	[alertView show];
@@ -159,7 +159,7 @@
 		[_overlayImageView startAnimating];
 		[self addSubview:_overlayImageView];
 		
-		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 120.0, 157.0, 24.0)];
+		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 114.0, 157.0, 24.0)];
 		captionLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:21];
 		captionLabel.textColor = [UIColor whiteColor];
 		captionLabel.backgroundColor = [UIColor clearColor];

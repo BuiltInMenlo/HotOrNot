@@ -98,7 +98,7 @@
 		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		//[self addSubview:_usernamesLabel];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 100.0, 74.0, 74.0)];
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 74.0, 74.0)];
 		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_001"];
 		[_controlsHolderView addSubview:_circleFillImageView];
 				
@@ -161,6 +161,20 @@
 	if (isIntro) {
 		_infoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"]];
 		[self addSubview:_infoImageView];
+		
+		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 74.0, 74.0)];
+		clockImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraAnimation_001"],
+										  [UIImage imageNamed:@"cameraAnimation_002"],
+										  [UIImage imageNamed:@"cameraAnimation_003"],
+										  [UIImage imageNamed:@"cameraAnimation_004"],
+										  [UIImage imageNamed:@"cameraAnimation_005"],
+										  [UIImage imageNamed:@"cameraAnimation_006"],
+										  [UIImage imageNamed:@"cameraAnimation_007"],
+										  [UIImage imageNamed:@"cameraAnimation_008"], nil];
+		clockImageView.animationDuration = 2.5f;
+		clockImageView.animationRepeatCount = 0;
+		[clockImageView startAnimating];
+		[_infoImageView addSubview:clockImageView];
 	
 	} else {
 		[_infoImageView removeFromSuperview];

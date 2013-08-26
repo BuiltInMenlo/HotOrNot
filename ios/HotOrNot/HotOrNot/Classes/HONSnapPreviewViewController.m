@@ -235,7 +235,7 @@
 	nameLabel.text = [NSString stringWithFormat:@"@%@", _opponentVO.username];
 	[self.view addSubview:nameLabel];
 	
-	_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(155.0, 27.0, 150.0, 20.0)];
+	_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(153.0, 27.0, 150.0, 20.0)];
 	_ageLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 	_ageLabel.textAlignment = NSTextAlignmentRight;
 	_ageLabel.textColor = [UIColor whiteColor];

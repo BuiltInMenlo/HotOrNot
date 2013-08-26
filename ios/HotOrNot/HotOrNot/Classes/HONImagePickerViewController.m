@@ -57,6 +57,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
 @property (nonatomic, strong) UIImage *challangeImage;
 @property (nonatomic, strong) UIImage *rawImage;
+@property (nonatomic, strong) UIImageView *submitImageView;
 @end
 
 @implementation HONImagePickerViewController
@@ -250,12 +251,33 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_submitChallenge:(NSMutableDictionary *)params {
-	if (_progressHUD == nil)
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
+	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 157.0) * 0.5, 157.0, 157.0)];
+	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
+										 [UIImage imageNamed:@"overlayLoader002"],
+										 [UIImage imageNamed:@"overlayLoader003"],
+										 [UIImage imageNamed:@"overlayLoader004"],
+										 [UIImage imageNamed:@"overlayLoader005"],
+										 [UIImage imageNamed:@"overlayLoader006"],
+										 [UIImage imageNamed:@"overlayLoader007"],
+										 [UIImage imageNamed:@"overlayLoader008"],
+										 nil];
+	_submitImageView.animationDuration = 1.125f;
+	_submitImageView.animationRepeatCount = 0;
+	_submitImageView.alpha = 0.0;
+	[_submitImageView startAnimating];
+	[[[UIApplication sharedApplication] delegate].window addSubview:_submitImageView];
+	
+	UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 114.0, 157.0, 24.0)];
+	captionLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:21];
+	captionLabel.textColor = [UIColor whiteColor];
+	captionLabel.backgroundColor = [UIColor clearColor];
+	captionLabel.textAlignment = NSTextAlignmentCenter;
+	captionLabel.text = @"Submitting…";
+	[_submitImageView addSubview:captionLabel];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_submitImageView.alpha = 1.0;
+	} completion:nil];
 	
 	_hasSubmitted = NO;
 	
@@ -265,6 +287,9 @@ const CGFloat kFocusInterval = 0.5f;
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 			_progressHUD.minShowTime = kHUDTime;
 			_progressHUD.mode = MBProgressHUDModeCustomView;
 			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
@@ -278,8 +303,12 @@ const CGFloat kFocusInterval = 0.5f;
 			VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
 			
 			if (_uploadCounter == 4) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
+				[UIView animateWithDuration:0.5 animations:^(void) {
+					_submitImageView.alpha = 0.0;
+				} completion:^(BOOL finished) {
+					[_submitImageView removeFromSuperview];
+					_submitImageView = nil;
+				}];
 			}
 			
 			if ([[challengeResult objectForKey:@"result"] isEqualToString:@"fail"]) {
@@ -979,9 +1008,13 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	_uploadCounter++;
 	if (_uploadCounter == 4) {
-		if (_progressHUD != nil) {
-			[_progressHUD hide:YES];
-			_progressHUD = nil;
+		if (_submitImageView != nil) {
+			[UIView animateWithDuration:0.5 animations:^(void) {
+				_submitImageView.alpha = 0.0;
+			} completion:^(BOOL finished) {
+				[_submitImageView removeFromSuperview];
+				_submitImageView = nil;
+			}];
 		}
 		
 		[_previewView uploadComplete];

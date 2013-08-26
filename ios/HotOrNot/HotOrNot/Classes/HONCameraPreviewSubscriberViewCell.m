@@ -31,11 +31,11 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 13.0, 38.0, 38.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(28.0, 11.0, 33.0, 33.0)];
 	[avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 24.0, 200.0, 20.0)];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(73.0, 20.0, 200.0, 20.0)];
 	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
 	nameLabel.textColor = [UIColor whiteColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
@@ -43,7 +43,7 @@
 	[self addSubview:nameLabel];
 	
 	UIButton *removeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	removeButton.frame = CGRectMake(220.0, 10.0, 24.0, 24.0);
+	removeButton.frame = CGRectMake(269.0, 15.0, 24.0, 24.0);
 	[removeButton setBackgroundImage:[UIImage imageNamed:@"subscriberCloseButton"] forState:UIControlStateNormal];
 	[removeButton setBackgroundImage:[UIImage imageNamed:@"subscriberCloseButton"] forState:UIControlStateHighlighted];
 	[removeButton addTarget:self action:@selector(_goRemove) forControlEvents:UIControlEventTouchUpInside];

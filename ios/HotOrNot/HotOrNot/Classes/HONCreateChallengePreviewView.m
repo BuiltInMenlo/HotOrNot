@@ -113,16 +113,16 @@
 	[self addSubview:toggleKeyboardButton];
 	
 	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_backButton.frame = CGRectMake(263.0, 11.0, 44.0, 44.0);
+	_backButton.frame = CGRectMake(276.0, 10.0, 37.0, 37.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
 	_backButton.alpha = 0.0;
 	[self addSubview:_backButton];
 	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(22.0, 10.0, 268.0, 30.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 9.0, 268.0, 30.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
-	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];;
+	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:22];
 	_placeholderLabel.textColor = [HONAppDelegate honGrey518Color];
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"What's happening?" : @"";
 	_placeholderLabel.alpha = 0.0;
@@ -143,14 +143,14 @@
 	_subjectTextField.delegate = self;
 	[self addSubview:_subjectTextField];
 	
-	_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(22.0, 50.0, 200.0, 50.0)];
-	_actionLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:21];
+	_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 53.0, 200.0, 38.0)];
+	_actionLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	_actionLabel.textColor = [UIColor whiteColor];
 	_actionLabel.backgroundColor = [UIColor clearColor];
 	_actionLabel.numberOfLines = 2;
 	[self addSubview:_actionLabel];
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(246.0, 85.0, 54.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(237.0, 70.0, 54.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
@@ -160,7 +160,7 @@
 	[_uploadingImageView startAnimating];
 	[self addSubview:_uploadingImageView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(22.0, 110.0, 276.0, [UIScreen mainScreen].bounds.size.height - 110.0) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 108.0, 320.0, [UIScreen mainScreen].bounds.size.height - 110.0) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.alpha = 0.0;
@@ -335,7 +335,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight);
+	return (kOrthodoxTableCellHeight - 8.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

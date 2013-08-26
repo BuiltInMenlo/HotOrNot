@@ -223,14 +223,7 @@
 							_filename, @"imgURL",
 							nil];
 	
-	NSLog(@"PARAMS:[%@]", params);
-	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
+	NSLog(@"PARAMS:[%@]", params);	
 	[HONImagingDepictor writeImageFromWeb:_filename withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
@@ -408,17 +401,16 @@
 	_datePicker.date = [dateFormat dateFromString:@"2000-01-01"];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
 	_datePicker.minimumDate = [dateFormat dateFromString:@"1930-01-01"];
-	_datePicker.maximumDate = [NSDate date];// [dateFormat dateFromString:@"2012-01-01"];
+	_datePicker.maximumDate = [NSDate date];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:_datePicker];
-	_birthday = @"2000-01-01";
+	_birthday = @"1970-01-01";
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[self.view addSubview:_tutorialHolderView];
 	
 	UIImageView *page1ImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialHolderView.frame.size.height)];
 	page1ImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fue_dynamicImage_A-568h@2x" : @"fue_dynamicImage_A"];
-	//[page1ImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@.png", [HONAppDelegate tutorialImageForPage:0], ([HONAppDelegate isRetina5]) ? @"-568h" : @""]] placeholderImage:nil];
 	page1ImageView.userInteractionEnabled = YES;
 	page1ImageView.backgroundColor = [UIColor whiteColor];
 	[_tutorialHolderView addSubview:page1ImageView];
