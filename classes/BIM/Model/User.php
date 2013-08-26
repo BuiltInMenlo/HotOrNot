@@ -42,7 +42,7 @@ class BIM_Model_User{
 		$this->pics = $pics;
 		$this->meta = '';
 	    $this->sms_code = BIM_Utils::getSMSCodeForId( $this->id );
-	    $this->friends = BIM_App_Social::getFriends( (object) array( 'userID' => $this->id ) );
+	    $this->friends = BIM_App_Social::getFollowers( (object) array( 'userID' => $this->id ) );
 	    $this->sms_verified = self::isVerified( $this->id );
         $this->is_suspended = $this->isSuspended();
         $this->is_verified = $this->isApproved();

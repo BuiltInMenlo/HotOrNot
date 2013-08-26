@@ -141,4 +141,34 @@ class BIM_App_Social extends BIM_App_Base{
         }
         return $friendList;
     }
+    
+    public static function getFollowed( $params, $assoc = false ){
+        $friends = self::getFriends($params);
+        $followers = array();
+        foreach( $friends as $key => $friend ){
+            if( $friend->source == $params->userID ){
+                if( $assoc ){
+                    $followers[ $key ] = $friend;
+                } else {
+                    $followers[] = $friend;
+                }
+            }
+        }
+        return $followers;
+    }
+    
+    public static function getFollowers( $params, $assoc = false ){
+        $friends = self::getFriends($params);
+        $followers = array();
+        foreach( $friends as $key => $friend ){
+            if( $friend->target == $params->userID ){
+                if( $assoc ){
+                    $followers[ $key ] = $friend;
+                } else {
+                    $followers[] = $friend;
+                }
+            }
+        }
+        return $followers;
+    }
 }

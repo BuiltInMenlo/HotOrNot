@@ -107,6 +107,34 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         return $id;
     }
     
+    public function getMulti( $ids ){
+        
+        //$ids = array_splice($ids, 254);
+        
+		// $IdPlaceholders = trim( str_repeat('?,', count($ids) ), ',' );
+        
+        $ids = join(',', $ids);
+                
+        $sql = "
+            SELECT 
+                tc.*, 
+                tcp.user_id AS challenger_id,
+                tcp.img AS challenger_img,
+                tcp.joined as joined
+            FROM `hotornot-dev`.tblChallenges AS tc 
+                LEFT JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
+                ON tc.id = tcp.challenge_id 
+            WHERE tc.id IN ( $ids )
+            ORDER BY tcp.joined";
+        
+        $stmt = $this->prepareAndExecute( $sql );
+        
+        //$params = array( $ids );
+        //$stmt = $this->prepareAndExecute( $sql, $params );
+
+        $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+    }
+    
     public function get( $id ){
         $volley = null;
         

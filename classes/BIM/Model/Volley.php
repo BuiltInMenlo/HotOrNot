@@ -388,7 +388,7 @@ class BIM_Model_Volley{
     }
     
     public static function getVolleysWithFriends( $userId ){
-        $friends = BIM_App_Social::getFriends( (object) array('userID' => $userId ) );
+        $friends = BIM_App_Social::getFollowed( (object) array('userID' => $userId ) );
         $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
         // we add our own id here so we will include our challenges as well, not just our friends
         $friendIds[] = $userId;
