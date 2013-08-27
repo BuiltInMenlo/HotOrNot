@@ -108,7 +108,7 @@ class BIM_Model_User{
             
             // has nothing, default
             else
-                return ("https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png");
+                return ( 'https://s3.amazonaws.com/hotornot-avatars/defaultAvatar.png' );
         }
         
         // use custom
@@ -150,6 +150,14 @@ class BIM_Model_User{
             $this->pokes += 1;
             $this->purgeFromCache();
             $this->purgeFromCache( $targetId );
+        }
+    }
+
+    public function normalizeImage( $imgUrl  ){
+        if( strstr($imgUrl,'s3.amazonaws.com/hotornot-avatars') ){
+            return str_replace( 's3.amazonaws.com/hotornot-avatars', 'd3j8du2hyvd35p.cloudfront.net', $imgUrl );
+        } else {
+            return str_replace( 'hotornot-avatars.s3.amazonaws.com', 'd3j8du2hyvd35p.cloudfront.net', $imgUrl );
         }
     }
     
