@@ -154,10 +154,6 @@ class BIM_App_Challenges extends BIM_App_Base{
         return $volley;
     }
     
-    public function normalizeImage( $imgUrl  ){
-        return str_replace( 'hotornot-challenges.s3.amazonaws.com', 'd1fqnfrnudpaz6.cloudfront.net', $imgUrl );
-    }
-    
     /**
      * Submits a new challenge to a specific user
      * @param $user_id The user submitting the challenge (integer)

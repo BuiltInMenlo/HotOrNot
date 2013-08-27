@@ -20,6 +20,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function updateUsernameAvatar(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) ){
+            $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
             $userId = $this->resolveUserId( $input->userID );
             $birthdate = !empty( $input->age ) ? $input->age : null;
             if( !$birthdate || ($birthdate && BIM_Utils::ageOK( $birthdate ) ) ){
@@ -37,6 +38,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         $input = (object) ($_POST ? $_POST : $_GET);
         if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) && !empty( $input->age ) && !empty( $input->password ) ){
             if( BIM_Utils::ageOK( $input->age ) ){
+                $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
                 $userId = $this->resolveUserId( $input->userID );
                 $users = new BIM_App_Users();
                 $users->firstRunComplete( $input->userID );

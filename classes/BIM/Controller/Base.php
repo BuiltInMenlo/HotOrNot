@@ -41,4 +41,16 @@ class BIM_Controller_Base{
         }
         return $this->input;
     }
+    
+    public function normalizeVolleyImgUrl( $imgUrl  ){
+        return str_replace( 'hotornot-challenges.s3.amazonaws.com', 'd1fqnfrnudpaz6.cloudfront.net', $imgUrl );
+    }
+
+    public function normalizeAvatarImgUrl( $imgUrl  ){
+        if( strstr($imgUrl,'s3.amazonaws.com/hotornot-avatars') ){
+            return str_replace( 's3.amazonaws.com/hotornot-avatars', 'd3j8du2hyvd35p.cloudfront.net', $imgUrl );
+        } else {
+            return str_replace( 'hotornot-avatars.s3.amazonaws.com', 'd3j8du2hyvd35p.cloudfront.net', $imgUrl );
+        }
+    }
 }

@@ -152,14 +152,6 @@ class BIM_Model_User{
             $this->purgeFromCache( $targetId );
         }
     }
-
-    public function normalizeImage( $imgUrl  ){
-        if( strstr($imgUrl,'s3.amazonaws.com/hotornot-avatars') ){
-            return str_replace( 's3.amazonaws.com/hotornot-avatars', 'd3j8du2hyvd35p.cloudfront.net', $imgUrl );
-        } else {
-            return str_replace( 'hotornot-avatars.s3.amazonaws.com', 'd3j8du2hyvd35p.cloudfront.net', $imgUrl );
-        }
-    }
     
     public function updateUsernameAvatar( $username, $imgUrl, $birthdate = null, $password = null ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
