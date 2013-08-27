@@ -98,8 +98,8 @@
 		_usernamesLabel.text = ([_username length] > 0) ? [NSString stringWithFormat:@"@%@", _username] : @"";
 		//[self addSubview:_usernamesLabel];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 74.0, 74.0)];
-		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_001"];
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 44.0, 44.0)];
+		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_000"];
 		[_controlsHolderView addSubview:_circleFillImageView];
 				
 		_optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -162,7 +162,7 @@
 		_infoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"]];
 		[self addSubview:_infoImageView];
 		
-		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 74.0, 74.0)];
+		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 44.0, 44.0)];
 		clockImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraAnimation_001"],
 										  [UIImage imageNamed:@"cameraAnimation_002"],
 										  [UIImage imageNamed:@"cameraAnimation_003"],
@@ -213,12 +213,10 @@
 	
 	if (_previewImageView == nil) {
 		UIImage *scaledImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83f];
-		//_previewImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 480.0)];
-		//_previewImageView.image = scaledImage;
 		_previewImageView = [[UIImageView alloc] initWithImage:scaledImage];
 		_previewImageView.frame = CGRectOffset(_previewImageView.frame, ABS(self.frame.size.width - scaledImage.size.width) * -0.5, -12.0 + ABS(self.frame.size.width - scaledImage.size.width) * -0.5);
 		_previewImageView.transform = CGAffineTransformScale(_previewImageView.transform, -1.0f, 1.0f);
-		[_previewHolderView addSubview:_previewImageView];
+		//[_previewHolderView addSubview:_previewImageView];
 	}
 }
 
@@ -233,6 +231,10 @@
 - (void)updateClock:(int)tick {
 	//NSLog(@"IMG:[cameraAnimation_%03d]", tick);
 	_circleFillImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"cameraAnimation_%03d", tick]];
+}
+
+- (void)submitStep:(HONCreateChallengePreviewView *)previewView {
+	[self addSubview:previewView];
 }
 
 

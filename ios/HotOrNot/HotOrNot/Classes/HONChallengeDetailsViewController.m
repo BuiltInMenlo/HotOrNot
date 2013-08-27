@@ -264,7 +264,7 @@
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
 	__weak typeof(self) weakSelf = self;
-	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 0.0, 294.0, 348.0)];
+	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 0.0, 294.0, 294.0)];
 	_creatorChallengeImageView.userInteractionEnabled = YES;
 	_creatorChallengeImageView.alpha = [_creatorChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]]];
 	[_scrollView addSubview:_creatorChallengeImageView];
@@ -348,7 +348,7 @@
 	challengersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	challengersLabel.textColor = [HONAppDelegate honGrey455Color];
 	challengersLabel.backgroundColor = [UIColor clearColor];
-	challengersLabel.text = [NSString stringWithFormat:@"%d Volley%@ - Tap and Hold to view", respondedOpponents, (respondedOpponents != 1) ? @"s" : @""];
+	challengersLabel.text = [NSString stringWithFormat:@"%d Volley%@ - Tap and Hold to view", (respondedOpponents + 1), ((respondedOpponents + 1) != 1) ? @"s" : @""];
 	[_scrollView addSubview:challengersLabel];
 	
 	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 283.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
@@ -690,10 +690,10 @@
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"This person will be flagged"
+														message:@"This person will be flagged for review"
 													   delegate:self
 											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
+											  otherButtonTitles:@"Yes, flag user", nil];
 	
 	[alertView setTag:0];
 	[alertView show];

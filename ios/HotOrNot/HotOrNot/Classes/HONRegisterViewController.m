@@ -259,6 +259,7 @@
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
 				
+				[_cameraOverlayView verifyOverlay:NO];
 				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 					//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 					
@@ -305,7 +306,7 @@
 	
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	
-	_headerView = [[HONHeaderView alloc] initWithTitle:@"Register"];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Register for Volley"];
 	[_headerView hideRefreshing];
 	[self.view addSubview:_headerView];
 	
@@ -397,14 +398,17 @@
 	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"yyyy-MM-dd"];
 	
+	NSDateFormatter *dateFormat2 = [[NSDateFormatter alloc] init];
+	[dateFormat2 setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+	
 	_datePicker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0)];
-	_datePicker.date = [dateFormat dateFromString:@"2000-01-01"];
+	_datePicker.date = [dateFormat2 dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]];
 	_datePicker.datePickerMode = UIDatePickerModeDate;
-	_datePicker.minimumDate = [dateFormat dateFromString:@"1930-01-01"];
+	_datePicker.minimumDate = [dateFormat dateFromString:@"1970-01-01"];
 	_datePicker.maximumDate = [NSDate date];
 	[_datePicker addTarget:self action:@selector(_pickerValueChanged) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:_datePicker];
-	_birthday = @"1970-01-01";
+	_birthday = [[HONAppDelegate infoForUser] objectForKey:@"age"];
 	
 	_tutorialHolderView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	[self.view addSubview:_tutorialHolderView];
@@ -480,6 +484,10 @@
 		_submitButton.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 216.0) - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 216.0, 320.0, 216.0);
 	} completion:^(BOOL finished) {
+		NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+		[dateFormatter setDateStyle:NSDateFormatterLongStyle];
+		[dateFormatter setTimeStyle:NSDateFormatterNoStyle];
+		_birthdayLabel.text = [dateFormatter stringFromDate:_datePicker.date];
 	}];
 }
 
@@ -597,7 +605,7 @@
 - (void)_updateClock {
 	_clockCounter++;
 	
-	if (_clockCounter >= 10) {
+	if (_clockCounter >= 9) {
 		[_clockTimer invalidate];
 		_clockTimer = nil;
 		
@@ -815,6 +823,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self _finalizeUser];
+	[_cameraOverlayView verifyOverlay:YES];
 }
 
 
@@ -828,7 +837,7 @@
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 		
-		[_cameraOverlayView animateSubmit];
+		[_cameraOverlayView animateAccept];
 	}
 }
 

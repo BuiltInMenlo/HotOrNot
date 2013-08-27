@@ -14,8 +14,10 @@
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
+#import "Mixpanel.h"
 #import "UIImage+fixOrientation.h"
 
+#import "HONAppDelegate.h"
 #import "HONImagePickerViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONSnapCameraOverlayView.h"
@@ -253,14 +255,8 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)_submitChallenge:(NSMutableDictionary *)params {
 	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 157.0) * 0.5, 157.0, 157.0)];
 	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
-										 [UIImage imageNamed:@"overlayLoader002"],
-										 [UIImage imageNamed:@"overlayLoader003"],
-										 [UIImage imageNamed:@"overlayLoader004"],
-										 [UIImage imageNamed:@"overlayLoader005"],
-										 [UIImage imageNamed:@"overlayLoader006"],
-										 [UIImage imageNamed:@"overlayLoader007"],
-										 [UIImage imageNamed:@"overlayLoader008"],
-										 nil];
+										[UIImage imageNamed:@"overlayLoader002"],
+										[UIImage imageNamed:@"overlayLoader003"], nil];
 	_submitImageView.animationDuration = 1.125f;
 	_submitImageView.animationRepeatCount = 0;
 	_submitImageView.alpha = 0.0;
@@ -541,7 +537,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)_updateClock {
 	_clockCounter++;
 	
-	if (_clockCounter >= 10) {
+	if (_clockCounter >= 9) {
 		[_clockTimer invalidate];
 		_clockTimer = nil;
 		
@@ -700,7 +696,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	
 	///[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	[self dismissViewControllerAnimated:NO completion:^(void) {
+	//[self dismissViewControllerAnimated:NO completion:^(void) {
 		_usernames = [NSMutableArray array];
 		for (HONUserVO *vo in _addFollowing)
 			[_usernames addObject:vo.username];
@@ -710,7 +706,9 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
 		_previewView.delegate = self;
-		[self.view addSubview:_previewView];
+	//[self.view addSubview:_previewView];
+	
+	[_cameraOverlayView submitStep:_previewView];
 		
 		[self _uploadPhoto:_challangeImage];
 		
@@ -727,7 +725,7 @@ const CGFloat kFocusInterval = 0.5f;
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
 			[[NSUserDefaults standardUserDefaults] synchronize];
 		}
-	}];
+	//}];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -977,7 +975,7 @@ const CGFloat kFocusInterval = 0.5f;
 									   _challengerName, @"username",
 									   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
 		
-		if ([_addFollowing count] > 1) {
+		if ([_addFollowing count] > 0) {
 			NSString *usernames = @"";
 			for (HONUserVO *vo in _addFollowing)
 				usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];

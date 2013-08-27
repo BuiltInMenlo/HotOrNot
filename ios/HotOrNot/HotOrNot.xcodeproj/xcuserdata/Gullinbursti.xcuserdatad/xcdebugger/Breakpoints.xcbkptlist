@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "HotOrNot/Classes/HONTimelineViewController.m"
-         timestampString = "399082661.06613"
+         timestampString = "399250391.701"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "474"
-         endingLineNumber = "474"
+         startingLineNumber = "475"
+         endingLineNumber = "475"
          landmarkName = "-loadView"
          landmarkType = "5">
       </FileBreakpoint>

@@ -47,19 +47,19 @@
 	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 17.0, 109.0, 109.0)];
 	_avatarImageView.userInteractionEnabled = YES;
-//	[_avatarImageView setImageWithURL:[NSURL URLWithString:(isUser) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : _userVO.imageURL] placeholderImage:nil];
+	[_avatarImageView setImageWithURL:[NSURL URLWithString:(isUser) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : _userVO.imageURL] placeholderImage:nil];
 	[self addSubview:_avatarImageView];
 	
-	if (isUser) {
-		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
-																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
-	
-	} else {
-		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
-																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-	}
+//	if (isUser) {
+//		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
+//																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+//															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
+//	
+//	} else {
+//		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
+//																  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+//															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+//	}
 	
 	
 	BOOL isFriend = NO;

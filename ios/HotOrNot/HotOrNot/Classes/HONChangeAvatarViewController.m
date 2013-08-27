@@ -95,20 +95,12 @@
 }
 
 - (void)_finalizeUser {
-	
-	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 9], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									[[HONAppDelegate infoForUser] objectForKey:@"name"], @"username",
 									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 									nil];
-	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = NSLocalizedString(@"hud_submit", nil);
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
 	
 	[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
@@ -134,9 +126,8 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				[_progressHUD hide:YES];
-				_progressHUD = nil;
 				
+				[_cameraOverlayView verifyOverlay:NO];
 				[HONAppDelegate writeUserInfo:userResult];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
@@ -271,7 +262,7 @@
 - (void)_updateClock {
 	_clockCounter++;
 	
-	if (_clockCounter >= 10) {
+	if (_clockCounter >= 9) {
 		[_clockTimer invalidate];
 		_clockTimer = nil;
 		
@@ -439,6 +430,7 @@
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self _finalizeUser];
+	[_cameraOverlayView verifyOverlay:YES];
 }
 
 
@@ -449,7 +441,7 @@
 	[_progressHUD hide:YES];
 	_progressHUD = nil;
 	
-	[_cameraOverlayView animateSubmit];
+	[_cameraOverlayView animateAccept];
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {

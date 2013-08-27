@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+
 #import "HONImagePickerViewController.h"
+#import "HONCreateChallengePreviewView.h"
 
 @protocol HONSnapCameraOverlayViewDelegate;
 @interface HONSnapCameraOverlayView : UIView
@@ -19,6 +21,7 @@
 - (void)addMirroredPreview:(UIImage *)image;
 - (void)removePreview;
 - (void)updateClock:(int)tick;
+- (void)submitStep:(HONCreateChallengePreviewView *)previewView;
 @property(nonatomic, assign) id <HONSnapCameraOverlayViewDelegate> delegate;
 @end
 

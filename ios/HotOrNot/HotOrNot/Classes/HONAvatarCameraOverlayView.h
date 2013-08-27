@@ -14,7 +14,9 @@
 - (void)showPreviewAsFlipped:(UIImage *)image;
 - (void)hidePreview;
 - (void)updateClock:(int)tick;
-- (void)animateSubmit;
+- (void)animateAccept;
+- (void)verifyOverlay:(BOOL)isIntro;
+
 
 @property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
 @end

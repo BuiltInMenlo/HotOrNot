@@ -93,7 +93,7 @@ const CGSize kTabSize = {80.0, 50.0};
 
 // snap params
 const CGFloat kSnapRatio = 1.33333333f;
-const CGFloat kSnapJPEGCompress = 0.875f;
+const CGFloat kSnapJPEGCompress = 0.400f;
 
 // animation params
 const CGFloat kHUDTime = 2.33f;

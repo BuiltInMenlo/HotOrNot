@@ -467,8 +467,6 @@
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:self];
 		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
-		NSLog(@"L-FRAME:%@", NSStringFromCGRect(_lHolderView.frame));
-		NSLog(@"R-FRAME:%@", NSStringFromCGRect(_rHolderView.frame));
 		
 		CGRect creatorFrame = CGRectMake(_lHolderView.frame.origin.x, _lHolderView.frame.origin.y, _lHolderView.frame.size.width, _lHolderView.frame.size.height);
 		if (CGRectContainsPoint(creatorFrame, touchPoint))

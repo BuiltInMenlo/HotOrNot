@@ -161,6 +161,16 @@
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
 	
+	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:_bannerView.frame];
+	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:(_timelineType == HONTimelineTypeFriends) ? 0 : 3]] placeholderImage:nil];
+	[_bannerView addSubview:bannerImageView];
+	
+	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	bannerButton.frame = bannerImageView.frame;
+	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
+	[_bannerView addSubview:bannerButton];
+	
+	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[params setObject:[NSString stringWithFormat:@"%d", _timelineType] forKey:@"action"];
@@ -417,15 +427,6 @@
 	
 	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
 	[self.view addSubview:_bannerView];
-	
-	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:_bannerView.frame];
-	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:(_timelineType == HONTimelineTypeFriends) ? 0 : 3]] placeholderImage:nil];
-	[_bannerView addSubview:bannerImageView];
-	
-	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	bannerButton.frame = bannerImageView.frame;
-	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
-	[_bannerView addSubview:bannerButton];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 14.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
@@ -933,10 +934,10 @@
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"This person will be flagged"
+														message:@"This person will be flagged for review"
 													   delegate:self
 											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
+											  otherButtonTitles:@"Yes, flag user", nil];
 	
 	[alertView setTag:2];
 	[alertView show];
@@ -987,10 +988,10 @@
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"This person will be flagged"
+														message:@"This person will be flagged for review"
 													   delegate:self
 											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
+											  otherButtonTitles:@"Yes, flag user", nil];
 	
 	[alertView setTag:2];
 	[alertView show];
@@ -1334,10 +1335,10 @@
 												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																	message:@"This person will be flagged"
+																	message:@"This person will be flagged for review"
 																   delegate:self
 														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"Yes", nil];
+														  otherButtonTitles:@"Yes, flag user", nil];
 				
 				[alertView setTag:2];
 				[alertView show];
@@ -1389,10 +1390,10 @@
 												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
 				
 				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																	message:@"This person will be flagged"
+																	message:@"This person will be flagged for review"
 																   delegate:self
 														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"Yes", nil];
+														  otherButtonTitles:@"Yes, flag user", nil];
 				
 				[alertView setTag:2];
 				[alertView show];

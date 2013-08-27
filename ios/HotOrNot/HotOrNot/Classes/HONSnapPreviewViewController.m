@@ -203,7 +203,7 @@
 	if (_challengeVO != nil)
 		_opponentVO = _challengeVO.creatorVO;
 	
-	UIImageView *uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, ([UIScreen mainScreen].bounds.size.height - 70.0), 64.0, 64.0)];
+	UIImageView *uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, ([UIScreen mainScreen].bounds.size.height - 30.0), 54.0, 14.0)];
 	uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										  [UIImage imageNamed:@"cameraUpload_002"],
 										  [UIImage imageNamed:@"cameraUpload_003"], nil];
