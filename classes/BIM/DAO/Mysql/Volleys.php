@@ -503,7 +503,7 @@ WHERE is_verify != 1
             		)
         		)
         	GROUP BY tc.id
-        	ORDER BY tc.`updated` DESC LIMIT 10
+        	ORDER BY tc.`updated` DESC LIMIT 25
         ";
         
 		$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
@@ -517,11 +517,7 @@ WHERE is_verify != 1
 //        print_r( array( $query, $params ) ); exit;
         
         $stmt = $dao->prepareAndExecute( $query, $params );
-        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
-        foreach( $ids as &$id ){
-            $id = $id->id;
-        }
-        return array_unique($ids);
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
     
     /**
@@ -735,14 +731,10 @@ WHERE is_verify != 1
         	WHERE `status_id` = 4 
         		AND `started` > ? 
 				AND is_verify != 1
-        	ORDER BY `votes` DESC LIMIT 256
+        	ORDER BY `votes` DESC LIMIT 50
         ';
 		$params = array( $startDate );
         $stmt = $this->prepareAndExecute( $query, $params );
-        $ids = $stmt->fetchAll( PDO::FETCH_OBJ );
-        foreach( $ids as &$id ){
-            $id = $id->id;
-        }
-        return $ids;
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
 }
