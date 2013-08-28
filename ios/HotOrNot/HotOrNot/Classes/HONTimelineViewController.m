@@ -137,7 +137,7 @@
 	//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showRegistration:) name:@"SHOW_REGISTRATION" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"SELECTED_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeVerify:) name:@"REMOVE_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showAddContacts:) name:@"SHOW_ADD_CONTACTS" object:nil];
@@ -1074,7 +1074,7 @@
 																 delegate:self
 														cancelButtonTitle:@"Cancel"
 												   destructiveButtonTitle:@"Flag"
-														otherButtonTitles:(isFriend) ? @"Remove friend" : @"Add friend", nil];
+														otherButtonTitles:(isFriend) ? @"Unsubscribe" : @"Subscribe", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
@@ -1236,7 +1236,7 @@
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (indexPath.section == 0)
-		return ((_timelineType == HONTimelineTypeSingleUser) ? 252.0 : 286.0);
+		return ((_timelineType == HONTimelineTypeSingleUser) ? 248.0 : 286.0);
 		
 	else {
 		if (_timelineType == HONTimelineTypeSingleUser)

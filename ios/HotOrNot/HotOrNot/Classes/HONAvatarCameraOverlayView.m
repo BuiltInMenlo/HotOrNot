@@ -11,7 +11,8 @@
 #import "HONImagingDepictor.h"
 
 @interface HONAvatarCameraOverlayView () <UIAlertViewDelegate>
-@property (nonatomic, strong) UIImageView *irisImageView;
+@property (nonatomic, strong) UILabel *actionLabel;
+@property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIView *controlsHolderView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
@@ -30,12 +31,10 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:self.frame];
 		[self addSubview:_previewHolderView];
 		
-		_irisImageView = [[UIImageView alloc] initWithFrame:self.frame];
-		_irisImageView.image = [UIImage imageNamed:@"cameraViewShutter"];
-		_irisImageView.alpha = 0.0;
-		//[self addSubview:_irisImageView];
-		
-		//hide overlay - [self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
+		_irisView = [[UIImageView alloc] initWithFrame:self.frame];
+		_irisView.backgroundColor = [UIColor blackColor];
+		_irisView.alpha = 0.0;
+		[self addSubview:_irisView];
 		
 		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height * 2.0)];
 		[self addSubview:_controlsHolderView];
@@ -47,7 +46,7 @@
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 44.0, 44.0)];
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(261.0, self.frame.size.height - 59.0, 44.0, 44.0)];
 		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_000"];
 		[_controlsHolderView addSubview:_circleFillImageView];
 		
@@ -80,7 +79,7 @@
 		_infoHolderImageView.userInteractionEnabled = YES;
 		[self addSubview:_infoHolderImageView];
 		
-		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(123.0, self.frame.size.height - 150.0, 44.0, 44.0)];
+		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(261.0, self.frame.size.height - 59.0, 44.0, 44.0)];
 		clockImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraAnimation_001"],
 										  [UIImage imageNamed:@"cameraAnimation_002"],
 										  [UIImage imageNamed:@"cameraAnimation_003"],
@@ -88,7 +87,15 @@
 										  [UIImage imageNamed:@"cameraAnimation_005"],
 										  [UIImage imageNamed:@"cameraAnimation_006"],
 										  [UIImage imageNamed:@"cameraAnimation_007"],
-										  [UIImage imageNamed:@"cameraAnimation_008"], nil];
+										  [UIImage imageNamed:@"cameraAnimation_008"],
+										  [UIImage imageNamed:@"cameraAnimation_009"],
+										  [UIImage imageNamed:@"cameraAnimation_010"],
+										  [UIImage imageNamed:@"cameraAnimation_011"],
+										  [UIImage imageNamed:@"cameraAnimation_012"],
+										  [UIImage imageNamed:@"cameraAnimation_013"],
+										  [UIImage imageNamed:@"cameraAnimation_014"],
+										  [UIImage imageNamed:@"cameraAnimation_015"],
+										  [UIImage imageNamed:@"cameraAnimation_016"], nil];
 		clockImageView.animationDuration = 2.5f;
 		clockImageView.animationRepeatCount = 0;
 		[clockImageView startAnimating];
@@ -122,6 +129,13 @@
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[submitHolderView addSubview:skipButton];
+		
+		
+		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 16.0, 200.0, 20.0)];
+		_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+		_actionLabel.textColor = [UIColor whiteColor];
+		_actionLabel.backgroundColor = [UIColor clearColor];
+		[self addSubview:_actionLabel];
 
 	}
 	
@@ -140,6 +154,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self.delegate cameraOverlayViewStartClock:self];
+	_actionLabel.text = @"Take your profile picture";
 }
 
 - (void)_goCancel {
@@ -173,7 +188,12 @@
 }
 
 - (void)_goCapture {
-	[self _animateShutter];
+	_irisView.alpha = 1.0;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_irisView.alpha = 0.65;
+	} completion:^(BOOL finished){}];
+	
+	_actionLabel.text = @"Approve your profile picture";
 	[self.delegate cameraOverlayViewTakePicture:self];
 }
 
@@ -234,7 +254,7 @@
 
 - (void)verifyOverlay:(BOOL)isIntro {
 	if (isIntro) {
-		_overlayImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 157.0) * 0.5, 157.0, 157.0)];
+		_overlayImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
 		_overlayImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
 											 [UIImage imageNamed:@"overlayLoader002"],
 											 [UIImage imageNamed:@"overlayLoader003"], nil];
@@ -243,14 +263,6 @@
 		_overlayImageView.alpha = 0.0;
 		[_overlayImageView startAnimating];
 		[self addSubview:_overlayImageView];
-		
-		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 114.0, 157.0, 24.0)];
-		captionLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:21];
-		captionLabel.textColor = [UIColor whiteColor];
-		captionLabel.backgroundColor = [UIColor clearColor];
-		captionLabel.textAlignment = NSTextAlignmentCenter;
-		captionLabel.text = @"Verifying…";
-		[_overlayImageView addSubview:captionLabel];
 		
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_overlayImageView.alpha = 1.0;
@@ -261,13 +273,6 @@
 			_overlayImageView.alpha = 0.0;
 		} completion:nil];
 	}
-}
-
-- (void)_animateShutter {
-	_irisImageView.alpha = 1.0;
-	[UIView animateWithDuration:0.33 animations:^(void) {
-		_irisImageView.alpha = 0.0;
-	} completion:^(BOOL finished){}];
 }
 
 - (void)updateClock:(int)tick {

@@ -369,7 +369,7 @@
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView {
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
@@ -421,7 +421,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {

@@ -253,7 +253,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_submitChallenge:(NSMutableDictionary *)params {
-	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 157.0) * 0.5, 157.0, 157.0)];
+	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
 	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
 										[UIImage imageNamed:@"overlayLoader002"],
 										[UIImage imageNamed:@"overlayLoader003"], nil];
@@ -262,14 +262,6 @@ const CGFloat kFocusInterval = 0.5f;
 	_submitImageView.alpha = 0.0;
 	[_submitImageView startAnimating];
 	[[[UIApplication sharedApplication] delegate].window addSubview:_submitImageView];
-	
-	UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 114.0, 157.0, 24.0)];
-	captionLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:21];
-	captionLabel.textColor = [UIColor whiteColor];
-	captionLabel.backgroundColor = [UIColor clearColor];
-	captionLabel.textAlignment = NSTextAlignmentCenter;
-	captionLabel.text = @"Submitting…";
-	[_submitImageView addSubview:captionLabel];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_submitImageView.alpha = 1.0;
@@ -456,7 +448,7 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 		if (_challengeVO.statusID != 1) {
 			for (HONOpponentVO *vo in _challengeVO.challengers) {
-				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
+				if ([vo.imagePrefix length] > 0) {
 					[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																			[NSString stringWithFormat:@"%d", vo.userID], @"id",
 																			[NSString stringWithFormat:@"%d", 0], @"points",
@@ -515,6 +507,7 @@ const CGFloat kFocusInterval = 0.5f;
 
 - (void)_showOverlay {
 	[_cameraOverlayView intro];
+	[_cameraOverlayView updateChallengers:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
 }
 
@@ -537,7 +530,7 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)_updateClock {
 	_clockCounter++;
 	
-	if (_clockCounter >= 9) {
+	if (_clockCounter >= 17) {
 		[_clockTimer invalidate];
 		_clockTimer = nil;
 		
@@ -547,6 +540,7 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 		
 		[_imagePicker takePicture];
+		[_cameraOverlayView takePhoto];
 	
 	} else
 		[_cameraOverlayView updateClock:_clockCounter];
@@ -558,7 +552,7 @@ const CGFloat kFocusInterval = 0.5f;
 	[_cameraOverlayView toggleInfoOverlay:NO];
 	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 
@@ -603,7 +597,7 @@ const CGFloat kFocusInterval = 0.5f;
 		
 	} else {
 		_clockCounter = 0;
-		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 	}
 	
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
@@ -695,37 +689,34 @@ const CGFloat kFocusInterval = 0.5f;
 		_challangeImage = _rawImage;
 	
 	
-	///[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	//[self dismissViewControllerAnimated:NO completion:^(void) {
-		_usernames = [NSMutableArray array];
-		for (HONUserVO *vo in _addFollowing)
-			[_usernames addObject:vo.username];
-		
-		for (HONContactUserVO *vo in _addContacts)
-			[_usernames addObject:vo.fullName];
-		
-		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
-		_previewView.delegate = self;
-	//[self.view addSubview:_previewView];
+	_usernames = [NSMutableArray array];
+	for (HONUserVO *vo in _addFollowing)
+		[_usernames addObject:vo.username];
+	
+	for (HONContactUserVO *vo in _addContacts)
+		[_usernames addObject:vo.fullName];
+	
+	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
+	_previewView.delegate = self;
+	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 	
 	[_cameraOverlayView submitStep:_previewView];
 		
-		[self _uploadPhoto:_challangeImage];
+	[self _uploadPhoto:_challangeImage];
+	
+	[_previewView showKeyboard];
+	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
+	
+	int friend_total = 0;
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 		
-		[_previewView showKeyboard];
-		[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
-		
-		int friend_total = 0;
-		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:friend_total] forKey:@"friend_total"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-			
-		} else {
-			friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
-			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
-			[[NSUserDefaults standardUserDefaults] synchronize];
-		}
-	//}];
+	} else {
+		friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
+		[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
@@ -770,7 +761,7 @@ const CGFloat kFocusInterval = 0.5f;
 	[_cameraOverlayView removePreview];
 	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {

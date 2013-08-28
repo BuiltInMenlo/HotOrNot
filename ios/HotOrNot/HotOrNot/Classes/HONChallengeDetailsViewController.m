@@ -214,7 +214,7 @@
 	creatorAvatarImageView.userInteractionEnabled = YES;
 	[headerView addSubview:creatorAvatarImageView];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 10.0, 180.0, 20.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 10.0, 170.0, 20.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -229,7 +229,7 @@
 	[headerView addSubview:creatorNameLabel];
 	
 	if ([_challengeVO.challengers count] > 0) {
-		UILabel *lastJoinedLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 5.0, 160.0, 19.0)];
+		UILabel *lastJoinedLabel = [[UILabel alloc] initWithFrame:CGRectMake(226.0, 5.0, 80.0, 19.0)];
 		lastJoinedLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 		lastJoinedLabel.textColor = [HONAppDelegate honOrthodoxGreenColor];
 		lastJoinedLabel.backgroundColor = [UIColor clearColor];
@@ -264,7 +264,7 @@
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
 	__weak typeof(self) weakSelf = self;
-	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, 0.0, 294.0, 294.0)];
+	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 0.0, 294.0, 294.0)];
 	_creatorChallengeImageView.userInteractionEnabled = YES;
 	_creatorChallengeImageView.alpha = [_creatorChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]]];
 	[_scrollView addSubview:_creatorChallengeImageView];

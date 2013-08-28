@@ -17,6 +17,7 @@
 - (void)intro;
 - (void)toggleInfoOverlay:(BOOL)isIntro;
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining;
+- (void)takePhoto;
 - (void)addPreview:(UIImage *)image;
 - (void)addMirroredPreview:(UIImage *)image;
 - (void)removePreview;

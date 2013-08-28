@@ -78,22 +78,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 
-//#pragma mark - Touch Handlers
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-////	UITouch *touch = [touches anyObject];
-////	CGPoint location = [touch locationInView:self.view];
-//	
-//	CGPoint touchPoint = [[[event touchesForView:self.view] anyObject] locationInView:self.view];
-//	
-//	NSLog(@"TOUCH:[%@][%@]", NSStringFromCGPoint(touchPoint), NSStringFromCGRect(_verifyOverlayView.frame));
-//	
-//	if (!CGRectContainsPoint(_verifyOverlayView.frame, touchPoint)) {
-//		[_verifyOverlayView removeFromSuperview];
-//		_verifyOverlayView = nil;
-//	}
-//}
-
-
 #pragma mark - Data Calls
 - (void)_retrieveUser {
 	if ([HONAppDelegate infoForUser]) {
@@ -185,7 +169,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				_progressHUD = nil;
 			}
 			
-			_emptyImageView.hidden = [_challenges count] > 0;
+			//_emptyImageView.hidden = [_challenges count] > 0;
 			//_bannerView.hidden = ([_challenges count] == 0 || ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"]);
 		}
 		
@@ -295,10 +279,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_isPrivate = NO;
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	bgImageView.frame = self.view.bounds;
-//	[self.view addSubview:bgImageView];
-	
 	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 	
 	self.navigationController.navigationBar.topItem.title = @"Verify";
@@ -319,8 +299,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_bannerView addSubview:bannerButton];
 	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
-	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 140.0);
-	_emptyImageView.hidden = YES;
+	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"] * 90.0));
+	//_emptyImageView.hidden = YES;
 	[self.view addSubview:_emptyImageView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 14.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
@@ -332,10 +312,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_tableView.userInteractionEnabled = YES;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:_tableView];
-	
-//	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-//	[_tableView addGestureRecognizer:lpGestureRecognizer];
+	//[self.view addSubview:_tableView];
 	
 	[_refreshButtonView toggleRefresh:YES];
 }

@@ -29,7 +29,7 @@
 		creatorAvatarImageView.userInteractionEnabled = YES;
 		[self addSubview:creatorAvatarImageView];
 		
-		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 10.0, 180.0, 20.0)];
+		UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 10.0, 170.0, 20.0)];
 		subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 		subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 		subjectLabel.backgroundColor = [UIColor clearColor];
@@ -44,7 +44,7 @@
 		[self addSubview:creatorNameLabel];
 		
 		if ([_challengeVO.challengers count] > 0 && [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).imagePrefix length] > 0) {
-			UILabel *lastJoinedLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 5.0, 160.0, 19.0)];
+			UILabel *lastJoinedLabel = [[UILabel alloc] initWithFrame:CGRectMake(226.0, 5.0, 80.0, 19.0)];
 			lastJoinedLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 			lastJoinedLabel.textColor = [HONAppDelegate honOrthodoxGreenColor];
 			lastJoinedLabel.backgroundColor = [UIColor clearColor];

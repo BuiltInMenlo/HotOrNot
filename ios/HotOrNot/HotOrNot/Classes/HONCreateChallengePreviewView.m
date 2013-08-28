@@ -12,19 +12,23 @@
 #import "HONImagingDepictor.h"
 #import "HONImageLoadingView.h"
 #import "HONUserVO.h"
-#import "HONCameraPreviewSubscriberViewCell.h"
+#import "HONCameraPreviewSubscribersView.h"
 
-@interface HONCreateChallengePreviewView () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UITextFieldDelegate, HONCameraPreviewSubscriberViewCellDelegate>
+@interface HONCreateChallengePreviewView () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UITextFieldDelegate, HONCameraPreviewSubscribersViewDelegate>
+@property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UILabel *actionLabel;
 @property (nonatomic, strong) UIImage *previewImage;
 @property (nonatomic, strong) NSString *subjectName;
+@property (nonatomic, strong) UIView *subjectHolderView;
 @property (nonatomic, strong) UILabel *placeholderLabel;
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *backButton;
-@property (nonatomic, retain) UIButton *submitButton;
+@property (nonatomic, strong) UIButton *previewBackButton;
+@property (nonatomic, strong) UIButton *subscribersBackButton;
+@property (nonatomic, strong) UIButton *subscribersButton;
+@property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
-@property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) NSArray *opponents;
+@property (nonatomic, strong) HONCameraPreviewSubscribersView *subscribersView;
 @end
 
 @implementation HONCreateChallengePreviewView
@@ -39,8 +43,6 @@
 		
 		_previewImage = image;
 		_subjectName = subject;
-		
-		_opponents = [NSArray array];
 		
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:(([HONAppDelegate isRetina5]) ? 1.25f : 1.125f) * (self.frame.size.width / image.size.width)];
 		//NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
@@ -62,8 +64,6 @@
 		
 		_previewImage = image;
 		_subjectName = subject;
-		
-		_opponents = [NSArray array];
 		
 		_previewImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83333f];
 		//NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
@@ -87,12 +87,12 @@
 }
 
 - (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw {
-	_opponents = users;
-	_actionLabel.text = (isJoining) ? [NSString stringWithFormat:@"joining %d of your friends", [_opponents count]] : [NSString stringWithFormat:@"sending to %d of your subscribers", [_opponents count]];
+	_subscribersView.opponents = [users mutableCopy];
+	_actionLabel.text = (isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [users count], ([users count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [users count], ([users count] != 1 ? @"s" : @"")];
 	
 	
-	if (isRedraw)
-		[_tableView reloadData];
+//	if (isRedraw)
+//		[_tableView reloadData];
 }
 
 - (void)showKeyboard {
@@ -103,30 +103,47 @@
 
 #pragma mark - UI Presentation
 - (void)_makeUI {
-	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
-	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	[self addSubview:overlayView];
+	_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
+	_blackMatteView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.65];
+	[self addSubview:_blackMatteView];
 	
-	UIButton *toggleKeyboardButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	toggleKeyboardButton.frame = self.frame;
-	[toggleKeyboardButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:toggleKeyboardButton];
+	_previewBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_previewBackButton.frame = self.frame;
+	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchUpInside];
+	
+	_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 16.0, 200.0, 20.0)];
+	_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+	_actionLabel.textColor = [UIColor whiteColor];
+	_actionLabel.backgroundColor = [UIColor clearColor];
+	[self addSubview:_actionLabel];
+	
+	_subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_subscribersButton.frame = CGRectMake(13.0, 27.0, 44.0, 44.0);
+	[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateNormal];
+	[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_Active"] forState:UIControlStateHighlighted];
+	[_subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
+	//_subscribersButton.alpha = 0.0;
+	[self addSubview:_subscribersButton];
 	
 	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_backButton.frame = CGRectMake(268.0, 10.0, 44.0, 44.0);
+	_backButton.frame = CGRectMake(262.0, 14.0, 44.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	_backButton.alpha = 0.0;
+	//_backButton.alpha = 0.0;
 	[self addSubview:_backButton];
+	
+	_subjectHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 35.0, 320.0, 53.0)];
+	_subjectHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	_subjectHolderView.alpha = 0.0;
+	[self addSubview:_subjectHolderView];
 	
 	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 9.0, 268.0, 30.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
-	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:22];
+	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:23];
 	_placeholderLabel.textColor = [HONAppDelegate honGrey518Color];
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"What's happening?" : @"";
-	_placeholderLabel.alpha = 0.0;
-	[self addSubview:_placeholderLabel];
+	[_subjectHolderView addSubview:_placeholderLabel];
 	
 	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
 	_subjectTextField.frame = CGRectOffset(_subjectTextField.frame, -10.0, 0.0);
@@ -136,21 +153,13 @@
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
 	[_subjectTextField setTextColor:[UIColor whiteColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
-	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:22];
+	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:23];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
 	_subjectTextField.text = _subjectName;
-	_subjectTextField.alpha = 0.0;
 	_subjectTextField.delegate = self;
-	[self addSubview:_subjectTextField];
+	[_subjectHolderView addSubview:_subjectTextField];
 	
-	_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 53.0, 200.0, 38.0)];
-	_actionLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
-	_actionLabel.textColor = [UIColor whiteColor];
-	_actionLabel.backgroundColor = [UIColor clearColor];
-	_actionLabel.numberOfLines = 2;
-	[self addSubview:_actionLabel];
-	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(237.0, 70.0, 54.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, 177.0 + ([HONAppDelegate isRetina5] * 65.0), 54.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
@@ -160,23 +169,37 @@
 	[_uploadingImageView startAnimating];
 	[self addSubview:_uploadingImageView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 108.0, 320.0, [UIScreen mainScreen].bounds.size.height - 110.0) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.alpha = 0.0;
-	_tableView.delegate = self;
-	_tableView.dataSource = self;
-	_tableView.scrollsToTop = NO;
-	_tableView.showsVerticalScrollIndicator = YES;
-	[self addSubview:_tableView];
-		
-	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(160.0, [UIScreen mainScreen].bounds.size.height - 53.0, 160.0, 53.0);
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButttonCamera_nonActive"] forState:UIControlStateNormal];
-	[_submitButton setBackgroundImage:[UIImage imageNamed:@"submitButttonCamera_Active"] forState:UIControlStateHighlighted];
-	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-	_submitButton.hidden = YES;
-	[self addSubview:_submitButton];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0)];
+	_buttonHolderView.alpha = 0.0;
+	[self addSubview:_buttonHolderView];
+	
+	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	previewButton.frame = CGRectMake(0.0, 0.0, 160.0, 53.0);
+	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_nonActive"] forState:UIControlStateNormal];
+	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_Active"] forState:UIControlStateHighlighted];
+	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchUpInside];
+	[_buttonHolderView addSubview:previewButton];
+	
+	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	submitButton.frame = CGRectMake(160.0, 0.0, 160.0, 53.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButttonCamera_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButttonCamera_Active"] forState:UIControlStateHighlighted];
+	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[_buttonHolderView addSubview:submitButton];
+	
+	_subscribersView = [[HONCameraPreviewSubscribersView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, [UIScreen mainScreen].bounds.size.height + 50.0)];
+	_subscribersView.hidden = YES;
+	_subscribersView.alpha = 0.0;
+	_subscribersView.delegate = self;
+	[self addSubview:_subscribersView];
+	
+	_subscribersBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_subscribersBackButton.frame = CGRectMake(9.0, 14.0, 44.0, 44.0);
+	[_subscribersBackButton setBackgroundImage:[UIImage imageNamed:@"backCameraButton_nonActive"] forState:UIControlStateNormal];
+	[_subscribersBackButton setBackgroundImage:[UIImage imageNamed:@"backCameraButton_Active"] forState:UIControlStateHighlighted];
+	[_subscribersBackButton addTarget:self action:@selector(_goSubscribersClose) forControlEvents:UIControlEventTouchUpInside];
+	_subscribersBackButton.alpha = 0.0;
+	[self addSubview:_subscribersBackButton];
 }
 
 
@@ -188,6 +211,57 @@
 	else
 		[self _raiseKeyboard];
 }
+
+- (void)_goSubscribers {
+	_subscribersView.hidden = NO;
+	
+	[_subjectTextField resignFirstResponder];
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_actionLabel.frame = CGRectOffset(_actionLabel.frame, 48.0, 0.0);
+		_subscribersButton.frame = CGRectOffset(_subscribersButton.frame, 48.0, 0.0);
+		_subscribersButton.alpha = 0.5;
+		
+		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, 100);
+		_subjectHolderView.alpha = 0.0;
+		_backButton.alpha = 0.0;
+		_uploadingImageView.alpha = 0.0;
+		
+		_subscribersView.alpha = 1.0;
+		_subscribersView.frame = CGRectOffset(_subscribersView.frame, 0.0, -100.0);
+		
+		_buttonHolderView.alpha = 0.0;
+		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_subscribersBackButton.alpha = 1.0;
+		}];
+	}];
+}
+
+- (void)_goSubscribersClose {
+	_subscribersView.hidden = NO;
+	
+	[_subjectTextField becomeFirstResponder];
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_subscribersBackButton.alpha = 0.0;
+		
+		_actionLabel.frame = CGRectOffset(_actionLabel.frame, -48.0, 0.0);
+		_subscribersButton.frame = CGRectOffset(_subscribersButton.frame, -48.0, 0.0);
+		_subscribersButton.alpha = 1.0;
+		
+		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, -100);
+		_subjectHolderView.alpha = 1.0;
+		_backButton.alpha = 1.0;
+		_uploadingImageView.alpha = 1.0;
+		
+		_subscribersView.alpha = 0.0;
+		_subscribersView.frame = CGRectOffset(_subscribersView.frame, 0.0, 100.0);
+		
+		_buttonHolderView.alpha = 1.0;
+		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
+	} completion:nil];
+}
+
 
 - (void)_goAddChallengers {
 	[self.delegate previewViewAddChallengers:self];
@@ -216,6 +290,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[self _dropKeyboardAndRemove:NO];
 	if ([_subjectTextField.text length] > 0) {
 		_subjectName = _subjectTextField.text;
 		
@@ -229,19 +304,15 @@
 		
 		[_subjectTextField resignFirstResponder];
 		[UIView animateWithDuration:0.25 animations:^(void) {
-			_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+			_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
 			_uploadingImageView.alpha = 0.0;
 			_placeholderLabel.alpha = 0.0;
 			_subjectTextField.alpha = 0.0;
 			_backButton.alpha = 0.0;
-			_tableView.alpha = 0.0;
-			_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -100.0);
 		} completion:^(BOOL finished) {
-			_submitButton.hidden = YES;
 		}];
 	
 	} else {
-		[self _dropKeyboardAndRemove:NO];
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Need to enter a hashtag"
 															message:@"Enter hashtag before submitting!"
 														   delegate:self
@@ -260,17 +331,19 @@
 
 #pragma mark - UI Presentation
 - (void)_raiseKeyboard {
-	_submitButton.hidden = NO;
-//	_subjectBGView.hidden = NO;
 	[_subjectTextField becomeFirstResponder];
+	[_previewBackButton removeFromSuperview];;
+	
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blackMatteView.alpha = 0.65;
+		_actionLabel.alpha = 1.0;
 		_uploadingImageView.alpha = 1.0;
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, -216.0);
-		_placeholderLabel.alpha = 1.0;
-		_subjectTextField.alpha = 1.0;
+		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);
+		_buttonHolderView.alpha = 1.0;
+		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, -100);
+		_subjectHolderView.alpha = 1.0;
 		_backButton.alpha = 1.0;
-		_tableView.alpha = 0.0;
-		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, 100.0);
+		_subscribersButton.alpha = 1.0;
 	}completion:^(BOOL finished) {
 	}];
 }
@@ -278,18 +351,20 @@
 - (void)_dropKeyboardAndRemove:(BOOL)isRemoved {
 	[_subjectTextField resignFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_submitButton.frame = CGRectOffset(_submitButton.frame, 0.0, 216.0);
+		_blackMatteView.alpha = 0.0;
+		_actionLabel.alpha = 0.0;
+		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
 		_uploadingImageView.alpha = 0.0;
-		_placeholderLabel.alpha = 0.0;
-		_subjectTextField.alpha = 0.0;
+		_subjectHolderView.frame = CGRectOffset(_subjectHolderView.frame, 0.0, 100);
+		_subjectHolderView.alpha = 0.0;
 		_backButton.alpha = 0.0;
-		_tableView.alpha = 1.0;
-		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, -100.0);
+		_subscribersButton.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		_submitButton.hidden = YES;
-		
 		if (isRemoved)
 			[self removeFromSuperview];
+		
+		else
+			[self addSubview:_previewBackButton];
 	}];
 }
 
@@ -299,49 +374,9 @@
 	
 }
 
-
-#pragma mark - SubscriberViewCell Delegates
-- (void)subscriberViewCell:(HONCameraPreviewSubscriberViewCell *)cameraPreviewSubscriberViewCell removeOpponent:(HONUserVO *)userVO {
-	int row = 0;
-	for (HONUserVO *vo in _opponents) {
-		if (vo.userID == userVO.userID)
-			break;
-		
-		row++;
-	}
-	
-	//[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:row inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-	
-	
+#pragma mark - SubscriberView Delegates
+- (void)subscriberView:(HONCameraPreviewSubscribersView *)cameraPreviewSubscribersView removeOpponent:(HONUserVO *)userVO {
 	[self.delegate previewView:self removeChallenger:userVO];
-}
-
-#pragma mark - TableView DataSource Delegates
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return ([_opponents count]);
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONCameraPreviewSubscriberViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-	
-	if (cell == nil)
-		cell = [[HONCameraPreviewSubscriberViewCell alloc] init];
-	
-	cell.delegate = self;
-	[cell setUserVO:(HONUserVO *)[_opponents objectAtIndex:indexPath.row]];
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-	
-	return (cell);
-}
-
-
-#pragma mark - TableView Delegates
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (kOrthodoxTableCellHeight - 8.0);
-}
-
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
 }
 
 
