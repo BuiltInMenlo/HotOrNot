@@ -78,7 +78,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $deviceTokens = array_unique($deviceTokens);
         
         $push = array(
-            "device_tokens" =>  $deviceTokens, 
+            "device_tokens" =>  $deviceTokens,
             "type" => "3", 
             "aps" =>  array(
                 "alert" =>  $msg,
@@ -380,11 +380,9 @@ class BIM_App_Challenges extends BIM_App_Base{
             $OK = false;
             if( $volley->is_private == 'N' ){
                 $volley->join( $userId, $imgUrl );
-                if( $userId != $volley->creator->id ){
-                    $creator = BIM_Model_User::get($volley->creator->id );
-                    $joiner = BIM_Model_User::get( $userId );
-                    $this->doAcceptNotification($volley, $creator, $joiner);
-                }
+                $creator = BIM_Model_User::get($volley->creator->id );
+                $joiner = BIM_Model_User::get( $userId );
+                $this->doAcceptNotification($volley, $creator, $joiner);
             }
         }
         return $volley;        

@@ -18,10 +18,13 @@ class BIM_Controller{
             $controllerClass = $request->controllerClass;
             $r = new $controllerClass();
             if( $method && method_exists( $r, $method ) ){
-                $r->user = BIM_Utils::getSessionUser();
-                $res = $r->$method();
-                if( is_bool( $res ) ){
-                    $res = array( 'result' => $res );
+                $res = $this->getAccountSuspendedVolley();
+                if( !$res ){
+                    $r->user = BIM_Utils::getSessionUser();
+                    $res = $r->$method();
+                    if( is_bool( $res ) ){
+                        $res = array( 'result' => $res );
+                    }
                 }
             }
         }
@@ -29,6 +32,21 @@ class BIM_Controller{
             file_put_contents('/tmp/sql_profile', print_r(BIM_DAO_Mysql::$profile ,1) );
         }
         $this->sendResponse( 200, $res );
+    }
+    
+    // returns an empty array or
+    // a verify volley if the user is suspended
+    public function getAccountSuspendedVolley(){
+        $volley = null;
+        $input = (object) ($_POST ? $_POST : $_GET);
+        $user = BIM_Utils::getSessionUser();
+        if( !$user && !empty( $input->userID ) ){
+            $user = BIM_Model_User::get( $input->userID );
+        }
+        if( $user && $user->isSuspended() ){
+            $volley =  array( BIM_Model_Volley::getAccountSuspendedVolley($input->userID) );
+        }
+        return $volley;
     }
         
 	public function getStatusCodeMessage($status) {			
