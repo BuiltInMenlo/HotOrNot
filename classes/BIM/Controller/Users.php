@@ -41,8 +41,8 @@ class BIM_Controller_Users extends BIM_Controller_Base {
                 $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
                 $userId = $this->resolveUserId( $input->userID );
                 $users = new BIM_App_Users();
-                $users->firstRunComplete( $input->userID );
-                // BIM_Jobs_Users::queueFirstRunComplete($userId);
+                //$users->firstRunComplete( $input->userID );
+                BIM_Jobs_Users::queueFirstRunComplete($userId);
                 $users = new BIM_App_Users();
 			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age, $input->password );
             }

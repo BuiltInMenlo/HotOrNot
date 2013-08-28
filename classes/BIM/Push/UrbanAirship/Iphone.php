@@ -6,7 +6,7 @@ class BIM_Push_UrbanAirship_Iphone{
         if( !is_array($ids) ){
             $ids = array( $ids );
         }
-        $push = array(
+        $push = (object) array(
             'device_tokens' => $ids,
             "aps" => array(
                 "alert" => $msg,
