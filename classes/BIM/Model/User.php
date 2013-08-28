@@ -10,10 +10,8 @@ class BIM_Model_User{
         }
         
         if( $params ){
+            unset( $params->password );
             foreach( $params as $prop => $value ){
-                if( preg_match('@password@', $prop) ) {
-                    continue;
-                }
                 $this->$prop = $value;
             }
             if( $this->age <= 0 ){
