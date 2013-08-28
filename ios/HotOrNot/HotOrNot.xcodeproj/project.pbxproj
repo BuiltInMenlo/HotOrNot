@@ -2367,10 +2367,10 @@
 			children = (
 				4C6BBC841615455000145996 /* HONSnapCameraOverlayView.h */,
 				4C6BBC851615455000145996 /* HONSnapCameraOverlayView.m */,
-				4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */,
-				4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */,
 				4C3D7E90176D3B8400AE07B3 /* HONCreateChallengePreviewView.h */,
 				4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */,
+				4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */,
+				4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */,
 				4C0F5EE117C9508000894551 /* HONCameraPreviewSubscriberViewCell.h */,
 				4C0F5EE217C9508000894551 /* HONCameraPreviewSubscriberViewCell.m */,
 				4C60AF6917CCFEF800609792 /* HONCameraPreviewSubscribersView.h */,

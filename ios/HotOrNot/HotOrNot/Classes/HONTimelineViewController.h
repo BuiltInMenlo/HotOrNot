@@ -25,5 +25,6 @@ typedef enum {
 - (id)initWithFriends;
 - (id)initWithSubject:(NSString *)subjectName;
 - (id)initWithUsername:(NSString *)username;
+- (id)initWithUserID:(int)userID;
 - (id)initWithUserID:(int)userID andOpponentID:(int)opponentID asPublic:(BOOL)isPublic;
 @end

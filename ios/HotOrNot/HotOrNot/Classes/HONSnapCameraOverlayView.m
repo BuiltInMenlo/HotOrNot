@@ -57,17 +57,18 @@
 		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
 		[self addSubview:_controlsHolderView];
 		
-		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 16.0, 200.0, 20.0)];
+		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 200.0, 20.0)];
 		_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 		_actionLabel.textColor = [UIColor whiteColor];
 		_actionLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:_actionLabel];
 		
 		_subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_subscribersButton.frame = CGRectMake(13.0, 27.0, 44.0, 44.0);
+		_subscribersButton.frame = CGRectMake(9.0, 27.0, 44.0, 44.0);
 		[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateNormal];
 		[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateHighlighted];
 		//[_subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
+		_subscribersButton.alpha = 0.5;
 		[self addSubview:_subscribersButton];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -77,7 +78,7 @@
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_cancelButton];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(261.0, self.frame.size.height - 60.0, 44.0, 44.0)];
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(201.0, self.frame.size.height - 121.0, 128.0, 128.0)];
 		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_000"];
 		[_controlsHolderView addSubview:_circleFillImageView];
 				
@@ -105,7 +106,7 @@
 		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
 		[self addSubview:_infoImageView];
 		
-		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(261.0, self.frame.size.height - 60.0, 44.0, 44.0)];
+		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(201.0, self.frame.size.height - 121.0, 128.0, 128.0)];
 		clockImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraAnimation_001"],
 										  [UIImage imageNamed:@"cameraAnimation_002"],
 										  [UIImage imageNamed:@"cameraAnimation_003"],

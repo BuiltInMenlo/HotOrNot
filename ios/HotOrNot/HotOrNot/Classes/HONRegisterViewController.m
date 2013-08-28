@@ -22,6 +22,7 @@
 
 @interface HONRegisterViewController () <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate, HONAvatarCameraOverlayDelegate, AmazonServiceRequestDelegate>
 @property (nonatomic, strong) UIImagePickerController *imagePicker;
+@property (nonatomic, strong) UIImagePickerController *previewPicker;
 @property (nonatomic, strong) HONAvatarCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -433,6 +434,26 @@
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	
+//	_previewPicker = [[UIImagePickerController alloc] init];
+//	_previewPicker.delegate = nil;
+//	_previewPicker.navigationBarHidden = YES;
+//	_previewPicker.toolbarHidden = YES;
+//	_previewPicker.allowsEditing = NO;
+//	
+//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//		_previewPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+//		
+//		// these two fuckers don't work in ios7 right now!!
+//		_previewPicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+//		_previewPicker.showsCameraControls = NO;
+//		// ---------------------------------------------------------------------------
+//		
+//		//_previewPicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+//	}
+//	
+//	[self presentViewController:_previewPicker animated:YES completion:^(void) {
+//	}];
 }
 
 
@@ -440,11 +461,37 @@
 - (void)_previewStarted:(NSNotification *)notification {
 	NSLog(@"_previewStarted");
 	
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
-		[self _removeIris];
+	if (_imagePicker != nil) {
+		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+			[self _removeIris];
+		
+		[self _showOverlay];
+		//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
+	}
 	
-	[self _showOverlay];
-	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
+//	if (_previewPicker != nil) {
+//		_cameraIrisImageView.hidden = YES;
+//		[_cameraIrisImageView removeFromSuperview];
+//		
+//		_plCameraIrisAnimationView.hidden = YES;
+//		[_plCameraIrisAnimationView removeFromSuperview];
+//		
+//		UIView *cameraOverlayHolderView = [[UIView alloc] initWithFrame:self.view.frame];
+//		
+//		UIImageView *whySelfieImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, _tutorialHolderView.frame.size.height)];
+//		whySelfieImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"fue_dynamicImage_A-568h@2x" : @"fue_dynamicImage_A"];
+//		whySelfieImageView.backgroundColor = [UIColor whiteColor];
+//		[cameraOverlayHolderView addSubview:whySelfieImageView];
+//		
+//		UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeTutorialButton.frame = CGRectMake(53.0, _tutorialHolderView.frame.size.height - (([HONAppDelegate isRetina5]) ? 89.0 : 78.0), 214.0, 49.0);
+//		[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
+//		[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
+//		[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+//		[cameraOverlayHolderView addSubview:closeTutorialButton];
+//		
+//		//_previewPicker.cameraOverlayView = cameraOverlayHolderView;
+//	}
 }
 
 
@@ -626,6 +673,11 @@
 		_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
 		_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
 	}
+	
+//	if (_previewPicker != nil) {
+//		_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
+//		_plCameraIrisAnimationView = [[[[viewController.view subviews] objectAtIndex:2] subviews] objectAtIndex:0];
+//	}
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {

@@ -318,7 +318,7 @@
 			
 			mixPanelTrack = @"Tab Bar - Settings";
 			//notificationName = @"SELECTED_PROFILE_TAB";
-			notificationName = @"SELECTED_VOTE_TAB";
+			//notificationName = @"SELECTED_VOTE_TAB";
 			break;
 	}
 	

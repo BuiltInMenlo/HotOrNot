@@ -62,6 +62,7 @@
 @property (nonatomic, strong) UIImageView *tooltipImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) UIButton *backButton;
+@property (nonatomic) int userID;
 @end
 
 @implementation HONTimelineViewController
@@ -103,6 +104,20 @@
 	return (self);
 }
 
+
+- (id)initWithUserID:(int)userID {
+	if ((self = [super init])) {
+		_isPushView = YES;
+		_isPublic = YES;
+		_isProfileFiltered = YES;
+		_timelineType = HONTimelineTypeSingleUser;
+		_userID = userID;
+		
+		[self _registerNotifications];
+	}
+	
+	return (self);
+}
 
 - (id)initWithUsername:(NSString *)username {
 	if ((self = [super init])) {
@@ -244,7 +259,48 @@
 	}];
 }
 
-- (void)_retrieveUser {
+- (void)_retrieveUserByID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 5], @"action",
+							[NSString stringWithFormat:@"%d", _userID], @"userID",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			_userVO = [HONUserVO userWithDictionary:userResult];
+			_username = _userVO.username;
+			
+			self.navigationController.navigationBar.topItem.title = @"Me";
+			_backButton.hidden = !_isProfileViewable;
+			[_tableView reloadData];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_retrieveUserByUsername {
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", 8], @"action",
 							_username, @"username",
@@ -402,11 +458,11 @@
 	_cells = [NSMutableArray array];
 	
 	if (_isPushView) {
-		NSString *title = @"";
+		NSString *title = @"Me";
 		if (_timelineType == HONTimelineTypeSubject) {
 			title = _subjectName;
 		
-		} else if (_timelineType == HONTimelineTypeSingleUser) {
+		} else if (_timelineType == HONTimelineTypeSingleUser && _username != nil) {
 			title = [NSString stringWithFormat:@"@%@", _username];
 			
 			if ([[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username] && [(NSNumber *)[[NSUserDefaults standardUserDefaults] objectForKey:@"current_tab"] intValue] == 3) {
@@ -467,8 +523,13 @@
 	
 	[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.5];
 	
-	if (_timelineType == HONTimelineTypeSingleUser)
-		[self _retrieveUser];
+	if (_timelineType == HONTimelineTypeSingleUser) {
+		if (_username != nil)
+			[self _retrieveUserByUsername];
+		
+		else
+			[self _retrieveUserByID];
+	}
 	
 	if (!_isPushView) {
 #if __ALWAYS_VERIFY__ == 1
@@ -506,7 +567,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
-		[self _retrieveUser];
+		[self _retrieveUserByUsername];
 	
 	[self _retrieveChallenges];
 }
@@ -690,7 +751,7 @@
 	[_refreshButtonView toggleRefresh:YES];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
-		[self _retrieveUser];
+		[self _retrieveUserByUsername];
 	
 	[self _retrieveChallenges];
 }
@@ -699,7 +760,7 @@
 	[_refreshButtonView toggleRefresh:YES];
 	
 	if (_timelineType == HONTimelineTypeSingleUser)
-		[self _retrieveUser];
+		[self _retrieveUserByUsername];
 	
 	[self _retrieveChallenges];
 }

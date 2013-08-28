@@ -36,7 +36,7 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(13.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
 	holderView.clipsToBounds = YES;
 	[self addSubview:holderView];
 	
@@ -50,7 +50,7 @@
 	HONImageLoadingView *rImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0 + kSnapMediumDim, 4.0)];
 	[holderView addSubview:rImageLoadingView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim + 1.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_lChallengeVO.challengers lastObject]).imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:rImageView];
 	
@@ -78,7 +78,7 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(163.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
 	holderView.clipsToBounds = YES;
 	[self addSubview:holderView];
 		
@@ -92,7 +92,7 @@
 	HONImageLoadingView *rImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0 + kSnapMediumDim, 4.0)];
 	[holderView addSubview:rImageLoadingView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim + 1.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
 	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_rChallengeVO.challengers lastObject]).imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:rImageView];
 	

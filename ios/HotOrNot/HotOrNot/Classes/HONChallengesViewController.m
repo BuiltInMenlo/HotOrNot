@@ -169,7 +169,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				_progressHUD = nil;
 			}
 			
-			//_emptyImageView.hidden = [_challenges count] > 0;
+			_emptyImageView.hidden = [_challenges count] > 0;
 			//_bannerView.hidden = ([_challenges count] == 0 || ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"]);
 		}
 		
@@ -253,7 +253,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 							@"0", @"auto", nil];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIAddFriend);
-	AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIAddFriend parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
@@ -300,7 +300,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
 	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"] * 90.0));
-	//_emptyImageView.hidden = YES;
+	_emptyImageView.hidden = YES;
 	[self.view addSubview:_emptyImageView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 14.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
@@ -312,7 +312,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_tableView.userInteractionEnabled = YES;
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
-	//[self.view addSubview:_tableView];
+	[self.view addSubview:_tableView];
 	
 	[_refreshButtonView toggleRefresh:YES];
 }
@@ -635,7 +635,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									nil];
 			
 			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 			[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {
@@ -681,7 +681,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									nil];
 			
 			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-			AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:[HONAppDelegate apiServerPath]]];
+			AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 			[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 				NSError *error = nil;
 				if (error != nil) {

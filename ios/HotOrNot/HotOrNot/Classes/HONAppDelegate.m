@@ -1293,7 +1293,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	discoveryViewController = [[HONDiscoveryViewController alloc] init];
 	challengesViewController = [[HONChallengesViewController alloc] init];
 	//profileViewController = [[HONProfileViewController alloc] init];
-	profileViewController = [[HONTimelineViewController alloc] initWithUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
+	profileViewController = [[HONTimelineViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]];
 	
 	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:timelineViewController];
 	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];

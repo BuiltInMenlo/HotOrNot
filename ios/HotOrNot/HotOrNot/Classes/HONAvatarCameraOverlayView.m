@@ -46,7 +46,7 @@
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(261.0, self.frame.size.height - 59.0, 44.0, 44.0)];
+		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(201.0, self.frame.size.height - 121.0, 128.0, 128.0)];
 		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_000"];
 		[_controlsHolderView addSubview:_circleFillImageView];
 		
@@ -79,7 +79,7 @@
 		_infoHolderImageView.userInteractionEnabled = YES;
 		[self addSubview:_infoHolderImageView];
 		
-		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(261.0, self.frame.size.height - 59.0, 44.0, 44.0)];
+		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(201.0, self.frame.size.height - 121.0, 128.0, 128.0)];
 		clockImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraAnimation_001"],
 										  [UIImage imageNamed:@"cameraAnimation_002"],
 										  [UIImage imageNamed:@"cameraAnimation_003"],
@@ -219,6 +219,7 @@
 	[_previewHolderView addSubview:imgView];
 	_previewHolderView.hidden = NO;
 	
+	_actionLabel.text = @"Approve your profile picture";
 	if ([HONAppDelegate isRetina5]) {
 		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
 		imgView.frame = frame;
@@ -233,6 +234,8 @@
 	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 	[_previewHolderView addSubview:previewImageView];
 	_previewHolderView.hidden = NO;
+	
+	_actionLabel.text = @"Approve your profile picture";
 }
 
 - (void)hidePreview {

@@ -109,19 +109,19 @@
 	
 	_previewBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_previewBackButton.frame = self.frame;
-	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchUpInside];
+	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	
-	_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 16.0, 200.0, 20.0)];
+	_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 200.0, 20.0)];
 	_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	_actionLabel.textColor = [UIColor whiteColor];
 	_actionLabel.backgroundColor = [UIColor clearColor];
 	[self addSubview:_actionLabel];
 	
 	_subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_subscribersButton.frame = CGRectMake(13.0, 27.0, 44.0, 44.0);
+	_subscribersButton.frame = CGRectMake(9.0, 27.0, 44.0, 44.0);
 	[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateNormal];
 	[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_Active"] forState:UIControlStateHighlighted];
-	[_subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
+	[_subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchDown];
 	//_subscribersButton.alpha = 0.0;
 	[self addSubview:_subscribersButton];
 	
@@ -129,7 +129,7 @@
 	_backButton.frame = CGRectMake(262.0, 14.0, 44.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 	//_backButton.alpha = 0.0;
 	[self addSubview:_backButton];
 	
@@ -177,14 +177,14 @@
 	previewButton.frame = CGRectMake(0.0, 0.0, 160.0, 53.0);
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_nonActive"] forState:UIControlStateNormal];
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_Active"] forState:UIControlStateHighlighted];
-	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchUpInside];
+	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:previewButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	submitButton.frame = CGRectMake(160.0, 0.0, 160.0, 53.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButttonCamera_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButttonCamera_Active"] forState:UIControlStateHighlighted];
-	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:submitButton];
 	
 	_subscribersView = [[HONCameraPreviewSubscribersView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, [UIScreen mainScreen].bounds.size.height + 50.0)];
@@ -197,7 +197,7 @@
 	_subscribersBackButton.frame = CGRectMake(9.0, 14.0, 44.0, 44.0);
 	[_subscribersBackButton setBackgroundImage:[UIImage imageNamed:@"backCameraButton_nonActive"] forState:UIControlStateNormal];
 	[_subscribersBackButton setBackgroundImage:[UIImage imageNamed:@"backCameraButton_Active"] forState:UIControlStateHighlighted];
-	[_subscribersBackButton addTarget:self action:@selector(_goSubscribersClose) forControlEvents:UIControlEventTouchUpInside];
+	[_subscribersBackButton addTarget:self action:@selector(_goSubscribersClose) forControlEvents:UIControlEventTouchDown];
 	_subscribersBackButton.alpha = 0.0;
 	[self addSubview:_subscribersBackButton];
 }
