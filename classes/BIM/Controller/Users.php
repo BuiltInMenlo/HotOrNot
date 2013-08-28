@@ -7,8 +7,8 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         if ( !empty( $input->userID ) && property_exists($input, 'approves' ) && !empty( $input->targetID ) ){
             $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
-            $users->flagUser($input->userID, $input->approves, $input->targetID);
-		    //BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
+            //$users->flagUser($input->userID, $input->approves, $input->targetID);
+		    BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
     		return array(
     			'id' => $input->userID,
     			'mail' => true
