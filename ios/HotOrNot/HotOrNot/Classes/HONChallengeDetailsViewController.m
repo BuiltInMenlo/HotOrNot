@@ -232,7 +232,7 @@
 		[self.view addSubview:headerView];
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.frame = CGRectMake(-7.0, 0.0, 64.0, 44.0);
+		closeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
 		[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
 		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
@@ -358,16 +358,16 @@
 	
 	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	likesButton.frame = CGRectMake(8.0, 14.0, 24.0, 24.0);
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateNormal];
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"heartIcon"] forState:UIControlStateHighlighted];
-	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
+//	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:likesButton];
 	
 	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 15.0, 40.0, 22.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
-	_likesLabel.textColor = [HONAppDelegate honBlueTextColor];
+	_likesLabel.textColor = [HONAppDelegate honGrey710Color];
 	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.text = (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score > 99) ? @"99+" : [NSString stringWithFormat:@"%d", (_challengeVO.creatorVO.score + ((HONOpponentVO *)[_challengeVO.challengers lastObject]).score)];
+	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
 	[footerHolderView addSubview:_likesLabel];
 	
 	UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -700,5 +700,13 @@
 	}
 }
 
+
+- (int)_calcScore {
+	int score = _challengeVO.creatorVO.score;
+	for (HONOpponentVO *vo in _challengeVO.challengers)
+		score += vo.score;
+	
+	return (score);
+}
 
 @end

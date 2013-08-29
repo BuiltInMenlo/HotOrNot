@@ -184,6 +184,14 @@
 	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
 	[_bannerView addSubview:bannerButton];
 	
+	if (_timelineType == HONTimelineTypeSubject) {
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.labelText = @"Loading";
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.taskInProgress = YES;
+	}
+	
 	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];

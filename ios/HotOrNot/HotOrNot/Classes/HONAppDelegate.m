@@ -853,7 +853,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
-	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
@@ -1032,8 +1032,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"passed_registration"] isEqualToString:@"YES"]) {
 		if (!_isFromBackground) {
 			// sms sound
-			AudioServicesPlaySystemSound(1007);
-			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+//			AudioServicesPlaySystemSound(1007);
+//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 			
 			if ([userInfo objectForKey:@"type"] != nil) {
 				int type_id = [[userInfo objectForKey:@"type"] intValue];

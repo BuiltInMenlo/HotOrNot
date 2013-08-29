@@ -24,6 +24,7 @@
 		
 		UIImageView *staticBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBackground"]];
 		staticBGImageView.userInteractionEnabled = YES;
+		staticBGImageView.alpha = 0.85;
 		[self addSubview:staticBGImageView];
 		
 		_greenBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBackgroundGreen"]];
