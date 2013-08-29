@@ -12,18 +12,16 @@
 
 #import "HONSnapCameraOverlayView.h"
 #import "HONImagingDepictor.h"
-#import "HONSnapCameraOptionsView.h"
 #import "HONUserVO.h"
 #import "HONContactUserVO.h"
 
-@interface HONSnapCameraOverlayView() <HONSnapCameraOptionsViewDelegate>
+@interface HONSnapCameraOverlayView()
 @property (nonatomic, strong) UIImageView *infoImageView;
 @property (nonatomic, strong) UIView *irisView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIImageView *previewImageView;
 @property (nonatomic, strong) UIImageView *circleFillImageView;
-@property (nonatomic, strong) HONSnapCameraOptionsView *cameraOptionsView;
 @property (nonatomic, strong) UIView *controlsHolderView;
 @property (nonatomic, strong) UILabel *actionLabel;
 @property (nonatomic, strong) UIButton *cancelButton;
@@ -190,24 +188,6 @@
 
 
 #pragma mark - Navigation
-- (void)_goCameraOptions {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Camera Options"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	_cameraOptionsView = [[HONSnapCameraOptionsView alloc] initWithFrame:self.frame];
-	_cameraOptionsView.frame = CGRectOffset(_cameraOptionsView.frame, 0.0, self.frame.size.height);
-	_cameraOptionsView.delegate = self;
-	[self addSubview:_cameraOptionsView];
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:0.25];
-	[UIView setAnimationDelay:0.0];
-	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
-	_cameraOptionsView.frame = CGRectOffset(_cameraOptionsView.frame, 0.0, -self.frame.size.height);
-	[UIView commitAnimations];
-}
-
 - (void)_goToggleFlash {
 	[self.delegate cameraOverlayViewChangeFlash:self];
 }
@@ -216,23 +196,5 @@
 	[self.delegate cameraOverlayViewCloseCamera:self];
 }
 
-
-#pragma mark - CameraOptionsView Delegates
-- (void)cameraOptionsViewCameraRoll:(HONSnapCameraOptionsView *)cameraOptionsView {
-	[self.delegate cameraOverlayViewShowCameraRoll:self];
-}
-
-- (void)cameraOptionsViewFlipCamera:(HONSnapCameraOptionsView *)cameraOptionsView {
-	[self.delegate cameraOverlayViewChangeCamera:self];
-}
-
-- (void)cameraOptionsViewClose:(HONSnapCameraOptionsView *)cameraOptionsView {
-	[UIView animateWithDuration:0.25 delay:0.125 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
-		_cameraOptionsView.frame = CGRectOffset(_cameraOptionsView.frame, 0.0, self.frame.size.height);
-	} completion:^(BOOL finished) {
-		[_cameraOptionsView removeFromSuperview];
-		_cameraOptionsView = nil;
-	}];
-}
 
 @end

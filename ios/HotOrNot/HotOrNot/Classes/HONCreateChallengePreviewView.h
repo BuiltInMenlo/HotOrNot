@@ -22,7 +22,6 @@
 @end
 
 @protocol HONCreateChallengePreviewViewDelegate
-- (void)previewViewAddChallengers:(HONCreateChallengePreviewView *)previewView;
 - (void)previewView:(HONCreateChallengePreviewView *)previewView removeChallenger:(HONUserVO *)userVO;
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView;
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject;

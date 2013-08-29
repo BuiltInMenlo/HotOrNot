@@ -346,7 +346,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - Navigation
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Activity - Create Snap"
+	[[Mixpanel sharedInstance] track:@"Verify - Create Volley"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -356,7 +356,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 - (void)_goRefresh {
-	[[Mixpanel sharedInstance] track:@"Activity - Refresh"
+	[[Mixpanel sharedInstance] track:@"Verify - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -365,7 +365,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 - (void)_goCloseBanner {
-	[[Mixpanel sharedInstance] track:@"Activity - Close Banner"
+	[[Mixpanel sharedInstance] track:@"Verify - Close Banner"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -408,8 +408,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[[Mixpanel sharedInstance] track:@"Verify Header - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"creator", nil]];
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:challengeVO.creatorVO.username];
 }
@@ -418,11 +417,21 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (void)challengeViewCellShowPreview:(HONChallengeViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
+	[[Mixpanel sharedInstance] track:@"Verify - Show Detail"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:_challengeVO];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
 - (void)challengeViewCellHidePreview:(HONChallengeViewCell *)cell {
+	[[Mixpanel sharedInstance] track:@"Verify - Hide Detail"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
 	if (_snapPreviewViewController != nil) {
 		[_snapPreviewViewController.view removeFromSuperview];
 		_snapPreviewViewController = nil;
@@ -450,10 +459,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	//NSLog(@"APPROVE:[%@]", _idxPath);
 	
 	if (isApproved) {
-		[[Mixpanel sharedInstance] track:@"Activity - Approve"
+		[[Mixpanel sharedInstance] track:@"Verify - Approve"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+										  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 															message:[NSString stringWithFormat:@"Are you sure @%@ matches their age?", _challengeVO.creatorVO.username]
@@ -464,10 +473,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[alertView show];
 		
 	} else {
-		[[Mixpanel sharedInstance] track:@"Activity - Disprove"
+		[[Mixpanel sharedInstance] track:@"Verify - Disprove"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+										  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 															message:[NSString stringWithFormat:@"Are you sure @%@ does not match their age?", _challengeVO.creatorVO.username]
@@ -491,17 +500,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (void)challengeOverlayViewFlag:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:@"Activity - Disprove"
+	[[Mixpanel sharedInstance] track:@"Verify - Flag"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.creatorVO.userID, challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
 														message:[NSString stringWithFormat:@"Are you sure @%@ does not match their age?", _challengeVO.creatorVO.username]
 													   delegate:self
 											  cancelButtonTitle:@"No"
 											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:3];
+	[alertView setTag:1];
 	[alertView show];
 	
 	if (_challengeOverlayView != nil) {
@@ -513,7 +522,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (void)challengeOverlayViewProfile:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:@"Activity - Profile"
+	[[Mixpanel sharedInstance] track:@"Verify - Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
@@ -529,7 +538,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (void)challengeOverlayViewUpvote:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	[[Mixpanel sharedInstance] track:@"Activity - Upvote"
+	[[Mixpanel sharedInstance] track:@"Verify - Upvote"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
@@ -607,20 +616,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	if (alertView.tag == 0) {
 	
 	} else if (alertView.tag == 1) {
-	
-		// flag
-	} else if (alertView.tag == 3) {
+		if (_challengeOverlayView != nil) {
+			[_challengeOverlayView removeFromSuperview];
+			_challengeOverlayView = nil;
+		}
+		
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		
 		if (buttonIndex == 1) {
-			if (_challengeOverlayView != nil) {
-				[_challengeOverlayView removeFromSuperview];
-				_challengeOverlayView = nil;
-			}
-			
-			[[Mixpanel sharedInstance] track:@"Activity - Disprove Alert"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-			
 			[[[UIAlertView alloc] initWithTitle:@""
 										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
 									   delegate:nil
@@ -656,23 +662,62 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
 			}];
+		}
+		
+		// flag
+	} else if (alertView.tag == 3) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 1) {
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
 			
-//			[_challenges removeObjectAtIndex:_idxPath.section];
-//			[_cells removeObjectAtIndex:_idxPath.section];
+			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+									[NSString stringWithFormat:@"%d", 10], @"action",
+									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"targetID",
+									[NSString stringWithFormat:@"%d", 0], @"approves",
+									nil];
 			
-			//[_tableView deleteSections:[NSIndexSet indexSetWithIndex:_idxPath.section] withRowAnimation:UITableViewRowAnimationFade];
-			//[_tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_idxPath] withRowAnimation:UITableViewRowAnimationFade];
+			VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+			AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+			[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+				NSError *error = nil;
+				if (error != nil) {
+					VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+					
+				} else {
+					[self _goRefresh];
+				}
+				
+			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+				VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+				
+				_progressHUD.minShowTime = kHUDTime;
+				_progressHUD.mode = MBProgressHUDModeCustomView;
+				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+				_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+				[_progressHUD show:NO];
+				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+				_progressHUD = nil;
+			}];			
 		}
 		
 		
 		// approve
 	} else if (alertView.tag == 4) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Approve %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		
 		if (buttonIndex == 1) {
-			[[Mixpanel sharedInstance] track:@"Activity - Approve Alert"
-								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-			
 			NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 10], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",

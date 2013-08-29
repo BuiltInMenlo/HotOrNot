@@ -205,6 +205,10 @@
 
 #pragma mark - Navigation
 - (void)_goToggleKeyboard {
+	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Create Volley - Toggle Preview %@", ([_subjectTextField isFirstResponder]) ? @"Down" : @"Up"]
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	if ([_subjectTextField isFirstResponder])
 		[self _dropKeyboardAndRemove:NO];
 	
@@ -213,6 +217,10 @@
 }
 
 - (void)_goSubscribers {
+	[[Mixpanel sharedInstance] track:@"Create Volley - Show Opponents"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_subscribersView.hidden = NO;
 	
 	[_subjectTextField resignFirstResponder];
@@ -239,6 +247,10 @@
 }
 
 - (void)_goSubscribersClose {
+	[[Mixpanel sharedInstance] track:@"Create Volley - Hide Opponents"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_subscribersView.hidden = NO;
 	
 	[_subjectTextField becomeFirstResponder];
@@ -262,10 +274,6 @@
 	} completion:nil];
 }
 
-
-- (void)_goAddChallengers {
-	[self.delegate previewViewAddChallengers:self];
-}
 
 - (void)_goBack {
 	[[Mixpanel sharedInstance] track:@"Camera Preview - Back"

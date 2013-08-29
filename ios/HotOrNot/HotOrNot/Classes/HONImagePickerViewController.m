@@ -21,7 +21,6 @@
 #import "HONImagePickerViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONSnapCameraOverlayView.h"
-#import "HONAddChallengersViewController.h"
 #import "HONCreateChallengePreviewView.h"
 #import "HONAddContactsViewController.h"
 #import "HONUserVO.h"
@@ -31,7 +30,7 @@
 
 const CGFloat kFocusInterval = 0.5f;
 
-@interface HONImagePickerViewController () <UIAlertViewDelegate, AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONAddChallengersDelegate, HONCreateChallengePreviewViewDelegate>
+@interface HONImagePickerViewController () <UIAlertViewDelegate, AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *challengerName;
@@ -421,18 +420,6 @@ const CGFloat kFocusInterval = 0.5f;
 	if (_challengeSubmitType == HONChallengeSubmitTypeOpponentID && [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _userVO.userID) {
 		[_addFollowing addObject:_userVO];
 		
-	} else if (_challengeSubmitType == HONChallengeSubmitTypeAccept) {
-		[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
-																[NSString stringWithFormat:@"%d", 0], @"points",
-																[NSString stringWithFormat:@"%d", 0], @"votes",
-																[NSString stringWithFormat:@"%d", 0], @"pokes",
-																[NSString stringWithFormat:@"%d", 0], @"pics",
-																[NSString stringWithFormat:@"%d", 0], @"age",
-																_challengeVO.creatorVO.username, @"username",
-																_challengeVO.creatorVO.fbID, @"fb_id",
-																_challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
-		
 	} else if (_challengeSubmitType == HONChallengeSubmitTypeJoin) {
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorVO.userID) {
 			[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -446,20 +433,19 @@ const CGFloat kFocusInterval = 0.5f;
 																	_challengeVO.creatorVO.fbID, @"fb_id",
 																	_challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
 		}
-		if (_challengeVO.statusID != 1) {
-			for (HONOpponentVO *vo in _challengeVO.challengers) {
-				if ([vo.imagePrefix length] > 0) {
-					[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																			[NSString stringWithFormat:@"%d", vo.userID], @"id",
-																			[NSString stringWithFormat:@"%d", 0], @"points",
-																			[NSString stringWithFormat:@"%d", 0], @"votes",
-																			[NSString stringWithFormat:@"%d", 0], @"pokes",
-																			[NSString stringWithFormat:@"%d", 0], @"pics",
-																			[NSString stringWithFormat:@"%d", 0], @"age",
-																			vo.username, @"username",
-																			vo.fbID, @"fb_id",
-																			vo.avatarURL, @"avatar_url", nil]]];
-				}
+		
+		for (HONOpponentVO *vo in _challengeVO.challengers) {
+			if ([vo.imagePrefix length] > 0 && vo.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+				[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		[NSString stringWithFormat:@"%d", vo.userID], @"id",
+																		[NSString stringWithFormat:@"%d", 0], @"points",
+																		[NSString stringWithFormat:@"%d", 0], @"votes",
+																		[NSString stringWithFormat:@"%d", 0], @"pokes",
+																		[NSString stringWithFormat:@"%d", 0], @"pics",
+																		[NSString stringWithFormat:@"%d", 0], @"age",
+																		vo.username, @"username",
+																		vo.fbID, @"fb_id",
+																		vo.avatarURL, @"avatar_url", nil]]];
 			}
 		}
 	
@@ -551,8 +537,12 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)_goCloseInfoOverlay {
 	[_cameraOverlayView toggleInfoOverlay:NO];
 	
+	[[Mixpanel sharedInstance] track:@"Create Volley - Close Overlay"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 
@@ -597,7 +587,7 @@ const CGFloat kFocusInterval = 0.5f;
 		
 	} else {
 		_clockCounter = 0;
-		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 	}
 	
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
@@ -761,11 +751,11 @@ const CGFloat kFocusInterval = 0.5f;
 	[_cameraOverlayView removePreview];
 	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Cancel"
+	[[Mixpanel sharedInstance] track:@"Volley Snap - Cancel"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -785,103 +775,13 @@ const CGFloat kFocusInterval = 0.5f;
 	}];
 }
 
-- (void)cameraOverlayViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Add Friends"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	HONAddChallengersViewController *addChallengersViewController = [[HONAddChallengersViewController alloc] initRecentsSelected:[_addFollowing copy] friendsSelected:[NSArray array] contactsSelected:[_addContacts copy]];
-	addChallengersViewController.delegate = self;
-	[_imagePicker presentViewController:addChallengersViewController animated:YES completion:nil];
-}
-
-- (void)cameraOverlayViewMakeChallengeNonExpire:(HONSnapCameraOverlayView *)cameraOverlayView {
-	_challengeExpireType = HONChallengeExpireTypeNone;
-}
-
-- (void)cameraOverlayViewExpires10Minutes:(HONSnapCameraOverlayView *)cameraOverlayView {
-	_challengeExpireType = HONChallengeExpireType10Minutes;
-}
-
-- (void)cameraOverlayViewExpires24Hours:(HONSnapCameraOverlayView *)cameraOverlayView {
-	_challengeExpireType = HONChallengeExpireType24Hours;
-}
-
-#pragma mark - AddFriends Delegate
-- (void)addChallengers:(HONAddChallengersViewController *)viewController selectFollowing:(NSArray *)following forAppending:(BOOL)isAppend {
-	NSLog(@"addChallengers: selectFollowing:[%@] forAppending:[%d]", following, isAppend);
-	
-	if (isAppend) {
-		[_addFollowing addObjectsFromArray:following];
-	
-	} else {
-		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONUserVO *vo in _addFollowing) {
-			for (HONUserVO *dropVO in following) {
-				if (vo.userID == dropVO.userID) {
-					[removeVOs addObject:vo];
-				}
-			}
-		}
-		
-		[_addFollowing removeObjectsInArray:removeVOs];
-		removeVOs = nil;
-	}
-	
-	NSLog(@"following:%@", following);
-	NSLog(@"_addFollowing:%@", _addFollowing);
-	
-	NSMutableArray *usernames = [NSMutableArray array];
-	for (HONUserVO *vo in _addFollowing)
-		[usernames addObject:vo.username];
-	
-	for (HONContactUserVO *vo in _addContacts)
-		[usernames addObject:vo.fullName];
-	
-	
-	[_cameraOverlayView updateChallengers:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
-	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
-}
-
-- (void)addChallengers:(HONAddChallengersViewController *)viewController selectContacts:(NSArray *)contacts forAppending:(BOOL)isAppend {
-	NSLog(@"addChallengers: selectContacts:[%@] forAppending:[%d]", contacts, isAppend);
-	
-	if (isAppend)
-		[_addContacts addObjectsFromArray:contacts];
-	
-	else  {
-		NSMutableArray *removeVOs = [NSMutableArray array];
-		for (HONContactUserVO *vo in _addContacts) {
-			for (HONContactUserVO *dropVO in contacts) {
-				if ([vo.mobileNumber isEqualToString:dropVO.mobileNumber]) {
-					[removeVOs addObject:vo];
-					continue;
-				}
-			}
-		}
-		
-		[_addContacts removeObjectsInArray:removeVOs];
-		removeVOs = nil;
-	}
-	
-	
-	NSMutableArray *usernames = [NSMutableArray array];
-	for (HONUserVO *vo in _addFollowing)
-		[usernames addObject:vo.username];
-	
-	for (HONContactUserVO *vo in _addContacts)
-		[usernames addObject:vo.fullName];
-	
-	[_cameraOverlayView updateChallengers:[usernames copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
-	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
-}
-
 
 #pragma mark - PreviewView Delegates
 - (void)previewView:(HONCreateChallengePreviewView *)previewView removeChallenger:(HONUserVO *)userVO {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Remove User"
+	[[Mixpanel sharedInstance] track:@"Create Volley - Remove Opponent"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"challenger", nil]];
 	
 	NSMutableArray *removeVOs = [NSMutableArray array];
 	for (HONUserVO *vo in _addFollowing) {
@@ -897,41 +797,27 @@ const CGFloat kFocusInterval = 0.5f;
 	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 }
 
-- (void)previewViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Add Friends"
+- (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
+	NSLog(@"previewViewBackToCamera");
+	
+	[[Mixpanel sharedInstance] track:@"Create Volley - Retake Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	HONAddChallengersViewController *addChallengersViewController = [[HONAddChallengersViewController alloc] initRecentsSelected:[_addFollowing copy] friendsSelected:[NSArray array] contactsSelected:[_addContacts copy]];
-	addChallengersViewController.delegate = self;
-	[self presentViewController:addChallengersViewController animated:YES completion:nil];
-}
-
-- (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
-	NSLog(@"previewViewBackToCamera");
 	
 	[self _showCamera];
 }
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
 	NSLog(@"previewView:changeSubject:[%@]", subject);
-	_subjectName = subject;
-	
-	[[Mixpanel sharedInstance] track:@"Camera Preview - Change Hashtag"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 _subjectName, @"subject", nil]];
-	
-	
-	
-	// accepting, now submit new against username w/ subject
-	if (_challengeSubmitType == HONChallengeSubmitTypeAccept && (_challengeVO != nil && ![_subjectName isEqualToString:_challengeVO.subjectName])) {
-		_challengerName = (_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username;
-		_challengeSubmitType = HONChallengeSubmitTypeOpponentName;
-	}
+	_subjectName = subject;	
 }
 
 - (void)previewViewClose:(HONCreateChallengePreviewView *)previewView {
+	[[Mixpanel sharedInstance] track:@"Create Volley - Close"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	for (S3PutObjectRequest *por in _s3Uploads)
 		[por.urlConnection cancel];
 	
@@ -939,6 +825,10 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
+	[[Mixpanel sharedInstance] track:@"Create Volley - Submit"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -1007,8 +897,6 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 		
 		[_previewView uploadComplete];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-		
 		
 		if (_hasSubmitted) {
 			if (_imagePicker.parentViewController != nil) {
@@ -1018,6 +906,8 @@ const CGFloat kFocusInterval = 0.5f;
 				
 			} else
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 		}
 	}
 }
@@ -1033,6 +923,10 @@ const CGFloat kFocusInterval = 0.5f;
 		[_previewView showKeyboard];
 	
 	} else if (alertView.tag == 2) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Create Volley - Find Friends %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		if (buttonIndex == 0) {
 			int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
 			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];

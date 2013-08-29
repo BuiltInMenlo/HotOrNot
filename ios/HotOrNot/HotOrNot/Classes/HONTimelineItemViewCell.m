@@ -18,12 +18,10 @@
 #import "HONOpponentVO.h"
 
 
-@interface HONTimelineItemViewCell() <UIActionSheetDelegate>
+@interface HONTimelineItemViewCell()
 @property (nonatomic, strong) UIView *lHolderView;
 @property (nonatomic, strong) UIView *rHolderView;
 @property (nonatomic, strong) UIImageView *lChallengeImageView;
-@property (nonatomic, strong) NSTimer *tapTimer;
-@property (nonatomic) BOOL isDoubleTap;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIImageView *upvoteImageView;
@@ -194,23 +192,6 @@
 			[rightButton setTag:opponentCounter];
 			[opponentHolderView addSubview:rightButton];
 			
-			UIImageView *strokeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 30.0, 30.0, 30.0)];
-			strokeImageView.image = [UIImage imageNamed:@"avatarStroke"];
-			//[opponentHolderView addSubview:strokeImageView];
-			
-			UIImageView *challengerAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, kSnapMediumDim - 28.0, 28.0, 28.0)];
-			[challengerAvatarImageView setImageWithURL:[NSURL URLWithString:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).avatarURL] placeholderImage:nil];
-			challengerAvatarImageView.userInteractionEnabled = YES;
-			challengerAvatarImageView.clipsToBounds = YES;
-			//[opponentHolderView addSubview:challengerAvatarImageView];
-			
-			UIButton *challengerAvatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-			challengerAvatarButton.frame = challengerAvatarImageView.frame;
-			[challengerAvatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			[challengerAvatarButton addTarget:self action:@selector(_goChallengerTimeline:) forControlEvents:UIControlEventTouchUpInside];
-			[challengerAvatarButton setTag:opponentCounter];
-			//[opponentHolderView addSubview:challengerAvatarButton];
-			
 			opponentCounter++;
 		}
 	}
@@ -270,13 +251,6 @@
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchDown];
 	[self addSubview:joinButton];
 	
-//	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	moreButton.frame = CGRectMake(254.0, 0.0, 64.0, 44.0);
-//	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
-//	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
-//	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-//	[footerHolderView addSubview:moreButton];
-	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
 	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 282.0);
 	[self addSubview:dividerImageView];
@@ -284,66 +258,17 @@
 
 
 #pragma mark - Navigation
-- (void)_tapTimeout {
-	_isDoubleTap = NO;
-	[self _goChallengeDetails];
-}
-
 - (void)_goTapCreator {
 	[self _goChallengeDetails];
-//	
-//	if (!_isDoubleTap) {
-//		_isDoubleTap = YES;
-//		_tapTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_tapTimeout) userInfo:nil repeats:NO];
-//	
-//	} else {
-//		if (_tapTimer != nil) {
-//			[_tapTimer invalidate];
-//			_tapTimer = nil;
-//		}
-//		
-//		_isDoubleTap = NO;
-//		[self _goUpvoteCreator];
-//	}
 }
 
 - (void)_goTapOpponent:(id)sender {
 	[self _goChallengeDetails];
-	
-//	if (!_isDoubleTap) {
-//		_isDoubleTap = YES;
-//		_tapTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_tapTimeout) userInfo:nil repeats:NO];
-//		
-//	} else {
-//		if (_tapTimer != nil) {
-//			[_tapTimer invalidate];
-//			_tapTimer = nil;
-//		}
-//		
-//		_isDoubleTap = NO;
-//		[self _goUpvoteChallenger:[(UIButton *)sender tag]];
-//	}
 }
 
 
 - (void)_goChallengeDetails {
 	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
-}
-
-- (void)_goNewSubjectChallenge {
-	[self.delegate timelineItemViewCell:self snapWithSubject:_challengeVO.subjectName];
-}
-
-- (void)_goCreatorChallenge {
-	[self.delegate timelineItemViewCell:self snapAtCreator:_challengeVO];
-}
-
-- (void)_goChallengerChallenge {
-	[self.delegate timelineItemViewCell:self snapAtChallenger:_challengeVO];
-}
-
-- (void)_goAcceptChallenge {
-	[self.delegate timelineItemViewCell:self acceptChallenge:_challengeVO];
 }
 
 - (void)_goJoinChallenge {
@@ -357,110 +282,6 @@
 - (void)_goScore {
 	[self.delegate timelineItemViewCell:self showVoters:_challengeVO];
 }
-
-- (void)_goSubjectTimeline {
-	[self.delegate timelineItemViewCell:self showSubjectChallenges:_challengeVO.subjectName];
-}
-
-- (void)_goCreatorTimeline {
-	[[Mixpanel sharedInstance] track:@"Timeline - Show Creator Timeline"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"creator", nil]];
-	
-	[self.delegate timelineItemViewCell:self showUserChallenges:_challengeVO.creatorVO.username];
-}
-
-- (void)_goChallengerTimeline:(id)sender {
-	[[Mixpanel sharedInstance] track:@"Timeline - Show Challenger Timeline"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).userID, ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).username], @"challenger", nil]];
-	
-	[self.delegate timelineItemViewCell:self showUserChallenges:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:[(UIButton *)sender tag]]).username];
-}
-
-- (void)_goUpvoteCreator {
-	_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
-	_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
-	[_lHolderView addSubview:_upvoteImageView];
-	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 17.0, 94.0, 94.0)];
-	heartImageView.image = [UIImage imageNamed:@"largeHeart"];
-	[_upvoteImageView addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_upvoteImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[_upvoteImageView removeFromSuperview];
-		_upvoteImageView = nil;
-	}];
-	
-	_challengeVO.creatorVO.score++;
-	
-	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-		[[Mixpanel sharedInstance] track:@"Timeline - Upvote Creator"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-		
-		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:YES];
-		[self _upvoteChallenge:_challengeVO.creatorVO.userID];
-	}
-	
-	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
-}
-
-- (void)_goUpvoteChallenger:(int)index {
-	_upvoteImageView = [[UIImageView alloc] initWithFrame:CGRectMake(41.0, 41.0, 128.0, 128.0)];
-	_upvoteImageView.image = [UIImage imageNamed:@"alertBackground"];
-	[_rHolderView addSubview:_upvoteImageView];
-	
-	UIImageView *heartImageView = [[UIImageView alloc] initWithFrame:CGRectMake(17.0, 17.0, 94.0, 94.0)];
-	heartImageView.image = [UIImage imageNamed:@"largeHeart"];
-	[_upvoteImageView addSubview:heartImageView];
-	
-	[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_upvoteImageView.alpha = 0.0;
-	} completion:^(BOOL finished) {
-		[_upvoteImageView removeFromSuperview];
-		_upvoteImageView = nil;
-	}];
-	
-	((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).score++;
-	
-	if ([HONAppDelegate hasVoted:_challengeVO.challengeID] == 0) {
-		[[Mixpanel sharedInstance] track:@"Timeline - Upvote Challenger"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-		
-		[HONAppDelegate setVote:_challengeVO.challengeID forCreator:NO];
-		[self _upvoteChallenge:((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).userID];
-	}
-	
-	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
-
-}
-
-- (void)_goMore {
-	[[Mixpanel sharedInstance] track:@"Timeline - More Shelf"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-	
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																 delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:@"Report Abuse"
-														otherButtonTitles:@"Join Volley", nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:1];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-}
-
 
 #pragma mark - UI Presentation
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -488,54 +309,6 @@
 		score += vo.score;
 	
 	return (score);
-}
-
-
-#pragma mark - ActionSheet Delegates
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-//	if (actionSheet.tag == 0) {
-//		switch (buttonIndex) {
-//			case 0: {
-//				[[Mixpanel sharedInstance] track:@"Timeline - Flag"
-//											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-//															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-//				
-//				[self _flagChallenge];
-//				
-//			break;}
-//				
-//			case 1:
-//				[self.delegate timelineItemViewCell:self showVoters:_challengeVO];
-//				break;
-//				
-//			case 2:
-//				[self.delegate timelineItemViewCell:self snapWithSubject:_challengeVO.subjectName];
-//				break;
-//		}
-//	}
-//	
-//	else if (actionSheet.tag == 1) {
-		switch (buttonIndex) {
-			case 0: {
-				[[Mixpanel sharedInstance] track:@"Timeline - Flag"
-											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-															 [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge", nil]];
-				
-				[self _flagChallenge];
-				break;}
-				
-			case 1:
-//				if (_isChallengeOpponent)
-//					[self  _goAcceptChallenge];
-//				
-//				else
-					[self _goJoinChallenge];
-				
-				break;
-		}
-//	}
 }
 
 

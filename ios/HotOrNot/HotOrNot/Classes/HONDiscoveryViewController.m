@@ -191,7 +191,7 @@
 }
 
 - (void)_goCreateChallenge {
-	[[Mixpanel sharedInstance] track:@"Discover - Create Snap"
+	[[Mixpanel sharedInstance] track:@"Explore - Create Volley"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -201,7 +201,7 @@
 }
 
 - (void)_goCloseBanner {
-	[[Mixpanel sharedInstance] track:@"Discover - Close Banner"
+	[[Mixpanel sharedInstance] track:@"Explore - Close Banner"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -261,7 +261,7 @@
 
 #pragma mark - DiscoveryViewCell Delegates
 - (void)discoveryViewCell:(HONDiscoveryViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Discover - Select"
+	[[Mixpanel sharedInstance] track:@"Explore - Select Volley"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
@@ -271,7 +271,7 @@
 }
 
 - (void)discoveryViewCell:(HONDiscoveryViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO {
-	[[Mixpanel sharedInstance] track:@"Discover - Select"
+	[[Mixpanel sharedInstance] track:@"Explore - Select Volley"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];

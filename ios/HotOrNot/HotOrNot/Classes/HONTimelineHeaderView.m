@@ -22,7 +22,7 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 61.0)])) {
 		_challengeVO = vo;
 		
-		self.backgroundColor = [UIColor whiteColor];
+		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.80];
 		
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 9.0, 38.0, 38.0)];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];

@@ -853,7 +853,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
+	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
@@ -1042,36 +1042,36 @@ NSString * const kTwilioSMS = @"6475577873";
 					// challenge request
 					case 1:{
 						_challengeID = [[userInfo objectForKey:@"challenge"] intValue];
-						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
-																			message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
-																		   delegate:self
-																  cancelButtonTitle:@"Cancel"
-																  otherButtonTitles:@"OK", nil];
-						[alertView setTag:3];
-						[alertView show];
+//						UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@""
+//																			message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+//																		   delegate:self
+//																  cancelButtonTitle:@"Cancel"
+//																  otherButtonTitles:@"OK", nil];
+//						[alertView setTag:3];
+//						[alertView show];
 						break;}
 						
 						// poke
 					case 2:
-						[self _showOKAlert:@"Poke"
-							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+//						[self _showOKAlert:@"Poke"
+//							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 						break;
 						
 						// accpeted challenge
 					case 3:
-						[self _showOKAlert:@""
-							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+//						[self _showOKAlert:@""
+//							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 						break;
 						
 					default:
-						[self _showOKAlert:@""
-							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+//						[self _showOKAlert:@""
+//							   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 						break;
 				}
 			
 			} else {
-				[self _showOKAlert:@""
-					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
+//				[self _showOKAlert:@""
+//					   withMessage:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]];
 			}
 			
 		} else {
@@ -1292,8 +1292,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	timelineViewController = [[HONTimelineViewController alloc] initWithFriends];
 	discoveryViewController = [[HONDiscoveryViewController alloc] init];
 	challengesViewController = [[HONChallengesViewController alloc] init];
-	//profileViewController = [[HONProfileViewController alloc] init];
 	profileViewController = [[HONTimelineViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]];
+	//profileViewController = [[HONTimelineViewController alloc] initWithUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	
 	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:timelineViewController];
 	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];

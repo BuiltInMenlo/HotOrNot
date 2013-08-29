@@ -30,10 +30,6 @@
 @protocol HONSnapCameraOverlayViewDelegate
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewAddChallengers:(HONSnapCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewMakeChallengeNonExpire:(HONSnapCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewExpires10Minutes:(HONSnapCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewExpires24Hours:(HONSnapCameraOverlayView *)cameraOverlayView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView;

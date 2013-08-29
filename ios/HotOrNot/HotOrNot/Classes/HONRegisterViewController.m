@@ -61,11 +61,6 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
-		[[Mixpanel sharedInstance] track:@"New user type (first run)"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  @"organic", @"user_type",
-										  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
-		
 	}
 	
 	return (self);
@@ -224,7 +219,7 @@
 							_filename, @"imgURL",
 							nil];
 	
-	NSLog(@"PARAMS:[%@]", params);	
+	//NSLog(@"PARAMS:[%@]", params);
 	[HONImagingDepictor writeImageFromWeb:_filename withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
@@ -256,6 +251,10 @@
 				
 				[HONAppDelegate writeUserInfo:userResult];
 				[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
+				
+				[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
+									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
 				[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 				[[NSUserDefaults standardUserDefaults] synchronize];
@@ -497,15 +496,9 @@
 
 #pragma mark - Navigation
 - (void)_goCloseTutorial {
-	[[Mixpanel sharedInstance] track:@"Register - Close Scroll"
+	[[Mixpanel sharedInstance] track:@"Register - Close Splash"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[[Mixpanel sharedInstance] track:@"Sign up now button (first run)"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  @"organic", @"user_type",
-									  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
-	
 	
 	[_usernameTextField becomeFirstResponder];
 	
@@ -781,11 +774,6 @@
 - (void)_onTextEditingDidEnd:(id)sender {
 	_username = ([_usernameTextField.text length] > 0 && [[_usernameTextField.text substringToIndex:1] isEqualToString:@"@"]) ? [_usernameTextField.text substringFromIndex:1] : _usernameTextField.text;
 	_password = _passwordTextField.text;
-	
-	[[Mixpanel sharedInstance] track:@"Register - Change Username"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												 _username, @"username", nil]];
 }
 
 - (void)_onTextEditingDidEndOnExit:(id)sender {
@@ -794,8 +782,12 @@
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Register - Close Camera Info"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
@@ -803,6 +795,10 @@
 	
 	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 		[TestFlight passCheckpoint:@"PASSED REGISTRATION"];
@@ -817,11 +813,6 @@
 	[[Mixpanel sharedInstance] track:@"Register - Switch Camera"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	[[Mixpanel sharedInstance] track:@"User flips (first run)"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  @"organic", @"user_type",
-									  _username, @"username", nil]];
 	
 	if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
 		_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
@@ -838,22 +829,17 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[Mixpanel sharedInstance] track:@"User selects from camera roll (first run)"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  @"organic", @"user_type",
-									  _username, @"username", nil]];
-	
 	_imagePicker.cameraDevice = UIImagePickerControllerCameraDeviceRear;
 	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Register - Retake"
+	[[Mixpanel sharedInstance] track:@"Register - Retake Photo"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.125 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
 }
 
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView {
@@ -861,16 +847,11 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[[Mixpanel sharedInstance] track:@"User takes photo (first run)"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  @"organic", @"user_type",
-									  _username, @"username", nil]];
-	
 	[_imagePicker takePicture];
 }
 
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Register - Submit"
+	[[Mixpanel sharedInstance] track:@"Register - Accept Photo"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	

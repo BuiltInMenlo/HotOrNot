@@ -122,7 +122,7 @@
 	ptsLabel.textColor = kStatsColor;
 	ptsLabel.backgroundColor = [UIColor clearColor];
 	ptsLabel.textAlignment = NSTextAlignmentCenter;
-	ptsLabel.text = [NSString stringWithFormat:(_userVO.score == 1) ? @"%@ subscriber" : @"%@ subscribers", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]]];
+	ptsLabel.text = [NSString stringWithFormat:([_userVO.friends count] == 1) ? @"%@ subscriber" : @"%@ subscribers", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]]];
 	[self addSubview:ptsLabel];
 	
 	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];

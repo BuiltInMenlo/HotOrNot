@@ -131,7 +131,7 @@
 		[submitHolderView addSubview:skipButton];
 		
 		
-		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 16.0, 200.0, 20.0)];
+		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 200.0, 20.0)];
 		_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 		_actionLabel.textColor = [UIColor whiteColor];
 		_actionLabel.backgroundColor = [UIColor clearColor];
@@ -148,10 +148,6 @@
 	[UIView animateWithDuration:0.25 animations:^(void){
 		_infoHolderImageView.alpha = 0.0;
 	}];
-	
-	[[Mixpanel sharedInstance] track:@"Register - OK Selfie"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[self.delegate cameraOverlayViewStartClock:self];
 	_actionLabel.text = @"Take your profile picture";
@@ -250,6 +246,7 @@
 
 - (void)animateAccept {
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+		_circleFillImageView.alpha = 0.0;
 		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
 	} completion:^(BOOL finished) {
 	}];
@@ -292,11 +289,6 @@
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-				[[Mixpanel sharedInstance] track:@"cancel alert button (first run)"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  @"organic", @"user_type",
-												  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
-				
 				[self.delegate cameraOverlayViewCloseCamera:self];
 				break;
 				
@@ -305,10 +297,6 @@
 											 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 				
-				[[Mixpanel sharedInstance] track:@"cancel alert button Cancel (first run)"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  @"organic", @"user_type",
-												  [[HONAppDelegate infoForUser] objectForKey:@"name"], @"username", nil]];
 				break;
 		}
 	}

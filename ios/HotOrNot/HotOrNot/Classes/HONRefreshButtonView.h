@@ -11,4 +11,5 @@
 @interface HONRefreshButtonView : UIView
 - (id)initWithTarget:(id)target action:(SEL)action;
 - (void)toggleRefresh:(BOOL)isRefreshing;
+- (void)offsetFrame:(CGPoint)pos;
 @end

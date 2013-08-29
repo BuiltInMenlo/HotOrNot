@@ -38,5 +38,9 @@
 	_refreshButton.hidden = isRefreshing;
 }
 
+- (void)offsetFrame:(CGPoint)pos {
+	_activityIndicatorView.frame = CGRectOffset(_activityIndicatorView.frame, pos.x, pos.y);
+	_refreshButton.frame = CGRectOffset(_refreshButton.frame, pos.x, pos.y);
+}
 
 @end

@@ -8,11 +8,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "HotOrNot/Classes/HONTimelineViewController.m"
-         timestampString = "399417357.650912"
+         timestampString = "399446503.527772"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "536"
-         endingLineNumber = "536"
+         startingLineNumber = "538"
+         endingLineNumber = "538"
          landmarkName = "-loadView"
          landmarkType = "5">
       </FileBreakpoint>
@@ -28,6 +28,19 @@
          endingLineNumber = "43"
          landmarkName = "-setUserVO:"
          landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "HotOrNot/Classes/HONCreateChallengePreviewView.h"
+         timestampString = "399445372.545046"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "20"
+         endingLineNumber = "20"
+         landmarkName = "@interface HONCreateChallengePreviewView"
+         landmarkType = "2">
       </FileBreakpoint>
    </FileBreakpoints>
 </Bucket>
