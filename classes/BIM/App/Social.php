@@ -26,12 +26,13 @@ class BIM_App_Social extends BIM_App_Base{
                 'target' => $params->target,
             );
             $doc = $dao->getRelation( $relation );
-            if( !empty( $doc->state ) && $doc->state == 0 ){
+            if( isset( $doc->state ) && $doc->state == 0 ){
                 $added = $dao->acceptFriend( $relation );
             } else if( !$doc ){
                 $relation = self::createRelationDoc($params, $sourceUser, $targetUser);
                 $added = $dao->addFriend( $relation );
             }
+            
             $dao->flush();
             $targetUser->purgeFromCache();
             $sourceUser->purgeFromCache();

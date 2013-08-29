@@ -475,7 +475,7 @@ WHERE is_verify != 1
             ) 
         ) 
         ORDER BY tc.`updated` DESC 
-        LIMIT 50 
+        LIMIT 64 
      * 
      */
     public function getVolleysWithFriends( $userId, $friendIds ){
@@ -615,7 +615,7 @@ WHERE is_verify != 1
 		        $privateSql 
 				AND tcs.title = ?
 			ORDER BY tc.`updated` DESC
-			LIMIT 100
+			LIMIT 25
 		";
 		$params = array( $hashTag );
         $stmt = $this->prepareAndExecute( $query, $params );
@@ -715,6 +715,7 @@ WHERE is_verify != 1
 				ON tc.subject_id = tcs.id
 			WHERE tcs.title LIKE ?
 			GROUP BY subject_id
+        	ORDER BY `votes` DESC LIMIT 50
 		';
 		$params = array( "%$subjectName%" );
         $stmt = $this->prepareAndExecute( $query, $params );
@@ -731,7 +732,7 @@ WHERE is_verify != 1
         	WHERE `status_id` = 4 
         		AND `started` > ? 
 				AND is_verify != 1
-        	ORDER BY `votes` DESC LIMIT 50
+        	ORDER BY `votes` DESC LIMIT 64
         ';
 		$params = array( $startDate );
         $stmt = $this->prepareAndExecute( $query, $params );

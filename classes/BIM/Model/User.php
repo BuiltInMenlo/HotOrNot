@@ -15,7 +15,10 @@ class BIM_Model_User{
                 $this->$prop = $value;
             }
             if( $this->age <= 0 ){
-                $this->age = '1900-01-01 00:00:00';
+                //set the default age to 17
+                $date = new DateTime();
+                $date = $date->sub( new DateInterval('P17Y') );
+                $this->age = $date->format('Y-m-d H:i:s');
             } else if( !empty( $this->age ) ){
                 $birthdate = new DateTime( "@$this->age" );
                 $this->age = $birthdate->format('Y-m-d H:i:s');
