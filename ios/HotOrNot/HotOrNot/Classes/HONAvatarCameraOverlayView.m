@@ -258,7 +258,7 @@
 		_overlayImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
 											 [UIImage imageNamed:@"overlayLoader002"],
 											 [UIImage imageNamed:@"overlayLoader003"], nil];
-		_overlayImageView.animationDuration = 1.125f;
+		_overlayImageView.animationDuration = 0.5f;
 		_overlayImageView.animationRepeatCount = 0;
 		_overlayImageView.alpha = 0.0;
 		[_overlayImageView startAnimating];
