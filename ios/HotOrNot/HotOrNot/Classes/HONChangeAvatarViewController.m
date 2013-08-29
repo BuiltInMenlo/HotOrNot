@@ -54,8 +54,10 @@
 #pragma mark - Data Calls
 - (void)_uploadPhoto:(UIImage *)image {
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
-	
-	_filename = [NSString stringWithFormat:@"%@.jpg", [HONAppDelegate deviceToken]];
+    
+    NSString *currentTimestamp = [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
+    
+	_filename = [NSString stringWithFormat:@"%@-%@.jpg", [HONAppDelegate deviceToken], currentTimestamp];
 	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
@@ -95,6 +97,7 @@
 }
 
 - (void)_finalizeUser {
+
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 9], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",

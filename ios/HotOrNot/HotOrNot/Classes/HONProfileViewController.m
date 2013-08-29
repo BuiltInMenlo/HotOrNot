@@ -290,6 +290,7 @@
 			[(HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]] updateCell];
 			self.navigationController.navigationBar.topItem.title = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"name"]];
 			
+            
 			_recentOpponents = [NSMutableArray array];
 			_friends = [NSMutableArray array];
 			_contacts = [NSMutableArray array];
