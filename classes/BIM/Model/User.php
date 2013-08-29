@@ -159,7 +159,9 @@ class BIM_Model_User{
         $dao->updateUsernameAvatar( $this->id, $username, $imgUrl, $birthdate, $password );
         $this->username = $username;
         $this->img_url = $imgUrl;
-        $this->age = $birthdate;
+        if( !empty($birthdate) ){
+            $this->age = $birthdate;
+        }
         $this->purgeFromCache();
         $this->queuePurgeVolleys();
     }
