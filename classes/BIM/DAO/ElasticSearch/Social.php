@@ -77,14 +77,11 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
     
     public function acceptFriend( $doc ){
         $added = false;
-        if( isset( $doc->source ) && $doc->source ){
+        if( !empty( $doc->source ) ){
             $update = array(
                 'script' => "
-                    if(target == ctx._source.target && ctx._source.state == 0){
-                    	ctx._source.state = 1;
-                    	ctx._source.accept_time = timestamp;
-                    }
-                    ;
+                	ctx._source.state = 1;
+                	ctx._source.accept_time = timestamp;
                 ",
                 'params' => array(
                     'timestamp' => time(),

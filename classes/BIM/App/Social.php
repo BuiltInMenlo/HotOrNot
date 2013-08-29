@@ -12,46 +12,62 @@ class BIM_App_Social extends BIM_App_Base{
                 BIM_Jobs_Users::queueFriendNotification( $params->userID, $params->target );
             }
         }
-        return self::getFriends($params);
+        return self::getFollowers($params);
     }
     
     protected static function _addFriend( $params ){
         $added = false;
-        $targetUser = self::getUser( $params->target );
+        $targetUser = BIM_Model_User::get( $params->target );
         if( $targetUser ){
-            $sourceUser = self::getUser( $params->userID );
+            $sourceUser = BIM_Model_User::get( $params->userID );
             $dao = new BIM_DAO_ElasticSearch_Social( BIM_Config::elasticSearch() );
-            $time = time();
-            $defaultState = 0;
-            $acceptTime = -1;
-            if( !empty( $params->auto ) ){
-                $defaultState = 1;
-                $acceptTime = $time;
-            }
-            
             $relation = (object) array(
                 'source' => $params->userID,
                 'target' => $params->target,
-                'state' => $defaultState,
-                'init_time' => $time,
-                'accept_time' => $acceptTime,
-                'source_data' => (object) array(
-                    'username' => $sourceUser->username,
-                    'id' => $sourceUser->id,
-                    'avatar_url' => $sourceUser->getAvatarUrl()
-                ),
-                'target_data' => (object) array(
-                    'username' => $targetUser->username,
-                    'id' => $targetUser->id,
-                    'avatar_url' => $targetUser->getAvatarUrl()
-                ),
-                
             );
+            $doc = $dao->getRelation( $relation );
+            if( isset( $doc->state ) && $doc->state == 0 ){
+                $added = $dao->acceptFriend( $relation );
+            } else if( !$doc ){
+                $relation = self::createRelationDoc($params, $sourceUser, $targetUser);
+                $added = $dao->addFriend( $relation );
+            }
             
-            $added = $dao->addFriend( $relation );
+            $dao->flush();
+            $targetUser->purgeFromCache();
+            $sourceUser->purgeFromCache();
         }
-        $dao->flush();
         return $added;
+    }
+    
+    protected static function createRelationDoc( $params, $source, $target ){
+        $time = time();
+        $defaultState = 0;
+        $acceptTime = -1;
+        if( !empty( $params->auto ) ){
+            $defaultState = 1;
+            $acceptTime = $time;
+        }
+        
+        $relation = (object) array(
+            'source' => $params->userID,
+            'target' => $params->target,
+            'state' => $defaultState,
+            'init_time' => $time,
+            'accept_time' => $acceptTime,
+            'source_data' => (object) array(
+                'username' => $source->username,
+                'id' => $source->id,
+                'avatar_url' => $source->getAvatarUrl()
+            ),
+            'target_data' => (object) array(
+                'username' => $target->username,
+                'id' => $target->id,
+                'avatar_url' => $target->getAvatarUrl()
+            ),
+        );
+        
+        return $relation;
     }
     
     public static function acceptFriend( $params ){
@@ -146,7 +162,8 @@ class BIM_App_Social extends BIM_App_Base{
         $friends = self::getFriends($params);
         $followers = array();
         foreach( $friends as $key => $friend ){
-            if( $friend->source == $params->userID ){
+            if( $friend->source == $params->userID
+                || ( ($friend->target == $params->userID ) && $friend->state == 1 ) ){
                 if( $assoc ){
                     $followers[ $key ] = $friend;
                 } else {
@@ -161,7 +178,8 @@ class BIM_App_Social extends BIM_App_Base{
         $friends = self::getFriends($params);
         $followers = array();
         foreach( $friends as $key => $friend ){
-            if( $friend->target == $params->userID ){
+            if( $friend->target == $params->userID
+                || ( ($friend->source == $params->userID ) && $friend->state == 1 ) ){
                 if( $assoc ){
                     $followers[ $key ] = $friend;
                 } else {

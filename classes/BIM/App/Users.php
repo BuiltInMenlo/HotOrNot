@@ -48,18 +48,6 @@ class BIM_App_Users extends BIM_App_Base{
 		    }
 		} else {
 			$user = BIM_Model_User::create( $device_token, BIM_Utils::getAdvertisingId() );
-			if( $user->isExtant() ){
-                BIM_Model_Volley::autoVolley($user->id);
-                
-                // have @teamvolley friend the new user			
-    			$friendRelation = (object) array( 
-    				'target' => $user->id, 
-    				'userID' => 2394, /*team volley id */
-    			    'auto' => 1,
-    			);
-    			$s = new BIM_App_Social();
-    			$s->addFriend($friendRelation);
-			}
 		}
         return $user;
 	}
@@ -219,19 +207,15 @@ class BIM_App_Users extends BIM_App_Base{
     	        $purge = true;
                 $verifyVolley = BIM_Model_Volley::createVerifyVolley( $targetId );
         	    $target->flag( $verifyVolley->id, $userId, $approves );
-        	    
-                $friends = BIM_App_Social::getFriends( (object) array('userID' => $targetId, 'from' => 0, 'size' => 50 ) );
-                $friendIds = array_map(function($friend){return $friend->user->id;}, $friends);
-        	    if( $friendIds ){
-                    $this->sendVerifyPush( $targetId, $friendIds );
-                }
+                $this->sendVerifyPush( $targetId );
                 $this->sendFlaggedEmail($userId);
-                
     	    } else if( $verifyVolley->isExtant() && !$verifyVolley->hasApproved($userId) ){
     	        $purge = true;
         	    $target->flag( $verifyVolley->id, $userId, $approves );
         	    if( $approves < 0 ){
     	            $this->sendApprovePush( $targetId );
+        	    } else if( $approves > 0 ){
+                    $this->sendVerifyPush( $targetId );
         	    }
     	    }
     	    if( $purge ){
@@ -246,9 +230,9 @@ class BIM_App_Users extends BIM_App_Base{
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
             if( $target->isApproved() ){
-                $msg = "The network has approved you!";
+                $msg = "Congrats! Your Volley profile has been Volley verified!";
             } else {
-                $msg = "Someone thinks you are Real!";
+                $msg = "Your Volley profile has been verified by another Volley user!";
             }
             $push = array(
                 "device_tokens" => $target->device_token, 
@@ -289,12 +273,17 @@ class BIM_App_Users extends BIM_App_Base{
 	 * @param int $targetId usr bring flagged
 	 * @param array[int] $userIds - list of users to push
 	 */
-	public function sendVerifyPush( $targetId, $userIds ){
+	public function sendVerifyPush( $targetId ){
 
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
+            
             // Your Volley profile has been flagged
+            
             $msg = "Your Volley profile has been flagged";
+            if( $target->isSuspended() ){
+                $msg = "Your Volley profile has been suspended";
+            }
             $push = array(
                 "device_tokens" =>  $target->device_token, 
                 "type" => "3", 
@@ -628,6 +617,15 @@ class BIM_App_Users extends BIM_App_Base{
                 $volley = BIM_Model_Volley::createVerifyVolley($userId);
                 //BIM_Jobs_Users::queueVolleySignupVerificationPush($userId);
             }
+            // BIM_Model_Volley::autoVolley($user->id);
+            // have @teamvolley friend the new user			
+			$friendRelation = (object) array( 
+				'target' => 2394, 
+				'userID' => $user->id, /*team volley id */
+			    'auto' => 1,
+			);
+			$s = new BIM_App_Social();
+			$s->addFriend($friendRelation);
         }
         return BIM_Model_User::get( $userId );
     }

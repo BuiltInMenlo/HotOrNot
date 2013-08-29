@@ -7,8 +7,8 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         if ( !empty( $input->userID ) && property_exists($input, 'approves' ) && !empty( $input->targetID ) ){
             $input->userID = $this->resolveUserId( $input->userID );
             $users = new BIM_App_Users();
-            $users->flagUser($input->userID, $input->approves, $input->targetID);
-		    //BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
+            //$users->flagUser($input->userID, $input->approves, $input->targetID);
+		    BIM_Jobs_Users::queueFlagUser( $input->userID, $input->approves, $input->targetID );
     		return array(
     			'id' => $input->userID,
     			'mail' => true
@@ -20,6 +20,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     public function updateUsernameAvatar(){
         $input = (object) ($_POST ? $_POST : $_GET);
         if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) ){
+            $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
             $userId = $this->resolveUserId( $input->userID );
             $birthdate = !empty( $input->age ) ? $input->age : null;
             if( !$birthdate || ($birthdate && BIM_Utils::ageOK( $birthdate ) ) ){
@@ -37,10 +38,11 @@ class BIM_Controller_Users extends BIM_Controller_Base {
         $input = (object) ($_POST ? $_POST : $_GET);
         if (!empty($input->userID) && !empty($input->username) && !empty($input->imgURL) && !empty( $input->age ) && !empty( $input->password ) ){
             if( BIM_Utils::ageOK( $input->age ) ){
+                $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
                 $userId = $this->resolveUserId( $input->userID );
                 $users = new BIM_App_Users();
-                $users->firstRunComplete( $input->userID );
-                // BIM_Jobs_Users::queueFirstRunComplete($userId);
+                //$users->firstRunComplete( $input->userID );
+                BIM_Jobs_Users::queueFirstRunComplete($userId);
                 $users = new BIM_App_Users();
 			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age, $input->password );
             }

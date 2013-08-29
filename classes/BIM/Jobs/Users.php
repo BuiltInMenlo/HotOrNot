@@ -40,13 +40,12 @@ class BIM_Jobs_Users extends BIM_Jobs{
     
     public function friendNotification( $workload ){
         // now we perform a search and send out push notification
-        $user = BIM_App_Base::getUser( $workload->data->user_id );
-        $friend = BIM_App_Base::getUser( $workload->data->friend_id );
+        $user = BIM_Model_User::get( $workload->data->user_id );
+        $friend = BIM_Model_User::get( $workload->data->friend_id );
         
         // @jason has added you as a friend
-        $msg = "$user->username has added you as a friend";
+        $msg = "@$user->username has subscribed to your Volley updates";
         BIM_Push_UrbanAirship_Iphone::send( $friend->device_token, $msg );
-        
     }
     
     public static function queueFriendAcceptedNotification( $userId, $friendId ){
@@ -126,17 +125,33 @@ class BIM_Jobs_Users extends BIM_Jobs{
         	'class' => 'BIM_Jobs_Users',
         	'method' => 'flagUser',
         	'input' => (object) array(
-        					'user_id' => $userId,
+        					'userID' => $userId,
                             'approves' => $approves,
                             'targetID' => $targetId
                         ),
         );
-        return self::queueBackground( $job, 'firstruncomplete' );
+        return self::queueBackground( $job, 'flaguser' );
     }
     
     public function flagUser( $workload ){
         $input = $workload->input;
         $users = new BIM_App_Users();
-	    return $users->flagUser( $input->userID, $input->approves, $input->targetID );
+	    $users->flagUser( $input->userID, $input->approves, $input->targetID );
+    }
+    
+    public static function queuePurgeUserVolleys( $userId ){
+        $job = array(
+        	'class' => 'BIM_Jobs_Users',
+        	'method' => 'purgeUserVolleys',
+        	'input' => (object) array(
+        					'userID' => $userId,
+                        ),
+        );
+        return self::queueBackground( $job, 'purgeuservolleys' );
+    }
+    
+    public function purgeUserVolleys( $workload ){
+        $user = BIM_Model_User::get( $workload->input->userID );
+        $user->purgeVolleys();
     }
 }

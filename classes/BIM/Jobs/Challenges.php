@@ -120,13 +120,13 @@ class BIM_Jobs_Challenges extends BIM_Jobs{
     }
     
     public function acceptChallengeAsDefaultUser( $workload ){
-        $c = new BIM_App_Challenges();
         $params = json_decode($workload->params);
         if( $params ){
             // now we need to instantiate the real php objects and not just the stdClass
             $volley = BIM_Model_Volley::get( $params->volleyObject->id );
             $target = BIM_Model_User::get( $params->targetUser->id );
             $creator = BIM_Model_User::get( $params->creator->id );
+            $c = new BIM_App_Challenges();
             $c->doAcceptChallemgeAsDefaultUser( $volley, $creator, $target );
         }
     }

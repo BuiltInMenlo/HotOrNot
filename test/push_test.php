@@ -1,12 +1,26 @@
 <?php
 require_once 'vendor/autoload.php';
 
-$volley = BIM_Model_Volley::get( 25690 );
-$creator = BIM_Model_User::get( 881 );
-$targetUser = BIM_Model_User::get( 882 );
+$workload = (object) array(
+    'data' => (object) array( 
+    	'friend_id' => 9718, 
+    	'user_id' => 9719
+    )
+);
 
-$a = new BIM_App_Challenges(); 
-$a->doAcceptNotification($volley, $creator, $targetUser);
+//$j = new BIM_Jobs_Users();
+//$j->friendNotification($workload);
+
+BIM_Jobs_Users::queueFriendNotification(9718, 9719);
+
+/*
+$volley = BIM_Model_Volley::get( 25812 );
+$creator = BIM_Model_User::get( $volley->creator->id );
+$targetUser = BIM_Model_User::get( 881 );
+*/
+
+//$a = new BIM_App_Challenges(); 
+//$a->doAcceptNotification($volley, $creator, $targetUser);
 
 /**
 foreach ( array(881) as $id ){

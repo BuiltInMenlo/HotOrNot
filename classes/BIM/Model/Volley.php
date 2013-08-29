@@ -68,7 +68,7 @@ class BIM_Model_Volley{
             }
             $this->expires = $volley->expires;
             $this->is_private = $volley->is_private;
-            $this->is_verify = $volley->is_verify;
+            $this->is_verify = (int) $volley->is_verify;
         }
     }
     
@@ -154,6 +154,13 @@ class BIM_Model_Volley{
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify );
         return self::get( $volleyId );
+    }
+    
+    public static function getAccountSuspendedVolley( $targetId ){
+        $vv = self::getVerifyVolley( $targetId );
+        $vv->subject = '#Account_Disabled_Temporarily';
+        $vv->creator->img = '';
+        return $vv;
     }
     
     public static function getVerifyVolley( $targetId ){
