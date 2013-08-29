@@ -9,10 +9,12 @@ class BIM_Controller{
         $legacyKey = 'IS_LEGACY';
         if( !empty( $_SERVER[ $legacyKey ] ) ){
             define($legacyKey,TRUE);
+        } else {
+            define($legacyKey,FALSE);
         }
         
         $res = null;
-        if( $this->sessionOK() ){
+        if( $this->sessionOK() || IS_LEGACY ){
             $request = BIM_Utils::getRequest();
             $method = $request->method;
             $controllerClass = $request->controllerClass;

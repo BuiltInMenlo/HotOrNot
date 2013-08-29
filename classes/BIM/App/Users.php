@@ -230,9 +230,9 @@ class BIM_App_Users extends BIM_App_Base{
     	$target = BIM_Model_User::get( $targetId );
         if( $target->canPush() ){
             if( $target->isApproved() ){
-                $msg = "Your Volley profile has been verified!";
+                $msg = "Congrats! Your Volley profile has been Volley verified!";
             } else {
-                $msg = "Your Volley profile has been verified!";
+                $msg = "Your Volley profile has been verified by another Volley user!";
             }
             $push = array(
                 "device_tokens" => $target->device_token, 
