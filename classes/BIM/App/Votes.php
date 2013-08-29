@@ -171,7 +171,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	**/
 	public function upvoteChallenge($volleyId, $userId, $targetId) {
 	    $volley = BIM_Model_Volley::get($volleyId);
-	    if( $volley->isExtant() && ( $volley->hasUser( $targetId ) ) ){
+	    if( $volley->isExtant() && $volley->hasUser( $targetId ) && !$volley->isCreator( $targetId ) ){
 	        $volley->upVote( $targetId, $userId );
     		$liker = BIM_Model_User::get( $userId );
     		$target = BIM_Model_User::get( $targetId );
