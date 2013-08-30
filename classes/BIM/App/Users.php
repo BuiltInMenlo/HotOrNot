@@ -376,7 +376,11 @@ class BIM_App_Users extends BIM_App_Base{
 	public function matchFriends( $params ){
 	    $list = $this->addPhoneList($params);
 	    $friendMatches = $this->findfriends($list, true);
-	    $friendList = BIM_App_Social::getFriends($params, true);
+	    
+	    $fParams = (object) array(
+	        'userID' => $params->id,
+	    );
+	    $friendList = BIM_App_Social::getFriends($fParams, true);
 	    
 	    // firletering out users with which we are already friends
 	    $friendIds = array_keys( $friendList );
@@ -387,7 +391,7 @@ class BIM_App_Users extends BIM_App_Base{
             $user = $friendMatches[ $user ];
         }
         
-        return $matches;
+        return array_values($matches);
 	}
 	
 	public function matchFriendsEmail( $params ){
@@ -404,7 +408,7 @@ class BIM_App_Users extends BIM_App_Base{
 	        $hits = &$hits->hits->hits;
 	        foreach( $hits as $hit ){
 	            $hit = $hit->fields->_source;
-                $user = self::getUser( $hit->id );
+                $user = BIM_Model_User::get( $hit->id );
                 if( $user->isExtant() ){
                     $hit->username = $user->username;
                     if( $assoc ){

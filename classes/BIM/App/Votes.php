@@ -171,21 +171,23 @@ class BIM_App_Votes extends BIM_App_Base{
 	**/
 	public function upvoteChallenge($volleyId, $userId, $targetId) {
 	    $volley = BIM_Model_Volley::get($volleyId);
-	    if( $volley->isExtant() && $volley->hasUser( $targetId ) && !$volley->isCreator( $targetId ) ){
+	    if( $volley->isExtant() && $volley->hasUser( $targetId ) ){
 	        $volley->upVote( $targetId, $userId );
-    		$liker = BIM_Model_User::get( $userId );
-    		$target = BIM_Model_User::get( $targetId );
-    		// @jason your Volley #WhatsUp"
-			$msg = "@$liker->username liked your Volley $volley->subject";
-			$push = array(
-		    	"device_tokens" =>  $target->device_token, 
-		    	"type" => "3", 
-		    	"aps" =>  array(
-		    		"alert" =>  $msg,
-		    		"sound" =>  "push_01.caf"
-		        )
-		    );
-    	    BIM_Jobs_Utils::queuePush( $push );
+	        if( $userId != $targetId ){
+        		$liker = BIM_Model_User::get( $userId );
+        		$target = BIM_Model_User::get( $targetId );
+        		// @jason your Volley #WhatsUp"
+    			$msg = "@$liker->username liked your Volley $volley->subject";
+    			$push = array(
+    		    	"device_tokens" =>  $target->device_token, 
+    		    	"type" => "3", 
+    		    	"aps" =>  array(
+    		    		"alert" =>  $msg,
+    		    		"sound" =>  "push_01.caf"
+    		        )
+    		    );
+        	    BIM_Jobs_Utils::queuePush( $push );
+	        }
 	    }
 		return BIM_Model_Volley::get( $volleyId );
 	}

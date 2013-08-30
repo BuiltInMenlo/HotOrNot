@@ -9,7 +9,7 @@ class BIM_Model_User{
             $params = $dao->getData( $params );
         }
         
-        if( $params ){
+        if( !empty($params->id) ){
             unset( $params->password );
             foreach( $params as $prop => $value ){
                 $this->$prop = $value;
@@ -385,6 +385,33 @@ class BIM_Model_User{
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $ids = $dao->getUsersWithSimilarName( $username );
         return self::getMulti($ids);
+    }
+    
+    /**
+     * we get the user object and the list of their images
+     * and serialize it and store into an archived users table
+     * 
+     * the archived users table 
+     * user_id, username, blob
+     * 
+     */
+    public static function archive( $userId ){
+        $user = self::get( $userId );
+        $user->volleys = BIM_Model_Volley::getMulti($user->getVolleyIds());
+        $data = json_encode($user);
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->archive($user->id, $user->username, $data);
+        $user->delete();
+    }
+    
+    public function delete(){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->delete($user->id);
+    }
+    
+    public function getVolleyIds(){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        return $dao->getVolleysForUserId($this->id);
     }
     
     public function canPush(){

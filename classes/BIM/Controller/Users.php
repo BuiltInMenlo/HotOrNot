@@ -135,7 +135,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
 		    $hashedList = explode('|', $input->phone );
 		    $params = (object) array(
 		        'id' => $input->userID,
-		        'hashed_list' => $hashedList,
+		    	'hashed_list' => $hashedList,
 		    );
 		    $users = new BIM_App_Users();
 			$friends = $users->matchFriends( $params );
