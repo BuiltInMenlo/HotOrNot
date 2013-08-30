@@ -553,7 +553,7 @@ WHERE is_verify != 1
         return $ids;        
     }
     
-    public function getVolleysForUserId( $userId, $private ){
+    public function getVolleysForUserId( $userId, $private = false ){
 		// get latest 10 challenges for user
 	    $privateSql = ' AND tc.`is_private` != "Y" ';
 	    if( $private ){
