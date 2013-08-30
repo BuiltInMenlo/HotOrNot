@@ -106,7 +106,7 @@ class BIM_App_Social extends BIM_App_Base{
             $params->target = $target;
             $removed = self::_removeFriend($params);
         }
-        return self::getFriends($params);
+        return self::getFollowers($params);
     }
     
     protected static function _removeFriend( $params ){
