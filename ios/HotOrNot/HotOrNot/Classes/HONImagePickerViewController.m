@@ -513,23 +513,17 @@ const CGFloat kFocusInterval = 0.5f;
 	}
 }
 
-- (void)_updateClock {
-	_clockCounter++;
+- (void)_takePhoto {
+	[_clockTimer invalidate];
+	_clockTimer = nil;
 	
-	if (_clockCounter >= 17) {
-		[_clockTimer invalidate];
-		_clockTimer = nil;
-		
-		if (_focusTimer != nil) {
-			[_focusTimer invalidate];
-			_focusTimer = nil;
-		}
-		
-		[_imagePicker takePicture];
-		[_cameraOverlayView takePhoto];
+	if (_focusTimer != nil) {
+		[_focusTimer invalidate];
+		_focusTimer = nil;
+	}
 	
-	} else
-		[_cameraOverlayView updateClock:_clockCounter];
+	[_imagePicker takePicture];
+	[_cameraOverlayView takePhoto];
 }
 
 
@@ -542,7 +536,8 @@ const CGFloat kFocusInterval = 0.5f;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	[_cameraOverlayView startProgress];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 
@@ -587,7 +582,8 @@ const CGFloat kFocusInterval = 0.5f;
 		
 	} else {
 		_clockCounter = 0;
-		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+		[_cameraOverlayView startProgress];
+		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 	}
 	
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
@@ -689,13 +685,12 @@ const CGFloat kFocusInterval = 0.5f;
 	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
 	_previewView.delegate = self;
 	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
+	[_previewView showKeyboard];
 	
 	[_cameraOverlayView submitStep:_previewView];
 		
 	[self _uploadPhoto:_challangeImage];
 	
-	[_previewView showKeyboard];
-	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 	
 	int friend_total = 0;
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"]) {
@@ -748,10 +743,9 @@ const CGFloat kFocusInterval = 0.5f;
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	[_cameraOverlayView removePreview];
-	
 	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	[_cameraOverlayView startProgress];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -804,8 +798,10 @@ const CGFloat kFocusInterval = 0.5f;
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	
-	[self _showCamera];
+	_clockCounter = 0;
+	[_cameraOverlayView startProgress];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+	//[self _showCamera];
 }
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {

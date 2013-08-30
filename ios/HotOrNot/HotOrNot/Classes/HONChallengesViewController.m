@@ -170,7 +170,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			}
 			
 			_emptyImageView.hidden = [_challenges count] > 0;
-			//_bannerView.hidden = ([_challenges count] == 0 || ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"]);
+			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -299,12 +299,12 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_bannerView addSubview:bannerButton];
 	
 	_emptyImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"noOneVerify"]];
-	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"] * 90.0));
+	_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, ([[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"] * 90.0));
 	_emptyImageView.hidden = YES;
 	[self.view addSubview:_emptyImageView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 14.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor whiteColor]];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
 	_tableView.delegate = self;
@@ -371,6 +371,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
 		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
+		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
 		[_bannerView removeFromSuperview];
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"activity_banner"];

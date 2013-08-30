@@ -134,7 +134,7 @@
 				[HONAppDelegate writeUserInfo:userResult];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_PROFILE_TAB" object:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 				}];
 				
 			} else {
@@ -265,7 +265,7 @@
 - (void)_updateClock {
 	_clockCounter++;
 	
-	if (_clockCounter >= 9) {
+	if (_clockCounter >= 17) {
 		[_clockTimer invalidate];
 		_clockTimer = nil;
 		

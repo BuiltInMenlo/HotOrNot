@@ -211,7 +211,7 @@
 		[params setObject:[NSString stringWithFormat:@"%d", _isProfileFiltered] forKey:@"p"];
 	}
 	
-	//NSLog(@"CHALLENGE PARAMS:[%@]", params);
+	NSLog(@"CHALLENGE PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -479,6 +479,11 @@
 				_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 				self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 			}
+		}
+		
+		if (_timelineType == HONTimelineTypeSingleUser && _userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+			_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
+			self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 		}
 		
 		self.navigationController.navigationBar.topItem.title = (_timelineType == HONTimelineTypeSingleUser && [[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]) ? @"Me" : title;

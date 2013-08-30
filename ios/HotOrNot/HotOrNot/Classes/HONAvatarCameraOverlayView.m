@@ -131,7 +131,7 @@
 		[submitHolderView addSubview:skipButton];
 		
 		
-		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 200.0, 20.0)];
+		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 260.0, 20.0)];
 		_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 		_actionLabel.textColor = [UIColor whiteColor];
 		_actionLabel.backgroundColor = [UIColor clearColor];

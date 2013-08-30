@@ -42,25 +42,20 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
+	//NSLog(@"IMG:[%@]", [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]);
+	
 	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	[self addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(127.0, 31.0)]];
 	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 15.0, 109.0, 109.0)];
 	_avatarImageView.userInteractionEnabled = YES;
-	[_avatarImageView setImageWithURL:[NSURL URLWithString:(isUser) ? [[HONAppDelegate infoForUser] objectForKey:@"avatar_url"] : _userVO.imageURL] placeholderImage:nil];
+	[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[self addSubview:_avatarImageView];
 	
-	if (isUser) {
-		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]]
-																  cachePolicy:NSURLRequestReloadRevalidatingCacheData//NSURLRequestReloadIgnoringLocalCacheData
-															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];
-	
-	} else {
-		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
-																  cachePolicy:NSURLRequestReloadRevalidatingCacheData
-															  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-	}
-	
+//	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
+//															  cachePolicy:NSURLRequestReloadRevalidatingCacheData
+//														  timeoutInterval:3] placeholderImage:nil success:nil failure:nil];//^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+//	
 	
 	BOOL isFriend = NO;
 	if (!isUser) {

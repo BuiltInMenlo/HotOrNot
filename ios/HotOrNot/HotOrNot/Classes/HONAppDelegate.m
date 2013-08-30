@@ -301,6 +301,10 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 + (void)writeUserInfo:(NSDictionary *)userInfo {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"user_info"] != nil) {
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"user_info"];
+	}
+	
 	[[NSUserDefaults standardUserDefaults] setObject:userInfo forKey:@"user_info"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 }

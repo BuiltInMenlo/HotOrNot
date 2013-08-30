@@ -18,18 +18,12 @@
 @interface HONSnapCameraOverlayView()
 @property (nonatomic, strong) UIImageView *infoImageView;
 @property (nonatomic, strong) UIView *irisView;
-@property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIView *blackMatteView;
-@property (nonatomic, strong) UIImageView *previewImageView;
-@property (nonatomic, strong) UIImageView *circleFillImageView;
-@property (nonatomic, strong) UIView *controlsHolderView;
+@property (nonatomic, strong) UIImageView *progressBarImageView;
 @property (nonatomic, strong) UILabel *actionLabel;
 @property (nonatomic, strong) UIButton *cancelButton;
-@property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *subscribersButton;
 @property (nonatomic, strong) NSArray *usernames;
-@property (nonatomic, strong) NSString *username;
-@property (nonatomic) BOOL isPrivate;
 @property (readonly, nonatomic, assign) HONChallengeExpireType expireType;
 @end
 
@@ -39,7 +33,6 @@
 - (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username {
 	if ((self = [super initWithFrame:frame])) {
 		_usernames = [NSArray arrayWithObject:username];
-		_username = username;
 		
 		//NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", subject, username);
 		//hide overlay - [self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
@@ -48,12 +41,6 @@
 		_irisView.backgroundColor = [UIColor blackColor];
 		_irisView.alpha = 0.0;
 		[self addSubview:_irisView];
-		
-		_previewHolderView = [[UIView alloc] initWithFrame:self.frame];
-		[self addSubview:_previewHolderView];
-		
-		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 640.0, self.frame.size.height)];
-		[self addSubview:_controlsHolderView];
 		
 		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 200.0, 20.0)];
 		_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
@@ -76,10 +63,6 @@
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_cancelButton];
 		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(201.0, self.frame.size.height - 121.0, 128.0, 128.0)];
-		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_000"];
-		[_controlsHolderView addSubview:_circleFillImageView];
-				
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_blackMatteView.backgroundColor = [UIColor blackColor];
 		[self addSubview:_blackMatteView];
@@ -91,7 +74,7 @@
 
 #pragma mark - Public API
 - (void)intro {
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void){
+	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		_blackMatteView.alpha = 0.0;
 	} completion:^(BOOL fininshed){
 		[_blackMatteView removeFromSuperview];
@@ -104,31 +87,18 @@
 		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
 		[self addSubview:_infoImageView];
 		
-		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(201.0, self.frame.size.height - 121.0, 128.0, 128.0)];
-		clockImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraAnimation_001"],
-										  [UIImage imageNamed:@"cameraAnimation_002"],
-										  [UIImage imageNamed:@"cameraAnimation_003"],
-										  [UIImage imageNamed:@"cameraAnimation_004"],
-										  [UIImage imageNamed:@"cameraAnimation_005"],
-										  [UIImage imageNamed:@"cameraAnimation_006"],
-										  [UIImage imageNamed:@"cameraAnimation_007"],
-										  [UIImage imageNamed:@"cameraAnimation_008"],
-										  [UIImage imageNamed:@"cameraAnimation_009"],
-										  [UIImage imageNamed:@"cameraAnimation_010"],
-										  [UIImage imageNamed:@"cameraAnimation_011"],
-										  [UIImage imageNamed:@"cameraAnimation_012"],
-										  [UIImage imageNamed:@"cameraAnimation_013"],
-										  [UIImage imageNamed:@"cameraAnimation_014"],
-										  [UIImage imageNamed:@"cameraAnimation_015"],
-										  [UIImage imageNamed:@"cameraAnimation_016"], nil];
-		clockImageView.animationDuration = 2.5f;
-		clockImageView.animationRepeatCount = 0;
-		[clockImageView startAnimating];
-		[_infoImageView addSubview:clockImageView];
+		_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 4.0, 2.0)];
+		_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
+		[self addSubview:_progressBarImageView];
+		
+		[self _animateLoader:YES];
 	
 	} else {
 		[_infoImageView removeFromSuperview];
 		_infoImageView = nil;
+		
+		[_progressBarImageView removeFromSuperview];
+		_progressBarImageView = nil;
 	}
 }
 
@@ -137,6 +107,10 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_irisView.alpha = 0.65;
 	} completion:^(BOOL finished){}];
+	
+//	_progressBarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whiteLoader"]];
+//	_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 320.0, 2.0);
+//	[self addSubview:_progressBarImageView];
 }
 
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
@@ -144,42 +118,17 @@
 	_actionLabel.text = (isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [challengers count], ([challengers count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [challengers count], ([challengers count] != 1 ? @"s" : @"")];
 }
 
-- (void)addPreview:(UIImage *)image {
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
-	} completion:nil];
-	
-	if (_previewImageView == nil) {
-		_previewImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor scaleImage:image byFactor:(([HONAppDelegate isRetina5]) ? 1.25f : 1.125f) * (self.frame.size.width / image.size.width)]];
-		[_previewHolderView addSubview:_previewImageView];
+- (void)startProgress {
+	if (_progressBarImageView != nil) {
+		[_progressBarImageView removeFromSuperview];
+		_progressBarImageView = nil;
 	}
-}
-
-- (void)addMirroredPreview:(UIImage *)image {
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, -320.0, 0.0);
-	} completion:nil];
 	
-	if (_previewImageView == nil) {
-		UIImage *scaledImage = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83f];
-		_previewImageView = [[UIImageView alloc] initWithImage:scaledImage];
-		_previewImageView.frame = CGRectOffset(_previewImageView.frame, ABS(self.frame.size.width - scaledImage.size.width) * -0.5, -12.0 + ABS(self.frame.size.width - scaledImage.size.width) * -0.5);
-		_previewImageView.transform = CGAffineTransformScale(_previewImageView.transform, -1.0f, 1.0f);
-		//[_previewHolderView addSubview:_previewImageView];
-	}
-}
-
-- (void)removePreview {
-	[_previewImageView removeFromSuperview];
-	_previewImageView = nil;
+	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 4.0, 2.0)];
+	_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
+	[self addSubview:_progressBarImageView];
 	
-	_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 320.0, 0.0);
-}
-
-
-- (void)updateClock:(int)tick {
-	//NSLog(@"IMG:[cameraAnimation_%03d]", tick);
-	_circleFillImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"cameraAnimation_%03d", tick]];
+	[self _animateLoader:NO];
 }
 
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView {
@@ -194,6 +143,24 @@
 
 - (void)_goCloseCamera {
 	[self.delegate cameraOverlayViewCloseCamera:self];
+}
+
+#pragma mark - UI Presentation
+- (void)_animateLoader:(BOOL)isRepeating {
+	if (_progressBarImageView != nil) {
+		[UIView animateWithDuration:1.6 animations:^(void) {
+			_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 320.0, 2.0);
+		} completion:^(BOOL fishished) {
+			if (isRepeating) {
+				_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 4.0, 2.0);
+				[self _animateLoader:YES];
+			
+			} else {
+//				[_progressBarImageView removeFromSuperview];
+//				_progressBarImageView = nil;
+			}
+		}];
+	}
 }
 
 

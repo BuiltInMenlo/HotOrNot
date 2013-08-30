@@ -28,6 +28,7 @@
 @property (nonatomic, strong) UIButton *subscribersButton;
 @property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
+@property (nonatomic, strong) UIImageView *progressBarImageView;
 @property (nonatomic, strong) HONCameraPreviewSubscribersView *subscribersView;
 @end
 
@@ -98,11 +99,21 @@
 - (void)showKeyboard {
 	[_subjectTextField becomeFirstResponder];
 	[self _raiseKeyboard];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 135.0, 320.0, 53.0);
+		//progressBarImageView.alpha = 0.5;
+	} completion:^(BOOL finished) {
+		[_progressBarImageView removeFromSuperview];
+		_subjectHolderView.hidden = NO;
+	}];
 }
 
 
 #pragma mark - UI Presentation
 - (void)_makeUI {
+	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerFadeBackground"]]];
+	
 	_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 	_blackMatteView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.65];
 	[self addSubview:_blackMatteView];
@@ -134,24 +145,26 @@
 	[self addSubview:_backButton];
 	
 	_subjectHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 35.0, 320.0, 53.0)];
-	_subjectHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	_subjectHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+	_subjectHolderView.hidden = YES;
 	_subjectHolderView.alpha = 0.0;
 	[self addSubview:_subjectHolderView];
 	
-	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(24.0, 9.0, 268.0, 30.0)];
+	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 9.0, 320.0, 30.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:23];
-	_placeholderLabel.textColor = [HONAppDelegate honGrey518Color];
+	_placeholderLabel.textColor = [UIColor blackColor];
+	_placeholderLabel.textAlignment = NSTextAlignmentCenter;
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"What's happening?" : @"";
 	[_subjectHolderView addSubview:_placeholderLabel];
 	
-	_subjectTextField = [[UITextField alloc] initWithFrame:_placeholderLabel.frame];
+	_subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(24.0, 9.0, 268.0, 30.0)];
 	_subjectTextField.frame = CGRectOffset(_subjectTextField.frame, -10.0, 0.0);
 	[_subjectTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[UIColor whiteColor]];
+	[_subjectTextField setTextColor:[UIColor blackColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:23];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
@@ -159,7 +172,7 @@
 	_subjectTextField.delegate = self;
 	[_subjectHolderView addSubview:_subjectTextField];
 	
-	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, 177.0 + ([HONAppDelegate isRetina5] * 65.0), 54.0, 14.0)];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, 174.0 + ([HONAppDelegate isRetina5] * 65.0), 54.0, 14.0)];
 	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
 										   [UIImage imageNamed:@"cameraUpload_002"],
 										   [UIImage imageNamed:@"cameraUpload_003"], nil];
@@ -169,21 +182,28 @@
 	[_uploadingImageView startAnimating];
 	[self addSubview:_uploadingImageView];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 53.0, 320.0, 53.0)];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0)];
 	_buttonHolderView.alpha = 0.0;
 	[self addSubview:_buttonHolderView];
 	
+	UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	retakeButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
+	[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_nonActive"] forState:UIControlStateNormal];
+	[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_Active"] forState:UIControlStateHighlighted];
+	[retakeButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchDown];
+	[_buttonHolderView addSubview:retakeButton];
+	
 	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	previewButton.frame = CGRectMake(0.0, 0.0, 160.0, 53.0);
+	previewButton.frame = CGRectMake(106.0, 0.0, 106.0, 64.0);
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_nonActive"] forState:UIControlStateNormal];
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_Active"] forState:UIControlStateHighlighted];
 	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:previewButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(160.0, 0.0, 160.0, 53.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButttonCamera_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"submitButttonCamera_Active"] forState:UIControlStateHighlighted];
+	submitButton.frame = CGRectMake(212.0, 0.0, 106.0, 64.0);
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
+	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:submitButton];
 	
@@ -200,6 +220,12 @@
 	[_subscribersBackButton addTarget:self action:@selector(_goSubscribersClose) forControlEvents:UIControlEventTouchDown];
 	_subscribersBackButton.alpha = 0.0;
 	[self addSubview:_subscribersBackButton];
+	
+	_progressBarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whiteLoader"]];
+	_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 320.0, 2.0);
+	[self addSubview:_progressBarImageView];
+	
+	
 }
 
 
@@ -276,19 +302,11 @@
 
 
 - (void)_goBack {
-	[[Mixpanel sharedInstance] track:@"Camera Preview - Back"
-								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
 	[self _dropKeyboardAndRemove:YES];
 	[self.delegate previewViewBackToCamera:self];
 }
 
 - (void)_goClose {
-	[[Mixpanel sharedInstance] track:@"Camera Preview - Close"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
 	[self _dropKeyboardAndRemove:YES];
 	[self.delegate previewViewClose:self];
 }

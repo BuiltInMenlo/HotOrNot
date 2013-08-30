@@ -26,7 +26,7 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 61.0)])) {
 		_challengeVO = vo;
 		
-		self.backgroundColor = [UIColor whiteColor];
+		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.85];
 		
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 9.0, 38.0, 38.0)];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
@@ -40,7 +40,7 @@
 		usernameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
 		[self addSubview:usernameLabel];
 		
-		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 31.0, 180.0, 16.0)];
+		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(58.0, 31.0, 220.0, 16.0)];
 		_ageLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
 		_ageLabel.textColor = [HONAppDelegate honBlueTextColor];
 		_ageLabel.backgroundColor = [UIColor clearColor];
@@ -93,7 +93,7 @@
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-			_ageLabel.text = ([userVO.birthday timeIntervalSince1970] == 0.0) ? @"hasn't set a birthday yet" : [NSString stringWithFormat:@"does this user look %d?", [HONAppDelegate ageForDate:userVO.birthday]];
+			_ageLabel.text = ([userVO.birthday timeIntervalSince1970] == 0.0) ? @"hasn't set a birthday yet" : [NSString stringWithFormat:@"does this new user look %d?", [HONAppDelegate ageForDate:userVO.birthday]];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
