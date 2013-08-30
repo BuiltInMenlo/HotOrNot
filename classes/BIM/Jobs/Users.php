@@ -60,12 +60,11 @@ class BIM_Jobs_Users extends BIM_Jobs{
     
     public function friendAcceptedNotification( $workload ){
         // now we perform a search and send out push notification
-        $user = BIM_App_Base::getUser( $workload->data->user_id );
-        $friend = BIM_App_Base::getUser( $workload->data->friend_id );
+        $user = BIM_Model_User::get( $workload->data->user_id, true );
+        $friend = BIM_Model_User::get( $workload->data->friend_id, true );
         
         $msg = "$user->username accepted your friend request on Volley!";
         BIM_Push_UrbanAirship_Iphone::send( $friend->device_token, $msg );
-        
     }
     
     /**

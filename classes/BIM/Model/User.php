@@ -9,7 +9,7 @@ class BIM_Model_User{
             $params = $dao->getData( $params );
         }
         
-        if( $params ){
+        if( !empty($params->id) ){
             unset( $params->password );
             foreach( $params as $prop => $value ){
                 $this->$prop = $value;

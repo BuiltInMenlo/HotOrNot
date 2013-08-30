@@ -139,6 +139,7 @@ class BIM_App_Social extends BIM_App_Base{
         );
         $friends = $dao->getFriends( $relation );
         $friends = json_decode($friends);
+        
         if( !empty( $friends->hits->hits ) && is_array( $friends->hits->hits ) ){
             foreach( $friends->hits->hits as $hit ){
                 if( $hit->_source->source_data->id == $params->userID ){
@@ -149,7 +150,7 @@ class BIM_App_Social extends BIM_App_Base{
                 unset( $hit->_source->source_data );
                 unset( $hit->_source->target_data );
                 if( $assoc ){
-                    $friendList[$hit->_source->id] = $hit->_source;
+                    $friendList[$hit->_source->user->id] = $hit->_source;
                 } else {
                     $friendList[] = $hit->_source;
                 }
