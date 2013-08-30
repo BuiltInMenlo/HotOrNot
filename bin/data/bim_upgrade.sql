@@ -27,6 +27,12 @@ CREATE TABLE `tblFlaggedUserApprovals` (
   CONSTRAINT `tblFlaggedUserApprovals_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `tblUsers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `user_archive` (
+  `user_id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `data` longtext
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
 alter table tblChallenges drop column challenger_id, drop column challenger_img, add column is_verify tinyint not null default 0;
 alter table tblUsers add column adid varchar(36) unique null, add column abuse_ct int not null default 0, add column password varchar(100) not null;
 update tblUsers set age = -1;
