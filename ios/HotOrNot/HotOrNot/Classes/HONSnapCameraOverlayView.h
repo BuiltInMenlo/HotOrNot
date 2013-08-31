@@ -27,6 +27,7 @@
 @protocol HONSnapCameraOverlayViewDelegate
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayView:(HONSnapCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView;

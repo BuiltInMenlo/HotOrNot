@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <AudioToolbox/AudioToolbox.h>
+
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCreateChallengePreviewView.h"
@@ -61,7 +63,7 @@
 	if ((self = [super initWithFrame:frame])) {
 		self.backgroundColor = [UIColor blackColor];
 		//NSLog(@"MIRRORED");
-		//NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
+		NSLog(@"SRC IMAGE:[%@]", NSStringFromCGSize(image.size));
 		
 		_previewImage = image;
 		_subjectName = subject;
@@ -70,7 +72,7 @@
 		//NSLog(@"ZOOMED IMAGE:[%@]", NSStringFromCGSize(_previewImage.size));
 		
 		UIImageView *previewImageView = [[UIImageView alloc] initWithImage:_previewImage];
-		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-26.0 + (-24.0 * [HONAppDelegate isRetina5])) + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
+		previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - _previewImage.size.width) * -0.5, (-26.0 + (-28.0 * [HONAppDelegate isRetina5])) + (ABS(self.frame.size.height - _previewImage.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 		previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 		[self addSubview:previewImageView];
 		
@@ -106,6 +108,10 @@
 	} completion:^(BOOL finished) {
 		[_progressBarImageView removeFromSuperview];
 		_subjectHolderView.hidden = NO;
+		
+		SystemSoundID sound1;
+		AudioServicesCreateSystemSoundID((__bridge CFURLRef)([[NSBundle mainBundle] URLForResource:@"BLASTWAVEFX_29648" withExtension:@"caf"]), &sound1);
+		AudioServicesPlaySystemSound(sound1);
 	}];
 }
 
@@ -115,7 +121,8 @@
 	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerFadeBackground"]]];
 	
 	_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
-	_blackMatteView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.65];
+	_blackMatteView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:1.0];
+	_blackMatteView.alpha = 0.0;
 	[self addSubview:_blackMatteView];
 	
 	_previewBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -222,10 +229,8 @@
 	[self addSubview:_subscribersBackButton];
 	
 	_progressBarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whiteLoader"]];
-	_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 320.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 320.0, 2.0);
 	[self addSubview:_progressBarImageView];
-	
-	
 }
 
 
@@ -251,6 +256,8 @@
 	
 	[_subjectTextField resignFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blackMatteView.alpha = 0.65;
+		
 		_actionLabel.frame = CGRectOffset(_actionLabel.frame, 48.0, 0.0);
 		_subscribersButton.frame = CGRectOffset(_subscribersButton.frame, 48.0, 0.0);
 		_subscribersButton.alpha = 0.5;
@@ -281,6 +288,7 @@
 	
 	[_subjectTextField becomeFirstResponder];
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blackMatteView.alpha = 0.0;
 		_subscribersBackButton.alpha = 0.0;
 		
 		_actionLabel.frame = CGRectOffset(_actionLabel.frame, -48.0, 0.0);
@@ -330,6 +338,7 @@
 		
 		[_subjectTextField resignFirstResponder];
 		[UIView animateWithDuration:0.25 animations:^(void) {
+			_blackMatteView.alpha = 0.33;
 			_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, 216.0);
 			_uploadingImageView.alpha = 0.0;
 			_placeholderLabel.alpha = 0.0;
@@ -361,7 +370,7 @@
 	[_previewBackButton removeFromSuperview];;
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blackMatteView.alpha = 0.65;
+		_blackMatteView.alpha = 0.0;
 		_actionLabel.alpha = 1.0;
 		_uploadingImageView.alpha = 1.0;
 		_buttonHolderView.frame = CGRectOffset(_buttonHolderView.frame, 0.0, -216.0);

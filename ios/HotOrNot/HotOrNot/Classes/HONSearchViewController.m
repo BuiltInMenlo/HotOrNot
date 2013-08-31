@@ -398,7 +398,7 @@
 - (void)_retrieveUserSearchResults:(NSNotification *)notification {
 	[self retrieveUsers:[notification object]];
 	
-	_tableView.frame = CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - kNavBarHeaderHeight);
+	_tableView.frame = CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 20.0));
 }
 
 

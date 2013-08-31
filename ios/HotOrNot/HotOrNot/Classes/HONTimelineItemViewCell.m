@@ -30,6 +30,7 @@
 @property (nonatomic) BOOL hasOponentRetorted;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
+@property (nonatomic) int opponentCounter;
 
 @end
 
@@ -173,26 +174,26 @@
 	_rHolderView.clipsToBounds = YES;
 	[self addSubview:_rHolderView];
 	
-	int opponentCounter = 0;
+	_opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (kSnapMediumDim + 1.0) * opponentCounter, kSnapMediumDim, kSnapMediumDim)];
+		UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, (kSnapMediumDim + 1.0) * _opponentCounter, kSnapMediumDim, kSnapMediumDim)];
 		[_rHolderView addSubview:opponentHolderView];
 		
-		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix length] > 0) {
+		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:_opponentCounter]).imagePrefix length] > 0) {
 			[opponentHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(0.0, 0.0)]];
 		
 			UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
-			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]] placeholderImage:nil];
+			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:_opponentCounter]).imagePrefix]] placeholderImage:nil];
 			[opponentHolderView addSubview:opponentImageView];
 		
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			rightButton.frame = opponentImageView.frame;
 			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 			[rightButton addTarget:self action:@selector(_goTapOpponent:) forControlEvents:UIControlEventTouchUpInside];
-			[rightButton setTag:opponentCounter];
+			[rightButton setTag:_opponentCounter];
 			[opponentHolderView addSubview:rightButton];
 			
-			opponentCounter++;
+			_opponentCounter++;
 		}
 	}
 	
@@ -245,7 +246,7 @@
 //	[footerHolderView addSubview:likesLabelButton];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(245.0, 227.0 - ((opponentCounter == 0) * 141.0), 64.0, 49.0);
+	joinButton.frame = CGRectMake(245.0, 227.0 - ((_opponentCounter == 0) * 141.0), 64.0, 49.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchDown];
@@ -293,7 +294,7 @@
 		if (CGRectContainsPoint(creatorFrame, touchPoint))
 			[self.delegate timelineItemViewCell:self showPreview:_challengeVO.creatorVO forChallenge:_challengeVO];
 		
-		if (CGRectContainsPoint(_rHolderView.frame, touchPoint)) {
+		if (CGRectContainsPoint(_rHolderView.frame, touchPoint) && _opponentCounter > 0) {
 			int index = touchPoint.y / (kSnapMediumDim + 1.0);
 			[self.delegate timelineItemViewCell:self showPreview:(HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index] forChallenge:_challengeVO];
 		}

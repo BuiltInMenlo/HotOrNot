@@ -61,7 +61,7 @@
 	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Loading";
+	_progressHUD.labelText = @"Uploading…";
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
 	_progressHUD.minShowTime = kHUDTime;
 	_progressHUD.taskInProgress = YES;
@@ -230,6 +230,9 @@
 	_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 	_cameraOverlayView.delegate = self;
 	
+	[_cameraOverlayView startProgress];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_restartProgress) userInfo:nil repeats:YES];
+	
 	_imagePicker.cameraOverlayView = _cameraOverlayView;
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(autofocusCamera) userInfo:nil repeats:YES];
 }
@@ -262,17 +265,18 @@
 	}
 }
 
-- (void)_updateClock {
-	_clockCounter++;
-	
-	if (_clockCounter >= 17) {
+- (void)_restartProgress {
+	[_cameraOverlayView startProgress];
+}
+
+- (void)_takePhoto {
+	if (_clockTimer != nil) {
 		[_clockTimer invalidate];
 		_clockTimer = nil;
-		
-		[_imagePicker takePicture];
-		
-	} else
-		[_cameraOverlayView updateClock:_clockCounter];
+	}
+	
+	[_imagePicker takePicture];
+	[_cameraOverlayView takePhoto];
 }
 
 
@@ -331,15 +335,15 @@
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
 		[self dismissViewControllerAnimated:NO completion:^(void) {
-			[_cameraOverlayView showPreview:image];
+			[_cameraOverlayView addPreview:image];
 		}];
 		
 	} else {
 		if (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront)
-			[_cameraOverlayView showPreviewAsFlipped:image];
+			[_cameraOverlayView addPreviewAsFlipped:image];
 		
 		else
-			[_cameraOverlayView showPreview:image];
+			[_cameraOverlayView addPreview:image];
 	}
 	
 	[self _uploadPhoto:image];
@@ -371,8 +375,26 @@
 
 #pragma mark - CameraOverlayView Delegates
 - (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView {
-	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	if (_clockTimer != nil) {
+		[_clockTimer invalidate];
+		_clockTimer = nil;
+	}
+	
+	[_cameraOverlayView startProgress];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+}
+
+- (void)cameraOverlayView:(HONAvatarCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed {
+	if (isPressed) {
+		if (_clockTimer){
+			[_clockTimer invalidate];
+			_clockTimer = nil;
+		}
+		
+	} else {
+		[_cameraOverlayView startProgress];
+		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+	}
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView {
@@ -423,8 +445,13 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_clockCounter = 0;
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_updateClock) userInfo:nil repeats:YES];
+	if (_clockTimer != nil) {
+		[_clockTimer invalidate];
+		_clockTimer = nil;
+	}
+	
+	[_cameraOverlayView startProgress];
+	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView {

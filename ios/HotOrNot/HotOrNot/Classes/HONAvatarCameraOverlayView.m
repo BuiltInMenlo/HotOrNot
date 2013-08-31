@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 
 #import "HONAvatarCameraOverlayView.h"
 #import "HONImagingDepictor.h"
@@ -13,11 +14,13 @@
 @interface HONAvatarCameraOverlayView () <UIAlertViewDelegate>
 @property (nonatomic, strong) UILabel *actionLabel;
 @property (nonatomic, strong) UIView *irisView;
-@property (nonatomic, strong) UIView *controlsHolderView;
+@property (nonatomic, strong) UIView *submitHolderView;
 @property (nonatomic, strong) UIView *previewHolderView;
 @property (nonatomic, strong) UIImageView *infoHolderImageView;
-@property (nonatomic, strong) UIImageView *circleFillImageView;
-@property (nonatomic, strong) UIImageView *overlayImageView;
+@property (nonatomic, strong) UIImageView *progressBarImageView;
+@property (nonatomic, strong) UIImageView *verifyImageView;
+@property (nonatomic, strong) UIView *blackMatteView;
+@property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @end
 
 @implementation HONAvatarCameraOverlayView
@@ -31,13 +34,12 @@
 		_previewHolderView = [[UIView alloc] initWithFrame:self.frame];
 		[self addSubview:_previewHolderView];
 		
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerFadeBackground"]]];
+		
 		_irisView = [[UIImageView alloc] initWithFrame:self.frame];
 		_irisView.backgroundColor = [UIColor blackColor];
 		_irisView.alpha = 0.0;
 		[self addSubview:_irisView];
-		
-		_controlsHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height * 2.0)];
-		[self addSubview:_controlsHolderView];
 		
 		UIButton *cameraRollButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		cameraRollButton.frame = CGRectMake(15.0, 267.0, 64.0, 44.0);
@@ -45,112 +47,180 @@
 		[cameraRollButton setBackgroundImage:[UIImage imageNamed:@"cameraRoll_Active"] forState:UIControlStateHighlighted];
 		[cameraRollButton addTarget:self action:@selector(_goCameraRoll) forControlEvents:UIControlEventTouchUpInside];
 //		[_controlsHolderView addSubview:cameraRollButton];
-		
-		_circleFillImageView = [[UIImageView alloc] initWithFrame:CGRectMake(201.0, self.frame.size.height - 121.0, 128.0, 128.0)];
-		_circleFillImageView.image = [UIImage imageNamed:@"cameraAnimation_000"];
-		[_controlsHolderView addSubview:_circleFillImageView];
-		
-//		CGPoint newCenter = CGPointMake(_circleFillImageView.frame.origin.x, _circleFillImageView.frame.origin.y);
-//		[UIView animateWithDuration: 5
-//							  delay: 0
-//							options: (UIViewAnimationOptionCurveLinear | UIViewAnimationOptionAllowUserInteraction)
-//						 animations:^{_circleFillImageView.center = newCenter ; _circleFillImageView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 2.0, 2.0);}
-//						 completion:^(BOOL finished) { }
-//		 ];
-		
-//		[UIView animateWithDuration:1.5 animations:^(void) {
-//			CGFloat scale = 2.5f;
-//			CGAffineTransform transform = _circleFillImageView.transform;
-//			_circleFillImageView.transform = CGAffineTransformIdentity;
-//			_circleFillImageView.frame = CGRectMake(_circleFillImageView.frame.origin.x, _circleFillImageView.frame.origin.y, _circleFillImageView.frame.size.width * scale , _circleFillImageView.frame.size.height * scale);
-//			_circleFillImageView.transform = transform;
-//		} completion:nil];
-		
-		UIButton *captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		captureButton.frame = CGRectMake(123.0, [UIScreen mainScreen].bounds.size.height - 100.0, 74.0, 74.0);
-		//captureButton.frame = CGRectMake(128.0, offset, 64.0, 64.0);
-		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
-		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
-		[captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];
-		//[_controlsHolderView addSubview:captureButton];
+				
+//		UIButton *captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		captureButton.frame = CGRectMake(123.0, [UIScreen mainScreen].bounds.size.height - 100.0, 74.0, 74.0);
+//		//captureButton.frame = CGRectMake(128.0, offset, 64.0, 64.0);
+//		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_nonActive"] forState:UIControlStateNormal];
+//		[captureButton setBackgroundImage:[UIImage imageNamed:@"cameraLargeButton_Active"] forState:UIControlStateHighlighted];
+//		[captureButton addTarget:self action:@selector(_goCapture) forControlEvents:UIControlEventTouchUpInside];
+//		//[_controlsHolderView addSubview:captureButton];
 		
 		_infoHolderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"whySelfie-568h@2x" : @"whySelfie"]];
 		_infoHolderImageView.frame = [UIScreen mainScreen].bounds;
 		_infoHolderImageView.userInteractionEnabled = YES;
 		[self addSubview:_infoHolderImageView];
 		
-		UIImageView *clockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(201.0, self.frame.size.height - 121.0, 128.0, 128.0)];
-		clockImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraAnimation_001"],
-										  [UIImage imageNamed:@"cameraAnimation_002"],
-										  [UIImage imageNamed:@"cameraAnimation_003"],
-										  [UIImage imageNamed:@"cameraAnimation_004"],
-										  [UIImage imageNamed:@"cameraAnimation_005"],
-										  [UIImage imageNamed:@"cameraAnimation_006"],
-										  [UIImage imageNamed:@"cameraAnimation_007"],
-										  [UIImage imageNamed:@"cameraAnimation_008"],
-										  [UIImage imageNamed:@"cameraAnimation_009"],
-										  [UIImage imageNamed:@"cameraAnimation_010"],
-										  [UIImage imageNamed:@"cameraAnimation_011"],
-										  [UIImage imageNamed:@"cameraAnimation_012"],
-										  [UIImage imageNamed:@"cameraAnimation_013"],
-										  [UIImage imageNamed:@"cameraAnimation_014"],
-										  [UIImage imageNamed:@"cameraAnimation_015"],
-										  [UIImage imageNamed:@"cameraAnimation_016"], nil];
-		clockImageView.animationDuration = 2.5f;
-		clockImageView.animationRepeatCount = 0;
-		[clockImageView startAnimating];
-		[_infoHolderImageView addSubview:clockImageView];
-		
 		UIButton *okInfoButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		okInfoButton.frame = _infoHolderImageView.frame;
 		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
 		[_infoHolderImageView addSubview:okInfoButton];
 		
-		UIView *submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height + (([UIScreen mainScreen].bounds.size.height - 64.0) * 0.5), 320.0, 64.0)];
-		[_controlsHolderView addSubview:submitHolderView];
-		
-		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(0.0, 0.0, 105.0, 64.0);
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
-		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
-		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
-		[submitHolderView addSubview:submitButton];
-		
-		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		retakeButton.frame = CGRectMake(108.0, 0.0, 105.0, 64.0);
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_nonActive"] forState:UIControlStateNormal];
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_Active"] forState:UIControlStateHighlighted];
-		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
-		[submitHolderView addSubview:retakeButton];
+		_submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0)];
+		_submitHolderView.hidden = YES;
+		[self addSubview:_submitHolderView];
 		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(215.0, 0.0, 105.0, 64.0);
+		skipButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_nonActive"] forState:UIControlStateNormal];
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
-		[submitHolderView addSubview:skipButton];
+		[_submitHolderView addSubview:skipButton];
 		
+		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		retakeButton.frame = CGRectMake(106.0, 0.0, 106.0, 64.0);
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_nonActive"] forState:UIControlStateNormal];
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_Active"] forState:UIControlStateHighlighted];
+		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
+		[_submitHolderView addSubview:retakeButton];
+		
+		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		submitButton.frame = CGRectMake(212.0, 0.0, 106.0, 64.0);
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
+		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
+		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
+		[_submitHolderView addSubview:submitButton];
 		
 		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 260.0, 20.0)];
 		_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 		_actionLabel.textColor = [UIColor whiteColor];
 		_actionLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:_actionLabel];
-
+		
+		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
+		_blackMatteView.backgroundColor = [UIColor blackColor];
+		_blackMatteView.alpha = 0.0;
+		[self addSubview:_blackMatteView];
+		
+		_lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+		_lpGestureRecognizer.minimumPressDuration = 0.05;
 	}
 	
 	return (self);
 }
 
 
+#pragma mark - Public APIs
+- (void)startProgress {
+	if (_progressBarImageView != nil) {
+		[_progressBarImageView.layer removeAllAnimations];
+		[_progressBarImageView removeFromSuperview];
+		_progressBarImageView = nil;
+	}
+	
+	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 4.0, 2.0)];
+	_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
+	[self addSubview:_progressBarImageView];
+	
+	[self _animateLoader];
+}
+
+- (void)takePhoto {
+	if (_progressBarImageView != nil) {
+		[_progressBarImageView.layer removeAllAnimations];
+		[_progressBarImageView removeFromSuperview];
+		_progressBarImageView = nil;
+	}
+	
+	[self removeGestureRecognizer:_lpGestureRecognizer];
+	
+	_irisView.alpha = 1.0;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_irisView.alpha = 0.33;
+	} completion:^(BOOL finished){}];
+}
+
+- (void)addPreview:(UIImage *)image {
+	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
+	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
+	[_previewHolderView addSubview:imgView];
+	_previewHolderView.hidden = NO;
+	
+	_actionLabel.text = @"Approve your profile picture";
+	if ([HONAppDelegate isRetina5]) {
+		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
+		imgView.frame = frame;
+	}
+}
+
+- (void)addPreviewAsFlipped:(UIImage *)image {
+	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83f];
+	//image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
+	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
+	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, -24.0 + ([HONAppDelegate isRetina5] * -22.0) + (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
+	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
+	[_previewHolderView addSubview:previewImageView];
+	_previewHolderView.hidden = NO;
+	
+	_actionLabel.text = @"Approve your profile picture";
+}
+
+- (void)removePreview {
+	_previewHolderView.hidden = YES;
+	for (UIView *subview in _previewHolderView.subviews)
+		[subview removeFromSuperview];
+	
+	_submitHolderView.hidden = YES;
+}
+
+- (void)animateAccept {
+	_submitHolderView.hidden = NO;
+}
+
+- (void)verifyOverlay:(BOOL)isIntro {
+	if (isIntro) {
+		_verifyImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
+		_verifyImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
+											 [UIImage imageNamed:@"overlayLoader002"],
+											 [UIImage imageNamed:@"overlayLoader003"], nil];
+		_verifyImageView.animationDuration = 0.5f;
+		_verifyImageView.animationRepeatCount = 0;
+		_verifyImageView.alpha = 0.0;
+		[_verifyImageView startAnimating];
+		[self addSubview:_verifyImageView];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_verifyImageView.alpha = 1.0;
+		} completion:nil];
+		
+	} else {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_verifyImageView.alpha = 0.0;
+		} completion:nil];
+	}
+}
+
+
+
 #pragma mark - Navigation
 - (void)_goOKInfo {
+	if (_progressBarImageView != nil) {
+		[_progressBarImageView.layer removeAllAnimations];
+		[_progressBarImageView removeFromSuperview];
+		_progressBarImageView = nil;
+	}
+	
 	[UIView animateWithDuration:0.25 animations:^(void){
 		_infoHolderImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_infoHolderImageView removeFromSuperview];
+		
+		[self addGestureRecognizer:_lpGestureRecognizer];
 	}];
 	
 	[self.delegate cameraOverlayViewStartClock:self];
-	_actionLabel.text = @"Take your profile picture";
+	_actionLabel.text = @"Taking profile photo…";
 }
 
 - (void)_goCancel {
@@ -169,28 +239,14 @@
 }
 
 - (void)_goSubmit {
-	UIView *blackMatteView = [[UIView alloc] initWithFrame:self.frame];
-	blackMatteView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	blackMatteView.alpha = 0.0;
-	[self addSubview:blackMatteView];
+	_actionLabel.text = @"";
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		blackMatteView.alpha = 1.0;
-		_controlsHolderView.alpha = 0.0;
+		_blackMatteView.alpha = 0.65;
 	} completion:^(BOOL finished) {
-		[_controlsHolderView removeFromSuperview];
+		_submitHolderView.hidden = YES;
 		[self.delegate cameraOverlayViewSubmit:self];
 	}];
-}
-
-- (void)_goCapture {
-	_irisView.alpha = 1.0;
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_irisView.alpha = 0.65;
-	} completion:^(BOOL finished){}];
-	
-	_actionLabel.text = @"Approve your profile picture";
-	[self.delegate cameraOverlayViewTakePicture:self];
 }
 
 - (void)_goChangeCamera {
@@ -202,83 +258,45 @@
 }
 
 - (void)_goCameraBack {
-	[self hidePreview];
+	[self removePreview];
+	
+	_actionLabel.text = @"Taking profile photo…";
+	
+	[self addGestureRecognizer:_lpGestureRecognizer];
 	[self.delegate cameraOverlayViewRetake:self];
+}
+
+-(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	//CGPoint touchPoint = [lpGestureRecognizer locationInView:self];
+	
+	if (_progressBarImageView != nil) {
+		[_progressBarImageView.layer removeAllAnimations];
+		[_progressBarImageView removeFromSuperview];
+		_progressBarImageView = nil;
+	}
+	
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		[self.delegate cameraOverlayView:self toggleLongPress:YES];
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+		[self.delegate cameraOverlayView:self toggleLongPress:NO];
+	}
 }
 
 
 #pragma mark - UI Presentation
-- (void)showPreview:(UIImage *)image {
-	image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
-	UIImage *scaledImage = [UIImage imageWithCGImage:image.CGImage scale:1.5 orientation:UIImageOrientationUp];
-	UIImageView *imgView = [[UIImageView alloc] initWithImage:[UIImage imageWithCGImage:scaledImage.CGImage scale:1.5 orientation:UIImageOrientationUp]];
-	[_previewHolderView addSubview:imgView];
-	_previewHolderView.hidden = NO;
+- (void)_animateLoader {
+	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 4.0, 2.0);
 	
-	_actionLabel.text = @"Approve your profile picture";
-	if ([HONAppDelegate isRetina5]) {
-		CGRect frame = CGRectMake(-18.0, 0.0, 355.0, 475.0);
-		imgView.frame = frame;
-	}
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:1.6];
+	[UIView setAnimationDelay:0.0];
+	[UIView setAnimationBeginsFromCurrentState:YES];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 320.0, 2.0);
+	[UIView commitAnimations];
 }
 
-- (void)showPreviewAsFlipped:(UIImage *)image {
-	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83f];
-	//image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
-	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
-	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, -24.0 + ([HONAppDelegate isRetina5] * -22.0) + (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
-	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
-	[_previewHolderView addSubview:previewImageView];
-	_previewHolderView.hidden = NO;
-	
-	_actionLabel.text = @"Approve your profile picture";
-}
-
-- (void)hidePreview {
-	_previewHolderView.hidden = YES;
-	for (UIView *subview in _previewHolderView.subviews)
-		[subview removeFromSuperview];
-	
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
-	} completion:nil];
-}
-
-- (void)animateAccept {
-	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-		_circleFillImageView.alpha = 0.0;
-		_controlsHolderView.frame = CGRectOffset(_controlsHolderView.frame, 0.0, -[UIScreen mainScreen].bounds.size.height);
-	} completion:^(BOOL finished) {
-	}];
-}
-
-- (void)verifyOverlay:(BOOL)isIntro {
-	if (isIntro) {
-		_overlayImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
-		_overlayImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
-											 [UIImage imageNamed:@"overlayLoader002"],
-											 [UIImage imageNamed:@"overlayLoader003"], nil];
-		_overlayImageView.animationDuration = 0.5f;
-		_overlayImageView.animationRepeatCount = 0;
-		_overlayImageView.alpha = 0.0;
-		[_overlayImageView startAnimating];
-		[self addSubview:_overlayImageView];
-		
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_overlayImageView.alpha = 1.0;
-		} completion:nil];
-		
-	} else {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_overlayImageView.alpha = 0.0;
-		} completion:nil];
-	}
-}
-
-- (void)updateClock:(int)tick {
-	//NSLog(@"IMG:[cameraAnimation_%03d]", tick);
-	_circleFillImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"cameraAnimation_%03d", tick]];
-}
 
 #pragma mark - AlertView Delegates
 -(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {

@@ -10,6 +10,7 @@
 
 
 @interface HONSearchBarHeaderView() <UITextFieldDelegate>
+@property (nonatomic, strong) UIImageView *staticBGImageView;
 @property (nonatomic, strong) UIImageView *greenBGImageView;
 @property (nonatomic, strong) UITextField *searchTextField;
 @property (nonatomic, strong) UIButton *cancelButton;
@@ -22,15 +23,15 @@
 	if ((self = [super initWithFrame:frame])) {
 		_isUser = YES;
 		
-		UIImageView *staticBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBackground"]];
-		staticBGImageView.userInteractionEnabled = YES;
-		staticBGImageView.alpha = 0.85;
-		[self addSubview:staticBGImageView];
+		_staticBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBackground"]];
+		_staticBGImageView.userInteractionEnabled = YES;
+		_staticBGImageView.alpha = 0.85;
+		[self addSubview:_staticBGImageView];
 		
 		_greenBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"searchInputBackgroundGreen"]];
 		_greenBGImageView.userInteractionEnabled = YES;
 		_greenBGImageView.alpha = 0.0;
-		[staticBGImageView addSubview:_greenBGImageView];
+		[_staticBGImageView addSubview:_greenBGImageView];
 		
 		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(39.0, 11.0, 275.0, 24.0)];
 		[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -44,7 +45,7 @@
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
 		//_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
 		_searchTextField.delegate = self;
-		[staticBGImageView addSubview:_searchTextField];
+		[_staticBGImageView addSubview:_searchTextField];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_cancelButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
@@ -65,7 +66,7 @@
 	else
 		[_searchTextField resignFirstResponder];
 	
-	
+	_staticBGImageView.alpha = (isFocused) ? 1.0 : 0.85;
 	_searchTextField.frame = CGRectMake(39.0, 11.0, 200.0 + ((int)!isFocused * 75), 24.0);
 	_searchTextField.text = @"";//NSLocalizedString(@"search_placeHolder", nil);
 	[UIView animateWithDuration:0.25 animations:^(void) {

@@ -10,23 +10,24 @@
 
 @protocol HONAvatarCameraOverlayDelegate;
 @interface HONAvatarCameraOverlayView : UIView
-- (void)showPreview:(UIImage *)image;
-- (void)showPreviewAsFlipped:(UIImage *)image;
-- (void)hidePreview;
-- (void)updateClock:(int)tick;
+- (void)takePhoto;
+- (void)addPreview:(UIImage *)image;
+- (void)addPreviewAsFlipped:(UIImage *)image;
+- (void)removePreview;
+- (void)startProgress;
 - (void)animateAccept;
 - (void)verifyOverlay:(BOOL)isIntro;
-
 
 @property (nonatomic, assign) id <HONAvatarCameraOverlayDelegate> delegate;
 @end
 
 @protocol HONAvatarCameraOverlayDelegate
+- (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayView:(HONAvatarCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed;
 - (void)cameraOverlayViewTakePicture:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewRetake:(HONAvatarCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewSubmit:(HONAvatarCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayViewStartClock:(HONAvatarCameraOverlayView *)cameraOverlayView;
+- (void)cameraOverlayViewCloseCamera:(HONAvatarCameraOverlayView *)cameraOverlayView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONAvatarCameraOverlayView *)previewView;
 - (void)cameraOverlayViewChangeCamera:(HONAvatarCameraOverlayView *)previewView;

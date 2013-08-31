@@ -695,7 +695,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	}
 	
 	_searchViewController = [[HONSearchViewController alloc] init];
-	_searchViewController.view.frame = CGRectMake(0.0, 20.0 + kSearchHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 188.0);
+	_searchViewController.view.frame = CGRectMake(0.0, 20.0 + kSearchHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (20.0 + kSearchHeaderHeight));
 	[self.window addSubview:_searchViewController.view];
 }
 

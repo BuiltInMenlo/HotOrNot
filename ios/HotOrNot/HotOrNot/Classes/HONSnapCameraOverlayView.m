@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
+
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "UIImageView+AFNetworking.h"
@@ -22,6 +24,7 @@
 @property (nonatomic, strong) UIImageView *progressBarImageView;
 @property (nonatomic, strong) UILabel *actionLabel;
 @property (nonatomic, strong) UIButton *cancelButton;
+@property (nonatomic, strong) UIButton *flipButton;
 @property (nonatomic, strong) UIButton *subscribersButton;
 @property (nonatomic, strong) NSArray *usernames;
 @property (readonly, nonatomic, assign) HONChallengeExpireType expireType;
@@ -56,6 +59,10 @@
 		_subscribersButton.alpha = 0.5;
 		[self addSubview:_subscribersButton];
 		
+		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
+		_blackMatteView.backgroundColor = [UIColor blackColor];
+		[self addSubview:_blackMatteView];
+
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_cancelButton.frame = CGRectMake(262.0, 14.0, 44.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
@@ -63,9 +70,16 @@
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
 		[self addSubview:_cancelButton];
 		
-		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
-		_blackMatteView.backgroundColor = [UIColor blackColor];
-		[self addSubview:_blackMatteView];
+		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		_flipButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
+		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
+		//[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:_flipButton];
+				
+		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+		lpGestureRecognizer.minimumPressDuration = 0.05;
+		[_blackMatteView addGestureRecognizer:lpGestureRecognizer];
 	}
 	
 	return (self);
@@ -77,7 +91,8 @@
 	[UIView animateWithDuration:0.33 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		_blackMatteView.alpha = 0.0;
 	} completion:^(BOOL fininshed){
-		[_blackMatteView removeFromSuperview];
+		_blackMatteView.backgroundColor = [UIColor clearColor];
+		_blackMatteView.alpha = 1.0;
 	}];
 }
 
@@ -87,12 +102,6 @@
 		_infoImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"cameraInfoOverlay-568h@2x" : @"cameraInfoOverlay"];
 		[self addSubview:_infoImageView];
 		
-		_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 4.0, 2.0)];
-		_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
-		[self addSubview:_progressBarImageView];
-		
-		[self _animateLoader:YES];
-	
 	} else {
 		[_infoImageView removeFromSuperview];
 		_infoImageView = nil;
@@ -103,14 +112,13 @@
 }
 
 - (void)takePhoto {
+	[UIView animateWithDuration:0.1 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
 	_irisView.alpha = 1.0;
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_irisView.alpha = 0.65;
-	} completion:^(BOOL finished){}];
-	
-//	_progressBarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whiteLoader"]];
-//	_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 320.0, 2.0);
-//	[self addSubview:_progressBarImageView];
+	} completion:^(BOOL finished) {
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_irisView.alpha = 0.33;
+		} completion:^(BOOL finished){}];
+	}];
 }
 
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
@@ -124,11 +132,11 @@
 		_progressBarImageView = nil;
 	}
 	
-	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 4.0, 2.0)];
+	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 4.0, 2.0)];
 	_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
 	[self addSubview:_progressBarImageView];
 	
-	[self _animateLoader:NO];
+	[self _animateLoader];
 }
 
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView {
@@ -137,30 +145,55 @@
 
 
 #pragma mark - Navigation
+- (void)_goFlipCamera {
+	[_progressBarImageView.layer removeAllAnimations];
+	[_progressBarImageView removeFromSuperview];
+	_progressBarImageView = nil;
+	
+	[self.delegate cameraOverlayViewChangeCamera:self];
+}
+
 - (void)_goToggleFlash {
 	[self.delegate cameraOverlayViewChangeFlash:self];
 }
 
 - (void)_goCloseCamera {
+	[_progressBarImageView.layer removeAllAnimations];
+	[_progressBarImageView removeFromSuperview];
+	_progressBarImageView = nil;
+	
 	[self.delegate cameraOverlayViewCloseCamera:self];
 }
 
-#pragma mark - UI Presentation
-- (void)_animateLoader:(BOOL)isRepeating {
+-(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	//CGPoint touchPoint = [lpGestureRecognizer locationInView:self];
+	
 	if (_progressBarImageView != nil) {
-		[UIView animateWithDuration:1.6 animations:^(void) {
-			_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 320.0, 2.0);
-		} completion:^(BOOL fishished) {
-			if (isRepeating) {
-				_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 2.0) * 0.5, 4.0, 2.0);
-				[self _animateLoader:YES];
-			
-			} else {
-//				[_progressBarImageView removeFromSuperview];
-//				_progressBarImageView = nil;
-			}
-		}];
+		[_progressBarImageView.layer removeAllAnimations];
+		[_progressBarImageView removeFromSuperview];
+		_progressBarImageView = nil;
 	}
+	
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		[self.delegate cameraOverlayView:self toggleLongPress:YES];
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+		[self.delegate cameraOverlayView:self toggleLongPress:NO];
+	}
+}
+
+
+#pragma mark - UI Presentation
+- (void)_animateLoader {
+	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 4.0, 2.0);
+	
+	[UIView beginAnimations:nil context:NULL];
+	[UIView setAnimationDuration:1.6];
+	[UIView setAnimationDelay:0.0];
+	[UIView setAnimationBeginsFromCurrentState:YES];
+	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
+	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 320.0, 2.0);
+	[UIView commitAnimations];
 }
 
 
