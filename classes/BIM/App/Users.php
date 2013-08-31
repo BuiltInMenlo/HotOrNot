@@ -382,7 +382,7 @@ class BIM_App_Users extends BIM_App_Base{
 	    );
 	    $friendList = BIM_App_Social::getFriends($fParams, true);
 	    
-	    // firletering out users with which we are already friends
+	    // filtering out users with which we are already friends
 	    $friendIds = array_keys( $friendList );
 	    $matchIds = array_keys( $friendMatches );
         $matches = array_diff($matchIds, $friendIds);

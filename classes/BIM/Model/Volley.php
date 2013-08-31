@@ -2,7 +2,7 @@
 
 class BIM_Model_Volley{
     
-    public function __construct($volleyId, $userId = 0) {
+    public function __construct($volleyId, $populateUserData = true ) {
         
         $volley = null;
         if( is_object($volleyId) ){
@@ -13,48 +13,32 @@ class BIM_Model_Volley{
         }
         
         if( $volley ){
-            $creator = BIM_Model_User::get( $volley->creator_id );
             $creator = (object) array(
-                'id' => $creator->id, 
-                'fb_id' => $creator->fb_id,
-                'username' => $creator->username,
-                'avatar' => $creator->getAvatarUrl(),
+                'id' => $volley->creator_id,
                 'img' => $volley->creator_img,
-                'score' => 0
+                'score' => $volley->creator_likes,
             );
+            // finally get the correct score if necessary
+            $this->resolveScore($creator);
             
             $challengers = array();
             foreach( $volley->challengers as $challenger ){
-                $target = BIM_Model_User::get( $challenger->challenger_id );
                 $joined = new DateTime( "@$challenger->joined" );
                 $joined = $joined->format('Y-m-d H:i:s');
                 $target = (object) array(
-                    'id' => $target->id, 
-                    'fb_id' => $target->fb_id,
-                    'username' => $target->username,
-                    'avatar' => $target->getAvatarUrl(),
+                    'id' => $challenger->challenger_id,
                     'img' => $challenger->challenger_img,
-                    'score' => 0,
+                    'score' => $challenger->likes,
                     'joined' => $joined,
                 );
-                
-                $usersInChallenge = array( $creator, $target );
-                $likes = $dao->getLikes($volleyId);
-                foreach( $likes as $likeData ){
-                    foreach( $usersInChallenge as $user ){
-                        if( $user->id == $likeData->uid ){
-                            $user->score = $likeData->count;
-                            break;
-                        }
-                    }
-                }
+                $this->resolveScore($target);
                 $challengers[] = $target;            
             }
             
             $this->id = $volley->id; 
-            $this->status = ($userId != 0 && $userId == $volley->challenger_id && $volley->status_id == "2") ? "0" : $volley->status_id; 
-            $this->subject = 'foo'; // $dao->getSubject($volley->subject_id); 
-            $this->comments = 0; // $dao->commentCount( $volley->id ); 
+            $this->status = $volley->status_id; 
+            $this->subject = 'foo';// $dao->getSubject($volley->subject_id);
+            $this->comments = 0; //$dao->commentCount( $volley->id ); 
             $this->has_viewed = $volley->hasPreviewed; 
             $this->started = $volley->started; 
             $this->added = $volley->added; 
@@ -69,7 +53,52 @@ class BIM_Model_Volley{
             $this->expires = $volley->expires;
             $this->is_private = $volley->is_private;
             $this->is_verify = (int) $volley->is_verify;
+            
+            if( $populateUserData ){
+                $this->populateUsers();
+            }
         }
+    }
+    
+    /*
+     * This function will gather all of the user ids 
+     * and call BIM_Model_User::getMulti()
+     * and populate the data structures accordingly
+     * 
+     */
+    protected function populateUsers(){
+        $userIds = $this->getUsers();
+        $users = BIM_Model_User::getMulti($userIds, true);
+        
+        // populate the creator
+        $creator = $users[ $this->creator->id ];
+        $this->creator->fb_id = $creator->fb_id;
+        $this->creator->username = $creator->username;
+        $this->creator->avatar = $creator->getAvatarUrl();
+        
+        // populate the challengers
+        if( $this->isLegacy() ){
+            $challengers = array($this->challenger);
+        } else{
+            $challengers = $this->challengers;
+        }
+        foreach ( $challengers as $challenger ){
+            $target = $users[ $challenger->challenger_id ];
+            $challenger->fb_id = $target->fb_id;
+            $challenger->username = $target->username;
+            $challenger->avatar = $target->getAvatarUrl();
+        }
+    }
+    
+    private function resolveScore( $userData ){
+        $score = !empty($userData->score) ?  $userData->score : 0;
+        if( $userData->score < 0 ){
+            $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+            $score = $dao->getLikes($this->id, $userData->id);
+            $isCreator = $this->isCreator($userData->id);
+            $dao->setLikes( $this->id, $userData->id, $score, $isCreator );
+        }
+        $userData->score = $score;
     }
     
     // returns true if the requesting client
@@ -213,7 +242,8 @@ class BIM_Model_Volley{
     
     public function upVote( $targetId, $userId ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $dao->upVote( $this->id, $userId, $targetId  );
+        $isCreator = $this->isCreator($targetId);
+        $dao->upVote( $this->id, $userId, $targetId, $isCreator  );
         $this->purgeFromCache();
     }
     
@@ -356,6 +386,43 @@ class BIM_Model_Volley{
             }
         }
         return $ids;
+    }
+    
+    /** 
+     * 
+     * first get items from cache
+     * collect the keys for the missing items
+     * then do multi row fetch from the db
+     * build all volleys, the volley constructor will not call out to any db routines
+     * get all user ids for all the volleys
+     * call User::getMultiNew with the list of userIds to get all usr obejcts for the volleys
+     * then cycle the list of volleys and copy over data properties from user objects and cache them
+     * 
+     * 
+    **/
+    public static function getMultiNew( $ids ) {
+        $volleyKeys = self::makeCacheKeys( $ids );
+        $cache = new BIM_Cache( BIM_Config::cache() );
+        $volleys = $cache->getMulti( $volleyKeys );
+        // now we determine which things were not in memcache dn get those
+        $retrievedKeys = array_keys( $volleys );
+        $missedKeys = array_diff( $volleyKeys, $retrievedKeys );
+        if( $missedKeys ){
+            $missingVolleys = array();
+            foreach( $missedKeys as $volleyKey ){
+                list($prefix,$volleyId) = explode('_',$volleyKey);
+                $missingVolleys[] = $volleyId;
+            }
+            $dao = new BIM_Model_Volley($volleyId);
+            $missingVolleyData = $dao->getMulti($missingVolleys);
+            foreach( $missingVolleyData as $volleyData ){
+                $volley = new self( $volleyData, true );
+                if( $volley->isExtant() ){
+                    $volleys[ $volleyKey ] = $volley;
+                }
+            }
+        }
+        return array_values($volleys);        
     }
     
     /** 

@@ -24,10 +24,8 @@ class BIM_Model_User{
                 $this->age = $birthdate->format('Y-m-d H:i:s');
             }
             
-    		// get total votes
-            $votes = $dao->getTotalVotes( $this->id );
-            //$pokes = $dao->getTotalPokes( $this->id );
-            $pics = $dao->getTotalChallenges( $this->id );		
+            $votes = $this->getTotalVotes();
+            $pics = $this->getTotalVolleys();
     		
     		// find the avatar image
     		$avatar_url = $this->getAvatarUrl();
@@ -51,6 +49,26 @@ class BIM_Model_User{
         }
     }
     
+    public function getTotalVotes(){
+        if( ! property_exists($this, 'total_votes') || $this->total_votes < 0 ){
+            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+            $this->total_votes = $dao->getTotalVotes( $this->id );
+            // now we put the total in a caching column for faster object builds
+            $dao->setTotalVotes($this->id, $this->total_votes);
+        }
+        return $this->total_votes;
+    }
+    
+    public function getTotalVolleys(){
+        if( ! property_exists($this, 'total_challenges') || $this->total_challenges < 0 ){
+            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+            $this->total_challenges = $dao->getTotalChallenges( $this->id );
+            // now we put the total in a caching column for faster object builds
+            $dao->setTotalVolleys($this->id, $this->total_challenges);
+        }
+        return $this->total_challenges;
+    }
+        
     public function isSuspended(){
         return (!empty( $this->abuse_ct ) && $this->abuse_ct >= 10);
     }
@@ -305,6 +323,35 @@ class BIM_Model_User{
             }
         }
         return $ids;
+    }
+    
+    /** 
+     * 
+     * first get items from cache
+     * collect the keys for the missing items
+     * then do multi row fetch from the db
+     * build all users, the volley constructor will not call out to any db routines
+     * cache the users
+     * 
+    **/
+    public static function getMultiNew( $ids, $assoc = false ) {
+        $userKeys = self::makeCacheKeys( $ids );
+        $cache = new BIM_Cache( BIM_Config::cache() );
+        $users = $cache->getMulti( $userKeys );
+        
+        // now we determine which things were not in memcache dn get those
+        $retrievedKeys = array_keys( $users );
+        $missedKeys = array_diff( $userKeys, $retrievedKeys );
+        if( $missedKeys ){
+            foreach( $missedKeys as $userKey ){
+                list($prefix,$userId) = explode('_',$userKey);
+                $user = self::get( $userId, true );
+                if( $user->isExtant() ){
+                    $users[ $userKey ] = $user;
+                }
+            }
+        }
+        return $assoc ? $users : array_values( $users );        
     }
     
     /** 

@@ -108,6 +108,18 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         return $count;
     }
     
+    public function setTotalVotes( $userId, $count ){
+        $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_votes = ? where id = ?';
+        $params = array( $count, $userId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
+    public function setTotalVolleys( $userId, $count ){
+        $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = ? where id = ?';
+        $params = array( $count, $userId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
     public function getTotalPokes( $userId ){
         $count = 0;
 		$sql = "SELECT count(*) as count FROM `hotornot-dev`.`tblUserPokes` WHERE `user_id` = ?";
@@ -145,7 +157,6 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $data = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
         if( $data ){
             $count = array_sum($data);
-            //$count = $data[0]->count;
         }
         return $count;
     }
