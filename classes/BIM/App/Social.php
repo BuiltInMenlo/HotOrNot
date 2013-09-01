@@ -12,7 +12,7 @@ class BIM_App_Social extends BIM_App_Base{
                 BIM_Jobs_Users::queueFriendNotification( $params->userID, $params->target );
             }
         }
-        return self::getFollowers($params);
+        return self::getFollowed($params);
     }
     
     protected static function _addFriend( $params ){
@@ -106,7 +106,7 @@ class BIM_App_Social extends BIM_App_Base{
             $params->target = $target;
             $removed = self::_removeFriend($params);
         }
-        return self::getFollowers($params);
+        return self::getFollowed($params);
     }
     
     protected static function _removeFriend( $params ){

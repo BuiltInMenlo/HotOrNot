@@ -180,7 +180,8 @@ class BIM_App_Votes extends BIM_App_Base{
     			$msg = "@$liker->username liked your Volley $volley->subject";
     			$push = array(
     		    	"device_tokens" =>  $target->device_token, 
-    		    	"type" => "3", 
+    		    	"type" => "1",
+    			    "challenge" => $volleyId, 
     		    	"aps" =>  array(
     		    		"alert" =>  $msg,
     		    		"sound" =>  "push_01.caf"

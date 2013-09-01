@@ -205,7 +205,7 @@ class BIM_App_Users extends BIM_App_Base{
     	    $purge = false;
     	    if( $verifyVolley->isNotExtant() && $approves > 0 ){
     	        $purge = true;
-                $verifyVolley = BIM_Model_Volley::createVerifyVolley( $targetId );
+                $verifyVolley = BIM_Model_Volley::createVerifyVolley( $targetId, 10 );
         	    $target->flag( $verifyVolley->id, $userId, $approves );
                 $this->sendVerifyPush( $targetId );
                 $this->sendFlaggedEmail($userId);
@@ -384,6 +384,7 @@ class BIM_App_Users extends BIM_App_Base{
 	    
 	    // firletering out users with which we are already friends
 	    $friendIds = array_keys( $friendList );
+	    $friendIds[] = $params->id;
 	    $matchIds = array_keys( $friendMatches );
         $matches = array_diff($matchIds, $friendIds);
         
