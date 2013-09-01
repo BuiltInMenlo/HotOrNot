@@ -26,7 +26,7 @@ class BIM_App_Social extends BIM_App_Base{
                 'target' => $params->target,
             );
             $doc = $dao->getRelation( $relation );
-            if( isset( $doc->state ) && $doc->state == 0 ){
+            if( isset( $doc->state ) && $doc->state == 0 && ( $params->userID != $doc->source ) ){
                 $added = $dao->acceptFriend( $relation );
             } else if( !$doc ){
                 $relation = self::createRelationDoc($params, $sourceUser, $targetUser);
