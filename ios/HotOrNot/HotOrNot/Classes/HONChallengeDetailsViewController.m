@@ -188,7 +188,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeFriendsList:result];
+				[HONAppDelegate writeSubscribeeList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -303,8 +303,8 @@
 	[headerView addSubview:avatarButton];
 	
 	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 61.0 + offset, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, 569.0 + (kSnapMediumDim * (respondedOpponents / 5)) - (_isModal * 85.0));
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 58.0 + offset, 320.0, [UIScreen mainScreen].bounds.size.height)];
+	_scrollView.contentSize = CGSizeMake(320.0, 603.0 + (kSnapMediumDim * (respondedOpponents / 5)) - (_isModal * 85.0));
 	_scrollView.pagingEnabled = NO;
 	_scrollView.showsVerticalScrollIndicator = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
@@ -332,18 +332,21 @@
 	//[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:leftButton];
 	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 187.0, 320.0, 200.0)];
-	footerHolderView.backgroundColor = [UIColor whiteColor];
+	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 198.0, 320.0, 78.0)];
 	[_scrollView addSubview:footerHolderView];
 	
+	UIView *footerFillView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 15.0, 320.0, 200.0)];
+	footerFillView.backgroundColor = [UIColor whiteColor];
+	[footerHolderView addSubview:footerFillView];
+	
 //	UIButton *commentsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	commentsButton.frame = CGRectMake(8.0, 14.0, 24.0, 24.0);
+//	commentsButton.frame = CGRectMake(8.0, 37.0, 24.0, 24.0);
 //	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateNormal];
 //	[commentsButton setBackgroundImage:[UIImage imageNamed:@"commentBubble"] forState:UIControlStateHighlighted];
 //	[commentsButton addTarget:self action:@selector(_goComments) forControlEvents:UIControlEventTouchUpInside];
 //	[footerHolderView addSubview:commentsButton];
 //
-//	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 15.0, 40.0, 22.0)];
+//	_commentsLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 38.0, 40.0, 22.0)];
 //	_commentsLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 //	_commentsLabel.textColor = [HONAppDelegate honBlueTextColor];
 //	_commentsLabel.backgroundColor = [UIColor clearColor];
@@ -357,13 +360,13 @@
 //	[footerHolderView addSubview:commentsLabelButton];
 	
 	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(8.0, 14.0, 24.0, 24.0);
+	likesButton.frame = CGRectMake(8.0, 37.0, 24.0, 24.0);
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
 //	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:likesButton];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 15.0, 40.0, 22.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 38.0, 40.0, 22.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	_likesLabel.textColor = [HONAppDelegate honGrey710Color];
 	_likesLabel.backgroundColor = [UIColor clearColor];
@@ -377,24 +380,24 @@
 	[footerHolderView addSubview:likesLabelButton];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(252.0, 4.0, 64.0, 49.0);
+	joinButton.frame = CGRectMake(242.0, 0.0, 78.0, 78.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:joinButton];
 	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 242.0);
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 276.0);
 	[_scrollView addSubview:dividerImageView];
 	
-	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 252.0, 300.0, 20.0)];
-	challengersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
+	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 298.0, 300.0, 20.0)];
+	challengersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:17];
 	challengersLabel.textColor = [HONAppDelegate honGrey455Color];
 	challengersLabel.backgroundColor = [UIColor clearColor];
 	challengersLabel.text = [NSString stringWithFormat:@"%d Volley%@ - Tap and Hold to view", (respondedOpponents + 1), ((respondedOpponents + 1) != 1) ? @"s" : @""];
 	[_scrollView addSubview:challengersLabel];
 	
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 283.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(11.0, 337.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor whiteColor];
 	[_scrollView addSubview:_gridHolderView];
 	

@@ -74,8 +74,8 @@
 		_flipButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
-		//[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_flipButton];
+		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+		//[self addSubview:_flipButton];
 				
 		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 		lpGestureRecognizer.minimumPressDuration = 0.05;
@@ -109,16 +109,20 @@
 		[_progressBarImageView removeFromSuperview];
 		_progressBarImageView = nil;
 	}
+	
+	_cancelButton.hidden = isIntro;
+	_subscribersButton.hidden = isIntro;
+	_actionLabel.hidden = isIntro;
 }
 
 - (void)takePhoto {
-	[UIView animateWithDuration:0.1 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
+//	[UIView animateWithDuration:0.1 animations:^(void) {
 	_irisView.alpha = 1.0;
-	} completion:^(BOOL finished) {
+//	} completion:^(BOOL finished) {
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_irisView.alpha = 0.33;
 		} completion:^(BOOL finished){}];
-	}];
+//	}];
 }
 
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {

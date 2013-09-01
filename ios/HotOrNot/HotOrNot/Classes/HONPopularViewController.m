@@ -68,7 +68,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeFriendsList:result];
+				[HONAppDelegate writeSubscribeeList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

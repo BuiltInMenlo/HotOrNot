@@ -238,7 +238,7 @@
 			NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			[HONAppDelegate writeFriendsList:result];
+			[HONAppDelegate writeSubscribeeList:result];
 			
 			if (_progressHUD != nil) {
 				[_progressHUD hide:YES];

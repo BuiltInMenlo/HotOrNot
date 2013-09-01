@@ -184,15 +184,6 @@
 	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
 	[_bannerView addSubview:bannerButton];
 	
-	if (_timelineType == HONTimelineTypeSubject) {
-		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-		_progressHUD.labelText = @"Loading";
-		_progressHUD.mode = MBProgressHUDModeIndeterminate;
-		_progressHUD.minShowTime = kHUDTime;
-		_progressHUD.taskInProgress = YES;
-	}
-	
-	
 	NSMutableDictionary *params = [NSMutableDictionary dictionary];
 	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
 	[params setObject:[NSString stringWithFormat:@"%d", _timelineType] forKey:@"action"];
@@ -367,7 +358,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeFriendsList:result];
+				[HONAppDelegate writeSubscribeeList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -392,7 +383,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeFriendsList:result];
+				[HONAppDelegate writeSubscribeeList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -531,11 +522,13 @@
 	[ctaButton addTarget:self action:@selector(_goAddContactsAlert) forControlEvents:UIControlEventTouchUpInside];
 	[findFriendsImageView addSubview:ctaButton];
 	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
+	if (_timelineType == HONTimelineTypeSubject) {
+		_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.labelText = @"Loading…";
+		_progressHUD.mode = MBProgressHUDModeIndeterminate;
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.taskInProgress = YES;
+	}
 	
 	[self performSelector:@selector(_retrieveChallenges) withObject:nil afterDelay:0.5];
 	
@@ -1056,7 +1049,7 @@
 	
 	} else {
 		BOOL isFriend = NO;
-		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
 			if (vo.userID == _userVO.userID) {
 				isFriend = YES;
 				break;
@@ -1297,7 +1290,7 @@
 				
 			case 1:{
 				BOOL isFriend = NO;
-				for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+				for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
 					if (vo.userID == _userVO.userID) {
 						isFriend = YES;
 						break;

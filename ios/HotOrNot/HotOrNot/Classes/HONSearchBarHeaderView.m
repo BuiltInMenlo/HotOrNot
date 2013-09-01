@@ -91,6 +91,7 @@
 	_searchTextField.text = @"";//NSLocalizedString(@"search_placeHolder", nil);
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = 0.0;
+		_staticBGImageView.alpha = 0.85;
 	}];
 	
 	_searchTextField.frame = CGRectMake(39.0, 11.0, 275.0, 24.0);
@@ -111,6 +112,7 @@
 	else {
 		[UIView animateWithDuration:0.25 animations:^(void) {
 			_greenBGImageView.alpha = 0.0;
+			_staticBGImageView.alpha = 0.85;
 		}];
 		
 		_searchTextField.text = @"";//NSLocalizedString(@"search_placeHolder", nil);
@@ -131,6 +133,7 @@
 	
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
+		_staticBGImageView.alpha = 1.0;
 		_greenBGImageView.alpha = 1.0;
 		_cancelButton.alpha = 1.0;
 	}];

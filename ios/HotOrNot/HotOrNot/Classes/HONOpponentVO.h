@@ -18,5 +18,6 @@
 @property (nonatomic, retain) NSString *avatarURL;
 @property (nonatomic, retain) NSString *imagePrefix;
 @property (nonatomic, retain) NSDate *joinedDate;
+@property (nonatomic, retain) NSDate *birthday;
 @property (nonatomic) int score;
 @end

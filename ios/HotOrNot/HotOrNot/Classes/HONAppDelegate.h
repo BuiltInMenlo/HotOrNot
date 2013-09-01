@@ -30,6 +30,7 @@ extern NSString * const kAPISearch;
 extern NSString * const kAPIUsers;
 extern NSString * const kAPIVotes;
 extern NSString * const kAPIGetFriends;
+extern NSString * const kAPIGetSubscribees;
 extern NSString * const kAPIAddFriend;
 extern NSString * const kAPIRemoveFriend;
 extern NSString * const kAPISMSInvites;
@@ -124,6 +125,10 @@ extern NSString * const kTwilioSMS;
 + (NSArray *)friendsList;
 + (void)addFriendToList:(NSDictionary *)friend;
 + (void)writeFriendsList:(NSArray *)friends;
+
++ (NSArray *)subscribeeList;
++ (void)addSubscribeeToList:(NSDictionary *)subscribee;
++ (void)writeSubscribeeList:(NSArray *)subscribees;
 
 + (void)setAllowsFBPosting:(BOOL)canPost;
 + (BOOL)allowsFBPosting;

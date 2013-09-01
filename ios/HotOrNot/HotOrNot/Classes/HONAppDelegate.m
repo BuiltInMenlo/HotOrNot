@@ -66,6 +66,7 @@ NSString * const kAPISearch = @"Search.php";
 NSString * const kAPIUsers = @"Users.php";
 NSString * const kAPIVotes = @"Votes.php";
 NSString * const kAPIGetFriends = @"social/getfriends";
+NSString * const kAPIGetSubscribees = @"users/getsubscribees";
 NSString * const kAPIAddFriend = @"social/addfriend";
 NSString * const kAPIRemoveFriend = @"social/removefriend";
 NSString * const kAPISMSInvites = @"g/smsinvites";
@@ -331,8 +332,6 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 + (NSArray *)friendsList {
-	//return ([[HONAppDelegate infoForUser] objectForKey:@"friends"]);
-	
 	NSMutableArray *friends = [NSMutableArray array];
 	for (NSDictionary *dict in [[HONAppDelegate infoForUser] objectForKey:@"friends"]) {
 		[friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -364,6 +363,40 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSMutableDictionary *userInfo = [[HONAppDelegate infoForUser] mutableCopy];
 	[userInfo setObject:friends forKey:@"friends"];
 	[HONAppDelegate writeUserInfo:[userInfo copy]];
+}
+
++ (NSArray *)subscribeeList {
+	NSMutableArray *subscribees = [NSMutableArray array];
+	for (NSDictionary *dict in [[NSUserDefaults standardUserDefaults] objectForKey:@"subscribees"]) {
+		[subscribees addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+														  [NSString stringWithFormat:@"%d", [[[dict objectForKey:@"user"] objectForKey:@"id"] intValue]], @"id",
+														  [NSString stringWithFormat:@"%d", 0], @"points",
+														  [NSString stringWithFormat:@"%d", 0], @"votes",
+														  [NSString stringWithFormat:@"%d", 0], @"pokes",
+														  [NSString stringWithFormat:@"%d", 0], @"pics",
+														  [NSString stringWithFormat:@"%d", 0], @"age",
+														  [[dict objectForKey:@"user"] objectForKey:@"username"], @"username",
+														  @"", @"fb_id",
+														  [[dict objectForKey:@"user"] objectForKey:@"avatar_url"], @"avatar_url", nil]]];
+	}
+	
+	return ([NSArray arrayWithArray:[subscribees sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]]]]);
+}
+
++ (void)addSubscribeeToList:(NSDictionary *)subscribee {
+	NSMutableArray *friends = [[[NSUserDefaults standardUserDefaults] objectForKey:@"subscribees"] mutableCopy];
+	[friends addObject:subscribee];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:[friends copy] forKey:@"subscribees"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (void)writeSubscribeeList:(NSArray *)subscribees {
+	if ([[NSUserDefaults standardUserDefaults] objectForKey:@"subscribees"] != nil)
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"subscribees"];
+	
+	[[NSUserDefaults standardUserDefaults] setObject:subscribees forKey:@"subscribees"];
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 
@@ -1239,9 +1272,9 @@ NSString * const kTwilioSMS = @"6475577873";
 							[HONAppDelegate deviceToken], @"token",
 							nil];
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
-		AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	
-		[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 		
@@ -1271,6 +1304,52 @@ NSString * const kTwilioSMS = @"6475577873";
 				}
 			}
 			
+			[self _retreiveSubscribees];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
+- (void)_retreiveSubscribees {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID", nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIGetSubscribees);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	
+	[httpClient postPath:kAPIGetSubscribees parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSArray *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+			if (_progressHUD == nil)
+				_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+			_progressHUD.minShowTime = kHUDTime;
+			_progressHUD.mode = MBProgressHUDModeCustomView;
+			_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+			_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+			[_progressHUD show:NO];
+			[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+			_progressHUD = nil;
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			[HONAppDelegate writeSubscribeeList:result];
+			
 			[self _initTabs];
 		}
 		
@@ -1288,6 +1367,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		_progressHUD = nil;
 	}];
 }
+
 
 - (void)_initTabs {
 	[_bgImageView removeFromSuperview];

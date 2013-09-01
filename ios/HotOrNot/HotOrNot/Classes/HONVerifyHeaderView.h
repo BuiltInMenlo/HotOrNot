@@ -13,6 +13,9 @@
 @protocol HONVerifyHeaderViewDelegate;
 @interface HONVerifyHeaderView : UIView
 - (id)initWithChallenge:(HONChallengeVO *)vo;
+- (void)changeStatus:(NSString *)status;
+
+@property (nonatomic, retain) HONChallengeVO *challengeVO;
 @property (nonatomic, assign) id <HONVerifyHeaderViewDelegate> delegate;
 @end
 

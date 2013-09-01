@@ -74,6 +74,7 @@
 														  [[dictionary objectForKey:@"creator"] objectForKey:@"avatar"], @"avatar",
 														  [[dictionary objectForKey:@"creator"] objectForKey:@"img"], @"img",
 														  [[dictionary objectForKey:@"creator"] objectForKey:@"score"], @"score",
+														  [[dictionary objectForKey:@"creator"] objectForKey:@"age"], @"age",
 														  [dictionary objectForKey:@"added"], @"joined", nil]];
 	
 	vo.challengers = [NSMutableArray array];

@@ -6,8 +6,6 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
-#import <AudioToolbox/AudioToolbox.h>
-
 #import "UIImageView+AFNetworking.h"
 
 #import "HONCreateChallengePreviewView.h"
@@ -30,7 +28,7 @@
 @property (nonatomic, strong) UIButton *subscribersButton;
 @property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
-@property (nonatomic, strong) UIImageView *progressBarImageView;
+//@property (nonatomic, strong) UIImageView *progressBarImageView;
 @property (nonatomic, strong) HONCameraPreviewSubscribersView *subscribersView;
 @end
 
@@ -87,15 +85,13 @@
 - (void)uploadComplete {
 	[_uploadingImageView stopAnimating];
 	[_uploadingImageView removeFromSuperview];
+	
+	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 }
 
 - (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw {
 	_subscribersView.opponents = [users mutableCopy];
-	_actionLabel.text = (isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [users count], ([users count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [users count], ([users count] != 1 ? @"s" : @"")];
-	
-	
-//	if (isRedraw)
-//		[_tableView reloadData];
+	_actionLabel.text = (isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [users count], ([users count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [users count], ([users count] != 1 ? @"s" : @"")];	
 }
 
 - (void)showKeyboard {
@@ -103,15 +99,11 @@
 	[self _raiseKeyboard];
 	
 	[UIView animateWithDuration:0.25 animations:^(void) {
-		_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 135.0, 320.0, 53.0);
-		//progressBarImageView.alpha = 0.5;
+		_subjectHolderView.alpha = 1.0;
+		//_progressBarImageView.frame = CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 135.0, 320.0, 53.0);
 	} completion:^(BOOL finished) {
-		[_progressBarImageView removeFromSuperview];
+		//[_progressBarImageView removeFromSuperview];
 		_subjectHolderView.hidden = NO;
-		
-		SystemSoundID sound1;
-		AudioServicesCreateSystemSoundID((__bridge CFURLRef)([[NSBundle mainBundle] URLForResource:@"BLASTWAVEFX_29648" withExtension:@"caf"]), &sound1);
-		AudioServicesPlaySystemSound(sound1);
 	}];
 }
 
@@ -147,7 +139,6 @@
 	_backButton.frame = CGRectMake(262.0, 14.0, 44.0, 44.0);
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 	//_backButton.alpha = 0.0;
 	[self addSubview:_backButton];
 	
@@ -195,8 +186,8 @@
 	
 	UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	retakeButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
-	[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_nonActive"] forState:UIControlStateNormal];
-	[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_Active"] forState:UIControlStateHighlighted];
+	[retakeButton setBackgroundImage:[UIImage imageNamed:@"cameraReTakeButton_nonActive"] forState:UIControlStateNormal];
+	[retakeButton setBackgroundImage:[UIImage imageNamed:@"cameraReTakeButton_Active"] forState:UIControlStateHighlighted];
 	[retakeButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:retakeButton];
 	
@@ -208,7 +199,7 @@
 	[_buttonHolderView addSubview:previewButton];
 	
 	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(212.0, 0.0, 106.0, 64.0);
+	submitButton.frame = CGRectMake(212.0, 0.0, 107.0, 64.0);
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
 	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
@@ -228,9 +219,9 @@
 	_subscribersBackButton.alpha = 0.0;
 	[self addSubview:_subscribersBackButton];
 	
-	_progressBarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whiteLoader"]];
-	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 320.0, 2.0);
-	[self addSubview:_progressBarImageView];
+//	_progressBarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whiteLoader"]];
+//	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 320.0, 2.0);
+//	[self addSubview:_progressBarImageView];
 }
 
 

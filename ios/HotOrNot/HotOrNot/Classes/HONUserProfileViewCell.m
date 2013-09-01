@@ -59,7 +59,7 @@
 	
 	BOOL isFriend = NO;
 	if (!isUser) {
-		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
 			if (vo.userID == _userVO.userID) {
 				isFriend = YES;
 				break;

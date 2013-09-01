@@ -52,8 +52,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic, strong) NSTimer *focusTimer;
-@property (nonatomic, strong) NSTimer *clockTimer;
-@property (nonatomic) int clockCounter;
+@property (nonatomic, strong) NSTimer *progressTimer;
 @property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
 @property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
 @property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
@@ -208,34 +207,38 @@ const CGFloat kFocusInterval = 0.5f;
 		UIImage *oImage = _rawImage;
 		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeDim * 2.0, kSnapLargeDim * 2.0)];
 		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
-		UIImage *tImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbDim * 2.0, kSnapThumbDim * 2.0)];
+		//UIImage *tImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbDim * 2.0, kSnapThumbDim * 2.0)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(tImage, kSnapJPEGCompress);
+		
+		//stream.delay = 0.2;
+		//stream.packetSize = 16;
+		
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.delegate = self;
+		por1.contentType = @"image/jpeg";
+//		por1.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
+		por1.contentLength = [UIImageJPEGRepresentation(mImage, kSnapJPEGCompress) length];
+		por1.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(mImage, kSnapJPEGCompress)];
 		[s3 putObject:por1];
 		
-		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por2.delegate = self;
+		por2.contentType = @"image/jpeg";
+//		por2.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+		por2.contentLength = [UIImageJPEGRepresentation(lImage, kSnapJPEGCompress) length];
+		por2.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(lImage, kSnapJPEGCompress)];
 		[s3 putObject:por2];
 		
-		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por3.contentType = @"image/jpeg";
-		por3.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.delegate = self;
+		por3.contentType = @"image/jpeg";
+//		por3.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+		por3.contentLength = [UIImageJPEGRepresentation(oImage, kSnapJPEGCompress) length];
+		por3.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(oImage, kSnapJPEGCompress)];
 		[s3 putObject:por3];
 		
-		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
-		por4.contentType = @"image/jpeg";
-		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
-		por4.delegate = self;
-		[s3 putObject:por4];
-		
-		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, nil];
+		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, nil];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -291,7 +294,7 @@ const CGFloat kFocusInterval = 0.5f;
 			NSDictionary *challengeResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			VolleyJSONLog(@"AFNetworking [-] %@ %@", [[self class] description], challengeResult);
 			
-			if (_uploadCounter == 4) {
+			if (_uploadCounter == [_s3Uploads count]) {
 				[UIView animateWithDuration:0.5 animations:^(void) {
 					_submitImageView.alpha = 0.0;
 				} completion:^(BOOL finished) {
@@ -316,7 +319,7 @@ const CGFloat kFocusInterval = 0.5f;
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 				
 				_hasSubmitted = YES;
-				if (_uploadCounter == 4) {
+				if (_uploadCounter == [_s3Uploads count]) {
 					if (_imagePicker.parentViewController != nil) {
 						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
 							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
@@ -546,16 +549,19 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_takePhoto {
-	[_clockTimer invalidate];
-	_clockTimer = nil;
+	
+	if (_progressTimer != nil) {
+		[_progressTimer invalidate];
+		_progressTimer = nil;
+	}
 	
 	if (_focusTimer != nil) {
 		[_focusTimer invalidate];
 		_focusTimer = nil;
 	}
 	
-	[_imagePicker takePicture];
 	[_cameraOverlayView takePhoto];
+	[_imagePicker takePicture];
 }
 
 
@@ -567,9 +573,13 @@ const CGFloat kFocusInterval = 0.5f;
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	_clockCounter = 0;
+	if (_progressTimer != nil) {
+		[_progressTimer invalidate];
+		_progressTimer = nil;
+	}
+	
 	[_cameraOverlayView startProgress];
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+	_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 
@@ -604,7 +614,12 @@ const CGFloat kFocusInterval = 0.5f;
 		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
-	if (camera_total == 0) {
+	if (_progressTimer != nil) {
+		[_progressTimer invalidate];
+		_progressTimer = nil;
+	}
+	
+//	if (camera_total == 0) {
 		[_cameraOverlayView toggleInfoOverlay:YES];
 		
 		UIButton *infoOverlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -613,13 +628,12 @@ const CGFloat kFocusInterval = 0.5f;
 		[_cameraOverlayView addSubview:infoOverlayButton];
 		
 		[_cameraOverlayView startProgress];
-		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_restartProgress) userInfo:nil repeats:YES];
+		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_restartProgress) userInfo:nil repeats:YES];
 		
-	} else {
-		_clockCounter = 0;
-		[_cameraOverlayView startProgress];
-		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
-	}
+//	} else {
+//		[_cameraOverlayView startProgress];
+//		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+//	}
 	
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
 }
@@ -722,10 +736,6 @@ const CGFloat kFocusInterval = 0.5f;
 	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 	[_previewView showKeyboard];
 	
-//	SystemSoundID sound1;
-//	AudioServicesCreateSystemSoundID((__bridge CFURLRef)([[NSBundle mainBundle] URLForResource:@"BLASTWAVEFX_29648" withExtension:@"caf"]), &sound1);
-//	AudioServicesPlaySystemSound(sound1);
-	
 	[_cameraOverlayView submitStep:_previewView];
 		
 	[self _uploadPhoto:_challangeImage];
@@ -760,15 +770,14 @@ const CGFloat kFocusInterval = 0.5f;
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayView:(HONSnapCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed {
-	if (isPressed) {
-		if (_clockTimer){
-			[_clockTimer invalidate];
-			_clockTimer = nil;
-		}
+	if (_progressTimer){
+		[_progressTimer invalidate];
+		_progressTimer = nil;
+	}
 	
-	} else {
+	if (!isPressed) {
 		[_cameraOverlayView startProgress];
-		_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 	}
 }
 
@@ -782,15 +791,15 @@ const CGFloat kFocusInterval = 0.5f;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"rear" : @"front", @"type", nil]];
 	
-	if (_clockTimer){
-		[_clockTimer invalidate];
-		_clockTimer = nil;
+	if (_progressTimer){
+		[_progressTimer invalidate];
+		_progressTimer = nil;
 	}
 	
 	_imagePicker.cameraDevice = (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
 	
 	[_cameraOverlayView startProgress];
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+	_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -801,9 +810,13 @@ const CGFloat kFocusInterval = 0.5f;
 	for (S3PutObjectRequest *por in _s3Uploads)
 		[por.urlConnection cancel];
 	
-	_clockCounter = 0;
+	if (_progressTimer){
+		[_progressTimer invalidate];
+		_progressTimer = nil;
+	}
+	
 	[_cameraOverlayView startProgress];
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+	_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -816,9 +829,9 @@ const CGFloat kFocusInterval = 0.5f;
 		_focusTimer = nil;
 	}
 	
-	if (_clockTimer != nil) {
-		[_clockTimer invalidate];
-		_clockTimer = nil;
+	if (_progressTimer){
+		[_progressTimer invalidate];
+		_progressTimer = nil;
 	}
 	
 	for (S3PutObjectRequest *por in _s3Uploads)
@@ -862,10 +875,13 @@ const CGFloat kFocusInterval = 0.5f;
 	for (S3PutObjectRequest *por in _s3Uploads)
 		[por.urlConnection cancel];
 	
-	_clockCounter = 0;
+	if (_progressTimer != nil) {
+		[_progressTimer invalidate];
+		_progressTimer = nil;
+	}
+	
 	[_cameraOverlayView startProgress];
-	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
-	//[self _showCamera];
+	_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
@@ -946,7 +962,7 @@ const CGFloat kFocusInterval = 0.5f;
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
-	if (_uploadCounter == 4) {
+	if (_uploadCounter == [_s3Uploads count]) {
 		if (_submitImageView != nil) {
 			[UIView animateWithDuration:0.5 animations:^(void) {
 				_submitImageView.alpha = 0.0;
@@ -973,7 +989,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {
-	//NSLog(@"AWS didFailWithError:\n%@", error);
+	NSLog(@"AWS didFailWithError:\n%@", error);
 }
 
 

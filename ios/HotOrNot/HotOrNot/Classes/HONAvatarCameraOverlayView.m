@@ -85,7 +85,7 @@
 		[_submitHolderView addSubview:retakeButton];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(212.0, 0.0, 106.0, 64.0);
+		submitButton.frame = CGRectMake(212.0, 0.0, 107.0, 64.0);
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -135,7 +135,7 @@
 	[self removeGestureRecognizer:_lpGestureRecognizer];
 	
 	_irisView.alpha = 1.0;
-	[UIView animateWithDuration:0.25 animations:^(void) {
+	[UIView animateWithDuration:0.125 animations:^(void) {
 		_irisView.alpha = 0.33;
 	} completion:^(BOOL finished){}];
 }
@@ -158,7 +158,7 @@
 	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83f];
 	//image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
-	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, -24.0 + ([HONAppDelegate isRetina5] * -22.0) + (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
+	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, -26.0 + ([HONAppDelegate isRetina5] * -22.0) + (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 	[_previewHolderView addSubview:previewImageView];
 	_previewHolderView.hidden = NO;

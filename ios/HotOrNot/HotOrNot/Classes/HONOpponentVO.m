@@ -11,7 +11,7 @@
 @implementation HONOpponentVO
 
 @synthesize dictionary;
-@synthesize userID, fbID, username, avatarURL, imagePrefix, joinedDate, score;
+@synthesize userID, fbID, username, avatarURL, imagePrefix, joinedDate, score, birthday;
 
 + (HONOpponentVO *)opponentWithDictionary:(NSDictionary *)dictionary {
 	HONOpponentVO *vo = [[HONOpponentVO alloc] init];
@@ -28,6 +28,7 @@
 	
 	vo.joinedDate = [dateFormat dateFromString:[dictionary objectForKey:@"joined"]];
 	vo.score = [[dictionary objectForKey:@"score"] intValue];
+	vo.birthday = ([dictionary objectForKey:@"age"] != [NSNull null]) ? [dateFormat dateFromString:[dictionary objectForKey:@"age"]] : [dateFormat dateFromString:@"1970-01-01 00:00:00"];
 	
 	return (vo);
 }

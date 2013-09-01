@@ -33,7 +33,6 @@
 	return (self);
 }
 
-
 - (void)_imageLoadFallback {
 	[_challengeImageView removeFromSuperview];
 	_challengeImageView = nil;

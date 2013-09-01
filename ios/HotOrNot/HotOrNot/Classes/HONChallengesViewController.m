@@ -32,6 +32,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONChallengeOverlayViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic, strong) NSMutableArray *headers;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) NSDate *lastDate;
@@ -39,7 +40,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) HONChallengeOverlayView *challengeOverlayView;
 @property (nonatomic, strong) UIImageView *emptyImageView;
-@property (nonatomic, strong) NSIndexPath *idxPath;
+@property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic) int blockCounter;
@@ -53,6 +54,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (id)init {
 	if ((self = [super init])) {
 		_challenges = [NSMutableArray array];
+		_headers = [NSMutableArray array];
 		_cells = [NSMutableArray array];
 		_blockCounter = 0;
 		
@@ -264,7 +266,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			if (result != nil)
-				[HONAppDelegate writeFriendsList:result];
+				[HONAppDelegate writeSubscribeeList:result];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -455,9 +457,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		}
 	}
 	
-	_idxPath = [_tableView indexPathForCell:cell];
+	_indexPath = [_tableView indexPathForCell:tableCell];
 	
-	//NSLog(@"APPROVE:[%@]", _idxPath);
+	//NSLog(@"APPROVE:[%@]", _indexPath);
 	
 	if (isApproved) {
 		[[Mixpanel sharedInstance] track:@"Verify - Approve"
@@ -576,6 +578,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	HONVerifyHeaderView *headerView = [[HONVerifyHeaderView alloc] initWithChallenge:(HONChallengeVO *)[_challenges objectAtIndex:section]];
 	headerView.delegate = self;
 	
+	[_headers addObject:headerView];
+	
 	return (headerView);
 }
 
@@ -673,6 +677,17 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
+			HONVerifyHeaderView *headerView;
+			for (HONVerifyHeaderView *view in _headers) {
+				if (view.challengeVO.creatorVO.userID == _challengeVO.creatorVO.userID) {
+					headerView = view;
+					break;
+				}
+			}
+			
+			if (headerView != nil)
+				[headerView changeStatus:@"flagged for review"];
+			
 			[[[UIAlertView alloc] initWithTitle:@""
 										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
 									   delegate:nil
