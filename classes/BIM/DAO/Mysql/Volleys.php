@@ -51,7 +51,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
     }
     
-    public function add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify = false ){
+    public function add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify = false, $status = 2 ){
         if( !is_array($targetIds) ) $targetIds = array();
         $isVerify = (int) $isVerify;
         // add the new challenge
@@ -59,9 +59,9 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             INSERT INTO `hotornot-dev`.tblChallenges 
                 ( status_id, subject_id, creator_id, creator_img, hasPreviewed, votes, updated, started, added, is_private, expires, is_verify )
             VALUES 
-                ("2", ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ?, ? )
+                (?, ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ?, ? )
         ';
-        $params = array($hashTagId, $userId, $imgUrl, $isPrivate, $expires, $isVerify);
+        $params = array($status, $hashTagId, $userId, $imgUrl, $isPrivate, $expires, $isVerify);
         $this->prepareAndExecute( $sql, $params );
         $volleyId = $this->lastInsertId;
         
@@ -302,7 +302,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
                 $sql = '
                 	UPDATE `hotornot-dev`.tblChallenges 
                 	SET votes = votes + 1, 
-                		creator_likes = creator_likes + 1
+                	    creator_likes = creator_likes + 1,
+			    updated = now()
                 	where id = ?
                 ';
             }
@@ -486,7 +487,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 				LEFT JOIN `hotornot-dev`.tblFlaggedUserApprovals as u 
 				ON tc.id = u.challenge_id AND u.user_id = ? 
 				
-			WHERE tc.status_id in ( 1,2,4 ) 
+			WHERE tc.status_id in ( 9,10 ) 
 				AND tc.is_verify = 1 
 				AND u.user_id is null
 				AND tc.creator_id != ?

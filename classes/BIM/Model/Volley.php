@@ -25,6 +25,7 @@ class BIM_Model_Volley{
             foreach( $volley->challengers as $challenger ){
                 $joined = new DateTime( "@$challenger->joined" );
                 $joined = $joined->format('Y-m-d H:i:s');
+                
                 $target = (object) array(
                     'id' => $challenger->challenger_id,
                     'img' => $challenger->challenger_img,
@@ -75,6 +76,7 @@ class BIM_Model_Volley{
         $this->creator->fb_id = $creator->fb_id;
         $this->creator->username = $creator->username;
         $this->creator->avatar = $creator->getAvatarUrl();
+	$this->creator->age = $creator->age;
         
         // populate the challengers
         if( $this->isLegacy() ){
@@ -82,11 +84,12 @@ class BIM_Model_Volley{
         } else{
             $challengers = $this->challengers;
         }
-        foreach ( $challengers as $challenger ){
+	foreach ( $challengers as $challenger ){
             $target = $users[ $challenger->challenger_id ];
             $challenger->fb_id = $target->fb_id;
             $challenger->username = $target->username;
             $challenger->avatar = $target->getAvatarUrl();
+	    $challenger->age = $target->age;
         }
     }
     
@@ -177,11 +180,11 @@ class BIM_Model_Volley{
         return $dao->hasApproved( $this->id, $userId );
     }
     
-    public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires, $isVerify = false ) {
+    public static function create( $userId, $hashTag, $imgUrl, $targetIds, $isPrivate, $expires, $isVerify = false, $status = 2 ) {
         $volleyId = null;
         $hashTagId = self::getHashTagId($userId, $hashTag);
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify );
+        $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify, $status );
         return self::get( $volleyId );
     }
     
@@ -198,7 +201,7 @@ class BIM_Model_Volley{
         return BIM_Model_Volley::get( $id );
     }
     
-    public static function createVerifyVolley( $targetId ){
+    public static function createVerifyVolley( $targetId, $status = 9 ){
 	    $target = BIM_Model_User::get( $targetId );
 	    $imgUrl = trim($target->getAvatarUrl());
 	    // now we get our avatar image and 
@@ -208,7 +211,7 @@ class BIM_Model_Volley{
 	    } else {
     	    $imgUrl = preg_replace('/^(.*?)\.jpg$/', '$1_o.jpg', $imgUrl);
 	    }
-	    return self::create($targetId, '#__verifyMe__', $imgUrl, array(), 'N', -1, true);
+	    return self::create($targetId, '#__verifyMe__', $imgUrl, array(), 'N', -1, true, $status);
     }
     
     public static function getHashTagId( $userId, $hashTag = 'N/A' ) {

@@ -79,7 +79,8 @@ class BIM_App_Challenges extends BIM_App_Base{
         
         $push = array(
             "device_tokens" =>  $deviceTokens,
-            "type" => "3", 
+            "type" => "1",
+            "challenge" => $volleyObject->id,
             "aps" =>  array(
                 "alert" =>  $msg,
                 "sound" =>  "push_01.caf"
@@ -228,7 +229,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $msg = "@$creator->username has just created the Volley $hashTag";
         $push = array(
             "device_tokens" =>  array( $target->device_token ), 
-            "type" => "1", 
+            "type" => "1",
             "challenge" => $volleyId,
             "aps" =>  array(
                 "alert" =>  $msg,
