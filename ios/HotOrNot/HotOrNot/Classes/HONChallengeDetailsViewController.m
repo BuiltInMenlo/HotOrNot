@@ -8,6 +8,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -20,7 +21,7 @@
 #import "HONChallengeOverlayView.h"
 #import "HONRefreshButtonView.h"
 
-@interface HONChallengeDetailsViewController () <UIAlertViewDelegate, HONChallengeOverlayViewDelegate>
+@interface HONChallengeDetailsViewController () <UIScrollViewDelegate, UIAlertViewDelegate, HONChallengeOverlayViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -36,6 +37,8 @@
 @property (nonatomic) BOOL isModal;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
+@property (nonatomic) BOOL isRefreshing;
+@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @end
 
 @implementation HONChallengeDetailsViewController
@@ -69,6 +72,8 @@
 
 #pragma mark - Data Calls
 - (void)_refreshChallenge {
+	_isRefreshing = YES;
+	
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 							[NSString stringWithFormat:@"%d", _challengeVO.challengeID], @"challengeID",
 							nil];
@@ -88,6 +93,9 @@
 			[_refreshButtonView toggleRefresh:NO];
 			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 			[self _makeUI];
+			
+			_isRefreshing = NO;
+			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -309,6 +317,11 @@
 	_scrollView.showsVerticalScrollIndicator = YES;
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
+	
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+	_refreshTableHeaderView.delegate = self;
+	[_scrollView addSubview:_refreshTableHeaderView];
+	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
@@ -686,6 +699,34 @@
 		[_challengeOverlayView removeFromSuperview];
 		_challengeOverlayView = nil;
 	}
+}
+
+
+#pragma mark - RefreshTableHeader Delegates
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+	[self _goRefresh];
+}
+
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
+	return (_isRefreshing); // should return if data source model is reloading
+}
+
+- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
+	return ([NSDate date]); // should return date data source was last change
+}
+
+
+#pragma mark - ScrollView Delegates
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+}
+
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+}
+
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 

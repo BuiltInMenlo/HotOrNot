@@ -9,6 +9,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -37,7 +38,7 @@
 #import "HONChallengeOverlayView.h"
 
 
-@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONTimelineHeaderViewDelegate, HONChallengeOverlayViewDelegate>
+@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONTimelineHeaderViewDelegate, HONChallengeOverlayViewDelegate, EGORefreshTableHeaderDelegate>
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
@@ -55,12 +56,14 @@
 @property (nonatomic) BOOL isPublic;
 @property (nonatomic) BOOL isProfileViewable;
 @property (nonatomic) BOOL isProfileFiltered;
+@property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) UIScrollView *findFriendsScrollView;
 @property (nonatomic, strong) UIImageView *tooltipImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) UIButton *backButton;
+@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic) int userID;
 @end
 
@@ -240,6 +243,9 @@
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 		}
+		
+		_isRefreshing = NO;
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
@@ -501,6 +507,11 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+	_refreshTableHeaderView.delegate = self;
+	[_tableView addSubview:_refreshTableHeaderView];
+	[_refreshTableHeaderView refreshLastUpdatedDate];
+	
 	_findFriendsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
 	_findFriendsScrollView.contentSize = CGSizeMake(_findFriendsScrollView.frame.size.width, _findFriendsScrollView.frame.size.height+ 1.0);
 	_findFriendsScrollView.pagingEnabled = NO;
@@ -570,6 +581,7 @@
 }
 
 - (void)_goRefresh {
+	_isRefreshing = YES;
 	[_refreshButtonView toggleRefresh:YES];
 	[[Mixpanel sharedInstance] track:@"Timeline - Refresh"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -1107,6 +1119,34 @@
 	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
 	[actionSheet setTag:0];
 	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+}
+
+
+#pragma mark - RefreshTableHeader Delegates
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+	[self _goRefresh];
+}
+
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
+	return (_isRefreshing); // should return if data source model is reloading
+}
+
+- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
+	return ([NSDate date]); // should return date data source was last change
+}
+
+
+#pragma mark - ScrollView Delegates
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+}
+
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+}
+
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 

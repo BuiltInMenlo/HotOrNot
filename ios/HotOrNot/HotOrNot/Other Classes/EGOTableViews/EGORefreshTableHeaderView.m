@@ -53,13 +53,11 @@
 		
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(45.0f, frame.size.height - 19.0f, self.frame.size.width - 45.0, 16.0f)];
 		label.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		//label.font = [[SNAppDelegate snHelveticaNeueFontBold] fontWithSize:12.0];
-		label.textColor = TEXT_COLOR;
-		label.shadowColor = [UIColor colorWithWhite:0.9f alpha:1.0f];
-		label.shadowOffset = CGSizeMake(0.0f, 1.0f);
+		label.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12.0];
+		label.textColor = [HONAppDelegate honGrey518Color];
 		label.backgroundColor = [UIColor clearColor];
 		[self addSubview:label];
-		_statusLabel=label;
+		_statusLabel = label;
 		
 		[self setState:EGOOPullRefreshNormal];
 		
@@ -97,7 +95,7 @@
 	
 	switch (aState) {
 		case EGOOPullRefreshPulling:
-			//_statusLabel.text = NSLocalizedString(@"Release to refresh…", @"Release to refresh status");
+			_statusLabel.text = NSLocalizedString(@"Release to refresh…", @"Release to refresh status");
 			break;
 			
 		case EGOOPullRefreshNormal:
@@ -109,7 +107,7 @@
 			break;
 			
 		case EGOOPullRefreshLoading:
-			_statusLabel.text = NSLocalizedString(@"Assembling…", @"Loading Status");
+			_statusLabel.text = NSLocalizedString(@"Refreshing…", @"Loading Status");
 			break;
 			
 		default:

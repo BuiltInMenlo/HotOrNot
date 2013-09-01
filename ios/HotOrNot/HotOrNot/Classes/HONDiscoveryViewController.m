@@ -8,6 +8,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -19,7 +20,7 @@
 #import "HONTimelineViewController.h"
 #import "HONDiscoveryViewCell.h"
 
-@interface HONDiscoveryViewController ()<UITableViewDataSource, UITableViewDelegate, HONDiscoveryViewCellDelegate>
+@interface HONDiscoveryViewController ()<UITableViewDataSource, UITableViewDelegate, HONDiscoveryViewCellDelegate, EGORefreshTableHeaderDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONRefreshButtonView *refreshButtonView;
@@ -28,6 +29,8 @@
 @property(nonatomic, strong) NSMutableArray *currChallenges;
 @property(nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property (nonatomic, strong) UIView *bannerView;
+@property (nonatomic) BOOL isRefreshing;
+@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @end
 
 @implementation HONDiscoveryViewController
@@ -153,6 +156,11 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+	_refreshTableHeaderView.delegate = self;
+	[_tableView addSubview:_refreshTableHeaderView];
+	[_refreshTableHeaderView refreshLastUpdatedDate];
+	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -178,6 +186,7 @@
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	_isRefreshing = YES;
 	NSLog(@"refresh:[%d]", [_allChallenges count]);
 	_currChallenges = [NSMutableArray array];
 	
@@ -187,6 +196,9 @@
 		
 		[_refreshButtonView toggleRefresh:NO];
 		[_tableView reloadData];
+		
+		_isRefreshing = NO;
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}
 }
 
@@ -273,6 +285,35 @@
 	
 	[self.navigationController pushViewController:[[HONTimelineViewController alloc] initWithSubject:challengeVO.subjectName] animated:YES];
 }
+
+
+#pragma mark - RefreshTableHeader Delegates
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+	[self _goRefresh];
+}
+
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
+	return (_isRefreshing); // should return if data source model is reloading
+}
+
+- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
+	return ([NSDate date]); // should return date data source was last change
+}
+
+
+#pragma mark - ScrollView Delegates
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+}
+
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+}
+
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+}
+
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

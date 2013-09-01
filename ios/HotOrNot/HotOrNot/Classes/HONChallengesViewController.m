@@ -9,6 +9,7 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -29,7 +30,7 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONChallengeOverlayViewDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONChallengeOverlayViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -47,6 +48,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic, strong) UIImageView *togglePrivateImageView;
 @property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic) BOOL isPrivate;
+@property (nonatomic) BOOL isRefreshing;
+@property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @end
 
 @implementation HONChallengesViewController
@@ -173,6 +176,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			
 			_emptyImageView.hidden = [_challenges count] > 0;
 			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"];
+			
+			_isRefreshing = NO;
+			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -316,6 +322,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+	_refreshTableHeaderView.delegate = self;
+	[_tableView addSubview:_refreshTableHeaderView];
+	[_refreshTableHeaderView refreshLastUpdatedDate];
+	
 	[_refreshButtonView toggleRefresh:YES];
 }
 
@@ -362,6 +373,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	_isRefreshing = YES;
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 }
@@ -562,6 +574,34 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}];
 	
 	[self _upvoteChallenge:_challengeVO.creatorVO.userID];
+}
+
+
+#pragma mark - RefreshTableHeader Delegates
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+	[self _goRefresh];
+}
+
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
+	return (_isRefreshing); // should return if data source model is reloading
+}
+
+- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
+	return ([NSDate date]); // should return date data source was last change
+}
+
+
+#pragma mark - ScrollView Delegates
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+}
+
+-(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+}
+
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 
