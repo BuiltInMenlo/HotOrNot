@@ -115,45 +115,52 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
         $removed = false;
         if( isset( $doc->source ) && $doc->source ){
             $relation = $this->getRelation($doc);
-            if( $relation->state == 0 && ($doc->source == $relation->source) ){
-                $id = self::makeFriendkey($doc);
-                $urlSuffix = "social/friends/$id";
-                $removed = $this->call('DELETE', $urlSuffix);
-                $removed = json_decode( $removed );
-                if( isset( $removed->ok ) && $removed->ok ){
-                    $removed = true;
-                } else {
-                    $removed = false;
-                }
-            } else if( $relation->state == 1 ){
-                $params = array();
-                if( $doc->source == $relation->source_data->id ){
-                    $params = array(
-                        'source' => $relation->source_data,
-                        'target' => $relation->target_data,
-                    );                    
-                } else if( $doc->source == $relation->target_data->id ){
-                    $params = array(
-                        'source' => $relation->target_data,
-                        'target' => $relation->source_data,
-                    );                    
-                }
-                if( $params ){
-                    $update = array(
-                        'script' => "
-                        	ctx._source.state = 0;
-                        	ctx._source.source_data = source;
-                        	ctx._source.target_data = target;
-                        ",
-                        'params' => $params
-                    );
+            if( $relation ){
+                if( $relation->state == 0 && ($doc->source == $relation->source) ){
                     $id = self::makeFriendkey($doc);
-                    $urlSuffix = "social/friends/$id/_update";
-                    $removed = $this->call('POST', $urlSuffix, $update);
+                    $urlSuffix = "social/friends/$id";
+                    $removed = $this->call('DELETE', $urlSuffix);
+                    $removed = json_decode( $removed );
                     if( isset( $removed->ok ) && $removed->ok ){
                         $removed = true;
                     } else {
                         $removed = false;
+                    }
+                } else if( $relation->state == 1 ){
+                    $params = array();
+                    if( $doc->source == $relation->source_data->id ){
+                        $params = array(
+                            'source' => $relation->target_data,
+                            'target' => $relation->source_data,
+                        );                    
+                    } else if( $doc->source == $relation->target_data->id ){
+                        $params = array(
+                        	'source' => $relation->source_data,
+                            'target' => $relation->target_data,
+                        );                    
+                    }
+                    if( $params ){
+                        $update = array(
+                            'script' => "
+                            	ctx._source.state = 0;
+                            	
+                            	ctx._source.source = source.id;
+                            	ctx._source.source_data = source;
+                            	
+                            	ctx._source.target = target.id;
+                            	ctx._source.target_data = target;
+                            ",
+                            'params' => $params
+                        );
+                        $id = self::makeFriendkey($doc);
+                        $urlSuffix = "social/friends/$id/_update";
+                        $removed = $this->call('POST', $urlSuffix, $update);
+                        $removed = json_decode($removed);
+                        if( !empty( $removed->ok ) ){
+                            $removed = true;
+                        } else {
+                            $removed = false;
+                        }
                     }
                 }
             }
