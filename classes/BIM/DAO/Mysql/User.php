@@ -6,16 +6,17 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $sql = "
         	delete from `hotornot-dev`.tblChallengeParticipants 
         	where challenge_id in (
-        		select id from tblChallenges where creator_id = ?
+        		select id from `hotornot-dev`.tblChallenges where creator_id = ?
         	)
+        	or user_id = ?
         ";
-        $params = array( $userId );
+        $params = array( $userId, $userId );
         $this->prepareAndExecute( $sql, $params );
         
         $sql = "
         	delete from `hotornot-dev`.tblFlaggedUserApprovals 
         	where challenge_id in (
-        		select id from tblChallenges where creator_id = ?
+        		select id from `hotornot-dev`.tblChallenges where creator_id = ?
         	)
         ";
         $params = array( $userId );
@@ -77,7 +78,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     
     public function archive( $id, $username, $data ){
         $sql = "
-        	insert into user_archive ( user_id, username, data )
+        	insert into `hotornot-dev`.user_archive ( user_id, username, data )
         	values ( ?, ?, ? )
         ";
         

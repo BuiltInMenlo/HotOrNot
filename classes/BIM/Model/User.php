@@ -461,7 +461,7 @@ class BIM_Model_User{
     
     public function delete(){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $dao->delete($user->id);
+        $dao->delete($this->id);
     }
     
     public function getVolleyIds(){
