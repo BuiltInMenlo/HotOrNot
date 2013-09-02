@@ -220,23 +220,19 @@
 		[self _loadForVerify];
 	
 	
-	UIView *headerBGView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kSnapThumbDim + 30.0)];
-	headerBGView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
-	[self.view addSubview:headerBGView];
-	
-	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15.0, 15.0, kSnapThumbDim, kSnapThumbDim)];
+	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 11.0, kSnapThumbDim, kSnapThumbDim)];
 	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@", _opponentVO.avatarURL]] placeholderImage:nil];
 	[self.view addSubview:challengeImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(65.0, 27.0, 200.0, 20.0)];
-	nameLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 19.0, 200.0, 20.0)];
+	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
 	nameLabel.textColor = [UIColor whiteColor];
 	nameLabel.backgroundColor = [UIColor clearColor];
 	nameLabel.text = [NSString stringWithFormat:@"@%@", _opponentVO.username];
 	[self.view addSubview:nameLabel];
 	
-	_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(153.0, 27.0, 150.0, 20.0)];
-	_ageLabel.font = [[HONAppDelegate cartoGothicBook] fontWithSize:16];
+	_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(145.0, 19.0, 150.0, 20.0)];
+	_ageLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
 	_ageLabel.textAlignment = NSTextAlignmentRight;
 	_ageLabel.textColor = [UIColor whiteColor];
 	_ageLabel.backgroundColor = [UIColor clearColor];

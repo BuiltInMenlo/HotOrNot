@@ -90,12 +90,12 @@
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			[_refreshButtonView toggleRefresh:NO];
-			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
-			[self _makeUI];
-			
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+			
+			[_refreshButtonView toggleRefresh:NO];
+			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
+			[self performSelector:@selector(_makeUI) withObject:nil afterDelay:0.25];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -263,9 +263,26 @@
 	}
 	
 	
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0 + offset, 320.0, 61.0)];
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, offset, 320.0, [UIScreen mainScreen].bounds.size.height)];
+	_scrollView.contentSize = CGSizeMake(320.0, 603.0 + (kSnapMediumDim * (respondedOpponents / 5)) - (_isModal * 85.0));
+	_scrollView.pagingEnabled = NO;
+	_scrollView.delegate = self;
+	_scrollView.showsVerticalScrollIndicator = YES;
+	_scrollView.showsHorizontalScrollIndicator = NO;
+	[self.view addSubview:_scrollView];
+	
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+	_refreshTableHeaderView.delegate = self;
+	[_scrollView addSubview:_refreshTableHeaderView];
+	[_refreshTableHeaderView refreshLastUpdatedDate];
+	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[_scrollView addGestureRecognizer:lpGestureRecognizer];
+	
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0 + offset, 320.0, 58.0)];
 	headerView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.80];
-	[self.view addSubview:headerView];
+	[_scrollView addSubview:headerView];
 	
 	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 9.0, 38.0, 38.0)];
 	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
@@ -309,25 +326,10 @@
 	[avatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 	[avatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 	[headerView addSubview:avatarButton];
-	
-	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 58.0 + offset, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, 603.0 + (kSnapMediumDim * (respondedOpponents / 5)) - (_isModal * 85.0));
-	_scrollView.pagingEnabled = NO;
-	_scrollView.showsVerticalScrollIndicator = YES;
-	_scrollView.showsHorizontalScrollIndicator = NO;
-	[self.view addSubview:_scrollView];
-	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
-	_refreshTableHeaderView.delegate = self;
-	[_scrollView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView refreshLastUpdatedDate];
-	
-	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-	[_scrollView addGestureRecognizer:lpGestureRecognizer];
+
 	
 	__weak typeof(self) weakSelf = self;
-	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 0.0, 294.0, 294.0)];
+	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 58.0, 294.0, 294.0)];
 	_creatorChallengeImageView.userInteractionEnabled = YES;
 	_creatorChallengeImageView.alpha = [_creatorChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]]];
 	[_scrollView addSubview:_creatorChallengeImageView];
@@ -345,7 +347,7 @@
 	//[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:leftButton];
 	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 198.0, 320.0, 78.0)];
+	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 256.0, 320.0, 78.0)];
 	[_scrollView addSubview:footerHolderView];
 	
 	UIView *footerFillView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 15.0, 320.0, 200.0)];
@@ -400,17 +402,17 @@
 	[footerHolderView addSubview:joinButton];
 	
 	UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
-	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 276.0);
+	dividerImageView.frame = CGRectOffset(dividerImageView.frame, 0.0, 334.0);
 	[_scrollView addSubview:dividerImageView];
 	
-	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 298.0, 300.0, 20.0)];
+	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 356.0, 300.0, 20.0)];
 	challengersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:17];
 	challengersLabel.textColor = [HONAppDelegate honGrey455Color];
 	challengersLabel.backgroundColor = [UIColor clearColor];
 	challengersLabel.text = [NSString stringWithFormat:@"%d Volley%@ - Tap and Hold to view", (respondedOpponents + 1), ((respondedOpponents + 1) != 1) ? @"s" : @""];
 	[_scrollView addSubview:challengersLabel];
 	
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(11.0, 337.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(11.0, 395.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor whiteColor];
 	[_scrollView addSubview:_gridHolderView];
 	
@@ -436,7 +438,7 @@
 			
 			opponentCounter++;
 		}
-	}
+	}	
 }
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
@@ -456,6 +458,13 @@
 			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_opponentVO];
 		}
 		
+		[[Mixpanel sharedInstance] track:@"Timeline Details - Show Photo Detail"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
+										  nil]];
+		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
@@ -463,6 +472,13 @@
 			[_snapPreviewViewController.view removeFromSuperview];
 			_snapPreviewViewController = nil;
 		}
+		
+		[[Mixpanel sharedInstance] track:@"Timeline Details - Hide Photo Detail"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
+										  nil]];
 		
 		_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
 		_challengeOverlayView.delegate = self;
@@ -474,6 +490,8 @@
 
 #pragma mark - Navigation
 - (void)_goRefresh {
+	_isRefreshing = YES;
+	
 	[_refreshButtonView toggleRefresh:YES];
 	[self _refreshChallenge];
 }
@@ -518,39 +536,6 @@
 	
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:_challengeVO] animated:YES];
 }
-
-//- (void)_goTapCreator {
-//	if (!_isDoubleTap) {
-//		_isDoubleTap = YES;
-//		_tapTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_tapTimeout) userInfo:nil repeats:NO];
-//		
-//	} else {
-//		if (_tapTimer != nil) {
-//			[_tapTimer invalidate];
-//			_tapTimer = nil;
-//		}
-//		
-//		_isDoubleTap = NO;
-//		[self _goUpvoteCreator];
-//	}
-//}
-//
-//- (void)_goTapOpponent:(id)sender {
-//	if (!_isDoubleTap) {
-//		_isDoubleTap = YES;
-//		_tapTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(_tapTimeout) userInfo:nil repeats:NO];
-//		
-//	} else {
-//		if (_tapTimer != nil) {
-//			[_tapTimer invalidate];
-//			_tapTimer = nil;
-//		}
-//		
-//		_isDoubleTap = NO;
-//		[self _goUpvoteChallenger:[(UIButton *)sender tag]];
-//	}
-//}
-
 
 - (void)_goCreatorTimeline {
 	[[Mixpanel sharedInstance] track:@"Timeline Details Header - Profile"
@@ -646,7 +631,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, (([UIScreen mainScreen].bounds.size.height - 108.0) * 0.5) + 10.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 108.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -708,21 +693,17 @@
 }
 
 - (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
-	return (_isRefreshing); // should return if data source model is reloading
+	return (_isRefreshing);
 }
 
 - (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
-	return ([NSDate date]); // should return date data source was last change
+	return ([NSDate date]);
 }
 
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{

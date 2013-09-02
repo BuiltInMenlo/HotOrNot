@@ -66,6 +66,10 @@
 		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
 		[_infoHolderImageView addSubview:okInfoButton];
 		
+		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0)];
+		progressBarBGImageView.backgroundColor = [UIColor blackColor];
+		[self addSubview:progressBarBGImageView];
+		
 		_submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0)];
 		_submitHolderView.hidden = YES;
 		[self addSubview:_submitHolderView];
@@ -118,7 +122,7 @@
 		_progressBarImageView = nil;
 	}
 	
-	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 4.0, 2.0)];
+	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 4.0, 2.0)];
 	_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
 	[self addSubview:_progressBarImageView];
 	
@@ -278,22 +282,31 @@
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		[self.delegate cameraOverlayView:self toggleLongPress:YES];
 		
+		_irisView.alpha = 0.0;
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			_irisView.alpha = 0.35;
+		} completion:^(BOOL finished){}];
+		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 		[self.delegate cameraOverlayView:self toggleLongPress:NO];
+		
+		[UIView animateWithDuration:0.125 animations:^(void) {
+			_irisView.alpha = 0.0;
+		} completion:^(BOOL finished){}];
 	}
 }
 
 
 #pragma mark - UI Presentation
 - (void)_animateLoader {
-	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 4.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 4.0, 2.0);
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.6];
 	[UIView setAnimationDelay:0.0];
 	[UIView setAnimationBeginsFromCurrentState:YES];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
-	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 320.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0);
 	[UIView commitAnimations];
 }
 

@@ -528,7 +528,7 @@
 	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:inviteAllButton];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight + 45.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 65.0)) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, kNavBarHeaderHeight, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (kNavBarHeaderHeight + 65.0)) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 249.0;
@@ -538,13 +538,6 @@
 	_tableView.scrollsToTop = NO;
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
-	
-	UIButton *selectToggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectToggleButton.frame = CGRectMake(0.0, kNavBarHeaderHeight, 320.0, 50.0);
-	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateNormal];
-	[selectToggleButton setBackgroundImage:[UIImage imageNamed:@"singleTab_nonActive"] forState:UIControlStateHighlighted];
-	//[selectToggleButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:selectToggleButton];
 	
 	ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
 	NSLog(@"ABAddressBookGetAuthorizationStatus() = [%ld]", ABAddressBookGetAuthorizationStatus());
@@ -755,7 +748,7 @@
 	label.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
 	label.textColor = [HONAppDelegate honGreenTextColor];
 	label.backgroundColor = [UIColor clearColor];
-	label.text = (section == 0) ? @"Follow friends who Volley" : @"Invite friends to Volley";
+	label.text = (section == 0) ? @"Subscribe to friends who Volley" : @"Invite friends to Volley";
 	[headerImageView addSubview:label];
 	
 	return (headerImageView);

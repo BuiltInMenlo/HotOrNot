@@ -19,8 +19,14 @@
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONDiscoveryViewCell.h"
+#import "HONChangeAvatarViewController.h"
+#import "HONAddContactsViewController.h"
+#import "HONSettingsViewController.h"
+#import "HONImagingDepictor.h"
+#import "HONProfileHeaderButtonView.h"
+#import "HONUserProfileView.h"
 
-@interface HONDiscoveryViewController ()<UITableViewDataSource, UITableViewDelegate, HONDiscoveryViewCellDelegate, EGORefreshTableHeaderDelegate>
+@interface HONDiscoveryViewController ()<UITableViewDataSource, UITableViewDelegate, HONDiscoveryViewCellDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) MBProgressHUD *progressHUD;
 @property(nonatomic, strong) HONRefreshButtonView *refreshButtonView;
@@ -31,6 +37,9 @@
 @property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+@property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
+@property (nonatomic, strong) HONUserProfileView *userProfileView;
+@property (nonatomic, strong) UIView *profileOverlayView;
 @end
 
 @implementation HONDiscoveryViewController
@@ -98,10 +107,13 @@
 		}
 		
 		[_refreshButtonView toggleRefresh:NO];
+		
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 		}
+		
+		_isRefreshing = NO;
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIDiscover, [error localizedDescription]);
@@ -124,10 +136,13 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
+//	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 	self.navigationController.navigationBar.topItem.title = @"Explore";
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
+//	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	
+	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_profileHeaderButtonView];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
@@ -161,6 +176,21 @@
 	[_tableView addSubview:_refreshTableHeaderView];
 	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
+	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	_profileOverlayView.alpha = 0.0;
+	_profileOverlayView.hidden = YES;
+	[self.view addSubview:_profileOverlayView];
+	
+	UIButton *closeProfileButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeProfileButton.frame = _profileOverlayView.frame;
+	[closeProfileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+	[_profileOverlayView addSubview:closeProfileButton];
+	
+	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -300.0, 320.0, 300.0)];
+	_userProfileView.delegate = self;
+	[self.view addSubview:_userProfileView];
+	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
 	_progressHUD.mode = MBProgressHUDModeIndeterminate;
@@ -181,6 +211,33 @@
 
 
 #pragma mark - Navigation
+- (void)_goProfile {
+	if (_userProfileView.isOpen) {
+		[_userProfileView hide];
+		[_profileHeaderButtonView toggleSelected:NO];
+		
+		[UIView animateWithDuration:kProfileTime animations:^(void) {
+			_profileOverlayView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			_profileOverlayView.hidden = YES;
+		}];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
+		
+	} else {
+		[_userProfileView show];
+		[_profileHeaderButtonView toggleSelected:YES];
+		
+		_profileOverlayView.hidden = NO;
+		[UIView animateWithDuration:kProfileTime animations:^(void) {
+			_profileOverlayView.alpha = 1.0;
+		} completion:^(BOOL finished) {
+		}];
+		
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	}
+}
+
 - (void)_goRefresh {
 	[[Mixpanel sharedInstance] track:@"Discover - Refresh"
 								 properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -197,8 +254,7 @@
 		[_refreshButtonView toggleRefresh:NO];
 		[_tableView reloadData];
 		
-		_isRefreshing = NO;
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		[self performSelector:@selector(_doneRefreshing) withObject:nil afterDelay:0.125];
 	}
 }
 
@@ -266,6 +322,56 @@
 }
 
 
+#pragma mark - UI Presentation
+- (void)_doneRefreshing {
+	_isRefreshing = NO;
+	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+}
+
+
+#pragma mark - UserProfile Delegates
+- (void)userProfileViewChangeAvatar:(HONUserProfileView *)userProfileView {
+	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:NO completion:nil];
+}
+
+- (void)userProfileViewInviteFriends:(HONUserProfileView *)userProfileView {
+	[[Mixpanel sharedInstance] track:@"Profile - Find Friends Button"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)userProfileViewPromote:(HONUserProfileView *)userProfileView {
+	[[Mixpanel sharedInstance] track:@"Profile - Promote Instagram"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UIImage *image = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
+																							[HONAppDelegate instagramShareComment], @"caption",
+																							image, @"image", nil]];
+}
+
+- (void)userProfileViewSettings:(HONUserProfileView *)userProfileView {
+	[[Mixpanel sharedInstance] track:@"Profile - Settings"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
+	[navigationController setNavigationBarHidden:YES];
+	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+
 #pragma mark - DiscoveryViewCell Delegates
 - (void)discoveryViewCell:(HONDiscoveryViewCell *)cell selectLeftChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Explore - Select Volley"
@@ -293,21 +399,17 @@
 }
 
 - (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
-	return (_isRefreshing); // should return if data source model is reloading
+	return (_isRefreshing);
 }
 
 - (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
-	return ([NSDate date]); // should return date data source was last change
+	return ([NSDate date]);
 }
 
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
--(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{

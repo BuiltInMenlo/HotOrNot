@@ -198,6 +198,7 @@
 	}
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[self addGestureRecognizer:lpGestureRecognizer];
 	
 	
@@ -246,7 +247,7 @@
 //	[footerHolderView addSubview:likesLabelButton];
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake((_opponentCounter == 0) ? 171.0 : 243.0, (_opponentCounter == 0)? 200.0 : 200.0, 78.0, 78.0);
+	joinButton.frame = CGRectMake((_opponentCounter < 3) ? 171.0 : 243.0, (_opponentCounter < 3)? 200.0 : 200.0, 78.0, 78.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchDown];

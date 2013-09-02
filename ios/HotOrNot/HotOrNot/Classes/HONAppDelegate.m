@@ -99,6 +99,7 @@ const CGFloat kSnapJPEGCompress = 0.400f;
 // animation params
 const CGFloat kHUDTime = 2.33f;
 const CGFloat kHUDErrorTime = 1.5f;
+const CGFloat kProfileTime = 0.25f;
 
 // image sizes
 const CGFloat kSnapThumbDim = 37.0f;
@@ -848,7 +849,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19], UITextAttributeFont, nil]];
+														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:20], UITextAttributeFont, nil]];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_nonActive"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil] setBackButtonBackgroundImage:[[UIImage imageNamed:@"backButtonIcon_Active"] stretchableImageWithLeftCapWidth:23.0 topCapHeight:0.0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -1372,17 +1373,16 @@ NSString * const kTwilioSMS = @"6475577873";
 - (void)_initTabs {
 	[_bgImageView removeFromSuperview];
 	
-	UIViewController *timelineViewController, *discoveryViewController, *challengesViewController, *profileViewController;
+	UIViewController *timelineViewController, *discoveryViewController, *challengesViewController;
 	timelineViewController = [[HONTimelineViewController alloc] initWithFriends];
 	discoveryViewController = [[HONDiscoveryViewController alloc] init];
 	challengesViewController = [[HONChallengesViewController alloc] init];
-	profileViewController = [[HONTimelineViewController alloc] initWithUserID:[[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]];
 	//profileViewController = [[HONTimelineViewController alloc] initWithUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	
 	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:timelineViewController];
 	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
 	UINavigationController *navigationController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-	UINavigationController *navigationController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];
+	//UINavigationController *navigationController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];
 		
 	if ([navigationController1.navigationBar respondsToSelector:@selector(setShadowImage:)])
 		[navigationController1.navigationBar setShadowImage:[[UIImage alloc] init]];
@@ -1393,10 +1393,10 @@ NSString * const kTwilioSMS = @"6475577873";
 	if ([navigationController3.navigationBar respondsToSelector:@selector(setShadowImage:)])
 		[navigationController3.navigationBar setShadowImage:[[UIImage alloc] init]];
 	
-	if ([navigationController4.navigationBar respondsToSelector:@selector(setShadowImage:)])
-		[navigationController4.navigationBar setShadowImage:[[UIImage alloc] init]];
-		
-	self.tabBarController.viewControllers = [NSArray arrayWithObjects:navigationController1, navigationController2, navigationController3, navigationController4, nil];
+	self.tabBarController.viewControllers = [NSArray arrayWithObjects:
+											 navigationController1,
+											 navigationController2,
+											 navigationController3, nil];
 }
 
 

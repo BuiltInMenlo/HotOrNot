@@ -62,7 +62,7 @@
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_blackMatteView.backgroundColor = [UIColor blackColor];
 		[self addSubview:_blackMatteView];
-
+		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_cancelButton.frame = CGRectMake(262.0, 14.0, 44.0, 44.0);
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
@@ -76,6 +76,10 @@
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 		//[self addSubview:_flipButton];
+		
+		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0)];
+		progressBarBGImageView.backgroundColor = [UIColor blackColor];
+		[self addSubview:progressBarBGImageView];
 				
 		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
 		lpGestureRecognizer.minimumPressDuration = 0.05;
@@ -136,7 +140,7 @@
 		_progressBarImageView = nil;
 	}
 	
-	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 4.0, 2.0)];
+	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 4.0, 2.0)];
 	_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
 	[self addSubview:_progressBarImageView];
 	
@@ -181,22 +185,35 @@
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		[self.delegate cameraOverlayView:self toggleLongPress:YES];
 		
+		_blackMatteView.alpha = 0.0;
+		_blackMatteView.backgroundColor = [UIColor blackColor];
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_blackMatteView.alpha = 0.35;
+		}];
+		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 		[self.delegate cameraOverlayView:self toggleLongPress:NO];
+		
+		[UIView animateWithDuration:0.25 animations:^(void) {
+			_blackMatteView.alpha = 0.0;
+		} completion:^(BOOL finished) {
+			_blackMatteView.backgroundColor = [UIColor clearColor];
+			_blackMatteView.alpha = 1.0;
+		}];
 	}
 }
 
 
 #pragma mark - UI Presentation
 - (void)_animateLoader {
-	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 4.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 4.0, 2.0);
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.6];
 	[UIView setAnimationDelay:0.0];
 	[UIView setAnimationBeginsFromCurrentState:YES];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
-	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 320.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0);
 	[UIView commitAnimations];
 }
 

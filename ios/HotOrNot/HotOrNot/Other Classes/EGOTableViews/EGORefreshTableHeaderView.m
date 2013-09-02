@@ -46,7 +46,7 @@
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-		_activityIndicatorView.frame = CGRectMake(16.0, frame.size.height - 24.0, 24.0, 24.0);
+		_activityIndicatorView.frame = CGRectMake(148.0, frame.size.height - 24.0, 24.0, 24.0);
 		[_activityIndicatorView startAnimating];
 		[self addSubview:_activityIndicatorView];
 		
@@ -56,7 +56,7 @@
 		label.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:12.0];
 		label.textColor = [HONAppDelegate honGrey518Color];
 		label.backgroundColor = [UIColor clearColor];
-		[self addSubview:label];
+		//[self addSubview:label];
 		_statusLabel = label;
 		
 		[self setState:EGOOPullRefreshNormal];
@@ -92,15 +92,20 @@
 }
 
 - (void)setState:(EGOPullRefreshState)aState{
-	
 	switch (aState) {
 		case EGOOPullRefreshPulling:
 			_statusLabel.text = NSLocalizedString(@"Release to refresh…", @"Release to refresh status");
+			
+//			[_activityIndicatorView startAnimating];
+//			_activityIndicatorView.hidden = NO;
 			break;
 			
 		case EGOOPullRefreshNormal:
 			if (_state == EGOOPullRefreshPulling) {
 			}
+			
+//			[_activityIndicatorView stopAnimating];
+//			_activityIndicatorView.hidden = YES;
 			
 			_statusLabel.text = NSLocalizedString(@"Pull down to refresh…", @"Pull down to refresh status");
 			[self refreshLastUpdatedDate];			
@@ -118,11 +123,9 @@
 }
 
 
-#pragma mark -
-#pragma mark ScrollView Methods
+#pragma mark - ScrollView Methods
 
-- (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView {	
-	
+- (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView {
 	if (_state == EGOOPullRefreshLoading) {
 		CGFloat offset = MAX(scrollView.contentOffset.y * -1, 0);
 		offset = MIN(offset, 44);
@@ -149,6 +152,7 @@
 }
 
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
+	//NSLog(@"egoRefreshScrollViewDidEndDragging");
 	
 	BOOL _loading = NO;
 	if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDataSourceIsLoading:)]) {
@@ -156,10 +160,12 @@
 	}
 	
 	if (scrollView.contentOffset.y <= -40.0f && !_loading) {
+		NSLog(@"%f %d",scrollView.contentOffset.y, !_loading);
 		
 		if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDidTriggerRefresh:)]) {
 			[_delegate egoRefreshTableHeaderDidTriggerRefresh:self];
 		}
+		
 		
 		[self setState:EGOOPullRefreshLoading];
 		[UIView beginAnimations:nil context:NULL];
@@ -170,6 +176,7 @@
 }
 
 - (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView {	
+	//NSLog(@"egoRefreshScrollViewDataSourceDidFinishedLoading");
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.3];

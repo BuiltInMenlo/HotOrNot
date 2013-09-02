@@ -33,46 +33,43 @@
 		[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
 		[self addSubview:closeButton];
 		
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height - 108.0) * 0.5, 320.0, 128.0)];
-		[self addSubview:holderView];
-		
-		UIImageView *blueBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"blueBackground"]];
-		[holderView addSubview:blueBGImageView];
-		
-		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(9.0, 13.0, 37.0, 37.0)];
+		UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 31.0, 37.0, 37.0)];
 		[avatarImageView setImageWithURL:[NSURL URLWithString:_opponentVO.avatarURL] placeholderImage:nil];
-		[holderView addSubview:avatarImageView];
+		[self addSubview:avatarImageView];
 		
-		UILabel *captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(61.0, 23.0, 300.0, 16.0)];
-		captionLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
-		captionLabel.textColor = [UIColor whiteColor];
-		captionLabel.backgroundColor = [UIColor clearColor];
-		captionLabel.text = [NSString stringWithFormat:@"@%@", _opponentVO.username];
-		[holderView addSubview:captionLabel];
+		UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 39.0, 200.0, 20.0)];
+		nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
+		nameLabel.textColor = [UIColor whiteColor];
+		nameLabel.backgroundColor = [UIColor clearColor];
+		nameLabel.text = [NSString stringWithFormat:@"@%@", _opponentVO.username];
+		[self addSubview:nameLabel];
 		
-		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(245.0, 24.0, 50.0, 16.0)];
+		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(153.0, 39.0, 150.0, 20.0)];
 		_ageLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
+		_ageLabel.textAlignment = NSTextAlignmentRight;
 		_ageLabel.textColor = [UIColor whiteColor];
 		_ageLabel.backgroundColor = [UIColor clearColor];
-		_ageLabel.textAlignment = NSTextAlignmentRight;
-		[holderView addSubview:_ageLabel];
+		[self addSubview:_ageLabel];
+		
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 42.0, 320.0, 84.0)];
+		[self addSubview:holderView];
 		
 		UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		upvoteButton.frame = CGRectMake(0.0, 66.0, 105.0, 64.0);
+		upvoteButton.frame = CGRectMake(18.0, 0.0, 84.0, 84.0);
 		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 		[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
 		[holderView addSubview:upvoteButton];
 		
 		UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		profileButton.frame = CGRectMake(108.0, 66.0, 105.0, 64.0);
+		profileButton.frame = CGRectMake(116.0, 0.0, 84.0, 84.0);
 		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
 		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
 		[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 		[holderView addSubview:profileButton];
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flagButton.frame = CGRectMake(215.0, 66.0, 105.0, 64.0);
+		flagButton.frame = CGRectMake(217.0, 0.0, 84.0, 84.0);
 		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];

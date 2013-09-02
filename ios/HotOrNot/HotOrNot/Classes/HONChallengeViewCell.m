@@ -84,6 +84,7 @@
 	[_imageHolderView addSubview:tapButton];
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_imageHolderView addGestureRecognizer:lpGestureRecognizer];
 	
 	UIButton *yayButton = [UIButton buttonWithType:UIButtonTypeCustom];

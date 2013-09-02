@@ -43,6 +43,7 @@
 @property (nonatomic, strong) NSTimer *clockTimer;
 @property (nonatomic) int clockCounter;
 @property (nonatomic) int uploadCounter;
+@property (nonatomic) BOOL isFirstAppearance;
 @end
 
 @implementation HONRegisterViewController
@@ -61,6 +62,7 @@
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 		
+		_isFirstAppearance = YES;
 	}
 	
 	return (self);
@@ -437,25 +439,43 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-//	_previewPicker = [[UIImagePickerController alloc] init];
-//	_previewPicker.delegate = nil;
-//	_previewPicker.navigationBarHidden = YES;
-//	_previewPicker.toolbarHidden = YES;
-//	_previewPicker.allowsEditing = NO;
-//	
-//	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//		_previewPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+//	if (_isFirstAppearance) {
+//		_isFirstAppearance = NO;
 //		
-//		// these two fuckers don't work in ios7 right now!!
-//		_previewPicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//		_previewPicker.showsCameraControls = NO;
-//		// ---------------------------------------------------------------------------
+//		_previewPicker = [[UIImagePickerController alloc] init];
+//		_previewPicker.delegate = nil;
+//		_previewPicker.navigationBarHidden = YES;
+//		_previewPicker.toolbarHidden = YES;
+//		_previewPicker.allowsEditing = NO;
 //		
-//		//_previewPicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+//		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+//			_previewPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+//			
+//			UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+//			UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//			closeTutorialButton.frame = CGRectMake(53.0, _tutorialHolderView.frame.size.height - (([HONAppDelegate isRetina5]) ? 129.0 : 118.0), 214.0, 49.0);
+//			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
+//			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
+//			[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+//			[overlayView addSubview:closeTutorialButton];
+//			
+//			_previewPicker.cameraOverlayView = overlayView;
+//			
+//			// these two fuckers don't work in ios7 right now!!
+//			_previewPicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+//			_previewPicker.showsCameraControls = NO;
+//			// ---------------------------------------------------------------------------
+//			
+//			_previewPicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
+//			_previewPicker.cameraViewTransform = CGAffineTransformScale(_previewPicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+//			
+//		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+//			_previewPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+//		}
+//		
+//		[self presentViewController:_previewPicker animated:YES completion:^(void) {
+//		}];
 //	}
-//	
-//	[self presentViewController:_previewPicker animated:YES completion:^(void) {
-//	}];
 }
 
 
@@ -503,6 +523,22 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+//	[_previewPicker dismissViewControllerAnimated:YES completion:^(void) {
+//		[_usernameTextField becomeFirstResponder];
+//		
+//		[UIView beginAnimations:nil context:NULL];
+//		[UIView setAnimationDuration:0.5];
+//		[UIView setAnimationDelay:0.33];
+//		_tutorialHolderView.frame = CGRectOffset(_tutorialHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+//		[UIView commitAnimations];
+//		
+//		[UIView beginAnimations:nil context:NULL];
+//		[UIView setAnimationDuration:0.5];
+//		[UIView setAnimationDelay:0.33];
+//		_usernameHolderView.frame = CGRectOffset(_usernameHolderView.frame, 0.0, [UIScreen mainScreen].bounds.size.height);
+//		[UIView commitAnimations];
+//	}];
+	
 	[_usernameTextField becomeFirstResponder];
 	
 	[UIView beginAnimations:nil context:NULL];
@@ -544,9 +580,9 @@
 		[_usernameTextField becomeFirstResponder];
 	
 	} else {
-		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 23) {
+		if ([[NSDate date] timeIntervalSinceDate:_datePicker.date] > ((60 * 60 * 24) * 365) * 20) {
 			[[[UIAlertView alloc] initWithTitle:@""
-										message:@"Volley is only available to young adults. Check back soon as we scale up and support your age range. support@letsvolley.com"
+										message:@"Volley is intended for young adults 13-19, you may get flagged by the userbase."
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
@@ -805,6 +841,10 @@
 
 - (void)cameraOverlayView:(HONAvatarCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed {
 	if (isPressed) {
+		[[Mixpanel sharedInstance] track:@"Register - Long Press"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		if (_clockTimer){
 			[_clockTimer invalidate];
 			_clockTimer = nil;

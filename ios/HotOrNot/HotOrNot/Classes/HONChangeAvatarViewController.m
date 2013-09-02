@@ -386,6 +386,10 @@
 
 - (void)cameraOverlayView:(HONAvatarCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed {
 	if (isPressed) {
+		[[Mixpanel sharedInstance] track:@"Change Avatar - Long Press"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
 		if (_clockTimer){
 			[_clockTimer invalidate];
 			_clockTimer = nil;

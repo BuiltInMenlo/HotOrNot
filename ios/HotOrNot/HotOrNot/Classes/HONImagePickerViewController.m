@@ -619,7 +619,7 @@ const CGFloat kFocusInterval = 0.5f;
 		_progressTimer = nil;
 	}
 	
-//	if (camera_total == 0) {
+	if (camera_total == 0) {
 		[_cameraOverlayView toggleInfoOverlay:YES];
 		
 		UIButton *infoOverlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -630,10 +630,10 @@ const CGFloat kFocusInterval = 0.5f;
 		[_cameraOverlayView startProgress];
 		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_restartProgress) userInfo:nil repeats:YES];
 		
-//	} else {
-//		[_cameraOverlayView startProgress];
-//		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
-//	}
+	} else {
+		[_cameraOverlayView startProgress];
+		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
+	}
 	
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
 }
@@ -770,6 +770,12 @@ const CGFloat kFocusInterval = 0.5f;
 
 #pragma mark - CameraOverlay Delegates
 - (void)cameraOverlayView:(HONSnapCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed {
+	if (isPressed) {
+		[[Mixpanel sharedInstance] track:@"Create Volley - Long Press"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	}
+	
 	if (_progressTimer){
 		[_progressTimer invalidate];
 		_progressTimer = nil;
@@ -786,7 +792,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Flip Camera"
+	[[Mixpanel sharedInstance] track:@"Create Volley - Flip Camera"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"rear" : @"front", @"type", nil]];
@@ -803,7 +809,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Create Snap - Back"
+	[[Mixpanel sharedInstance] track:@"Create Volley - Back"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
@@ -820,7 +826,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
-	[[Mixpanel sharedInstance] track:@"Volley Snap - Cancel"
+	[[Mixpanel sharedInstance] track:@"Create Volley - Cancel"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
