@@ -12,8 +12,8 @@ class BIM_Model_Volley{
             $volley = $dao->get( $volleyId );
         }
         
-        if( $volley ){
-            $this->id = $volley->id; 
+        if( $volley && property_exists($volley,'id') ){
+            $this->id = $volley->id;
             $this->status = $volley->status_id;
             $this->_setSubject($volley);
             $this->comments = 0; //$dao->commentCount( $volley->id ); 
