@@ -381,6 +381,8 @@ class BIM_Model_User{
                 $user = new self( $userData );
                 if( $user->isExtant() ){
                     $users[ $user->id ] = $user;
+                    $key = self::makeCacheKeys($user->id);
+                    $cache->set( $key, $user );
                 }
             }
         }

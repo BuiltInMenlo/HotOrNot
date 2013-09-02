@@ -75,10 +75,7 @@ class BIM_Model_Volley{
         
         // populate the creator
         $creator = $users[ $this->creator->id ];
-        $this->creator->fb_id = $creator->fb_id;
-        $this->creator->username = $creator->username;
-        $this->creator->avatar = $creator->getAvatarUrl();
-	    $this->creator->age = $creator->age;
+        self::_updateUser($this->creator, $creator);
         
         // populate the challengers
         if( $this->isLegacy() ){
@@ -88,11 +85,18 @@ class BIM_Model_Volley{
         }
 	    foreach ( $challengers as $challenger ){
             $target = $users[ $challenger->id ];
-            $challenger->fb_id = $target->fb_id;
-            $challenger->username = $target->username;
-            $challenger->avatar = $target->getAvatarUrl();
-	        $challenger->age = $target->age;
+            self::_updateUser($challenger, $target);
         }
+    }
+    
+    /**
+     * this function is for updating the various user data in the creator or challengers array
+     */
+    private static function _updateUser($user,$update){
+        $user->fb_id = $update->fb_id;
+        $user->username = $update->username;
+        $user->avatar = $update->getAvatarUrl();
+        $user->age = $update->age;
     }
     
     private function resolveScore( $userData ){
@@ -291,6 +295,32 @@ class BIM_Model_Volley{
         return (!$this->isExtant());
     }
     
+    public function updateUser( $data ){
+        $user = null;
+        if( $this->creator->id == $data->id ){
+            $user = $this->creator;
+        } else {
+            if( $this->isLegacy() ){
+                if( $this->challenger->id == $data->id ){
+                    $user = $this->challenger;
+                }
+            } else {
+                if( !empty( $this->challengers ) ){
+                    foreach( $this->challengers as $challenger ){
+                        if( $challenger->id == $data->id ){
+                            $user = $challenger;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if( $user ){
+            self::_updateUser($user, $data);
+        }
+        return $user;
+    }
+    
     public function hasChallenger( $userId ){
         $has = false;
         if( $this->isLegacy() ){
@@ -451,18 +481,40 @@ class BIM_Model_Volley{
                 list($prefix,$volleyId) = explode('_',$volleyKey);
                 $missingVolleys[] = $volleyId;
             }
-            $dao = new BIM_Model_Volley($volleyId);
-            $missingVolleyData = $dao->getMulti($missingVolleys);
+            $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+            $missingVolleyData = $dao->get($missingVolleys);
             foreach( $missingVolleyData as $volleyData ){
-                $volley = new self( $volleyData, true );
+                $volley = new self( $volleyData, false );
                 if( $volley->isExtant() ){
-                    $volleys[ $volleyKey ] = $volley;
+                    $volleys[ $volley->id ] = $volley;
                 }
+            }
+            self::populateVolleyUsers( $volleys );
+            foreach( $volleys as $volley ){
+                $key = self::makeCacheKeys($volley->id);
+                $cache->set( $key, $volley );
             }
         }
         return array_values($volleys);        
     }
     
+    private static function populateVolleyUsers( $volleys ){
+        $userIds = array();
+        foreach( $volleys as $volley ){
+            $ids = $volley->getUsers();
+            array_splice( $userIds, count( $userIds ), 0, $ids );
+        }
+        $users = BIM_Model_User::getMulti($userIds);
+        foreach( $users as $user ){
+            foreach( $volleys as $volley ){
+                $updated = $volley->updateUser( $user );
+                if( $updated ){
+                    break;
+                }
+            }
+        }
+    }
+
     public static function get( $volleyId, $forceDb = false ){
         $cacheKey = self::makeCacheKeys($volleyId);
         $volley = null;

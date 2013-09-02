@@ -135,10 +135,16 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
     }
     
-    public function get( $id ){
-        $volley = null;
+    public function get( $ids ){
+        $returnArray = true;
+        if( !is_array($ids)){
+            $ids = array( $ids );
+            $returnArray = false;
+        }
         
-        $sql = '
+        $placeHolders = trim(join('',array_fill(0, count( $ids ), '?,') ),',');
+        
+        $sql = "
         	SELECT 
         		tc.*, 
         		tcp.user_id AS challenger_id, 
@@ -148,29 +154,48 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         	FROM `hotornot-dev`.tblChallenges AS tc 
         		LEFT JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
         		ON tc.id = tcp.challenge_id 
-        	WHERE tc.id = ?
-        	ORDER BY tcp.joined';
+        	WHERE tc.id in ( $placeHolders )
+        	ORDER BY tc.id, tcp.joined";
         
-        $params = array( $id );
-        
-        
-        $stmt = $this->prepareAndExecute( $sql, $params );
+        $stmt = $this->prepareAndExecute( $sql, $ids );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
+        
+        $volleys = array();
         if( $data ){
-            $volley = array_shift( $data );
-            if( !empty( $volley->challenger_id ) ){
-                $volley->challengers = array( ( object ) array( 'challenger_id' => $volley->challenger_id, 'challenger_img' => $volley->challenger_img,  'joined' => $volley->joined, 'likes' => $volley->likes  ) );
-            } else {
-                $volley->challengers = array();
-            }
-            unset( $volley->challenger_id );
-            unset( $volley->challenger_img );
-            unset( $volley->joined );
             foreach( $data as $row ){
-                $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $row->joined, 'likes' => $volley->likes );
+                if( empty( $volleys[ $row->id ] ) ){
+                    if( !empty( $row->challenger_id ) ){
+                        $row->challengers = array( ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img,  'joined' => $row->joined, 'likes' => $row->likes ) );
+                    } else {
+                        $row->challengers = array();
+                    }
+                    unset( $row->challenger_id );
+                    unset( $row->challenger_img );
+                    unset( $row->joined );
+                    unset( $row->likes );
+                    $volleys[ $row->id ] = $row;
+                } else {
+                    $volley = $volleys[ $row->id ];
+                    $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $row->joined, 'likes' => $row->likes );
+                }
             }
         }
-        return $volley;
+        
+        if( !$returnArray ){
+            if( !empty( $volleys ) ){
+                $volleys = current($volleys);
+            } else {
+                $volleys = (object) array();
+            }
+        } else {
+            if( !empty($volleys) ){
+                $volleys = array_values($volleys);
+            } else {
+                $volleys = array();
+            }
+        }
+        
+        return $volleys;
     }
     
     /**
@@ -780,7 +805,7 @@ WHERE is_verify != 1
         	WHERE `status_id` = 4 
         		AND `started` > ? 
 				AND is_verify != 1
-        	ORDER BY `votes` DESC LIMIT 64
+        	ORDER BY `votes` DESC LIMIT 256
         ';
 		$params = array( $startDate );
         $stmt = $this->prepareAndExecute( $query, $params );
