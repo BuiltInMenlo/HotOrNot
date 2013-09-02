@@ -70,6 +70,8 @@ class BIM_Model_Volley{
             $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
             $this->subject = $dao->getSubject( $volley->subject_id );
             $dao->setSubject( $this->id );
+        } else {
+            $this->subject = $volley->subject;
         }
     }
     /*
@@ -305,29 +307,23 @@ class BIM_Model_Volley{
     }
     
     public function updateUser( $data ){
-        $user = null;
         if( $this->creator->id == $data->id ){
-            $user = $this->creator;
+            self::_updateUser($this->creator, $data);
         } else {
             if( $this->isLegacy() ){
                 if( $this->challenger->id == $data->id ){
-                    $user = $this->challenger;
+                    self::_updateUser($this->challenger, $data);
                 }
             } else {
                 if( !empty( $this->challengers ) ){
                     foreach( $this->challengers as $challenger ){
                         if( $challenger->id == $data->id ){
-                            $user = $challenger;
-                            break;
+                            self::_updateUser($challenger, $data);
                         }
                     }
                 }
             }
         }
-        if( $user ){
-            self::_updateUser($user, $data);
-        }
-        return $user;
     }
     
     public function hasChallenger( $userId ){
