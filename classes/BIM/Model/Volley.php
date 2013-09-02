@@ -13,6 +13,18 @@ class BIM_Model_Volley{
         }
         
         if( $volley ){
+            $this->id = $volley->id; 
+            $this->status = $volley->status_id; 
+            $this->subject = 'foo';// $dao->getSubject($volley->subject_id);
+            $this->comments = 0; //$dao->commentCount( $volley->id ); 
+            $this->has_viewed = $volley->hasPreviewed; 
+            $this->started = $volley->started; 
+            $this->added = $volley->added; 
+            $this->updated = $volley->updated;
+            $this->expires = $volley->expires;
+            $this->is_private = $volley->is_private;
+            $this->is_verify = (int) $volley->is_verify;
+            
             $creator = (object) array(
                 'id' => $volley->creator_id,
                 'img' => $volley->creator_img,
@@ -20,8 +32,10 @@ class BIM_Model_Volley{
             );
             // finally get the correct score if necessary
             $this->resolveScore($creator);
+            $this->creator = $creator;
             
             $challengers = array();
+            
             foreach( $volley->challengers as $challenger ){
                 $joined = new DateTime( "@$challenger->joined" );
                 $joined = $joined->format('Y-m-d H:i:s');
@@ -36,24 +50,12 @@ class BIM_Model_Volley{
                 $challengers[] = $target;            
             }
             
-            $this->id = $volley->id; 
-            $this->status = $volley->status_id; 
-            $this->subject = 'foo';// $dao->getSubject($volley->subject_id);
-            $this->comments = 0; //$dao->commentCount( $volley->id ); 
-            $this->has_viewed = $volley->hasPreviewed; 
-            $this->started = $volley->started; 
-            $this->added = $volley->added; 
-            $this->updated = $volley->updated;
-            $this->creator = $creator;
             // legacy versions of client do not support multiple challengers
             if( $this->isLegacy() ){
                 $this->challenger = $challengers[0];
             } else{
                 $this->challengers = $challengers;
             }
-            $this->expires = $volley->expires;
-            $this->is_private = $volley->is_private;
-            $this->is_verify = (int) $volley->is_verify;
             
             if( $populateUserData ){
                 $this->populateUsers();
@@ -76,7 +78,7 @@ class BIM_Model_Volley{
         $this->creator->fb_id = $creator->fb_id;
         $this->creator->username = $creator->username;
         $this->creator->avatar = $creator->getAvatarUrl();
-	$this->creator->age = $creator->age;
+	    $this->creator->age = $creator->age;
         
         // populate the challengers
         if( $this->isLegacy() ){
@@ -84,17 +86,18 @@ class BIM_Model_Volley{
         } else{
             $challengers = $this->challengers;
         }
-	foreach ( $challengers as $challenger ){
-            $target = $users[ $challenger->challenger_id ];
+	    foreach ( $challengers as $challenger ){
+            $target = $users[ $challenger->id ];
             $challenger->fb_id = $target->fb_id;
             $challenger->username = $target->username;
             $challenger->avatar = $target->getAvatarUrl();
-	    $challenger->age = $target->age;
+	        $challenger->age = $target->age;
         }
     }
     
     private function resolveScore( $userData ){
         $score = !empty($userData->score) ?  $userData->score : 0;
+        
         if( $userData->score < 0 ){
             $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
             $score = $dao->getLikes($this->id, $userData->id);

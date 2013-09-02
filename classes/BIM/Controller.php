@@ -20,7 +20,7 @@ class BIM_Controller{
             $controllerClass = $request->controllerClass;
             $r = new $controllerClass();
             if( $method && method_exists( $r, $method ) ){
-                //$res = $this->getAccountSuspendedVolley();
+                $res = $this->getAccountSuspendedVolley();
                 if( !$res ){
                     $r->user = BIM_Utils::getSessionUser();
                     $res = $r->$method();

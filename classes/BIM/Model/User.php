@@ -334,7 +334,7 @@ class BIM_Model_User{
      * cache the users
      * 
     **/
-    public static function getMultiNew( $ids, $assoc = false ) {
+    public static function getMultiOld( $ids, $assoc = false ) {
         $userKeys = self::makeCacheKeys( $ids );
         $cache = new BIM_Cache( BIM_Config::cache() );
         $users = $cache->getMulti( $userKeys );
@@ -370,11 +370,17 @@ class BIM_Model_User{
         $retrievedKeys = array_keys( $users );
         $missedKeys = array_diff( $userKeys, $retrievedKeys );
         if( $missedKeys ){
+            $missedIds = array();
             foreach( $missedKeys as $userKey ){
                 list($prefix,$userId) = explode('_',$userKey);
-                $user = self::get( $userId, true );
+                $missedIds[] = $userId;
+            }
+            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+            $missingData = $dao->getData($missedIds);
+            foreach( $missingData as $userData ){
+                $user = new self( $userData );
                 if( $user->isExtant() ){
-                    $users[ $userKey ] = $user;
+                    $users[ $user->id ] = $user;
                 }
             }
         }

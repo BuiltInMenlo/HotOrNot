@@ -39,7 +39,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     public function getRandomIds( $total = 1, $exclude = array() ){
         $sql = "SELECT id FROM `hotornot-dev`.`tblUsers` ";
         if( $exclude ){
-            $placeHolders = join('',array_fill(0, count( $exclude ), '?') );
+            $placeHolders = trim(join('',array_fill(0, count( $exclude ), '?,') ),',' );
             $sql = "$sql where id not in ($placeHolders)";
         }
         $total = (int) $total;
@@ -49,15 +49,28 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
     
-    public function getData( $id ){
-        $sql = "select * from `hotornot-dev`.tblUsers where id = ?";
-        $params = array( $id );
-        $stmt = $this->prepareAndExecute( $sql, $params );
+    public function getData( $ids ){
+        $returnArray = true;
+        if( !is_array( $ids ) ){
+            $ids = array( $ids );
+            $returnArray = false;
+        }
+       
+        $placeHolders = trim(join('',array_fill(0, count( $ids ), '?,') ),',');
+        $sql = "select * from `hotornot-dev`.tblUsers where id in ($placeHolders)";
+        $stmt = $this->prepareAndExecute( $sql, $ids );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
-        if( ! isset($data[0]) ){
-            $data = (object) array();
+        
+        if( !$returnArray ){
+            if( !empty( $data ) ){
+                $data = $data[0];
+            } else {
+                $data = (object) array();
+            }
         } else {
-            $data = $data[0];
+            if( !$data ){
+                $data = array();
+            }
         }
         return $data;
     }

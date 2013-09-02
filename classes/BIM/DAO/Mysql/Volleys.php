@@ -143,7 +143,8 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		tc.*, 
         		tcp.user_id AS challenger_id, 
         		tcp.img AS challenger_img,
-        		tcp.joined as joined
+        		tcp.joined as joined,
+        		tcp.likes as likes
         	FROM `hotornot-dev`.tblChallenges AS tc 
         		LEFT JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
         		ON tc.id = tcp.challenge_id 
@@ -158,7 +159,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         if( $data ){
             $volley = array_shift( $data );
             if( !empty( $volley->challenger_id ) ){
-                $volley->challengers = array( ( object ) array( 'challenger_id' => $volley->challenger_id, 'challenger_img' => $volley->challenger_img,  'joined' => $volley->joined ) );
+                $volley->challengers = array( ( object ) array( 'challenger_id' => $volley->challenger_id, 'challenger_img' => $volley->challenger_img,  'joined' => $volley->joined, 'likes' => $volley->likes  ) );
             } else {
                 $volley->challengers = array();
             }
@@ -166,7 +167,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             unset( $volley->challenger_img );
             unset( $volley->joined );
             foreach( $data as $row ){
-                $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $row->joined );
+                $volley->challengers[] = ( object ) array( 'challenger_id' => $row->challenger_id, 'challenger_img' => $row->challenger_img, 'joined' => $row->joined, 'likes' => $volley->likes );
             }
         }
         return $volley;
