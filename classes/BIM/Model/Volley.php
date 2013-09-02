@@ -14,8 +14,8 @@ class BIM_Model_Volley{
         
         if( $volley ){
             $this->id = $volley->id; 
-            $this->status = $volley->status_id; 
-            $this->subject = 'foo';// $dao->getSubject($volley->subject_id);
+            $this->status = $volley->status_id;
+            $this->_setSubject($volley);
             $this->comments = 0; //$dao->commentCount( $volley->id ); 
             $this->has_viewed = $volley->hasPreviewed; 
             $this->started = $volley->started; 
@@ -63,6 +63,14 @@ class BIM_Model_Volley{
         }
     }
     
+    
+    private function _setSubject( $volley ){
+        if( empty($volley->subject) ){
+            $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+            $this->subject = $dao->getSubject( $volley->subject_id );
+            $dao->setSubject( $this->id );
+        }
+    }
     /*
      * This function will gather all of the user ids 
      * and call BIM_Model_User::getMulti()
@@ -191,7 +199,7 @@ class BIM_Model_Volley{
         $volleyId = null;
         $hashTagId = self::getHashTagId($userId, $hashTag);
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify, $status );
+        $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $hashTag, $imgUrl, $isPrivate, $expires, $isVerify, $status );
         return self::get( $volleyId );
     }
     
@@ -504,13 +512,11 @@ class BIM_Model_Volley{
             $ids = $volley->getUsers();
             array_splice( $userIds, count( $userIds ), 0, $ids );
         }
+        $userIds = array_unique($userIds);
         $users = BIM_Model_User::getMulti($userIds);
         foreach( $users as $user ){
             foreach( $volleys as $volley ){
                 $updated = $volley->updateUser( $user );
-                if( $updated ){
-                    break;
-                }
             }
         }
     }

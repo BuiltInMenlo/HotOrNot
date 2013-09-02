@@ -51,17 +51,17 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
     }
     
-    public function add( $userId, $targetIds, $hashTagId, $imgUrl, $isPrivate, $expires, $isVerify = false, $status = 2 ){
+    public function add( $userId, $targetIds, $hashTagId, $hashTag, $imgUrl, $isPrivate, $expires, $isVerify = false, $status = 2 ){
         if( !is_array($targetIds) ) $targetIds = array();
         $isVerify = (int) $isVerify;
         // add the new challenge
         $sql = '
             INSERT INTO `hotornot-dev`.tblChallenges 
-                ( status_id, subject_id, creator_id, creator_img, hasPreviewed, votes, updated, started, added, is_private, expires, is_verify )
+                ( status_id, subject_id, subject, creator_id, creator_img, hasPreviewed, votes, updated, started, added, is_private, expires, is_verify )
             VALUES 
-                (?, ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ?, ? )
+                (?, ?, ?, ?, ?, "N", "0", NOW(), NOW(), NOW(), ?, ?, ? )
         ';
-        $params = array($status, $hashTagId, $userId, $imgUrl, $isPrivate, $expires, $isVerify);
+        $params = array($status, $hashTagId, $hashTag, $userId, $imgUrl, $isPrivate, $expires, $isVerify);
         $this->prepareAndExecute( $sql, $params );
         $volleyId = $this->lastInsertId;
         
@@ -213,6 +213,18 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
             $subject = $data[0]->title;
         }
         return $subject;
+    }
+    
+    public function setSubject($volleyId) {
+        $subject = null;
+        $sql = 'UPDATE `hotornot-dev`.tblChallenges as c 
+        		join `hotornot-dev`.tblChallengeSubjects as s
+        		on c.subject_id = s.id
+        		set c.subject = s.title 
+        		where c.id = ?';
+        
+        $params = array( $volleyId );
+        $stmt = $this->prepareAndExecute($sql, $params);
     }
     
     public function getHashTag($tagId) {
