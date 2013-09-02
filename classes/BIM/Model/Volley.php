@@ -31,8 +31,9 @@ class BIM_Model_Volley{
                 'score' => $volley->creator_likes,
             );
             // finally get the correct score if necessary
-            $this->resolveScore($creator);
+            
             $this->creator = $creator;
+            $this->resolveScore($creator);
             
             $challengers = array();
             
