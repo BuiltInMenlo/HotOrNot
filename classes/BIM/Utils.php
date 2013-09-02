@@ -175,7 +175,7 @@ class BIM_Utils{
 	    $OK = false;
         $birthdate = new DateTime( $birthdate );
         $cutoffBirthdate = new DateTime();
-        $cutoffBirthdate->sub( new DateInterval('P25Y') );
+        $cutoffBirthdate->sub( new DateInterval('P20Y') );
         if( $cutoffBirthdate < $birthdate ){
             $OK = true;
         }

@@ -85,7 +85,6 @@ class BIM_DAO_ElasticSearch_Social extends BIM_DAO_ElasticSearch {
                 ",
                 'params' => array(
                     'timestamp' => time(),
-                    'target' => $doc->target,
                 )
             );
             $id = self::makeFriendkey($doc);

@@ -1,3 +1,5 @@
+-- need to add a unique key to the device token
+
 CREATE TABLE `tblChallengeParticipants` (
   `challenge_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
@@ -33,7 +35,23 @@ CREATE TABLE `user_archive` (
   `data` longtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
-alter table tblChallenges drop column challenger_id, drop column challenger_img, add column is_verify tinyint not null default 0;
-alter table tblUsers add column adid varchar(36) unique null, add column abuse_ct int not null default 0, add column password varchar(100) not null;
-update tblUsers set age = -1;
+alter table tblUsers 
+	add column adid varchar(36) unique null, 
+	add column abuse_ct int not null default 0,
+	add column `total_challenges` int(11) NOT NULL DEFAULT '-1',
+	add column `total_votes` int(11) NOT NULL DEFAULT '-1',
+	add column password varchar(100) not null;
 
+alter table tblChallenges 
+	drop column challenger_id, 
+	drop column challenger_img,
+	add column `creator_likes` int(11) NOT NULL DEFAULT '-1',
+	add column `subject` varchar(255) NOT NULL,
+	add column is_verify tinyint not null default 0;
+
+alter table tblChallengeParticipants 
+	add column `likes` int(11) NOT NULL DEFAULT '-1';
+
+update tblUsers set age = -1;
+insert into tblChallengeStatusTypes (id,name,info,added) values (9,'New User Verify','',now());
+insert into tblChallengeStatusTypes (id,name,info,added) values (10,'Flagged User Verify','',now());
