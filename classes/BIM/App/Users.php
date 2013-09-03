@@ -437,8 +437,6 @@ class BIM_App_Users extends BIM_App_Base{
 	}
 	
 	public function addPhoneList( $list ){
-	    $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
-	    
 	    if( isset( $list->id ) && $list->id ){
             if(! isset( $list->hashed_number ) ) $list->hashed_number = '';
             if(! isset( $list->hashed_list ) ) $list->hashed_list = array();
@@ -450,18 +448,22 @@ class BIM_App_Users extends BIM_App_Base{
                 // if we do not add the list
                 // then this means the list already existed
                 // so we update the list with the data we have been passed
-        	    $added = $dao->addPhoneList( $list );
+	            $dao = new BIM_DAO_ElasticSearch_ContactLists( BIM_Config::elasticSearch() );
+                $added = $dao->addPhoneList( $list );
         	    if( !$added ){
         	        $dao->updatePhoneList( $list );
             	    $list = $dao->getPhoneList( $list );
             	    $list = json_decode( $list );
             	    if( isset( $list->exists ) && $list->exists ){
             	        $list = $list->_source;
+            	        if( !empty($list->hashed_number) ){
+            	            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+            	            $dao->setSmsVerified($list->id, 1);
+            	        }
             	    }
         	    }
             }
 	    }
-	    
 	    return $list;
 	}
 	

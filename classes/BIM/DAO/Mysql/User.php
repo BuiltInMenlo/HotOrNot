@@ -128,6 +128,12 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $this->prepareAndExecute($sql, $params);
     }
     
+    public function setSmsVerified( $userId, $smsVerified ){
+        $sql = 'UPDATE `hotornot-dev`.tblUsers SET sms_verified = ? where id = ?';
+        $params = array( $smsVerified, $userId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
     public function setTotalVolleys( $userId, $count ){
         $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = ? where id = ?';
         $params = array( $count, $userId );

@@ -2,6 +2,7 @@
 class BIM_DAO_ElasticSearch
 {
     
+    public static $profile = null;
     /**
      * 
      * @var search
@@ -49,7 +50,10 @@ class BIM_DAO_ElasticSearch
      * @param string $routing
      */
     public function call( $reqMethod, $urlSuffix, $args = array(), $routing = '' ){
-
+        if( !empty($_GET['profile']) ){
+            $start = microtime(1);
+        }
+        
         if( !$reqMethod ){
             throw new Exception("no request method passed to the call method.  you must pass a request method");
         }
@@ -91,7 +95,36 @@ class BIM_DAO_ElasticSearch
         //curl_close($ch);
         
         $response = self::parseResponse( $responseStr );
-//        return $format == 'json' ? json_decode( $response['body'] ) : $response['body'];
+//      return $format == 'json' ? json_decode( $response['body'] ) : $response['body'];
+        if( !empty($_GET['profile']) ){
+            if( strtolower($reqMethod) == 'get' ){
+                $suffix = explode( '/', $urlSuffix );
+                array_pop($suffix);
+                $suffix = join('/',$suffix);
+                $q = "{$reqMethod}_$suffix";
+            } else {
+                $q = "{$reqMethod}_$urlSuffix";
+            }
+            $end = microtime(1);
+            if( empty( self::$profile ) ){
+                self::$profile = array();
+            }
+            if( empty( self::$profile[ $q ] ) ){
+                self::$profile[ $q ] = array();
+                self::$profile[ $q ]['total'] = 0;
+                self::$profile[ $q ]['time'] = 0;
+            }
+            self::$profile[ $q ]['total']++;
+            self::$profile[ $q ]['time'] += ($end - $start);
+
+            $bt = debug_backtrace();
+            $callTree = join( ' => ', array( $bt[2]['class'].':'.$bt[2]['function'], $bt[1]['class'].':'.$bt[1]['function'] ) );
+            if( !isset( self::$profile[ $q ][$callTree] ) ){
+                self::$profile[ $q ][$callTree] = 0;
+            }
+            self::$profile[ $q ][$callTree]++;
+        }
+        
         return $response['body'];
     }
     

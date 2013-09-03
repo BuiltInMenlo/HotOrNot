@@ -40,13 +40,25 @@ class BIM_Model_User{
     		$this->meta = '';
     	    $this->sms_code = BIM_Utils::getSMSCodeForId( $this->id );
     	    $this->friends = BIM_App_Social::getFollowers( (object) array( 'userID' => $this->id ) );
-    	    $this->sms_verified = self::isVerified( $this->id );
+    	    $this->sms_verified = $this->smsVerified();
             $this->is_suspended = $this->isSuspended();
             $this->is_verified = $this->isApproved();
             if( empty($this->adid) ){
                 $this->adid = '';
             }
         }
+    }
+    
+    private function smsVerified( ){
+        $smsVerified = 0;
+        if( ! property_exists($this, 'sms_verified')  || $this->sms_verified < 0 ){
+    	    $smsVerified = (int) self::isVerified( $this->id );
+            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+            $dao->setSmsVerified($this->id, $smsVerified);
+        } else {
+            $smsVerified = $this->sms_verified;
+        }
+        return $smsVerified == 0 ? false : true;
     }
     
     public function getTotalVotes(){
