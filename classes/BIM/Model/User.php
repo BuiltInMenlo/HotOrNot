@@ -500,6 +500,8 @@ class BIM_Model_User{
     
     public function delete(){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $this->purgeFromCache();
+        $this->purgeVolleys();
         $dao->delete($this->id);
     }
     
