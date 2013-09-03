@@ -264,13 +264,19 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     }
     
     public function updateUsernameAvatar( $userId, $username, $imgUrl, $birthdate, $password = null ){
-        $sql = '';
+        $ageSql = $passSql = '';
         $password = $password?:'';
-        $params = array( $username, $imgUrl, $password, $userId );
+        $params = array( $username, $imgUrl, $userId );
+        
         if( $birthdate ){
             $birthdate = new DateTime( $birthdate );
             $birthdate = $birthdate->format('U');
-            $sql = ' age = ?,';
+            $ageSql = ' age = ?,';
+            $params = array( $username, $imgUrl, $birthdate, $userId );
+        }
+        
+        if( $password ){
+            $passSql = ' password = ?,';
             $params = array( $username, $imgUrl, $birthdate, $password, $userId );
         }
         
@@ -278,10 +284,10 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         	UPDATE `hotornot-dev`.tblUsers 
         	SET username = ?, 
         		img_url = ?, 
-        		$sql
-        		last_login = CURRENT_TIMESTAMP,
-        		password = ?
-        	WHERE id = ?
+        		$ageSql
+        		$passSql
+        		last_login = CURRENT_TIMESTAMP
+        		WHERE id = ?
         ";
         $stmt = $this->prepareAndExecute( $query, $params );
     }
