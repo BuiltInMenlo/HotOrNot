@@ -50,7 +50,7 @@ class BIM_DAO_ElasticSearch
      * @param string $routing
      */
     public function call( $reqMethod, $urlSuffix, $args = array(), $routing = '' ){
-        if( !empty($_GET['profile']) ){
+        if( BIM_Utils::isProfiling() ){
             $start = microtime(1);
         }
         
@@ -96,7 +96,7 @@ class BIM_DAO_ElasticSearch
         
         $response = self::parseResponse( $responseStr );
 //      return $format == 'json' ? json_decode( $response['body'] ) : $response['body'];
-        if( !empty($_GET['profile']) ){
+        if( BIM_Utils::isProfiling() ){
             if( strtolower($reqMethod) == 'get' ){
                 $suffix = explode( '/', $urlSuffix );
                 array_pop($suffix);

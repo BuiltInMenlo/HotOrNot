@@ -5,6 +5,7 @@ class BIM_Utils{
     protected static $request = null;
     protected static $adid = null;
     protected static $deviceToken = null;
+    protected static $profile = array();
     
     public static function hashMobileNumber( $number ){
         $c = BIM_Config::sms();
@@ -181,4 +182,36 @@ class BIM_Utils{
         }
 	    return $OK;
 	}
+	
+	public static function isProfiling(){
+	    return (defined( 'PROFILING' ) && PROFILING);
+	}
+	
+	public static function startProfiling(){
+        $profilingKey = 'PROFILING';
+        if( !empty( $_GET['__profile__'] ) ){
+            self::$profile['start_time'] = microtime(true);
+            define($profilingKey,TRUE);
+        } else {
+            define($profilingKey,FALSE);
+        }
+	}
+	
+	public static function endProfiling(){
+        if( BIM_Utils::isProfiling() ){
+            $totalTime = microtime(true) - self::$profile['start_time'];
+            file_put_contents('/tmp/req_profile', $totalTime );
+            file_put_contents('/tmp/sql_profile', print_r(BIM_DAO_Mysql::$profile ,1) );
+            file_put_contents('/tmp/es_profile', print_r(BIM_DAO_ElasticSearch::$profile ,1) );
+        }
+	}
+	
+    public static function setLegacy(){
+        $legacyKey = 'IS_LEGACY';
+        if( !empty( $_SERVER[ $legacyKey ] ) ){
+            define($legacyKey,TRUE);
+        } else {
+            define($legacyKey,FALSE);
+        }
+    }	
 }

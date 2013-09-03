@@ -6,13 +6,9 @@ class BIM_Controller{
     
     public function handleReq(){
         // set the environment to support legacy versions of the app.
-        $legacyKey = 'IS_LEGACY';
-        if( !empty( $_SERVER[ $legacyKey ] ) ){
-            define($legacyKey,TRUE);
-        } else {
-            define($legacyKey,FALSE);
-        }
-        
+        BIM_Utils::setLegacy();        
+        BIM_Utils::startProfiling();
+                
         $res = null;
         if( $this->sessionOK() || IS_LEGACY ){
             $request = BIM_Utils::getRequest();
@@ -30,10 +26,7 @@ class BIM_Controller{
                 }
             }
         }
-        if( !empty($_GET['profile']) ){
-            file_put_contents('/tmp/sql_profile', print_r(BIM_DAO_Mysql::$profile ,1) );
-            file_put_contents('/tmp/es_profile', print_r(BIM_DAO_ElasticSearch::$profile ,1) );
-        }
+        BIM_Utils::endProfiling();
         $this->sendResponse( 200, $res );
     }
     

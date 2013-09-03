@@ -138,7 +138,7 @@ class BIM_DAO_Mysql extends BIM_DAO{
      * @param string $shardKey - the key we are using for doing a lookup across shards / nodes if necessary
      */
     public function prepareAndExecute( &$sql, &$params = array(), $getWriter = false, $shardKey = '' ){
-        if( !empty($_GET['profile']) ){
+        if( BIM_Utils::isProfiling() ){
             $start = microtime(1);
         }
         $connParams = $this->getConnectionParams( $getWriter, $shardKey );
@@ -154,7 +154,7 @@ class BIM_DAO_Mysql extends BIM_DAO{
         $this->lastInsertId = $conn->lastInsertId();
         $this->rowCount = $stmt->rowCount();
         
-        if( !empty($_GET['profile']) ){
+        if( BIM_Utils::isProfiling() ){
             $end = microtime(1);
             if( empty( self::$profile ) ){
                 self::$profile = array();

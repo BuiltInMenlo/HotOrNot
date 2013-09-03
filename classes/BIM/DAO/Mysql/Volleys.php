@@ -841,7 +841,7 @@ WHERE is_verify != 1
 				AND img != "" 
 				AND img is not null 				
 			GROUP BY subject_id
-        	ORDER BY votes DESC LIMIT 256
+        	ORDER BY votes DESC LIMIT 64
         ';
 		$params = array( $startDate );
         $stmt = $this->prepareAndExecute( $query, $params );
