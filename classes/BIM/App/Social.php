@@ -160,7 +160,7 @@ class BIM_App_Social extends BIM_App_Base{
     }
     
     public static function getFollowed( $params, $assoc = false ){
-        $friends = self::getFriends($params);
+        $friends = self::getFriends($params, $assoc );
         $followers = array();
         foreach( $friends as $key => $friend ){
             if( $friend->source == $params->userID
@@ -176,7 +176,7 @@ class BIM_App_Social extends BIM_App_Base{
     }
     
     public static function getFollowers( $params, $assoc = false ){
-        $friends = self::getFriends($params);
+        $friends = self::getFriends($params, $assoc);
         $followers = array();
         foreach( $friends as $key => $friend ){
             if( $friend->target == $params->userID

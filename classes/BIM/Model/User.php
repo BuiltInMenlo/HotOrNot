@@ -2,7 +2,7 @@
 
 class BIM_Model_User{
     
-    public function __construct( $params = null ){
+    public function __construct( $params = null, $getFriends = false ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         
         if( !is_object($params) ){
@@ -39,7 +39,9 @@ class BIM_Model_User{
     		$this->pics = $pics;
     		$this->meta = '';
     	    $this->sms_code = BIM_Utils::getSMSCodeForId( $this->id );
-    	    $this->friends = BIM_App_Social::getFollowers( (object) array( 'userID' => $this->id ) );
+    	    $this->friends = $getFriends ? 
+    	        BIM_App_Social::getFollowers( (object) array( 'userID' => $this->id ) )
+    	        : -1;
     	    $this->sms_verified = $this->smsVerified();
             $this->is_suspended = $this->isSuspended();
             $this->is_verified = $this->isApproved();
@@ -47,6 +49,14 @@ class BIM_Model_User{
                 $this->adid = '';
             }
         }
+    }
+    
+    public function hasFriendList(){
+        return ( property_exists( $this, 'friends' ) && $this->friends != -1  );
+    }
+    
+    public function populateFriends(){
+        $this->friends = BIM_App_Social::getFollowers( (object) array( 'userID' => $this->id ) );
     }
     
     private function smsVerified( ){
