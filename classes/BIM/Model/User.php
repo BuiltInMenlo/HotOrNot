@@ -450,13 +450,16 @@ class BIM_Model_User{
      * user_id, username, blob
      * 
      */
-    public static function archive( $userId ){
-        $user = self::get( $userId );
-        $user->volleys = BIM_Model_Volley::getMulti($user->getVolleyIds());
-        $data = json_encode($user);
-        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-        $dao->archive($user->id, $user->username, $data);
-        $user->delete();
+    public static function archive( $userIds ){
+        $users = self::getMulti( $userIds );
+        foreach( $users as $user ){
+            print_r( array("archiving: ", $user ) );
+            $user->volleys = BIM_Model_Volley::getMulti($user->getVolleyIds());
+            $data = json_encode($user);
+            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+            $dao->archive($user->id, $user->username, $data);
+            $user->delete();
+        }
     }
     
     public function delete(){

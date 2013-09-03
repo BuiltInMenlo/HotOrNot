@@ -605,7 +605,7 @@ WHERE is_verify != 1
             WHERE
                 tc.is_verify != 1
                 AND tc.status_id IN (1,2,4)
-                AND tcp.`user_id` IN ( $fIdPlaceholders ) 
+                AND tcp.`user_id` IN ( $fIdPlaceholders )
             GROUP BY tc.id
             ORDER BY updated DESC LIMIT 25		
 		";
