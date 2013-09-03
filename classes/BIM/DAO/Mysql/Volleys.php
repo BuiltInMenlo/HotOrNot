@@ -313,6 +313,10 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
         $params = array( $volleyId );
         $this->prepareAndExecute($sql, $params);
+        
+        $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = total_challenges + 1 WHERE id = ? ';
+        $params = array( $userId );
+        $this->prepareAndExecute($sql, $params);
     }
     
     public function accept( $volleyId, $userId, $imgUrl ){

@@ -41,6 +41,7 @@ alter table tblUsers
 	add column `total_challenges` int(11) NOT NULL DEFAULT '-1',
 	add column `total_votes` int(11) NOT NULL DEFAULT '-1',
 	add column password varchar(100) not null;
+	add column sms_verified int not null default -1;
 
 alter table tblChallenges 
 	drop column challenger_id, 

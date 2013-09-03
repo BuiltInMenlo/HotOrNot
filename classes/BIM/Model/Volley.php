@@ -245,7 +245,10 @@ class BIM_Model_Volley{
     public function join( $userId, $imgUrl ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->join( $this->id, $userId, $imgUrl );
+        
         $this->purgeFromCache();
+        $user = BIM_Model_User::get( $userId );
+        $user->purgeFromCache();
     }
     
     public function updateStatus( $status ){
