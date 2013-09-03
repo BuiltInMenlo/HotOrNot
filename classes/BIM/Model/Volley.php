@@ -503,7 +503,20 @@ class BIM_Model_Volley{
                 $cache->set( $key, $volley );
             }
         }
-        return array_values($volleys);        
+        
+        // now reorder according to passed ids
+        $volleyArr = array();
+        foreach( $volleys as $id => $volley ){
+            $volleyArr[ $volley->id ] = $volley;
+        }
+        $volleys = array();
+        foreach( $ids as $id ){
+            if( !empty( $volleyArr[ $id ] ) ){
+                $volleys[ $id ] = $volleyArr[ $id ];
+            }
+        }
+        
+        return array_values($volleys);
     }
     
     private static function populateVolleyUsers( $volleys ){
