@@ -132,11 +132,6 @@ class BIM_App_Users extends BIM_App_Base{
 	**/
 	public function getUserObj($user_id) {
 		$user = BIM_Model_User::get($user_id);
-		if( !$user->hasFriendList() ){
-		    // we go to elastic search to get the friends list
-		    // here unless we have already done so 
-		    $user->populateFriends();
-		}
 		return $user;
 	}
 	
