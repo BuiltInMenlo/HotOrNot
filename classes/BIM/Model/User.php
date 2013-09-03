@@ -2,7 +2,7 @@
 
 class BIM_Model_User{
     
-    public function __construct( $params = null, $getFriends = true ){
+    public function __construct( $params = null, $getFriends = false ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         
         if( !is_object($params) ){
@@ -408,6 +408,13 @@ class BIM_Model_User{
                 }
             }
         }
+        if( $assoc ){
+            $userArr = array();
+            foreach( $users as $key => $user ){
+                $userArr[ $user->id ] = $user;
+            }
+            $users = $userArr;
+        }
         return $assoc ? $users : array_values( $users );        
     }
         
@@ -428,8 +435,7 @@ class BIM_Model_User{
         if( $user && $user->isExtant() && !$user->hasFriendList() ){
 		    // we go to elastic search to get the friends list
 		    // here unless we have already done so 
-		    $user->populateFriends();
-		    $user->purgeFromCache();
+            $user->populateFriends();
             $cache->set( $cacheKey, $user );
         }
         return $user;
