@@ -831,15 +831,26 @@ WHERE is_verify != 1
         $startDate = new DateTime( "@$startDate" );
         $startDate = $startDate->format('Y-m-d H:i:s');
         $query = '
-        	SELECT `id` 
-        	FROM `hotornot-dev`.tblChallenges
-        	WHERE `status_id` = 4 
-        		AND `started` > ? 
+        	SELECT id , subject_id, sum(votes) as votes
+        	FROM `hotornot-dev`.tblChallenges as c
+        		join `hotornot-dev`.tblChallengeParticipants as p
+        		on c.id = p.challenge_id
+        	WHERE status_id = 4 
+        		AND started > ? 
 				AND is_verify != 1
-        	ORDER BY `votes` DESC LIMIT 256
+				AND img != "" 
+				AND img is not null 				
+			GROUP BY subject_id
+        	ORDER BY votes DESC LIMIT 256
         ';
 		$params = array( $startDate );
         $stmt = $this->prepareAndExecute( $query, $params );
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+    }
+    
+    public function getVolleyIds(){
+        $sql = "select id from `hotornot-dev`.tblChallenges";
+        $stmt = $this->prepareAndExecute( $sql );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
 }

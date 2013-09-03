@@ -592,4 +592,16 @@ class BIM_Model_Volley{
 		
 		self::create($userId, $hashTag, $img, array( $userId ), 'N', -1);
     }
+    
+    public static function warmCache(){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $volleyIds = $dao->getVolleyIds();
+        $ids = array_splice($volleyIds, 0, 250);
+        print count( $volleyIds )." remaining\n";
+        while( $volleyIds ){
+            self::getMulti($ids);
+            $ids = array_splice($volleyIds, 0, 250);
+            print count( $volleyIds )." remaining\n";
+        }
+    }
 }

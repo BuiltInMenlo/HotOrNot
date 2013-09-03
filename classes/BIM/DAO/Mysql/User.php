@@ -17,9 +17,9 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         	delete from `hotornot-dev`.tblFlaggedUserApprovals 
         	where challenge_id in (
         		select id from `hotornot-dev`.tblChallenges where creator_id = ?
-        	)
+        	) or user_id = ?
         ";
-        $params = array( $userId );
+        $params = array( $userId, $userId );
         $this->prepareAndExecute( $sql, $params );
         
         $sql = "
