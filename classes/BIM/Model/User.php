@@ -349,35 +349,6 @@ class BIM_Model_User{
     
     /** 
      * 
-     * first get items from cache
-     * collect the keys for the missing items
-     * then do multi row fetch from the db
-     * build all users, the volley constructor will not call out to any db routines
-     * cache the users
-     * 
-    **/
-    public static function getMultiOld( $ids, $assoc = false ) {
-        $userKeys = self::makeCacheKeys( $ids );
-        $cache = new BIM_Cache( BIM_Config::cache() );
-        $users = $cache->getMulti( $userKeys );
-        
-        // now we determine which things were not in memcache dn get those
-        $retrievedKeys = array_keys( $users );
-        $missedKeys = array_diff( $userKeys, $retrievedKeys );
-        if( $missedKeys ){
-            foreach( $missedKeys as $userKey ){
-                list($prefix,$userId) = explode('_',$userKey);
-                $user = self::get( $userId, true );
-                if( $user->isExtant() ){
-                    $users[ $userKey ] = $user;
-                }
-            }
-        }
-        return $assoc ? $users : array_values( $users );        
-    }
-    
-    /** 
-     * 
      * do a multifetch to memcache
      * if there are any missing objects
      * get them from the db, one a t a time
