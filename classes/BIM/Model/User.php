@@ -206,6 +206,12 @@ class BIM_Model_User{
         $this->queuePurgeVolleys();
     }
     
+    public function reCache(){
+        $cache = new BIM_Cache( BIM_Config::cache() );
+        $key = self::makeCacheKeys($this->id);
+        $cache->set($key,$this);
+    }
+    
     public function purgeFromCache( $id = null ){
         $cache = new BIM_Cache( BIM_Config::cache() );
         if(!$id) $id = $this->id; 
@@ -383,7 +389,7 @@ class BIM_Model_User{
      * get them from the db, one a t a time
      * 
     **/
-    public static function getMulti( $ids, $assoc = false ) {
+    public static function getMulti( $ids, $assoc = false, $getFriends = false ) {
         $userKeys = self::makeCacheKeys( $ids );
         $cache = new BIM_Cache( BIM_Config::cache() );
         $users = $cache->getMulti( $userKeys );
@@ -400,7 +406,7 @@ class BIM_Model_User{
             $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
             $missingData = $dao->getData($missedIds);
             foreach( $missingData as $userData ){
-                $user = new self( $userData );
+                $user = new self( $userData, $getFriends );
                 if( $user->isExtant() ){
                     $users[ $user->id ] = $user;
                     $key = self::makeCacheKeys($user->id);
@@ -408,14 +414,15 @@ class BIM_Model_User{
                 }
             }
         }
-        if( $assoc ){
-            $userArr = array();
-            foreach( $users as $key => $user ){
-                $userArr[ $user->id ] = $user;
-            }
-            $users = $userArr;
+        $userArr = array();
+        foreach( $users as $key => $user ){
+            $userArr[ $user->id ] = $user;
+		    if($getFriends && !$user->hasFriendList() ){
+		        $user->populateFriends();
+		        $user->reCache();
+		    }
         }
-        return $assoc ? $users : array_values( $users );        
+        return $assoc ? $userArr : array_values( $userArr );        
     }
         
     public static function get( $id, $forceDb = false ){
@@ -436,7 +443,7 @@ class BIM_Model_User{
 		    // we go to elastic search to get the friends list
 		    // here unless we have already done so 
             $user->populateFriends();
-            $cache->set( $cacheKey, $user );
+            $user->reCache();
         }
         return $user;
     }
@@ -472,10 +479,9 @@ class BIM_Model_User{
     }
     
     public static function getUsersWithSimilarName( $username ){
-        $me = null;
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $ids = $dao->getUsersWithSimilarName( $username );
-        return self::getMulti($ids);
+        return self::getMulti($ids, false, true);
     }
     
     /**

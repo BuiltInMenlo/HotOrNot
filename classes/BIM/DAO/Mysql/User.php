@@ -395,7 +395,12 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     }
     
     public function getUsersWithSimilarName( $username ){
-		$query = 'SELECT id from `hotornot-dev`.tblUsers WHERE username LIKE ?';
+		$query = '
+			SELECT id from `hotornot-dev`.tblUsers 
+			WHERE username LIKE ? 
+			order by last_login desc
+			limit 64
+		';
 		$params = array( "%$username%" );
         $stmt = $this->prepareAndExecute($query, $params);
         $ids = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );

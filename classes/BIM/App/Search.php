@@ -11,9 +11,6 @@ class BIM_App_Search extends BIM_App_Base{
 	**/
 	public function getUsersLikeUsername($username) {
 	    $users = BIM_Model_User::getUsersWithSimilarName( $username );
-		foreach( $users as &$user ){
-		    $user->avatar_url = $user->getAvatarUrl();
-		}
 		return $users;
 	}
 	
@@ -51,9 +48,6 @@ class BIM_App_Search extends BIM_App_Base{
 	public function getSnappedUsers( $userId ) {
         $user = BIM_Model_User::get($userId);
 		$users = $user->getOpponenetsWithSnaps();
-		foreach( $users as &$user ){
-		    $user->avatar_url = $user->getAvatarUrl();
-		}
 		return $users;
 	}
 }
