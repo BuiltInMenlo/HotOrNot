@@ -537,4 +537,32 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         }
     }
     
+    public static function harvestTags( $tags ){
+        $baseUrl = 'http://web.stagram.com/search';
+        $g = new BIM_Growth_Webstagram();
+        $tagsFound = array();
+        foreach( $tags as $tag ){
+            $url = "$baseUrl/$tag/";
+            $response = '';
+            $tries = 0;
+            while( !$response && $tries < 10 ){
+                $tries++;
+                echo "getting $url\n";
+                $response = $g->get( $url );
+            }
+            $matches = array();
+            preg_match_all('@href="/tag/(.*?)/@i', $response, $matches);
+            if( isset( $matches[1] ) ){
+                array_splice( $tagsFound, count( $tagsFound), 0, $matches[1] );
+            }
+            print_r( $tagsFound );
+        }
+        
+        $file = 'tags.out';
+        file_put_contents( $file, '' );
+        foreach( $tagsFound as $tag ){
+            file_put_contents( $file, "$tag\n", FILE_APPEND );
+        }
+    }
+    
 }
