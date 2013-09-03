@@ -549,6 +549,11 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
                 $tries++;
                 echo "getting $url\n";
                 $response = $g->get( $url );
+                if( !$response ){
+                    $sleep = 1;
+                    echo "sleeping for $sleep seconds\n";
+                    sleep( $sleep );
+                }
             }
             $matches = array();
             preg_match_all('@href="/tag/(.*?)/@i', $response, $matches);

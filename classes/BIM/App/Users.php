@@ -62,6 +62,7 @@ class BIM_App_Users extends BIM_App_Base{
 	public function updateUsernameAvatar($userId, $username, $imgUrl, $birthdate = null, $password = null ) {
         $user = BIM_Model_User::get($userId);
         $user->updateUsernameAvatar( $username, $imgUrl, $birthdate, $password  );
+        
         return $user;
 	}
 	
