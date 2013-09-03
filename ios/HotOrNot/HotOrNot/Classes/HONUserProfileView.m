@@ -72,6 +72,11 @@
 		_nameLabel.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"username"]];
 		[holderImageView addSubview:_nameLabel];
 		
+		UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		nameButton.frame = _nameLabel.frame;
+		[nameButton addTarget:self action:@selector(_goTimeline) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:nameButton];
+		
 		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(130.0, 46.0, 180.0, 20.0)];
 		_ageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 		_ageLabel.textColor = kStatsColor;
@@ -94,7 +99,7 @@
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 		
-		_subscribersValLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 142.0, 93.0, 16.0)];
+		_subscribersValLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 142.0, 92.0, 16.0)];
 		_subscribersValLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
 		_subscribersValLabel.textColor = kStatsColor;
 		_subscribersValLabel.backgroundColor = [UIColor clearColor];
@@ -110,7 +115,7 @@
 		subscribersLabel.text = ([[HONAppDelegate friendsList] count] == 1) ? @"Subscriber" : @"Subscribers";
 		[holderImageView addSubview:subscribersLabel];
 		
-		_volleysValLabel = [[UILabel alloc] initWithFrame:CGRectMake(116.0, 142.0, 93.0, 16.0)];
+		_volleysValLabel = [[UILabel alloc] initWithFrame:CGRectMake(116.0, 142.0, 92.0, 16.0)];
 		_volleysValLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
 		_volleysValLabel.textColor = kStatsColor;
 		_volleysValLabel.backgroundColor = [UIColor clearColor];
@@ -126,7 +131,7 @@
 		volleysLabel.text = ([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] == 1) ? @"Volley" : @"Volleys";
 		[holderImageView addSubview:volleysLabel];
 		
-		_likesValLabel = [[UILabel alloc] initWithFrame:CGRectMake(217.0, 142.0, 93.0, 16.0)];
+		_likesValLabel = [[UILabel alloc] initWithFrame:CGRectMake(216.0, 142.0, 92.0, 16.0)];
 		_likesValLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
 		_likesValLabel.textColor = kStatsColor;
 		_likesValLabel.backgroundColor = [UIColor clearColor];
@@ -143,21 +148,21 @@
 		[holderImageView addSubview:likesLabel];
 		
 		UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		friendsButton.frame = CGRectMake(13.0, 210.0, 114.0, 44.0);
-		[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_nonActive"] forState:UIControlStateNormal];
-		[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsButton_Active"] forState:UIControlStateHighlighted];
+		friendsButton.frame = CGRectMake(8.0, 210.0, 109.0, 44.0);
+		[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsProfileButton_nonActive"] forState:UIControlStateNormal];
+		[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsProfileButton_Active"] forState:UIControlStateHighlighted];
 		[friendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
 		[holderImageView addSubview:friendsButton];
 		
 		UIButton *promoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		promoteButton.frame = CGRectMake(132.0, 210.0, 99.0, 44.0);
+		promoteButton.frame = CGRectMake(124.0, 210.0, 109.0, 44.0);
 		[promoteButton setBackgroundImage:[UIImage imageNamed:@"promoteButton_nonActive"] forState:UIControlStateNormal];
 		[promoteButton setBackgroundImage:[UIImage imageNamed:@"promoteButton_Active"] forState:UIControlStateHighlighted];
 		[promoteButton addTarget:self action:@selector(_goPromote) forControlEvents:UIControlEventTouchUpInside];
 		[holderImageView addSubview:promoteButton];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(243.0, 210.0, 64.0, 44.0);
+		moreButton.frame = CGRectMake(240.0, 210.0, 64.0, 44.0);
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButtonProfile_nonActive"] forState:UIControlStateNormal];
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButtonProfile_Active"] forState:UIControlStateHighlighted];
 		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
@@ -187,7 +192,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			[HONAppDelegate writeUserInfo:userResult];
 			
@@ -255,6 +260,10 @@
 
 - (void)_goMore {
 	[self.delegate userProfileViewSettings:self];
+}
+
+- (void)_goTimeline {
+	[self.delegate userProfileViewTimeline:self];
 }
 
 

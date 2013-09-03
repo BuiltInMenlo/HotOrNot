@@ -33,24 +33,24 @@
 		_greenBGImageView.alpha = 0.0;
 		[_staticBGImageView addSubview:_greenBGImageView];
 		
-		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(39.0, 11.0, 275.0, 24.0)];
+		_searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(9.0, 11.0, 275.0, 24.0)];
 		[_searchTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 		[_searchTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 		[_searchTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 		_searchTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 		[_searchTextField setReturnKeyType:UIReturnKeyDefault];
-		[_searchTextField setTextColor:[UIColor whiteColor]];
+		[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
 		[_searchTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_searchTextField.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
-		//_searchTextField.text = NSLocalizedString(@"search_placeHolder", nil);
+		_searchTextField.text = @"Tap here to search for people";
 		_searchTextField.delegate = self;
 		[_staticBGImageView addSubview:_searchTextField];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_cancelButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_nonActive"] forState:UIControlStateNormal];
-		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"cancelButton_Active"] forState:UIControlStateHighlighted];
+		_cancelButton.frame = CGRectMake(277.0, 0.0, 64.0, 44.0);
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
+		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[_greenBGImageView addSubview:_cancelButton];
 	}
@@ -60,15 +60,18 @@
 
 
 - (void)toggleFocus:(BOOL)isFocused {
-	if (isFocused)
+	if (isFocused) {
 		[_searchTextField becomeFirstResponder];
+		[_searchTextField setTextColor:[UIColor whiteColor]];
 	
-	else
+	} else {
 		[_searchTextField resignFirstResponder];
+		[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
+	}
 	
 	_staticBGImageView.alpha = (isFocused) ? 1.0 : 0.85;
-	_searchTextField.frame = CGRectMake(39.0, 11.0, 200.0 + ((int)!isFocused * 75), 24.0);
-	_searchTextField.text = @"";//NSLocalizedString(@"search_placeHolder", nil);
+	_searchTextField.frame = CGRectMake(9.0, 11.0, 200.0 + ((int)!isFocused * 75), 24.0);
+	_searchTextField.text = @"Tap here to search for people";
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = (int)isFocused;
 	}];
@@ -88,13 +91,14 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	_searchTextField.text = @"";//NSLocalizedString(@"search_placeHolder", nil);
+	_searchTextField.text = @"Tap here to search for people";
+	[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = 0.0;
 		_staticBGImageView.alpha = 0.85;
 	}];
 	
-	_searchTextField.frame = CGRectMake(39.0, 11.0, 275.0, 24.0);
+	_searchTextField.frame = CGRectMake(9.0, 11.0, 275.0, 24.0);
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 }
 
@@ -115,8 +119,9 @@
 			_staticBGImageView.alpha = 0.85;
 		}];
 		
-		_searchTextField.text = @"";//NSLocalizedString(@"search_placeHolder", nil);
-		_searchTextField.frame = CGRectMake(39.0, 11.0, 275.0, 24.0);
+		_searchTextField.text = @"Tap here to search for people";
+		_searchTextField.frame = CGRectMake(9.0, 11.0, 275.0, 24.0);
+		[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
 	}
 }
@@ -139,7 +144,8 @@
 	}];
 	
 	textField.text = (_isUser) ? @"@" : @"#";
-	textField.frame = CGRectMake(39.0, 11.0, 200.0, 24.0);
+	textField.frame = CGRectMake(9.0, 11.0, 200.0, 24.0);
+	[_searchTextField setTextColor:[UIColor whiteColor]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_SEARCH_TABLE" object:textField.text];
 }
 

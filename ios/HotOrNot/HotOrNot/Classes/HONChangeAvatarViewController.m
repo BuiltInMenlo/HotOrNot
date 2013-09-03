@@ -60,12 +60,6 @@
 	_filename = [NSString stringWithFormat:@"%@-%@.jpg", [HONAppDelegate deviceToken], currentTimestamp];
 	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Uploading…";
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
 	@try {
 		float avatarSize = 200.0;
 		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
@@ -105,7 +99,10 @@
 									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 									nil];
 	
-	[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
+	NSMutableString *avatarURL = [[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] mutableCopy];
+	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(480.0, 640.0) withUserDefaultsKey:@"avatar_image"];
+	//[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -480,6 +477,7 @@
 	[_progressHUD hide:YES];
 	_progressHUD = nil;
 	
+	[_cameraOverlayView uploadComplete];
 	[_cameraOverlayView animateAccept];
 }
 

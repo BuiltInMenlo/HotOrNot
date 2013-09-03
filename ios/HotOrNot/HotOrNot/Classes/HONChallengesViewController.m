@@ -351,6 +351,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_profileOverlayView addSubview:closeProfileButton];
 	
 	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -300.0, 320.0, 300.0)];
+	_userProfileView.hidden = YES;
 	_userProfileView.delegate = self;
 	[self.view addSubview:_userProfileView];
 	
@@ -394,6 +395,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			_profileOverlayView.alpha = 0.0;
 		} completion:^(BOOL finished) {
 			_profileOverlayView.hidden = YES;
+			_userProfileView.hidden = YES;
 		}];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -403,6 +405,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[_profileHeaderButtonView toggleSelected:YES];
 		
 		_profileOverlayView.hidden = NO;
+		_userProfileView.hidden = NO;
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
 			_profileOverlayView.alpha = 1.0;
 		} completion:^(BOOL finished) {
@@ -475,7 +478,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[self _goProfile];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -485,7 +488,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[[Mixpanel sharedInstance] track:@"Profile - Find Friends Button"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[self _goProfile];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -495,7 +498,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[[Mixpanel sharedInstance] track:@"Profile - Promote Instagram"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[self _goProfile];
 	UIImage *image = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
 																							[HONAppDelegate instagramShareComment], @"caption",
@@ -506,10 +509,18 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[[Mixpanel sharedInstance] track:@"Profile - Settings"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[self _goProfile];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)userProfileViewTimeline:(HONUserProfileView *)userProfileView {
+	[[Mixpanel sharedInstance] track:@"Profile - Timeline"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[self _goProfile];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
 }
 
 

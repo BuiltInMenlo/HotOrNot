@@ -177,20 +177,12 @@
 + (UIImage *)prepImageForSharing:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle {
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 612.0, 612.0)];
 	canvasView.backgroundColor = [UIColor blackColor];
-	[canvasView addSubview:[[UIImageView alloc] initWithImage:baseImage]];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(395.0, 186.0, 130.0, 130.0)];
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(335.0, 100.0, 228.0, 404.0)];
 	avatarImageView.image = avatar;
 	[canvasView addSubview:avatarImageView];
 	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(23.0, 542.0, 370.0, 60.0)];
-	nameLabel.font = [[HONAppDelegate cartoGothicBold] fontWithSize:42];
-	nameLabel.textColor = [UIColor whiteColor];
-	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = [NSString stringWithFormat:@"@%@", handle];
-	//[canvasView addSubview:nameLabel];
-	
-	//[canvasView.layer addSublayer:[HONImagingDepictor drawTextToLayer:[NSString stringWithFormat:@"@%@", handle] inFrame:CGRectMake(23.0, 542.0, 370.0, 60.0) withFont:[[HONAppDelegate cartoGothicBold] fontWithSize:42.0] textColor:[UIColor whiteColor]]];
+	[canvasView addSubview:[[UIImageView alloc] initWithImage:baseImage]];
 	
 	return ([HONImagingDepictor createImageFromView:canvasView]);
 }

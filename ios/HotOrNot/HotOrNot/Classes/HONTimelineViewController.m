@@ -183,8 +183,16 @@
 #pragma mark - Data Calls
 - (void)_retrieveChallenges {
 	
+	int bannerIndex = 0;
+	if (_timelineType == HONTimelineTypeSubject)
+		bannerIndex = 1;
+	
+	else if (_timelineType == HONTimelineTypeFriends)
+		bannerIndex = 3;
+	
+	
 	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:_bannerView.frame];
-	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:(_timelineType == HONTimelineTypeFriends) ? 0 : 3]] placeholderImage:nil];
+	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:bannerIndex]] placeholderImage:nil];
 	[_bannerView addSubview:bannerImageView];
 	
 	UIButton *bannerButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -222,7 +230,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
 			
@@ -470,7 +478,7 @@
 	_cells = [NSMutableArray array];
 	
 	if (_isPushView) {
-		NSString *title = @"Me";
+		NSString *title = @"";
 		if (_timelineType == HONTimelineTypeSubject) {
 			title = _subjectName;
 		
@@ -494,7 +502,7 @@
 			self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_profileHeaderButtonView];
 		}
 		
-		self.navigationController.navigationBar.topItem.title = (_timelineType == HONTimelineTypeSingleUser && [[[HONAppDelegate infoForUser] objectForKey:@"username"] isEqualToString:_username]) ? @"Me" : title;
+		self.navigationController.navigationBar.topItem.title = title;
 		
 	} else {
 //		_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
@@ -559,6 +567,7 @@
 	[_profileOverlayView addSubview:closeProfileButton];
 	
 	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -300.0, 320.0, 300.0)];
+	_userProfileView.hidden = YES;
 	_userProfileView.delegate = self;
 	[self.view addSubview:_userProfileView];
 	
@@ -619,6 +628,7 @@
 			_profileOverlayView.alpha = 0.0;
 		} completion:^(BOOL finished) {
 			_profileOverlayView.hidden = YES;
+			_userProfileView.hidden = YES;
 		}];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -628,6 +638,7 @@
 		[_profileHeaderButtonView toggleSelected:YES];
 		
 		_profileOverlayView.hidden = NO;
+		_userProfileView.hidden = NO;
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
 			_profileOverlayView.alpha = 1.0;
 		} completion:^(BOOL finished) {
@@ -859,7 +870,7 @@
 	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[self _goProfile];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:NO completion:nil];
@@ -869,7 +880,7 @@
 	[[Mixpanel sharedInstance] track:@"Profile - Find Friends Button"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[self _goProfile];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
@@ -879,7 +890,7 @@
 	[[Mixpanel sharedInstance] track:@"Profile - Promote Instagram"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[self _goProfile];
 	UIImage *image = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
 																							[HONAppDelegate instagramShareComment], @"caption",
@@ -890,10 +901,18 @@
 	[[Mixpanel sharedInstance] track:@"Profile - Settings"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
+	[self _goProfile];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)userProfileViewTimeline:(HONUserProfileView *)userProfileView {
+	[[Mixpanel sharedInstance] track:@"Profile - Timeline"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	[self _goProfile];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
 }
 
 
@@ -1011,10 +1030,10 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-//	if (_challengeOverlayView != nil) {
-//		[_challengeOverlayView removeFromSuperview];
-//		_challengeOverlayView = nil;
-//	}
+	if (_challengeOverlayView != nil) {
+		[_challengeOverlayView removeFromSuperview];
+		_challengeOverlayView = nil;
+	}
 	
 	_challengeOverlayView.alpha = 0.33;
 	
@@ -1022,11 +1041,11 @@
 	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 97.0);
 	[self.view addSubview:heartImageView];
 	
-//	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-//		heartImageView.alpha = 0.0;
-//	} completion:^(BOOL finished) {
-//		[heartImageView removeFromSuperview];
-//	}];
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		heartImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[heartImageView removeFromSuperview];
+	}];
 	
 	for (HONTimelineItemViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == challengeVO.challengeID)

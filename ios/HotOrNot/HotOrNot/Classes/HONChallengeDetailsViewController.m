@@ -213,9 +213,9 @@
 	self.view.backgroundColor = [UIColor whiteColor];
 	self.navigationController.navigationBar.topItem.title = _challengeVO.subjectName;
 	
-	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
-	[_refreshButtonView offsetFrame:CGPointMake(15.0, 0.0)];
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
+//	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
+//	[_refreshButtonView offsetFrame:CGPointMake(15.0, 0.0)];
+//	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
 	
 	[self _makeUI];
 }
@@ -280,7 +280,7 @@
 	lpGestureRecognizer.minimumPressDuration = 0.25;
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
-	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0 + offset, 320.0, 58.0)];
+	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 58.0)];
 	headerView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.80];
 	[_scrollView addSubview:headerView];
 	

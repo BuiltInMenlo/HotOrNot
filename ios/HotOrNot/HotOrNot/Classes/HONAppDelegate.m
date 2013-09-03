@@ -86,7 +86,7 @@ NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
 
 // view heights
 const CGFloat kNavBarHeaderHeight = 44.0f;
-const CGFloat kSearchHeaderHeight = 44.0f;
+const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
 const CGSize kTabSize = {80.0, 50.0};
@@ -888,7 +888,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //	//config.secureUdid = @"<SecureUDID value goes here>";
 //	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
+	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
@@ -1297,7 +1297,12 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 			if ([userResult objectForKey:@"id"] != [NSNull null]) {
 				[HONAppDelegate writeUserInfo:userResult];
-				[HONImagingDepictor writeImageFromWeb:[userResult objectForKey:@"avatar_url"] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
+				
+				NSMutableString *avatarURL = [[userResult objectForKey:@"avatar_url"] mutableCopy];
+				NSLog(@"IMG:[%@]", avatarURL);
+				
+				[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+				[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(480.0, 640.0) withUserDefaultsKey:@"avatar_image"];
 				
 				if ([[[HONAppDelegate infoForUser] objectForKey:@"age"] isEqualToString:@"0000-00-00 00:00:00"]) {
 					[[NSUserDefaults standardUserDefaults] setObject:nil forKey:@"passed_registration"];

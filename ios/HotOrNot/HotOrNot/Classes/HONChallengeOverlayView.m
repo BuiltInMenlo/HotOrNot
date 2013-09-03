@@ -10,6 +10,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "UIImageView+AFNetworking.h"
 
+
 #import "HONChallengeOverlayView.h"
 #import "HONUserVO.h"
 
@@ -17,6 +18,7 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UILabel *ageLabel;
+@property (nonatomic, strong) UIImageView *imageView;
 @end
 
 @implementation HONChallengeOverlayView
@@ -26,7 +28,7 @@
 		_challengeVO = challengeVO;
 		_opponentVO = opponentVO;
 		
-		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.8];
+		self.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
 		
 		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		closeButton.frame = self.frame;

@@ -20,6 +20,7 @@
 @property (nonatomic, strong) UIImageView *progressBarImageView;
 @property (nonatomic, strong) UIImageView *verifyImageView;
 @property (nonatomic, strong) UIView *blackMatteView;
+@property (nonatomic, strong) UIImageView *uploadingImageView;
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @end
 
@@ -69,6 +70,16 @@
 		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0)];
 		progressBarBGImageView.backgroundColor = [UIColor blackColor];
 		[self addSubview:progressBarBGImageView];
+		
+		_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, ([UIScreen mainScreen].bounds.size.height - 14.0) * 0.5, 54.0, 14.0)];
+		_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
+											   [UIImage imageNamed:@"cameraUpload_002"],
+											   [UIImage imageNamed:@"cameraUpload_003"], nil];
+		_uploadingImageView.animationDuration = 0.5f;
+		_uploadingImageView.animationRepeatCount = 0;
+		_uploadingImageView.alpha = 0.0;
+		[_uploadingImageView startAnimating];
+		[self addSubview:_uploadingImageView];
 		
 		_submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0)];
 		_submitHolderView.hidden = YES;
@@ -142,6 +153,10 @@
 	[UIView animateWithDuration:0.125 animations:^(void) {
 		_irisView.alpha = 0.33;
 	} completion:^(BOOL finished){}];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_uploadingImageView.alpha = 0.33;
+	} completion:^(BOOL finished){}];
 }
 
 - (void)addPreview:(UIImage *)image {
@@ -176,6 +191,11 @@
 		[subview removeFromSuperview];
 	
 	_submitHolderView.hidden = YES;
+}
+
+- (void)uploadComplete {
+	[_uploadingImageView stopAnimating];
+	[_uploadingImageView removeFromSuperview];
 }
 
 - (void)animateAccept {

@@ -24,4 +24,5 @@
 - (void)userProfileViewInviteFriends:(HONUserProfileView *)userProfileView;
 - (void)userProfileViewPromote:(HONUserProfileView *)userProfileView;
 - (void)userProfileViewSettings:(HONUserProfileView *)userProfileView;
+- (void)userProfileViewTimeline:(HONUserProfileView *)userProfileView;
 @end

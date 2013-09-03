@@ -14,6 +14,7 @@
 - (void)addPreview:(UIImage *)image;
 - (void)addPreviewAsFlipped:(UIImage *)image;
 - (void)removePreview;
+- (void)uploadComplete;
 - (void)startProgress;
 - (void)animateAccept;
 - (void)verifyOverlay:(BOOL)isIntro;

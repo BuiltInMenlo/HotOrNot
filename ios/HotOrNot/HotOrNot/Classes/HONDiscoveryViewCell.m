@@ -36,7 +36,7 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(13.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(11.0, 0.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
 	holderView.clipsToBounds = YES;
 	[self addSubview:holderView];
 	
@@ -55,7 +55,7 @@
 	[holderView addSubview:rImageView];
 	
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 94.0, 140.0, 20.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 83.0, 140.0, 20.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
@@ -78,7 +78,7 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 10.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
+	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(162.0, 0.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
 	holderView.clipsToBounds = YES;
 	[self addSubview:holderView];
 		
@@ -97,7 +97,7 @@
 	[holderView addSubview:rImageView];
 	
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(164.0, 94.0, 140.0, 20.0)];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(164.0, 83.0, 140.0, 20.0)];
 	subjectLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
 	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];

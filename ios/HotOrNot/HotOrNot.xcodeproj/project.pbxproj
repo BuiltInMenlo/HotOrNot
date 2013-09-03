@@ -817,6 +817,12 @@
 		4CED1C1E177D46C100A32F2B /* NBPhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CED1C17177D46C100A32F2B /* NBPhoneNumberUtil.m */; };
 		4CEE1C96161A238C00C54FBF /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEE1C95161A238C00C54FBF /* CoreData.framework */; };
 		4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4CEE1C9E161A311E00C54FBF /* HotOrNot.xcdatamodeld */; };
+		4CEFDEA117D502FE0086AC32 /* findFriendsProfileButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CEFDE9D17D502FE0086AC32 /* findFriendsProfileButton_Active.png */; };
+		4CEFDEA217D502FE0086AC32 /* findFriendsProfileButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CEFDE9E17D502FE0086AC32 /* findFriendsProfileButton_Active@2x.png */; };
+		4CEFDEA317D502FE0086AC32 /* findFriendsProfileButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CEFDE9F17D502FE0086AC32 /* findFriendsProfileButton_nonActive.png */; };
+		4CEFDEA417D502FE0086AC32 /* findFriendsProfileButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CEFDEA017D502FE0086AC32 /* findFriendsProfileButton_nonActive@2x.png */; };
+		4CEFDEA717D54E120086AC32 /* registerSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CEFDEA517D54E120086AC32 /* registerSelected.png */; };
+		4CEFDEA817D54E120086AC32 /* registerSelected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CEFDEA617D54E120086AC32 /* registerSelected@2x.png */; };
 		4CF07C141686756C00E0FBC1 /* fpo_upvote.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 4CF07C131686756C00E0FBC1 /* fpo_upvote.mp3 */; };
 		4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CF07C151686770100E0FBC1 /* MediaPlayer.framework */; };
 		B3BE3EAA1608E42500E7E2B7 /* HONUserVO.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE3EA91608E42500E7E2B7 /* HONUserVO.m */; };
@@ -2130,6 +2136,12 @@
 		4CED1C17177D46C100A32F2B /* NBPhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NBPhoneNumberUtil.m; sourceTree = "<group>"; };
 		4CEE1C95161A238C00C54FBF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		4CEE1C9F161A311E00C54FBF /* HotOrNotModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = HotOrNotModel.xcdatamodel; sourceTree = "<group>"; };
+		4CEFDE9D17D502FE0086AC32 /* findFriendsProfileButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = findFriendsProfileButton_Active.png; sourceTree = "<group>"; };
+		4CEFDE9E17D502FE0086AC32 /* findFriendsProfileButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "findFriendsProfileButton_Active@2x.png"; sourceTree = "<group>"; };
+		4CEFDE9F17D502FE0086AC32 /* findFriendsProfileButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = findFriendsProfileButton_nonActive.png; sourceTree = "<group>"; };
+		4CEFDEA017D502FE0086AC32 /* findFriendsProfileButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "findFriendsProfileButton_nonActive@2x.png"; sourceTree = "<group>"; };
+		4CEFDEA517D54E120086AC32 /* registerSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = registerSelected.png; sourceTree = "<group>"; };
+		4CEFDEA617D54E120086AC32 /* registerSelected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "registerSelected@2x.png"; sourceTree = "<group>"; };
 		4CF07C131686756C00E0FBC1 /* fpo_upvote.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = fpo_upvote.mp3; sourceTree = "<group>"; };
 		4CF07C151686770100E0FBC1 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		B3BE3EA81608E42500E7E2B7 /* HONUserVO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserVO.h; sourceTree = "<group>"; };
@@ -3411,6 +3423,8 @@
 		4CA34C3D16F69D230000751E /* Splash */ = {
 			isa = PBXGroup;
 			children = (
+				4CEFDEA517D54E120086AC32 /* registerSelected.png */,
+				4CEFDEA617D54E120086AC32 /* registerSelected@2x.png */,
 				4CE5309617C2F46500F7B4AD /* fue_dynamicImage_A-568h@2x.png */,
 				4CE5309717C2F46500F7B4AD /* fue_dynamicImage_A.png */,
 				4CE5309817C2F46500F7B4AD /* fue_dynamicImage_A@2x.png */,
@@ -3605,6 +3619,10 @@
 		4CA8DA9B16140F6900B7B13C /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				4CEFDE9D17D502FE0086AC32 /* findFriendsProfileButton_Active.png */,
+				4CEFDE9E17D502FE0086AC32 /* findFriendsProfileButton_Active@2x.png */,
+				4CEFDE9F17D502FE0086AC32 /* findFriendsProfileButton_nonActive.png */,
+				4CEFDEA017D502FE0086AC32 /* findFriendsProfileButton_nonActive@2x.png */,
 				4C0F5F2117CC21F900894551 /* notVerified@2x.png */,
 				4C0F5F1B17C9CD2700894551 /* notVerified.png */,
 				4C0F5F1C17C9CD2700894551 /* verified.png */,
@@ -4738,6 +4756,12 @@
 				4C1435E317D4032200ACBF41 /* moreButtonProfile_Active@2x.png in Resources */,
 				4C1435E417D4032200ACBF41 /* moreButtonProfile_nonActive.png in Resources */,
 				4C1435E517D4032200ACBF41 /* moreButtonProfile_nonActive@2x.png in Resources */,
+				4CEFDEA117D502FE0086AC32 /* findFriendsProfileButton_Active.png in Resources */,
+				4CEFDEA217D502FE0086AC32 /* findFriendsProfileButton_Active@2x.png in Resources */,
+				4CEFDEA317D502FE0086AC32 /* findFriendsProfileButton_nonActive.png in Resources */,
+				4CEFDEA417D502FE0086AC32 /* findFriendsProfileButton_nonActive@2x.png in Resources */,
+				4CEFDEA717D54E120086AC32 /* registerSelected.png in Resources */,
+				4CEFDEA817D54E120086AC32 /* registerSelected@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -322,11 +322,11 @@ const CGFloat kFocusInterval = 0.5f;
 				if (_uploadCounter == [_s3Uploads count]) {
 					if (_imagePicker.parentViewController != nil) {
 						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 						}];
 						
 					} else
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				}
 			}
 		}
@@ -983,11 +983,11 @@ const CGFloat kFocusInterval = 0.5f;
 		if (_hasSubmitted) {
 			if (_imagePicker.parentViewController != nil) {
 				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				}];
 				
 			} else
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 			
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 		}

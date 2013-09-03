@@ -17,6 +17,7 @@
 
 @interface HONSnapPreviewViewController ()
 @property (nonatomic, strong) NSString *url;
+@property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UIImageView *imageView;
@@ -25,6 +26,8 @@
 
 
 @implementation HONSnapPreviewViewController
+
+@synthesize delegate = _delegate;
 
 - (id)initWithImageURL:(NSString *)url {
 	if ((self = [super init])) {
@@ -238,6 +241,30 @@
 	_ageLabel.backgroundColor = [UIColor clearColor];
 	[self.view addSubview:_ageLabel];
 	
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 42.0, 320.0, 84.0)];
+	[self.view addSubview:_buttonHolderView];
+	
+	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	upvoteButton.frame = CGRectMake(18.0, 0.0, 84.0, 84.0);
+	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
+	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
+	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
+	[_buttonHolderView addSubview:upvoteButton];
+	
+	UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	profileButton.frame = CGRectMake(116.0, 0.0, 84.0, 84.0);
+	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
+	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
+	[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
+	[_buttonHolderView addSubview:profileButton];
+	
+	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	flagButton.frame = CGRectMake(217.0, 0.0, 84.0, 84.0);
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+	[_buttonHolderView addSubview:flagButton];
+	
 	[self _retrieveUser:_opponentVO.userID];
 }
 
@@ -263,6 +290,23 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
+}
+
+
+#pragma mark - Public APIs
+- (void)showControls {
+	_buttonHolderView.hidden = NO;
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = self.view.frame;
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
+	[self.view addSubview:closeButton];
+}
+
+
+#pragma mark - Navigation
+- (void)_goClose {
+	
 }
 
 

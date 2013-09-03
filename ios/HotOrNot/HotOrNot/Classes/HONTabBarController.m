@@ -138,7 +138,7 @@
 
 -(void)_addCustomTabs {
 	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
-	_tabHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.01];
+	_tabHolderView.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:_tabHolderView];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
@@ -189,30 +189,7 @@
 //	[_tabHolderView addSubview:_settingsButton];
 	
 	[self _toggleTabsEnabled:YES];
-	
-//	UIButton *toggleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	toggleButton.frame = CGRectMake(130.0, 0.0, 60.0, 58.0);
-//	toggleButton.backgroundColor = [UIColor redColor];
-//	[toggleButton addTarget:self action:@selector(_goExpand:) forControlEvents:UIControlEventTouchUpInside];
-//	[_bgImageView addSubview:toggleButton];
 }
-
-
-//- (void)_dropTabs {
-//	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
-//		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kLipHeight, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-//	} completion:^(BOOL finished) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"TABS_DROPPED" object:nil];
-//	}];
-//}
-//
-//- (void)_raiseTabs {
-//	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-//		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - (kLipHeight + kTabHeight), _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
-//	} completion:^(BOOL finished) {
-//		[[NSNotificationCenter defaultCenter] postNotificationName:@"TABS_RAISED" object:nil];
-//	}];
-//}
 
 - (void)_showAlertPopOverWithTotals:(NSDictionary *)dict {
 	[_alertPopOverView setAlerts:dict];

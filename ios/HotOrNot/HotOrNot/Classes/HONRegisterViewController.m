@@ -36,6 +36,9 @@
 @property (nonatomic, strong) UILabel *usernameLabel;
 @property (nonatomic, strong) UITextField *passwordTextField;
 @property (nonatomic, retain) UIButton *submitButton;
+@property (nonatomic, retain) UIButton *usernameButton;
+@property (nonatomic, retain) UIButton *passwordButton;
+@property (nonatomic, retain) UIButton *birthdayButton;
 @property (nonatomic, strong) UIView *tutorialHolderView;
 @property (nonatomic, strong) UIDatePicker *datePicker;
 @property (nonatomic, strong) UILabel *birthdayLabel;
@@ -166,12 +169,6 @@
 	_filename = [NSString stringWithFormat:@"%@-%@",[HONAppDelegate deviceToken],currentTimestamp];
 	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
-	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-	_progressHUD.labelText = @"Uploading…";
-	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-	_progressHUD.minShowTime = kHUDTime;
-	_progressHUD.taskInProgress = YES;
-	
 	@try {
 		float avatarSize = kSnapLargeDim;
 		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
@@ -225,7 +222,11 @@
 							nil];
 	
 	//NSLog(@"PARAMS:[%@]", params);
-	[HONImagingDepictor writeImageFromWeb:_filename withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
+	NSMutableString *avatarURL = [_filename mutableCopy];
+	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(480.0, 640.0) withUserDefaultsKey:@"avatar_image"];
+	
+	//[HONImagingDepictor writeImageFromWeb:_filename withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsersFirstRunComplete);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -327,14 +328,20 @@
 //	captionImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"firstRunCopy_username-568h@2x" : @"firstRunCopy_username"];
 //	[_usernameHolderView addSubview:captionImageView];
 	
-	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 65.0, 230.0, 26.0)];
+	_usernameButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_usernameButton.frame = CGRectMake(0.0, 44.0, 320.0, 64.0);
+	[_usernameButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
+	[_usernameButton addTarget:self action:@selector(_goUsername) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_usernameButton];
+	
+	_usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 65.0, 308.0, 26.0)];
 	_usernameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
 	_usernameLabel.textColor = [HONAppDelegate honGrey710Color];
 	_usernameLabel.backgroundColor = [UIColor clearColor];
 	_usernameLabel.text = @"Enter username";
 	[self.view addSubview:_usernameLabel];
 	
-	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 65.0, 230.0, 30.0)];
+	_usernameTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 65.0, 308.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
 	[_usernameTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[_usernameTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
@@ -353,6 +360,12 @@
 	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
 	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 108.0);
 	[self.view addSubview:divider1ImageView];
+	
+	_passwordButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_passwordButton.frame = CGRectMake(0.0, 109.0, 320.0, 64.0);
+	[_passwordButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
+	[_passwordButton addTarget:self action:@selector(_goPassword) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_passwordButton];
 	
 	_passwordTextField = [[UITextField alloc] initWithFrame:CGRectMake(12.0, 131.0, 230.0, 30.0)];
 	//[_usernameTextField setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
@@ -383,10 +396,11 @@
 	_birthdayLabel.text = @"What is your birthday?";
 	[self.view addSubview:_birthdayLabel];
 	
-	UIButton *birthdayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	birthdayButton.frame = _birthdayLabel.frame;
-	[birthdayButton addTarget:self action:@selector(_goPicker) forControlEvents:UIControlEventTouchUpInside];
-	[self.view addSubview:birthdayButton];
+	_birthdayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_birthdayButton.frame = CGRectMake(0.0, 174.0, 320.0, 64.0);
+	[_birthdayButton setBackgroundImage:[UIImage imageNamed:@"registerSelected"] forState:UIControlStateSelected];
+	[_birthdayButton addTarget:self action:@selector(_goPicker) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:_birthdayButton];
 	
 	UIImageView *divider3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
 	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 238.0);
@@ -425,7 +439,7 @@
 	[_tutorialHolderView addSubview:page1ImageView];
 	
 	UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeTutorialButton.frame = CGRectMake(53.0, _tutorialHolderView.frame.size.height - (([HONAppDelegate isRetina5]) ? 129.0 : 118.0), 214.0, 49.0);
+	closeTutorialButton.frame = CGRectMake(53.0, 371.0, 214.0, 49.0);
 	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
 	[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
 	[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
@@ -540,6 +554,7 @@
 //	}];
 	
 	[_usernameTextField becomeFirstResponder];
+	[_usernameButton setSelected:YES];
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:0.5];
@@ -554,7 +569,18 @@
 	[UIView commitAnimations];
 }
 
+- (void)_goUsername {
+	[_usernameTextField becomeFirstResponder];
+}
+
+- (void)_goPassword {
+	[_passwordTextField becomeFirstResponder];
+}
+
 - (void)_goPicker {
+	[_usernameButton setSelected:NO];
+	[_passwordButton setSelected:NO];
+	[_birthdayButton setSelected:YES];
 	[_usernameTextField resignFirstResponder];
 	[_passwordTextField resignFirstResponder];
 	
@@ -586,6 +612,8 @@
 									   delegate:nil
 							  cancelButtonTitle:@"OK"
 							  otherButtonTitles:nil] show];
+			
+			[self _submitUsername];
 		
 		} else {
 			if ([_passwordTextField.text length] == 0) {
@@ -776,7 +804,18 @@
 
 
 #pragma mark - TextField Delegates
--(void)textFieldDidBeginEditing:(UITextField *)textField {	
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+	if (textField.tag == 0) {
+		[_usernameButton setSelected:YES];
+		[_passwordButton setSelected:NO];
+		[_birthdayButton setSelected:NO];
+	
+	} else {
+		[_usernameButton setSelected:NO];
+		[_passwordButton setSelected:YES];
+		[_birthdayButton setSelected:NO];
+	}
+	
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_datePicker.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 216.0);
 		_submitButton.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - _submitButton.frame.size.height, _submitButton.frame.size.width, _submitButton.frame.size.height);
@@ -941,6 +980,7 @@
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 		
+		[_cameraOverlayView uploadComplete];
 		[_cameraOverlayView animateAccept];
 	}
 }
