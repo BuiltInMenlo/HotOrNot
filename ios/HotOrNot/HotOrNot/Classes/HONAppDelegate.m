@@ -48,7 +48,7 @@ NSString * const kMixPanelToken = @"c7bf64584c01bca092e204d95414985f"; // Dev
 NSString * const kConfigURL = @"http://config.letsvolley.com/hotornot";
 NSString * const kConfigJSON = @"boot_124.json";
 NSString * const kAPIHost = @"data_api";
-NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3
+NSString * const kMixPanelToken = @"7de852844068f082ddfeaf43d96e998e"; // Volley 1.2.3/4
 #endif
 
 
@@ -111,8 +111,11 @@ const BOOL kIsImageCacheEnabled = YES;
 const NSUInteger kRecentOpponentsDisplayTotal = 10;
 NSString * const kTwilioSMS = @"6475577873";
 
+#if __DEV_BUILD___ == 0
+@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+#else
 @interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate, BITHockeyManagerDelegate, BITUpdateManagerDelegate, BITCrashManagerDelegate>
-//@interface HONAppDelegate() <UIAlertViewDelegate, UIDocumentInteractionControllerDelegate>
+#endif
 @property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, strong) AVAudioPlayer *mp3Player;
 @property (nonatomic) BOOL isFromBackground;
@@ -1517,6 +1520,7 @@ NSString * const kTwilioSMS = @"6475577873";
 }
 
 
+#if __DEV_BUILD___ == 1
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 #ifndef CONFIGURATION_AppStore
@@ -1525,5 +1529,5 @@ NSString * const kTwilioSMS = @"6475577873";
 #endif
 	return nil;
 }
-
+#endif
 @end

@@ -88,7 +88,7 @@
 			
 		} else {
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
 			[_refreshButtonView toggleRefresh:NO];
 			_challengeVO = [HONChallengeVO challengeWithDictionary:result];

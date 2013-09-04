@@ -43,7 +43,7 @@
 		[_searchTextField addTarget:self action:@selector(_onTextEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 		_searchTextField.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
 		_searchTextField.keyboardType = UIKeyboardTypeAlphabet;
-		_searchTextField.text = @"Tap here to search for people";
+		_searchTextField.text = @"Tap here to search";
 		_searchTextField.delegate = self;
 		[_staticBGImageView addSubview:_searchTextField];
 		
@@ -71,7 +71,7 @@
 	
 	_staticBGImageView.alpha = (isFocused) ? 1.0 : 0.85;
 	_searchTextField.frame = CGRectMake(9.0, 11.0, 200.0 + ((int)!isFocused * 75), 24.0);
-	_searchTextField.text = @"Tap here to search for people";
+	_searchTextField.text = @"Tap here to search";
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = (int)isFocused;
 	}];
@@ -91,7 +91,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	
-	_searchTextField.text = @"Tap here to search for people";
+	_searchTextField.text = @"Tap here to search";
 	[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_greenBGImageView.alpha = 0.0;
@@ -119,7 +119,7 @@
 			_staticBGImageView.alpha = 0.85;
 		}];
 		
-		_searchTextField.text = @"Tap here to search for people";
+		_searchTextField.text = @"Tap here to search";
 		_searchTextField.frame = CGRectMake(9.0, 11.0, 275.0, 24.0);
 		[_searchTextField setTextColor:[HONAppDelegate honGrey635Color]];
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];

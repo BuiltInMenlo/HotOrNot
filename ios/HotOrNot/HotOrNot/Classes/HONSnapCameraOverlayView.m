@@ -56,7 +56,7 @@
 		[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateNormal];
 		[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateHighlighted];
 		//[_subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
-		_subscribersButton.alpha = 0.5;
+		_subscribersButton.alpha = 0.2;
 		[self addSubview:_subscribersButton];
 		
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];

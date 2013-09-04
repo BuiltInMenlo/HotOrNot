@@ -271,6 +271,7 @@
 					
 					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
 					}];
 				}];
@@ -793,12 +794,13 @@
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
 		[self _finalizeUser];
-//		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
-//			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-//			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
-//				//[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
-//			}];
-//		}];
+		[_imagePicker dismissViewControllerAnimated:YES completion:^(void) {
+			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
+			}];
+		}];
 	}
 }
 
