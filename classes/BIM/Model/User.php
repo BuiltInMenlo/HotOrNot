@@ -385,6 +385,7 @@ class BIM_Model_User{
                 }
             }
         }
+        //now sort the users according to the order in which they were asked
         $userArr = array();
         foreach( $users as $key => $user ){
             $userArr[ $user->id ] = $user;
@@ -393,7 +394,14 @@ class BIM_Model_User{
 		        $user->reCache();
 		    }
         }
-        return $assoc ? $userArr : array_values( $userArr );        
+        $users = array();
+        foreach( $ids as $id ){
+            if( isset( $userArr[ $id ] ) ){
+                $users[ $id ] = $userArr[ $id ];
+            }
+        }
+        
+        return $assoc ? $users : array_values( $users );        
     }
         
     public static function get( $id, $forceDb = false ){
