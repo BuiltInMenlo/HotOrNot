@@ -12,6 +12,10 @@ class BIM_App_Social extends BIM_App_Base{
                 BIM_Jobs_Users::queueFriendNotification( $params->userID, $params->target );
             }
         }
+        
+        $targets[] = $params->userID;
+        self::purgeUserCache($targets);
+        
         return self::getFollowed($params);
     }
     
@@ -80,6 +84,10 @@ class BIM_App_Social extends BIM_App_Base{
                 BIM_Jobs_Users::queueFriendAcceptedNotification( $params->userID, $params->source );
             }
         }
+        
+        $sources[] = $params->userID;
+        self::purgeUserCache($sources);
+        
         return self::getFriends($params);
     }
     
@@ -106,7 +114,20 @@ class BIM_App_Social extends BIM_App_Base{
             $params->target = $target;
             $removed = self::_removeFriend($params);
         }
+        
+        $targets[] = $params->userID;
+        self::purgeUserCache($targets);
+        
         return self::getFollowed($params);
+    }
+    
+    protected static function purgeUserCache( $ids ){
+        $users = BIM_Model_User::getMulti($ids);
+        foreach( $users as $user ){
+            if( $user->isExtant() ){
+                $user->purgeFromCache();
+            }
+        }
     }
     
     protected static function _removeFriend( $params ){

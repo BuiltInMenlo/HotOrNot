@@ -722,6 +722,7 @@ WHERE is_verify != 1
 			WHERE (tc.`status_id` = 1 OR tc.`status_id` = 4) 
 		        $privateSql 
 				AND tcs.title = ?
+				AND updated > (select now() - INTERVAL 3 MONTH)
 			ORDER BY tc.`updated` DESC
 			LIMIT 25
 		";

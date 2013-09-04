@@ -620,4 +620,13 @@ class BIM_Model_Volley{
             print count( $volleyIds )." remaining\n";
         }
     }
+    
+    public static function getSticky(){
+        $c = BIM_Config::app();
+        $ids = array();
+        if( !empty($c->sticky_volleys) ){
+            $ids = $c->sticky_volleys;
+        }
+        return self::getMulti($ids);
+    }
 }

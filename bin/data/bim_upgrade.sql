@@ -33,14 +33,14 @@ CREATE TABLE `user_archive` (
   `user_id` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
   `data` longtext
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 alter table tblUsers 
 	add column adid varchar(36) unique null, 
 	add column abuse_ct int not null default 0,
 	add column `total_challenges` int(11) NOT NULL DEFAULT '-1',
 	add column `total_votes` int(11) NOT NULL DEFAULT '-1',
-	add column password varchar(100) not null;
+	add column password varchar(100) not null,
 	add column sms_verified int not null default -1;
 
 alter table tblChallenges 

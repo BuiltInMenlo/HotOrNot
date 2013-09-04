@@ -112,7 +112,12 @@ class BIM_Controller_Votes extends BIM_Controller_Base {
         if( !empty( $input->userID ) ){
             $input->userID = $this->resolveUserId($input->userID);
             $votes = new BIM_App_Votes();
-            return $votes->getChallengesWithFriends( $input );
+            $volleys = $votes->getChallengesWithFriends( $input );
+            $stickyVolleys = BIM_Model_Volley::getSticky();
+            foreach( $stickyVolleys as $volley ){
+                array_unshift( $volleys, $volley );
+            }
+            return $volleys;
         }
     }
 }
