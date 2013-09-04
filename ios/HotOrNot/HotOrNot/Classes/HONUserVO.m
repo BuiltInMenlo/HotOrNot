@@ -33,7 +33,6 @@
 	[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 	vo.birthday = [dateFormat dateFromString:[dictionary objectForKey:@"age"]];
 	
-	
 	vo.friends = [NSMutableArray array];
 	for (NSDictionary *dict in [dictionary objectForKey:@"friends"]) {
 		[vo.friends addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:

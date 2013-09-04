@@ -38,6 +38,7 @@ const CGFloat kFocusInterval = 0.5f;
 @property (nonatomic, strong) NSMutableArray *addFollowing;
 @property (nonatomic, strong) NSMutableArray *addFollowingIDs;
 @property (nonatomic, strong) NSMutableArray *addContacts;
+@property (nonatomic, strong) NSDictionary *challengeParams;
 @property (nonatomic, strong) NSMutableArray *usernames;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -217,25 +218,25 @@ const CGFloat kFocusInterval = 0.5f;
 		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.delegate = self;
 		por1.contentType = @"image/jpeg";
-//		por1.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
-		por1.contentLength = [UIImageJPEGRepresentation(mImage, kSnapJPEGCompress) length];
-		por1.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(mImage, kSnapJPEGCompress)];
+		por1.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
+//		por1.contentLength = [UIImageJPEGRepresentation(mImage, kSnapJPEGCompress) length];
+//		por1.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(mImage, kSnapJPEGCompress)];
 		[s3 putObject:por1];
 		
 		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por2.delegate = self;
 		por2.contentType = @"image/jpeg";
-//		por2.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
-		por2.contentLength = [UIImageJPEGRepresentation(lImage, kSnapJPEGCompress) length];
-		por2.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(lImage, kSnapJPEGCompress)];
+		por2.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+//		por2.contentLength = [UIImageJPEGRepresentation(lImage, kSnapJPEGCompress) length];
+//		por2.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(lImage, kSnapJPEGCompress)];
 		[s3 putObject:por2];
 		
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.delegate = self;
 		por3.contentType = @"image/jpeg";
-//		por3.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
-		por3.contentLength = [UIImageJPEGRepresentation(oImage, kSnapJPEGCompress) length];
-		por3.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(oImage, kSnapJPEGCompress)];
+		por3.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+//		por3.contentLength = [UIImageJPEGRepresentation(oImage, kSnapJPEGCompress) length];
+//		por3.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(oImage, kSnapJPEGCompress)];
 		[s3 putObject:por3];
 		
 		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, nil];
@@ -256,7 +257,7 @@ const CGFloat kFocusInterval = 0.5f;
 	}
 }
 
-- (void)_submitChallenge:(NSMutableDictionary *)params {
+- (void)_submitChallenge { //:(NSMutableDictionary *)params {
 	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
 	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
 										[UIImage imageNamed:@"overlayLoader002"],
@@ -271,11 +272,9 @@ const CGFloat kFocusInterval = 0.5f;
 		_submitImageView.alpha = 1.0;
 	} completion:nil];
 	
-	_hasSubmitted = NO;
-	
-	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], (_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges, [params objectForKey:@"action"]);
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], (_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges, [_challengeParams objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
-	[httpClient postPath:(_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+	[httpClient postPath:(_challengeSubmitType == HONChallengeSubmitTypeJoin) ? kAPIJoinChallenge : kAPIChallenges parameters:_challengeParams success:^(AFHTTPRequestOperation *operation, id responseObject) {
 		NSError *error = nil;
 		if (error != nil) {
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
@@ -309,24 +308,26 @@ const CGFloat kFocusInterval = 0.5f;
 				_progressHUD.minShowTime = kHUDTime;
 				_progressHUD.mode = MBProgressHUDModeCustomView;
 				_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
-				_progressHUD.labelText = NSLocalizedString(@"hud_usernameNotFound", nil);
+				_progressHUD.labelText = @"Error!";
 				[_progressHUD show:NO];
 				[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 				_progressHUD = nil;
 				
 			} else {
 				///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 				
-				_hasSubmitted = YES;
 				if (_uploadCounter == [_s3Uploads count]) {
-					if (_imagePicker.parentViewController != nil) {
-						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//					if (_imagePicker.parentViewController != nil) {
+//						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+//							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+//								[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+//							}];
+//						}];
+//						
+//					} else
+						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 						}];
-						
-					} else
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 				}
 			}
 		}
@@ -619,21 +620,21 @@ const CGFloat kFocusInterval = 0.5f;
 		_progressTimer = nil;
 	}
 	
-	if (camera_total == 0) {
-		[_cameraOverlayView toggleInfoOverlay:YES];
-		
-		UIButton *infoOverlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		infoOverlayButton.frame = _cameraOverlayView.frame;
-		[infoOverlayButton addTarget:self action:@selector(_goCloseInfoOverlay) forControlEvents:UIControlEventTouchUpInside];
-		[_cameraOverlayView addSubview:infoOverlayButton];
-		
-		[_cameraOverlayView startProgress];
-		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_restartProgress) userInfo:nil repeats:YES];
-		
-	} else {
+//	if (camera_total == 0) {
+//		[_cameraOverlayView toggleInfoOverlay:YES];
+//		
+//		UIButton *infoOverlayButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		infoOverlayButton.frame = _cameraOverlayView.frame;
+//		[infoOverlayButton addTarget:self action:@selector(_goCloseInfoOverlay) forControlEvents:UIControlEventTouchUpInside];
+//		[_cameraOverlayView addSubview:infoOverlayButton];
+//		
+//		[_cameraOverlayView startProgress];
+//		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_restartProgress) userInfo:nil repeats:YES];
+//		
+//	} else {
 		[_cameraOverlayView startProgress];
 		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
-	}
+//	}
 	
 	//_focusTimer = [NSTimer scheduledTimerWithTimeInterval:kFocusInterval target:self selector:@selector(_autofocusCamera) userInfo:nil repeats:YES];
 }
@@ -911,6 +912,7 @@ const CGFloat kFocusInterval = 0.5f;
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	_hasSubmitted = NO;
 	int friend_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"friend_total"] intValue];
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++friend_total] forKey:@"friend_total"];
 	[[NSUserDefaults standardUserDefaults] synchronize];
@@ -957,8 +959,12 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		[params setObject:[NSString stringWithFormat:@"%d", _challengeSubmitType] forKey:@"action"];
 		
-		NSLog(@"PARAMS:[%@]", params);
-		[self _submitChallenge:params];
+		_challengeParams = [params copy];
+		
+		NSLog(@"PARAMS:[%@]", _challengeParams);
+		_hasSubmitted = YES;
+		
+		[self _submitChallenge];
 	}
 }
 
@@ -980,17 +986,17 @@ const CGFloat kFocusInterval = 0.5f;
 		
 		[_previewView uploadComplete];
 		
-		if (_hasSubmitted) {
-			if (_imagePicker.parentViewController != nil) {
-				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-				}];
-				
-			} else
-				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-		}
+//		if (_hasSubmitted) {
+//			if (_imagePicker.parentViewController != nil) {
+//				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+//					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//				}];
+//				
+//			} else
+//				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+//			
+//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+//		}
 	}
 }
 
@@ -1049,8 +1055,9 @@ const CGFloat kFocusInterval = 0.5f;
 			
 			[params setObject:[NSString stringWithFormat:@"%d", _challengeSubmitType] forKey:@"action"];
 			
+			_challengeParams = [params copy];
 			NSLog(@"PARAMS:[%@]", params);
-			[self _submitChallenge:params];
+			[self _submitChallenge];
 		}
 	}
 }

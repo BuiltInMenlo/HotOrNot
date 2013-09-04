@@ -32,7 +32,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
+		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
 		
 		
 		UIImageView *holderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileOverlay"]];
@@ -180,8 +180,6 @@
 							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 							nil];
 	
-	NSLog(@"USER BY ID PARAMS:[%@]", params);
-	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -228,10 +226,10 @@
 - (void)show {
 	[self _retrieveUser];
 	
+	_isOpen = YES;
 	[UIView animateWithDuration:kProfileTime animations:^(void) {
 		self.frame = CGRectOffset(self.frame, 0.0, 300.0);
 	} completion:^(BOOL finished) {
-		_isOpen = YES;
 	}];
 }
 

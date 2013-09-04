@@ -24,6 +24,7 @@
 @property (nonatomic, strong) UITextField *subjectTextField;
 @property (nonatomic, strong) UIButton *backButton;
 @property (nonatomic, strong) UIButton *previewBackButton;
+@property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *subscribersBackButton;
 @property (nonatomic, strong) UIButton *subscribersButton;
 @property (nonatomic, strong) UIView *buttonHolderView;
@@ -87,6 +88,8 @@
 	[_uploadingImageView removeFromSuperview];
 	
 	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
+	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
+	_submitButton.alpha = 1.0;
 }
 
 - (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw {
@@ -198,12 +201,12 @@
 	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:previewButton];
 	
-	UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	submitButton.frame = CGRectMake(212.0, 0.0, 107.0, 64.0);
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
-	[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
-	[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
-	[_buttonHolderView addSubview:submitButton];
+	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_submitButton.frame = CGRectMake(212.0, 0.0, 107.0, 64.0);
+	_submitButton.alpha = 0.33;
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
+	[_submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
+	[_buttonHolderView addSubview:_submitButton];
 	
 	_subscribersView = [[HONCameraPreviewSubscribersView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, [UIScreen mainScreen].bounds.size.height + 50.0)];
 	_subscribersView.hidden = YES;

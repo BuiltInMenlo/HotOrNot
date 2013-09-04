@@ -51,7 +51,7 @@
 	[holderView addSubview:rImageLoadingView];
 	
 	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
-	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_lChallengeVO.challengers lastObject]).imagePrefix]] placeholderImage:nil];
+	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:rImageView];
 	
 	
@@ -93,7 +93,7 @@
 	[holderView addSubview:rImageLoadingView];
 	
 	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kSnapMediumDim, 0.0, kSnapMediumDim, kSnapMediumDim)];
-	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_rChallengeVO.challengers lastObject]).imagePrefix]] placeholderImage:nil];
+	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).imagePrefix]] placeholderImage:nil];
 	[holderView addSubview:rImageView];
 	
 	

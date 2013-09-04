@@ -138,7 +138,6 @@
 
 -(void)_addCustomTabs {
 	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
-	_tabHolderView.backgroundColor = [UIColor whiteColor];
 	[self.view addSubview:_tabHolderView];
 	
 	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];

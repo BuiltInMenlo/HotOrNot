@@ -177,8 +177,8 @@
 + (UIImage *)prepImageForSharing:(UIImage *)baseImage avatarImage:(UIImage *)avatar username:(NSString *)handle {
 	UIView *canvasView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 612.0, 612.0)];
 	canvasView.backgroundColor = [UIColor blackColor];
-	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(335.0, 100.0, 228.0, 404.0)];
+	//228
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(335.0 - 37.0, 100.0, 404.0 * 0.75, 404.0)];
 	avatarImageView.image = avatar;
 	[canvasView addSubview:avatarImageView];
 	

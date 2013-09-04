@@ -522,7 +522,7 @@
 	[self.view addSubview:closeButton];
 	
 	UIButton *inviteAllButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	inviteAllButton.frame = CGRectMake(240.0, 5.0, 74.0, 34.0);
+	inviteAllButton.frame = CGRectMake(230.0, 5.0, 84.0, 34.0);
 	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_nonActive"] forState:UIControlStateNormal];
 	[inviteAllButton setBackgroundImage:[UIImage imageNamed:@"inviteAllButton_Active"] forState:UIControlStateHighlighted];
 	[inviteAllButton addTarget:self action:@selector(_goSelectAllToggle) forControlEvents:UIControlEventTouchUpInside];

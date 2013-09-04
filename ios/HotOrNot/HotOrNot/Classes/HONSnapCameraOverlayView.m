@@ -77,7 +77,7 @@
 		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 		//[self addSubview:_flipButton];
 		
-		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0)];
+		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 300.0, 5.0)];
 		progressBarBGImageView.backgroundColor = [UIColor blackColor];
 		[self addSubview:progressBarBGImageView];
 				
@@ -140,7 +140,7 @@
 		_progressBarImageView = nil;
 	}
 	
-	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 4.0, 2.0)];
+	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 4.0, 5.0)];
 	_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
 	[self addSubview:_progressBarImageView];
 	
@@ -206,14 +206,14 @@
 
 #pragma mark - UI Presentation
 - (void)_animateLoader {
-	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 4.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 4.0, 5.0);
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.6];
 	[UIView setAnimationDelay:0.0];
 	[UIView setAnimationBeginsFromCurrentState:YES];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
-	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 300.0, 5.0);
 	[UIView commitAnimations];
 }
 

@@ -35,12 +35,11 @@
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONChangeAvatarViewController.h"
-#import "HONChallengeOverlayView.h"
 #import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileView.h"
 
 
-@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONTimelineHeaderViewDelegate, HONChallengeOverlayViewDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONUserProfileViewCellDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONTimelineHeaderViewDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
@@ -49,7 +48,6 @@
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
-@property (nonatomic, strong) HONChallengeOverlayView *challengeOverlayView;
 @property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
@@ -188,7 +186,7 @@
 		bannerIndex = 1;
 	
 	else if (_timelineType == HONTimelineTypeFriends)
-		bannerIndex = 3;
+		bannerIndex = 0;
 	
 	
 	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:_bannerView.frame];
@@ -218,7 +216,7 @@
 		[params setObject:[NSString stringWithFormat:@"%d", _isProfileFiltered] forKey:@"p"];
 	}
 	
-	NSLog(@"CHALLENGE PARAMS:[%@]", params);
+	//NSLog(@"CHALLENGE PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -230,7 +228,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
 			
@@ -273,6 +271,9 @@
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+		
+		_isRefreshing = NO;
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
 
@@ -282,7 +283,7 @@
 							[NSString stringWithFormat:@"%d", _userID], @"userID",
 							nil];
 	
-	NSLog(@"USER BY ID PARAMS:[%@]", params);
+	//NSLog(@"USER BY ID PARAMS:[%@]", params);
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -443,6 +444,7 @@
 							[NSString stringWithFormat:@"%d", userID], @"challengerID",
 							nil];
 	
+	NSLog(@"PARAMS:[%@]", params);
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
 	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -451,8 +453,8 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
+//			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -858,10 +860,6 @@
 		[_snapPreviewViewController.view removeFromSuperview];
 		_snapPreviewViewController = nil;
 	}
-	
-	_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
-	_challengeOverlayView.delegate = self;
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
 }
 
 
@@ -997,7 +995,8 @@
 	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
-	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO];
+	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO];
+	_snapPreviewViewController.delegate = self;
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
@@ -1009,18 +1008,11 @@
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
 									  nil]];
 	
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
-	
-	_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
-	_challengeOverlayView.delegate = self;
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
+	[_snapPreviewViewController showControls];
 }
 
-#pragma mark - ChallengeOverlay Delegates
-- (void)challengeOverlayViewUpvote:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+#pragma mark - SnapPreview Delegates
+- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
@@ -1030,12 +1022,10 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (snapPreviewViewController != nil) {
+		[snapPreviewViewController.view removeFromSuperview];
+		snapPreviewViewController = nil;
 	}
-	
-	_challengeOverlayView.alpha = 0.33;
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
 	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 97.0);
@@ -1047,15 +1037,16 @@
 		[heartImageView removeFromSuperview];
 	}];
 	
-	for (HONTimelineItemViewCell *cell in _cells) {
-		if (cell.challengeVO.challengeID == challengeVO.challengeID)
-			[cell upvoteUser:opponentVO.userID];
-	}
+//	for (HONTimelineItemViewCell *cell in _cells) {
+//		NSLog(@"challenge:[%d]", cell.challengeVO.challengeID);
+//		if (cell.challengeVO.challengeID == challengeVO.challengeID)
+//			[cell upvoteUser:opponentVO.userID];
+//	}
 	
 	[self _upvoteChallenge:_opponentVO.userID];
 }
 
-- (void)challengeOverlayViewFlag:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
@@ -1074,13 +1065,13 @@
 	[alertView setTag:2];
 	[alertView show];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (snapPreviewViewController != nil) {
+		[snapPreviewViewController.view removeFromSuperview];
+		snapPreviewViewController = nil;
 	}
 }
 
-- (void)challengeOverlayViewProfile:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewControllerProfile:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	_opponentVO = opponentVO;
 	
@@ -1092,16 +1083,16 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (snapPreviewViewController != nil) {
+		[snapPreviewViewController.view removeFromSuperview];
+		snapPreviewViewController = nil;
 	}
 }
 
-- (void)challengeOverlayViewClose:(HONChallengeOverlayView *)challengeOverlayView {
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+- (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
+	if (snapPreviewViewController != nil) {
+		[snapPreviewViewController.view removeFromSuperview];
+		snapPreviewViewController = nil;
 	}
 }
 

@@ -26,6 +26,7 @@
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSTimer *clockTimer;
 @property (nonatomic) int clockCounter;
+@property (nonatomic) int uploadCounter;
 @end
 
 @implementation HONChangeAvatarViewController
@@ -53,26 +54,36 @@
 
 #pragma mark - Data Calls
 - (void)_uploadPhoto:(UIImage *)image {
+	_uploadCounter = 0;
+	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
     
     NSString *currentTimestamp = [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
     
-	_filename = [NSString stringWithFormat:@"%@-%@.jpg", [HONAppDelegate deviceToken], currentTimestamp];
-	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
+	_filename = [NSString stringWithFormat:@"%@-%@", [HONAppDelegate deviceToken], currentTimestamp];
+	NSLog(@"FILENAME: %@/%@.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
 	
 	@try {
 		float avatarSize = 200.0;
 		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
 		
 		UIImage *lImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
-		lImage =	[HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
+		lImage = [HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
+		
+		UIImage *oImage = image;
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
-		S3PutObjectRequest *por = [[S3PutObjectRequest alloc] initWithKey:_filename inBucket:@"hotornot-avatars"];
-		por.contentType = @"image/jpeg";
-		por.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
-		por.delegate = self;
-		[s3 putObject:por];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@.jpg", _filename] inBucket:@"hotornot-avatars"];
+		por1.contentType = @"image/jpeg";
+		por1.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+		por1.delegate = self;
+		[s3 putObject:por1];
+		
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-avatars"];
+		por2.contentType = @"image/jpeg";
+		por2.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+		por2.delegate = self;
+		[s3 putObject:por2];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -91,18 +102,12 @@
 }
 
 - (void)_finalizeUser {
-
 	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 									[NSString stringWithFormat:@"%d", 9], @"action",
 									[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									[[HONAppDelegate infoForUser] objectForKey:@"name"], @"username",
-									[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
+									[NSString stringWithFormat:@"%@/%@.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename], @"imgURL",
 									nil];
-	
-	NSMutableString *avatarURL = [[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(480.0, 640.0) withUserDefaultsKey:@"avatar_image"];
-	//[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
 	
 	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
 	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
@@ -123,10 +128,9 @@
 			
 		} else {
 			NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			if (![[userResult objectForKey:@"result"] isEqualToString:@"fail"]) {
-				
 				[_cameraOverlayView verifyOverlay:NO];
 				[HONAppDelegate writeUserInfo:userResult];
 				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -474,11 +478,18 @@
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
-	[_progressHUD hide:YES];
-	_progressHUD = nil;
+	_uploadCounter++;
+	if (_uploadCounter == 2) {
+		[_progressHUD hide:YES];
+		_progressHUD = nil;
 	
-	[_cameraOverlayView uploadComplete];
-	[_cameraOverlayView animateAccept];
+		[_cameraOverlayView uploadComplete];
+		[_cameraOverlayView animateAccept];
+		
+		NSString *avatarURL = [NSString stringWithFormat:@"%@/%@_o.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename];
+		[HONImagingDepictor writeImageFromWeb:avatarURL withDimensions:CGSizeMake(480.0, 640.0) withUserDefaultsKey:@"avatar_image"];
+		//[HONImagingDepictor writeImageFromWeb:[NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename] withDimensions:CGSizeMake(kAvatarDim, kAvatarDim) withUserDefaultsKey:@"avatar_image"];
+	}
 }
 
 - (void)request:(AmazonServiceRequest *)request didFailWithError:(NSError *)error {

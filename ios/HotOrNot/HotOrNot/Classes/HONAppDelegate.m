@@ -855,11 +855,11 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateNormal];
+														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateNormal];
 	[[UIBarButtonItem appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
-														  [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateHighlighted];
+														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateHighlighted];
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
@@ -888,7 +888,7 @@ NSString * const kTwilioSMS = @"6475577873";
 //	//config.secureUdid = @"<SecureUDID value goes here>";
 //	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
 	
-	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
@@ -991,6 +991,7 @@ NSString * const kTwilioSMS = @"6475577873";
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
+	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"APP_ENTERING_BACKGROUND" object:nil];
 }
 

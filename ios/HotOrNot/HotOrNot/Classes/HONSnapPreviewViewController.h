@@ -14,12 +14,15 @@
 @protocol HONSnapPreviewViewControllerDelegate;
 @interface HONSnapPreviewViewController : UIViewController
 - (id)initWithChallenge:(HONChallengeVO *)vo;
-- (id)initWithOpponent:(HONOpponentVO *)vo;
-- (id)initWithImageURL:(NSString *)url;
+- (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (void)showControls;
 
 @property (nonatomic, assign) id <HONSnapPreviewViewControllerDelegate> delegate;
 @end
 
 @protocol HONSnapPreviewViewControllerDelegate
+- (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController;
+- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+- (void)snapPreviewViewControllerProfile:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 @end

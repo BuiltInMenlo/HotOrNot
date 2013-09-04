@@ -297,7 +297,9 @@
 		
 		if (CGRectContainsPoint(_rHolderView.frame, touchPoint) && _opponentCounter > 0) {
 			int index = touchPoint.y / (kSnapMediumDim + 1.0);
-			[self.delegate timelineItemViewCell:self showPreview:(HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index] forChallenge:_challengeVO];
+			
+			if (index < _opponentCounter)
+				[self.delegate timelineItemViewCell:self showPreview:(HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index] forChallenge:_challengeVO];
 		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {

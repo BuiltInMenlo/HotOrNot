@@ -28,7 +28,6 @@
 #import "HONAddContactsViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONImagingDepictor.h"
-#import "HONChallengeOverlayView.h"
 #import "HONVerifyHeaderView.h"
 #import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileView.h"
@@ -36,7 +35,7 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONChallengeOverlayViewDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -45,7 +44,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic, strong) NSDate *lastDate;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
-@property (nonatomic, strong) HONChallengeOverlayView *challengeOverlayView;
 @property (nonatomic, strong) UIImageView *emptyImageView;
 @property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, strong) NSMutableArray *friends;
@@ -203,6 +201,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+		
+		_isRefreshing = NO;
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
 	}];
 }
 
@@ -546,6 +547,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithChallenge:_challengeVO];
+	_snapPreviewViewController.delegate = self;
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
@@ -555,15 +557,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
-	if (_snapPreviewViewController != nil) {
-		[_snapPreviewViewController.view removeFromSuperview];
-		_snapPreviewViewController = nil;
-	}
-	
-	_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_challengeVO.creatorVO];
-	_challengeOverlayView.delegate = self;
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
+	[_snapPreviewViewController showControls];
 }
 
 - (void)challengeViewCell:(HONChallengeViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
@@ -612,15 +606,15 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 
-#pragma mark - ChallengeOverlay Delegates
-- (void)challengeOverlayViewClose:(HONChallengeOverlayView *)challengeOverlayView {
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+#pragma mark - SnapPreview Delegates
+- (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
 	}
 }
 
-- (void)challengeOverlayViewFlag:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:@"Verify - Flag"
@@ -636,13 +630,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[alertView setTag:1];
 	[alertView show];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
 	}
 }
 
-- (void)challengeOverlayViewProfile:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewControllerProfile:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:@"Verify - Profile"
@@ -650,15 +644,15 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
 	}
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:opponentVO.username];
 }
 
-- (void)challengeOverlayViewUpvote:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:@"Verify - Upvote"
@@ -666,9 +660,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent", nil]];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
@@ -765,11 +759,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	if (alertView.tag == 0) {
 	
 	} else if (alertView.tag == 1) {
-		if (_challengeOverlayView != nil) {
-			[_challengeOverlayView removeFromSuperview];
-			_challengeOverlayView = nil;
-		}
-		
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",

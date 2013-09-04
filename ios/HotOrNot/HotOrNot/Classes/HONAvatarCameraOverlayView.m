@@ -67,7 +67,7 @@
 		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
 		[_infoHolderImageView addSubview:okInfoButton];
 		
-		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0)];
+		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 300.0, 5.0)];
 		progressBarBGImageView.backgroundColor = [UIColor blackColor];
 		[self addSubview:progressBarBGImageView];
 		
@@ -85,22 +85,22 @@
 		_submitHolderView.hidden = YES;
 		[self addSubview:_submitHolderView];
 		
+		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		retakeButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeAvatarButton_nonActive"] forState:UIControlStateNormal];
+		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeAvatarButton_Active"] forState:UIControlStateHighlighted];
+		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
+		[_submitHolderView addSubview:retakeButton];
+		
 		UIButton *skipButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		skipButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
+		skipButton.frame = CGRectMake(106.0, 0.0, 106.0, 64.0);
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_nonActive"] forState:UIControlStateNormal];
 		[skipButton setBackgroundImage:[UIImage imageNamed:@"doNotUseButton_Active"] forState:UIControlStateHighlighted];
 		[skipButton addTarget:self action:@selector(_goCancel) forControlEvents:UIControlEventTouchUpInside];
 		[_submitHolderView addSubview:skipButton];
 		
-		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		retakeButton.frame = CGRectMake(106.0, 0.0, 106.0, 64.0);
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_nonActive"] forState:UIControlStateNormal];
-		[retakeButton setBackgroundImage:[UIImage imageNamed:@"retakeButton_Active"] forState:UIControlStateHighlighted];
-		[retakeButton addTarget:self action:@selector(_goCameraBack) forControlEvents:UIControlEventTouchUpInside];
-		[_submitHolderView addSubview:retakeButton];
-		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(212.0, 0.0, 107.0, 64.0);
+		submitButton.frame = CGRectMake(212.0, 0.0, 108.0, 64.0);
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];
@@ -133,7 +133,7 @@
 		_progressBarImageView = nil;
 	}
 	
-	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 4.0, 2.0)];
+	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 4.0, 5.0)];
 	_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
 	[self addSubview:_progressBarImageView];
 	
@@ -244,7 +244,7 @@
 	}];
 	
 	[self.delegate cameraOverlayViewStartClock:self];
-	_actionLabel.text = @"Taking profile photo…";
+	_actionLabel.text = @"Taking profile photo";
 }
 
 - (void)_goCancel {
@@ -319,14 +319,14 @@
 
 #pragma mark - UI Presentation
 - (void)_animateLoader {
-	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 4.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 4.0, 5.0);
 	
 	[UIView beginAnimations:nil context:NULL];
 	[UIView setAnimationDuration:1.6];
 	[UIView setAnimationDelay:0.0];
 	[UIView setAnimationBeginsFromCurrentState:YES];
 	[UIView setAnimationCurve:UIViewAnimationCurveEaseOut];
-	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 14.0, 300.0, 2.0);
+	_progressBarImageView.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 300.0, 5.0);
 	[UIView commitAnimations];
 }
 

@@ -18,10 +18,9 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONSnapPreviewViewController.h"
-#import "HONChallengeOverlayView.h"
 #import "HONRefreshButtonView.h"
 
-@interface HONChallengeDetailsViewController () <UIScrollViewDelegate, UIAlertViewDelegate, HONChallengeOverlayViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONChallengeDetailsViewController () <UIScrollViewDelegate, UIAlertViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIScrollView *scrollView;
@@ -31,14 +30,15 @@
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) NSTimer *tapTimer;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
-@property (nonatomic, strong) HONChallengeOverlayView *challengeOverlayView;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic) BOOL isDoubleTap;
 @property (nonatomic) BOOL isModal;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
 @property (nonatomic) BOOL isRefreshing;
+@property (nonatomic) int opponentCounter;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
 
 @implementation HONChallengeDetailsViewController
@@ -90,16 +90,29 @@
 			NSDictionary *result = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], result);
 			
-			_isRefreshing = NO;
-			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
-			
 			[_refreshButtonView toggleRefresh:NO];
 			_challengeVO = [HONChallengeVO challengeWithDictionary:result];
 			[self performSelector:@selector(_makeUI) withObject:nil afterDelay:0.25];
 		}
 		
+		_isRefreshing = NO;
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIChallenges, [error localizedDescription]);
+		
+		_isRefreshing = NO;
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
 	}];
 }
 
@@ -416,17 +429,17 @@
 	_gridHolderView.backgroundColor = [UIColor whiteColor];
 	[_scrollView addSubview:_gridHolderView];
 	
-	int opponentCounter = 0;
+	_opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
 		if ([vo.imagePrefix length] > 0) {
-			CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (opponentCounter % 4), (kSnapMediumDim + 1.0) * (opponentCounter / 4));
+			CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (_opponentCounter % 4), (kSnapMediumDim + 1.0) * (_opponentCounter / 4));
 			
 			UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
 			[_gridHolderView addSubview:opponentHolderView];
 			
 			UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 			opponentImageView.userInteractionEnabled = YES;
-			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:opponentCounter]).imagePrefix]] placeholderImage:nil];
+			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:_opponentCounter]).imagePrefix]] placeholderImage:nil];
 			[opponentHolderView addSubview:opponentImageView];
 			
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -436,7 +449,7 @@
 			[rightButton setTag:vo.userID];
 			[opponentHolderView addSubview:rightButton];
 			
-			opponentCounter++;
+			_opponentCounter++;
 		}
 	}	
 }
@@ -445,34 +458,34 @@
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
 		
+		_opponentVO = nil;
 		CGRect creatorFrame = CGRectMake(_creatorChallengeImageView.frame.origin.x, _creatorChallengeImageView.frame.origin.y, _creatorChallengeImageView.frame.size.width, _creatorChallengeImageView.frame.size.height * 0.5);
 		if (CGRectContainsPoint(creatorFrame, touchPoint))
 			_opponentVO = _challengeVO.creatorVO;
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_challengeVO.creatorVO];
-		
+			
 		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
 			int col = touchPoint.x / (kSnapMediumDim + 1.0);
 			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
-			_opponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:(row * 4) + col];
 			
-			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_opponentVO];
+			if ((row * 4) + col < _opponentCounter)
+				_opponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:(row * 4) + col];
 		}
 		
-		[[Mixpanel sharedInstance] track:@"Timeline Details - Show Photo Detail"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
-										  nil]];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+		if (_opponentVO != nil) {
+			[[Mixpanel sharedInstance] track:@"Timeline Details - Show Photo Detail"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+											  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
+											  nil]];
+			
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:_opponentVO forChallenge:_challengeVO];
+			_snapPreviewViewController.delegate = self;
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+		}
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-		if (_snapPreviewViewController != nil) {
-			[_snapPreviewViewController.view removeFromSuperview];
-			_snapPreviewViewController = nil;
-		}
-		
 		[[Mixpanel sharedInstance] track:@"Timeline Details - Hide Photo Detail"
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -480,9 +493,7 @@
 										  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent",
 										  nil]];
 		
-		_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
-		_challengeOverlayView.delegate = self;
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
+		[_snapPreviewViewController showControls];
 	}
 }
 
@@ -597,10 +608,6 @@
 		[_snapPreviewViewController.view removeFromSuperview];
 		_snapPreviewViewController = nil;
 	}
-	
-	_challengeOverlayView = [[HONChallengeOverlayView alloc] initWithChallenge:_challengeVO forOpponent:_opponentVO];
-	_challengeOverlayView.delegate = self;
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_challengeOverlayView];
 }
 
 - (void)_refreshAllTabs:(NSNotification *)notification {
@@ -608,15 +615,17 @@
 }
 
 
-#pragma mark - ChallengeOverlay Delegates
-- (void)challengeOverlayViewClose:(HONChallengeOverlayView *)challengeOverlayView {
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+#pragma mark - SnapPreview Delegates
+- (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
+	NSLog(@"fgdgdgdddddgd");
+	
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
 	}
 }
 
-- (void)challengeOverlayViewUpvote:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_opponentVO = opponentVO;
 	
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Upvote"
@@ -625,9 +634,9 @@
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
@@ -647,7 +656,7 @@
 		[self _goUpvoteChallenger:_opponentVO.userID];
 }
 
-- (void)challengeOverlayViewFlag:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	_opponentVO = opponentVO;
 	
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Flag"
@@ -665,13 +674,13 @@
 	[alertView setTag:0];
 	[alertView show];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
 	}
 }
 
-- (void)challengeOverlayViewProfile:(HONChallengeOverlayView *)challengeOverlayView opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+- (void)snapPreviewViewControllerProfile:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Timeline Details -  Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -680,9 +689,9 @@
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
 	
-	if (_challengeOverlayView != nil) {
-		[_challengeOverlayView removeFromSuperview];
-		_challengeOverlayView = nil;
+	if (_snapPreviewViewController != nil) {
+		[_snapPreviewViewController.view removeFromSuperview];
+		_snapPreviewViewController = nil;
 	}
 }
 

@@ -17,11 +17,14 @@
 
 @interface HONSnapPreviewViewController ()
 @property (nonatomic, strong) NSString *url;
-@property (nonatomic, strong) UIView *buttonHolderView;
+@property (nonatomic, strong) UIView *imageHolderView;
+@property (nonatomic, strong) UIView *controlsHolderView;
+@property (nonatomic, strong) UIImageView *uploadingImageView;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UILabel *ageLabel;
+@property (nonatomic) BOOL isVerify;
 @end
 
 
@@ -29,25 +32,20 @@
 
 @synthesize delegate = _delegate;
 
-- (id)initWithImageURL:(NSString *)url {
-	if ((self = [super init])) {
-		_url = url;
-	}
-	
-	return (self);
-}
-
 - (id)initWithChallenge:(HONChallengeVO *)vo {
 	if ((self = [super init])) {
 		_challengeVO = vo;
+		_isVerify = YES;
 	}
 	
 	return (self);
 }
 
-- (id)initWithOpponent:(HONOpponentVO *)vo {
+- (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
 	if ((self = [super init])) {
-		_opponentVO = vo;
+		_opponentVO = opponentVO;
+		_challengeVO = challengeVO;
+		_isVerify = NO;
 	}
 	
 	return (self);
@@ -64,19 +62,6 @@
 - (BOOL)shouldAutorotate {
 	return (NO);
 }
-
-
-#pragma mark - Touch Handlers
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	//	UITouch *touch = [touches anyObject];
-	//	CGPoint location = [touch locationInView:self.view];
-	
-	CGPoint touchPoint = [[[event touchesForView:self.view] anyObject] locationInView:self.view];
-	NSLog(@"TOUCH:[%@]", NSStringFromCGPoint(touchPoint));
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"REMOVE_PREVIEW" object:nil];
-}
-
 
 
 #pragma mark - Data Calls
@@ -118,12 +103,11 @@
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_opponentVO.avatarURL]
 														cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+						  [weakSelf.uploadingImageView stopAnimating];
 						  weakSelf.imageView.image = image;
 						  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.imageView.alpha = 1.0; } completion:nil];
 					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-	[self.view addSubview:_imageView];
-	
-	//[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _opponentVO.imagePrefix]] placeholderImage:nil];
+	[_imageHolderView addSubview:_imageView];
 }
 
 - (void)_reloadChallengeImage {
@@ -137,12 +121,11 @@
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _opponentVO.imagePrefix]]
 														cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+						  [weakSelf.uploadingImageView stopAnimating];
 						  weakSelf.imageView.image = image;
 						  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.imageView.alpha = 1.0; } completion:nil];
 					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
-	[self.view addSubview:_imageView];
-	
-	//[_imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _opponentVO.imagePrefix]] placeholderImage:nil];
+	[_imageHolderView addSubview:_imageView];
 }
 
 - (void)_loadForVerify {
@@ -161,12 +144,13 @@
 	_imageView.alpha = 0.0;
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+						  [weakSelf.uploadingImageView stopAnimating];
 						  weakSelf.imageView.image = image;
 						  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.imageView.alpha = 1.0; } completion:nil];
 					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 						  [weakSelf _reloadVerifyImage];
 					  }];
-	[self.view addSubview:_imageView];
+	[_imageHolderView addSubview:_imageView];
 	
 	NSLog(@"VERIFY -- ORIGINAL:[%d] DIFF:[%f] IMG:[%@] DATA:[%@]\n", isOriginalImageAvailable, diff, imageURL, _opponentVO.dictionary);
 }
@@ -187,12 +171,13 @@
 	_imageView.alpha = 0.0;
 	[_imageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:imageURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 					  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+						  [weakSelf.uploadingImageView stopAnimating];
 						  weakSelf.imageView.image = image;
 						  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.imageView.alpha = 1.0; } completion:nil];
 					  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 						  [weakSelf _reloadChallengeImage];
 					  }];
-	[self.view addSubview:_imageView];
+	[_imageHolderView addSubview:_imageView];
 	
 	NSLog(@"CHALLENGE -- ORIGINAL:[%d] DIFF:[%f] IMG:[%@] DATA:[%@]\n", isOriginalImageAvailable, diff, imageURL, _opponentVO.dictionary);
 }
@@ -203,24 +188,28 @@
 	
 	//NSLog(@"VERSION:[%d][%@]", [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"] intValue], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]);
 	
-	if (_challengeVO != nil)
+	//if (_challengeVO != nil)
+	if (_isVerify)
 		_opponentVO = _challengeVO.creatorVO;
 	
-	UIImageView *uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, ([UIScreen mainScreen].bounds.size.height - 45.0), 54.0, 14.0)];
-	uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
-										  [UIImage imageNamed:@"cameraUpload_002"],
-										  [UIImage imageNamed:@"cameraUpload_003"], nil];
-	uploadingImageView.animationDuration = 0.5f;
-	uploadingImageView.animationRepeatCount = 0;
-	[uploadingImageView startAnimating];
-	[self.view addSubview:uploadingImageView];
+	_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, ([UIScreen mainScreen].bounds.size.height - 45.0), 54.0, 14.0)];
+	_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
+										   [UIImage imageNamed:@"cameraUpload_002"],
+										   [UIImage imageNamed:@"cameraUpload_003"], nil];
+	_uploadingImageView.animationDuration = 0.5f;
+	_uploadingImageView.animationRepeatCount = 0;
+	[_uploadingImageView startAnimating];
+	[self.view addSubview:_uploadingImageView];
 	
+	_imageHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
+	[self.view addSubview:_imageHolderView];
 	
-	if (_challengeVO == nil)
-		[self _loadForChallenge];
+	//if (_challengeVO == nil)
+	if (_isVerify)
+		[self _loadForVerify];
 	
 	else
-		[self _loadForVerify];
+		[self _loadForChallenge];
 	
 	
 	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 11.0, kSnapThumbDim, kSnapThumbDim)];
@@ -239,33 +228,45 @@
 	_ageLabel.textAlignment = NSTextAlignmentRight;
 	_ageLabel.textColor = [UIColor whiteColor];
 	_ageLabel.backgroundColor = [UIColor clearColor];
+	_ageLabel.text = ([_opponentVO.birthday timeIntervalSince1970] == 0.0) ? @"" : [NSString stringWithFormat:@"%d", [HONAppDelegate ageForDate:_opponentVO.birthday]];
 	[self.view addSubview:_ageLabel];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 42.0, 320.0, 84.0)];
-	[self.view addSubview:_buttonHolderView];
+	_controlsHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
+	_controlsHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.65];
+	_controlsHolderView.hidden = YES;
+	_controlsHolderView.alpha = 0.0;
+	[self.view addSubview:_controlsHolderView];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = _controlsHolderView.frame;
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
+	[_controlsHolderView addSubview:closeButton];
+	
+	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 42.0, 320.0, 84.0)];
+	[_controlsHolderView addSubview:buttonHolderView];
 	
 	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	upvoteButton.frame = CGRectMake(18.0, 0.0, 84.0, 84.0);
 	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
-	[_buttonHolderView addSubview:upvoteButton];
+	[buttonHolderView addSubview:upvoteButton];
 	
 	UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	profileButton.frame = CGRectMake(116.0, 0.0, 84.0, 84.0);
 	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
 	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
 	[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-	[_buttonHolderView addSubview:profileButton];
+	[buttonHolderView addSubview:profileButton];
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(217.0, 0.0, 84.0, 84.0);
 	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-	[_buttonHolderView addSubview:flagButton];
+	[buttonHolderView addSubview:flagButton];
 	
-	[self _retrieveUser:_opponentVO.userID];
+	//[self _retrieveUser:_opponentVO.userID];
 }
 
 - (void)viewDidLoad {
@@ -295,18 +296,28 @@
 
 #pragma mark - Public APIs
 - (void)showControls {
-	_buttonHolderView.hidden = NO;
-	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = self.view.frame;
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
-	[self.view addSubview:closeButton];
+	_controlsHolderView.hidden = NO;
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		_controlsHolderView.alpha = 1.0;
+	}];
 }
 
 
 #pragma mark - Navigation
 - (void)_goClose {
-	
+	[self.delegate snapPreviewViewControllerClose:self];
+}
+
+- (void)_goUpvote {
+	[self.delegate snapPreviewViewControllerUpvote:self opponent:_opponentVO forChallenge:_challengeVO];
+}
+
+- (void)_goProfile {
+	[self.delegate snapPreviewViewControllerProfile:self opponent:_opponentVO forChallenge:_challengeVO];
+}
+
+- (void)_goFlag {
+	[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
 }
 
 
