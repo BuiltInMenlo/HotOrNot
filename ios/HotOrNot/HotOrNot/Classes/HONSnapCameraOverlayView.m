@@ -188,7 +188,7 @@
 		_blackMatteView.alpha = 0.0;
 		_blackMatteView.backgroundColor = [UIColor blackColor];
 		[UIView animateWithDuration:0.25 animations:^(void) {
-			_blackMatteView.alpha = 0.35;
+			_blackMatteView.alpha = 0.65;
 		}];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {

@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UIImageView *verifyImageView;
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
+@property (nonatomic, strong) UIView *progressBarBGImageView;
 @property (nonatomic, strong) UILongPressGestureRecognizer *lpGestureRecognizer;
 @end
 
@@ -67,9 +68,9 @@
 		[okInfoButton addTarget:self action:@selector(_goOKInfo) forControlEvents:UIControlEventTouchUpInside];
 		[_infoHolderImageView addSubview:okInfoButton];
 		
-		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 300.0, 5.0)];
-		progressBarBGImageView.backgroundColor = [UIColor blackColor];
-		[self addSubview:progressBarBGImageView];
+		_progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 300.0, 5.0)];
+		_progressBarBGImageView.backgroundColor = [UIColor blackColor];
+		[self addSubview:_progressBarBGImageView];
 		
 		_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, ([UIScreen mainScreen].bounds.size.height - 14.0) * 0.5, 54.0, 14.0)];
 		_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
@@ -81,8 +82,7 @@
 		[_uploadingImageView startAnimating];
 		[self addSubview:_uploadingImageView];
 		
-		_submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0)];
-		_submitHolderView.hidden = YES;
+		_submitHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 64.0)];
 		[self addSubview:_submitHolderView];
 		
 		UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -190,7 +190,10 @@
 	for (UIView *subview in _previewHolderView.subviews)
 		[subview removeFromSuperview];
 	
-	_submitHolderView.hidden = YES;
+	_progressBarBGImageView.hidden = NO;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_submitHolderView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height, 320.0, 64.0);
+	}];
 }
 
 - (void)uploadComplete {
@@ -199,7 +202,10 @@
 }
 
 - (void)animateAccept {
-	_submitHolderView.hidden = NO;
+	_progressBarBGImageView.hidden = YES;
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		_submitHolderView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0);
+	}];
 }
 
 - (void)verifyOverlay:(BOOL)isIntro {
@@ -244,7 +250,7 @@
 	}];
 	
 	[self.delegate cameraOverlayViewStartClock:self];
-	_actionLabel.text = @"Taking profile photo";
+	_actionLabel.text = @"Tap anywhere to pause";
 }
 
 - (void)_goCancel {
@@ -304,7 +310,7 @@
 		
 		_irisView.alpha = 0.0;
 		[UIView animateWithDuration:0.125 animations:^(void) {
-			_irisView.alpha = 0.35;
+			_irisView.alpha = 0.65;
 		} completion:^(BOOL finished){}];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {

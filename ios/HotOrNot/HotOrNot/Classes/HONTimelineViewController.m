@@ -154,13 +154,12 @@
 }
 
 - (void)_registerNotifications {
-	//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showRegistration:) name:@"SHOW_REGISTRATION" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"SELECTED_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeVerify:) name:@"REMOVE_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showAddContacts:) name:@"SHOW_ADD_CONTACTS" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showProfile:) name:@"SHOW_PROFILE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_killTooltip:) name:@"KILL_TOOLTIP" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removePreview:) name:@"REMOVE_PREVIEW" object:nil];
 }
@@ -806,18 +805,9 @@
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)_showAddContacts:(NSNotification *)notification {
-	if (_timelineType == HONTimelineTypeFriends) {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Find friends who Volley"
-//															message:@"Would you like to find friends who Volley?"
-//														   delegate:self
-//												  cancelButtonTitle:@"No"
-//												  otherButtonTitles:@"Yes", nil];
-//		[alertView setTag:1];
-//		[alertView show];
-		
+- (void)_showProfile:(NSNotification *)notification {
+	if (_timelineType == HONTimelineTypeFriends)
 		[self _goProfile];
-	}
 }
 
 - (void)_selectedVoteTab:(NSNotification *)notification {

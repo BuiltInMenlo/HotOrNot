@@ -272,7 +272,7 @@
 					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
-						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PROFILE" object:nil];
 					}];
 				}];
 				
@@ -358,7 +358,7 @@
 	_usernameTextField.delegate = self;
 	[self.view addSubview:_usernameTextField];
 	
-	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	UIImageView *divider1ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
 	divider1ImageView.frame = CGRectOffset(divider1ImageView.frame, 0.0, 108.0);
 	[self.view addSubview:divider1ImageView];
 	
@@ -386,7 +386,7 @@
 	_passwordTextField.delegate = self;
 	[self.view addSubview:_passwordTextField];
 	
-	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	UIImageView *divider2ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
 	divider2ImageView.frame = CGRectOffset(divider2ImageView.frame, 0.0, 173.0);
 	[self.view addSubview:divider2ImageView];
 	
@@ -403,7 +403,7 @@
 	[_birthdayButton addTarget:self action:@selector(_goPicker) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:_birthdayButton];
 	
-	UIImageView *divider3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"divider"]];
+	UIImageView *divider3ImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"firstRunDivider"]];
 	divider3ImageView.frame = CGRectOffset(divider3ImageView.frame, 0.0, 238.0);
 	[self.view addSubview:divider3ImageView];
 	
@@ -798,7 +798,7 @@
 			[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void){
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_ADD_CONTACTS" object:nil];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PROFILE" object:nil];
 			}];
 		}];
 	}

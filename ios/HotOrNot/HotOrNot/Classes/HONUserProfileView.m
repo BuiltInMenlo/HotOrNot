@@ -44,12 +44,11 @@
 		__weak typeof(self) weakSelf = self;
 		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 10.0, 93.0, 93.0)];
 		_avatarImageView.userInteractionEnabled = YES;
-		//[_avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
-		_avatarImageView.alpha = 0.0;
+		//_avatarImageView.alpha = 0.0;
 		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 									weakSelf.avatarImageView.image = image;
-									[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
+									//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 		
 		[holderImageView addSubview:_avatarImageView];
