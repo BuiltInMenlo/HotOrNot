@@ -106,7 +106,11 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 		$params = array( $count, $targetId );
 		$stmt = $this->prepareAndExecute($sql,$params);
 		
-        // update the users participant record that they have voted
+		$sql = "update `hotornot-dev`.tblChallenges set updated = now() where id = ?";
+		$params = array( $volleyId );
+		$stmt = $this->prepareAndExecute($sql,$params);
+		
+		// update the users participant record that they have voted
 		$sql = "
 			INSERT IGNORE INTO `hotornot-dev`.tblFlaggedUserApprovals
 			 (flag, user_id, challenge_id, added)
@@ -163,7 +167,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $sql = "
             (select count(*) as count
             from `hotornot-dev`.tblChallenges as tc
-            where tc.creator_id = ?
+            where tc.creator_id = ? and is_verify != 1
             ) union (
             select count(*) as count
             from `hotornot-dev`.tblChallengeParticipants as tcp

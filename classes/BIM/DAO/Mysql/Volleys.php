@@ -547,6 +547,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 				AND tc.is_verify = 1 
 				AND u.user_id is null
 				AND tc.creator_id != ?
+				AND tc.creator_id != 2394
 				
 			GROUP BY tc.id
 			ORDER BY tc.updated DESC 
