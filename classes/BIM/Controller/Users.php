@@ -41,6 +41,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
                 $input->imgURL = $this->normalizeAvatarImgUrl($input->imgURL);
                 $userId = $this->resolveUserId( $input->userID );
                 $users = new BIM_App_Users();
+                self::friendTeamVolley($userId);
                 //$users->firstRunComplete( $input->userID );
                 BIM_Jobs_Users::queueFirstRunComplete($userId);
                 $users = new BIM_App_Users();
@@ -48,6 +49,17 @@ class BIM_Controller_Users extends BIM_Controller_Base {
             }
 		}
 		return false;
+    }
+    
+    public static function friendTeamVolley( $userId ){
+        // have @teamvolley friend the new user			
+		$friendRelation = (object) array( 
+			'target' => 2394, 
+			'userID' => $userId, /*team volley id */
+		    'auto' => 1,
+		);
+		$s = new BIM_App_Social();
+		$s->addFriend($friendRelation);
     }
     
     public function getUserFromName(){

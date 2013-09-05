@@ -626,15 +626,6 @@ class BIM_App_Users extends BIM_App_Base{
                 $volley = BIM_Model_Volley::createVerifyVolley($userId);
                 //BIM_Jobs_Users::queueVolleySignupVerificationPush($userId);
             }
-            // BIM_Model_Volley::autoVolley($user->id);
-            // have @teamvolley friend the new user			
-			$friendRelation = (object) array( 
-				'target' => 2394, 
-				'userID' => $user->id, /*team volley id */
-			    'auto' => 1,
-			);
-			$s = new BIM_App_Social();
-			$s->addFriend($friendRelation);
         }
         return BIM_Model_User::get( $userId );
     }

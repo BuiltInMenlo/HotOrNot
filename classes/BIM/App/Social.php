@@ -38,8 +38,6 @@ class BIM_App_Social extends BIM_App_Base{
             }
             
             $dao->flush();
-            $targetUser->purgeFromCache();
-            $sourceUser->purgeFromCache();
         }
         return $added;
     }

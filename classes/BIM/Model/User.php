@@ -471,10 +471,12 @@ class BIM_Model_User{
      * user_id, username, blob
      * 
      */
-    public static function archive( $userIds ){
-        $users = self::getMulti( $userIds );
-        foreach( $users as $user ){
+    public static function archive( $userNames ){
+        foreach( $userNames as $name ){
+            $user = BIM_Model_User::getByUsername($name);
             print_r( array("archiving: ", $user ) );
+            $user->purgeVolleys();
+            $user->purgeFromCache();
             $user->volleys = BIM_Model_Volley::getMulti($user->getVolleyIds());
             $data = json_encode($user);
             $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );

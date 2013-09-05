@@ -339,26 +339,36 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $stmt = $this->prepareAndExecute($query, $params);
 		
         if( !empty($this->lastInsertId) ){
-            $sql = 'UPDATE `hotornot-dev`.tblChallenges SET votes = votes + 1 where id = ?';
+            
             if( $isCreator ){
                 $sql = '
                 	UPDATE `hotornot-dev`.tblChallenges 
                 	SET votes = votes + 1, 
                 	    creator_likes = creator_likes + 1,
-			    updated = now()
+			    		updated = now()
                 	where id = ?
                 ';
+                $params = array( $volleyId );
+                $this->prepareAndExecute($sql, $params);
+            } else {
+                $sql = '
+                	UPDATE `hotornot-dev`.tblChallenges 
+                	SET votes = votes + 1, 
+			    		updated = now()
+                	where id = ?
+                ';
+                $params = array( $volleyId );
+                $this->prepareAndExecute($sql, $params);
+                
+                $sql = 'UPDATE `hotornot-dev`.tblChallengeParticipants SET likes = likes + 1 where user_id = ? and challenge_id = ?';
+                $params = array( $targetId, $volleyId );
+                $this->prepareAndExecute($sql, $params);
             }
-            $params = array( $volleyId );
-            $this->prepareAndExecute($sql, $params);
             
             $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_votes = total_votes + 1 where id = ?';
             $params = array( $targetId );
             $this->prepareAndExecute($sql, $params);
             
-            $sql = 'UPDATE `hotornot-dev`.tblChallengeParticipants SET likes = likes + 1 where user_id = ? and challenge_id = ?';
-            $params = array( $targetId, $volleyId );
-            $this->prepareAndExecute($sql, $params);
         }
     }
     
