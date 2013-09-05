@@ -14,7 +14,7 @@ class BIM_App_Social extends BIM_App_Base{
         }
         
         $targets[] = $params->userID;
-        self::purgeUserCache($targets);
+        BIM_Model_User::purgeById($targets);
         
         return self::getFollowed($params);
     }
@@ -84,7 +84,7 @@ class BIM_App_Social extends BIM_App_Base{
         }
         
         $sources[] = $params->userID;
-        self::purgeUserCache($sources);
+        BIM_Model_User::purgeById($sources);
         
         return self::getFriends($params);
     }
@@ -114,18 +114,9 @@ class BIM_App_Social extends BIM_App_Base{
         }
         
         $targets[] = $params->userID;
-        self::purgeUserCache($targets);
+        BIM_Model_User::purgeById($targets);
         
         return self::getFollowed($params);
-    }
-    
-    protected static function purgeUserCache( $ids ){
-        $users = BIM_Model_User::getMulti($ids);
-        foreach( $users as $user ){
-            if( $user->isExtant() ){
-                $user->purgeFromCache();
-            }
-        }
     }
     
     protected static function _removeFriend( $params ){

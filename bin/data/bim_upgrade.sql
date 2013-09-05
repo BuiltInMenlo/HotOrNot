@@ -56,3 +56,4 @@ alter table tblChallengeParticipants
 update tblUsers set age = -1;
 insert into tblChallengeStatusTypes (id,name,info,added) values (9,'New User Verify','',now());
 insert into tblChallengeStatusTypes (id,name,info,added) values (10,'Flagged User Verify','',now());
+delete from tblChallengeParticipants where img = '' or img is null;

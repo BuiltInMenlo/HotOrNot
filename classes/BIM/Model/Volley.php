@@ -203,6 +203,7 @@ class BIM_Model_Volley{
         $hashTagId = self::getHashTagId($userId, $hashTag);
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volleyId = $dao->add( $userId, $targetIds, $hashTagId, $hashTag, $imgUrl, $isPrivate, $expires, $isVerify, $status );
+        BIM_Model_User::purgeById( array( $userId ) );
         return self::get( $volleyId );
     }
     
@@ -247,8 +248,7 @@ class BIM_Model_Volley{
         $dao->join( $this->id, $userId, $imgUrl );
         
         $this->purgeFromCache();
-        $user = BIM_Model_User::get( $userId );
-        $user->purgeFromCache();
+        $user = BIM_Model_User::purgeById( $userId );
     }
     
     public function updateStatus( $status ){
@@ -628,5 +628,26 @@ class BIM_Model_Volley{
             $ids = $c->sticky_volleys;
         }
         return self::getMulti($ids);
+    }
+    
+    public static function assignVerifyVolleysToAll(){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $userIds = $dao->getAllIds();
+        foreach( $userIds as $userId ){
+            $user = BIM_Model_User::get( $userId );
+            if( $user->isExtant() ){
+                $vv = self::getVerifyVolley($user->id);
+                if( $vv->isNotExtant() ){
+                    $vv = self::createVerifyVolley($user->id);
+                    if( $vv->isExtant() ){
+                        print "created a verify volley for $user->username : $user->id\n";
+                    } else {
+                        print "could not create a verify volley for $user->username : $user->id\n";
+                    }
+                } else {
+                    print "a verify volley exists for $user->username : $user->id\n";
+                }
+            }
+        }
     }
 }

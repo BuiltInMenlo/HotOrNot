@@ -65,6 +65,10 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
         $volleyId = $this->lastInsertId;
         
+        $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = total_challenges + 1 WHERE id = ? ';
+        $params = array( $userId );
+        $this->prepareAndExecute($sql, $params);
+        
         if( $volleyId && $targetIds ){
             // now we create the insert statement for all of the users in this volley
             $params = array();

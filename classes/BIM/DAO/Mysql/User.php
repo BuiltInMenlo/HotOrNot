@@ -2,6 +2,12 @@
 
 class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
     
+    public function getAllIds(){
+        $sql = "select id from `hotornot-dev`.tblUsers";
+		$stmt = $this->prepareAndExecute($sql);
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+    }
+    
     public function delete( $userId ){
         $sql = "
         	delete from `hotornot-dev`.tblChallengeParticipants 

@@ -51,6 +51,18 @@ class BIM_Model_User{
         }
     }
     
+    public static function purgeById( $ids ){
+        if( !is_array($ids) ){
+            $ids = array( $ids );
+        }
+        $users = self::getMulti($ids);
+        foreach( $users as $user ){
+            if( $user->isExtant() ){
+                $user->purgeFromCache();
+            }
+        }
+    }
+        
     public function hasFriendList(){
         return ( property_exists( $this, 'friends' ) && $this->friends != -1  );
     }
@@ -471,9 +483,12 @@ class BIM_Model_User{
      * user_id, username, blob
      * 
      */
-    public static function archive( $userNames ){
-        foreach( $userNames as $name ){
-            $user = BIM_Model_User::getByUsername($name);
+    public static function archive( $ids ){
+        if( !is_array($ids)){
+            $ids = array( $ids );
+        }
+        foreach( $ids as $id ){
+            $user = BIM_Model_User::get($id);
             print_r( array("archiving: ", $user ) );
             $user->purgeVolleys();
             $user->purgeFromCache();
@@ -482,6 +497,13 @@ class BIM_Model_User{
             $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
             $dao->archive($user->id, $user->username, $data);
             $user->delete();
+        }
+    }
+    
+    public static function archiveByName( $userNames ){
+        foreach( $userNames as $name ){
+            $user = BIM_Model_User::getByUsername($name);
+            self::archive($user->id);
         }
     }
     
