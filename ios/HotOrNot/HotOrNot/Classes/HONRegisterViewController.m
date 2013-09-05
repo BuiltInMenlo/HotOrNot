@@ -669,7 +669,7 @@
 }
 
 - (void)_showOverlay {
-	//_imagePicker.cameraOverlayView = _cameraOverlayView;
+	_imagePicker.cameraOverlayView = _cameraOverlayView;
 	[_cameraOverlayView startProgress];
 	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_restartProgress) userInfo:nil repeats:YES];
 	

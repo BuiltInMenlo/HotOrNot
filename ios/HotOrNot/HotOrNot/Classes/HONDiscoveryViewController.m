@@ -303,7 +303,8 @@
 - (void)_showSearchTable:(NSNotification *)notification {
 	[self.navigationController setNavigationBarHidden:YES animated:YES];
 	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, (-90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]));
+		_tableView.frame = CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height);
+		//_tableView.frame = CGRectOffset(_tableView.frame, 0.0, (-90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]));
 		_bannerView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		_bannerView.hidden = YES;
