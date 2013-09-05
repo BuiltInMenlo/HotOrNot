@@ -25,9 +25,9 @@ class BIM_Controller_Users extends BIM_Controller_Base {
             $birthdate = !empty( $input->age ) ? $input->age : null;
             if( !$birthdate || ($birthdate && BIM_Utils::ageOK( $birthdate ) ) ){
                 $users = new BIM_App_Users();
-                if( !empty( $input->firstRun ) ){
-                    $users->firstRunComplete($userId);
-                }
+                //if( !empty( $input->firstRun ) ){
+                    //$users->firstRunComplete($userId);
+                //}
 			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $birthdate );
             }
 		}
@@ -52,14 +52,13 @@ class BIM_Controller_Users extends BIM_Controller_Base {
     }
     
     public static function friendTeamVolley( $userId ){
-        // have @teamvolley friend the new user			
+        // have @teamvolley friend the new user	
 		$friendRelation = (object) array( 
 			'target' => 2394, 
 			'userID' => $userId, /*team volley id */
 		    'auto' => 1,
 		);
-		$s = new BIM_App_Social();
-		$s->addFriend($friendRelation);
+		BIM_App_Social::addFriend($friendRelation);
     }
     
     public function getUserFromName(){
