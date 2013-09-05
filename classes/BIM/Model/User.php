@@ -472,7 +472,13 @@ class BIM_Model_User{
     public static function getUsersWithSimilarName( $username ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $ids = $dao->getUsersWithSimilarName( $username );
-        return self::getMulti($ids, false, true);
+        $users = self::getMulti($ids, false);
+        foreach( $users as $user ){
+            if( !$user->hasFriendList() ){
+                $user->friends = array();
+            }
+        }
+        return $users;
     }
     
     /**
