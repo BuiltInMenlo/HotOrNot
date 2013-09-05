@@ -164,7 +164,7 @@
 	
 	_uploadCounter = 0;
     
-    NSString *currentTimestamp = [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
+    NSString *currentTimestamp = [NSString stringWithFormat:@"%d", (int)[[NSDate date] timeIntervalSince1970]];
     
 	_filename = [NSString stringWithFormat:@"%@-%@",[HONAppDelegate deviceToken],currentTimestamp];
 	NSLog(@"FILENAME: %@/%@", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
@@ -640,16 +640,20 @@
 	_imagePicker.toolbarHidden = YES;
 	_imagePicker.allowsEditing = NO;
 	
+//	_imagePicker.navigationBarHidden = NO;
+//	_imagePicker.toolbarHidden = NO;
+//	_imagePicker.allowsEditing = YES;
+//	_imagePicker.showsCameraControls = YES;
+
+	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
 		
 		_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
 		_cameraOverlayView.delegate = self;
-		
-		//_imagePicker.cameraOverlayView = _cameraOverlayView;
-		
-		// these two fuckers don't work in ios7 right now!!
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		
+		// this fucker don't work in ios7 right now!!
 		_imagePicker.showsCameraControls = NO;
 		// ---------------------------------------------------------------------------
 		
@@ -665,7 +669,7 @@
 }
 
 - (void)_showOverlay {
-	_imagePicker.cameraOverlayView = _cameraOverlayView;
+	//_imagePicker.cameraOverlayView = _cameraOverlayView;
 	[_cameraOverlayView startProgress];
 	_clockTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_restartProgress) userInfo:nil repeats:YES];
 	
@@ -755,6 +759,7 @@
 
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+	NSLog(@"imagePickerController:didFinishPickingMediaWithInfo");
 	UIImage *image = [[info objectForKey:UIImagePickerControllerOriginalImage] fixOrientation];
 	
 	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {

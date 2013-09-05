@@ -58,7 +58,8 @@
 	
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
     
-    NSString *currentTimestamp = [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
+	// NSString *currentTimestamp = [NSString stringWithFormat:@"%f", [[NSDate date] timeIntervalSince1970]];
+	NSString *currentTimestamp = [NSString stringWithFormat:@"%d", (int)[[NSDate date] timeIntervalSince1970]];
     
 	_filename = [NSString stringWithFormat:@"%@-%@", [HONAppDelegate deviceToken], currentTimestamp];
 	NSLog(@"FILENAME: %@/%@.jpg", [HONAppDelegate s3BucketForType:@"avatars"], _filename);
@@ -201,9 +202,9 @@
 		_imagePicker.wantsFullScreenLayout = NO;
 		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
 		_imagePicker.navigationBar.barStyle = UIBarStyleDefault;
-		
-		// these two fuckers don't work in ios7 right now!!
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		
+		// this fuck don't work in ios7 right now!!
 		_imagePicker.showsCameraControls = NO;
 		// ---------------------------------------------------------------------------
 		
@@ -412,9 +413,13 @@
 		_clockTimer = nil;
 	}
 	
+	//[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
-		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+			_cameraOverlayView = nil;
+			_imagePicker.cameraOverlayView = nil;
+			_imagePicker = nil;
+		}];
 	}];
 }
 

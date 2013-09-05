@@ -72,10 +72,10 @@
 		_progressBarBGImageView.backgroundColor = [UIColor blackColor];
 		[self addSubview:_progressBarBGImageView];
 		
-		_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(133.0, ([UIScreen mainScreen].bounds.size.height - 14.0) * 0.5, 54.0, 14.0)];
-		_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"cameraUpload_001"],
-											   [UIImage imageNamed:@"cameraUpload_002"],
-											   [UIImage imageNamed:@"cameraUpload_003"], nil];
+		_uploadingImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
+		_uploadingImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
+											   [UIImage imageNamed:@"overlayLoader002"],
+											   [UIImage imageNamed:@"overlayLoader003"], nil];
 		_uploadingImageView.animationDuration = 0.5f;
 		_uploadingImageView.animationRepeatCount = 0;
 		_uploadingImageView.alpha = 0.0;

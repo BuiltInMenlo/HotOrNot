@@ -459,7 +459,7 @@
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
 		
 		_opponentVO = nil;
-		CGRect creatorFrame = CGRectMake(_creatorChallengeImageView.frame.origin.x, _creatorChallengeImageView.frame.origin.y, _creatorChallengeImageView.frame.size.width, _creatorChallengeImageView.frame.size.height * 0.5);
+		CGRect creatorFrame = CGRectMake(_creatorChallengeImageView.frame.origin.x, _creatorChallengeImageView.frame.origin.y, _creatorChallengeImageView.frame.size.width, _creatorChallengeImageView.frame.size.height * 0.73);
 		if (CGRectContainsPoint(creatorFrame, touchPoint))
 			_opponentVO = _challengeVO.creatorVO;
 			

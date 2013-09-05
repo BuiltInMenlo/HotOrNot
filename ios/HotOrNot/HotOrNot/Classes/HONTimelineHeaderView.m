@@ -43,7 +43,7 @@
 		creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
 		[self addSubview:creatorNameLabel];
 		
-		if ([_challengeVO.challengers count] > 0 && [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).imagePrefix length] > 0 && ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
+		if ([_challengeVO.challengers count] > 0 && [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).imagePrefix length] > 0 && ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] && _challengeVO.creatorVO.userID != ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).userID) {
 			UILabel *lastJoinedLabel = [[UILabel alloc] initWithFrame:CGRectMake(226.0, 5.0, 80.0, 19.0)];
 			lastJoinedLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
 			lastJoinedLabel.textColor = [HONAppDelegate honOrthodoxGreenColor];

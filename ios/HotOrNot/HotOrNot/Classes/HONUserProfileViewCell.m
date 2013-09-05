@@ -67,13 +67,13 @@
 		}
 	}
 	
-	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	profilePicButton.frame = CGRectMake(196.0, 46.0, 34.0, 34.0);
-	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
-	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
-	[profilePicButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
-	profilePicButton.hidden = !isUser;
-	[self addSubview:profilePicButton];
+//	UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//	profilePicButton.frame = CGRectMake(196.0, 46.0, 34.0, 34.0);
+//	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
+//	[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
+//	[profilePicButton addTarget:self action:@selector(_goProfilePic) forControlEvents:UIControlEventTouchUpInside];
+//	profilePicButton.hidden = !isUser;
+//	[self addSubview:profilePicButton];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];

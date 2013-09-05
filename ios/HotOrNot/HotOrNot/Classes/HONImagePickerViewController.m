@@ -316,6 +316,7 @@ const CGFloat kFocusInterval = 0.5f;
 			} else {
 				///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				
+				_hasSubmitted = YES;
 				if (_uploadCounter == [_s3Uploads count]) {
 //					if (_imagePicker.parentViewController != nil) {
 //						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
@@ -344,6 +345,59 @@ const CGFloat kFocusInterval = 0.5f;
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
+	}];
+}
+
+- (void)_retrieveUser {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 5], @"action",
+							[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+							nil];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			[HONAppDelegate writeUserInfo:userResult];
+			
+			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
+				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
+					BOOL isFound = NO;
+					for (NSNumber *userID in _addFollowingIDs) {
+						if ([userID intValue] == vo.userID) {
+							isFound = YES;
+							break;
+						}
+					}
+					
+					if (!isFound) {
+						[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																				[NSString stringWithFormat:@"%d", vo.userID], @"id",
+																				[NSString stringWithFormat:@"%d", 0], @"points",
+																				[NSString stringWithFormat:@"%d", 0], @"votes",
+																				[NSString stringWithFormat:@"%d", 0], @"pokes",
+																				[NSString stringWithFormat:@"%d", 0], @"pics",
+																				[NSString stringWithFormat:@"%d", 0], @"age",
+																				vo.username, @"username",
+																				vo.fbID, @"fb_id",
+																				vo.imageURL, @"avatar_url", nil]]];
+						[_addFollowingIDs addObject:[NSNumber numberWithInt:vo.userID]];
+					}
+				}
+			}
+			
+			[_cameraOverlayView updateChallengers:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 	}];
 }
 
@@ -471,38 +525,14 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 	
 	} else if (_challengeSubmitType == HONChallengeSubmitTypeMatch) {
-		for (HONUserVO *vo in [HONAppDelegate friendsList]) {
-			if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
-				BOOL isFound = NO;
-				for (NSNumber *userID in _addFollowingIDs) {
-					if ([userID intValue] == vo.userID) {
-						isFound = YES;
-						break;
-					}
-				}
-				
-				if (!isFound) {
-					[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																			[NSString stringWithFormat:@"%d", vo.userID], @"id",
-																			[NSString stringWithFormat:@"%d", 0], @"points",
-																			[NSString stringWithFormat:@"%d", 0], @"votes",
-																			[NSString stringWithFormat:@"%d", 0], @"pokes",
-																			[NSString stringWithFormat:@"%d", 0], @"pics",
-																			[NSString stringWithFormat:@"%d", 0], @"age",
-																			vo.username, @"username",
-																			vo.fbID, @"fb_id",
-																			vo.imageURL, @"avatar_url", nil]]];
-					[_addFollowingIDs addObject:[NSNumber numberWithInt:vo.userID]];
-				}
-			}
-		}
+		[self _retrieveUser];
 	}
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-		
-		// these two fuckers don't work in ios7 right now!!
 		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+		
+		// this fucker don't work in ios7 right now!!
 		_imagePicker.showsCameraControls = NO;
 		// ---------------------------------------------------------------------------
 		
@@ -962,7 +992,6 @@ const CGFloat kFocusInterval = 0.5f;
 		_challengeParams = [params copy];
 		
 		NSLog(@"PARAMS:[%@]", _challengeParams);
-		_hasSubmitted = YES;
 		
 		[self _submitChallenge];
 	}

@@ -54,7 +54,7 @@
 		[holderImageView addSubview:_avatarImageView];
 		
 		UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		profilePicButton.frame = CGRectMake(88.0, 38.0, 34.0, 34.0);
+		profilePicButton.frame = CGRectMake(83.0, 33.0, 44.0, 44.0);
 		[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 		[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
 		[profilePicButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
@@ -189,7 +189,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			[HONAppDelegate writeUserInfo:userResult];
 			
@@ -200,12 +200,11 @@
 			[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 			
 			__weak typeof(self) weakSelf = self;
-			//[_avatarImageView setImageWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] placeholderImage:nil];
-			_avatarImageView.alpha = 0.0;
+			//_avatarImageView.alpha = 0.0;
 			[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 										weakSelf.avatarImageView.image = image;
-										[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
+										//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 									} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 			
 			_nameLabel.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"username"]];
