@@ -96,15 +96,7 @@ class BIM_App_Votes extends BIM_App_Base{
 	}
 	
 	public function getChallengesWithFriends($input) {
-	    $challenge_arr = array();
-        $volleys = BIM_Model_Volley::getVolleysWithFriends( $input->userID );
-        foreach( $volleys as $volley ){
-	    	$isForUser = $volley->hasUser( $input->userID );
-			if( $volley->is_private == 'N' || $isForUser && ( ! $volley->isExpired() ) ){
-				array_push( $challenge_arr, $volley );
-			}
-        }
-		return $challenge_arr;
+        return BIM_Model_Volley::getVolleysWithFriends( $input->userID );
 	}
 	
 	/** 

@@ -546,25 +546,27 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     }
     
     /*
- 881, 2454, 2, 2383, 2379, 2456, 882, 2457, 2394, 3932, 1, 881, 881,
+881, 2454, 2, 2383, 2379, 2456, 882, 2457, 2394, 3932, 1
 
-SELECT tc.id as id
+SELECT tc.id, tc.updated
 FROM `hotornot-dev`.`tblChallenges` as tc 
 WHERE
     tc.is_verify != 1
     AND tc.status_id IN (1,2,4)
     AND tc.`creator_id` IN ( 881, 2454, 2, 2383, 2379, 2456, 882, 2457, 2394, 3932, 1 )
+
 UNION
-SELECT tc.id as id
+
+SELECT tc.id, tc.updated
 FROM `hotornot-dev`.`tblChallenges` as tc 
     LEFT JOIN `hotornot-dev`.tblChallengeParticipants as tcp
     ON tc.id = tcp.challenge_id
 WHERE
     tc.is_verify != 1
     AND tc.status_id IN (1,2,4)
-    AND tcp.`user_id` IN ( 881, 2454, 2, 2383, 2379, 2456, 882, 2457, 2394, 3932, 1 ) 
+    AND tcp.`user_id` IN ( 881, 2454, 2, 2383, 2379, 2456, 882, 2457, 2394, 3932, 1 )
 GROUP BY tc.id
-ORDER BY tc.`updated` DESC LIMIT 25
+ORDER BY updated DESC LIMIT 25
 
 
 
@@ -594,7 +596,7 @@ WHERE is_verify != 1
 		$fIdPlaceholders = trim( str_repeat('?,', $fIdct ), ',' );
 		
 		$query = "
-            SELECT tc.id, tc.updated
+            SELECT tc.id as id, tc.updated as updated
             FROM `hotornot-dev`.`tblChallenges` as tc 
             WHERE
                 tc.is_verify != 1
@@ -603,7 +605,7 @@ WHERE is_verify != 1
                 
             UNION
             
-            SELECT tc.id, tc.updated
+            SELECT tc.id as id, tc.updated as updated
             FROM `hotornot-dev`.`tblChallenges` as tc 
                 LEFT JOIN `hotornot-dev`.tblChallengeParticipants as tcp
                 ON tc.id = tcp.challenge_id
@@ -611,8 +613,8 @@ WHERE is_verify != 1
                 tc.is_verify != 1
                 AND tc.status_id IN (1,2,4)
                 AND tcp.`user_id` IN ( $fIdPlaceholders )
-            GROUP BY tc.id
-            ORDER BY updated DESC LIMIT 25		
+            GROUP BY tc.id, tc.updated
+            ORDER BY updated DESC, id DESC LIMIT 25		
 		";
 		
 		$dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
@@ -621,10 +623,6 @@ WHERE is_verify != 1
         foreach( $friendIds as $friendId ){
             $params[] = $friendId;
         }
-        //$params[] = $userId;
-
-        //print_r( array( $query, $params ) ); exit;
-        
         $stmt = $dao->prepareAndExecute( $query, $params );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
