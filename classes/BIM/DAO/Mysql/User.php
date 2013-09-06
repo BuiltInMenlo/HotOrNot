@@ -43,6 +43,43 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
     }
     
+    public function block( $userId ){
+        $sql = "
+        	delete from `hotornot-dev`.tblChallengeParticipants 
+        	where challenge_id in (
+        		select id from `hotornot-dev`.tblChallenges where creator_id = ?
+        	)
+        	or user_id = ?
+        ";
+        $params = array( $userId, $userId );
+        $this->prepareAndExecute( $sql, $params );
+        
+        $sql = "
+        	delete from `hotornot-dev`.tblFlaggedUserApprovals 
+        	where challenge_id in (
+        		select id from `hotornot-dev`.tblChallenges where creator_id = ?
+        	) or user_id = ?
+        ";
+        $params = array( $userId, $userId );
+        $this->prepareAndExecute( $sql, $params );
+        
+        $sql = "
+        	delete from `hotornot-dev`.tblChallenges 
+        	where creator_id = ?
+        	and is_verify = 1
+        ";
+        $params = array( $userId );
+        $this->prepareAndExecute( $sql, $params );
+        
+        $sql = "
+        	update `hotornot-dev`.tblUsers 
+        	set abuse_ct = 999999 
+        	where id = ?
+        ";
+        $params = array( $userId );
+        $this->prepareAndExecute( $sql, $params );
+    }
+    
     public function getRandomIds( $total = 1, $exclude = array() ){
         $sql = "SELECT id FROM `hotornot-dev`.`tblUsers` ";
         if( $exclude ){

@@ -348,6 +348,17 @@ class BIM_Model_User{
         return $dao->getRandomIds( $total, $exclude );
     }
     
+    public function archive(){
+        if( $this->isExtant() ){
+            $this->purgeVolleys();
+            $this->purgeFromCache();
+            $this->volleys = BIM_Model_Volley::getMulti($this->getVolleyIds());
+            $data = json_encode($this);
+            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+            $dao->archive($this->id, $this->username, $data);
+        }
+    }
+    
     public static function makeCacheKeys( $ids ){
         if( $ids ){
             $return1 = false;
@@ -489,19 +500,14 @@ class BIM_Model_User{
      * user_id, username, blob
      * 
      */
-    public static function archive( $ids ){
+    public static function archiveUser( $ids ){
         if( !is_array($ids)){
             $ids = array( $ids );
         }
         foreach( $ids as $id ){
             $user = BIM_Model_User::get($id);
             print_r( array("archiving: ", $user ) );
-            $user->purgeVolleys();
-            $user->purgeFromCache();
-            $user->volleys = BIM_Model_Volley::getMulti($user->getVolleyIds());
-            $data = json_encode($user);
-            $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
-            $dao->archive($user->id, $user->username, $data);
+            $user->archive();
             $user->delete();
         }
     }
@@ -509,7 +515,26 @@ class BIM_Model_User{
     public static function archiveByName( $userNames ){
         foreach( $userNames as $name ){
             $user = BIM_Model_User::getByUsername($name);
-            self::archive($user->id);
+            self::archiveUser($user->id);
+        }
+    }
+    
+    public static function blockUser( $ids ){
+        if( !is_array($ids)){
+            $ids = array( $ids );
+        }
+        foreach( $ids as $id ){
+            $user = BIM_Model_User::get($id);
+            print_r( array("blocking: ", $user ) );
+            $user->archive();
+            $user->block();
+        }
+    }
+    
+    public static function blockByName( $userNames ){
+        foreach( $userNames as $name ){
+            $user = BIM_Model_User::getByUsername($name);
+            self::blockUser($user->id);
         }
     }
     
@@ -518,6 +543,13 @@ class BIM_Model_User{
         $this->purgeFromCache();
         $this->purgeVolleys();
         $dao->delete($this->id);
+    }
+    
+    public function block(){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $this->purgeFromCache();
+        $this->purgeVolleys();
+        $dao->block($this->id);
     }
     
     public function getVolleyIds(){
