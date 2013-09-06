@@ -233,6 +233,13 @@ class BIM_Model_Volley{
 	    return self::create($targetId, '#__verifyMe__', $imgUrl, array(), 'N', -1, true, $status);
     }
     
+    public static function addVerifVolley( $targetId ){
+        $vv = self::getVerifyVolley($targetId);
+        if( $vv->isNotExtant() ){
+            self::createVerifyVolley($targetId);
+        }
+    }
+    
     public static function getHashTagId( $userId, $hashTag = 'N/A' ) {
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $hashTagId = $dao->addHashTag($hashTag, $userId);

@@ -654,7 +654,7 @@ limit 10
             		img is not null 
             		and challenge_id not in ( $placeHolders )
             		and user_id > 100
-            		and user_id not in (2408,2454,2456,3932,2383,2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824, 1)
+            		and user_id not in (2408,2454,2456,3932,2383,2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824, 1, 903)
             	limit $limit
             ";
 		    array_unshift($challengeIdsForQuery, $challengeId);

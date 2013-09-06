@@ -168,7 +168,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
             (select count(*) as count
             from `hotornot-dev`.tblChallenges as tc
             where tc.creator_id = ? and is_verify != 1
-            ) union (
+            ) union all (
             select count(*) as count
             from `hotornot-dev`.tblChallengeParticipants as tcp
             where tcp.user_id = ?)
@@ -182,6 +182,8 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 			where tc.creator_id = ? OR tcp.user_id = ?
         ";
         */
+        
+        
         $params = array( $userId, $userId );
 		$stmt = $this->prepareAndExecute($sql,$params);
         $data = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );

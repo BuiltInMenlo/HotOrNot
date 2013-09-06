@@ -296,23 +296,9 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
     }
     
     public function join( $volleyId, $userId, $imgUrl ){
-        
-        $sql = '
-        	update `hotornot-dev`.tblChallengeParticipants 
-            	set img = ?, 
-            	joined = ? 
-        	where challenge_id = ? 
-        		  and user_id = ?
-        		  and ( img = "" or img is null )
-        ';
-        $params = array( $imgUrl, time(), $volleyId, $userId );
-        $stmt = $this->prepareAndExecute($sql, $params);
-        
-        if( $this->rowCount == 0 ){
-            $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img, joined, likes ) VALUES (?, ?, ?, ?, ?)';
-            $params = array( $volleyId, $userId, $imgUrl, time(), 0 );
-            $this->prepareAndExecute($sql, $params);
-        }
+        $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img, joined, likes ) VALUES (?, ?, ?, ?, ?)';
+        $params = array( $volleyId, $userId, $imgUrl, time(), 0 );
+        $this->prepareAndExecute($sql, $params);
         
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
         $params = array( $volleyId );
