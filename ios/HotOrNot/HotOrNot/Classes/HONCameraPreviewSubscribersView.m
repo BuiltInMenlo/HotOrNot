@@ -21,7 +21,7 @@
 
 - (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_opponents = [NSArray array];
+		_opponents = [NSMutableArray array];
 		
 		_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 129.0, 320.0, [UIScreen mainScreen].bounds.size.height - 79.0) style:UITableViewStylePlain];
 		[_tableView setBackgroundColor:[UIColor clearColor]];

@@ -272,6 +272,7 @@
 		4C45FF4916DECE95002F1080 /* HONUserProfileViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C45FF4816DECE95002F1080 /* HONUserProfileViewCell.m */; };
 		4C48745816BF0E36007D901B /* HONSearchBarHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */; };
 		4C48745B16C05699007D901B /* HONSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C48745A16C05699007D901B /* HONSearchViewController.m */; };
+		4C4B802917D94ACD00D660B2 /* HONRegisterCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C4B802817D94ACD00D660B2 /* HONRegisterCameraViewController.m */; };
 		4C4BAB4317A0EC2400AA4457 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C3E53C81783408C0065D1AA /* FacebookSDK.framework */; };
 		4C4BAB4917A0EC5400AA4457 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C4BAB4517A0EC5400AA4457 /* HockeySDK.framework */; };
 		4C4BAB4A17A0EC5400AA4457 /* HockeySDK.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 4C4BAB4717A0EC5400AA4457 /* HockeySDK.xcconfig */; };
@@ -1260,6 +1261,8 @@
 		4C48745716BF0E36007D901B /* HONSearchBarHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONSearchBarHeaderView.m; sourceTree = "<group>"; };
 		4C48745916C05698007D901B /* HONSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONSearchViewController.h; sourceTree = "<group>"; };
 		4C48745A16C05699007D901B /* HONSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = HONSearchViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		4C4B802717D94ACD00D660B2 /* HONRegisterCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONRegisterCameraViewController.h; sourceTree = "<group>"; };
+		4C4B802817D94ACD00D660B2 /* HONRegisterCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONRegisterCameraViewController.m; sourceTree = "<group>"; };
 		4C4BAB4517A0EC5400AA4457 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		4C4BAB4717A0EC5400AA4457 /* HockeySDK.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = HockeySDK.xcconfig; sourceTree = "<group>"; };
 		4C4BAB4817A0EC5400AA4457 /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
@@ -3994,6 +3997,8 @@
 			children = (
 				4CE8B62F16E2EC8700D29191 /* HONRegisterViewController.h */,
 				4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */,
+				4C4B802717D94ACD00D660B2 /* HONRegisterCameraViewController.h */,
+				4C4B802817D94ACD00D660B2 /* HONRegisterCameraViewController.m */,
 			);
 			name = Splash;
 			sourceTree = "<group>";
@@ -4866,6 +4871,7 @@
 				4CA0852D16A12FD900673F3A /* AFNetworkActivityIndicatorManager.m in Sources */,
 				4CA0852E16A12FD900673F3A /* AFPropertyListRequestOperation.m in Sources */,
 				4C56864C177A2A59004E570F /* HONEmptyTimelineView.m in Sources */,
+				4C4B802917D94ACD00D660B2 /* HONRegisterCameraViewController.m in Sources */,
 				4CA0852F16A12FD900673F3A /* AFURLConnectionOperation.m in Sources */,
 				4CA0853016A12FD900673F3A /* AFXMLRequestOperation.m in Sources */,
 				4CA0853116A12FD900673F3A /* UIImageView+AFNetworking.m in Sources */,

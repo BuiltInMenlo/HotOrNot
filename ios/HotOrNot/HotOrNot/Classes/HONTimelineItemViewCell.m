@@ -195,6 +195,9 @@
 			
 			_opponentCounter++;
 		}
+		
+		if (_opponentCounter == 3)
+			break;
 	}
 	
 	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
