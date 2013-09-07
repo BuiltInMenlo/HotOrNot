@@ -27,18 +27,13 @@
 @property (nonatomic, strong) UIButton *flipButton;
 @property (nonatomic, strong) UIButton *subscribersButton;
 @property (nonatomic, strong) NSArray *usernames;
-@property (readonly, nonatomic, assign) HONChallengeExpireType expireType;
 @end
 
 @implementation HONSnapCameraOverlayView
 @synthesize delegate = _delegate;
 
-- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username {
+- (id)initWithFrame:(CGRect)frame {
 	if ((self = [super initWithFrame:frame])) {
-		_usernames = [NSArray arrayWithObject:username];
-		
-		//NSLog(@"HONSnapCameraOverlayView:initWithFrame:withSubject:[%@] withUsername:[%@]", subject, username);
-		//hide overlay - [self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"OverlayCoverCamera-568h@2x" : @"OverlayCoverCamera"]]];
 		
 		_irisView = [[UIImageView alloc] initWithFrame:self.frame];
 		_irisView.backgroundColor = [UIColor blackColor];
@@ -120,16 +115,14 @@
 }
 
 - (void)takePhoto {
-//	[UIView animateWithDuration:0.1 animations:^(void) {
 	_irisView.alpha = 1.0;
-//	} completion:^(BOOL finished) {
-		[UIView animateWithDuration:0.25 animations:^(void) {
-			_irisView.alpha = 0.33;
-		} completion:^(BOOL finished){}];
-//	}];
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_irisView.alpha = 0.33;
+	} completion:^(BOOL finished){}];
 }
 
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
+	NSLog(@"updateChallengers:[%@]", challengers);
 	_usernames = challengers;
 	_actionLabel.text = (isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [challengers count], ([challengers count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [challengers count], ([challengers count] != 1 ? @"s" : @"")];
 }

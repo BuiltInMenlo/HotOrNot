@@ -21,8 +21,8 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		UIImageView *dividerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraDivider"]];
-		[self addSubview:dividerImageView];
+		self.backgroundColor = [UIColor clearColor];
+		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraDivider"]]];
 	}
 	
 	return (self);

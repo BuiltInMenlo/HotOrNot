@@ -12,6 +12,7 @@
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
+#import "UIImage+ImageEffects.h"
 
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
@@ -638,12 +639,15 @@
 		[_userProfileView show];
 		[_profileHeaderButtonView toggleSelected:YES];
 		
-		_profileOverlayView.hidden = NO;
+		UIImageView *blurredImageView = [[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:self.view] applyDarkEffect]];
+		[self.view addSubview:blurredImageView];
+		
+//		_profileOverlayView.hidden = NO;
 		_userProfileView.hidden = NO;
-		[UIView animateWithDuration:kProfileTime animations:^(void) {
-			_profileOverlayView.alpha = 1.0;
-		} completion:^(BOOL finished) {
-		}];
+//		[UIView animateWithDuration:kProfileTime animations:^(void) {
+//			_profileOverlayView.alpha = 1.0;
+//		} completion:^(BOOL finished) {
+//		}];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	}
@@ -765,12 +769,6 @@
 	
 	[self _removeToolTip];
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)_goNewChallengeAtUser:(HONUserVO *)userVO {
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO]];
 	[navigationController setNavigationBarHidden:YES];
 	[self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -1138,15 +1136,6 @@
 											  otherButtonTitles:@"Yes", nil];
 	[alertView setTag:4];
 	[alertView show];
-}
-
-- (void)userProfileViewCell:(HONUserProfileViewCell *)cell snapAtUser:(HONUserVO *)userVO {
-	[[Mixpanel sharedInstance] track:@"Timeline Profile - Photo Message"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"opponent", nil]];
-	
-	[self _goNewChallengeAtUser:userVO];
 }
 
 - (void)userProfileViewCell:(HONUserProfileViewCell *)cell showUserTimeline:(HONUserVO *)userVO {

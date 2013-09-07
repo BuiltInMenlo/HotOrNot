@@ -9,13 +9,10 @@
 
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
 #import <AVFoundation/AVFoundation.h>
-//#import <AudioToolbox/AudioToolbox.h>
-#import <MediaPlayer/MediaPlayer.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
-#import "Mixpanel.h"
 #import "UIImage+fixOrientation.h"
 
 #import "HONAppDelegate.h"
@@ -27,29 +24,26 @@
 #import "HONUserVO.h"
 #import "HONOpponentVO.h"
 #import "HONContactUserVO.h"
+#import "HONChallengeCameraViewController.h"
 
 
 const CGFloat kFocusInterval = 0.5f;
 
-@interface HONImagePickerViewController () <UIAlertViewDelegate, AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>
+@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *challengerName;
-@property (nonatomic, strong) NSMutableArray *addFollowing;
-@property (nonatomic, strong) NSMutableArray *addFollowingIDs;
-@property (nonatomic, strong) NSMutableArray *addContacts;
+@property (nonatomic, strong) NSMutableArray *subscribers;
+@property (nonatomic, strong) NSMutableArray *subscriberIDs;
 @property (nonatomic, strong) NSDictionary *challengeParams;
 @property (nonatomic, strong) NSMutableArray *usernames;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) NSString *fbID;
 @property (readonly, nonatomic, assign) HONChallengeSubmitType challengeSubmitType;
-@property (nonatomic) BOOL isPrivate;
 @property (nonatomic) HONUserVO *userVO;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic, strong) NSArray *s3Uploads;
-@property (readonly, nonatomic, assign) HONChallengeExpireType challengeExpireType;
-@property (nonatomic, strong) UIImagePickerController *imagePicker;
+@property (nonatomic) UIImagePickerController *imagePickerController;
 @property (nonatomic) BOOL isFirstAppearance;
 @property (nonatomic) BOOL hasSubmitted;
 @property (nonatomic, strong) NSTimer *focusTimer;
@@ -80,79 +74,14 @@ const CGFloat kFocusInterval = 0.5f;
 	return (self);
 }
 
-- (id)initWithUser:(HONUserVO *)userVO {
-	if ((self = [super init])) {
-		NSLog(@"%@ - initWithUser:[%d/%@]", [self description], userVO.userID, userVO.username);
-		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
-		_userVO = userVO;
-		_challengerName = userVO.username;
-		_challengeSubmitType = HONChallengeSubmitTypeOpponentID;
-		_isFirstAppearance = YES;
-		_isPrivate = NO;
-		
-		[self _registerNotifications];
-	}
-	
-	return (self);
-}
-
-- (id)initWithSubject:(NSString *)subject {
-	if ((self = [super init])) {
-		NSLog(@"%@ - initWithSubject:[%@]", [self description], subject);
-		_subjectName = subject;
-		_challengeSubmitType = HONChallengeSubmitTypeMatch;
-		_challengerName = @"";
-		_isFirstAppearance = YES;
-		_isPrivate = NO;
-		
-		[self _registerNotifications];
-	}
-	
-	return (self);
-}
-
-- (id)initWithUser:(HONUserVO *)userVO withSubject:(NSString *)subject {
-	if ((self = [super init])) {
-		NSLog(@"%@ - initWithUser:[%d/%@] subject:[%@]", [self description], userVO.userID, userVO.username, subject);
-		_subjectName = subject;
-		_userVO = userVO;
-		_challengerName = userVO.username;
-		_challengeSubmitType = HONChallengeSubmitTypeOpponentID;
-		_isFirstAppearance = YES;
-		_isPrivate = NO;
-		
-		[self _registerNotifications];
-	}
-	
-	return (self);
-}
-
-- (id)initWithChallenge:(HONChallengeVO *)vo {
-	if ((self = [super init])) {
-		NSLog(@"%@ - initWithChallenge:[%d]", [self description], vo.challengeID);
-		_challengeVO = vo;
-		_fbID = vo.creatorVO.fbID;
-		_subjectName = vo.subjectName;
-		_challengeSubmitType = HONChallengeSubmitTypeAccept;
-		_challengerName = (_challengeVO.creatorVO.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) ? ((HONOpponentVO *)[_challengeVO.challengers lastObject]).username : _challengeVO.creatorVO.username;;
-		_isFirstAppearance = YES;
-		_isPrivate = NO;//vo.isPrivate;
-		[self _registerNotifications];
-	}
-	
-	return (self);
-}
-
 - (id)initWithJoinChallenge:(HONChallengeVO *)vo {
 	NSLog(@"%@ - initWithJoinChallenge:[%d] (%d/%d)", [self description], vo.challengeID, vo.creatorVO.userID, ((HONOpponentVO *)[vo.challengers lastObject]).userID);
 	if ((self = [super init])) {
 		_challengeVO = vo;
-		_fbID = vo.creatorVO.fbID;
 		_subjectName = vo.subjectName;
 		_challengeSubmitType = HONChallengeSubmitTypeJoin;
 		_challengerName = @"";
 		_isFirstAppearance = YES;
-		_isPrivate = NO;//vo.isPrivate;
 		[self _registerNotifications];
 	}
 	
@@ -178,15 +107,15 @@ const CGFloat kFocusInterval = 0.5f;
 												 name:nil
 											   object:nil];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(_didShowViewController:)
-												 name:@"UINavigationControllerDidShowViewControllerNotification"
-											   object:nil];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(_previewStarted:)
-												 name:@"PLCameraControllerPreviewStartedNotification"
-											   object:nil];
+//	[[NSNotificationCenter defaultCenter] addObserver:self
+//											 selector:@selector(_didShowViewController:)
+//												 name:@"UINavigationControllerDidShowViewControllerNotification"
+//											   object:nil];
+//	
+//	[[NSNotificationCenter defaultCenter] addObserver:self
+//											 selector:@selector(_previewStarted:)
+//												 name:@"PLCameraControllerPreviewStartedNotification"
+//											   object:nil];
 }
 
 
@@ -198,45 +127,29 @@ const CGFloat kFocusInterval = 0.5f;
 	_filename = [NSString stringWithFormat:@"%@_%@", [HONAppDelegate deviceToken], [[NSNumber numberWithLongLong:[[NSDate date] timeIntervalSince1970]] stringValue]];
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
-//	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
-//	_progressHUD.labelText = NSLocalizedString(@"hud_uploadPhoto", nil);
-//	_progressHUD.mode = MBProgressHUDModeIndeterminate;
-//	_progressHUD.minShowTime = kHUDTime;
-//	_progressHUD.taskInProgress = YES;
-	
 	@try {
 		UIImage *oImage = _rawImage;
 		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeDim * 2.0, kSnapLargeDim * 2.0)];
 		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
-		//UIImage *tImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapThumbDim * 2.0, kSnapThumbDim * 2.0)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
-		
-		//stream.delay = 0.2;
-		//stream.packetSize = 16;
 		
 		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.delegate = self;
 		por1.contentType = @"image/jpeg";
 		por1.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
-//		por1.contentLength = [UIImageJPEGRepresentation(mImage, kSnapJPEGCompress) length];
-//		por1.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(mImage, kSnapJPEGCompress)];
 		[s3 putObject:por1];
 		
 		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por2.delegate = self;
 		por2.contentType = @"image/jpeg";
 		por2.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
-//		por2.contentLength = [UIImageJPEGRepresentation(lImage, kSnapJPEGCompress) length];
-//		por2.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(lImage, kSnapJPEGCompress)];
 		[s3 putObject:por2];
 		
 		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.delegate = self;
 		por3.contentType = @"image/jpeg";
 		por3.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
-//		por3.contentLength = [UIImageJPEGRepresentation(oImage, kSnapJPEGCompress) length];
-//		por3.stream = [S3UploadInputStream inputStreamWithData:UIImageJPEGRepresentation(oImage, kSnapJPEGCompress)];
 		[s3 putObject:por3];
 		
 		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, nil];
@@ -257,7 +170,7 @@ const CGFloat kFocusInterval = 0.5f;
 	}
 }
 
-- (void)_submitChallenge { //:(NSMutableDictionary *)params {
+- (void)_submitChallenge {
 	_submitImageView = [[UIImageView alloc] initWithFrame:CGRectMake(81.0, ([UIScreen mainScreen].bounds.size.height - 124.0) * 0.5, 150.0, 124.0)];
 	_submitImageView.animationImages = [NSArray arrayWithObjects:[UIImage imageNamed:@"overlayLoader001"],
 										[UIImage imageNamed:@"overlayLoader002"],
@@ -318,17 +231,9 @@ const CGFloat kFocusInterval = 0.5f;
 				
 				_hasSubmitted = YES;
 				if (_uploadCounter == [_s3Uploads count]) {
-//					if (_imagePicker.parentViewController != nil) {
-//						[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-//							[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//								[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-//							}];
-//						}];
-//						
-//					} else
-						[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-							[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-						}];
+					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+					}];
 				}
 			}
 		}
@@ -370,7 +275,7 @@ const CGFloat kFocusInterval = 0.5f;
 			for (HONUserVO *vo in [HONAppDelegate friendsList]) {
 				if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != vo.userID) {
 					BOOL isFound = NO;
-					for (NSNumber *userID in _addFollowingIDs) {
+					for (NSNumber *userID in _subscriberIDs) {
 						if ([userID intValue] == vo.userID) {
 							isFound = YES;
 							break;
@@ -378,7 +283,7 @@ const CGFloat kFocusInterval = 0.5f;
 					}
 					
 					if (!isFound) {
-						[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+						[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 																				[NSString stringWithFormat:@"%d", vo.userID], @"id",
 																				[NSString stringWithFormat:@"%d", 0], @"points",
 																				[NSString stringWithFormat:@"%d", 0], @"votes",
@@ -388,12 +293,12 @@ const CGFloat kFocusInterval = 0.5f;
 																				vo.username, @"username",
 																				vo.fbID, @"fb_id",
 																				vo.imageURL, @"avatar_url", nil]]];
-						[_addFollowingIDs addObject:[NSNumber numberWithInt:vo.userID]];
+						[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
 					}
 				}
 			}
 			
-			[_cameraOverlayView updateChallengers:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
+			[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -406,11 +311,8 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)loadView {
 	[super loadView];
 	
-	_challengeExpireType = HONChallengeExpireTypeNone;
-	_isPrivate = NO;
-	_addContacts = [NSMutableArray array];
-	_addFollowing = [NSMutableArray array];
-	_addFollowingIDs = [NSMutableArray array];
+	_subscribers = [NSMutableArray array];
+	_subscriberIDs = [NSMutableArray array];
 }
 
 - (void)viewDidLoad {
@@ -419,25 +321,22 @@ const CGFloat kFocusInterval = 0.5f;
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-		
-	if (_isFirstAppearance) {
-		_isFirstAppearance = NO;
-		
-		[self _showCamera];
-		//[self performSelector:@selector(_showCamera) withObject:nil afterDelay:0.25];
-	}
+	
+	if (_challengeSubmitType == HONChallengeSubmitTypeMatch)
+		[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsNewChallenge] animated:NO];
+	
+	else
+		[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsJoinChallenge:_challengeVO] animated:NO];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
-	
-	//_isFirstAppearance = YES;
 }
 
 
 #pragma mark - UI Presentation
 - (void)_removeIris {
-	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
 		
 		if (_cameraIrisImageView != nil) {
 			_cameraIrisImageView.hidden = YES;
@@ -452,7 +351,7 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_restoreIris {
-	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
 		_cameraIrisImageView.hidden = NO;
 		[self.view insertSubview:_cameraIrisImageView atIndex:1];
 		
@@ -470,38 +369,37 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)_showCamera {
-	//NSLog(@"_showCamera");
+	NSLog(@"_showCamera");
 	
-	_imagePicker = [[UIImagePickerController alloc] init];
-	_imagePicker.delegate = self;
-	_imagePicker.navigationBarHidden = YES;
-	_imagePicker.toolbarHidden = YES;
-	_imagePicker.allowsEditing = NO;
 	
-	if (_challengeSubmitType == HONChallengeSubmitTypeOpponentID && [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _userVO.userID) {
-		[_addFollowing addObject:_userVO];
-		[_addFollowingIDs addObject:[NSNumber numberWithInt:_userVO.userID]];
+//	HONChallengeCameraViewController *challengeCameraViewController =[[HONChallengeCameraViewController alloc] init];
+//	[self.view addSubview:challengeCameraViewController.view];
+	
+	/*
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _userVO.userID) {
+		[_subscribers addObject:_userVO];
+		[_subscriberIDs addObject:[NSNumber numberWithInt:_userVO.userID]];
 		
 	} else if (_challengeSubmitType == HONChallengeSubmitTypeJoin) {
 		if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _challengeVO.creatorVO.userID) {
-			[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																	[NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
-																	[NSString stringWithFormat:@"%d", 0], @"points",
-																	[NSString stringWithFormat:@"%d", 0], @"votes",
-																	[NSString stringWithFormat:@"%d", 0], @"pokes",
-																	[NSString stringWithFormat:@"%d", 0], @"pics",
-																	[NSString stringWithFormat:@"%d", 0], @"age",
-																	_challengeVO.creatorVO.username, @"username",
-																	_challengeVO.creatorVO.fbID, @"fb_id",
-																	_challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
-			[_addFollowingIDs addObject:[NSNumber numberWithInt:_challengeVO.creatorVO.userID]];
+			[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																   [NSString stringWithFormat:@"%d", _challengeVO.creatorVO.userID], @"id",
+																   [NSString stringWithFormat:@"%d", 0], @"points",
+																   [NSString stringWithFormat:@"%d", 0], @"votes",
+																   [NSString stringWithFormat:@"%d", 0], @"pokes",
+																   [NSString stringWithFormat:@"%d", 0], @"pics",
+																   [NSString stringWithFormat:@"%d", 0], @"age",
+																   _challengeVO.creatorVO.username, @"username",
+																   _challengeVO.creatorVO.fbID, @"fb_id",
+																   _challengeVO.creatorVO.avatarURL, @"avatar_url", nil]]];
+			[_subscriberIDs addObject:[NSNumber numberWithInt:_challengeVO.creatorVO.userID]];
 		}
 		
 		for (HONOpponentVO *vo in _challengeVO.challengers) {
 			if ([vo.imagePrefix length] > 0 && vo.userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue]) {
 				
 				BOOL isFound = NO;
-				for (NSNumber *userID in _addFollowingIDs) {
+				for (NSNumber *userID in _subscriberIDs) {
 					if ([userID intValue] == vo.userID) {
 						isFound = YES;
 						break;
@@ -509,54 +407,54 @@ const CGFloat kFocusInterval = 0.5f;
 				}
 				
 				if (!isFound) {
-					[_addFollowing addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-																			[NSString stringWithFormat:@"%d", vo.userID], @"id",
-																			[NSString stringWithFormat:@"%d", 0], @"points",
-																			[NSString stringWithFormat:@"%d", 0], @"votes",
-																			[NSString stringWithFormat:@"%d", 0], @"pokes",
-																			[NSString stringWithFormat:@"%d", 0], @"pics",
-																			[NSString stringWithFormat:@"%d", 0], @"age",
-																			vo.username, @"username",
-																			vo.fbID, @"fb_id",
-																			vo.avatarURL, @"avatar_url", nil]]];
-					[_addFollowingIDs addObject:[NSNumber numberWithInt:vo.userID]];
+					[_subscribers addObject:[HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+																		   [NSString stringWithFormat:@"%d", vo.userID], @"id",
+																		   [NSString stringWithFormat:@"%d", 0], @"points",
+																		   [NSString stringWithFormat:@"%d", 0], @"votes",
+																		   [NSString stringWithFormat:@"%d", 0], @"pokes",
+																		   [NSString stringWithFormat:@"%d", 0], @"pics",
+																		   [NSString stringWithFormat:@"%d", 0], @"age",
+																		   vo.username, @"username",
+																		   vo.fbID, @"fb_id",
+																		   vo.avatarURL, @"avatar_url", nil]]];
+					[_subscriberIDs addObject:[NSNumber numberWithInt:vo.userID]];
 				}
 			}
 		}
-	
+		
 	} else if (_challengeSubmitType == HONChallengeSubmitTypeMatch) {
 		[self _retrieveUser];
 	}
+	 */
 	
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-		_imagePicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		
-		// this fucker don't work in ios7 right now!!
-		_imagePicker.showsCameraControls = NO;
-		// ---------------------------------------------------------------------------
-		
-		_imagePicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
-		
-		if (_cameraOverlayView == nil) {
-			_cameraOverlayView = [[HONSnapCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withUsername:_challengerName];
-			_cameraOverlayView.delegate = self;
-		}
-		
-	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-		_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-	}
+//	} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])
+//		imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	
-	///[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-	[self presentViewController:_imagePicker animated:NO completion:^(void) {
-	}];
+//	self.imagePickerController = imagePickerController;
+//	[self presentViewController:self.imagePickerController animated:YES completion:^(void) {
+//		int camera_total = 0;
+//		if (![[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"])
+//			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:camera_total] forKey:@"camera_total"];
+//		
+//		else {
+//			camera_total = [[[NSUserDefaults standardUserDefaults] objectForKey:@"camera_total"] intValue];
+//			[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:++camera_total] forKey:@"camera_total"];
+//			[[NSUserDefaults standardUserDefaults] synchronize];
+//		}
+//		
+//		if (_progressTimer != nil) {
+//			[_progressTimer invalidate];
+//			_progressTimer = nil;
+//		}
+//		
+		[_cameraOverlayView intro];
+		[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
+//	}];
 }
 
 - (void)_showOverlay {
-	[_cameraOverlayView intro];
-	[_cameraOverlayView updateChallengers:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin)];
-	_imagePicker.cameraOverlayView = _cameraOverlayView;
+	
 }
 
 - (void)_autofocusCamera {
@@ -592,7 +490,7 @@ const CGFloat kFocusInterval = 0.5f;
 	}
 	
 	[_cameraOverlayView takePhoto];
-	[_imagePicker takePicture];
+	[self.imagePickerController takePicture];
 }
 
 
@@ -676,7 +574,7 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	navigationController.navigationBar.barStyle = UIBarStyleDefault;
 	
-	if (_imagePicker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
 		if ([[viewController.view subviews] objectAtIndex:1] != nil)
 			_cameraIrisImageView = [[viewController.view subviews] objectAtIndex:1];
 		
@@ -756,15 +654,12 @@ const CGFloat kFocusInterval = 0.5f;
 	
 	
 	_usernames = [NSMutableArray array];
-	for (HONUserVO *vo in _addFollowing)
+	for (HONUserVO *vo in _subscribers)
 		[_usernames addObject:vo.username];
-	
-	for (HONContactUserVO *vo in _addContacts)
-		[_usernames addObject:vo.fullName];
 	
 	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
 	_previewView.delegate = self;
-	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
+	[_previewView setOpponents:[_subscribers copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 	[_previewView showKeyboard];
 	
 	[_cameraOverlayView submitStep:_previewView];
@@ -788,7 +683,7 @@ const CGFloat kFocusInterval = 0.5f;
 	NSLog(@"imagePickerControllerDidCancel");
 	
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
-		_imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+		self.imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
 
 	else {
 		[self dismissViewControllerAnimated:YES completion:^(void) {
@@ -819,21 +714,21 @@ const CGFloat kFocusInterval = 0.5f;
 }
 
 - (void)cameraOverlayViewShowCameraRoll:(HONSnapCameraOverlayView *)cameraOverlayView {
-	_imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
 
 - (void)cameraOverlayViewChangeCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
 	[[Mixpanel sharedInstance] track:@"Create Volley - Flip Camera"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"rear" : @"front", @"type", nil]];
+									  (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"rear" : @"front", @"type", nil]];
 	
 	if (_progressTimer){
 		[_progressTimer invalidate];
 		_progressTimer = nil;
 	}
 	
-	_imagePicker.cameraDevice = (_imagePicker.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
+	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
 	
 	[_cameraOverlayView startProgress];
 	_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
@@ -874,7 +769,7 @@ const CGFloat kFocusInterval = 0.5f;
 	for (S3PutObjectRequest *por in _s3Uploads)
 		[por.urlConnection cancel];
 	
-	[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
+	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	}];
@@ -889,17 +784,17 @@ const CGFloat kFocusInterval = 0.5f;
 									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"challenger", nil]];
 	
 	NSMutableArray *removeVOs = [NSMutableArray array];
-	for (HONUserVO *vo in _addFollowing) {
+	for (HONUserVO *vo in _subscribers) {
 		if (vo.userID == userVO.userID) {
 			[removeVOs addObject:vo];
 			break;
 		}
 	}
 	
-	[_addFollowing removeObjectsInArray:removeVOs];
+	[_subscribers removeObjectsInArray:removeVOs];
 	removeVOs = nil;
 	
-	[_previewView setOpponents:[_addFollowing copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
+	[_previewView setOpponents:[_subscribers copy] asJoining:(_challengeSubmitType == HONChallengeSubmitTypeJoin) redrawTable:YES];
 }
 
 - (void)previewViewBackToCamera:(HONCreateChallengePreviewView *)previewView {
@@ -963,34 +858,27 @@ const CGFloat kFocusInterval = 0.5f;
 			_subjectName = [HONAppDelegate rndDefaultSubject];
 		
 		NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 									   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
-									   [NSString stringWithFormat:@"%d", _challengeExpireType], @"expires",
+									   [NSString stringWithFormat:@"%d", _challengeSubmitType], @"action",
+									   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+									   [NSString stringWithFormat:@"%d", 1], @"expires",
 									   _subjectName, @"subject",
 									   _challengerName, @"username",
-									   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
+									   @"N", @"isPrivate",
+									   @"0", @"challengerID",
+									   @"0", @"fbID", nil];
 		
-		if ([_addFollowing count] > 0) {
-			NSString *usernames = @"";
-			for (HONUserVO *vo in _addFollowing)
+		NSString *usernames = @"";
+		if ([_subscribers count] > 0) {
+			for (HONUserVO *vo in _subscribers)
 				usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
-			
 			[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
 		}
 		
 		if (_challengeVO != nil)
 			[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];
 		
-		if (_userVO != nil)
-			[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
-		
-		if (_fbID != nil)
-			[params setObject:_fbID forKey:@"fbID"];
-		
-		[params setObject:[NSString stringWithFormat:@"%d", _challengeSubmitType] forKey:@"action"];
-		
 		_challengeParams = [params copy];
-		
 		NSLog(@"PARAMS:[%@]", _challengeParams);
 		
 		[self _submitChallenge];
@@ -1060,14 +948,14 @@ const CGFloat kFocusInterval = 0.5f;
 			NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 										   [[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
 										   [NSString stringWithFormat:@"%@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename], @"imgURL",
-										   [NSString stringWithFormat:@"%d", _challengeExpireType], @"expires",
+										   [NSString stringWithFormat:@"%d", 1], @"expires",
 										   _subjectName, @"subject",
 										   _challengerName, @"username",
-										   (_isPrivate) ? @"Y" : @"N", @"isPrivate", nil];
+										   @"N", @"isPrivate", nil];
 			
-			if ([_addFollowing count] > 1) {
+			if ([_subscribers count] > 1) {
 				NSString *usernames = @"";
-				for (HONUserVO *vo in _addFollowing)
+				for (HONUserVO *vo in _subscribers)
 					usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
 				
 				[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
@@ -1078,9 +966,6 @@ const CGFloat kFocusInterval = 0.5f;
 			
 			if (_userVO != nil)
 				[params setObject:[NSString stringWithFormat:@"%d", _userVO.userID] forKey:@"challengerID"];
-			
-			if (_fbID != nil)
-				[params setObject:_fbID forKey:@"fbID"];
 			
 			[params setObject:[NSString stringWithFormat:@"%d", _challengeSubmitType] forKey:@"action"];
 			

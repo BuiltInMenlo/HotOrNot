@@ -225,10 +225,6 @@
 	[self.delegate userProfileViewCell:self removeFriend:_userVO];
 }
 
-- (void)_goUserChallenge {
-	[self.delegate userProfileViewCell:self snapAtUser:_userVO];
-}
-
 - (void)_goFlagUser {
 	[self.delegate userProfileViewCell:self flagUser:_userVO];
 }

@@ -33,6 +33,7 @@
 #import "HONImagePickerViewController.h"
 #import "HONProfileViewController.h"
 #import "HONChallengeVO.h"
+#import "HONUserVO.h"
 #import "HONUsernameViewController.h"
 #import "HONSearchViewController.h"
 #import "HONImagingDepictor.h"
@@ -694,8 +695,6 @@ NSString * const kTwilioSMS = @"6475577873";
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengeResult);
 			
-			//UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult]]];
-			//[navigationController setNavigationBarHidden:YES];
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult] asModal:YES]];
 			[navigationController setNavigationBarHidden:YES];
 			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
@@ -894,7 +893,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
+	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])

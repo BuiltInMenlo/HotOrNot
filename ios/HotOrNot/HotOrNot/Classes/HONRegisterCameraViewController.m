@@ -250,11 +250,7 @@
     imagePickerController.sourceType = sourceType;
     imagePickerController.delegate = self;
     
-    if (sourceType == UIImagePickerControllerSourceTypeCamera)
-    {
-        /*
-         The user wants to use the camera interface. Set up our custom overlay view for the camera.
-         */
+    if (sourceType == UIImagePickerControllerSourceTypeCamera) {
         imagePickerController.showsCameraControls = NO;
 		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
@@ -277,6 +273,10 @@
 	
 	[self.imagePickerController takePicture];
 	[_cameraOverlayView takePhoto];
+}
+
+- (void)_restartProgress {
+	[_cameraOverlayView startProgress];
 }
 
 

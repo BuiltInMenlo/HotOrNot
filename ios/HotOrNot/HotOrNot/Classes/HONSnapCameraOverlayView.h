@@ -13,7 +13,7 @@
 
 @protocol HONSnapCameraOverlayViewDelegate;
 @interface HONSnapCameraOverlayView : UIView
-- (id)initWithFrame:(CGRect)frame withSubject:(NSString *)subject withUsername:(NSString *)username;
+- (id)initWithFrame:(CGRect)frame;
 - (void)intro;
 - (void)toggleInfoOverlay:(BOOL)isIntro;
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining;

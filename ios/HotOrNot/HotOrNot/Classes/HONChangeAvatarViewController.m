@@ -208,7 +208,7 @@
 		_imagePicker.showsCameraControls = NO;
 		// ---------------------------------------------------------------------------
 		
-		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+		_imagePicker.cameraViewTransform = CGAffineTransformScale(_imagePicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
 		[self.navigationController presentViewController:_imagePicker animated:NO completion:^(void) {
 			[self _showOverlay];
 		}];

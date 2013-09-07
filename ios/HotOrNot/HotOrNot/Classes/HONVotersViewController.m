@@ -143,20 +143,20 @@
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
-	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-												   [NSString stringWithFormat:@"%d", _voterVO.userID], @"id",
-												   [NSString stringWithFormat:@"%d", _voterVO.points], @"points",
-												   [NSString stringWithFormat:@"%d", _voterVO.votes], @"votes",
-												   [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
-												   [NSString stringWithFormat:@"%d", 0], @"pics",
-												   [NSString stringWithFormat:@"%d", 0], @"age",
-												   _voterVO.username, @"username",
-												   _voterVO.fbID, @"fb_id",
-												   _voterVO.imageURL, @"avatar_url", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo withSubject:_challengeVO.subjectName]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	HONUserVO *vo = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+//												   [NSString stringWithFormat:@"%d", _voterVO.userID], @"id",
+//												   [NSString stringWithFormat:@"%d", _voterVO.points], @"points",
+//												   [NSString stringWithFormat:@"%d", _voterVO.votes], @"votes",
+//												   [NSString stringWithFormat:@"%d", _voterVO.pokes], @"pokes",
+//												   [NSString stringWithFormat:@"%d", 0], @"pics",
+//												   [NSString stringWithFormat:@"%d", 0], @"age",
+//												   _voterVO.username, @"username",
+//												   _voterVO.fbID, @"fb_id",
+//												   _voterVO.imageURL, @"avatar_url", nil]];
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:vo withSubject:_challengeVO.subjectName]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 

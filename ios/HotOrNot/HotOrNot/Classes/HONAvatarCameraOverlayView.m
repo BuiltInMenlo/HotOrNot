@@ -177,7 +177,7 @@
 	image = [HONImagingDepictor scaleImage:image byFactor:([HONAppDelegate isRetina5]) ? 0.55f : 0.83f];
 	//image = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(480.0, 640.0)];
 	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
-	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, -26.0 + ([HONAppDelegate isRetina5] * -22.0) + (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
+	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, -26.0 + ([HONAppDelegate isRetina5] * -26.0) + (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
 	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
 	[_previewHolderView addSubview:previewImageView];
 	_previewHolderView.hidden = NO;

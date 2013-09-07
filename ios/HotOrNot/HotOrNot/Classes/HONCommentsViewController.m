@@ -338,20 +338,20 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", vo.userID, vo.username], @"opponent", nil]];
 	
-	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-													   [NSString stringWithFormat:@"%d", vo.userID], @"id",
-													   [NSString stringWithFormat:@"%d", 0], @"points",
-													   [NSString stringWithFormat:@"%d", 0], @"votes",
-													   [NSString stringWithFormat:@"%d", 0], @"pokes",
-													   [NSString stringWithFormat:@"%d", 0], @"pics",
-													   [NSString stringWithFormat:@"%d", 0], @"age",
-													   vo.username, @"username",
-													   vo.fbID, @"fb_id",
-													   vo.avatarURL, @"avatar_url", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:_challengeVO.subjectName]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
+//	HONUserVO *userVO = [HONUserVO userWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+//													   [NSString stringWithFormat:@"%d", vo.userID], @"id",
+//													   [NSString stringWithFormat:@"%d", 0], @"points",
+//													   [NSString stringWithFormat:@"%d", 0], @"votes",
+//													   [NSString stringWithFormat:@"%d", 0], @"pokes",
+//													   [NSString stringWithFormat:@"%d", 0], @"pics",
+//													   [NSString stringWithFormat:@"%d", 0], @"age",
+//													   vo.username, @"username",
+//													   vo.fbID, @"fb_id",
+//													   vo.avatarURL, @"avatar_url", nil]];
+//	
+//	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONImagePickerViewController alloc] initWithUser:userVO withSubject:_challengeVO.subjectName]];
+//	[navigationController setNavigationBarHidden:YES];
+//	[self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
