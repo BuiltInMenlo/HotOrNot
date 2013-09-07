@@ -809,6 +809,7 @@
 		4CE8B63116E2EC8700D29191 /* HONRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CE8B63016E2EC8700D29191 /* HONRegisterViewController.m */; };
 		4CEC303D17DA5E270016AAE1 /* HONChallengeCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC303C17DA5E270016AAE1 /* HONChallengeCameraViewController.m */; };
 		4CEC304117DACC9B0016AAE1 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CEC304017DACC9B0016AAE1 /* UIImage+ImageEffects.m */; };
+		4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CEC304217DAD3140016AAE1 /* Accelerate.framework */; };
 		4CED1C06177D463C00A32F2B /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4CED1C02177D463C00A32F2B /* libTestFlight.a */; };
 		4CED1C07177D463C00A32F2B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 4CED1C03177D463C00A32F2B /* README.md */; };
 		4CED1C08177D463C00A32F2B /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = 4CED1C04177D463C00A32F2B /* release_notes.md */; };
@@ -2128,6 +2129,7 @@
 		4CEC303C17DA5E270016AAE1 /* HONChallengeCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONChallengeCameraViewController.m; sourceTree = "<group>"; };
 		4CEC303F17DACC9B0016AAE1 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		4CEC304017DACC9B0016AAE1 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
+		4CEC304217DAD3140016AAE1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		4CED1C02177D463C00A32F2B /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
 		4CED1C03177D463C00A32F2B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		4CED1C04177D463C00A32F2B /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
@@ -2170,6 +2172,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */,
 				4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */,
 				4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */,
 				4CED1C06177D463C00A32F2B /* libTestFlight.a in Frameworks */,
@@ -2837,6 +2840,7 @@
 		4C62652815F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CEC304217DAD3140016AAE1 /* Accelerate.framework */,
 				4CABCEA7172F46F600AF5863 /* AddressBookUI.framework */,
 				4C026019172B2CA8001CC476 /* AddressBook.framework */,
 				4CF07C151686770100E0FBC1 /* MediaPlayer.framework */,

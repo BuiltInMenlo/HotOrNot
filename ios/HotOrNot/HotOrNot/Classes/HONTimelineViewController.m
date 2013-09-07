@@ -68,6 +68,7 @@
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) HONUserProfileView *userProfileView;
 @property (nonatomic, strong) UIView *profileOverlayView;
+@property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic) int userID;
 @end
 
@@ -571,7 +572,6 @@
 	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -300.0, 320.0, 300.0)];
 	_userProfileView.hidden = YES;
 	_userProfileView.delegate = self;
-	[self.view addSubview:_userProfileView];
 	
 	
 	if (_timelineType == HONTimelineTypeSubject) {
@@ -605,6 +605,10 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	[HONAppDelegate offsetSubviewsForIOS7:self.view];
+	
+//	UIView *tintView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
+//	tintView.backgroundColor = [HONAppDelegate honDebugBlueColor];
+//	[self.navigationController.navigationBar addSubview:tintView];
 }
 
 - (void)viewDidUnload {
@@ -627,10 +631,14 @@
 		[_profileHeaderButtonView toggleSelected:NO];
 		
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
+			_blurredImageView.alpha = 0.0;
 			_profileOverlayView.alpha = 0.0;
 		} completion:^(BOOL finished) {
 			_profileOverlayView.hidden = YES;
 			_userProfileView.hidden = YES;
+			
+			[_blurredImageView removeFromSuperview];
+			_blurredImageView = nil;
 		}];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -639,15 +647,18 @@
 		[_userProfileView show];
 		[_profileHeaderButtonView toggleSelected:YES];
 		
-		UIImageView *blurredImageView = [[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:self.view] applyDarkEffect]];
-		[self.view addSubview:blurredImageView];
+		_blurredImageView = [[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:self.view] applyBlurWithRadius:2.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.5] saturationDeltaFactor:1.0 maskImage:nil]];
+		_blurredImageView.alpha = 0.0;
+		[self.view addSubview:_blurredImageView];
 		
 //		_profileOverlayView.hidden = NO;
 		_userProfileView.hidden = NO;
-//		[UIView animateWithDuration:kProfileTime animations:^(void) {
+		[self.view addSubview:_userProfileView];
+		[UIView animateWithDuration:kProfileTime animations:^(void) {
+			_blurredImageView.alpha = 1.0;
 //			_profileOverlayView.alpha = 1.0;
-//		} completion:^(BOOL finished) {
-//		}];
+		} completion:^(BOOL finished) {
+		}];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	}

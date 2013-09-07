@@ -261,7 +261,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	if ([[[[UIDevice currentDevice] systemVersion] substringToIndex:1] isEqualToString:@"7"]) {
 		for (UIView *subview in [view subviews])
-			subview.frame = CGRectOffset(subview.frame, 0.0, 20.0);
+			subview.frame = CGRectOffset(subview.frame, 0.0, 0.0);
 	}
 }
 
@@ -844,10 +844,8 @@ NSString * const kTwilioSMS = @"6475577873";
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.backgroundColor = [UIColor whiteColor];
 	
-	//self.window.backgroundColor = [HONAppDelegate honOrthodoxGreenColor];
-	//self.window.frame = CGRectOffset(self.window.frame, 0.0, 20.0);
-	
-	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
+	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honOrthodoxGreenColor]];
+//	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
 	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
