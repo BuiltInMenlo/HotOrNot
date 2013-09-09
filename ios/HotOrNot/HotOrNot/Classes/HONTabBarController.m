@@ -8,9 +8,11 @@
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
+#import "UIImage+ImageEffects.h"
 
 #import "HONTabBarController.h"
 #import "HONAlertPopOverView.h"
+#import "HONImagingDepictor.h"
 
 @interface HONTabBarController ()
 @property (nonatomic, retain) UIButton *timelineButton;
@@ -85,7 +87,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	[self _hideNativeTabBar];
+//	[self _hideNativeTabBar];
 	[self _addCustomTabs];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
@@ -140,10 +142,10 @@
 	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
 	[self.view addSubview:_tabHolderView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
-	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
-	bgImageView.userInteractionEnabled = YES;
-	[_tabHolderView addSubview:bgImageView];
+//	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
+//	bgImageView.image = [[UIImage imageNamed:@"tabMenuBackground"] applyBlurWithRadius:5.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil];
+//	bgImageView.userInteractionEnabled = YES;
+//	[_tabHolderView addSubview:bgImageView];
 	
 	_timelineButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_timelineButton.frame = CGRectMake(20.0, 0.0, kTabSize.width, kTabSize.height);

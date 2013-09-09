@@ -140,6 +140,9 @@
 		4C15E85D17AADB9B0062C657 /* sendVolleyMessageButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C15E85917AADB9B0062C657 /* sendVolleyMessageButton_nonActive@2x.png */; };
 		4C19BF0D168E811E006D241E /* chevron.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0B168E811E006D241E /* chevron.png */; };
 		4C19BF0E168E811E006D241E /* chevron@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C19BF0C168E811E006D241E /* chevron@2x.png */; };
+		4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */; };
+		4C219C6D17DB90950048A87C /* fakeModal.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C219C6B17DB90950048A87C /* fakeModal.png */; };
+		4C219C6E17DB90950048A87C /* fakeModal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C219C6C17DB90950048A87C /* fakeModal@2x.png */; };
 		4C225CC017B83F3C00330EB3 /* divider.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C225CBE17B83F3C00330EB3 /* divider.png */; };
 		4C225CC117B83F3C00330EB3 /* divider@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C225CBF17B83F3C00330EB3 /* divider@2x.png */; };
 		4C225CC417B8593B00330EB3 /* HONCreateSnapButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C225CC317B8593B00330EB3 /* HONCreateSnapButtonView.m */; };
@@ -1014,6 +1017,10 @@
 		4C15E85917AADB9B0062C657 /* sendVolleyMessageButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sendVolleyMessageButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C19BF0B168E811E006D241E /* chevron.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chevron.png; sourceTree = "<group>"; };
 		4C19BF0C168E811E006D241E /* chevron@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chevron@2x.png"; sourceTree = "<group>"; };
+		4C219C6817DB8FFF0048A87C /* HONUserProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONUserProfileViewController.h; sourceTree = "<group>"; };
+		4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONUserProfileViewController.m; sourceTree = "<group>"; };
+		4C219C6B17DB90950048A87C /* fakeModal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fakeModal.png; sourceTree = "<group>"; };
+		4C219C6C17DB90950048A87C /* fakeModal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fakeModal@2x.png"; sourceTree = "<group>"; };
 		4C225CBE17B83F3C00330EB3 /* divider.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = divider.png; sourceTree = "<group>"; };
 		4C225CBF17B83F3C00330EB3 /* divider@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "divider@2x.png"; sourceTree = "<group>"; };
 		4C225CC217B8593B00330EB3 /* HONCreateSnapButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCreateSnapButtonView.h; sourceTree = "<group>"; };
@@ -2439,6 +2446,8 @@
 				4CC6AD1317B1F266004E7A3F /* HONTimelineHeaderView.m */,
 				4C03962E17B3350700AECD97 /* HONChallengeDetailsViewController.h */,
 				4C03962F17B3350700AECD97 /* HONChallengeDetailsViewController.m */,
+				4C219C6817DB8FFF0048A87C /* HONUserProfileViewController.h */,
+				4C219C6917DB8FFF0048A87C /* HONUserProfileViewController.m */,
 			);
 			name = Timeline;
 			sourceTree = "<group>";
@@ -3171,6 +3180,8 @@
 		4C62676115F9710E00AA7FCE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4C219C6B17DB90950048A87C /* fakeModal.png */,
+				4C219C6C17DB90950048A87C /* fakeModal@2x.png */,
 				4CDFB3C6178DC76F00438732 /* Verify */,
 				4C7AD0FA17629ACE0035A62A /* Invite */,
 				4C0AAAEA170C94F400BB32BD /* Search */,
@@ -4272,6 +4283,7 @@
 				4C351D1416FE8E4500BD9498 /* overlayMoreButton_nonActive@2x.png in Resources */,
 				4C351D1F16FEA02200BD9498 /* firstRun_AvatarIcon.png in Resources */,
 				4C351D2016FEA02200BD9498 /* firstRun_AvatarIcon@2x.png in Resources */,
+				4C219C6D17DB90950048A87C /* fakeModal.png in Resources */,
 				4CB75CBB16FEAC53001A8738 /* notificationBackground.png in Resources */,
 				4CB75CBC16FEAC53001A8738 /* notificationBackground@2x.png in Resources */,
 				4CB75CBD16FEAC53001A8738 /* notificationCameraIcon.png in Resources */,
@@ -4321,6 +4333,7 @@
 				4CD1126D1723895D0049DFBF /* notificationBG@2x.png in Resources */,
 				4CD1129B1724CB0A0049DFBF /* thumbCameraAction.png in Resources */,
 				4CD1129C1724CB0A0049DFBF /* thumbCameraAction@2x.png in Resources */,
+				4C219C6E17DB90950048A87C /* fakeModal@2x.png in Resources */,
 				4CD1129D1724CB0A0049DFBF /* thumbCameraGeneric.png in Resources */,
 				4CD1129E1724CB0A0049DFBF /* thumbCameraGeneric@2x.png in Resources */,
 				4CD112E11725D6E30049DFBF /* randomButton_Active.png in Resources */,
@@ -4934,6 +4947,7 @@
 				4C04DAA417A635FB0059DB70 /* HONUserProfileRequestViewCell.m in Sources */,
 				4CC8E5F417AF3E7400712223 /* UINavigationBar+NavigationBar.m in Sources */,
 				4CC6AD0E17B0AA98004E7A3F /* HONRefreshButtonView.m in Sources */,
+				4C219C6A17DB8FFF0048A87C /* HONUserProfileViewController.m in Sources */,
 				4CC6AD1117B1ACE9004E7A3F /* HONOpponentVO.m in Sources */,
 				4CC6AD1417B1F267004E7A3F /* HONTimelineHeaderView.m in Sources */,
 				4C03963017B3350800AECD97 /* HONChallengeDetailsViewController.m in Sources */,

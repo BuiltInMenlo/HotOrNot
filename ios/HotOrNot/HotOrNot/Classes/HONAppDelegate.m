@@ -695,7 +695,7 @@ NSString * const kTwilioSMS = @"6475577873";
 		} else {
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengeResult);
 			
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult] asModal:YES]];
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:[HONChallengeVO challengeWithDictionary:challengeResult] withBackground:nil]];
 			[navigationController setNavigationBarHidden:YES];
 			[self.tabBarController presentViewController:navigationController animated:YES completion:nil];
 		}
@@ -841,11 +841,17 @@ NSString * const kTwilioSMS = @"6475577873";
 
 #pragma mark - Application Delegates
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	
+//	[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+//	[[NSUserDefaults standardUserDefaults] synchronize];
+	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	//self.window.backgroundColor = [UIColor whiteColor];
 	
 	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honOrthodoxGreenColor]];
 //	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
+	[[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+	[[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
@@ -860,6 +866,9 @@ NSString * const kTwilioSMS = @"6475577873";
 														  [UIColor whiteColor], UITextAttributeTextColor,
 														  [UIColor clearColor], UITextAttributeTextShadowColor,
 														  [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:17], UITextAttributeFont,nil] forState:UIControlStateHighlighted];
+	
+	[[UITabBar appearance] setBarTintColor:[UIColor blackColor]];
+	[[UITabBar appearance] setTintColor:[UIColor blackColor]];
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
@@ -973,6 +982,8 @@ NSString * const kTwilioSMS = @"6475577873";
 		[self.tabBarController.view addSubview:_bgImageView];
 		
 		self.window.rootViewController = self.tabBarController;
+		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+//		self.window.rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
 		[self.window makeKeyAndVisible];
 		
 	} else {

@@ -211,15 +211,7 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
-    {
-        // There is not a camera on this device, so don't show the camera button.
-//        NSMutableArray *toolbarItems = [self.toolBar.items mutableCopy];
-//        [toolbarItems removeObjectAtIndex:2];
-//        [self.toolBar setItems:toolbarItems animated:NO];
-    }
-	[self showImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera];
+	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
 - (void)viewDidUnload {

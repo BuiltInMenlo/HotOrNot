@@ -22,8 +22,6 @@
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, 61.0)])) {
 		_challengeVO = vo;
 		
-		self.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.80];
-		
 		UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 9.0, 38.0, 38.0)];
 		[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
 		creatorAvatarImageView.userInteractionEnabled = YES;
@@ -42,16 +40,6 @@
 		creatorNameLabel.backgroundColor = [UIColor clearColor];
 		creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
 		[self addSubview:creatorNameLabel];
-		
-		if ([_challengeVO.challengers count] > 0 && [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).imagePrefix length] > 0 && ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).userID != [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] && _challengeVO.creatorVO.userID != ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).userID) {
-			UILabel *lastJoinedLabel = [[UILabel alloc] initWithFrame:CGRectMake(226.0, 5.0, 80.0, 19.0)];
-			lastJoinedLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
-			lastJoinedLabel.textColor = [HONAppDelegate honOrthodoxGreenColor];
-			lastJoinedLabel.backgroundColor = [UIColor clearColor];
-			lastJoinedLabel.textAlignment = NSTextAlignmentRight;
-			lastJoinedLabel.text = [NSString stringWithFormat:@"@%@", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).username];
-			[self addSubview:lastJoinedLabel];
-		}
 		
 		UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 24.0, 160.0, 16.0)];
 		timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];

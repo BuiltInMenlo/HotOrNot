@@ -10,6 +10,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
+#import "UIImage+ImageEffects.h"
 
 #import "HONSnapPreviewViewController.h"
 #import "HONImageLoadingView.h"
@@ -19,12 +20,23 @@
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIView *controlsHolderView;
+@property (nonatomic, strong) UIView *profileHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
+@property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) UIImageView *imageView;
-@property (nonatomic, strong) UILabel *ageLabel;
 @property (nonatomic) BOOL isVerify;
+
+@property (nonatomic, strong) UIImageView *avatarImageView;
+@property (nonatomic, strong) UILabel *nameAgeLabel;
+@property (nonatomic, strong) UILabel *subscribersLabel;
+@property (nonatomic, strong) UILabel *volleysLabel;
+@property (nonatomic, strong) UILabel *likesLabel;
+@property (nonatomic, strong) UIView *gridHolderView;
+@property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic) int challengeCounter;
+@property (nonatomic) BOOL isRefreshing;
 @end
 
 
@@ -83,8 +95,7 @@
 		} else {
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
-			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-			_ageLabel.text = ([userVO.birthday timeIntervalSince1970] == 0.0) ? @"" : [NSString stringWithFormat:@"%d", [HONAppDelegate ageForDate:userVO.birthday]];
+			_userVO = [HONUserVO userWithDictionary:userResult];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -212,36 +223,32 @@
 	else
 		[self _loadForChallenge];
 	
-	
-	UIImageView *challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 11.0, kSnapThumbDim, kSnapThumbDim)];
-	[challengeImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@", _opponentVO.avatarURL]] placeholderImage:nil];
-	[self.view addSubview:challengeImageView];
-	
-	UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(59.0, 19.0, 200.0, 20.0)];
-	nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
-	nameLabel.textColor = [UIColor whiteColor];
-	nameLabel.backgroundColor = [UIColor clearColor];
-	nameLabel.text = [NSString stringWithFormat:@"@%@", _opponentVO.username];
-	[self.view addSubview:nameLabel];
-	
-	_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(145.0, 19.0, 150.0, 20.0)];
-	_ageLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
-	_ageLabel.textAlignment = NSTextAlignmentRight;
-	_ageLabel.textColor = [UIColor whiteColor];
-	_ageLabel.backgroundColor = [UIColor clearColor];
-	_ageLabel.text = ([_opponentVO.birthday timeIntervalSince1970] == 0.0) ? @"" : [NSString stringWithFormat:@"%d", [HONAppDelegate ageForDate:_opponentVO.birthday]];
-	[self.view addSubview:_ageLabel];
-	
 	_controlsHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
-	_controlsHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.65];
 	_controlsHolderView.hidden = YES;
 	_controlsHolderView.alpha = 0.0;
 	[self.view addSubview:_controlsHolderView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = _controlsHolderView.frame;
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
-	[_controlsHolderView addSubview:closeButton];
+	_profileHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
+	_profileHolderView.hidden = YES;
+	_profileHolderView.alpha = 0.0;
+	[self.view addSubview:_profileHolderView];
+	
+	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 50.0, 109.0, 109.0)];
+	[avatarImageView setImageWithURL:[NSURL URLWithString:_opponentVO.avatarURL] placeholderImage:nil];
+	[_controlsHolderView addSubview:avatarImageView];
+	
+	BOOL isVerified = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < 0);
+	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(isVerified) ? @"verified" : @"notVerified"]];
+	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 200.0, 72.0);
+	[_controlsHolderView addSubview:verifiedImageView];
+	
+	_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 200.0, 200.0, 20.0)];
+	_nameAgeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
+	_nameAgeLabel.textColor = [UIColor whiteColor];
+	_nameAgeLabel.textAlignment = NSTextAlignmentCenter;
+	_nameAgeLabel.backgroundColor = [UIColor clearColor];
+	_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", _opponentVO.username, [HONAppDelegate ageForDate:_opponentVO.birthday]];
+	[_controlsHolderView addSubview:_nameAgeLabel];
 	
 	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 42.0, 320.0, 84.0)];
 	[_controlsHolderView addSubview:buttonHolderView];
@@ -267,7 +274,36 @@
 	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 	[buttonHolderView addSubview:flagButton];
 	
-	//[self _retrieveUser:_opponentVO.userID];
+	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+	
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 230.0, 260.0, 16.0)];
+	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
+	_subscribersLabel.textColor = [UIColor whiteColor];
+	_subscribersLabel.backgroundColor = [UIColor clearColor];
+	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+	[_profileHolderView addSubview:_subscribersLabel];
+	
+	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 260.0, 260.0, 16.0)];
+	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
+	_volleysLabel.textColor = [UIColor whiteColor];
+	_volleysLabel.backgroundColor = [UIColor clearColor];
+	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
+	[_profileHolderView addSubview:_volleysLabel];
+	
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 290.0, 260.0, 16.0)];
+	_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
+	_likesLabel.textColor = [UIColor whiteColor];
+	_likesLabel.backgroundColor = [UIColor clearColor];
+	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
+	[_profileHolderView addSubview:_likesLabel];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = _controlsHolderView.frame;
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
+	[_profileHolderView addSubview:closeButton];
+	
+	[self _retrieveUser:_opponentVO.userID];
 }
 
 - (void)viewDidLoad {
@@ -298,6 +334,8 @@
 #pragma mark - Public APIs
 - (void)showControls {
 	_controlsHolderView.hidden = NO;
+	
+	_imageView.image = [_imageView.image applyBlurWithRadius:5.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil];
 	[UIView animateWithDuration:0.33 animations:^(void) {
 		_controlsHolderView.alpha = 1.0;
 	}];
@@ -314,11 +352,28 @@
 }
 
 - (void)_goProfile {
-	[self.delegate snapPreviewViewControllerProfile:self opponent:_opponentVO forChallenge:_challengeVO];
+//	[self.delegate snapPreviewViewControllerProfile:self opponent:_opponentVO forChallenge:_challengeVO];
+	
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		_controlsHolderView.alpha = 0.0;
+	}];
+	
+	_profileHolderView.hidden = NO;
+	[UIView animateWithDuration:0.33 animations:^(void) {
+		_profileHolderView.alpha = 1.0;
+	}];
+	
+	[self _profileTransition];
 }
 
 - (void)_goFlag {
 	[self.delegate snapPreviewViewControllerFlag:self opponent:_opponentVO forChallenge:_challengeVO];
+}
+
+
+#pragma mark - UI Presentation
+- (void)_profileTransition {
+	//[self _retrieveChallenges];
 }
 
 
