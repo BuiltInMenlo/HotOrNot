@@ -66,7 +66,7 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $sql = "
         	delete from `hotornot-dev`.tblChallenges 
         	where creator_id = ?
-        	and is_verify = 1
+        	and is_verify != 1
         ";
         $params = array( $userId );
         $this->prepareAndExecute( $sql, $params );
