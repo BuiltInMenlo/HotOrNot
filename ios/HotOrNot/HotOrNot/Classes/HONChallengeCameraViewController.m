@@ -8,6 +8,8 @@
 
 
 #import <AWSiOSSDK/S3/AmazonS3Client.h>
+#import <CoreImage/CoreImage.h>
+#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -634,6 +636,14 @@
 		_rawImage = [_rawImage fixOrientation];
 	
 	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(_rawImage.size));
+	
+	
+	CIImage *image = [CIImage imageWithCGImage:_rawImage.CGImage];
+	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
+	NSArray *features = [detctor featuresInImage:image];
+	
+	NSLog(@"FEATURES:[%d]", [features count]);
+	
 	
 	// image is wider than tall (800x600)
 	if (_rawImage.size.width > _rawImage.size.height) {

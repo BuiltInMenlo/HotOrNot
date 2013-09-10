@@ -86,7 +86,7 @@ NSString * const kAPIGetVerifyList = @"challenges/getVerifyList";
 
 
 // view heights
-const CGFloat kNavBarHeaderHeight = 44.0f;
+const CGFloat kNavBarHeaderHeight = 77.0f;
 const CGFloat kSearchHeaderHeight = 49.0f;
 const CGFloat kOrthodoxTableHeaderHeight = 31.0f;
 const CGFloat kOrthodoxTableCellHeight = 63.0f;
@@ -846,11 +846,9 @@ NSString * const kTwilioSMS = @"6475577873";
 //	[[NSUserDefaults standardUserDefaults] synchronize];
 	
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	//self.window.backgroundColor = [UIColor whiteColor];
 	
-	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honOrthodoxGreenColor]];
+//	[[UINavigationBar appearance] setBarTintColor:[HONAppDelegate honOrthodoxGreenColor]];
 //	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header"] forBarMetrics:UIBarMetricsDefault];
-	[[UINavigationBar appearance] setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
 	[[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
 	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
 														  [UIColor whiteColor], UITextAttributeTextColor,
@@ -900,7 +898,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
-	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
+	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
@@ -1396,12 +1394,14 @@ NSString * const kTwilioSMS = @"6475577873";
 	timelineViewController = [[HONTimelineViewController alloc] initWithFriends];
 	discoveryViewController = [[HONDiscoveryViewController alloc] init];
 	challengesViewController = [[HONChallengesViewController alloc] init];
-	//profileViewController = [[HONTimelineViewController alloc] initWithUsername:[[HONAppDelegate infoForUser] objectForKey:@"username"]];
 	
 	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:timelineViewController];
 	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
 	UINavigationController *navigationController3 = [[UINavigationController alloc] initWithRootViewController:challengesViewController];
-	//UINavigationController *navigationController4 = [[UINavigationController alloc] initWithRootViewController:profileViewController];
+	
+	[navigationController1 setNavigationBarHidden:YES animated:NO];
+	[navigationController2 setNavigationBarHidden:YES animated:NO];
+	[navigationController3 setNavigationBarHidden:YES animated:NO];
 		
 	if ([navigationController1.navigationBar respondsToSelector:@selector(setShadowImage:)])
 		[navigationController1.navigationBar setShadowImage:[[UIImage alloc] init]];

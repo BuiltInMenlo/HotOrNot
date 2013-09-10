@@ -23,17 +23,19 @@
 #import "HONAddContactsViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONImagingDepictor.h"
+#import "HONHeaderView.h"
 #import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileView.h"
 
 @interface HONDiscoveryViewController ()<UITableViewDataSource, UITableViewDelegate, HONDiscoveryViewCellDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
-@property(nonatomic, strong) UITableView *tableView;
-@property(nonatomic, strong) MBProgressHUD *progressHUD;
-@property(nonatomic, strong) HONRefreshButtonView *refreshButtonView;
-@property(nonatomic, strong) UIImageView *emptySetImgView;
-@property(nonatomic, strong) NSMutableDictionary *allChallenges;
-@property(nonatomic, strong) NSMutableArray *currChallenges;
-@property(nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
+@property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) UIImageView *emptySetImgView;
+@property (nonatomic, strong) NSMutableDictionary *allChallenges;
+@property (nonatomic, strong) NSMutableArray *currChallenges;
+@property (nonatomic, strong) HONSearchBarHeaderView *searchHeaderView;
 @property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
@@ -87,7 +89,7 @@
 			
 		} else {
 			NSArray *parsedLists = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], parsedLists);
 			
 			_allChallenges = [NSMutableDictionary dictionary];
 			NSMutableArray *retrievedChallenges = [NSMutableArray array];
@@ -104,6 +106,8 @@
 			
 			_emptySetImgView.hidden = ([_currChallenges count] > 0);
 			[_tableView reloadData];
+			
+			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
 		}
 		
 		[_refreshButtonView toggleRefresh:NO];
@@ -138,20 +142,15 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-//	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
-	self.navigationController.navigationBar.topItem.title = @"Explore";
-//	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
-	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_profileHeaderButtonView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Explore"];
 	
 	_emptySetImgView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 285.0)];
 	_emptySetImgView.image = [UIImage imageNamed:@"noSnapsAvailable"];
 	_emptySetImgView.hidden = YES;
 	[self.view addSubview:_emptySetImgView];
 	
-	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 90.0)];
 	[self.view addSubview:_bannerView];
 	
 	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
@@ -165,6 +164,7 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - 10.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor whiteColor]];
+	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -193,6 +193,11 @@
 	_userProfileView.hidden = YES;
 	_userProfileView.delegate = self;
 	[self.view addSubview:_userProfileView];
+	
+	[_headerView addButton:_profileHeaderButtonView];
+	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:_headerView];
+	
 	
 	_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
 	_progressHUD.labelText = NSLocalizedString(@"hud_loading", nil);
@@ -443,7 +448,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
 	_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
-	return (_searchHeaderView);
+	return (nil);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -470,7 +475,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (kSearchHeaderHeight);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {

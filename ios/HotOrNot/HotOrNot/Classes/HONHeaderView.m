@@ -32,13 +32,13 @@
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 		_activityIndicatorView.frame = CGRectMake(11.0, 11.0, 24.0, 24.0);
-		[self addSubview:_activityIndicatorView];
+//		[self addSubview:_activityIndicatorView];
 		
 		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-		[self addSubview:_refreshButton];
+//		[self addSubview:_refreshButton];
 	}
 	
 	return (self);
@@ -47,17 +47,20 @@
 - (id)initAsVoteWall {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 320.0, kNavBarHeaderHeight)])) {
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
-		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]]];
+		
+		UIImageView *logoImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headerLogo"]];
+		logoImageView.frame = CGRectOffset(logoImageView.frame, 118.0, 20.0);
+		[self addSubview:logoImageView];
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 		_activityIndicatorView.frame = CGRectMake(11.0, 11.0, 24.0, 24.0);
-		[self addSubview:_activityIndicatorView];
+//		[self addSubview:_activityIndicatorView];
 		
 		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-		[self addSubview:_refreshButton];
+//		[self addSubview:_refreshButton];
 	}
 	
 	return (self);
@@ -78,18 +81,23 @@
 		
 		_activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
 		_activityIndicatorView.frame = CGRectMake(11.0, 11.0, 24.0, 24.0);
-		[self addSubview:_activityIndicatorView];
+//		[self addSubview:_activityIndicatorView];
 		
 		_refreshButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_refreshButton.frame = CGRectMake(0.0, 0.0, 50.0, 44.0);
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_nonActive"] forState:UIControlStateNormal];
 		[_refreshButton setBackgroundImage:[UIImage imageNamed:@"refreshButton_Active"] forState:UIControlStateHighlighted];
-		[self addSubview:_refreshButton];
+//		[self addSubview:_refreshButton];
 		
 		[self hideRefreshing];
 	}
 	
 	return (self);
+}
+
+- (void)addButton:(UIView *)buttonView {
+	buttonView.frame = CGRectOffset(buttonView.frame, 0.0, 20.0);
+	[self addSubview:buttonView];
 }
 
 

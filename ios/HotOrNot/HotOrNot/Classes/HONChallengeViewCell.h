@@ -10,11 +10,13 @@
 
 #import "HONGenericRowViewCell.h"
 #import "HONChallengeVO.h"
+#import "HONOpponentVO.h"
 
 
 @protocol HONChallengeViewCellDelegate;
 @interface HONChallengeViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
+- (id)initAsEvenRow:(BOOL)isEven;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, assign) id <HONChallengeViewCellDelegate> delegate;
@@ -23,5 +25,6 @@
 @protocol HONChallengeViewCellDelegate
 - (void)challengeViewCellShowPreview:(HONChallengeViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
 - (void)challengeViewCellHidePreview:(HONChallengeViewCell *)cell;
+- (void)challengeViewCell:(HONChallengeViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
 - (void)challengeViewCell:(HONChallengeViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO;
 @end

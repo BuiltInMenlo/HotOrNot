@@ -23,6 +23,5 @@
 @protocol HONSnapPreviewViewControllerDelegate
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController;
 - (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
-- (void)snapPreviewViewControllerProfile:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 - (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
 @end

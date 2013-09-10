@@ -17,7 +17,7 @@
 - (id)initWithTarget:(id)target action:(SEL)action {
 	if ((self = [super initWithFrame:CGRectMake(0.0, 0.0, 64.0, 44.0)])) {
 		_profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_profileButton.frame = CGRectMake(-5.0, 0.0, 64.0, 44.0);
+		_profileButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 		[_profileButton setBackgroundImage:[UIImage imageNamed:@"profileHeaderButton_nonActive"] forState:UIControlStateNormal];
 		[_profileButton setBackgroundImage:[UIImage imageNamed:@"profileHeaderButton_Active"] forState:UIControlStateHighlighted];
 		[_profileButton setBackgroundImage:[UIImage imageNamed:@"profileHeaderButton_Tapped"] forState:UIControlStateSelected];

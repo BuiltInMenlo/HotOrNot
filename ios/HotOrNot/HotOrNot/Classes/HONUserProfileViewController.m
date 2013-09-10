@@ -28,6 +28,7 @@
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic, strong) UIButton *subscribeButton;
 @property (nonatomic) int challengeCounter;
 @property (nonatomic) BOOL isRefreshing;
 @end
@@ -164,6 +165,28 @@
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:doneButton];
+	
+	_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_subscribeButton.frame = CGRectMake(0.0, 0.0, 60.0, 25.0);
+	[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+	[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+	[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:12.0]];
+	
+	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	flagButton.frame = CGRectMake(0.0, 0.0, 30.0, 25.0);
+	[flagButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+	[flagButton setTitleColor:[UIColor redColor] forState:UIControlStateHighlighted];
+	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:12.0]];
+	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
+	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+	
+	UIToolbar *footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 25.0, 320.0, 25.0)];
+	[footerToolbar setBarStyle:UIBarStyleBlackTranslucent];
+	[footerToolbar setItems:[NSArray arrayWithObjects:
+							 [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
+							 [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
+							 [[UIBarButtonItem alloc] initWithCustomView:flagButton], nil]];
+	[self.view addSubview:footerToolbar];
 }
 
 - (void)viewDidLoad {
@@ -196,6 +219,18 @@
 - (void)setUserVO:(HONUserVO *)userVO {
 	_userVO = userVO;
 	
+	BOOL isUser = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	
+	BOOL isFriend = NO;
+	if (!isUser) {
+		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+			if (vo.userID == _userVO.userID) {
+				isFriend = YES;
+				break;
+			}
+		}
+	}
+	
 	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 50.0, 109.0, 109.0)];
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[_scrollView addSubview:_avatarImageView];
@@ -205,7 +240,7 @@
 	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 200.0, 72.0);
 	[_scrollView addSubview:verifiedImageView];
 	
-	_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 200.0, 200.0, 20.0)];
+	_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 200.0, 180.0, 20.0)];
 	_nameAgeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
 	_nameAgeLabel.textColor = [UIColor whiteColor];
 	_nameAgeLabel.textAlignment = NSTextAlignmentCenter;
@@ -237,6 +272,9 @@
 	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_likesLabel];
 	
+	[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
+	[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goSubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+	
 	[self _retrieveChallenges];
 }
 
@@ -260,6 +298,17 @@
 	[self _retrieveChallenges];
 }
 
+- (void)_goSubscribe {
+//	[self.delegate userProfileViewCell:self addFriend:_userVO];
+}
+
+- (void)_goUnsubscribe {
+//	[self.delegate userProfileViewCell:self removeFriend:_userVO];
+}
+
+- (void)_goFlag {
+	
+}
 
 #pragma mark - UIPresentation
 - (void)_makeGrid {

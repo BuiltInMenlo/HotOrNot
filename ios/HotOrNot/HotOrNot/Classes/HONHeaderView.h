@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "HONProfileHeaderButtonView.h"
+#import "HONCreateSnapButtonView.h"
+
 @interface HONHeaderView : UIView
 - (id)initWithTitle:(NSString *)title;
 - (id)initAsVoteWall;
@@ -15,6 +18,7 @@
 - (void)toggleRefresh:(BOOL)isRefreshing;
 - (void)hideRefreshing;
 - (void)leftAlignTitle;
+- (void)addButton:(UIView *)buttonView;
 
 @property (nonatomic, strong) NSString *title;
 @property(nonatomic, strong) UIButton *refreshButton;

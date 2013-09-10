@@ -26,7 +26,7 @@
 #import "HONVotersViewController.h"
 #import "HONCommentsViewController.h"
 #import "HONSettingsViewController.h"
-#import "HONInviteCelebViewController.h"
+#import "HONHeaderView.h"
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
 #import "HONPopularViewController.h"
@@ -44,7 +44,7 @@
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
-@property (nonatomic, strong) NSDictionary *challengerDict;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) HONEmptyTimelineView *emptyTimelineView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -56,7 +56,6 @@
 @property (nonatomic) BOOL isPushView;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
-@property (nonatomic, strong) UIScrollView *findFriendsScrollView;
 @property (nonatomic, strong) UIImageView *tooltipImageView;
 @property (nonatomic, strong) HONUserVO *userVO;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
@@ -121,7 +120,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"SELECTED_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshVoteTab:) name:@"REFRESH_VOTE_TAB" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedVoteTab:) name:@"REFRESH_ALL_TABS" object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeVerify:) name:@"REMOVE_VERIFY" object:nil];
+//	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_removeVerify:) name:@"REMOVE_VERIFY" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showPopularUsers:) name:@"SHOW_POPULAR_USERS" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showProfile:) name:@"SHOW_PROFILE" object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_killTooltip:) name:@"KILL_TOOLTIP" object:nil];
@@ -152,7 +151,7 @@
 		bannerIndex = 0;
 	
 	
-	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:_bannerView.frame];
+	UIImageView *bannerImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
 	[bannerImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate bannerForSection:bannerIndex]] placeholderImage:nil];
 	[_bannerView addSubview:bannerImageView];
 	
@@ -339,7 +338,7 @@
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 			[navigationController setNavigationBarHidden:YES];
-			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:NO completion:nil];
+			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -464,10 +463,6 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIImageView *bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-	bgImageView.frame = self.view.bounds;
-	//[self.view addSubview:bgImageView];
-	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_userVO = nil;
@@ -475,8 +470,16 @@
 	_challenges = [NSMutableArray array];
 	_cells = [NSMutableArray array];
 	
+	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
+	
+	if (_timelineType == HONTimelineTypeFriends)
+		_headerView = [[HONHeaderView alloc] initAsVoteWall];
+		
+	else if (_timelineType == HONTimelineTypeSubject)
+		_headerView = [[HONHeaderView alloc] initWithTitle:_subjectName];
+	
+	/*
 	if (_isPushView) {
-		NSString *title = @"";
 		if (_timelineType == HONTimelineTypeSubject) {
 			title = _subjectName;
 		
@@ -505,12 +508,14 @@
 	}
 	
 	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	*/
 	
-	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 90.0)];
 	[self.view addSubview:_bannerView];
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -523,30 +528,7 @@
 	[_tableView addSubview:_refreshTableHeaderView];
 	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
-	_findFriendsScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
-	_findFriendsScrollView.contentSize = CGSizeMake(_findFriendsScrollView.frame.size.width, _findFriendsScrollView.frame.size.height+ 1.0);
-	_findFriendsScrollView.pagingEnabled = NO;
-	_findFriendsScrollView.showsVerticalScrollIndicator = YES;
-	_findFriendsScrollView.showsHorizontalScrollIndicator = NO;
-	_findFriendsScrollView.backgroundColor = [UIColor whiteColor];
-	_findFriendsScrollView.hidden = YES; //([_challenges count] > 0 || [[HONAppDelegate friendsList] count] > 0 || _isPushView);
-	//[self.view addSubview:_findFriendsScrollView];
-	
-	UIImageView *findFriendsImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, ([HONAppDelegate isRetina5]) ? 454.0 : 366.0)];
-	findFriendsImageView.image = [UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"findFriends-568h@2x" : @"findFriends"];
-	findFriendsImageView.userInteractionEnabled = YES;
-	[_findFriendsScrollView addSubview:findFriendsImageView];
-	
-	UIButton *ctaButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	ctaButton.frame = CGRectMake(0.0, 302.0, 320.0, 53.0);
-	[ctaButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateNormal];
-	[ctaButton setBackgroundImage:[UIImage imageNamed:@""] forState:UIControlStateHighlighted];
-	[ctaButton addTarget:self action:@selector(_goAddContactsAlert) forControlEvents:UIControlEventTouchUpInside];
-	[findFriendsImageView addSubview:ctaButton];
-	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	_profileOverlayView.alpha = 0.0;
 	_profileOverlayView.hidden = YES;
 	[self.view addSubview:_profileOverlayView];
 	
@@ -556,8 +538,12 @@
 	[_profileOverlayView addSubview:closeProfileButton];
 	
 	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -300.0, 320.0, 300.0)];
-	_userProfileView.hidden = YES;
 	_userProfileView.delegate = self;
+	[self.view addSubview:_userProfileView];
+	
+	[_headerView addButton:_profileHeaderButtonView];
+	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:_headerView];
 	
 	
 	if (_timelineType == HONTimelineTypeSubject) {
@@ -623,10 +609,8 @@
 		
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
 			_blurredImageView.alpha = 0.0;
-			_profileOverlayView.alpha = 0.0;
 		} completion:^(BOOL finished) {
 			_profileOverlayView.hidden = YES;
-			_userProfileView.hidden = YES;
 			
 			[_blurredImageView removeFromSuperview];
 			_blurredImageView = nil;
@@ -640,14 +624,11 @@
 		
 		_blurredImageView = [[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:self.view] applyBlurWithRadius:2.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.5] saturationDeltaFactor:1.0 maskImage:nil]];
 		_blurredImageView.alpha = 0.0;
-		[self.view addSubview:_blurredImageView];
+		//[self.view addSubview:_blurredImageView];
 		
-//		_profileOverlayView.hidden = NO;
-		_userProfileView.hidden = NO;
-		[self.view addSubview:_userProfileView];
+		_profileOverlayView.hidden = NO;
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
 			_blurredImageView.alpha = 1.0;
-//			_profileOverlayView.alpha = 1.0;
 		} completion:^(BOOL finished) {
 		}];
 		
@@ -698,34 +679,6 @@
 	}];
 }
 
-- (void)_goTimelineBanner {
-	[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline - Banner (%@)", [HONAppDelegate timelineBannerType]]
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	
-	if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"celeb"]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONInviteCelebViewController alloc] init]];
-		if ([[HONAppDelegate timelineBannerURL] length] > 0) {
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		}
-	
-	} else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"popular"]) {
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
-		if ([[HONAppDelegate timelineBannerURL] length] > 0) {
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		}
-	
-	} else if ([[[HONAppDelegate timelineBannerType] lowercaseString] isEqualToString:@"instagram"]) {
-		UIImage *image = [HONImagingDepictor prepImageForSharing:[UIImage imageNamed:@"share_template"] avatarImage:[HONAppDelegate avatarImage] username:[[HONAppDelegate infoForUser] objectForKey:@"name"]];
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"SEND_TO_INSTAGRAM" object:[NSDictionary dictionaryWithObjectsAndKeys:
-																								[HONAppDelegate instagramShareComment], @"caption",
-																								image, @"image", nil]];
-	}
-}
-
 - (void)_goLocaleRestriction {
 	//[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"boot_total"];
 	//[[NSUserDefaults standardUserDefaults] synchronize];
@@ -763,18 +716,6 @@
 	}
 }
 
-- (void)_goAddContactsAlert {
-	[[Mixpanel sharedInstance] track:@"Add Friends - Open"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	
-	[self _removeToolTip];
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
 
 #pragma mark - UI Presentation
 - (void)_removeToolTip {
@@ -786,18 +727,6 @@
 
 
 #pragma mark - Notifications
-- (void)_removeVerify:(NSNotification *)notification {
-	if (_emptyTimelineView != nil) {
-		_emptyTimelineView.hidden = YES;
-		[_emptyTimelineView removeFromSuperview];
-	}
-	
-	_findFriendsScrollView.hidden = [[HONAppDelegate friendsList] count] > 0;
-	
-	if ([[notification object] isEqualToString:@"Y"])
-		_findFriendsScrollView.hidden = YES;
-}
-
 - (void)_showPopularUsers:(NSNotification *)notification {
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONPopularViewController alloc] init]];
 	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
@@ -934,6 +863,7 @@
 	[self.view addSubview:_blurredImageView];
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
+	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 }
 
@@ -1057,30 +987,6 @@
 		[snapPreviewViewController.view removeFromSuperview];
 		snapPreviewViewController = nil;
 	}
-}
-
-- (void)snapPreviewViewControllerProfile:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
-	_opponentVO = opponentVO;
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - User Profile"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
-	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_opponentVO.username];
-	
-	if (snapPreviewViewController != nil) {
-		[snapPreviewViewController.view removeFromSuperview];
-		snapPreviewViewController = nil;
-	}
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	_blurredImageView = [[[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:[[UIApplication sharedApplication] delegate].window] applyBlurWithRadius:8.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.5] saturationDeltaFactor:1.0 maskImage:nil]] init];
-	[self.view addSubview:_blurredImageView];
-	
-	[self _retrieveUserForProfile:_opponentVO.userID];
 }
 
 - (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {

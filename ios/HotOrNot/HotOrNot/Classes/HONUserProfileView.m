@@ -226,14 +226,14 @@
 	
 	_isOpen = YES;
 	[UIView animateWithDuration:kProfileTime animations:^(void) {
-		self.frame = CGRectOffset(self.frame, 0.0, 300.0);
+		self.frame = CGRectOffset(self.frame, 0.0, 364.0);
 	} completion:^(BOOL finished) {
 	}];
 }
 
 - (void)hide {
 	[UIView animateWithDuration:kProfileTime delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
-		self.frame = CGRectOffset(self.frame, 0.0, -300.0);
+		self.frame = CGRectOffset(self.frame, 0.0, -364.0);
 	} completion:^(BOOL finished) {
 		_isOpen = NO;
 	}];

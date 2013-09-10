@@ -38,6 +38,7 @@
 @property (nonatomic) BOOL isChallengeOpponent;
 @property (nonatomic) BOOL isRefreshing;
 @property (nonatomic) int opponentCounter;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @end
@@ -224,15 +225,6 @@
 - (void)loadView {
 	[super loadView];
 	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
-	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
-	
-	self.navigationItem.title = _challengeVO.subjectName;
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:closeButton];
-	
 	[self _makeUI];
 }
 
@@ -267,9 +259,6 @@
 	_bgHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_bgHolderView];
 	
-//	HONHeaderView *headerNavView = [[HONHeaderView alloc] initAsModalWithTitle:_challengeVO.subjectName];
-//	[self.view addSubview:headerNavView];
-	
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
 	_isChallengeOpponent = NO;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
@@ -286,8 +275,9 @@
 	}
 	
 	
-	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 44.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 420.0 + (kSnapMediumDim * (respondedOpponents / 5))));
+	_scrollView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, -64.0f, 0.0f);
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
 	_scrollView.showsVerticalScrollIndicator = YES;
@@ -421,6 +411,16 @@
 //	[avatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 //	[avatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 //	[headerView addSubview:avatarButton];
+	
+	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	closeButton.frame = CGRectMake(270.0, 0.0, 64.0, 44.0);
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_nonActive"] forState:UIControlStateNormal];
+	[closeButton setBackgroundImage:[UIImage imageNamed:@"closeModalButton_Active"] forState:UIControlStateHighlighted];
+	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchUpInside];
+	
+	_headerView = [[HONHeaderView alloc] initWithTitle:_challengeVO.subjectName];
+	[_headerView addButton:closeButton];
+	[self.view addSubview:_headerView];
 	
 	UIButton *joinFooterButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	joinFooterButton.frame = CGRectMake(10.0, 0.0, 80.0, 25.0);

@@ -12,12 +12,15 @@
 #import "EGORefreshTableHeaderView.h"
 #import "MBProgressHUD.h"
 #import "UIImageView+AFNetworking.h"
+#import "UIImage+ImageEffects.h"
 
 #import "HONChallengesViewController.h"
 #import "HONChallengeViewCell.h"
 #import "HONChallengeVO.h"
+#import "HONUserVO.h"
 #import "HONImagePickerViewController.h"
 #import "HONTimelineViewController.h"
+#import "HONImagingDepictor.h"
 #import "HONRefreshButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONSearchBarHeaderView.h"
@@ -28,14 +31,15 @@
 #import "HONAddContactsViewController.h"
 #import "HONSettingsViewController.h"
 #import "HONImagingDepictor.h"
-#import "HONVerifyHeaderView.h"
+#import "HONHeaderView.h"
 #import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileView.h"
+#import "HONUserProfileViewController.h"
 
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyHeaderViewDelegate, HONChallengeViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONChallengeViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -57,6 +61,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic, strong) HONProfileHeaderButtonView *profileHeaderButtonView;
 @property (nonatomic, strong) HONUserProfileView *userProfileView;
 @property (nonatomic, strong) UIView *profileOverlayView;
+@property (nonatomic, strong) UIImageView *blurredImageView;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @end
 
 @implementation HONChallengesViewController
@@ -91,11 +97,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 #pragma mark - Data Calls
-- (void)_retrieveUser {
+- (void)_retrieveUser:(int)userID {
 	if ([HONAppDelegate infoForUser]) {
 		NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
 										[NSString stringWithFormat:@"%d", 5], @"action",
-										[[HONAppDelegate infoForUser] objectForKey:@"id"], @"userID",
+										[NSString stringWithFormat:@"%d", userID], @"userID",
 										nil];
 		
 		VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
@@ -118,13 +124,13 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				if ([userResult objectForKey:@"id"] != [NSNull null])
 					[HONAppDelegate writeUserInfo:userResult];
 				
-				[_tableView reloadData];
+				HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
+				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
+				userPofileViewController.userVO = userVO;
 				
-				[_refreshButtonView toggleRefresh:NO];
-				if (_progressHUD != nil) {
-					[_progressHUD hide:YES];
-					_progressHUD = nil;
-				}
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+				[navigationController setNavigationBarHidden:YES];
+				[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
 			}
 			
 		} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -297,16 +303,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	self.view.backgroundColor = [UIColor whiteColor];
 	
 	_isPrivate = NO;
-//	_refreshButtonView = [[HONRefreshButtonView alloc] initWithTarget:self action:@selector(_goRefresh)];
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_profileHeaderButtonView];
+	_headerView = [[HONHeaderView alloc] initWithTitle:@"Verify"];
 	
-	self.navigationController.navigationBar.topItem.title = @"Verify";
-//	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_refreshButtonView];
-	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
-	
-	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 90.0)];
+	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 90.0)];
 	_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"];
 	[self.view addSubview:_bannerView];
 	
@@ -324,8 +325,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_emptyImageView.hidden = YES;
 	[self.view addSubview:_emptyImageView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - 14.0 - kTabSize.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.rowHeight = 70.0;
 	_tableView.delegate = self;
@@ -355,6 +357,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_userProfileView.hidden = YES;
 	_userProfileView.delegate = self;
 	[self.view addSubview:_userProfileView];
+	
+	[_headerView addButton:_profileHeaderButtonView];
+	[_headerView addButton:[[HONCreateSnapButtonView alloc] initWithTarget:self action:@selector(_goCreateChallenge)]];
+	[self.view addSubview:_headerView];
 	
 	[_refreshButtonView toggleRefresh:YES];
 }
@@ -457,13 +463,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
-	//	[self _retrieveUser];
 }
 
 - (void)_refreshChallengesTab:(NSNotification *)notification {
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
-//	[self _retrieveUser];
 }
 
 - (void)_removePreview:(NSNotification *)notification {
@@ -525,19 +529,20 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 
-#pragma mark - VerifiyHeader Delegates
-- (void)verifyHeaderView:(HONVerifyHeaderView *)cell showCreatorTimeline:(HONChallengeVO *)challengeVO {
-	_challengeVO = challengeVO;
-	
-	[[Mixpanel sharedInstance] track:@"Verify Header - Show Profile"
+#pragma mark - ChallengeCell Delegates
+- (void)challengeViewCell:(HONChallengeViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
+	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:challengeVO.creatorVO.username];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	_blurredImageView = [[[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:[[UIApplication sharedApplication] delegate].window] applyBlurWithRadius:8.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.5] saturationDeltaFactor:1.0 maskImage:nil]] init];
+	[self.view addSubview:_blurredImageView];
+	
+	[self _retrieveUser:challengeVO.creatorVO.userID];
 }
 
-#pragma mark - ChallengeCell Delegates
 - (void)challengeViewCellShowPreview:(HONChallengeViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
@@ -705,30 +710,25 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (1);
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return ([_challenges count]);
 }
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (1);
+}
+
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	HONVerifyHeaderView *headerView = [[HONVerifyHeaderView alloc] initWithChallenge:(HONChallengeVO *)[_challenges objectAtIndex:section]];
-	headerView.delegate = self;
-	
-	[_headers addObject:headerView];
-	
-	return (headerView);
+	return (nil);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONChallengeViewCell alloc] init];
+		cell = [[HONChallengeViewCell alloc] initAsEvenRow:indexPath.row % 2 == 0];
 	
 	cell.delegate = self;
-	cell.challengeVO = [_challenges objectAtIndex:indexPath.section];
+	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
 	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 	
 	[_cells addObject:cell];
@@ -739,11 +739,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.section == [_challenges count] - 1) ? 283.0 : 236.0);
+	return ((indexPath.section == [_challenges count] - 1) ? 245.0 : 198.0);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (56.0);
+	return (0.0);
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -810,16 +810,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
-			HONVerifyHeaderView *headerView;
-			for (HONVerifyHeaderView *view in _headers) {
-				if (view.challengeVO.creatorVO.userID == _challengeVO.creatorVO.userID) {
-					headerView = view;
-					break;
-				}
-			}
-			
-			if (headerView != nil)
-				[headerView changeStatus:@"flagged for review"];
+//			HONVerifyHeaderView *headerView;
+//			for (HONVerifyHeaderView *view in _headers) {
+//				if (view.challengeVO.creatorVO.userID == _challengeVO.creatorVO.userID) {
+//					headerView = view;
+//					break;
+//				}
+//			}
+//			
+//			if (headerView != nil)
+//				[headerView changeStatus:@"flagged for review"];
 			
 			[[[UIAlertView alloc] initWithTitle:@""
 										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]

@@ -19,7 +19,9 @@
 @interface HONSnapPreviewViewController ()
 @property (nonatomic, strong) NSString *url;
 @property (nonatomic, strong) UIView *imageHolderView;
-@property (nonatomic, strong) UIView *controlsHolderView;
+@property (nonatomic, strong) UIButton *closeButton;
+@property (nonatomic, strong) UIView *buttonHolderView;
+@property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIView *profileHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -96,6 +98,13 @@
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
+			
+			NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+			[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+			
+			_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
+			_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
+			_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -194,6 +203,51 @@
 	NSLog(@"CHALLENGE -- ORIGINAL:[%d] DIFF:[%f] IMG:[%@] DATA:[%@]\n", isOriginalImageAvailable, diff, imageURL, _opponentVO.dictionary);
 }
 
+
+- (void)_retrieveChallenges {
+	NSMutableDictionary *params = [NSMutableDictionary dictionary];
+	[params setObject:[[HONAppDelegate infoForUser] objectForKey:@"id"] forKey:@"userID"];
+	[params setObject:[NSString stringWithFormat:@"%d", 9] forKey:@"action"];
+	[params setObject:@"N" forKey:@"isPrivate"];
+	[params setObject:_userVO.username forKey:@"username"];
+	[params setObject:[NSString stringWithFormat:@"%d", 1] forKey:@"p"];
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIVotes parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			
+			_challenges = [NSMutableArray array];
+			
+			for (NSDictionary *serverList in challengesResult) {
+				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
+				
+				if (vo != nil) {
+					if (vo.expireSeconds != 0)
+						[_challenges addObject:vo];
+				}
+			}
+			
+			_isRefreshing = NO;
+//			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
+			
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 500.0 + (kSnapMediumDim * ([_challenges count] / 5))));
+			[self _makeGrid];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
+	}];
+}
+
+
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
@@ -223,56 +277,64 @@
 	else
 		[self _loadForChallenge];
 	
-	_controlsHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
-	_controlsHolderView.hidden = YES;
-	_controlsHolderView.alpha = 0.0;
-	[self.view addSubview:_controlsHolderView];
+	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
+	_scrollView.pagingEnabled = NO;
+//	_scrollView.delegate = self;
+	_scrollView.showsVerticalScrollIndicator = YES;
+	_scrollView.showsHorizontalScrollIndicator = NO;
+	[self.view addSubview:_scrollView];
+	
+	_closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_closeButton.frame = self.view.frame;
+	[_closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
+	[_scrollView addSubview:_closeButton];
 	
 	_profileHolderView = [[UIView alloc] initWithFrame:self.view.bounds];
 	_profileHolderView.hidden = YES;
 	_profileHolderView.alpha = 0.0;
-	[self.view addSubview:_profileHolderView];
+	[_scrollView addSubview:_profileHolderView];
 	
-	UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 50.0, 109.0, 109.0)];
-	[avatarImageView setImageWithURL:[NSURL URLWithString:_opponentVO.avatarURL] placeholderImage:nil];
-	[_controlsHolderView addSubview:avatarImageView];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 50.0, 109.0, 109.0)];
+	[_avatarImageView setImageWithURL:[NSURL URLWithString:_opponentVO.avatarURL] placeholderImage:nil];
+	_avatarImageView.alpha = 0.0;
+	[_scrollView addSubview:_avatarImageView];
 	
 	BOOL isVerified = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < 0);
 	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(isVerified) ? @"verified" : @"notVerified"]];
-	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 200.0, 72.0);
-	[_controlsHolderView addSubview:verifiedImageView];
+	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 100.0, 22.0);
+	[_avatarImageView addSubview:verifiedImageView];
 	
-	_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 200.0, 200.0, 20.0)];
+	_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 200.0, 180.0, 20.0)];
 	_nameAgeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
 	_nameAgeLabel.textColor = [UIColor whiteColor];
 	_nameAgeLabel.textAlignment = NSTextAlignmentCenter;
 	_nameAgeLabel.backgroundColor = [UIColor clearColor];
-	_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", _opponentVO.username, [HONAppDelegate ageForDate:_opponentVO.birthday]];
-	[_controlsHolderView addSubview:_nameAgeLabel];
+	[_scrollView addSubview:_nameAgeLabel];
 	
-	UIView *buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 42.0, 320.0, 84.0)];
-	[_controlsHolderView addSubview:buttonHolderView];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 42.0, 320.0, 84.0)];
+	_buttonHolderView.alpha = 0.0;
+	[_scrollView addSubview:_buttonHolderView];
 	
 	UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	upvoteButton.frame = CGRectMake(18.0, 0.0, 84.0, 84.0);
 	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 	[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 	[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:upvoteButton];
+	[_buttonHolderView addSubview:upvoteButton];
 	
 	UIButton *profileButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	profileButton.frame = CGRectMake(116.0, 0.0, 84.0, 84.0);
 	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_nonActive"] forState:UIControlStateNormal];
 	[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
 	[profileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:profileButton];
+	[_buttonHolderView addSubview:profileButton];
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(217.0, 0.0, 84.0, 84.0);
 	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 	[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
-	[buttonHolderView addSubview:flagButton];
+	[_buttonHolderView addSubview:flagButton];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -281,27 +343,19 @@
 	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
 	_subscribersLabel.textColor = [UIColor whiteColor];
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
-	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 	[_profileHolderView addSubview:_subscribersLabel];
 	
 	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 260.0, 260.0, 16.0)];
 	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
-	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
 	[_profileHolderView addSubview:_volleysLabel];
 	
 	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 290.0, 260.0, 16.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 	[_profileHolderView addSubview:_likesLabel];
-	
-	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	closeButton.frame = _controlsHolderView.frame;
-	[closeButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
-	[_profileHolderView addSubview:closeButton];
 	
 	[self _retrieveUser:_opponentVO.userID];
 }
@@ -333,11 +387,19 @@
 
 #pragma mark - Public APIs
 - (void)showControls {
-	_controlsHolderView.hidden = NO;
+	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	doneButton.frame = CGRectMake(250.0, 20.0, 64.0, 44.0);
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
+	[self.view addSubview:doneButton];
 	
 	_imageView.image = [_imageView.image applyBlurWithRadius:5.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil];
+	_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", _opponentVO.username, [HONAppDelegate ageForDate:_opponentVO.birthday]];
+	
 	[UIView animateWithDuration:0.33 animations:^(void) {
-		_controlsHolderView.alpha = 1.0;
+		_buttonHolderView.alpha = 1.0;
+		_avatarImageView.alpha = 1.0;
 	}];
 }
 
@@ -347,23 +409,29 @@
 	[self.delegate snapPreviewViewControllerClose:self];
 }
 
+- (void)_goDone {
+	[self.delegate snapPreviewViewControllerClose:self];
+}
+
 - (void)_goUpvote {
 	[self.delegate snapPreviewViewControllerUpvote:self opponent:_opponentVO forChallenge:_challengeVO];
 }
 
 - (void)_goProfile {
-//	[self.delegate snapPreviewViewControllerProfile:self opponent:_opponentVO forChallenge:_challengeVO];
-	
-	[UIView animateWithDuration:0.33 animations:^(void) {
-		_controlsHolderView.alpha = 0.0;
-	}];
+	[[Mixpanel sharedInstance] track:@"Timeline - User Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", _opponentVO.userID, _opponentVO.username], @"opponent", nil]];
 	
 	_profileHolderView.hidden = NO;
 	[UIView animateWithDuration:0.33 animations:^(void) {
+		_buttonHolderView.alpha = 0.0;
 		_profileHolderView.alpha = 1.0;
 	}];
 	
-	[self _profileTransition];
+	[_closeButton removeFromSuperview];
+	[self _retrieveChallenges];
 }
 
 - (void)_goFlag {
@@ -372,8 +440,25 @@
 
 
 #pragma mark - UI Presentation
-- (void)_profileTransition {
-	//[self _retrieveChallenges];
+- (void)_makeGrid {
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(11.0, 400.0, 320.0, (kSnapMediumDim + 1.0) * (([_challenges count] / 4) + 1))];
+	_gridHolderView.backgroundColor = [UIColor clearColor];
+	[_scrollView addSubview:_gridHolderView];
+	
+	_challengeCounter = 0;
+	for (HONChallengeVO *vo in _challenges) {
+		CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (_challengeCounter % 4), (kSnapMediumDim + 1.0) * (_challengeCounter / 4));
+		
+		UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
+		[_gridHolderView addSubview:imageHolderView];
+		
+		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
+		imageView.userInteractionEnabled = YES;
+		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
+		[imageHolderView addSubview:imageView];
+		
+		_challengeCounter++;
+	}
 }
 
 

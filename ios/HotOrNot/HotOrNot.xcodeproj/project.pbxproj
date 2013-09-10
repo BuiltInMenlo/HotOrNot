@@ -519,6 +519,7 @@
 		4C7FE8B717C5CFAE00FCE1AA /* verifyYayButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C7FE8B317C5CFAE00FCE1AA /* verifyYayButton_nonActive.png */; };
 		4C7FE8B817C5CFAE00FCE1AA /* verifyYayButton_nonActive@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C7FE8B417C5CFAE00FCE1AA /* verifyYayButton_nonActive@2x.png */; };
 		4C801270176A530500BD795D /* HONImageLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C80126F176A530500BD795D /* HONImageLoadingView.m */; };
+		4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C810EA017DE65D900F6EAE9 /* CoreImage.framework */; };
 		4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C81A014163337C200AB188B /* UIImage+fixOrientation.m */; };
 		4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C81A016163367F300AB188B /* AVFoundation.framework */; };
 		4C8CBC20179CF36D00C95189 /* friendsButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C8CBC18179CF36D00C95189 /* friendsButton_Active.png */; };
@@ -1736,6 +1737,7 @@
 		4C7FE8B417C5CFAE00FCE1AA /* verifyYayButton_nonActive@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "verifyYayButton_nonActive@2x.png"; sourceTree = "<group>"; };
 		4C80126E176A530500BD795D /* HONImageLoadingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONImageLoadingView.h; sourceTree = "<group>"; };
 		4C80126F176A530500BD795D /* HONImageLoadingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONImageLoadingView.m; sourceTree = "<group>"; };
+		4C810EA017DE65D900F6EAE9 /* CoreImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreImage.framework; path = System/Library/Frameworks/CoreImage.framework; sourceTree = SDKROOT; };
 		4C81A013163337C100AB188B /* UIImage+fixOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+fixOrientation.h"; sourceTree = "<group>"; };
 		4C81A014163337C200AB188B /* UIImage+fixOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+fixOrientation.m"; sourceTree = "<group>"; };
 		4C81A016163367F300AB188B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -2179,6 +2181,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */,
 				4CEC304317DAD3140016AAE1 /* Accelerate.framework in Frameworks */,
 				4C02601A172B2CA8001CC476 /* AddressBook.framework in Frameworks */,
 				4CF07C161686770100E0FBC1 /* MediaPlayer.framework in Frameworks */,
@@ -2849,6 +2852,7 @@
 		4C62652815F96C7100AA7FCE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4C810EA017DE65D900F6EAE9 /* CoreImage.framework */,
 				4CEC304217DAD3140016AAE1 /* Accelerate.framework */,
 				4CABCEA7172F46F600AF5863 /* AddressBookUI.framework */,
 				4C026019172B2CA8001CC476 /* AddressBook.framework */,

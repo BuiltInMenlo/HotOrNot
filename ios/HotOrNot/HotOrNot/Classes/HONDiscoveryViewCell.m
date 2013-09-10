@@ -36,6 +36,8 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
+	//NSLog(@"L-CHALLENGE:(%d)[%@]", _lChallengeVO.challengeID, [_lChallengeVO.dictionary objectForKey:@"challengers"]);
+	
 	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(11.0, 0.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
 	holderView.clipsToBounds = YES;
 	[self addSubview:holderView];
@@ -77,6 +79,8 @@
 
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
+	
+	//NSLog(@"R-CHALLENGE:(%d)[%@]", _rChallengeVO.challengeID, [_rChallengeVO.dictionary objectForKey:@"challengers"]);
 	
 	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(162.0, 0.0, kSnapMediumDim * 2.0, kSnapMediumDim)];
 	holderView.clipsToBounds = YES;
