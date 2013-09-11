@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>php/api-dev/Users.php</string>
+	<string>php/api-dev/Votes.php</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -105,7 +105,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>525</integer>
+			<integer>480</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
@@ -135,7 +135,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>933</integer>
+			<integer>879</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
@@ -150,6 +150,20 @@
 				<key>line</key>
 				<integer>204</integer>
 			</dict>
+		</dict>
+		<key>php/api-dev/Discover.php</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>1</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
 		</dict>
 		<key>php/api-dev/Search.php</key>
 		<dict>
@@ -191,7 +205,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>655</integer>
+			<integer>636</integer>
 		</dict>
 		<key>php/api-shane/classes/BIM/App/Challenges.php</key>
 		<dict>
@@ -331,6 +345,7 @@
 		<string>php/api-dev/Challenges.php</string>
 		<string>php/api-20/Challenges.php</string>
 		<string>php/api-dev/Users.php</string>
+		<string>php/api-dev/Discover.php</string>
 		<string>php/api-shane/classes/BIM/App/Challenges.php</string>
 		<string>php/api-dev/Search.php</string>
 		<string>php/harness/stats.php</string>

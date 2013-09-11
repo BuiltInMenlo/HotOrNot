@@ -10,7 +10,7 @@
 
 #import "HONUserVO.h"
 
-@interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate>
+@interface HONUserProfileViewController : UIViewController <UIScrollViewDelegate, UIAlertViewDelegate>
 @property (nonatomic, strong) HONUserVO *userVO;
 
 - (id)initWithBackground:(UIImageView *)imageView;
