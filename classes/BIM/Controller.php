@@ -17,7 +17,7 @@ class BIM_Controller{
             $r = new $controllerClass();
             if( $method && method_exists( $r, $method ) ){
                 $res = $this->getAccountSuspendedVolley();
-                if( !$res ){
+                if( !$res || $controllerClass == 'BIM_Controller_Users' ){
                     $r->user = BIM_Utils::getSessionUser();
                     $res = $r->$method();
                     if( is_bool( $res ) ){
@@ -40,7 +40,7 @@ class BIM_Controller{
             $user = BIM_Model_User::get( $input->userID );
         }
         if( $user && $user->isSuspended() ){
-            $volley =  array( BIM_Model_Volley::getAccountSuspendedVolley($input->userID) );
+            $volley =  array( BIM_Model_Volley::getAccountSuspendedVolley($user->id) );
         }
         return $volley;
     }

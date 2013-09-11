@@ -374,6 +374,12 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute($sql, $params);
     }
     
+    public function updateImage( $volleyId, $url ){
+        $sql = 'UPDATE `hotornot-dev`.tblChallenges SET creator_img = ? WHERE id = ?';
+        $params = array( $url, $volleyId );
+        $this->prepareAndExecute($sql, $params);
+    }
+    
     public function cancel( $volleyId ){
         $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 3 WHERE id = ?';
         $params = array( $volleyId );
@@ -854,6 +860,12 @@ WHERE is_verify != 1
     
     public function getVolleyIds(){
         $sql = "select id from `hotornot-dev`.tblChallenges";
+        $stmt = $this->prepareAndExecute( $sql );
+        return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+    }
+    
+    public function getAllVerificationVolleyIds(){
+        $sql = "select id from `hotornot-dev`.tblChallenges where is_verify = 1";
         $stmt = $this->prepareAndExecute( $sql );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }

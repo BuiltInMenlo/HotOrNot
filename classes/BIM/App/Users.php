@@ -63,7 +63,7 @@ class BIM_App_Users extends BIM_App_Base{
         $user = BIM_Model_User::get($userId);
         $user->updateUsernameAvatar( $username, $imgUrl, $birthdate, $password  );
         if( $createVerifyVolley ){
-            BIM_Model_Volley::addVerifVolley($userId); // will create a verify volley if one does not yet exist
+            BIM_Model_Volley::addVerifVolley($userId, $imgUrl); // will create a verify volley if one does not yet exist
         }
         return $user;
 	}

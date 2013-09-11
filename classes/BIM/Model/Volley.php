@@ -142,6 +142,10 @@ class BIM_Model_Volley{
         return (defined( 'IS_LEGACY' ) && IS_LEGACY );
     }
     
+    public static function legacy(){
+        return (defined( 'IS_LEGACY' ) && IS_LEGACY );
+    }
+    
     /**
      * return the list of users
      * in the volley including the creator
@@ -224,7 +228,18 @@ class BIM_Model_Volley{
     public static function getAccountSuspendedVolley( $targetId ){
         $vv = self::getVerifyVolley( $targetId );
         $vv->subject = '#Account_Disabled_Temporarily';
-        $vv->creator->img = '';
+        $vv->challengers = array(
+            (object) array(
+                'id' => $vv->creator->id,
+                'img' => $vv->creator->img,
+                'score' => 0,
+                'joined' => '1970-01-01 12:34:56',
+            	'fb_id' => '',
+                'username' => $vv->creator->username,
+                'avatar' => $vv->creator->avatar,
+                'age' => $vv->creator->age,
+            )
+        );
         return $vv;
     }
     
@@ -247,10 +262,12 @@ class BIM_Model_Volley{
 	    return self::create($targetId, '#__verifyMe__', $imgUrl, array(), 'N', -1, true, $status);
     }
     
-    public static function addVerifVolley( $targetId ){
+    public static function addVerifVolley( $targetId, $imgUrl ){
         $vv = self::getVerifyVolley($targetId);
         if( $vv->isNotExtant() ){
-            self::createVerifyVolley($targetId);
+            $vv = self::createVerifyVolley($targetId);
+        } else {
+            $vv->updateImage( $imgUrl );
         }
     }
     
@@ -275,6 +292,12 @@ class BIM_Model_Volley{
     public function updateStatus( $status ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $dao->updateStatus( $this->id, $status );
+        $this->purgeFromCache();
+    }
+    
+    public function updateImage( $url ){
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $dao->updateImage( $this->id, $url );
         $this->purgeFromCache();
     }
     
@@ -455,43 +478,6 @@ class BIM_Model_Volley{
     
     /** 
      * 
-     * first get items from cache
-     * collect the keys for the missing items
-     * then do multi row fetch from the db
-     * build all volleys, the volley constructor will not call out to any db routines
-     * get all user ids for all the volleys
-     * call User::getMultiNew with the list of userIds to get all usr obejcts for the volleys
-     * then cycle the list of volleys and copy over data properties from user objects and cache them
-     * 
-     * 
-    **/
-    public static function getMultiNew( $ids ) {
-        $volleyKeys = self::makeCacheKeys( $ids );
-        $cache = new BIM_Cache( BIM_Config::cache() );
-        $volleys = $cache->getMulti( $volleyKeys );
-        // now we determine which things were not in memcache dn get those
-        $retrievedKeys = array_keys( $volleys );
-        $missedKeys = array_diff( $volleyKeys, $retrievedKeys );
-        if( $missedKeys ){
-            $missingVolleys = array();
-            foreach( $missedKeys as $volleyKey ){
-                list($prefix,$volleyId) = explode('_',$volleyKey);
-                $missingVolleys[] = $volleyId;
-            }
-            $dao = new BIM_Model_Volley($volleyId);
-            $missingVolleyData = $dao->getMulti($missingVolleys);
-            foreach( $missingVolleyData as $volleyData ){
-                $volley = new self( $volleyData, true );
-                if( $volley->isExtant() ){
-                    $volleys[ $volleyKey ] = $volley;
-                }
-            }
-        }
-        return array_values($volleys);        
-    }
-    
-    /** 
-     * 
      * do a multifetch to memcache
      * if there are any missing objects
      * get them from the db, one a t a time
@@ -521,7 +507,9 @@ class BIM_Model_Volley{
             self::populateVolleyUsers( $volleys );
             foreach( $volleys as $volley ){
                 $key = self::makeCacheKeys($volley->id);
-                $cache->set( $key, $volley );
+                if( !self::legacy() ){
+                    $cache->set( $key, $volley );
+                }
             }
         }
         
@@ -564,7 +552,7 @@ class BIM_Model_Volley{
         }
         if( !$volley ){
             $volley = new self($volleyId);
-            if( $volley->isExtant() ){
+            if( $volley->isExtant() && !self::legacy() ){
                 $cache->set( $cacheKey, $volley );
             }
         }
@@ -633,9 +621,8 @@ class BIM_Model_Volley{
     public static function warmCache(){
 		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volleyIds = $dao->getVolleyIds();
-        $ids = array_splice($volleyIds, 0, 250);
-        print count( $volleyIds )." remaining\n";
         while( $volleyIds ){
+            $ids = array_splice($volleyIds, 0, 250);
             self::getMulti($ids);
             $ids = array_splice($volleyIds, 0, 250);
             print count( $volleyIds )." remaining\n";
@@ -669,6 +656,23 @@ class BIM_Model_Volley{
                     print "a verify volley exists for $user->username : $user->id\n";
                 }
             }
+        }
+    }
+    
+    public static function fixVerificationImages(){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $volleyIds = $dao->getAllVerificationVolleyIds();
+        while( $volleyIds ){
+            $ids = array_splice($volleyIds, 0, 250);
+            $volleys = self::getMulti($ids);
+            foreach( $volleys as $volley ){
+	            $imgUrl = preg_replace('/^(.*?)\.jpg$/', '$1_o.jpg', $volley->creator->avatar);
+	            if( $imgUrl ){
+                    $volley->updateImage( $imgUrl );
+                    echo "updated volley $volley->id for user ".$volley->creator->username." with image $imgUrl\n";
+	            }
+            }
+            print count( $volleyIds )." remaining\n";
         }
     }
 }
