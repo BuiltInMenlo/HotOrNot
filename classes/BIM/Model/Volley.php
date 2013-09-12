@@ -273,9 +273,9 @@ class BIM_Model_Volley{
     
     public static function getHashTagId( $userId, $hashTag = 'N/A' ) {
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $hashTagId = $dao->addHashTag($hashTag, $userId);
+        $hashTagId = $dao->getHashTagId($hashTag, $userId);
         if( !$hashTagId ){
-            $hashTagId = $dao->getHashTagId($hashTag, $userId);
+            $hashTagId = $dao->addHashTag($hashTag, $userId);
         }
         return $hashTagId;
     }

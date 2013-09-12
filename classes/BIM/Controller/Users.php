@@ -40,7 +40,7 @@ class BIM_Controller_Users extends BIM_Controller_Base {
                 self::friendTeamVolley($userId);
                 BIM_Jobs_Users::queueFirstRunComplete($userId);
                 $users = new BIM_App_Users();
-			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age, $input->password, false );
+			    return $users->updateUsernameAvatar($userId, $input->username, $input->imgURL, $input->age, $input->password );
             }
 		}
 		return false;

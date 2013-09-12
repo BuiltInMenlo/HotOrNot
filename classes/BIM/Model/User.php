@@ -513,6 +513,10 @@ class BIM_Model_User{
     }
     
     public static function archiveByName( $userNames ){
+        if( !is_array($userNames)){
+            $userNames = array( $userNames );
+        }
+
         foreach( $userNames as $name ){
             $user = BIM_Model_User::getByUsername($name);
             self::archiveUser($user->id);

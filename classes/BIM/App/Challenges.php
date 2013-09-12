@@ -548,99 +548,18 @@ class BIM_App_Challenges extends BIM_App_Base{
     }
     
     /**
-     * get 25% of the volleys for user 2349
-     * 
-     * for a given set of challenge_ids
-     * 
-
-foreach( subjectids )
-
-get 90 challenge ids for the subject
-foreach challenge id
-    update 10 users in the participants table 
-	where the img is not empty 
-		  and the challenge id is not one of our ids
-	limit 10
-	
-
-select s.id, c.subject_id, s.title, count(*) 
-from tblChallenges as c 
-join tblChallengeParticipants as p 
-on c.id = p.challenge_id 
-
-join tblChallengeSubjects as s 
-on c.subject_id = s.id 
-
-where c.creator_id = 2394 
-group by s.id;
-
-+------+------------+------------------+----------+
-| id   | subject_id | title            | count(*) |
-+------+------------+------------------+----------+
-|  753 |        753 | #snapAtMe        |     2761 |
-| 1367 |       1367 | #welcomeVolley   |     1148 |
-| 1368 |       1368 | #teamVolleyRules |     1116 |
-| 1369 |       1369 | #teamVolley      |     1117 |
-| 1370 |       1370 | #teamVolleygirls |     1170 |
-+------+------------+------------------+----------+
-     
-select id from tblChallenges where subject_id = 1368 limit 30
-
-select id from tblChallenges where subject_id = 1369 limit 30
-
-select id from tblChallenges where subject_id = 1370 limit 30;
-
-
-select p.user_id, c.subject_id, p.challenge_id 
-from tblChallenges as c 
-	join tblChallengeParticipants as p 
-	on c.id = p.challenge_id  
-where c.subject_id = 1368  
-limit 10
-
-      update 
-      	tblChallenges as c 
-      	join tblChallengeParticipants as p 
-      	on c.id = p.challemge_id
-      
-     	set c.updated = now(),
-     		p.challenge_id = 16893
-     
-       where c.subject_id = 1368
-		and p.user_id in ( )
-		       
-       limit 10
-       
-       		and p.challemge_id not in (?)
-       
-       limit 10
-========       
-      select c.subject_id, p.challenge_id
-      from  
-          tblChallenges as c 
-          join tblChallengeParticipants as p 
-          on c.id = p.challenge_id
-      
-       where c.subject_id = 1368
-	   limit 10
-	   
-     *  
+     * get the volleyIds for the teamvolley user
+     * foreach volley
+     * 		get 10 - 30 photos from between
      * 
      */
     public static function redistributeVolleys(){
-        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
-        $challengeIds = array(); 
-        foreach( array( 1368, 1369, 1370)  as $subjectId ){
-            $sql = "select id from `hotornot-dev`.tblChallenges where subject_id = ? and id not in (16893,16890,16905,16898,16892,16924) limit 30";
-    		$params = array( $subjectId );
-            $stmt = $dao->prepareAndExecute( $sql, $params );
-            $ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
-            array_splice($challengeIds, count( $challengeIds ), 0, $ids);
-        }
         $sql = "select id from `hotornot-dev`.tblChallenges where creator_id = 2394";
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
         $stmt = $dao->prepareAndExecute( $sql );
-        $ids = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
-        array_splice($challengeIds, count( $challengeIds ), 0, $ids);
+        $challengeIds = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        
+        $challengeId = array(12);
         
 	    $chIdCt = count( $challengeIds );
 		$placeHolders = trim( str_repeat('?,', $chIdCt ), ',' );
@@ -651,9 +570,11 @@ limit 10
             	update `hotornot-dev`.tblChallengeParticipants
             	set challenge_id = ?, joined = UNIX_TIMESTAMP( NOW() )
             	where img != '' and 
-            		img is not null 
+            		img is not null
+            		and joined >= unix_timestamp('2013-07-12')
+            		and joined <= unix_timestamp('2013-08-12')
             		and challenge_id not in ( $placeHolders )
-            		and user_id > 100
+            		and user_id > 2500
             		and user_id not in (2408,2454,2456,3932,2383,2390, 2391, 2392, 2393, 2394, 2804, 2805, 2811, 2815, 2818, 2819, 2824, 1, 903)
             	limit $limit
             ";

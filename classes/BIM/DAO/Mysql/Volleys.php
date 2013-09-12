@@ -65,9 +65,11 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $this->prepareAndExecute( $sql, $params );
         $volleyId = $this->lastInsertId;
         
-        $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = total_challenges + 1 WHERE id = ? ';
-        $params = array( $userId );
-        $this->prepareAndExecute($sql, $params);
+        if( !$isVerify ){
+            $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = total_challenges + 1 WHERE id = ? ';
+            $params = array( $userId );
+            $this->prepareAndExecute($sql, $params);
+        }
         
         if( $volleyId && $targetIds ){
             // now we create the insert statement for all of the users in this volley
@@ -299,14 +301,16 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $sql = 'INSERT IGNORE INTO `hotornot-dev`.tblChallengeParticipants (challenge_id, user_id, img, joined, likes ) VALUES (?, ?, ?, ?, ?)';
         $params = array( $volleyId, $userId, $imgUrl, time(), 0 );
         $this->prepareAndExecute($sql, $params);
-        
-        $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
-        $params = array( $volleyId );
-        $this->prepareAndExecute($sql, $params);
-        
-        $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = total_challenges + 1 WHERE id = ? ';
-        $params = array( $userId );
-        $this->prepareAndExecute($sql, $params);
+
+        if( $this->rowCount ){
+            $sql = 'UPDATE `hotornot-dev`.tblChallenges SET status_id = 4, updated = NOW(), started = NOW() WHERE id = ? ';
+            $params = array( $volleyId );
+            $this->prepareAndExecute($sql, $params);
+            
+            $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_challenges = total_challenges + 1 WHERE id = ? ';
+            $params = array( $userId );
+            $this->prepareAndExecute($sql, $params);
+        }
     }
     
     public function accept( $volleyId, $userId, $imgUrl ){
