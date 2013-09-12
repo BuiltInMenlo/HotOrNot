@@ -15,7 +15,7 @@
 #import "UIImage+ImageEffects.h"
 
 #import "HONChallengesViewController.h"
-#import "HONChallengeViewCell.h"
+#import "HONVerifyViewCell.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONImagePickerViewController.h"
@@ -24,7 +24,6 @@
 #import "HONRefreshButtonView.h"
 #import "HONCreateSnapButtonView.h"
 #import "HONSearchBarHeaderView.h"
-#import "HONInviteNetworkViewController.h"
 #import "HONAddContactsViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONChangeAvatarViewController.h"
@@ -39,7 +38,7 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONChallengeViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONChallengesViewController() <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
@@ -530,7 +529,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 #pragma mark - ChallengeCell Delegates
-- (void)challengeViewCell:(HONChallengeViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
+- (void)challengeViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -543,7 +542,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[self _retrieveUser:challengeVO.creatorVO.userID];
 }
 
-- (void)challengeViewCellShowPreview:(HONChallengeViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+- (void)challengeViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:@"Verify - Show Detail"
@@ -556,7 +555,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
-- (void)challengeViewCellHidePreview:(HONChallengeViewCell *)cell {
+- (void)challengeViewCellHidePreview:(HONVerifyViewCell *)cell {
 	[[Mixpanel sharedInstance] track:@"Verify - Hide Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -565,11 +564,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_snapPreviewViewController showControls];
 }
 
-- (void)challengeViewCell:(HONChallengeViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
+- (void)challengeViewCell:(HONVerifyViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	UITableViewCell *tableCell;
-	for (HONChallengeViewCell *cell in _cells) {
+	for (HONVerifyViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
 			tableCell = (UITableViewCell *)cell;
 			break;
@@ -722,10 +721,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONChallengeViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	HONVerifyViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
 	
 	if (cell == nil)
-		cell = [[HONChallengeViewCell alloc] initAsEvenRow:indexPath.row % 2 == 0];
+		cell = [[HONVerifyViewCell alloc] initAsEvenRow:indexPath.row % 2 == 0];
 	
 	cell.delegate = self;
 	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
@@ -810,17 +809,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 		
 		if (buttonIndex == 1) {
-//			HONVerifyHeaderView *headerView;
-//			for (HONVerifyHeaderView *view in _headers) {
-//				if (view.challengeVO.creatorVO.userID == _challengeVO.creatorVO.userID) {
-//					headerView = view;
-//					break;
-//				}
-//			}
-//			
-//			if (headerView != nil)
-//				[headerView changeStatus:@"flagged for review"];
-			
 			[[[UIAlertView alloc] initWithTitle:@""
 										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
 									   delegate:nil

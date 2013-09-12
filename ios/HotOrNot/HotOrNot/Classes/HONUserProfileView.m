@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -18,8 +19,7 @@
 
 @interface HONUserProfileView()
 @property (nonatomic, strong) UIImageView *avatarImageView;
-@property (nonatomic, strong) UILabel *nameLabel;
-@property (nonatomic, strong) UILabel *ageLabel;
+@property (nonatomic, strong) UILabel *nameAgeLabel;
 @property (nonatomic, strong) UILabel *subscribersValLabel;
 @property (nonatomic, strong) UILabel *volleysValLabel;
 @property (nonatomic, strong) UILabel *likesValLabel;
@@ -35,14 +35,18 @@
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
 		
 		
-		UIImageView *holderImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileOverlay"]];
-		holderImageView.userInteractionEnabled = YES;
-		[self addSubview:holderImageView];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 375.0)];
+		holderView.backgroundColor = [UIColor grayColor];
+		[self addSubview:holderView];
 		
-		[holderImageView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(25.0, 24.0)]];
+		CALayer *maskLayer = [CALayer layer];
+		UIImage *mask = [UIImage imageNamed:@"profileImageMask.png"];
+		maskLayer.contents = (id)mask.CGImage;
+		maskLayer.frame = (CGRect){CGPointZero, mask.size};
 		
 		__weak typeof(self) weakSelf = self;
-		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(11.0, 10.0, 93.0, 93.0)];
+		_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(83.0, 30.0, 153.0, 153.0)];
+		_avatarImageView.layer.mask = maskLayer;
 		_avatarImageView.userInteractionEnabled = YES;
 		//_avatarImageView.alpha = 0.0;
 		[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[[HONAppDelegate infoForUser] objectForKey:@"avatar_url"]] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -51,121 +55,102 @@
 									//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 		
-		[holderImageView addSubview:_avatarImageView];
+		[holderView addSubview:_avatarImageView];
 		
 		UIButton *profilePicButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		profilePicButton.frame = CGRectMake(83.0, 33.0, 44.0, 44.0);
+		profilePicButton.frame = CGRectMake(200.0, 63.0, 64.0, 64.0);
 		[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_nonActive"] forState:UIControlStateNormal];
 		[profilePicButton setBackgroundImage:[UIImage imageNamed:@"addPhoto_Active"] forState:UIControlStateHighlighted];
 		[profilePicButton addTarget:self action:@selector(_goChangeAvatar) forControlEvents:UIControlEventTouchUpInside];
-		[holderImageView addSubview:profilePicButton];
+		[holderView addSubview:profilePicButton];
 		
 		NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 		[dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
 		NSDate *birthday = [dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]];
 		
-		_nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(130.0, 22.0, 180.0, 20.0)];
-		_nameLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
-		_nameLabel.textColor = [HONAppDelegate honBlueTextColor];
-		_nameLabel.backgroundColor = [UIColor clearColor];
-		_nameLabel.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"username"]];
-		[holderImageView addSubview:_nameLabel];
+		_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 200.0, 180.0, 20.0)];
+		_nameAgeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
+		_nameAgeLabel.textColor = [UIColor whiteColor];
+		_nameAgeLabel.textAlignment = NSTextAlignmentCenter;
+		_nameAgeLabel.backgroundColor = [UIColor clearColor];
+		_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate ageForDate:birthday]];
+		[holderView addSubview:_nameAgeLabel];
 		
-		UIButton *nameButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		nameButton.frame = _nameLabel.frame;
-		[nameButton addTarget:self action:@selector(_goTimeline) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:nameButton];
-		
-		_ageLabel = [[UILabel alloc] initWithFrame:CGRectMake(130.0, 46.0, 180.0, 20.0)];
-		_ageLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
-		_ageLabel.textColor = kStatsColor;
-		_ageLabel.backgroundColor = [UIColor clearColor];
-		_ageLabel.text = [NSString stringWithFormat:@"Age: %d", [HONAppDelegate ageForDate:birthday]];
-		[holderImageView addSubview:_ageLabel];
-		
-		BOOL isVerified = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < 0);
-		UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(isVerified) ? @"verified" : @"notVerified"]];
-		verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 128.0, 72.0);
-		[holderImageView addSubview:verifiedImageView];
-		
-		UILabel *verifiedLabel = [[UILabel alloc] initWithFrame:CGRectMake(152.0, 72.0, 180.0, 20.0)];
-		verifiedLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:16];
-		verifiedLabel.textColor = (isVerified) ? [HONAppDelegate honOrthodoxGreenColor] : [UIColor redColor];
-		verifiedLabel.backgroundColor = [UIColor clearColor];
-		verifiedLabel.text = (isVerified) ? @"Verified" : @"Not Verified";
-		[holderImageView addSubview:verifiedLabel];
+		UIImageView *statsBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileStatBackground"]];
+		statsBGImageView.frame = CGRectOffset(statsBGImageView.frame, 0.0, 230.0);
+		[holderView addSubview:statsBGImageView];
 		
 		NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 		[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 		
-		_subscribersValLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 142.0, 92.0, 16.0)];
-		_subscribersValLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
-		_subscribersValLabel.textColor = kStatsColor;
-		_subscribersValLabel.backgroundColor = [UIColor clearColor];
-		_subscribersValLabel.textAlignment = NSTextAlignmentCenter;
-		_subscribersValLabel.text = [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[HONAppDelegate friendsList] count]]]];
-		[holderImageView addSubview:_subscribersValLabel];
-		
-		UILabel *subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 160.0, 93.0, 16.0)];
-		subscribersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-		subscribersLabel.textColor = [HONAppDelegate honGrey518Color];
-		subscribersLabel.backgroundColor = [UIColor clearColor];
-		subscribersLabel.textAlignment = NSTextAlignmentCenter;
-		subscribersLabel.text = ([[HONAppDelegate friendsList] count] == 1) ? @"Subscriber" : @"Subscribers";
-		[holderImageView addSubview:subscribersLabel];
-		
-		_volleysValLabel = [[UILabel alloc] initWithFrame:CGRectMake(116.0, 142.0, 92.0, 16.0)];
+		_volleysValLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 242.0, 92.0, 16.0)];
 		_volleysValLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
-		_volleysValLabel.textColor = kStatsColor;
+		_volleysValLabel.textColor = [UIColor whiteColor];
 		_volleysValLabel.backgroundColor = [UIColor clearColor];
 		_volleysValLabel.textAlignment = NSTextAlignmentCenter;
 		_volleysValLabel.text = [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
-		[holderImageView addSubview:_volleysValLabel];
+		[holderView addSubview:_volleysValLabel];
 		
-		UILabel *volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(116.0, 160.0, 93.0, 16.0)];
+		UILabel *volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(15.0, 260.0, 93.0, 16.0)];
 		volleysLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-		volleysLabel.textColor = [HONAppDelegate honGrey518Color];
+		volleysLabel.textColor = [UIColor whiteColor];
 		volleysLabel.backgroundColor = [UIColor clearColor];
 		volleysLabel.textAlignment = NSTextAlignmentCenter;
 		volleysLabel.text = ([[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue] == 1) ? @"Volley" : @"Volleys";
-		[holderImageView addSubview:volleysLabel];
+		[holderView addSubview:volleysLabel];
 		
-		_likesValLabel = [[UILabel alloc] initWithFrame:CGRectMake(216.0, 142.0, 92.0, 16.0)];
+		_subscribersValLabel = [[UILabel alloc] initWithFrame:CGRectMake(116.0, 242.0, 92.0, 16.0)];
+		_subscribersValLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
+		_subscribersValLabel.textColor = [UIColor whiteColor];
+		_subscribersValLabel.backgroundColor = [UIColor clearColor];
+		_subscribersValLabel.textAlignment = NSTextAlignmentCenter;
+		_subscribersValLabel.text = [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[HONAppDelegate friendsList] count]]]];
+		[holderView addSubview:_subscribersValLabel];
+		
+		UILabel *subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(115.0, 260.0, 93.0, 16.0)];
+		subscribersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
+		subscribersLabel.textColor = [UIColor whiteColor];
+		subscribersLabel.backgroundColor = [UIColor clearColor];
+		subscribersLabel.textAlignment = NSTextAlignmentCenter;
+		subscribersLabel.text = ([[HONAppDelegate friendsList] count] == 1) ? @"Subscriber" : @"Subscribers";
+		[holderView addSubview:subscribersLabel];
+		
+		_likesValLabel = [[UILabel alloc] initWithFrame:CGRectMake(216.0, 242.0, 92.0, 16.0)];
 		_likesValLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
-		_likesValLabel.textColor = kStatsColor;
+		_likesValLabel.textColor = [UIColor whiteColor];
 		_likesValLabel.backgroundColor = [UIColor clearColor];
 		_likesValLabel.textAlignment = NSTextAlignmentCenter;
 		_likesValLabel.text = [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]]]];
-		[holderImageView addSubview:_likesValLabel];
+		[holderView addSubview:_likesValLabel];
 		
-		UILabel *likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(217.0, 160.0, 93.0, 16.0)];
+		UILabel *likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(217.0, 260.0, 93.0, 16.0)];
 		likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:15];
-		likesLabel.textColor = [HONAppDelegate honGrey518Color];
+		likesLabel.textColor = [UIColor whiteColor];
 		likesLabel.backgroundColor = [UIColor clearColor];
 		likesLabel.textAlignment = NSTextAlignmentCenter;
 		likesLabel.text = ([[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue] == 1) ? @"Like" : @"Likes";
-		[holderImageView addSubview:likesLabel];
+		[holderView addSubview:likesLabel];
 		
 		UIButton *friendsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		friendsButton.frame = CGRectMake(8.0, 210.0, 109.0, 44.0);
+		friendsButton.frame = CGRectMake(8.0, 310.0, 109.0, 44.0);
 		[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsProfileButton_nonActive"] forState:UIControlStateNormal];
 		[friendsButton setBackgroundImage:[UIImage imageNamed:@"findFriendsProfileButton_Active"] forState:UIControlStateHighlighted];
 		[friendsButton addTarget:self action:@selector(_goFindFriends) forControlEvents:UIControlEventTouchUpInside];
-		[holderImageView addSubview:friendsButton];
+		[holderView addSubview:friendsButton];
 		
 		UIButton *promoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		promoteButton.frame = CGRectMake(124.0, 210.0, 109.0, 44.0);
+		promoteButton.frame = CGRectMake(124.0, 310.0, 109.0, 44.0);
 		[promoteButton setBackgroundImage:[UIImage imageNamed:@"promoteButton_nonActive"] forState:UIControlStateNormal];
 		[promoteButton setBackgroundImage:[UIImage imageNamed:@"promoteButton_Active"] forState:UIControlStateHighlighted];
 		[promoteButton addTarget:self action:@selector(_goPromote) forControlEvents:UIControlEventTouchUpInside];
-		[holderImageView addSubview:promoteButton];
+		[holderView addSubview:promoteButton];
 		
 		UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		moreButton.frame = CGRectMake(240.0, 210.0, 64.0, 44.0);
+		moreButton.frame = CGRectMake(260.0, 310.0, 44.0, 44.0);
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButtonProfile_nonActive"] forState:UIControlStateNormal];
 		[moreButton setBackgroundImage:[UIImage imageNamed:@"moreButtonProfile_Active"] forState:UIControlStateHighlighted];
 		[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
-		[holderImageView addSubview:moreButton];
+		[holderView addSubview:moreButton];
 	}
 	
 	return (self);
@@ -207,8 +192,7 @@
 										//[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
 									} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
 			
-			_nameLabel.text = [NSString stringWithFormat:@"@%@", [[HONAppDelegate infoForUser] objectForKey:@"username"]];
-			_ageLabel.text = [NSString stringWithFormat:@"Age: %d", [HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]]];
+			_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", [[HONAppDelegate infoForUser] objectForKey:@"username"], [HONAppDelegate ageForDate:[dateFormat dateFromString:[[HONAppDelegate infoForUser] objectForKey:@"age"]]]];
 			_subscribersValLabel.text = [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[HONAppDelegate friendsList] count]]]];
 			_volleysValLabel.text = [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"pics"] intValue]]]];
 			_likesValLabel.text = [NSString stringWithFormat:@"%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[[[HONAppDelegate infoForUser] objectForKey:@"votes"] intValue]]]];
@@ -226,14 +210,14 @@
 	
 	_isOpen = YES;
 	[UIView animateWithDuration:kProfileTime animations:^(void) {
-		self.frame = CGRectOffset(self.frame, 0.0, 364.0);
+		self.frame = CGRectOffset(self.frame, 0.0, 439.0);
 	} completion:^(BOOL finished) {
 	}];
 }
 
 - (void)hide {
 	[UIView animateWithDuration:kProfileTime delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
-		self.frame = CGRectOffset(self.frame, 0.0, -364.0);
+		self.frame = CGRectOffset(self.frame, 0.0, -439.0);
 	} completion:^(BOOL finished) {
 		_isOpen = NO;
 	}];

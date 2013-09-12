@@ -57,7 +57,7 @@
 	for (NSDictionary *dict in [HONAppDelegate inviteCelebs])
 		[_celebs addObject:[HONCelebVO celebWithDictionary:dict]];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Invite People"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Invite People"];
 	[self.view addSubview:headerView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];

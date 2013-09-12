@@ -19,6 +19,7 @@
 #import "HONCommentsViewController.h"
 #import "HONSnapPreviewViewController.h"
 #import "HONRefreshButtonView.h"
+#import "HONUserProfileViewController.h"
 
 @interface HONChallengeDetailsViewController () <UIScrollViewDelegate, UIAlertViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -26,6 +27,7 @@
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIView *creatorImageHolderView;
 @property (nonatomic, strong) UIImageView *creatorChallengeImageView;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) UILabel *commentsLabel;
@@ -47,6 +49,7 @@
 
 - (id)initWithChallenge:(HONChallengeVO *)vo withBackground:(UIImageView *)imageView {
 	if ((self = [super init])) {
+		NSLog(@"CHALLENGE:[%@]", vo.dictionary);
 		_challengeVO = vo;
 		_bgImageView = imageView;
 		
@@ -220,6 +223,50 @@
 }
 
 
+- (void)_retrieveUserForProfile:(int)userID {
+	NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+							[NSString stringWithFormat:@"%d", 5], @"action",
+							[NSString stringWithFormat:@"%d", userID], @"userID",
+							nil];
+	
+	//NSLog(@"USER BY ID PARAMS:[%@]", params);
+	
+	VolleyJSONLog(@"%@ —/> (%@/%@?action=%@)", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [params objectForKey:@"action"]);
+	AFHTTPClient *httpClient = [HONAppDelegate getHttpClientWithHMAC];
+	[httpClient postPath:kAPIUsers parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+		NSError *error = nil;
+		NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+		
+		if (error != nil) {
+			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
+			
+		} else {
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
+			
+			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+			userPofileViewController.userVO = userVO;
+			
+			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
+			[navigationController setNavigationBarHidden:YES];
+			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+		}
+		
+	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
+		
+		if (_progressHUD == nil)
+			_progressHUD = [MBProgressHUD showHUDAddedTo:[[UIApplication sharedApplication] delegate].window animated:YES];
+		_progressHUD.minShowTime = kHUDTime;
+		_progressHUD.mode = MBProgressHUDModeCustomView;
+		_progressHUD.customView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"error"]];
+		_progressHUD.labelText = NSLocalizedString(@"hud_loadError", nil);
+		[_progressHUD show:NO];
+		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
+		_progressHUD = nil;
+	}];
+}
+
 
 #pragma mark - View Lifecycle
 - (void)loadView {
@@ -242,14 +289,20 @@
 - (void)_reloadCreatorImage {
 	__weak typeof(self) weakSelf = self;
 	
+	NSLog(@"RELOADING:[%@]", [NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]);
+	
+	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 426.0)];
 	_creatorChallengeImageView.frame = CGRectMake(0.0, 0.0, 320.0, 320.0);
 	_creatorChallengeImageView.alpha = [_creatorChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]]];
+	[_creatorImageHolderView addSubview:_creatorChallengeImageView];
 	[_creatorChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]
 																		cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 										  weakSelf.creatorChallengeImageView.image = image;
 										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.creatorChallengeImageView.alpha = 1.0; } completion:nil];
-									  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {}];
+									  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+										  NSLog(@"Error:[%@]", error.description);
+									  }];
 }
 
 - (void)_makeUI {
@@ -294,15 +347,14 @@
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
 	__weak typeof(self) weakSelf = self;
-	UIView *creatorImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 198.0)];
-	creatorImageHolderView.clipsToBounds = YES;
-	[_scrollView addSubview:creatorImageHolderView];
+	_creatorImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 198.0)];
+	_creatorImageHolderView.clipsToBounds = YES;
+	[_scrollView addSubview:_creatorImageHolderView];
 	
 	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 426.0)];
 	_creatorChallengeImageView.userInteractionEnabled = YES;
 	_creatorChallengeImageView.alpha = [_creatorChallengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", _challengeVO.creatorVO.imagePrefix]]]];
-	[creatorImageHolderView addSubview:_creatorChallengeImageView];
-	
+	[_creatorImageHolderView addSubview:_creatorChallengeImageView];
 	[_creatorChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", _challengeVO.creatorVO.imagePrefix]]
 																		cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -318,35 +370,6 @@
 	//[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:leftButton];
 	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 170.0, 320.0, 78.0)];
-	[_scrollView addSubview:footerHolderView];
-		
-	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(8.0, 0.0, 24.0, 24.0);
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
-	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
-//	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:likesButton];
-	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 1.0, 40.0, 22.0)];
-	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
-	_likesLabel.textColor = [UIColor whiteColor];
-	_likesLabel.backgroundColor = [UIColor clearColor];
-	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
-	[footerHolderView addSubview:_likesLabel];
-	
-	UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesLabelButton.frame = _likesLabel.frame;
-	[likesLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-	[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-	[footerHolderView addSubview:likesLabelButton];
-	
-	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(242.0, 75.0, 78.0, 78.0);
-	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
-	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
-	[_scrollView addSubview:joinButton];
 	
 	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 198.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
 	[_scrollView addSubview:_gridHolderView];
@@ -375,42 +398,74 @@
 		}
 	}
 	
+	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 163.0, 320.0, 44.0)];
+	[_scrollView addSubview:footerHolderView];
+	
+	UIButton *challengersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	challengersButton.frame = CGRectMake(5.0, 5.0, 24.0, 24.0);
+	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateNormal];
+	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateHighlighted];
+	[footerHolderView addSubview:challengersButton];
+	
+	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, 6.0, 40.0, 22.0)];
+	challengersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+	challengersLabel.textColor = [UIColor whiteColor];
+	challengersLabel.backgroundColor = [UIColor clearColor];
+	challengersLabel.text = (_opponentCounter > 99) ? @"99+" : [NSString stringWithFormat:@"%d", _opponentCounter];
+	[footerHolderView addSubview:challengersLabel];
+	
+	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	likesButton.frame = CGRectMake(66.0, 5.0, 24.0, 24.0);
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
+	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
+	[footerHolderView addSubview:likesButton];
+	
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(95.0, 6.0, 40.0, 22.0)];
+	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+	_likesLabel.textColor = [UIColor whiteColor];
+	_likesLabel.backgroundColor = [UIColor clearColor];
+	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
+	[footerHolderView addSubview:_likesLabel];
+	
+	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	joinButton.frame = CGRectMake(230.0, 54.0, 78.0, 78.0);
+	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
+	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
+	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
+	[_scrollView addSubview:joinButton];
+	
 	
 	UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 58.0)];
 	[_scrollView addSubview:headerView];
 	
-	//	UIImageView *creatorAvatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(12.0, 9.0, 38.0, 38.0)];
-	//	[creatorAvatarImageView setImageWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL] placeholderImage:nil];
-	//	creatorAvatarImageView.userInteractionEnabled = YES;
-	//	[headerView addSubview:creatorAvatarImageView];
-	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 10.0, 170.0, 30.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:26];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 6.0, 170.0, 28.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:25];
 	subjectLabel.textColor = [UIColor whiteColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[headerView addSubview:subjectLabel];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 45.0, 150.0, 19.0)];
-	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 35.0, 150.0, 19.0)];
+	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 	creatorNameLabel.textColor = [UIColor whiteColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
 	[headerView addSubview:creatorNameLabel];
 	
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 10.0, 160.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	creatorButton.frame = creatorNameLabel.frame;
+	[creatorButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
+	[creatorButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+	[creatorButton setTag:_challengeVO.creatorVO.userID];
+	[headerView addSubview:creatorButton];
+	
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 7.0, 160.0, 16.0)];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
 	timeLabel.textColor = [UIColor whiteColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
 	timeLabel.text = (_challengeVO.expireSeconds > 0) ? [HONAppDelegate formattedExpireTime:_challengeVO.expireSeconds] : [HONAppDelegate timeSinceDate:_challengeVO.updatedDate];
 	[headerView addSubview:timeLabel];
-	
-//	UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	avatarButton.frame = creatorAvatarImageView.frame;
-//	[avatarButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-//	[avatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
-//	[headerView addSubview:avatarButton];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	closeButton.frame = CGRectMake(270.0, 0.0, 64.0, 44.0);
@@ -525,14 +580,15 @@
 	[self.navigationController pushViewController:[[HONCommentsViewController alloc] initWithChallenge:_challengeVO] animated:YES];
 }
 
-- (void)_goCreatorTimeline {
-	[[Mixpanel sharedInstance] track:@"Timeline Details Header - Profile"
+
+- (void)_goUserProfile {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Creator Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:_challengeVO.creatorVO.username];
+	[self _retrieveUserForProfile:_challengeVO.creatorVO.userID];
 }
 
 - (void)_goJoinChallenge {

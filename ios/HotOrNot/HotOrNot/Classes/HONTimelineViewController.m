@@ -30,7 +30,7 @@
 #import "HONEmptyTimelineView.h"
 #import "HONAddContactsViewController.h"
 #import "HONPopularViewController.h"
-#import "HONVerifyViewController.h"
+#import "HONVerifyAccountViewController.h"
 #import "HONImagingDepictor.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONSnapPreviewViewController.h"
@@ -537,7 +537,7 @@
 	[closeProfileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[_profileOverlayView addSubview:closeProfileButton];
 	
-	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -300.0, 320.0, 300.0)];
+	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -375.0, 320.0, 375.0)];
 	_userProfileView.delegate = self;
 	[self.view addSubview:_userProfileView];
 	
@@ -997,120 +997,6 @@
 }
 
 
-/*
-#pragma mark - UserProfileCell Delegates
-- (void)userProfileViewCell:(HONUserProfileViewCell *)cell flagUser:(HONUserVO *)userVO {
-	[[Mixpanel sharedInstance] track:@"Timeline Profile - Flag"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"opponent", nil]];
-	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:@"This person will be flagged for review"
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes, flag user", nil];
-	
-	[alertView setTag:2];
-	[alertView show];
-	
-	[self _flagUser:userVO.userID];
-}
-
-- (void)userProfileViewCell:(HONUserProfileViewCell *)cell addFriend:(HONUserVO *)userVO {
-	_userVO = userVO;
-	
-	[[Mixpanel sharedInstance] track:@"Timeline Profile - Subscribe"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
-	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", userVO.username]
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:3];
-	[alertView show];
-}
-
-- (void)userProfileViewCell:(HONUserProfileViewCell *)cell removeFriend:(HONUserVO *)userVO {
-	_userVO = userVO;
-	
-	[[Mixpanel sharedInstance] track:@"Timeline Profile - Unsubscribe"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", userVO.userID, userVO.username], @"friend", nil]];
-	
-	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-														message:[NSString stringWithFormat:@"You will no longer receive Volley updates from @%@", userVO.username]
-													   delegate:self
-											  cancelButtonTitle:@"No"
-											  otherButtonTitles:@"Yes", nil];
-	[alertView setTag:4];
-	[alertView show];
-}
-
-- (void)userProfileViewCell:(HONUserProfileViewCell *)cell showUserTimeline:(HONUserVO *)userVO {
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_USER_SEARCH_TIMELINE" object:userVO.username];
-}
-
-- (void)userProfileViewCellMore:(HONUserProfileViewCell *)cell asProfile:(BOOL)isUser {
-	if (isUser) {
-		[[Mixpanel sharedInstance] track:@"Profile - Settings"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
-		UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONSettingsViewController alloc] init]];
-		[navigationController setNavigationBarHidden:YES];
-		[self presentViewController:navigationController animated:YES completion:nil];
-	
-	} else {
-		BOOL isFriend = NO;
-		for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
-			if (vo.userID == _userVO.userID) {
-				isFriend = YES;
-				break;
-			}
-		}
-		
-		[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
-		
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-																 delegate:self
-														cancelButtonTitle:@"Cancel"
-												   destructiveButtonTitle:@"Flag"
-														otherButtonTitles:(isFriend) ? @"Unsubscribe" : @"Subscribe", nil];
-		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:1];
-		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
-	}
-}
-
-- (void)userProfileViewCellFindFriends:(HONUserProfileViewCell *)cell {
-	[[Mixpanel sharedInstance] track:@"Profile - Find Friends Button"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (void)userProfileViewCellTakeNewAvatar:(HONUserProfileViewCell *)cell {
-	[[Mixpanel sharedInstance] track:@"Profile - Take New Avatar"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChangeAvatarViewController alloc] init]];
-	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:NO completion:nil];
-}*/
-
-
 #pragma mark - EmptyTimelineView Delegates
 - (void)emptyTimelineViewVerify:(HONEmptyTimelineView *)emptyTimelineView {
 	[[Mixpanel sharedInstance] track:@"Timeline - Verify"
@@ -1175,48 +1061,18 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	/*if (_timelineType == HONTimelineTypeSingleUser && _userVO != nil) {
-		if (indexPath.section == 0) {
-			HONUserProfileViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-			
-			if (cell == nil) {
-				cell = [[HONUserProfileViewCell alloc] init];
-				cell.userVO = _userVO;
-			}
-			
-			cell.delegate = self;
-			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-			return (cell);
-			
-		} else {
-			HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-			
-			if (cell == nil) {
-				HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.section - 1];
-				cell = [[HONTimelineItemViewCell alloc] initAsStartedCell:(vo.statusID == 4)];
-				cell.challengeVO = vo;
-			}
-			
-			[_cells addObject:cell];
-			cell.delegate = self;
-			[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-			return (cell);
-		}
-		
-	} else {*/
-		HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-		
-		if (cell == nil) {
-			HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-			cell = [[HONTimelineItemViewCell alloc] initAsStartedCell:(vo.statusID == 4)];
-			cell.challengeVO = vo;
-		}
-		
-		[_cells addObject:cell];
-		cell.delegate = self;
-		[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-		return (cell);
-//	}
+	HONTimelineItemViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	
+	if (cell == nil) {
+		HONChallengeVO *vo = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+		cell = [[HONTimelineItemViewCell alloc] init];
+		cell.challengeVO = vo;
+	}
+	
+	[_cells addObject:cell];
+	cell.delegate = self;
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	return (cell);
 }
 
 
@@ -1298,13 +1154,13 @@
 	if (actionSheet.tag == 0) {
 		switch (buttonIndex) {
 			case 0:{
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:NO]];
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:NO]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
 				break;}
 				
 			case 1:{
-				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyViewController alloc] initAsEmailVerify:YES]];
+				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:YES]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
 				break;}

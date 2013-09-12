@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Built in Menlo, LLC. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -16,7 +17,7 @@
 #import "HONOpponentVO.h"
 
 
-@interface HONUserProfileViewController () <EGORefreshTableHeaderDelegate>
+@interface HONUserProfileViewController ()
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
@@ -29,6 +30,7 @@
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) UIButton *subscribeButton;
+@property (nonatomic, strong) UIButton *flagButton;
 @property (nonatomic) int challengeCounter;
 @property (nonatomic) BOOL isRefreshing;
 @end
@@ -130,7 +132,7 @@
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 500.0 + (kSnapMediumDim * ([_challenges count] / 5))));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 535.0 + (kSnapMediumDim * ([_challenges count] / 5))));
 			[self _makeGrid];
 		}
 		
@@ -230,10 +232,10 @@
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
-	_refreshTableHeaderView.delegate = self;
-	[_scrollView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView refreshLastUpdatedDate];
+//	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+//	_refreshTableHeaderView.delegate = self;
+//	[_scrollView addSubview:_refreshTableHeaderView];
+//	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	doneButton.frame = CGRectMake(250.0, 20.0, 64.0, 44.0);
@@ -243,25 +245,25 @@
 	[self.view addSubview:doneButton];
 	
 	_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_subscribeButton.frame = CGRectMake(0.0, 0.0, 60.0, 25.0);
+	_subscribeButton.frame = CGRectMake(0.0, 0.0, 70.0, 25.0);
 	[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 	[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
 	[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:12.0]];
 	
-	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	flagButton.frame = CGRectMake(0.0, 0.0, 30.0, 25.0);
-	[flagButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-	[flagButton setTitleColor:[UIColor redColor] forState:UIControlStateHighlighted];
-	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:12.0]];
-	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
-	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
+	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	_flagButton.frame = CGRectMake(0.0, 0.0, 30.0, 25.0);
+	[_flagButton setTitleColor:[UIColor colorWithRed:0.733 green:0.380 blue:0.392 alpha:1.0] forState:UIControlStateNormal];
+	[_flagButton setTitleColor:[UIColor colorWithRed:0.733 green:0.380 blue:0.392 alpha:1.0] forState:UIControlStateHighlighted];
+	[_flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:12.0]];
+	[_flagButton setTitle:@"Flag" forState:UIControlStateNormal];
+	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 	
 	UIToolbar *footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 25.0, 320.0, 25.0)];
 	[footerToolbar setBarStyle:UIBarStyleBlackTranslucent];
 	[footerToolbar setItems:[NSArray arrayWithObjects:
 							 [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
 							 [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
-							 [[UIBarButtonItem alloc] initWithCustomView:flagButton], nil]];
+							 [[UIBarButtonItem alloc] initWithCustomView:_flagButton], nil]];
 	[self.view addSubview:footerToolbar];
 }
 
@@ -307,17 +309,27 @@
 		}
 	}
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(105.0, 50.0, 109.0, 109.0)];
+	CALayer *maskLayer = [CALayer layer];
+	UIImage *mask = [UIImage imageNamed:@"profileImageMask.png"];
+	maskLayer.contents = (id)mask.CGImage;
+	maskLayer.frame = (CGRect){CGPointZero, mask.size};
+	
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(83.0, 58.0, 153.0, 153.0)];
+	_avatarImageView.layer.mask = maskLayer;
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[_scrollView addSubview:_avatarImageView];
 	
-	BOOL isVerified = ([[[HONAppDelegate infoForUser] objectForKey:@"age"] intValue] < 0);
-	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:(isVerified) ? @"verified" : @"notVerified"]];
-	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 200.0, 72.0);
+	UIImageView *avararCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileAvatarBackground"]];
+	avararCoverImageView.frame = _avatarImageView.frame;
+	[_scrollView addSubview:avararCoverImageView];
+	
+	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUser"]];
+	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 197.0, 106.0);
+	verifiedImageView.hidden = ([HONAppDelegate ageForDate:_userVO.birthday] > 19);
 	[_scrollView addSubview:verifiedImageView];
 	
-	_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 200.0, 180.0, 20.0)];
-	_nameAgeLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16];
+	_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 227.0, 290.0, 28.0)];
+	_nameAgeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
 	_nameAgeLabel.textColor = [UIColor whiteColor];
 	_nameAgeLabel.textAlignment = NSTextAlignmentCenter;
 	_nameAgeLabel.backgroundColor = [UIColor clearColor];
@@ -327,29 +339,33 @@
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 230.0, 260.0, 16.0)];
-	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 275.0, 260.0, 28.0)];
+	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
 	_subscribersLabel.textColor = [UIColor whiteColor];
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
 	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_subscribersLabel];
 	
-	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 260.0, 260.0, 16.0)];
-	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
+	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 325.0, 260.0, 28.0)];
+	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
 	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_volleysLabel];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 290.0, 260.0, 16.0)];
-	_likesLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:15];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 373.0, 260.0, 28.0)];
+	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
 	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_likesLabel];
 	
-	[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
-	[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goSubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _userVO.userID) {
+		[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
+		[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+	}
+	
+	_flagButton.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	
 	[self _retrieveChallenges];
 }
@@ -375,7 +391,7 @@
 }
 
 - (void)_goSubscribe {
-	[[Mixpanel sharedInstance] track:@"Timeline Profile - Subscribe"
+	[[Mixpanel sharedInstance] track:@"Profile - Subscribe"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
@@ -390,7 +406,7 @@
 }
 
 - (void)_goUnsubscribe {
-	[[Mixpanel sharedInstance] track:@"Timeline Profile - Unsubscribe"
+	[[Mixpanel sharedInstance] track:@"Profile - Unsubscribe"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
@@ -406,18 +422,30 @@
 }
 
 - (void)_goFlag {
+	[[Mixpanel sharedInstance] track:@"Profile - Flag"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 	
+	UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
+														message:@"This person will be flagged for review"
+													   delegate:self
+											  cancelButtonTitle:@"No"
+											  otherButtonTitles:@"Yes, flag user", nil];
+	
+	[alertView setTag:2];
+	[alertView show];
 }
 
 #pragma mark - UIPresentation
 - (void)_makeGrid {
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(11.0, 400.0, 320.0, (kSnapMediumDim + 1.0) * (([_challenges count] / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, (kSnapMediumDim) * (([_challenges count] / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
 	[_scrollView addSubview:_gridHolderView];
 	
 	_challengeCounter = 0;
 	for (HONChallengeVO *vo in _challenges) {
-		CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (_challengeCounter % 4), (kSnapMediumDim + 1.0) * (_challengeCounter / 4));
+		CGPoint pos = CGPointMake((kSnapMediumDim) * (_challengeCounter % 4), (kSnapMediumDim) * (_challengeCounter / 4));
 		
 		UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
 		[_gridHolderView addSubview:imageHolderView];
@@ -442,18 +470,18 @@
 }
 
 
-#pragma mark - RefreshTableHeader Delegates
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
-	[self _goRefresh];
-}
-
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
-	return (_isRefreshing);
-}
-
-- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
-	return ([NSDate date]);
-}
+//#pragma mark - RefreshTableHeader Delegates
+//- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view {
+//	[self _goRefresh];
+//}
+//
+//- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view {
+//	return (_isRefreshing);
+//}
+//
+//- (NSDate *)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView *)view {
+//	return ([NSDate date]);
+//}
 
 
 #pragma mark - AlertView Delegates

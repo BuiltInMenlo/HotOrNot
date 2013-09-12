@@ -192,7 +192,7 @@
 //	[promoteImageView setImageWithURL:[NSURL URLWithString:[HONAppDelegate promoteInviteImageForType:1]] placeholderImage:nil];
 //	[self.view addSubview:promoteImageView];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Find friends"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Find friends"];
 	[self.view addSubview:headerView];
 	
 	if (isFUE) {

@@ -133,7 +133,7 @@
 	[self.view addSubview:captionImageView];
 	
 	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 147.0, 244.0, 44.0)];
-	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
+	inputBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
 	inputBGImageView.userInteractionEnabled = YES;
 	[self.view addSubview:inputBGImageView];
 	

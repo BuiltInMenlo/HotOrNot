@@ -57,7 +57,7 @@
 		[self addSubview:holderView];
 		
 		UIButton *upvoteButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		upvoteButton.frame = CGRectMake(18.0, 0.0, 84.0, 84.0);
+		upvoteButton.frame = CGRectMake(18.0, 0.0, 74.0, 74.0);
 		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_nonActive"] forState:UIControlStateNormal];
 		[upvoteButton setBackgroundImage:[UIImage imageNamed:@"likeButton_Active"] forState:UIControlStateHighlighted];
 		[upvoteButton addTarget:self action:@selector(_goUpvote) forControlEvents:UIControlEventTouchUpInside];
@@ -71,7 +71,7 @@
 		[holderView addSubview:profileButton];
 		
 		UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		flagButton.frame = CGRectMake(217.0, 0.0, 84.0, 84.0);
+		flagButton.frame = CGRectMake(217.0, 0.0, 74.0, 74.0);
 		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
 		[flagButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
 		[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];

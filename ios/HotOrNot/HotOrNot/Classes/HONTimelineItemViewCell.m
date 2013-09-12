@@ -41,10 +41,10 @@
 	return (NSStringFromClass(self));
 }
 
-- (id)initAsStartedCell:(BOOL)hasStarted {
+- (id)init {
 	if ((self = [super init])) {
-		_hasOponentRetorted = hasStarted;
-		//[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineRowBackground"]]];
+		_hasOponentRetorted = YES;
+		self.backgroundColor = [UIColor whiteColor];
 	}
 	
 	return (self);
@@ -138,6 +138,12 @@
 		}
 	}
 	
+	_opponentCounter = 0;
+	for (HONOpponentVO *vo in _challengeVO.challengers) {
+		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:_opponentCounter]).imagePrefix length] > 0)
+			_opponentCounter++;
+	}
+	
 	
 	__weak typeof(self) weakSelf = self;
 	//NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasOponentRetorted);
@@ -146,8 +152,10 @@
 	_creatorHolderView.clipsToBounds = YES;
 	[self addSubview:_creatorHolderView];
 	
-//	HONImageLoadingView *lImageLoading = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
-//	[_creatorHolderView addSubview:lImageLoading];
+	[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageOverlay"]]];
+	
+//	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
+//	[_creatorHolderView addSubview:imageLoadingView];
 	
 	_creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
 	_creatorImageView.userInteractionEnabled = YES;
@@ -162,7 +170,6 @@
 								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 									[weakSelf _reloadCreatorImage];
 								}];
-	
 	
 	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	leftButton.frame = _creatorImageView.frame;
@@ -181,15 +188,15 @@
 //	[avatarButton addTarget:self action:@selector(_goCreatorTimeline) forControlEvents:UIControlEventTouchUpInside];
 //	[self addSubview:avatarButton];
 	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 10.0, 170.0, 20.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 6.0, 170.0, 28.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:25];
 	subjectLabel.textColor = [UIColor whiteColor];
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _challengeVO.subjectName;
 	[self addSubview:subjectLabel];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(12.0, 28.0, 150.0, 19.0)];
-	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:14];
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 35.0, 150.0, 19.0)];
+	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16];
 	creatorNameLabel.textColor = [UIColor whiteColor];
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
 	creatorNameLabel.text = [NSString stringWithFormat:@"@%@", _challengeVO.creatorVO.username];
@@ -198,12 +205,11 @@
 	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	creatorButton.frame = creatorNameLabel.frame;
 	[creatorButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-	[creatorButton addTarget:self action:@selector(_goUserProfile:) forControlEvents:UIControlEventTouchUpInside];
-	[creatorButton setTag:_challengeVO.creatorVO.userID];
+	[creatorButton addTarget:self action:@selector(_goCreatorProfile) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:creatorButton];
 
-	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 24.0, 160.0, 16.0)];
-	timeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:13];
+	UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(146.0, 7.0, 160.0, 16.0)];
+	timeLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:13];
 	timeLabel.textColor = [UIColor whiteColor];
 	timeLabel.backgroundColor = [UIColor clearColor];
 	timeLabel.textAlignment = NSTextAlignmentRight;
@@ -247,50 +253,51 @@
 	[self addGestureRecognizer:lpGestureRecognizer];
 	
 	
-	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 167.0, 320.0, 44.0)];
+	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 163.0, 320.0, 44.0)];
 	[self addSubview:footerHolderView];
 	
+	UIButton *challengersButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	challengersButton.frame = CGRectMake(5.0, 5.0, 24.0, 24.0);
+	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateNormal];
+	[challengersButton setBackgroundImage:[UIImage imageNamed:@"smallPersonIcon"] forState:UIControlStateHighlighted];
+	[footerHolderView addSubview:challengersButton];
+	
+	UILabel *challengersLabel = [[UILabel alloc] initWithFrame:CGRectMake(35.0, 6.0, 40.0, 22.0)];
+	challengersLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
+	challengersLabel.textColor = [UIColor whiteColor];
+	challengersLabel.backgroundColor = [UIColor clearColor];
+	challengersLabel.text = (_opponentCounter > 99) ? @"99+" : [NSString stringWithFormat:@"%d", _opponentCounter];
+	[footerHolderView addSubview:challengersLabel];
+	
 	UIButton *likesButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	likesButton.frame = CGRectMake(8.0, 0.0, 24.0, 24.0);
+	likesButton.frame = CGRectMake(66.0, 5.0, 24.0, 24.0);
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateNormal];
 	[likesButton setBackgroundImage:[UIImage imageNamed:@"likeIcon"] forState:UIControlStateHighlighted];
-//	[likesButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:likesButton];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(37.0, 1.0, 40.0, 22.0)];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(95.0, 6.0, 40.0, 22.0)];
 	_likesLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
 	_likesLabel.text = ([self _calcScore] > 99) ? @"99+" : [NSString stringWithFormat:@"%d", [self _calcScore]];
 	[footerHolderView addSubview:_likesLabel];
 	
-//	UIButton *likesLabelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	likesLabelButton.frame = _likesLabel.frame;
-//	[likesLabelButton setBackgroundImage:[UIImage imageNamed:@"whiteOverlay_50"] forState:UIControlStateHighlighted];
-//	[likesLabelButton addTarget:self action:@selector(_goScore) forControlEvents:UIControlEventTouchUpInside];
-//	[footerHolderView addSubview:likesLabelButton];
-	
-//	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//	joinButton.frame = CGRectMake((_opponentCounter < 3) ? 171.0 : 243.0, (_opponentCounter < 3)? 200.0 : 200.0, 78.0, 78.0);
-//	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
-//	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
-//	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchDown];
-//	[self addSubview:joinButton];
+	UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	moreButton.frame = CGRectMake(275.0, 0.0, 44.0, 44.0);
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_nonActive"] forState:UIControlStateNormal];
+	[moreButton setBackgroundImage:[UIImage imageNamed:@"moreIcon_Active"] forState:UIControlStateHighlighted];
+	[moreButton addTarget:self action:@selector(_goMore) forControlEvents:UIControlEventTouchUpInside];
+	[footerHolderView addSubview:moreButton];
 }
 
 
 #pragma mark - Navigation
-- (void)_goTapCreator {
-	[self _goChallengeDetails];
+- (void)_goMore {
+	
 }
 
-- (void)_goTapOpponent:(id)sender {
-	[self _goChallengeDetails];
-}
-
-
-- (void)_goUserProfile:(id)sender {
-	[self.delegate timelineItemViewCell:self showProfileForUserID:((UIButton *)sender).tag forChallenge:_challengeVO];
+- (void)_goCreatorProfile {
+	[self.delegate timelineItemViewCell:self showProfileForUserID:_challengeVO.creatorVO.userID forChallenge:_challengeVO];
 }
 
 - (void)_goChallengeDetails {

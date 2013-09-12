@@ -29,9 +29,8 @@
 #import "HONTabBarController.h"
 #import "HONChallengesViewController.h"
 #import "HONTimelineViewController.h"
-#import "HONDiscoveryViewController.h"
+#import "HONExploreViewController.h"
 #import "HONImagePickerViewController.h"
-#import "HONProfileViewController.h"
 #import "HONChallengeVO.h"
 #import "HONUserVO.h"
 #import "HONUsernameViewController.h"
@@ -104,7 +103,7 @@ const CGFloat kProfileTime = 0.25f;
 
 // image sizes
 const CGFloat kSnapThumbDim = 37.0f;
-const CGFloat kSnapMediumDim = 73.0f;
+const CGFloat kSnapMediumDim = 80.0f;
 const CGFloat kSnapLargeDim = 221.0f;
 const CGFloat kAvatarDim = 200.0f;
 
@@ -804,7 +803,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	NSString *savePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/volley_instagram.igo"];
 	
 	NSDictionary *dict = [notification object];
-	UIImage *shareImage = [dict objectForKey:@"image"];//[UIImage imageNamed:@"instagram_template-0000"];
+	UIImage *shareImage = [dict objectForKey:@"image"];
 	[UIImageJPEGRepresentation(shareImage, 1.0f) writeToFile:savePath atomically:YES];
 	
 	
@@ -898,7 +897,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];
 	
-	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
+	//if (![[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"discover_banner"];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"])
@@ -1392,7 +1391,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	UIViewController *timelineViewController, *discoveryViewController, *challengesViewController;
 	timelineViewController = [[HONTimelineViewController alloc] initWithFriends];
-	discoveryViewController = [[HONDiscoveryViewController alloc] init];
+	discoveryViewController = [[HONExploreViewController alloc] init];
 	challengesViewController = [[HONChallengesViewController alloc] init];
 	
 	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:timelineViewController];

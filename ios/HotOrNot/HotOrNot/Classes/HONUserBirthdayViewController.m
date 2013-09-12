@@ -129,7 +129,7 @@
 	[self.view addSubview:bgImageView];
 	
 	UIImageView *inputBGImageView = [[UIImageView alloc] initWithFrame:CGRectMake(38.0, ([HONAppDelegate isRetina5]) ? 192.0 : 163.0, 244.0, 44.0)];
-	inputBGImageView.image = [UIImage imageNamed:@"fue_inputField_nonActive"];
+	inputBGImageView.image = [UIImage imageNamed:@"firstRunInputBG"];
 	[self.view addSubview:inputBGImageView];
 	
 	_birthdayLabel = [[UILabel alloc] initWithFrame:CGRectMake(6.0, 8.0, 230.0, 30.0)];

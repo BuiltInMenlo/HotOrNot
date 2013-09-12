@@ -14,7 +14,7 @@
 @interface HONTimelineItemViewCell : UITableViewCell
 
 + (NSString *)cellReuseIdentifier;
-- (id)initAsStartedCell:(BOOL)hasStarted;
+- (id)init;
 - (void)upvoteUser:(int)userID;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;

@@ -511,7 +511,7 @@
 	_selectedNonAppContacts = [NSMutableArray array];
 	_selectedInAppContacts = [NSMutableArray array];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Invite Friends"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Invite Friends"];
 	[self.view addSubview:headerView];
 	
 	UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];

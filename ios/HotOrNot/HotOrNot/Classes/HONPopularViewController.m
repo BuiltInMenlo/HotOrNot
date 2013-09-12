@@ -87,7 +87,7 @@
 	for (NSDictionary *dict in [HONAppDelegate popularPeople])
 		[_celebs addObject:[HONCelebVO celebWithDictionary:dict]];
 	
-	HONHeaderView *headerView = [[HONHeaderView alloc] initAsModalWithTitle:@"Popular People"];
+	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Popular People"];
 	[self.view addSubview:headerView];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
