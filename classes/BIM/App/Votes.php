@@ -170,6 +170,9 @@ class BIM_App_Votes extends BIM_App_Base{
         		$target = BIM_Model_User::get( $targetId );
         		// @jason your Volley #WhatsUp"
     			$msg = "@$liker->username liked your Volley $volley->subject";
+    			if( $volley->subject == '#__verifyMe__' ){
+    			    $msg = "Your profile selfie has been liked by @$liker->username";
+    			}
     			$push = array(
     		    	"device_tokens" =>  $target->device_token, 
     		    	"type" => "1",

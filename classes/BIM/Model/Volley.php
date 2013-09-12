@@ -666,7 +666,12 @@ class BIM_Model_Volley{
             $ids = array_splice($volleyIds, 0, 250);
             $volleys = self::getMulti($ids);
             foreach( $volleys as $volley ){
-	            $imgUrl = preg_replace('/^(.*?)\.jpg$/', '$1_o.jpg', $volley->creator->avatar);
+                $imgUrl = $volley->creator->avatar;
+        	    if( preg_match('/\.png/',$imgUrl) ){
+        	        $imgUrl = preg_replace('/defaultAvatar\.png/i', 'defaultAvatar_o.jpg', $imgUrl);
+        	    } else {
+            	    $imgUrl = preg_replace('/^(.*?)\.jpg$/', '$1_o.jpg', $imgUrl);
+        	    }
 	            if( $imgUrl ){
                     $volley->updateImage( $imgUrl );
                     echo "updated volley $volley->id for user ".$volley->creator->username." with image $imgUrl\n";
