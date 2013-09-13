@@ -559,7 +559,7 @@ class BIM_App_Challenges extends BIM_App_Base{
         $stmt = $dao->prepareAndExecute( $sql );
         $challengeIds = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
         
-        $challengeId = array(12);
+        $challengeIds = array(36268);
         
 	    $chIdCt = count( $challengeIds );
 		$placeHolders = trim( str_repeat('?,', $chIdCt ), ',' );

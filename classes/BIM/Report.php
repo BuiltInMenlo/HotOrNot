@@ -12,8 +12,17 @@ class BIM_Report{
         <body>
         ");
         
+        echo "<hr>Suspended<hr>\n";
+        
         echo("
-        <table>
+        <table border=1 cellpadding=10>
+        <tr>
+        <th>Image</th>
+        <th>Username</th>
+        <th>Flags</th>
+        <th>Approvals</th>
+        <th>Abuse Count</th>
+        </tr>
         ");
         $users = BIM_Model_User::getSuspendees();
         // now get the flag counts for each user
@@ -23,11 +32,11 @@ class BIM_Report{
                 $flagCounts = $vv->getFlagCounts();
                 echo "
                 <tr>
-                <td>$user->img_url</td>
+                <td><img src='$user->avatar_url'></td>
                 <td>$user->username</td>
                 <td>$flagCounts->flags</td>
                 <td>$flagCounts->approves</td>
-                <td>$user->abuse_ct</td>
+                <td>$flagCounts->abuse_ct</td>
                 </tr>
                 ";
             }
@@ -36,8 +45,17 @@ class BIM_Report{
         </table>
         ");
         
+        echo "<hr>Pending<hr>\n";
+        
         echo("
-        <table>
+        <table border=1 cellpadding=10>
+        <tr>
+        <th>Image</th>
+        <th>Username</th>
+        <th>Flags</th>
+        <th>Approvals</th>
+        <th>Abuse Count</th>
+        </tr>
         ");
         $users = BIM_Model_User::getPendingSuspendees();
         // now get the flag counts for each user
@@ -47,11 +65,11 @@ class BIM_Report{
                 $flagCounts = $vv->getFlagCounts();
                 echo "
                 <tr>
-                <td>$user->img_url</td>
+                <td><img src='$user->avatar_url'></td>
                 <td>$user->username</td>
                 <td>$flagCounts->flags</td>
                 <td>$flagCounts->approves</td>
-                <td>$user->abuse_ct</td>
+                <td>$flagCounts->abuse_ct</td>
                 </tr>
                 ";
             }

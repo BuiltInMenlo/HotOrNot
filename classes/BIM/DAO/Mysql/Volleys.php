@@ -876,9 +876,9 @@ WHERE is_verify != 1
     
     public function getFlagCounts( $volleyId ){
         $sql = "
-        	select sum(flag) as count from tblFlaggedUserApprovals where challenge_id = ? and flag < 0
+        	select sum(flag) as count from `hotornot-dev`.tblFlaggedUserApprovals where challenge_id = ? and flag < 0
         	union all
-        	select sum(flag) as count from tblFlaggedUserApprovals where challenge_id = ? and flag > 0
+        	select sum(flag) as count from `hotornot-dev`.tblFlaggedUserApprovals where challenge_id = ? and flag > 0
         ";
         $params = array( $volleyId, $volleyId );        
         $stmt = $this->prepareAndExecute( $sql, $params );

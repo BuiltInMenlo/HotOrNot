@@ -489,14 +489,14 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
 	
 	public function getSuspendees( $limit = 50 ){
 	    $limit = mysql_escape_string($limit);
-        $sql = "select id from tblUsers where abuse_ct >= 10  order by id limit $limit";
+        $sql = "select id from `hotornot-dev`.tblUsers where abuse_ct >= 10  order by abuse_ct desc, id limit $limit";
         $stmt = $this->prepareAndExecute( $sql );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
 	}
 	
 	public function getPendingSuspendees( $limit = 50 ){
 	    $limit = mysql_escape_string($limit);
-        $sql = "select id from tblUsers where abuse_ct < 10 and abuse_ct > 5 order by id limit $limit";
+        $sql = "select id from `hotornot-dev`.tblUsers where abuse_ct < 10 and abuse_ct > 5 order by abuse_ct desc, id limit $limit";
         $stmt = $this->prepareAndExecute( $sql );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
 	}

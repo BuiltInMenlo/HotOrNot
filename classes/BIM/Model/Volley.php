@@ -662,13 +662,15 @@ class BIM_Model_Volley{
     public function getFlagCounts(){
         $counts = (object) array(
             'approves' => 0,
-            'flags' => 0
+            'flags' => 0,
+            'abuse_ct' => 0,
         );
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $data = $dao->getFlagCounts( $this->id );
         if( $data ){
-            $counts->approves = abs($data[0]);
-            $counts->flags = $data[1];
+            $counts->approves = $data[0]?:0;
+            $counts->flags = $data[1]?:0;
+            $counts->abuse_ct = ($counts->flags + $counts->approves);
         }
         return $counts;
     }    
