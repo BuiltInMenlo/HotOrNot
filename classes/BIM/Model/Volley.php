@@ -659,6 +659,20 @@ class BIM_Model_Volley{
         }
     }
     
+    public function getFlagCounts(){
+        $counts = (object) array(
+            'approves' => 0,
+            'flags' => 0
+        );
+        $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $data = $dao->getFlagCounts( $this->id );
+        if( $data ){
+            $counts->approves = abs($data[0]);
+            $counts->flags = $data[1];
+        }
+        return $counts;
+    }    
+    
     public static function fixVerificationImages(){
 		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
         $volleyIds = $dao->getAllVerificationVolleyIds();

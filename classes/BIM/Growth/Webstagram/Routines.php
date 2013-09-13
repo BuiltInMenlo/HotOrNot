@@ -372,41 +372,42 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
      *  	
      */
     public function updateUserStats(){
-        $this->handleLogin();
-
-        $name = $this->persona->name;
-        $profileUrl = "http://web.stagram.com/n/$name/";
-        $response = $this->get( $profileUrl );
-
-        $following = 0;
-        $followers = 0;
-        $likes = 0;
-
-        $ptrn = '/<\s*span.+?id="follower_count_\d+"\s*>(.*?)</im';
-        preg_match( $ptrn, $response, $matches );
-        if( isset( $matches[1] ) ){
-            $followers = $matches[1];
-        }
-
-        $ptrn = '/<\s*span.+?id="following_count_\d+"\s*>(.*?)</im';
-        preg_match( $ptrn, $response, $matches );
-        if( isset( $matches[1] ) ){
-            $following = $matches[1];
-        }
-
-        $userStats = (object) array(
-            'name' => $this->persona->name,
-            'followers' => $followers,
-            'following' => $following,
-            'likes' => $likes,
-            'network' => 'webstagram',
-        );
-
-        print_r( $userStats );
         
-        $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
-        $dao->updateUserStats( $userStats );
-        
+        if($this->handleLogin()){
+    
+            $name = $this->persona->name;
+            $profileUrl = "http://web.stagram.com/n/$name/";
+            $response = $this->get( $profileUrl );
+    
+            $following = 0;
+            $followers = 0;
+            $likes = 0;
+    
+            $ptrn = '/<\s*span.+?id="follower_count_\d+"\s*>(.*?)</im';
+            preg_match( $ptrn, $response, $matches );
+            if( isset( $matches[1] ) ){
+                $followers = $matches[1];
+            }
+    
+            $ptrn = '/<\s*span.+?id="following_count_\d+"\s*>(.*?)</im';
+            preg_match( $ptrn, $response, $matches );
+            if( isset( $matches[1] ) ){
+                $following = $matches[1];
+            }
+    
+            $userStats = (object) array(
+                'name' => $this->persona->name,
+                'followers' => $followers,
+                'following' => $following,
+                'likes' => $likes,
+                'network' => 'webstagram',
+            );
+    
+            print_r( $userStats );
+            
+            $dao = new BIM_DAO_Mysql_Growth( BIM_Config::db() );
+            $dao->updateUserStats( $userStats );
+        }        
     }
     
 	/**
@@ -570,4 +571,166 @@ class BIM_Growth_Webstagram_Routines extends BIM_Growth_Webstagram{
         }
     }
     
+    public static function findPromoters(){
+        for( $n = 0; $n < 10; $n++ ){
+            @unlink('/tmp/cookies_BIM_Growth_Webstagram.txt');
+            self::_findPromoters();
+        }
+    }
+    
+    public static function _findPromoters(){
+        $baseUrl = 'http://web.stagram.com/popular/?'.uniqid();
+        $g = new BIM_Growth_Webstagram();
+        $response = $g->get( $baseUrl );
+        
+        $ids = array();
+        $ptrn = '@id="photo\d+_(\d+)".*?<strong><a href="/n/(.*?)/">.*?</a></strong>@is';
+        preg_match_all($ptrn,$response,$ids);
+        
+        $users = array();
+        foreach( $ids[1] as $idx => $id ){
+            $name = $ids[2][$idx];
+            $users[] = (object) array(
+                'id' => $id,
+                'name' => $name
+            );
+        }
+        
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        
+        foreach( $users as $idx => $user ){
+            $profileUrl = "http://web.stagram.com/n/$user->name/";
+            $response = $g->get( $profileUrl );
+    
+            $following = 0;
+            $followers = 0;
+            $likes = 0;
+    
+            $ptrn = '/<\s*span.+?id="follower_count_\d+"\s*>(.*?)</im';
+            preg_match( $ptrn, $response, $matches );
+            if( isset( $matches[1] ) ){
+                $followers = $matches[1];
+            }
+            if( $followers >= 100000 ){
+                echo "found $user->name with $followers followers\n";
+                $sql = "
+                	insert ignore into growth.ig_promoters
+                	(name,followers,url)
+                	values (?,?,?)
+                ";
+                $params = array($user->name,$followers,$profileUrl);
+                $dao->prepareAndExecute( $sql, $params );
+            }
+        }
+    }
+    
+    /**
+     * get a canadian tag 
+     * get users for that tag
+     * get the bio
+     * look for kik
+     * if kik, save the id
+     */
+    
+    public static function collectKikIdsCanada(){
+        $g = new BIM_Growth();
+        $tags = BIM_Growth_Tags_Canadian::getTags();
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        foreach( $tags as $tag ){
+            $names = array();
+            $pageUrl = "http://web.stagram.com/tag/$tag";
+            for( $n = 0; $n < 2; $n++ ){
+                $response = $g->get( $pageUrl );
+                $ptrn = '@id="photo\d+_\d+".*?<strong><a href="/n/(.*?)/">.*?</a></strong>@is';
+                preg_match_all($ptrn, $response, $matches);
+                if( isset( $matches[1] ) ){
+                    array_splice( $names, count( $names ),  0, $matches[1] );
+                }
+                $sleep = 1;
+                echo "sleeping for $sleep seconds after fetching $pageUrl\n";
+                sleep( $sleep );
+            }
+            $names = array_unique( $names );
+            
+            foreach( $names as $name ){
+                $profileUrl = "http://web.stagram.com/n/$name/";
+                $response = $g->get( $profileUrl );
+                
+                $matches = array();
+                $ptrn = '@class="ui_tools".*?style="padding-top:5px;">(.*?)</p>@is';
+                preg_match($ptrn, $response, $matches);
+                if(!empty($matches[1])){
+                    if( preg_match('@kik@i', $matches[1]) ){
+                        $sql = "
+                        	insert ignore into growth.ig_kik_canada
+                        	(name,kik_id,url)
+                        	values (?,?,?)
+                        ";
+                        $params = array($name,$matches[1],$profileUrl);
+                        $dao->prepareAndExecute( $sql, $params );
+                    } else {
+                        echo "no kik for $name\n";
+                    }
+                }
+                
+                $sleep = 1;
+                echo "completed name $name - sleeping for $sleep seconds\n";
+                sleep($sleep);
+            }
+        }
+    }
+    
+    public static function collectKikIds(){
+        $g = new BIM_Growth();
+        $dao = new BIM_DAO_Mysql( BIM_Config::db() );
+        $pageUrl = "http://web.stagram.com/keyword/kik/";
+        while( $pageUrl ){
+            $response = $g->get( $pageUrl );
+            $ptrn = '@class="username">(.*?)</a>@';
+            preg_match_all($ptrn, $response, $matches);
+            if( isset( $matches[1] ) ){
+                $names = $matches[1];
+            }
+            $names = array_unique( $names );
+            
+            $sleep = 1;
+            echo "sleeping for $sleep seconds after fetching $pageUrl\n";
+            sleep( $sleep );
+            
+            $ptrn = '@<a href="(.*?)" rel="next">@';
+            preg_match($ptrn, $response, $matches);
+            if( isset( $matches[1] ) ){
+                $pageUrl = 'http://web.stagram.com'.$matches[1];
+            } else {
+                $pageUrl = null;
+            }
+
+            foreach( $names as $name ){
+                $profileUrl = "http://web.stagram.com/n/$name/";
+                $response = $g->get( $profileUrl );
+                
+                $matches = array();
+                $ptrn = '@class="ui_tools".*?style="padding-top:5px;">(.*?)</p>@is';
+                preg_match($ptrn, $response, $matches);
+                if(!empty($matches[1])){
+                    if( preg_match('@kik@i', $matches[1]) ){
+                        echo "found kik for $name\n";
+                        $sql = "
+                        	insert ignore into growth.ig_kik
+                        	(name,kik_id,url)
+                        	values (?,?,?)
+                        ";
+                        $params = array($name,$matches[1],$profileUrl);
+                        $dao->prepareAndExecute( $sql, $params );
+                    } else {
+                        echo "no kik for $name\n";
+                    }
+                }
+                
+                $sleep = 1;
+                echo "completed name $name - sleeping for $sleep seconds\n";
+                sleep($sleep);
+            }
+        }
+    }
 }

@@ -568,4 +568,16 @@ class BIM_Model_User{
     public function hasSelfie(){
         return !empty($this->img_url);
     }
+    
+    public static function getSuspendees( $limit = 50 ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $ids = $dao->getSuspendees( $limit );
+        return self::getMulti($ids);
+    }
+    
+    public static function getPendingSuspendees( $limit = 50 ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $ids = $dao->getPendingSuspendees( $limit );
+        return self::getMulti($ids);
+    }
 }

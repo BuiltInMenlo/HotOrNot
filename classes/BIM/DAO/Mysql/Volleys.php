@@ -873,4 +873,16 @@ WHERE is_verify != 1
         $stmt = $this->prepareAndExecute( $sql );
         return $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
     }
+    
+    public function getFlagCounts( $volleyId ){
+        $sql = "
+        	select sum(flag) as count from tblFlaggedUserApprovals where challenge_id = ? and flag < 0
+        	union all
+        	select sum(flag) as count from tblFlaggedUserApprovals where challenge_id = ? and flag > 0
+        ";
+        $params = array( $volleyId, $volleyId );        
+        $stmt = $this->prepareAndExecute( $sql, $params );
+        $data = $stmt->fetchAll( PDO::FETCH_COLUMN, 0 );
+        return $data;
+    }
 }
