@@ -359,6 +359,15 @@ class BIM_DAO_Mysql_User extends BIM_DAO_Mysql{
         $stmt = $this->prepareAndExecute( $query, $params );
     }
     
+    public function updateAbuseCount( $userId, $abuseCt ){
+        $query = '
+        	UPDATE `hotornot-dev`.tblUsers 
+        	SET abuse_ct = ?
+        	WHERE id = ?';
+        $params = array( $abuseCt, $userId );
+        $stmt = $this->prepareAndExecute( $query,$params );
+    }
+    
     public function updateNotifications( $userId, $isNotifications ){
         $query = '
         	UPDATE `hotornot-dev`.tblUsers 

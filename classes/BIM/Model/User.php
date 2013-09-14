@@ -266,6 +266,13 @@ class BIM_Model_User{
         $this->purgeFromCache();
     }
     
+    public function updateAbuseCount( $count ){
+        $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
+        $dao->updateAbuseCount( $this->id, $count );
+        $this->abuse_ct = $count;
+        $this->purgeFromCache();
+    }
+    
     public function updateUsername( $username ){
         $dao = new BIM_DAO_Mysql_User( BIM_Config::db() );
         $dao->updateUsername( $this->id, $username );

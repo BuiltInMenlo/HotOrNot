@@ -480,7 +480,10 @@ class BIM_Model_Volley{
      * 
      * do a multifetch to memcache
      * if there are any missing objects
-     * get them from the db, one a t a time
+     * get them from the db.
+     *   
+     * we get multiple objects in one query
+     * to reduce trips to the db and network 
      * 
     **/
     public static function getMulti( $ids ) {
@@ -692,6 +695,22 @@ class BIM_Model_Volley{
                     $volley->updateImage( $imgUrl );
                     echo "updated volley $volley->id for user ".$volley->creator->username." with image $imgUrl\n";
 	            }
+            }
+            print count( $volleyIds )." remaining\n";
+        }
+    }
+    
+    public static function fixAbuseCount(){
+		$dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
+        $volleyIds = $dao->getAllVerificationVolleyIds();
+        while( $volleyIds ){
+            $ids = array_splice($volleyIds, 0, 250);
+            $volleys = self::getMulti($ids);
+            foreach( $volleys as $volley ){
+                $counts = $volley->getFlagCounts();
+                $user = BIM_Model_User::get( $volley->creator->id );
+                echo " updating abuse count for $user->username with $counts->abuse_ct\n ";
+                $user->updateAbuseCount( $counts->abuse_ct );
             }
             print count( $volleyIds )." remaining\n";
         }
