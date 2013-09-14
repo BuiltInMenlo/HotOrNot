@@ -4,7 +4,7 @@ class BIM_Report{
     // get the top 50 users that have been suspended
     // and get the top 50 that are about to be suspended
     
-    public static function carlosDanger(){
+    public static function carlosDanger(){        
         echo("
         <html>
         <head>
@@ -12,7 +12,8 @@ class BIM_Report{
         <body>
         ");
         
-        echo "<hr>Suspended<hr>\n";
+        $users = BIM_Model_User::getSuspendees();
+        echo "<hr>Suspended - ".count( $users )."<hr>\n";
         
         echo("
         <table border=1 cellpadding=10>
@@ -24,7 +25,6 @@ class BIM_Report{
         <th>Abuse Count</th>
         </tr>
         ");
-        $users = BIM_Model_User::getSuspendees();
         // now get the flag counts for each user
         foreach( $users as $user ){
             $vv = BIM_Model_Volley::getVerifyVolley($user->id);
@@ -36,7 +36,7 @@ class BIM_Report{
                 <td>$user->username</td>
                 <td>$flagCounts->flags</td>
                 <td>$flagCounts->approves</td>
-                <td>$flagCounts->abuse_ct</td>
+                <td>$user->abuse_ct</td>
                 </tr>
                 ";
             }
@@ -45,7 +45,8 @@ class BIM_Report{
         </table>
         ");
         
-        echo "<hr>Pending<hr>\n";
+        $users = BIM_Model_User::getPendingSuspendees();
+        echo "<hr>Pending - ".count( $users )."<hr>\n";
         
         echo("
         <table border=1 cellpadding=10>
@@ -57,7 +58,6 @@ class BIM_Report{
         <th>Abuse Count</th>
         </tr>
         ");
-        $users = BIM_Model_User::getPendingSuspendees();
         // now get the flag counts for each user
         foreach( $users as $user ){
             $vv = BIM_Model_Volley::getVerifyVolley($user->id);
@@ -69,7 +69,7 @@ class BIM_Report{
                 <td>$user->username</td>
                 <td>$flagCounts->flags</td>
                 <td>$flagCounts->approves</td>
-                <td>$flagCounts->abuse_ct</td>
+                <td>$user->abuse_ct</td>
                 </tr>
                 ";
             }
