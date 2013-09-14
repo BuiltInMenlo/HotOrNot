@@ -253,6 +253,7 @@
 				_hasSubmitted = YES;
 				if (_uploadCounter == [_s3Uploads count]) {
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+						[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 					}];
 				}
@@ -284,6 +285,7 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
+	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
@@ -394,14 +396,13 @@
 }
 
 - (void)_takePhoto {
-	
-	if (_progressTimer != nil) {
-		[_progressTimer invalidate];
-		_progressTimer = nil;
-	}
-	
-	[_cameraOverlayView takePhoto];
-	[self.imagePickerController takePicture];
+//	if (_progressTimer != nil) {
+//		[_progressTimer invalidate];
+//		_progressTimer = nil;
+//	}
+//	
+//	[_cameraOverlayView takePhoto];
+//	[self.imagePickerController takePicture];
 }
 
 
@@ -479,6 +480,19 @@
 		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	}];
+}
+
+- (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView {
+	[[Mixpanel sharedInstance] track:@"Create Volley - Take Photo"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+	
+	if (_progressTimer != nil) {
+		[_progressTimer invalidate];
+		_progressTimer = nil;
+	}
+	
+	[self.imagePickerController takePicture];
 }
 
 
@@ -608,18 +622,12 @@
 		}
 		
 		[_previewView uploadComplete];
-		
-		//		if (_hasSubmitted) {
-		//			if (_imagePicker.parentViewController != nil) {
-		//				[_imagePicker dismissViewControllerAnimated:NO completion:^(void) {
-		//					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-		//				}];
-		//
-		//			} else
-		//				[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
-		//
-		//			[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
-		//		}
+		if (_hasSubmitted) {
+			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
+				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+			}];
+		}
 	}
 }
 
@@ -631,6 +639,8 @@
 #pragma mark - ImagePicker Delegates
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	_rawImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+	
+	[_cameraOverlayView addMirroredPreview:_rawImage];
 	
 	if (_rawImage.imageOrientation != 0)
 		_rawImage = [_rawImage fixOrientation];

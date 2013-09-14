@@ -15,12 +15,14 @@
 
 #import "HONUserProfileViewController.h"
 #import "HONOpponentVO.h"
+#import "HONSnapPreviewViewController.h"
 
 
-@interface HONUserProfileViewController ()
+@interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate>
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
+@property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIScrollView *scrollView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *nameAgeLabel;
@@ -29,6 +31,7 @@
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) NSMutableArray *challenges;
+@property (nonatomic, strong) UIToolbar *footerToolbar;
 @property (nonatomic, strong) UIButton *subscribeButton;
 @property (nonatomic, strong) UIButton *flagButton;
 @property (nonatomic) int challengeCounter;
@@ -116,7 +119,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
 			
@@ -232,39 +235,43 @@
 	_scrollView.showsHorizontalScrollIndicator = NO;
 	[self.view addSubview:_scrollView];
 	
+	UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+	lpGestureRecognizer.minimumPressDuration = 0.25;
+	[_scrollView addGestureRecognizer:lpGestureRecognizer];
+	
 //	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
 //	_refreshTableHeaderView.delegate = self;
 //	[_scrollView addSubview:_refreshTableHeaderView];
 //	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(250.0, 20.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake(252.0, 20.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:doneButton];
 	
 	_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_subscribeButton.frame = CGRectMake(0.0, 0.0, 70.0, 25.0);
+	_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
 	[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-	[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:12.0]];
+	[_subscribeButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+	[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	
 	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_flagButton.frame = CGRectMake(0.0, 0.0, 30.0, 25.0);
+	_flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
 	[_flagButton setTitleColor:[UIColor colorWithRed:0.733 green:0.380 blue:0.392 alpha:1.0] forState:UIControlStateNormal];
-	[_flagButton setTitleColor:[UIColor colorWithRed:0.733 green:0.380 blue:0.392 alpha:1.0] forState:UIControlStateHighlighted];
-	[_flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:12.0]];
+	[_flagButton setTitleColor:[UIColor colorWithRed:0.560 green:0.291 blue:0.299 alpha:1.0] forState:UIControlStateHighlighted];
+	[_flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[_flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 	
-	UIToolbar *footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 25.0, 320.0, 25.0)];
-	[footerToolbar setBarStyle:UIBarStyleBlackTranslucent];
-	[footerToolbar setItems:[NSArray arrayWithObjects:
+	_footerToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - 44.0, 320.0, 44.0)];
+	[_footerToolbar setBarStyle:UIBarStyleBlackTranslucent];
+	[_footerToolbar setItems:[NSArray arrayWithObjects:
 							 [[UIBarButtonItem alloc] initWithCustomView:_subscribeButton],
 							 [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil],
 							 [[UIBarButtonItem alloc] initWithCustomView:_flagButton], nil]];
-	[self.view addSubview:footerToolbar];
+	[self.view addSubview:_footerToolbar];
 }
 
 - (void)viewDidLoad {
@@ -319,9 +326,9 @@
 	[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
 	[_scrollView addSubview:_avatarImageView];
 	
-	UIImageView *avararCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileAvatarBackground"]];
-	avararCoverImageView.frame = _avatarImageView.frame;
-	[_scrollView addSubview:avararCoverImageView];
+	UIImageView *avatarCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileAvatarBackground"]];
+	avatarCoverImageView.frame = _avatarImageView.frame;
+	[_scrollView addSubview:avatarCoverImageView];
 	
 	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUser"]];
 	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 197.0, 106.0);
@@ -360,12 +367,12 @@
 	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_likesLabel];
 	
-	if ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] != _userVO.userID) {
-		[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
-		[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
-	}
+	_footerToolbar.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
 	
-	_flagButton.hidden = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _userVO.userID);
+	[_subscribeButton setTitle:(isFriend) ? @"Unsubscribe" : @"Subscribe" forState:UIControlStateNormal];
+	[_subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+	_subscribeButton.frame = CGRectMake(0.0, 0.0, (isFriend) ? 95.0 : 73.0, 44.0);
+
 	
 	[self _retrieveChallenges];
 }
@@ -391,7 +398,7 @@
 }
 
 - (void)_goSubscribe {
-	[[Mixpanel sharedInstance] track:@"Profile - Subscribe"
+	[[Mixpanel sharedInstance] track:@"User Profile - Subscribe"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
@@ -406,7 +413,7 @@
 }
 
 - (void)_goUnsubscribe {
-	[[Mixpanel sharedInstance] track:@"Profile - Unsubscribe"
+	[[Mixpanel sharedInstance] track:@"User Profile - Unsubscribe"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"friend", nil]];
@@ -418,11 +425,10 @@
 											  otherButtonTitles:@"Yes", nil];
 	[alertView setTag:4];
 	[alertView show];
-
 }
 
 - (void)_goFlag {
-	[[Mixpanel sharedInstance] track:@"Profile - Flag"
+	[[Mixpanel sharedInstance] track:@"User Profile - Flag"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
@@ -437,7 +443,43 @@
 	[alertView show];
 }
 
-#pragma mark - UIPresentation
+#pragma mark - UI Presentation
+-(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
+	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
+		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
+		
+		HONChallengeVO *challengeVO = nil;
+		HONOpponentVO *opponentVO = nil;
+		
+		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
+			int col = touchPoint.x / (kSnapMediumDim + 1.0);
+			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
+			
+			if ((row * 4) + col < [_challenges count]) {
+				challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:(row * 4) + col];
+				opponentVO = challengeVO.creatorVO;
+			}
+		}
+		
+		if (opponentVO != nil) {
+			[[Mixpanel sharedInstance] track:@"User Profile - Show Photo Detail"
+								  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+											  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+											  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge",
+											  [NSString stringWithFormat:@"%d - %@", opponentVO.userID, opponentVO.username], @"opponent",
+											  nil]];
+			
+			_snapPreviewViewController = [[HONSnapPreviewViewController alloc] initWithOpponent:opponentVO forChallenge:challengeVO asRoot:YES];
+			_snapPreviewViewController.delegate = self;
+			
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
+		}
+		
+	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
+		[_snapPreviewViewController showControls];
+	}
+}
+
 - (void)_makeGrid {
 	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, (kSnapMediumDim) * (([_challenges count] / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
@@ -484,20 +526,54 @@
 //}
 
 
+#pragma mark - SnapPreview Delegates
+- (void)snapPreviewViewControllerUpvote:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	if (snapPreviewViewController != nil) {
+		[snapPreviewViewController.view removeFromSuperview];
+		snapPreviewViewController = nil;
+	}
+	
+	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 77.0);
+	[self.view addSubview:heartImageView];
+	
+	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		heartImageView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[heartImageView removeFromSuperview];
+	}];
+}
+
+- (void)snapPreviewViewControllerFlag:(HONSnapPreviewViewController *)snapPreviewViewController opponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO {
+	if (snapPreviewViewController != nil) {
+		[snapPreviewViewController.view removeFromSuperview];
+		snapPreviewViewController = nil;
+	}
+}
+
+- (void)snapPreviewViewControllerClose:(HONSnapPreviewViewController *)snapPreviewViewController {
+	if (snapPreviewViewController != nil) {
+		[snapPreviewViewController.view removeFromSuperview];
+		snapPreviewViewController = nil;
+	}
+}
+
+
 #pragma mark - AlertView Delegates
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	if (alertView.tag == 1) {
 	} else if (alertView.tag == 2) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Profile - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Flag %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
 		
-		if (buttonIndex == 1)
+		if (buttonIndex == 1) {
 			[self _flagUser:_userVO.userID];
+		}
 		
 	} else if (alertView.tag == 3) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Profile - Subscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Subscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
@@ -508,7 +584,7 @@
 		}
 		
 	} else if (alertView.tag == 4) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Profile - Unsubscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"User Profile - Unsubscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];

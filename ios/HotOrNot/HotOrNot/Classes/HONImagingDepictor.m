@@ -7,10 +7,10 @@
 //
 
 #import "AFImageRequestOperation.h"
+#import "UIImage+ImageEffects.h"
 #import "UIImageView+AFNetworking.h"
 
 #import "HONImagingDepictor.h"
-
 
 @implementation HONImagingDepictor
 
@@ -22,6 +22,30 @@
 	UIGraphicsEndImageContext();
 	
 	return (viewImage);
+}
+
++ (UIImage *)createImageFromScreen {
+	CGImageRef UIGetScreenImage(void);
+	CGImageRef screen = UIGetScreenImage();
+	UIImage* screenImage = [UIImage imageWithCGImage:screen];
+	CGImageRelease(screen);
+	
+	if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)]) {
+		CGSize size = CGSizeMake(screenImage.size.width * 0.5, screenImage.size.height * 0.5);
+		
+		UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+		[screenImage drawInRect:CGRectMake(0.0, 0.0, size.width, size.height)];
+		UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+		UIGraphicsEndImageContext();
+		
+		return (scaledImage);
+		
+	} else
+		return (screenImage);
+}
+
++ (UIImage *)createBlurredScreenShot {
+	return ([[HONImagingDepictor createImageFromScreen] applyBlurWithRadius:16.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.75] saturationDeltaFactor:1.0 maskImage:nil]);
 }
 
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key {

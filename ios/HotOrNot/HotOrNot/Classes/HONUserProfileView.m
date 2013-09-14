@@ -35,9 +35,10 @@
 		//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshAllTabs:) name:@"REFRESH_ALL_TABS" object:nil];
 		
 		
-		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 375.0)];
-		holderView.backgroundColor = [UIColor grayColor];
+		UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 395.0)];
 		[self addSubview:holderView];
+		
+		[holderView addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileBlurBackground"]]];
 		
 		CALayer *maskLayer = [CALayer layer];
 		UIImage *mask = [UIImage imageNamed:@"profileImageMask.png"];
@@ -210,14 +211,14 @@
 	
 	_isOpen = YES;
 	[UIView animateWithDuration:kProfileTime animations:^(void) {
-		self.frame = CGRectOffset(self.frame, 0.0, 439.0);
+		self.frame = CGRectOffset(self.frame, 0.0, 459.0);
 	} completion:^(BOOL finished) {
 	}];
 }
 
 - (void)hide {
 	[UIView animateWithDuration:kProfileTime delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^(void) {
-		self.frame = CGRectOffset(self.frame, 0.0, -439.0);
+		self.frame = CGRectOffset(self.frame, 0.0, -459.0);
 	} completion:^(BOOL finished) {
 		_isOpen = NO;
 	}];

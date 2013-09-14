@@ -27,7 +27,7 @@
 
 #import "HONAppDelegate.h"
 #import "HONTabBarController.h"
-#import "HONChallengesViewController.h"
+#import "HONVerifyViewController.h"
 #import "HONTimelineViewController.h"
 #import "HONExploreViewController.h"
 #import "HONImagePickerViewController.h"
@@ -866,6 +866,9 @@ NSString * const kTwilioSMS = @"6475577873";
 	
 	[[UITabBar appearance] setBarTintColor:[UIColor blackColor]];
 	[[UITabBar appearance] setTintColor:[UIColor blackColor]];
+	[[UITabBar appearance] setShadowImage:[[UIImage alloc] init]];
+	
+	[[UIToolbar appearance] setShadowImage:[[UIImage alloc] init] forToolbarPosition:UIBarPositionAny];
 	
 	_isFromBackground = NO;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_addViewToWindow:) name:@"ADD_VIEW_TO_WINDOW" object:nil];
@@ -1392,7 +1395,7 @@ NSString * const kTwilioSMS = @"6475577873";
 	UIViewController *timelineViewController, *discoveryViewController, *challengesViewController;
 	timelineViewController = [[HONTimelineViewController alloc] initWithFriends];
 	discoveryViewController = [[HONExploreViewController alloc] init];
-	challengesViewController = [[HONChallengesViewController alloc] init];
+	challengesViewController = [[HONVerifyViewController alloc] init];
 	
 	UINavigationController *navigationController1 = [[UINavigationController alloc] initWithRootViewController:timelineViewController];
 	UINavigationController *navigationController2 = [[UINavigationController alloc] initWithRootViewController:discoveryViewController];
@@ -1533,8 +1536,8 @@ NSString * const kTwilioSMS = @"6475577873";
 #pragma mark - UpdateManager Delegates
 - (NSString *)customDeviceIdentifierForUpdateManager:(BITUpdateManager *)updateManager {
 #ifndef CONFIGURATION_AppStore
-	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
-		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
+//	if ([[UIDevice currentDevice] respondsToSelector:@selector(uniqueIdentifier)])
+//		return [[UIDevice currentDevice] performSelector:@selector(uniqueIdentifier)];
 #endif
 	return nil;
 }

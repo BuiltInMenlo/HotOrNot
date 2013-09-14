@@ -15,6 +15,7 @@
 @interface HONVerifyViewCell()
 @property (nonatomic, strong) UIView *imageHolderView;
 @property (nonatomic, strong) UIImageView *challengeImageView;
+@property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic) BOOL isEven;
 @end
 
@@ -130,6 +131,20 @@
 	[nayButton setBackgroundImage:[UIImage imageNamed:@"verifyNayButton_Active"] forState:UIControlStateHighlighted];
 	[nayButton addTarget:self action:@selector(_goNay) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:nayButton];
+}
+
+- (void)showTapOverlay {
+	_tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
+	_tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
+	[self addSubview:_tappedOverlayView];
+	
+	NSLog(@"OVERLAY:[%@]", NSStringFromCGRect(_tappedOverlayView.frame));
+	[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
+		_tappedOverlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[_tappedOverlayView removeFromSuperview];
+		_tappedOverlayView = nil;
+	}];
 }
 
 

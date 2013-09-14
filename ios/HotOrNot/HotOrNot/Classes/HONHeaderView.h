@@ -14,6 +14,7 @@
 @interface HONHeaderView : UIView
 - (id)initAsVoteWall;
 - (id)initWithTitle:(NSString *)title;
+- (id)initAsModalWithTitle:(NSString *)title;
 
 - (void)toggleRefresh:(BOOL)isRefreshing;
 - (void)hideRefreshing;

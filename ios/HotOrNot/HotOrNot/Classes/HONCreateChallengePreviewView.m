@@ -14,7 +14,7 @@
 #import "HONUserVO.h"
 #import "HONCameraPreviewSubscribersView.h"
 
-@interface HONCreateChallengePreviewView () <UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UITextFieldDelegate, HONCameraPreviewSubscribersViewDelegate>
+@interface HONCreateChallengePreviewView () <UIAlertViewDelegate, UITextFieldDelegate, HONCameraPreviewSubscribersViewDelegate>
 @property (nonatomic, strong) UIView *blackMatteView;
 @property (nonatomic, strong) UILabel *actionLabel;
 @property (nonatomic, strong) UIImage *previewImage;
@@ -26,6 +26,7 @@
 @property (nonatomic, strong) UIButton *previewBackButton;
 @property (nonatomic, strong) UIButton *submitButton;
 @property (nonatomic, strong) UIButton *subscribersBackButton;
+@property (nonatomic, strong) UIImageView *opponentsImageView;
 @property (nonatomic, strong) UIButton *subscribersButton;
 @property (nonatomic, strong) UIView *buttonHolderView;
 @property (nonatomic, strong) UIImageView *uploadingImageView;
@@ -88,13 +89,11 @@
 	[_uploadingImageView removeFromSuperview];
 	
 	[_backButton addTarget:self action:@selector(_goClose) forControlEvents:UIControlEventTouchDown];
-	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
-	_submitButton.alpha = 1.0;
 }
 
 - (void)setOpponents:(NSArray *)users asJoining:(BOOL)isJoining redrawTable:(BOOL)isRedraw {
 	_subscribersView.opponents = [users mutableCopy];
-	_actionLabel.text = (isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [users count], ([users count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [users count], ([users count] != 1 ? @"s" : @"")];	
+	_actionLabel.text = [NSString stringWithFormat:@"%d", [users count]];//(isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [users count], ([users count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [users count], ([users count] != 1 ? @"s" : @"")];
 }
 
 - (void)showKeyboard {
@@ -124,29 +123,35 @@
 	_previewBackButton.frame = self.frame;
 	[_previewBackButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	
-	_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 200.0, 20.0)];
+	UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
+	[self addSubview:headerBGImageView];
+	
+	_opponentsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"smallPersonIcon"]];
+	_opponentsImageView.frame = CGRectOffset(_opponentsImageView.frame, 10.0, 12.0);
+	[self addSubview:_opponentsImageView];
+	
+	_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 14.0, 100.0, 20.0)];
 	_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 	_actionLabel.textColor = [UIColor whiteColor];
 	_actionLabel.backgroundColor = [UIColor clearColor];
 	[self addSubview:_actionLabel];
 	
 	_subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_subscribersButton.frame = CGRectMake(9.0, 27.0, 44.0, 44.0);
-	[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateNormal];
-	[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_Active"] forState:UIControlStateHighlighted];
+	_subscribersButton.frame = CGRectMake(10.0, 14.0, 64.0, 20.0);
+//	[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateNormal];
+//	[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_Active"] forState:UIControlStateHighlighted];
 	[_subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchDown];
 	//_subscribersButton.alpha = 0.0;
 	[self addSubview:_subscribersButton];
 	
 	_backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_backButton.frame = CGRectMake(262.0, 14.0, 44.0, 44.0);
-	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
-	[_backButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
-	//_backButton.alpha = 0.0;
+	_backButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+	[_backButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[self addSubview:_backButton];
 	
 	_subjectHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 35.0, 320.0, 53.0)];
-	_subjectHolderView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+	_subjectHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
 	_subjectHolderView.hidden = YES;
 	_subjectHolderView.alpha = 0.0;
 	[self addSubview:_subjectHolderView];
@@ -154,7 +159,7 @@
 	_placeholderLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 9.0, 320.0, 30.0)];
 	_placeholderLabel.backgroundColor = [UIColor clearColor];
 	_placeholderLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:23];
-	_placeholderLabel.textColor = [UIColor blackColor];
+	_placeholderLabel.textColor = [UIColor whiteColor];
 	_placeholderLabel.textAlignment = NSTextAlignmentCenter;
 	_placeholderLabel.text = ([_subjectName length] == 0) ? @"What's happening?" : @"";
 	[_subjectHolderView addSubview:_placeholderLabel];
@@ -165,7 +170,7 @@
 	[_subjectTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
 	_subjectTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
 	[_subjectTextField setReturnKeyType:UIReturnKeyDone];
-	[_subjectTextField setTextColor:[UIColor blackColor]];
+	[_subjectTextField setTextColor:[UIColor whiteColor]];
 	[_subjectTextField addTarget:self action:@selector(_onTextDoneEditingOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
 	_subjectTextField.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:23];
 	_subjectTextField.keyboardType = UIKeyboardTypeDefault;
@@ -183,29 +188,30 @@
 	[_uploadingImageView startAnimating];
 	[self addSubview:_uploadingImageView];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 64.0, 320.0, 64.0)];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 44.0, 320.0, 44.0)];
+	_buttonHolderView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.75];
 	_buttonHolderView.alpha = 0.0;
 	[self addSubview:_buttonHolderView];
 	
 	UIButton *retakeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	retakeButton.frame = CGRectMake(0.0, 0.0, 106.0, 64.0);
+	retakeButton.frame = CGRectMake(0.0, 0.0, 64.0, 44.0);
 	[retakeButton setBackgroundImage:[UIImage imageNamed:@"cameraReTakeButton_nonActive"] forState:UIControlStateNormal];
 	[retakeButton setBackgroundImage:[UIImage imageNamed:@"cameraReTakeButton_Active"] forState:UIControlStateHighlighted];
 	[retakeButton addTarget:self action:@selector(_goBack) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:retakeButton];
 	
 	UIButton *previewButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	previewButton.frame = CGRectMake(106.0, 0.0, 106.0, 64.0);
+	previewButton.frame = CGRectMake(80.0, 0.0, 64.0, 44.0);
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_nonActive"] forState:UIControlStateNormal];
 	[previewButton setBackgroundImage:[UIImage imageNamed:@"previewButttonCamera_Active"] forState:UIControlStateHighlighted];
 	[previewButton addTarget:self action:@selector(_goToggleKeyboard) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:previewButton];
 	
 	_submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	_submitButton.frame = CGRectMake(212.0, 0.0, 107.0, 64.0);
-	_submitButton.alpha = 0.33;
+	_submitButton.frame = CGRectMake(256.0, 0.0, 64.0, 44.0);
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
 	[_submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
+	[_submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchDown];
 	[_buttonHolderView addSubview:_submitButton];
 	
 	_subscribersView = [[HONCameraPreviewSubscribersView alloc] initWithFrame:CGRectMake(0.0, 50.0, 320.0, [UIScreen mainScreen].bounds.size.height + 50.0)];
@@ -221,10 +227,6 @@
 	[_subscribersBackButton addTarget:self action:@selector(_goSubscribersClose) forControlEvents:UIControlEventTouchDown];
 	_subscribersBackButton.alpha = 0.0;
 	[self addSubview:_subscribersBackButton];
-	
-//	_progressBarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"whiteLoader"]];
-//	_progressBarImageView.frame = CGRectMake(0.0, [UIScreen mainScreen].bounds.size.height - 2.0, 320.0, 2.0);
-//	[self addSubview:_progressBarImageView];
 }
 
 
@@ -252,6 +254,7 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_blackMatteView.alpha = 0.65;
 		
+		_opponentsImageView.frame = CGRectOffset(_opponentsImageView.frame, 48.0, 0.0);
 		_actionLabel.frame = CGRectOffset(_actionLabel.frame, 48.0, 0.0);
 		_subscribersButton.frame = CGRectOffset(_subscribersButton.frame, 48.0, 0.0);
 		_subscribersButton.alpha = 0.5;
@@ -284,6 +287,7 @@
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		_blackMatteView.alpha = 0.0;
 		_subscribersBackButton.alpha = 0.0;
+		_opponentsImageView.frame = CGRectOffset(_opponentsImageView.frame, -48.0, 0.0);
 		
 		_actionLabel.frame = CGRectOffset(_actionLabel.frame, -48.0, 0.0);
 		_subscribersButton.frame = CGRectOffset(_subscribersButton.frame, -48.0, 0.0);

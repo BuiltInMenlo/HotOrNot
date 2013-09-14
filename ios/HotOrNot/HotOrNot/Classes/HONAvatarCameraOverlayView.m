@@ -100,7 +100,7 @@
 		[_submitHolderView addSubview:skipButton];
 		
 		UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		submitButton.frame = CGRectMake(212.0, 0.0, 108.0, 64.0);
+		submitButton.frame = CGRectMake(256.0, 0.0, 64.0, 64.0);
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_nonActive"] forState:UIControlStateNormal];
 		[submitButton setBackgroundImage:[UIImage imageNamed:@"findalSubmitButton_Active"] forState:UIControlStateHighlighted];
 		[submitButton addTarget:self action:@selector(_goSubmit) forControlEvents:UIControlEventTouchUpInside];

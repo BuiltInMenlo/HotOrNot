@@ -17,6 +17,7 @@
 @interface HONVerifyViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (id)initAsEvenRow:(BOOL)isEven;
+- (void)showTapOverlay;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, assign) id <HONVerifyViewCellDelegate> delegate;

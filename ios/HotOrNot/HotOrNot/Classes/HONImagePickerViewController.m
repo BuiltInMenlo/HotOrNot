@@ -489,8 +489,8 @@ const CGFloat kFocusInterval = 0.5f;
 		_focusTimer = nil;
 	}
 	
-	[_cameraOverlayView takePhoto];
-	[self.imagePickerController takePicture];
+//	[_cameraOverlayView takePhoto];
+//	[self.imagePickerController takePicture];
 }
 
 
@@ -773,6 +773,10 @@ const CGFloat kFocusInterval = 0.5f;
 		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
 	}];
+}
+
+- (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView {
+	
 }
 
 

@@ -1,5 +1,5 @@
 //
-//  HONChallengesViewController.h
+//  HONVerifyViewController.h
 //  HotOrNot
 //
 //  Created by Matthew Holcombe on 09.06.12.
@@ -10,5 +10,5 @@
 
 const NSInteger kOlderThresholdSeconds;
 
-@interface HONChallengesViewController : UIViewController
+@interface HONVerifyViewController : UIViewController <UIActionSheetDelegate>
 @end

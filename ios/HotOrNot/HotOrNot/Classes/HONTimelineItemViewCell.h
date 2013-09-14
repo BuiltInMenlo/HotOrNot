@@ -16,6 +16,7 @@
 + (NSString *)cellReuseIdentifier;
 - (id)init;
 - (void)upvoteUser:(int)userID;
+- (void)showTapOverlay;
 
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, assign) id <HONTimelineItemViewCellDelegate> delegate;
@@ -23,7 +24,6 @@
 
 
 @protocol HONTimelineItemViewCellDelegate
-- (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showChallenge:(HONChallengeVO *)challengeVO;
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showProfileForUserID:(int)userID forChallenge:(HONChallengeVO *)challengeVO;
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell joinChallenge:(HONChallengeVO *)challengeVO;
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO;

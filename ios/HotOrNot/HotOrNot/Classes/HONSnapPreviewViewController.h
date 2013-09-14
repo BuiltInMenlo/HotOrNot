@@ -12,9 +12,9 @@
 #import "HONOpponentVO.h"
 
 @protocol HONSnapPreviewViewControllerDelegate;
-@interface HONSnapPreviewViewController : UIViewController
-- (id)initWithChallenge:(HONChallengeVO *)vo;
-- (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO;
+@interface HONSnapPreviewViewController : UIViewController <UIAlertViewDelegate>
+- (id)initWithChallenge:(HONChallengeVO *)vo asRoot:(BOOL)isFirst;
+- (id)initWithOpponent:(HONOpponentVO *)opponentVO forChallenge:(HONChallengeVO *)challengeVO asRoot:(BOOL)isFirst;
 - (void)showControls;
 
 @property (nonatomic, assign) id <HONSnapPreviewViewControllerDelegate> delegate;

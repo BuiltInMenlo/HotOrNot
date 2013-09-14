@@ -40,11 +40,25 @@
 		_irisView.alpha = 0.0;
 		[self addSubview:_irisView];
 		
-		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0, 16.0, 200.0, 20.0)];
+		UIImageView *headerBGImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cameraBackgroundHeader"]];
+		[self addSubview:headerBGImageView];
+		
+		UIImageView *opponentsImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"smallPersonIcon"]];
+		opponentsImageView.frame = CGRectOffset(opponentsImageView.frame, 10.0, 12.0);
+		[self addSubview:opponentsImageView];
+		
+		_actionLabel = [[UILabel alloc] initWithFrame:CGRectMake(40.0, 14.0, 100.0, 20.0)];
 		_actionLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:17];
 		_actionLabel.textColor = [UIColor whiteColor];
 		_actionLabel.backgroundColor = [UIColor clearColor];
 		[self addSubview:_actionLabel];
+		
+		UIButton *closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		closeButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
+		[closeButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
+		[closeButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:closeButton];
 		
 		_subscribersButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_subscribersButton.frame = CGRectMake(9.0, 27.0, 44.0, 44.0);
@@ -52,7 +66,7 @@
 		[_subscribersButton setBackgroundImage:[UIImage imageNamed:@"cameraMoreButton_nonActive"] forState:UIControlStateHighlighted];
 		//[_subscribersButton addTarget:self action:@selector(_goSubscribers) forControlEvents:UIControlEventTouchUpInside];
 		_subscribersButton.alpha = 0.2;
-		[self addSubview:_subscribersButton];
+//		[self addSubview:_subscribersButton];
 		
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_blackMatteView.backgroundColor = [UIColor blackColor];
@@ -63,22 +77,36 @@
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_nonActive"] forState:UIControlStateNormal];
 		[_cancelButton setBackgroundImage:[UIImage imageNamed:@"closeButton_Active"] forState:UIControlStateHighlighted];
 		[_cancelButton addTarget:self action:@selector(_goCloseCamera) forControlEvents:UIControlEventTouchUpInside];
-		[self addSubview:_cancelButton];
+//		[self addSubview:_cancelButton];
+		
+		UIButton *flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		flashButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
+		[flashButton setBackgroundImage:[UIImage imageNamed:@"flashButton_nonActive"] forState:UIControlStateNormal];
+		[flashButton setBackgroundImage:[UIImage imageNamed:@"flashButton_Active"] forState:UIControlStateHighlighted];
+//		[flashButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:flashButton];
+		
+		UIButton *takePhotoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+		takePhotoButton.frame = CGRectMake(123.0, [UIScreen mainScreen].bounds.size.height - 104.0, 74.0, 74.0);
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
+		[takePhotoButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_Active"] forState:UIControlStateHighlighted];
+		[takePhotoButton addTarget:self action:@selector(_goTakePhoto) forControlEvents:UIControlEventTouchUpInside];
+		[self addSubview:takePhotoButton];
 		
 		_flipButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_flipButton.frame = CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 54.0, 44.0, 44.0);
-		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_nonActive"] forState:UIControlStateNormal];
+		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraButton_nonActive"] forState:UIControlStateNormal];
 		[_flipButton setBackgroundImage:[UIImage imageNamed:@"cameraFlipButton_Active"] forState:UIControlStateHighlighted];
 		[_flipButton addTarget:self action:@selector(_goFlipCamera) forControlEvents:UIControlEventTouchUpInside];
 		//[self addSubview:_flipButton];
 		
 		UIView *progressBarBGImageView = [[UIView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 300.0, 5.0)];
 		progressBarBGImageView.backgroundColor = [UIColor blackColor];
-		[self addSubview:progressBarBGImageView];
+//		[self addSubview:progressBarBGImageView];
 				
-		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
-		lpGestureRecognizer.minimumPressDuration = 0.05;
-		[_blackMatteView addGestureRecognizer:lpGestureRecognizer];
+//		UILongPressGestureRecognizer *lpGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_goLongPress:)];
+//		lpGestureRecognizer.minimumPressDuration = 0.05;
+//		[_blackMatteView addGestureRecognizer:lpGestureRecognizer];
 	}
 	
 	return (self);
@@ -114,17 +142,17 @@
 	_actionLabel.hidden = isIntro;
 }
 
-- (void)takePhoto {
-	_irisView.alpha = 1.0;
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_irisView.alpha = 0.33;
-	} completion:^(BOOL finished){}];
+- (void)addMirroredPreview:(UIImage *)image {
+	UIImageView *previewImageView = [[UIImageView alloc] initWithImage:image];
+	previewImageView.frame = CGRectOffset(previewImageView.frame, ABS(self.frame.size.width - image.size.width) * -0.5, (-26.0 + (-26.0 * [HONAppDelegate isRetina5])) + (ABS(self.frame.size.height - image.size.height) * -0.5) - [[UIApplication sharedApplication] statusBarFrame].size.height);
+	previewImageView.transform = CGAffineTransformScale(previewImageView.transform, -1.0f, 1.0f);
+	[self addSubview:previewImageView];
 }
 
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining {
 	NSLog(@"updateChallengers:[%@]", challengers);
 	_usernames = challengers;
-	_actionLabel.text = (isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [challengers count], ([challengers count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [challengers count], ([challengers count] != 1 ? @"s" : @"")];
+	_actionLabel.text = [NSString stringWithFormat:@"%d", [challengers count]];//(isJoining) ? [NSString stringWithFormat:@"Joining %d other%@", [challengers count], ([challengers count] != 1 ? @"s" : @"")] : [NSString stringWithFormat:@"Sending to %d subscriber%@", [challengers count], ([challengers count] != 1 ? @"s" : @"")];
 }
 
 - (void)startProgress {
@@ -135,7 +163,7 @@
 	
 	_progressBarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10.0, [UIScreen mainScreen].bounds.size.height - 17.0, 4.0, 5.0)];
 	_progressBarImageView.image = [UIImage imageNamed:@"whiteLoader"];
-	[self addSubview:_progressBarImageView];
+//	[self addSubview:_progressBarImageView];
 	
 	[self _animateLoader];
 }
@@ -164,6 +192,15 @@
 	_progressBarImageView = nil;
 	
 	[self.delegate cameraOverlayViewCloseCamera:self];
+}
+
+- (void)_goTakePhoto {
+	_irisView.alpha = 1.0;
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_irisView.alpha = 0.33;
+	} completion:^(BOOL finished){}];
+	
+	[self.delegate cameraOverlayViewTakePhoto:self];
 }
 
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {

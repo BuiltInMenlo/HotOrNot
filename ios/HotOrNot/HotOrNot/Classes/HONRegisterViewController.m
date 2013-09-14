@@ -156,7 +156,7 @@
 	
 	self.view.backgroundColor = [UIColor whiteColor];
 	
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+	//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 	
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Register for Volley"];
 	[_headerView hideRefreshing];

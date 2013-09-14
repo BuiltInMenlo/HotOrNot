@@ -11,6 +11,8 @@
 
 @interface HONImagingDepictor : NSObject
 + (UIImage *)createImageFromView:(UIView *)view;
++ (UIImage *)createImageFromScreen;
++ (UIImage *)createBlurredScreenShot;
 
 + (void)writeImageFromWeb:(NSString *)url withUserDefaultsKey:(NSString *)key;
 + (void)writeImageFromWeb:(NSString *)url withDimensions:(CGSize)size withUserDefaultsKey:(NSString *)key;

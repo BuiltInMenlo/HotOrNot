@@ -40,9 +40,10 @@ typedef enum {
 	EGOPullRefreshState _state;
 	UILabel *_statusLabel;
 	UIActivityIndicatorView *_activityIndicatorView;
+	float _headerOffset;
 }
 
-//- (id)initWithFrame:(CGRect)frame topicName:(NSS
+- (id)initWithFrame:(CGRect)frame withHeaderOffset:(BOOL)isOffset;
 
 @property(nonatomic,assign) id <EGORefreshTableHeaderDelegate> delegate;
 

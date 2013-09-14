@@ -21,6 +21,7 @@
 @property (nonatomic, retain) UIButton *settingsButton;
 
 @property (nonatomic, strong) UIView *tabHolderView;
+@property (nonatomic, strong) UIView *tabBarView;
 @property (nonatomic, strong) HONAlertPopOverView *alertPopOverView;
 @property (nonatomic) CGPoint touchPt;
 @end
@@ -40,54 +41,12 @@
 	[super didReceiveMemoryWarning];
 }
 
-/*
-#pragma mark - Touch Handlers
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-	UITouch *touch = [touches anyObject];
-	CGPoint location = [touch locationInView:self.view];
-	
-	if ([touch view] == _tabHolderView) {
-		_touchPt = CGPointMake(_tabHolderView.center.x - location.x, _tabHolderView.center.y - location.y);
-		[self _toggleTabsEnabled:NO];
-	}
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-	UITouch *touch = [touches anyObject];
-	
-	if ([touch view] == _tabHolderView) {
-		CGPoint touchLocation = [touch locationInView:self.view];
-		float minY = (self.view.frame.size.height - (kLipHeight + kTabHeight)) + (_tabHolderView.frame.size.height * 0.5);
-		float maxY = (self.view.frame.size.height - kLipHeight) + (_tabHolderView.frame.size.height * 0.5);
-		
-		CGPoint location = CGPointMake(_tabHolderView.center.x, MIN(MAX(_touchPt.y + touchLocation.y, minY), maxY));
-		_tabHolderView.center = location;
-		
-		return;
-	}
-}
-
--(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-	UITouch *touch = [touches anyObject];
-	
-	if ([touch locationInView:self.view].y > self.view.frame.size.height - (kLipHeight + kTabHeight)) {
-		if ( _tabHolderView.center.y < self.view.frame.size.height - 10.0)
-			[self _raiseTabs];
-			
-		else
-			[self _dropTabs];
-	}
-	
-	[self _toggleTabsEnabled:YES];
-}
-*/
-
 
 #pragma mark - View Lifecycle
 - (void)loadView {
 	[super loadView];
 	
-//	[self _hideNativeTabBar];
+	[self _hideNativeTabBar];
 	[self _addCustomTabs];
 	
 	[[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithInt:0] forKey:@"current_tab"];
@@ -112,12 +71,12 @@
 - (void)_hideNativeTabBar {
 	for (UIView *view in self.view.subviews) {
 		if([view isKindOfClass:[UITabBar class]])
-			view.hidden = YES;//[view setFrame:CGRectMake(view.frame.origin.x, self.view.frame.size.height, view.frame.size.width, view.frame.size.height)];
+		_tabBarView = view;//view.hidden = YES;
 		
-		else
-			[view setFrame:[UIScreen mainScreen].bounds];//[view setFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
+//		else
+//			[view setFrame:[UIScreen mainScreen].bounds];//[view setFrame:CGRectMake(0.0, 0.0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
 		
-		//NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
+		NSLog(@"VIEW:[%@][%@]", [view class], NSStringFromCGRect(view.frame));
 	}
 
 //	for (UIViewController *viewController in self.viewControllers)
@@ -316,14 +275,16 @@
 
 #pragma mark - Notifications
 - (void)_showTabs:(NSNotification *)notification {
-	[UIView animateWithDuration:kProfileTime animations:^(void) {
+	[UIView animateWithDuration:0.125 animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabSize.height, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+		_tabBarView.frame = CGRectMake(_tabBarView.frame.origin.x, self.view.frame.size.height - 49.0, _tabBarView.frame.size.width, _tabBarView.frame.size.height);//CGRectOffset(_tabBarView.frame, 0.0, -44.0);
 	}];
 }
 
 - (void)_hideTabs:(NSNotification *)notification {
-	[UIView animateWithDuration:kProfileTime animations:^(void) {
+	[UIView animateWithDuration:0.125 animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
+		_tabBarView.frame = _tabBarView.frame = CGRectMake(_tabBarView.frame.origin.x, self.view.frame.size.height, _tabBarView.frame.size.width, _tabBarView.frame.size.height);//CGRectOffset(_tabBarView.frame, 0.0, 44.0);
 	}];
 }
 
