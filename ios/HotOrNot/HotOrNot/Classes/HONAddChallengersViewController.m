@@ -279,7 +279,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor blackColor];
 	
 	HONHeaderView *headerView = [[HONHeaderView alloc] initWithTitle:@"Select friends"];
 	[self.view addSubview:headerView];

@@ -12,8 +12,14 @@
 #import "HONImageLoadingView.h"
 
 @interface HONExploreViewCell()
-@property (nonatomic, strong) UIImageView *bgImageView;
+@property (nonatomic, strong) UIView *leftHolderView;
+@property (nonatomic, strong) UIImageView *leftImageView;
+@property (nonatomic, strong) UIView *leftOverlayView;
+@property (nonatomic, strong) UIView *rightHolderView;
+@property (nonatomic, strong) UIImageView *rightImageView;
+@property (nonatomic, strong) UIView *rightOverlayView;
 @end
+
 
 @implementation HONExploreViewCell
 @synthesize delegate = _delegate;
@@ -26,8 +32,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 117.0)];
-		[self addSubview:_bgImageView];
+		self.backgroundColor = [UIColor blackColor];
 	}
 	
 	return (self);
@@ -36,42 +41,44 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
+	__weak typeof(self) weakSelf = self;
 	//NSLog(@"L-CHALLENGE:(%d)[%@]", _lChallengeVO.challengeID, [_lChallengeVO.dictionary objectForKey:@"challengers"]);
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 10.0, 75.0 * 2.0, 75.0)];
-	holderView.clipsToBounds = YES;
-	[self addSubview:holderView];
+	_leftHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
+	_leftHolderView.clipsToBounds = YES;
+	[self addSubview:_leftHolderView];
 	
-	HONImageLoadingView *lImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0, 4.0)];
-	[holderView addSubview:lImageLoadingView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)];
+	[_leftHolderView addSubview:imageLoadingView];
 	
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 75.0, 75.0)];
-	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _lChallengeVO.creatorVO.imagePrefix]] placeholderImage:nil];
-	[holderView addSubview:lImageView];
+	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
+	_leftImageView.alpha = 0.0;
+	[_leftHolderView addSubview:_leftImageView];
+	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg",_lChallengeVO.creatorVO.imagePrefix]]
+															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+								 weakSelf.leftImageView.image = image;
+								 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.leftImageView.alpha = 1.0; } completion:nil];
+							 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+								 [weakSelf _reloadLeftImage];
+							 }];
 	
-	HONImageLoadingView *rImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0 + 75.0, 4.0)];
-	[holderView addSubview:rImageLoadingView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 0.0, 75.0, 75.0)];
-	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).imagePrefix]] placeholderImage:nil];
-	[holderView addSubview:rImageView];
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
+	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 0.0, 6.0);
+	[self addSubview:gradientImageView];
 	
-	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 89.0, 140.0, 24.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
-	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 125.0, 140.0, 24.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	subjectLabel.textColor = [UIColor colorWithWhite:0.898 alpha:1.0];
+	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _lChallengeVO.subjectName;
 	[self addSubview:subjectLabel];
-	
-	
-	UIButton *txtSelectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	txtSelectButton.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 10.0, subjectLabel.frame.size.width, subjectLabel.frame.size.height + 20.0);
-	[txtSelectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:txtSelectButton];
-	
+		
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = holderView.frame;
+	selectButton.frame = _leftHolderView.frame;
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectLeft) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
@@ -80,42 +87,43 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
+	__weak typeof(self) weakSelf = self;
 	//NSLog(@"R-CHALLENGE:(%d)[%@]", _rChallengeVO.challengeID, [_rChallengeVO.dictionary objectForKey:@"challengers"]);
 	
-	UIView *holderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 10.0, 75.0 * 2.0, 75.0)];
-	holderView.clipsToBounds = YES;
-	[self addSubview:holderView];
+	_rightHolderView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
+	_rightHolderView.clipsToBounds = YES;
+	[self addSubview:_rightHolderView];
 		
-	HONImageLoadingView *lImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0, 4.0)];
-	[holderView addSubview:lImageLoadingView];
+	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)];
+	[_rightHolderView addSubview:imageLoadingView];
 
-	UIImageView *lImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 75.0, 75.0)];
-	[lImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", _rChallengeVO.creatorVO.imagePrefix]] placeholderImage:nil];
-	[holderView addSubview:lImageView];
+	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 0.0, 320.0, 427.0)];
+	_rightImageView.alpha = 0.0;
+	[_rightHolderView addSubview:_rightImageView];
+	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg",_rChallengeVO.creatorVO.imagePrefix]]
+															cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+						  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+							  weakSelf.rightImageView.image = image;
+							  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rightImageView.alpha = 1.0; } completion:nil];
+						  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+							  [weakSelf _reloadRightImage];
+						  }];
 	
-	HONImageLoadingView *rImageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(4.0 + 75.0, 4.0)];
-	[holderView addSubview:rImageLoadingView];
+	UIImageView *gradientImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"timelineImageFade"]];
+	gradientImageView.frame = CGRectOffset(gradientImageView.frame, 160.0, 6.0);
+	[self addSubview:gradientImageView];
 	
-	UIImageView *rImageView = [[UIImageView alloc] initWithFrame:CGRectMake(75.0, 0.0, 75.0, 75.0)];
-	[rImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).imagePrefix]] placeholderImage:nil];
-	[holderView addSubview:rImageView];
-	
-	
-	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(160.0, 89.0, 140.0, 24.0)];
-	subjectLabel.font = [[HONAppDelegate helveticaNeueFontRegular] fontWithSize:18];
-	subjectLabel.textColor = [HONAppDelegate honBlueTextColor];
+	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(169.0, 125.0, 140.0, 24.0)];
+	subjectLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:18];
+	subjectLabel.textColor = [UIColor colorWithWhite:0.898 alpha:1.0];
+	subjectLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
+	subjectLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	subjectLabel.backgroundColor = [UIColor clearColor];
 	subjectLabel.text = _rChallengeVO.subjectName;
 	[self addSubview:subjectLabel];
-	
-	
-	UIButton *txtSelectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	txtSelectButton.frame = CGRectMake(subjectLabel.frame.origin.x, subjectLabel.frame.origin.y - 10.0, subjectLabel.frame.size.width, subjectLabel.frame.size.height + 20.0);
-	[txtSelectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
-	[self addSubview:txtSelectButton];
-	
+		
 	UIButton *selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	selectButton.frame = holderView.frame;
+	selectButton.frame = _rightHolderView.frame;
 	[selectButton setBackgroundImage:[UIImage imageNamed:@"discoveryOverlay"] forState:UIControlStateHighlighted];
 	[selectButton addTarget:self action:@selector(_goSelectRight) forControlEvents:UIControlEventTouchUpInside];
 	[self addSubview:selectButton];
@@ -124,26 +132,65 @@
 
 #pragma mark - Navigation
 - (void)_goSelectLeft {
+	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
+	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	[self addSubview:overlayView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		overlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[overlayView removeFromSuperview];
+	}];
+	
 	[self.delegate discoveryViewCell:self selectLeftChallenge:_lChallengeVO];
 }
 
 - (void)_goSelectRight {
+	UIView *overlayView = [[UIView alloc] initWithFrame:CGRectMake(160.0, 0.0, 160.0, 160.0)];
+	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	[self addSubview:overlayView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		overlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[overlayView removeFromSuperview];
+	}];
+	
 	[self.delegate discoveryViewCell:self selectRightChallenge:_rChallengeVO];
 }
 
+
 #pragma mark - UI Presentation
-- (void)didSelectLeftChallenge {
-	[self performSelector:@selector(_resetBGLeft) withObject:nil afterDelay:0.33];
+- (void)_reloadLeftImage {
+	__weak typeof(self) weakSelf = self;
+	
+	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 320.0, 320.0)];
+	_leftImageView.alpha = 0.0;
+	[_leftHolderView addSubview:_leftImageView];
+	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _lChallengeVO.creatorVO.imagePrefix]]
+															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+								 weakSelf.leftImageView.image = image;
+								 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.leftImageView.alpha = 1.0; } completion:nil];
+							 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+								 NSLog(@"%@_l.jpg", weakSelf.lChallengeVO.creatorVO.imagePrefix);
+							 }];
 }
 
-- (void)didSelectRightChallenge {
-	[self performSelector:@selector(_resetBGRight) withObject:nil afterDelay:0.33];
-}
-
-- (void)_resetBGLeft {
-}
-
-- (void)_resetBGRight {
+- (void)_reloadRightImage {
+	__weak typeof(self) weakSelf = self;
+	
+	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 320.0, 320.0)];
+	_rightImageView.alpha = 0.0;
+	[_rightHolderView addSubview:_rightImageView];
+	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _rChallengeVO.creatorVO.imagePrefix]]
+															cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+						  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+							  weakSelf.rightImageView.image = image;
+							  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.rightImageView.alpha = 1.0; } completion:nil];
+						  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+							  NSLog(@"%@_l.jpg", weakSelf.rChallengeVO.creatorVO.imagePrefix);
+						  }];
 }
 
 @end

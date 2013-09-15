@@ -16,16 +16,18 @@
 #import "HONUserProfileViewController.h"
 #import "HONOpponentVO.h"
 #import "HONSnapPreviewViewController.h"
+#import "HONHeaderView.h"
 
 
 @interface HONUserProfileViewController () <HONSnapPreviewViewControllerDelegate>
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
+@property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) HONSnapPreviewViewController *snapPreviewViewController;
 @property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIView *avatarHolderView;
 @property (nonatomic, strong) UIImageView *avatarImageView;
-@property (nonatomic, strong) UILabel *nameAgeLabel;
 @property (nonatomic, strong) UILabel *subscribersLabel;
 @property (nonatomic, strong) UILabel *volleysLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
@@ -90,7 +92,6 @@
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
 			[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-			_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]];
 			_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 			_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
 			_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
@@ -245,22 +246,26 @@
 //	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	doneButton.frame = CGRectMake(252.0, 20.0, 64.0, 44.0);
+	doneButton.frame = CGRectMake(252.0, 0.0, 64.0, 44.0);
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_nonActive"] forState:UIControlStateNormal];
 	[doneButton setBackgroundImage:[UIImage imageNamed:@"doneButton_Active"] forState:UIControlStateHighlighted];
 	[doneButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:doneButton];
 	
+	_headerView = [[HONHeaderView alloc] initAsModalWithTitle:@""];
+	[_headerView addButton:doneButton];
+	[self.view addSubview:_headerView];
+	
 	_subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_subscribeButton.frame = CGRectMake(0.0, 0.0, 95.0, 44.0);
 	[_subscribeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[_subscribeButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+	[_subscribeButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 	[_subscribeButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	
 	_flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	_flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
 	[_flagButton setTitleColor:[UIColor colorWithRed:0.733 green:0.380 blue:0.392 alpha:1.0] forState:UIControlStateNormal];
-	[_flagButton setTitleColor:[UIColor colorWithRed:0.560 green:0.291 blue:0.299 alpha:1.0] forState:UIControlStateHighlighted];
+	[_flagButton setTitleColor:[UIColor colorWithRed:0.325 green:0.169 blue:0.174 alpha:1.0] forState:UIControlStateHighlighted];
 	[_flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[_flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	[_flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
@@ -316,52 +321,54 @@
 		}
 	}
 	
-	CALayer *maskLayer = [CALayer layer];
-	UIImage *mask = [UIImage imageNamed:@"profileImageMask.png"];
-	maskLayer.contents = (id)mask.CGImage;
-	maskLayer.frame = (CGRect){CGPointZero, mask.size};
+	[_headerView setTitle:[NSString stringWithFormat:@"%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]]];
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(83.0, 58.0, 153.0, 153.0)];
-	_avatarImageView.layer.mask = maskLayer;
-	[_avatarImageView setImageWithURL:[NSURL URLWithString:_userVO.imageURL] placeholderImage:nil];
-	[_scrollView addSubview:_avatarImageView];
+	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 225.0)];
+	_avatarHolderView.clipsToBounds = YES;
+	[_scrollView addSubview:_avatarHolderView];
 	
-	UIImageView *avatarCoverImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"profileAvatarBackground"]];
-	avatarCoverImageView.frame = _avatarImageView.frame;
-	[_scrollView addSubview:avatarCoverImageView];
+	NSMutableString *avatarURL = [_userVO.imageURL mutableCopy];
+	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	
-	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"verifiedUser"]];
-	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 197.0, 106.0);
+	__weak typeof(self) weakSelf = self;
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -171.0, 320.0, 568.0)];
+	_avatarImageView.alpha = 0.0;
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL]
+															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+								weakSelf.avatarImageView.image = image;
+								[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
+							} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+								NSLog(@"FALLBACK");
+								[weakSelf _reloadCreatorImage];
+							}];
+	[_avatarHolderView addSubview:_avatarImageView];
+	
+	UIImageView *verifiedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"checkmarkIcon"]];
+	verifiedImageView.frame = CGRectOffset(verifiedImageView.frame, 7.0, 7.0);
 	verifiedImageView.hidden = ([HONAppDelegate ageForDate:_userVO.birthday] > 19);
-	[_scrollView addSubview:verifiedImageView];
-	
-	_nameAgeLabel = [[UILabel alloc] initWithFrame:CGRectMake(20.0, 227.0, 290.0, 28.0)];
-	_nameAgeLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
-	_nameAgeLabel.textColor = [UIColor whiteColor];
-	_nameAgeLabel.textAlignment = NSTextAlignmentCenter;
-	_nameAgeLabel.backgroundColor = [UIColor clearColor];
-	_nameAgeLabel.text = [NSString stringWithFormat:@"@%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]];
-	[_scrollView addSubview:_nameAgeLabel];
+	[_headerView addButton:verifiedImageView];
 	
 	NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 	[numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 	
-	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 275.0, 260.0, 28.0)];
-	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
+	_subscribersLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 260.0, 260.0, 30.0)];
+	_subscribersLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_subscribersLabel.textColor = [UIColor whiteColor];
 	_subscribersLabel.backgroundColor = [UIColor clearColor];
 	_subscribersLabel.text = [NSString stringWithFormat:@"%@ subscriber%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:[_userVO.friends count]]], ([_userVO.friends count] == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_subscribersLabel];
 	
-	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 325.0, 260.0, 28.0)];
-	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
+	_volleysLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 312.0, 260.0, 30.0)];
+	_volleysLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_volleysLabel.textColor = [UIColor whiteColor];
 	_volleysLabel.backgroundColor = [UIColor clearColor];
 	_volleysLabel.text = [NSString stringWithFormat:@"%@ volley%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.pics]], (_userVO.pics == 1) ? @"" : @"s"];
 	[_scrollView addSubview:_volleysLabel];
 	
-	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 373.0, 260.0, 28.0)];
-	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:24];
+	_likesLabel = [[UILabel alloc] initWithFrame:CGRectMake(21.0, 364.0, 260.0, 30.0)];
+	_likesLabel.font = [[HONAppDelegate helveticaNeueFontLight] fontWithSize:25];
 	_likesLabel.textColor = [UIColor whiteColor];
 	_likesLabel.backgroundColor = [UIColor clearColor];
 	_likesLabel.text = [NSString stringWithFormat:@"%@ like%@", [numberFormatter stringFromNumber:[NSNumber numberWithInt:_userVO.votes]], (_userVO.votes == 1) ? @"" : @"s"];
@@ -444,6 +451,22 @@
 }
 
 #pragma mark - UI Presentation
+- (void)_reloadCreatorImage {
+	__weak typeof(self) weakSelf = self;
+	
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -54.0, 320.0, 320.0)];
+	_avatarImageView.alpha = 0.0;
+	[_avatarHolderView addSubview:_avatarImageView];
+	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
+															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+								 weakSelf.avatarImageView.image = image;
+								 [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.avatarImageView.alpha = 1.0; } completion:nil];
+							 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+								 NSLog(@"%@", weakSelf.userVO.imageURL);
+							 }];
+}
+
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
@@ -534,7 +557,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 77.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {

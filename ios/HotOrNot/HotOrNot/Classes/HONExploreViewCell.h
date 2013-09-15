@@ -14,8 +14,6 @@
 @protocol HONExploreViewCellDelegate;
 @interface HONExploreViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
-- (void)didSelectLeftChallenge;
-- (void)didSelectRightChallenge;
 
 @property (nonatomic, retain) HONChallengeVO *lChallengeVO;
 @property (nonatomic, retain) HONChallengeVO *rChallengeVO;

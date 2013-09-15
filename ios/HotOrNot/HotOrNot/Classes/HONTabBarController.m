@@ -275,16 +275,22 @@
 
 #pragma mark - Notifications
 - (void)_showTabs:(NSNotification *)notification {
-	[UIView animateWithDuration:0.125 animations:^(void) {
+	[UIView animateWithDuration:0.25 animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height - kTabSize.height, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 		_tabBarView.frame = CGRectMake(_tabBarView.frame.origin.x, self.view.frame.size.height - 49.0, _tabBarView.frame.size.width, _tabBarView.frame.size.height);//CGRectOffset(_tabBarView.frame, 0.0, -44.0);
+		
+		_tabHolderView.alpha = 1.0;
+		_tabBarView.alpha = 1.0;
 	}];
 }
 
 - (void)_hideTabs:(NSNotification *)notification {
-	[UIView animateWithDuration:0.125 animations:^(void) {
+	[UIView animateWithDuration:0.25 animations:^(void) {
 		_tabHolderView.frame = CGRectMake(_tabHolderView.frame.origin.x, self.view.frame.size.height, _tabHolderView.frame.size.width, _tabHolderView.frame.size.height);
 		_tabBarView.frame = _tabBarView.frame = CGRectMake(_tabBarView.frame.origin.x, self.view.frame.size.height, _tabBarView.frame.size.width, _tabBarView.frame.size.height);//CGRectOffset(_tabBarView.frame, 0.0, 44.0);
+		
+		_tabHolderView.alpha = 0.0;
+		_tabBarView.alpha = 0.0;
 	}];
 }
 

@@ -25,7 +25,6 @@
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIImageView *upvoteImageView;
-@property (nonatomic, strong) UIView *tappedOverlayView;
 @property (nonatomic, strong) NSMutableArray *voters;
 @property (nonatomic) BOOL hasOponentRetorted;
 @property (nonatomic) BOOL isChallengeCreator;
@@ -158,7 +157,7 @@
 	
 	_creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
 	_creatorImageView.userInteractionEnabled = YES;
-	_creatorImageView.alpha = [_creatorImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", challengeVO.creatorVO.imagePrefix]]]];
+	_creatorImageView.alpha = 0.0;//[_creatorImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", challengeVO.creatorVO.imagePrefix]]]];
 	[_creatorHolderView addSubview:_creatorImageView];
 	[_creatorImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", challengeVO.creatorVO.imagePrefix]]
 																  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -254,7 +253,7 @@
 	[footerHolderView addSubview:creatorNameLabel];
 	
 	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	creatorButton.frame = creatorNameLabel.frame;
+	creatorButton.frame = CGRectMake(9.0, 0.0, 150.0, 44.0);
 	[creatorButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 	[creatorButton addTarget:self action:@selector(_goCreatorProfile) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:creatorButton];
@@ -370,16 +369,15 @@
 }
 
 - (void)showTapOverlay {
-	_tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
-	_tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
-	[self addSubview:_tappedOverlayView];
+	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	[self addSubview:tappedOverlayView];
 	
-	NSLog(@"OVERLAY:[%@]", NSStringFromCGRect(_tappedOverlayView.frame));
-	[UIView animateWithDuration:0.33 delay:0.125 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
-		_tappedOverlayView.alpha = 0.0;
+	NSLog(@"OVERLAY:[%@]", NSStringFromCGRect(tappedOverlayView.frame));
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		tappedOverlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
-		[_tappedOverlayView removeFromSuperview];
-		_tappedOverlayView = nil;
+		[tappedOverlayView removeFromSuperview];
 	}];
 }
 

@@ -143,7 +143,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor blackColor];
 	
 	_profileHeaderButtonView = [[HONProfileHeaderButtonView alloc] initWithTarget:self action:@selector(_goProfile)];
 	_headerView = [[HONHeaderView alloc] initWithTitle:@"Explore"];
@@ -168,7 +168,6 @@
 	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
 	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	_tableView.delegate = self;
 	_tableView.dataSource = self;
@@ -177,14 +176,13 @@
 	_tableView.showsVerticalScrollIndicator = YES;
 	[self.view addSubview:_tableView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
 	_refreshTableHeaderView.delegate = self;
 	[_tableView addSubview:_refreshTableHeaderView];
 	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	_profileOverlayView.alpha = 0.0;
+	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
 	_profileOverlayView.hidden = YES;
 	[self.view addSubview:_profileOverlayView];
 	
@@ -193,9 +191,9 @@
 	[closeProfileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[_profileOverlayView addSubview:closeProfileButton];
 	
-	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -395.0, 320.0, 395.0)];
-	_userProfileView.hidden = YES;
+	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -391.0, 320.0, 455.0)];
 	_userProfileView.delegate = self;
+	_userProfileView.alpha = 0.0;
 	[self.view addSubview:_userProfileView];
 	
 	[_headerView addButton:_profileHeaderButtonView];
@@ -230,9 +228,14 @@
 		
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
 			_profileOverlayView.alpha = 0.0;
+			_blurredImageView.alpha = 0.0;
+			_userProfileView.alpha = 0.0;
 		} completion:^(BOOL finished) {
 			_profileOverlayView.hidden = YES;
 			_userProfileView.hidden = YES;
+			
+			[_blurredImageView removeFromSuperview];
+			_blurredImageView = nil;
 		}];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -241,10 +244,16 @@
 		[_userProfileView show];
 		[_profileHeaderButtonView toggleSelected:YES];
 		
+		//		_blurredImageView = [[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:self.view] applyBlurWithRadius:2.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.5] saturationDeltaFactor:1.0 maskImage:nil]];
+		//		_blurredImageView.alpha = 0.0;
+		//		[self.view addSubview:_blurredImageView];
+		
 		_profileOverlayView.hidden = NO;
 		_userProfileView.hidden = NO;
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
 			_profileOverlayView.alpha = 1.0;
+			_blurredImageView.alpha = 1.0;
+			_userProfileView.alpha = 1.0;
 		} completion:^(BOOL finished) {
 		}];
 		
@@ -319,7 +328,6 @@
 
 - (void)_hideSearchTable:(NSNotification *)notification {
 	_bannerView.hidden = NO;
-	[self.navigationController setNavigationBarHidden:NO animated:YES];
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^(void) {
 		_tableView.frame = CGRectMake(0.0, (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]), _tableView.frame.size.width, _tableView.frame.size.height);
 //		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]));
@@ -500,7 +508,7 @@
 
 #pragma mark - TableView Delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == ceil([_currChallenges count] * 0.5) - 1) ? 167.0 : 116.0);
+	return ((indexPath.row == ceil([_currChallenges count] * 0.5) - 1) ? 211.0 : 160);
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {

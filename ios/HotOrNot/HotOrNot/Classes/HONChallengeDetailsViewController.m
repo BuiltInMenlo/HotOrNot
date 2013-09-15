@@ -20,6 +20,7 @@
 #import "HONSnapPreviewViewController.h"
 #import "HONRefreshButtonView.h"
 #import "HONUserProfileViewController.h"
+#import "HONImagingDepictor.h"
 
 @interface HONChallengeDetailsViewController () <UIScrollViewDelegate, UIAlertViewDelegate, HONSnapPreviewViewControllerDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
@@ -43,6 +44,7 @@
 @property (nonatomic, strong) HONHeaderView *headerView;
 @property (nonatomic, strong) EGORefreshTableHeaderView *refreshTableHeaderView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
+@property (nonatomic, strong) UIImageView *blurredImageView;
 @end
 
 @implementation HONChallengeDetailsViewController
@@ -242,12 +244,21 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
-			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:nil];
+			_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+			_blurredImageView.alpha = 0.0;
+			[self.view addSubview:_blurredImageView];
+			
+			[UIView animateWithDuration:0.25 animations:^(void) {
+				_blurredImageView.alpha = 1.0;
+			} completion:^(BOOL finished) {
+			}];
+			
+			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 			userPofileViewController.userVO = userVO;
 			
 			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPofileViewController];
 			[navigationController setNavigationBarHidden:YES];
-			[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+			[self presentViewController:navigationController animated:YES completion:nil];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -383,13 +394,13 @@
 	[_scrollView addSubview:leftButton];
 	
 	
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 355.0, 320.0, (kSnapMediumDim + 1.0) * ((respondedOpponents / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 355.0, 320.0, (kSnapMediumDim) * (respondedOpponents / 4))];
 	[_scrollView addSubview:_gridHolderView];
 	
 	_opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
 		if ([vo.imagePrefix length] > 0) {
-			CGPoint pos = CGPointMake((kSnapMediumDim + 1.0) * (_opponentCounter % 4), (kSnapMediumDim + 1.0) * (_opponentCounter / 4));
+			CGPoint pos = CGPointMake((kSnapMediumDim) * (_opponentCounter % 4), (kSnapMediumDim) * (_opponentCounter / 4));
 			
 			UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
 			[_gridHolderView addSubview:opponentHolderView];
@@ -423,7 +434,7 @@
 	[footerHolderView addSubview:creatorNameLabel];
 	
 	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	creatorButton.frame = creatorNameLabel.frame;
+	creatorButton.frame = CGRectMake(9.0, 0.0, 150.0, 44.0);
 	[creatorButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 	[creatorButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:creatorButton];
@@ -480,7 +491,7 @@
 	
 	
 	UIButton *joinButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	joinButton.frame = CGRectMake(121.0, 169.0, 78.0, 78.0);
+	joinButton.frame = CGRectMake(234.0, 145.0, 78.0, 78.0);
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_nonActive"] forState:UIControlStateNormal];
 	[joinButton setBackgroundImage:[UIImage imageNamed:@"joinButton_Active"] forState:UIControlStateHighlighted];
 	[joinButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -500,7 +511,7 @@
 	joinFooterButton.frame = CGRectMake(0.0, 0.0, 80.0, 44.0);
 //	joinFooterButton.backgroundColor = [UIColor greenColor];
 	[joinFooterButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-	[joinFooterButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+	[joinFooterButton setTitleColor:[UIColor colorWithWhite:0.5 alpha:1.0] forState:UIControlStateHighlighted];
 	[joinFooterButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontMedium] fontWithSize:16.0]];
 	[joinFooterButton setTitle:@"Join Volley" forState:UIControlStateNormal];
 	[joinFooterButton addTarget:self action:@selector(_goJoinChallenge) forControlEvents:UIControlEventTouchUpInside];
@@ -509,7 +520,7 @@
 	flagButton.frame = CGRectMake(0.0, 0.0, 31.0, 44.0);
 //	flagButton.backgroundColor = [UIColor greenColor];
 	[flagButton setTitleColor:[UIColor colorWithRed:0.808 green:0.420 blue:0.431 alpha:1.0] forState:UIControlStateNormal];
-	[flagButton setTitleColor:[UIColor colorWithRed:0.560 green:0.291 blue:0.299 alpha:1.0] forState:UIControlStateHighlighted];
+	[flagButton setTitleColor:[UIColor colorWithRed:0.325 green:0.169 blue:0.174 alpha:1.0] forState:UIControlStateHighlighted];
 	[flagButton.titleLabel setFont:[[HONAppDelegate helveticaNeueFontRegular] fontWithSize:16.0]];
 	[flagButton setTitle:@"Flag" forState:UIControlStateNormal];
 	
@@ -683,7 +694,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 77.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 28.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {

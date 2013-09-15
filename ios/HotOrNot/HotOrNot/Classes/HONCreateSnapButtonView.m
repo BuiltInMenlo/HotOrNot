@@ -15,7 +15,7 @@
 @implementation HONCreateSnapButtonView
 
 - (id)initWithTarget:(id)target action:(SEL)action {
-	if ((self = [super initWithFrame:CGRectMake(262.0, 4.0, 44.0, 44.0)])) {
+	if ((self = [super initWithFrame:CGRectMake(261.0, 5.0, 44.0, 44.0)])) {
 		_createSnapButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_createSnapButton.frame = CGRectMake(0.0, 0.0, 44.0, 44.0);
 		[_createSnapButton setBackgroundImage:[UIImage imageNamed:@"createChallengeButton_nonActive"] forState:UIControlStateNormal];

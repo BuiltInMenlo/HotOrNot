@@ -331,6 +331,15 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
+			_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+			_blurredImageView.alpha = 0.0;
+			[self.view addSubview:_blurredImageView];
+			
+			[UIView animateWithDuration:0.25 animations:^(void) {
+				_blurredImageView.alpha = 1.0;
+			} completion:^(BOOL finished) {
+			}];
+			
 			HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 			userPofileViewController.userVO = userVO;
 			
@@ -410,7 +419,7 @@
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor blackColor];
 	
 	_userVO = nil;
 	
@@ -445,6 +454,7 @@
 	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
+	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
 	_profileOverlayView.hidden = YES;
 	[self.view addSubview:_profileOverlayView];
 	
@@ -453,8 +463,9 @@
 	[closeProfileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[_profileOverlayView addSubview:closeProfileButton];
 	
-	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -395.0, 320.0, 395.0)];
+	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -391.0, 320.0, 455.0)];
 	_userProfileView.delegate = self;
+	_userProfileView.alpha = 0.0;
 	[self.view addSubview:_userProfileView];
 	
 	[_headerView addButton:_profileHeaderButtonView];
@@ -523,9 +534,12 @@
 		[_profileHeaderButtonView toggleSelected:NO];
 		
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
+			_profileOverlayView.alpha = 0.0;
 			_blurredImageView.alpha = 0.0;
+			_userProfileView.alpha = 0.0;
 		} completion:^(BOOL finished) {
 			_profileOverlayView.hidden = YES;
+			_userProfileView.hidden = YES;
 			
 			[_blurredImageView removeFromSuperview];
 			_blurredImageView = nil;
@@ -542,8 +556,11 @@
 //		[self.view addSubview:_blurredImageView];
 		
 		_profileOverlayView.hidden = NO;
+		_userProfileView.hidden = NO;
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
+			_profileOverlayView.alpha = 1.0;
 			_blurredImageView.alpha = 1.0;
+			_userProfileView.alpha = 1.0;
 		} completion:^(BOOL finished) {
 		}];
 		
@@ -752,15 +769,6 @@
 									  [NSString stringWithFormat:@"%d", userID], @"userID", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
 	[self _retrieveUserForProfile:userID];
 }
 
@@ -838,7 +846,7 @@
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 77.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {

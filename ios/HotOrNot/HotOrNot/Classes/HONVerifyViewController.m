@@ -119,10 +119,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				NSDictionary *userResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 				//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 				
-				if ([userResult objectForKey:@"id"] != [NSNull null])
-					[HONAppDelegate writeUserInfo:userResult];
-				
 				HONUserVO *userVO = [HONUserVO userWithDictionary:userResult];
+				_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+				_blurredImageView.alpha = 0.0;
+				[self.view addSubview:_blurredImageView];
+				
+				[UIView animateWithDuration:0.25 animations:^(void) {
+					_blurredImageView.alpha = 1.0;
+				} completion:^(BOOL finished) {
+				}];
+				
 				HONUserProfileViewController *userPofileViewController = [[HONUserProfileViewController alloc] initWithBackground:_blurredImageView];
 				userPofileViewController.userVO = userVO;
 				
@@ -299,7 +305,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (void)loadView {
 	[super loadView];
 	
-	self.view.backgroundColor = [UIColor whiteColor];
+	self.view.backgroundColor = [UIColor blackColor];
 	
 	_isPrivate = NO;
 	
@@ -343,8 +349,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_refreshTableHeaderView refreshLastUpdatedDate];
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
-	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
-	_profileOverlayView.alpha = 0.0;
+	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
 	_profileOverlayView.hidden = YES;
 	[self.view addSubview:_profileOverlayView];
 	
@@ -353,9 +358,9 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[closeProfileButton addTarget:self action:@selector(_goProfile) forControlEvents:UIControlEventTouchUpInside];
 	[_profileOverlayView addSubview:closeProfileButton];
 	
-	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -300.0, 320.0, 300.0)];
-	_userProfileView.hidden = YES;
+	_userProfileView = [[HONUserProfileView alloc] initWithFrame:CGRectMake(0.0, -391.0, 320.0, 455.0)];
 	_userProfileView.delegate = self;
+	_userProfileView.alpha = 0.0;
 	[self.view addSubview:_userProfileView];
 	
 	[_headerView addButton:_profileHeaderButtonView];
@@ -400,9 +405,14 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
 			_profileOverlayView.alpha = 0.0;
+			_blurredImageView.alpha = 0.0;
+			_userProfileView.alpha = 0.0;
 		} completion:^(BOOL finished) {
 			_profileOverlayView.hidden = YES;
 			_userProfileView.hidden = YES;
+			
+			[_blurredImageView removeFromSuperview];
+			_blurredImageView = nil;
 		}];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
@@ -411,10 +421,16 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[_userProfileView show];
 		[_profileHeaderButtonView toggleSelected:YES];
 		
+		//		_blurredImageView = [[UIImageView alloc] initWithImage:[[HONImagingDepictor createImageFromView:self.view] applyBlurWithRadius:2.0 tintColor:[UIColor colorWithWhite:0.0 alpha:0.5] saturationDeltaFactor:1.0 maskImage:nil]];
+		//		_blurredImageView.alpha = 0.0;
+		//		[self.view addSubview:_blurredImageView];
+		
 		_profileOverlayView.hidden = NO;
 		_userProfileView.hidden = NO;
 		[UIView animateWithDuration:kProfileTime animations:^(void) {
 			_profileOverlayView.alpha = 1.0;
+			_blurredImageView.alpha = 1.0;
+			_userProfileView.alpha = 1.0;
 		} completion:^(BOOL finished) {
 		}];
 		
@@ -530,10 +546,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	//_blurredImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fullScreenBlurBackground"]];
-	[self.view addSubview:_blurredImageView];
-	
 	[self _retrieveUser:challengeVO.creatorVO.userID];
 }
 
@@ -633,7 +645,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	}
 	
 	UIImageView *heartImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"heartAnimation"]];
-	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 77.0);
+	heartImageView.frame = CGRectOffset(heartImageView.frame, 29.0, ([UIScreen mainScreen].bounds.size.height * 0.5) + 32.0);
 	[self.view addSubview:heartImageView];
 	
 	[UIView animateWithDuration:0.5 delay:0.25 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
@@ -724,10 +736,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	//_blurredImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fullScreenBlurBackground"]];
-	[self.view addSubview:_blurredImageView];
-	
 	[self _retrieveUser:challengeVO.creatorVO.userID];
 }
 
