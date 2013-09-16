@@ -253,8 +253,8 @@
 				_hasSubmitted = YES;
 				if (_uploadCounter == [_s3Uploads count]) {
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-						[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
+						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 					}];
 				}
 			}
@@ -284,8 +284,6 @@
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	
-	[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 	[self showImagePickerForSourceType:([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary];
 }
 
@@ -464,6 +462,7 @@
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
+	NSLog(@"cameraOverlayViewCloseCamera");
 	[[Mixpanel sharedInstance] track:@"Create Volley - Cancel"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
@@ -479,6 +478,7 @@
 	[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
 		///[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 	}];
 }
 
@@ -550,6 +550,7 @@
 		[por.urlConnection cancel];
 	
 	[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 }
 
 - (void)previewViewSubmit:(HONCreateChallengePreviewView *)previewView {
@@ -624,7 +625,6 @@
 		[_previewView uploadComplete];
 		if (_hasSubmitted) {
 			[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-				[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_ALL_TABS" object:@"Y"];
 			}];
 		}

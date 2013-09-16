@@ -327,7 +327,6 @@ NSString * const kTwilioSMS = @"6475577873";
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"])
 		return ([UIImage imageNamed:@"defaultAvatar"]);
 	
-	
 	return ([UIImage imageWithData:[[NSUserDefaults standardUserDefaults] objectForKey:@"avatar_image"]]);
 }
 
@@ -1030,6 +1029,7 @@ NSString * const kTwilioSMS = @"6475577873";
 			
 		} else {
 			[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_SEARCH_TABLE" object:nil];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_TABS" object:nil];
 			[self _retrieveConfigJSON];
 			//_isFromBackground = NO;
 		}

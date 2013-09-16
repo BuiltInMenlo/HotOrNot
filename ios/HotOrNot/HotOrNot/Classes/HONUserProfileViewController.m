@@ -136,7 +136,7 @@
 			_isRefreshing = NO;
 			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_scrollView];
 			
-			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 535.0 + (kSnapMediumDim * ([_challenges count] / 5))));
+			_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 555.0 + (kSnapMediumDim * ([_challenges count] / 5))));
 			[self _makeGrid];
 		}
 		

@@ -66,12 +66,16 @@
 	[_imageHolderView addSubview:lImageLoading];
 	
 	
-	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];//CGRectMake(0.0, (size.height - size.width) * -0.5, size.width, size.height)];
+	_challengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -90.0, 320.0, 427.0)];//CGRectMake(0.0, (size.height - size.width) * -0.5, size.width, size.height)];
 	_challengeImageView.userInteractionEnabled = YES;
 	_challengeImageView.alpha = 0.0;//[_challengeImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:_challengeVO.creatorVO.avatarURL]]];
 	[_imageHolderView addSubview:_challengeImageView];
 	
-	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:challengeVO.creatorVO.avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
+	NSMutableString *avatarURL = [challengeVO.creatorVO.avatarURL mutableCopy];
+	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	
+	[_challengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL] cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 									weakSelf.challengeImageView.image = image;
 									[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.challengeImageView.alpha = 1.0; } completion:nil];

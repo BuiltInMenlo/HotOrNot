@@ -19,14 +19,13 @@
 
 
 @interface HONTimelineItemViewCell()
-@property (nonatomic, strong) UIView *creatorHolderView;
-@property (nonatomic, strong) UIView *rHolderView;
-@property (nonatomic, strong) UIImageView *creatorImageView;
+@property (nonatomic, strong) UIView *heroImageHolderView;
+@property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) UIImageView *upvoteImageView;
 @property (nonatomic, strong) NSMutableArray *voters;
-@property (nonatomic) BOOL hasOponentRetorted;
+@property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
 @property (nonatomic) int opponentCounter;
@@ -42,7 +41,6 @@
 
 - (id)init {
 	if ((self = [super init])) {
-		_hasOponentRetorted = YES;
 		self.backgroundColor = [UIColor clearColor];
 	}
 	
@@ -128,6 +126,10 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
+	_heroOpponentVO = _challengeVO.creatorVO;
+	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).birthday timeIntervalSinceNow] < [_heroOpponentVO.birthday timeIntervalSinceNow]))
+		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
+	
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
 	_isChallengeOpponent = NO;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
@@ -137,36 +139,44 @@
 		}
 	}
 	
+	BOOL isOpponent = NO;
 	_opponentCounter = 0;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:_opponentCounter]).imagePrefix length] > 0)
+		if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:_opponentCounter]).imagePrefix length] > 0) {
+			if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+				isOpponent = YES;
+			
 			_opponentCounter++;
+		}
 	}
 	
 	
 	__weak typeof(self) weakSelf = self;
-	//NSLog(@"setChallengeVO:%@[%@](%d)", challengeVO.subjectName, challengeVO.status, (int)_hasOponentRetorted);
 	
-//	_creatorHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 198.0)];
-	_creatorHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
-	_creatorHolderView.clipsToBounds = YES;
-	[self addSubview:_creatorHolderView];
+	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
+	_heroImageHolderView.clipsToBounds = YES;
+	[self addSubview:_heroImageHolderView];
 	
 //	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
-//	[_creatorHolderView addSubview:imageLoadingView];
+//	[_heroImageHolderView addSubview:imageLoadingView];
 	
-	_creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
-	_creatorImageView.userInteractionEnabled = YES;
-	_creatorImageView.alpha = 0.0;//[_creatorImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", challengeVO.creatorVO.imagePrefix]]]];
-	[_creatorHolderView addSubview:_creatorImageView];
-	[_creatorImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", challengeVO.creatorVO.imagePrefix]]
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
+	_heroImageView.userInteractionEnabled = YES;
+	_heroImageView.alpha = 0.0;
+	[_heroImageHolderView addSubview:_heroImageView];
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", _heroOpponentVO.imagePrefix]]
 																  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-									weakSelf.creatorImageView.image = image;
-									[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.creatorImageView.alpha = 1.0; } completion:nil];
+									weakSelf.heroImageView.image = image;
+									[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.heroImageView.alpha = 1.0; } completion:nil];
 								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-									[weakSelf _reloadCreatorImage];
+									[weakSelf _reloadHeroImage];
 								}];
+	
+	UIButton *detailsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	detailsButton.frame = _heroImageHolderView.frame;
+	[detailsButton addTarget:self action:@selector(_goDetails) forControlEvents:UIControlEventTouchUpInside];
+	[self addSubview:detailsButton];
 	
 	
 //	UILabel *subjectLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 5.0, 270.0, 28.0)];
@@ -243,13 +253,13 @@
 	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 322.0, 320.0, 44.0)];
 	[self addSubview:footerHolderView];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 150.0, 19.0)];
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
 	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
 	creatorNameLabel.textColor = [UIColor whiteColor];
 	creatorNameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	creatorNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
-	creatorNameLabel.text = _challengeVO.creatorVO.username;
+	creatorNameLabel.text = [NSString stringWithFormat:@"%@%@%@", _challengeVO.creatorVO.username, (isOpponent) ? @", you" : @"", (_opponentCounter > 0) ? [NSString stringWithFormat:@" & %d other%@…", _opponentCounter, (_opponentCounter != 1) ? @"s" : @""] : @""];//_challengeVO.creatorVO.username;
 	[footerHolderView addSubview:creatorNameLabel];
 	
 	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -314,6 +324,24 @@
 	
 }
 
+- (void)_goDetails {
+	UIView *tappedOverlayView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, self.frame.size.height)];
+	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
+	[self addSubview:tappedOverlayView];
+	
+	[UIView animateWithDuration:0.125 animations:^(void) {
+		tappedOverlayView.alpha = 0.0;
+	} completion:^(BOOL finished) {
+		[tappedOverlayView removeFromSuperview];
+	}];
+	
+	[self performSelector:@selector(_triggerSelect) withObject:Nil afterDelay:0.05];
+}
+
+- (void)_triggerSelect {
+	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
+}
+
 - (void)_goCreatorProfile {
 	[self.delegate timelineItemViewCell:self showProfileForUserID:_challengeVO.creatorVO.userID forChallenge:_challengeVO];
 }
@@ -331,17 +359,19 @@
 }
 
 #pragma mark - UI Presentation
-- (void)_reloadCreatorImage {
+- (void)_reloadHeroImage {
 	__weak typeof(self) weakSelf = self;
 	
-	_creatorImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 370.0, 370.0)];
-	_creatorImageView.alpha = [_creatorImageView isImageCached:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]]];
-	[_creatorHolderView addSubview:_creatorImageView];
-	[_creatorImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]
+	//HONOpponentVO *vo = (_opponentCounter == 0) ? _challengeVO.creatorVO : (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
+	
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 370.0, 370.0)];
+	_heroImageView.alpha = 0.0;
+	[_heroImageHolderView addSubview:_heroImageView];
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]]
 																		cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-										  weakSelf.creatorImageView.image = image;
-										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.creatorImageView.alpha = 1.0; } completion:nil];
+										  weakSelf.heroImageView.image = image;
+										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.heroImageView.alpha = 1.0; } completion:nil];
 									  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 										  NSLog(@"%@_l.jpg", weakSelf.challengeVO.creatorVO.imagePrefix);
 									  }];
@@ -352,16 +382,9 @@
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:self];
 		NSLog(@"TOUCH:%@", NSStringFromCGPoint(touchPoint));
 		
-		CGRect creatorFrame = CGRectMake(_creatorHolderView.frame.origin.x, _creatorHolderView.frame.origin.y, _creatorHolderView.frame.size.width, _creatorHolderView.frame.size.height);
+		CGRect creatorFrame = CGRectMake(_heroImageHolderView.frame.origin.x, _heroImageHolderView.frame.origin.y, _heroImageHolderView.frame.size.width, _heroImageHolderView.frame.size.height);
 		if (CGRectContainsPoint(creatorFrame, touchPoint))
-			[self.delegate timelineItemViewCell:self showPreview:_challengeVO.creatorVO forChallenge:_challengeVO];
-		
-		if (CGRectContainsPoint(_rHolderView.frame, touchPoint) && _opponentCounter > 0) {
-			int index = touchPoint.y / (kSnapMediumDim + 1.0);
-			
-			if (index < _opponentCounter)
-				[self.delegate timelineItemViewCell:self showPreview:(HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index] forChallenge:_challengeVO];
-		}
+			[self.delegate timelineItemViewCell:self showPreview:_heroOpponentVO forChallenge:_challengeVO];
 		
 	} else if (lpGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
 		[self.delegate timelineItemViewCellHidePreview:self];
@@ -373,7 +396,6 @@
 	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
 	[self addSubview:tappedOverlayView];
 	
-	NSLog(@"OVERLAY:[%@]", NSStringFromCGRect(tappedOverlayView.frame));
 	[UIView animateWithDuration:0.25 animations:^(void) {
 		tappedOverlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {

@@ -52,7 +52,7 @@
 
 - (id)init {
 	if ((self = [super init])) {
-//		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedDiscoveryTab:) name:@"SELECTED_DISCOVERY_TAB" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_selectedDiscoveryTab:) name:@"SELECTED_DISCOVERY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_ALL_TABS" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_refreshDiscoveryTab:) name:@"REFRESH_DISCOVERY_TAB" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_showSearchTable:) name:@"SHOW_SEARCH_TABLE" object:nil];
@@ -305,7 +305,7 @@
 
 #pragma mark - Notifications
 - (void)_selectedDiscoveryTab:(NSNotification *)notification {
-//	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	[self _goRefresh];
 }
@@ -318,7 +318,7 @@
 - (void)_showSearchTable:(NSNotification *)notification {
 	[self.navigationController setNavigationBarHidden:YES animated:YES];
 	[UIView animateWithDuration:0.125 delay:0.125 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-		_tableView.frame = CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height);
+		//_tableView.frame = CGRectMake(0.0, 0.0, _tableView.frame.size.width, _tableView.frame.size.height);
 		//_tableView.frame = CGRectOffset(_tableView.frame, 0.0, (-90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]));
 		_bannerView.alpha = 0.0;
 	} completion:^(BOOL finished) {
@@ -329,7 +329,7 @@
 - (void)_hideSearchTable:(NSNotification *)notification {
 	_bannerView.hidden = NO;
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^(void) {
-		_tableView.frame = CGRectMake(0.0, (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]), _tableView.frame.size.width, _tableView.frame.size.height);
+//		_tableView.frame = CGRectMake(0.0, (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]), _tableView.frame.size.width, _tableView.frame.size.height);
 //		_tableView.frame = CGRectOffset(_tableView.frame, 0.0, (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"]));
 		_bannerView.alpha = 1.0;
 	} completion:^(BOOL finished) {

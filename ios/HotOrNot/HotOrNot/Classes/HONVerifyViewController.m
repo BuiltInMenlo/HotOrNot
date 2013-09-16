@@ -476,7 +476,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - Notifications
 - (void)_selectedChallengesTab:(NSNotification *)notification {
-//	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 }

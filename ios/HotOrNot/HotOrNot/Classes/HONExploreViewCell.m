@@ -12,6 +12,8 @@
 #import "HONImageLoadingView.h"
 
 @interface HONExploreViewCell()
+@property (nonatomic, strong) HONOpponentVO *leftHeroOpponentVO;
+@property (nonatomic, strong) HONOpponentVO *rightHeroOpponentVO;
 @property (nonatomic, strong) UIView *leftHolderView;
 @property (nonatomic, strong) UIImageView *leftImageView;
 @property (nonatomic, strong) UIView *leftOverlayView;
@@ -41,6 +43,10 @@
 - (void)setLChallengeVO:(HONChallengeVO *)lChallengeVO {
 	_lChallengeVO = lChallengeVO;
 	
+	_leftHeroOpponentVO = _lChallengeVO.creatorVO;
+	if ([_lChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0]).birthday timeIntervalSinceNow] < [_leftHeroOpponentVO.birthday timeIntervalSinceNow]))
+		_leftHeroOpponentVO = (HONOpponentVO *)[_lChallengeVO.challengers objectAtIndex:0];
+	
 	__weak typeof(self) weakSelf = self;
 	//NSLog(@"L-CHALLENGE:(%d)[%@]", _lChallengeVO.challengeID, [_lChallengeVO.dictionary objectForKey:@"challengers"]);
 	
@@ -54,7 +60,7 @@
 	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
 	_leftImageView.alpha = 0.0;
 	[_leftHolderView addSubview:_leftImageView];
-	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg",_lChallengeVO.creatorVO.imagePrefix]]
+	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg",_leftHeroOpponentVO.imagePrefix]]
 															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 								 weakSelf.leftImageView.image = image;
@@ -87,6 +93,10 @@
 - (void)setRChallengeVO:(HONChallengeVO *)rChallengeVO {
 	_rChallengeVO = rChallengeVO;
 	
+	_rightHeroOpponentVO = _rChallengeVO.creatorVO;
+	if ([_rChallengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0]).birthday timeIntervalSinceNow] < [_rightHeroOpponentVO.birthday timeIntervalSinceNow]))
+		_rightHeroOpponentVO = (HONOpponentVO *)[_rChallengeVO.challengers objectAtIndex:0];
+	
 	__weak typeof(self) weakSelf = self;
 	//NSLog(@"R-CHALLENGE:(%d)[%@]", _rChallengeVO.challengeID, [_rChallengeVO.dictionary objectForKey:@"challengers"]);
 	
@@ -100,7 +110,7 @@
 	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(160.0, 0.0, 320.0, 427.0)];
 	_rightImageView.alpha = 0.0;
 	[_rightHolderView addSubview:_rightImageView];
-	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg",_rChallengeVO.creatorVO.imagePrefix]]
+	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg",_rightHeroOpponentVO.imagePrefix]]
 															cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 						  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 							  weakSelf.rightImageView.image = image;
@@ -167,7 +177,7 @@
 	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 320.0, 320.0)];
 	_leftImageView.alpha = 0.0;
 	[_leftHolderView addSubview:_leftImageView];
-	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _lChallengeVO.creatorVO.imagePrefix]]
+	[_leftImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _leftHeroOpponentVO.imagePrefix]]
 															   cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 							 placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 								 weakSelf.leftImageView.image = image;
@@ -183,7 +193,7 @@
 	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 320.0, 320.0)];
 	_rightImageView.alpha = 0.0;
 	[_rightHolderView addSubview:_rightImageView];
-	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _rChallengeVO.creatorVO.imagePrefix]]
+	[_rightImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _rightHeroOpponentVO.imagePrefix]]
 															cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 						  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 							  weakSelf.rightImageView.image = image;

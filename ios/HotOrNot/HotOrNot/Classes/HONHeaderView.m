@@ -33,7 +33,7 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"header"]]];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 28.0, 220.0, 24.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 28.0, 200.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
 		_titleLabel.textColor = [UIColor whiteColor];
@@ -50,7 +50,7 @@
 		[self addSubview:[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"modalHeader"]]];
 		
 		_title = title;
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(50.0, 28.0, 220.0, 24.0)];
+		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(60.0, 28.0, 200.0, 24.0)];
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = [[HONAppDelegate helveticaNeueFontMedium] fontWithSize:19];
 		_titleLabel.textColor = [UIColor whiteColor];

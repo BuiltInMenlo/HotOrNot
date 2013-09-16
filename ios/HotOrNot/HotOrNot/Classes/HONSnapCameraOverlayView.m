@@ -70,7 +70,7 @@
 		
 		_blackMatteView = [[UIView alloc] initWithFrame:self.frame];
 		_blackMatteView.backgroundColor = [UIColor blackColor];
-		[self addSubview:_blackMatteView];
+//		[self addSubview:_blackMatteView];
 		
 		_cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_cancelButton.frame = CGRectMake(262.0, 14.0, 44.0, 44.0);
@@ -187,6 +187,7 @@
 }
 
 - (void)_goCloseCamera {
+	NSLog(@"_goCloseCamera");
 	[_progressBarImageView.layer removeAllAnimations];
 	[_progressBarImageView removeFromSuperview];
 	_progressBarImageView = nil;

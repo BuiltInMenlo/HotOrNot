@@ -229,7 +229,7 @@
 		} else {
 			NSArray *challengesResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], challengesResult);
-			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
+			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [challengesResult objectAtIndex:0]);
 			
 			_challenges = [NSMutableArray array];
 			
@@ -438,7 +438,7 @@
 	[flagButton addTarget:self action:@selector(_goFlag) forControlEvents:UIControlEventTouchUpInside];
 	[_buttonHolderView addSubview:flagButton];
 	
-	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, -171.0, 320.0, 225.0)];
+	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 225.0)];
 	_avatarHolderView.clipsToBounds = YES;
 	[_profileHolderView addSubview:_avatarHolderView];
 	
@@ -447,7 +447,7 @@
 	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	
 	__weak typeof(self) weakSelf = self;
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 568.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -171.0, 320.0, 568.0)];
 	_avatarImageView.alpha = 0.0;
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL]
 															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]

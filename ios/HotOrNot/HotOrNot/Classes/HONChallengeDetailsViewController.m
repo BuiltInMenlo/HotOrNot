@@ -28,15 +28,15 @@
 @property (nonatomic, strong) UIView *bgHolderView;
 @property (nonatomic, strong) UIImageView *bgImageView;
 @property (nonatomic, strong) UIScrollView *scrollView;
-@property (nonatomic, strong) UIView *creatorImageHolderView;
-@property (nonatomic, strong) UIImageView *creatorChallengeImageView;
+@property (nonatomic, strong) UIView *heroImageHolderView;
+@property (nonatomic, strong) UIImageView *heroImageView;
 @property (nonatomic, strong) UIView *gridHolderView;
 @property (nonatomic, strong) UILabel *commentsLabel;
 @property (nonatomic, strong) UILabel *likesLabel;
 @property (nonatomic, strong) NSTimer *tapTimer;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
+@property (nonatomic, strong) HONOpponentVO *heroOpponentVO;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
-@property (nonatomic) BOOL isDoubleTap;
 @property (nonatomic) BOOL isChallengeCreator;
 @property (nonatomic) BOOL isChallengeOpponent;
 @property (nonatomic) BOOL isRefreshing;
@@ -300,19 +300,19 @@
 
 
 #pragma mark - UI Presentation
-- (void)_reloadCreatorImage {
+- (void)_reloadHeroImage {
 	__weak typeof(self) weakSelf = self;
 	
-	NSLog(@"RELOADING:[%@]", [NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]);
+	NSLog(@"RELOADING:[%@]", [NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]);
 	
-	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 370.0, 370.0)];
-	_creatorChallengeImageView.alpha = 0.0;
-	[_creatorImageHolderView addSubview:_creatorChallengeImageView];
-	[_creatorChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _challengeVO.creatorVO.imagePrefix]]
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-25.0, 0.0, 370.0, 370.0)];
+	_heroImageView.alpha = 0.0;
+	[_heroImageHolderView addSubview:_heroImageView];
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]]
 																		cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-										  weakSelf.creatorChallengeImageView.image = image;
-										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.creatorChallengeImageView.alpha = 1.0; } completion:nil];
+										  weakSelf.heroImageView.image = image;
+										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.heroImageView.alpha = 1.0; } completion:nil];
 									  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 										  NSLog(@"Error:[%@]", error.description);
 									  }];
@@ -324,6 +324,8 @@
 	
 	_bgHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_bgHolderView];
+	
+	[_bgHolderView addSubview:_bgImageView];
 	
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
 	_isChallengeOpponent = NO;
@@ -340,9 +342,13 @@
 			respondedOpponents++;
 	}
 	
+	_heroOpponentVO = _challengeVO.creatorVO;
+	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).birthday timeIntervalSinceNow] < [_heroOpponentVO.birthday timeIntervalSinceNow]))
+		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
+	
 	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
-	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 578.0 + (kSnapMediumDim * (respondedOpponents / 5))));
+	_scrollView.contentSize = CGSizeMake(320.0, MAX([UIScreen mainScreen].bounds.size.height + 1.0, 560.0 + (kSnapMediumDim * (respondedOpponents / 5))));
 	//_scrollView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, -64.0f, 0.0f);
 	_scrollView.pagingEnabled = NO;
 	_scrollView.delegate = self;
@@ -360,7 +366,7 @@
 	[_headerView addButton:closeButton];
 	[self.view addSubview:_headerView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height)];
+	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
 	_refreshTableHeaderView.delegate = self;
 	[_scrollView addSubview:_refreshTableHeaderView];
 	[_refreshTableHeaderView refreshLastUpdatedDate];
@@ -370,50 +376,63 @@
 	[_scrollView addGestureRecognizer:lpGestureRecognizer];
 	
 	__weak typeof(self) weakSelf = self;
-	_creatorImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 355.0)];
-	_creatorImageHolderView.clipsToBounds = YES;
-	[_scrollView addSubview:_creatorImageHolderView];
+	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 355.0)];
+	_heroImageHolderView.clipsToBounds = YES;
+	[_scrollView addSubview:_heroImageHolderView];
 	
-	_creatorChallengeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
-	_creatorChallengeImageView.userInteractionEnabled = YES;
-	_creatorChallengeImageView.alpha = 0.0;
-	[_creatorImageHolderView addSubview:_creatorChallengeImageView];
-	[_creatorChallengeImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", _challengeVO.creatorVO.imagePrefix]]
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
+	_heroImageView.userInteractionEnabled = YES;
+	_heroImageView.alpha = 0.0;
+	[_heroImageHolderView addSubview:_heroImageView];
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", _heroOpponentVO.imagePrefix]]
 																		cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-										  weakSelf.creatorChallengeImageView.image = image;
-										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.creatorChallengeImageView.alpha = 1.0; } completion:nil];
+										  weakSelf.heroImageView.image = image;
+										  [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.heroImageView.alpha = 1.0; } completion:nil];
 									  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
-										  [weakSelf _reloadCreatorImage];
+										  [weakSelf _reloadHeroImage];
 									  }];
 	
 	UIButton *leftButton = [UIButton buttonWithType:UIButtonTypeCustom];
-	leftButton.frame = _creatorChallengeImageView.frame;
+	leftButton.frame = _heroImageView.frame;
 	[leftButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
 	//[leftButton addTarget:self action:@selector(_goTapCreator) forControlEvents:UIControlEventTouchUpInside];
 	[_scrollView addSubview:leftButton];
 	
 	
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 355.0, 320.0, (kSnapMediumDim) * (respondedOpponents / 4))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 355.0, 320.0, kSnapMediumDim)];
 	[_scrollView addSubview:_gridHolderView];
 	
+	BOOL isOpponent = NO;
 	_opponentCounter = 0;
-	for (HONOpponentVO *vo in _challengeVO.challengers) {
-		if ([vo.imagePrefix length] > 0) {
-			CGPoint pos = CGPointMake((kSnapMediumDim) * (_opponentCounter % 4), (kSnapMediumDim) * (_opponentCounter / 4));
+	for (HONOpponentVO *opponentVO in _challengeVO.challengers) {
+		if ([opponentVO.imagePrefix length] > 0) {
+			
+			HONOpponentVO *vo;
+			if ([opponentVO.imagePrefix isEqualToString:_heroOpponentVO.imagePrefix])
+				vo = _challengeVO.creatorVO;//[HONOpponentVO opponentWithDictionary:_challengeVO.creatorVO.dictionary];
+			
+			else
+				vo = opponentVO;//[HONOpponentVO opponentWithDictionary:opponentVO.dictionary];
+			
+			
+			if (vo.userID == [[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue])
+				isOpponent = YES;
+			
+			CGPoint pos = CGPointMake(kSnapMediumDim * (_opponentCounter % 4), kSnapMediumDim * (_opponentCounter / 4));
 			
 			UIView *opponentHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
 			[_gridHolderView addSubview:opponentHolderView];
 			
 			UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 			opponentImageView.userInteractionEnabled = YES;
-			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:_opponentCounter]).imagePrefix]] placeholderImage:nil];
+			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.imagePrefix]] placeholderImage:nil];
 			[opponentHolderView addSubview:opponentImageView];
 			
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
 			rightButton.frame = opponentImageView.frame;
 			[rightButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-			//[rightButton addTarget:self action:@selector(_goTapOpponent:) forControlEvents:UIControlEventTouchUpInside];
+			[rightButton addTarget:self action:@selector(_goUserProfile:) forControlEvents:UIControlEventTouchUpInside];
 			[rightButton setTag:vo.userID];
 			[opponentHolderView addSubview:rightButton];
 			
@@ -421,22 +440,41 @@
 		}
 	}
 	
+	_gridHolderView.frame = CGRectMake(0.0, 355.0, 320.0, kSnapMediumDim + (kSnapMediumDim * (respondedOpponents / 4)));
+	
 	UIView *footerHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 302.0, 320.0, 44.0)];
 	[_scrollView addSubview:footerHolderView];
 	
-	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 150.0, 19.0)];
+//	NSString *opponents = @"";
+//	for (HONOpponentVO *vo in _challengeVO.challengers) {
+//		opponents = [opponents stringByAppendingFormat:@"%@, ", vo.username];
+//	}
+	
+	
+	
+//	NSString *emails = @"";
+//	for (HONContactUserVO *vo in addresses) {
+//		emails = [emails stringByAppendingFormat:@"%@|", vo.email];
+//	}
+//	
+//	NSLog(@"SELECTED CONTACTS:[%@]", [emails substringToIndex:[emails length] - 1]);
+	
+	
+	//NSString *opponents = [NSString stringWithFormat:@"%@%@%@", _challengeVO.creatorVO.username, (isOpponent) ? @", you" : @"", (_opponentCounter > 0) ? [NSString stringWithFormat:@" & %d others", _opponentCounter] : @""];
+	
+	UILabel *creatorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(9.0, 0.0, 290.0, 19.0)];
 	creatorNameLabel.font = [[HONAppDelegate helveticaNeueFontBold] fontWithSize:16];
 	creatorNameLabel.textColor = [UIColor whiteColor];
 	creatorNameLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.33];
 	creatorNameLabel.shadowOffset = CGSizeMake(1.0, 1.0);
 	creatorNameLabel.backgroundColor = [UIColor clearColor];
-	creatorNameLabel.text = _challengeVO.creatorVO.username;
+	creatorNameLabel.text = [NSString stringWithFormat:@"%@%@%@", _challengeVO.creatorVO.username, (isOpponent) ? @", you" : @"", (_opponentCounter > 0) ? [NSString stringWithFormat:@" & %d other%@…", _opponentCounter, (_opponentCounter != 1) ? @"s" : @""] : @""];//_challengeVO.creatorVO.username;
 	[footerHolderView addSubview:creatorNameLabel];
 	
 	UIButton *creatorButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	creatorButton.frame = CGRectMake(9.0, 0.0, 150.0, 44.0);
 	[creatorButton setBackgroundImage:[UIImage imageNamed:@"blackOverlay_50"] forState:UIControlStateHighlighted];
-	[creatorButton addTarget:self action:@selector(_goUserProfile) forControlEvents:UIControlEventTouchUpInside];
+	[creatorButton addTarget:self action:@selector(_goHeroProfile) forControlEvents:UIControlEventTouchUpInside];
 	[footerHolderView addSubview:creatorButton];
 	
 	//CGSize size = [creatorNameLabel.text sizeWithFont:creatorNameLabel.font constrainedToSize:CGSizeMake(150.0, CGFLOAT_MAX) lineBreakMode:NSLineBreakByClipping];
@@ -536,18 +574,24 @@
 -(void)_goLongPress:(UILongPressGestureRecognizer *)lpGestureRecognizer {
 	if (lpGestureRecognizer.state == UIGestureRecognizerStateBegan) {
 		CGPoint touchPoint = [lpGestureRecognizer locationInView:_scrollView];
+//		NSLog(@"TOUCH PT:[%@] <%@>", NSStringFromCGPoint(touchPoint), NSStringFromCGRect(_gridHolderView.frame));
 		
 		_opponentVO = nil;
-		CGRect creatorFrame = CGRectMake(_creatorChallengeImageView.frame.origin.x, _creatorChallengeImageView.frame.origin.y, _creatorChallengeImageView.frame.size.width, _creatorChallengeImageView.frame.size.height * 0.73);
-		if (CGRectContainsPoint(creatorFrame, touchPoint))
-			_opponentVO = _challengeVO.creatorVO;
+		if (CGRectContainsPoint(_heroImageHolderView.frame, touchPoint))
+			_opponentVO = _heroOpponentVO;
 			
 		if (CGRectContainsPoint(_gridHolderView.frame, touchPoint)) {
-			int col = touchPoint.x / (kSnapMediumDim + 1.0);
-			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / (kSnapMediumDim + 1.0);
+			int col = touchPoint.x / kSnapMediumDim;
+			int row = (touchPoint.y - _gridHolderView.frame.origin.y) / kSnapMediumDim;
+			int index = (row * 4) + col;
 			
-			if ((row * 4) + col < _opponentCounter)
-				_opponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:(row * 4) + col];
+			if (index < _opponentCounter) {
+				if ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index]).imagePrefix isEqualToString:_heroOpponentVO.imagePrefix])
+					_opponentVO = _challengeVO.creatorVO;
+				
+				else
+					_opponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:index];
+			}
 		}
 		
 		if (_opponentVO != nil) {
@@ -586,10 +630,6 @@
 	[self _refreshChallenge];
 }
 
-- (void)_tapTimeout {
-	_isDoubleTap = NO;
-}
-
 - (void)_goClose {
 	[[Mixpanel sharedInstance] track:@"Timeline Details - Close"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
@@ -621,14 +661,26 @@
 }
 
 
-- (void)_goUserProfile {
-	[[Mixpanel sharedInstance] track:@"Timeline Details - Creator Profile"
+- (void)_goHeroProfile {
+	[[Mixpanel sharedInstance] track:@"Timeline Details - Hero Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
-									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+									  [NSString stringWithFormat:@"%d - %@", _heroOpponentVO.userID, _heroOpponentVO.username], @"opponent", nil]];
 	
 	[self _retrieveUserForProfile:_challengeVO.creatorVO.userID];
+}
+
+- (void)_goUserProfile:(id)sender {
+	UIButton *button = (UIButton *)sender;
+	
+	[[Mixpanel sharedInstance] track:@"Timeline Details - User Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.challengeID, _challengeVO.subjectName], @"challenge",
+									  [NSString stringWithFormat:@"%d - %@", button.tag, @""], @"opponent", nil]];
+	
+	[self _retrieveUserForProfile:button.tag];
 }
 
 - (void)_goJoinChallenge {
