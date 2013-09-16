@@ -10,7 +10,7 @@ class BIM_Controller{
         BIM_Utils::startProfiling();
                 
         $res = null;
-        if( $this->sessionOK() || IS_LEGACY ){
+        if( $this->sessionOK() ){
             $request = BIM_Utils::getRequest();
             $method = $request->method;
             $controllerClass = $request->controllerClass;
@@ -108,6 +108,9 @@ class BIM_Controller{
 	 * 		OR we find a valid session user 
 	 */
 	protected function sessionOK(){
+	    if( IS_LEGACY ){
+	        return false;
+	    }
 	    $OK = true;
         $sessionConf = BIM_Config::session();
 	    if( !empty( $sessionConf->use ) ){

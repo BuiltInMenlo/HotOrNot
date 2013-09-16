@@ -173,6 +173,7 @@ class BIM_Utils{
 	 * @param string $birthdate a date in the format: Y-m-d H:i:s
 	 */
 	public static function ageOK( $birthdate ){
+	    return true;
 	    $OK = false;
         $birthdate = new DateTime( $birthdate );
         $cutoffBirthdate = new DateTime();
