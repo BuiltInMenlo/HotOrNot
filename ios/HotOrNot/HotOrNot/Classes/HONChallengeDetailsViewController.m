@@ -343,7 +343,7 @@
 	}
 	
 	_heroOpponentVO = _challengeVO.creatorVO;
-	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).birthday timeIntervalSinceNow] < [_heroOpponentVO.birthday timeIntervalSinceNow]))
+	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]))
 		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
 	
 	

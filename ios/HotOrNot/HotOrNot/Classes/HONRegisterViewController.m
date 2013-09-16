@@ -290,17 +290,15 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-//	if (_isFirstAppearance) {
-//		_isFirstAppearance = NO;
-//		
-//		_previewPicker = [[UIImagePickerController alloc] init];
-//		_previewPicker.delegate = nil;
-//		_previewPicker.navigationBarHidden = YES;
-//		_previewPicker.toolbarHidden = YES;
-//		_previewPicker.allowsEditing = NO;
-//		
 //		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//			_previewPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+//			UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+//			imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+//			imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+//			imagePickerController.delegate = nil;
+//		
+//			imagePickerController.showsCameraControls = NO;
+//			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+//			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 //			
 //			UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
 //			UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -309,23 +307,14 @@
 //			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
 //			[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
 //			[overlayView addSubview:closeTutorialButton];
-//			
-//			_previewPicker.cameraOverlayView = overlayView;
-//			
-//			// these two fuckers don't work in ios7 right now!!
-//			_previewPicker.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//			_previewPicker.showsCameraControls = NO;
-//			// ---------------------------------------------------------------------------
-//			
-//			_previewPicker.cameraFlashMode = UIImagePickerControllerCameraFlashModeOff;
-//			_previewPicker.cameraViewTransform = CGAffineTransformScale(_previewPicker.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
-//			
-//		} else if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-//			_previewPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-//		}
+//			imagePickerController.cameraOverlayView = overlayView;
 //		
-//		[self presentViewController:_previewPicker animated:YES completion:^(void) {
-//		}];
+//			self.previewPicker = imagePickerController;
+//			[self presentViewController:self.previewPicker animated:NO completion:nil];
+//		}
+	
+//	if (_isFirstAppearance) {
+//		_isFirstAppearance = NO;
 //	}
 }
 
@@ -335,7 +324,9 @@
 	[[Mixpanel sharedInstance] track:@"Register - Close Splash"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-		
+	
+	[self.previewPicker dismissViewControllerAnimated:NO completion:^(void) {}];
+	
 	[_usernameTextField becomeFirstResponder];
 	[_usernameButton setSelected:YES];
 	

@@ -7,54 +7,54 @@
 //
 
 
-#import <AWSiOSSDK/S3/AmazonS3Client.h>
-#import <AVFoundation/AVFoundation.h>
-
-#import "AFHTTPClient.h"
-#import "AFHTTPRequestOperation.h"
-#import "MBProgressHUD.h"
-#import "UIImage+fixOrientation.h"
-
-#import "HONAppDelegate.h"
+//#import <AWSiOSSDK/S3/AmazonS3Client.h>
+//#import <AVFoundation/AVFoundation.h>
+//
+//#import "AFHTTPClient.h"
+//#import "AFHTTPRequestOperation.h"
+//#import "MBProgressHUD.h"
+//#import "UIImage+fixOrientation.h"
+//
 #import "HONImagePickerViewController.h"
-#import "HONImagingDepictor.h"
-#import "HONSnapCameraOverlayView.h"
-#import "HONCreateChallengePreviewView.h"
-#import "HONAddContactsViewController.h"
-#import "HONUserVO.h"
-#import "HONOpponentVO.h"
-#import "HONContactUserVO.h"
+//#import "HONImagingDepictor.h"
+//#import "HONSnapCameraOverlayView.h"
+//#import "HONCreateChallengePreviewView.h"
+//#import "HONAddContactsViewController.h"
+//#import "HONUserVO.h"
+//#import "HONOpponentVO.h"
+//#import "HONContactUserVO.h"
 #import "HONChallengeCameraViewController.h"
 
 
-const CGFloat kFocusInterval = 0.5f;
+//const CGFloat kFocusInterval = 0.5f;
 
-@interface HONImagePickerViewController () <AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>
-@property (nonatomic, strong) NSString *filename;
-@property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic, strong) NSString *challengerName;
-@property (nonatomic, strong) NSMutableArray *subscribers;
-@property (nonatomic, strong) NSMutableArray *subscriberIDs;
-@property (nonatomic, strong) NSDictionary *challengeParams;
-@property (nonatomic, strong) NSMutableArray *usernames;
+@interface HONImagePickerViewController () //<AmazonServiceRequestDelegate, HONSnapCameraOverlayViewDelegate, HONCreateChallengePreviewViewDelegate>
+//@property (nonatomic, strong) NSString *filename;
+//@property (nonatomic, strong) NSString *subjectName;
+//@property (nonatomic, strong) NSString *challengerName;
+//@property (nonatomic, strong) NSMutableArray *subscribers;
+//@property (nonatomic, strong) NSMutableArray *subscriberIDs;
+//@property (nonatomic, strong) NSDictionary *challengeParams;
+//@property (nonatomic, strong) NSMutableArray *usernames;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
-@property (nonatomic, strong) MBProgressHUD *progressHUD;
+//@property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (readonly, nonatomic, assign) HONChallengeSubmitType challengeSubmitType;
-@property (nonatomic) HONUserVO *userVO;
-@property (nonatomic) int uploadCounter;
-@property (nonatomic, strong) NSArray *s3Uploads;
-@property (nonatomic) UIImagePickerController *imagePickerController;
-@property (nonatomic) BOOL isFirstAppearance;
-@property (nonatomic) BOOL hasSubmitted;
-@property (nonatomic, strong) NSTimer *focusTimer;
-@property (nonatomic, strong) NSTimer *progressTimer;
-@property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
-@property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
-@property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
-@property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
-@property (nonatomic, strong) UIImage *challangeImage;
-@property (nonatomic, strong) UIImage *rawImage;
-@property (nonatomic, strong) UIImageView *submitImageView;
+@property (nonatomic) BOOL isJoinChallenge;
+//@property (nonatomic) HONUserVO *userVO;
+//@property (nonatomic) int uploadCounter;
+//@property (nonatomic, strong) NSArray *s3Uploads;
+//@property (nonatomic) UIImagePickerController *imagePickerController;
+//@property (nonatomic) BOOL isFirstAppearance;
+//@property (nonatomic) BOOL hasSubmitted;
+//@property (nonatomic, strong) NSTimer *focusTimer;
+//@property (nonatomic, strong) NSTimer *progressTimer;
+//@property (nonatomic, strong) HONSnapCameraOverlayView *cameraOverlayView;
+//@property (nonatomic, strong) HONCreateChallengePreviewView *previewView;
+//@property (nonatomic, strong) UIView *plCameraIrisAnimationView;  // view that animates the opening/closing of the iris
+//@property (nonatomic, strong) UIImageView *cameraIrisImageView;  // static image of the closed iris
+//@property (nonatomic, strong) UIImage *challangeImage;
+//@property (nonatomic, strong) UIImage *rawImage;
+//@property (nonatomic, strong) UIImageView *submitImageView;
 @end
 
 @implementation HONImagePickerViewController
@@ -63,12 +63,13 @@ const CGFloat kFocusInterval = 0.5f;
 	if ((self = [super init])) {
 		NSLog(@"%@ - init", [self description]);
 		self.view.backgroundColor = [UIColor blackColor];
-		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
-		_challengeSubmitType = HONChallengeSubmitTypeMatch;
-		_challengerName = @"";
-		_isFirstAppearance = YES;
-		
-		[self _registerNotifications];
+		_isJoinChallenge = NO;
+//		_subjectName = @"";//[HONAppDelegate rndDefaultSubject];
+//		_challengeSubmitType = HONChallengeSubmitTypeMatch;
+//		_challengerName = @"";
+//		_isFirstAppearance = YES;
+//		
+//		[self _registerNotifications];
 	}
 	
 	return (self);
@@ -78,11 +79,13 @@ const CGFloat kFocusInterval = 0.5f;
 	NSLog(@"%@ - initWithJoinChallenge:[%d] (%d/%d)", [self description], vo.challengeID, vo.creatorVO.userID, ((HONOpponentVO *)[vo.challengers lastObject]).userID);
 	if ((self = [super init])) {
 		_challengeVO = vo;
-		_subjectName = vo.subjectName;
-		_challengeSubmitType = HONChallengeSubmitTypeJoin;
-		_challengerName = @"";
-		_isFirstAppearance = YES;
-		[self _registerNotifications];
+//		_subjectName = vo.subjectName;
+//		_challengeSubmitType = HONChallengeSubmitTypeJoin;
+//		_challengerName = @"";
+//		_isFirstAppearance = YES;
+//		[self _registerNotifications];
+		
+		_isJoinChallenge = YES;
 	}
 	
 	return (self);
@@ -101,21 +104,22 @@ const CGFloat kFocusInterval = 0.5f;
 	return (NO);
 }
 
+/*
 - (void)_registerNotifications {
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(_notificationReceived:)
 												 name:nil
 											   object:nil];
 	
-//	[[NSNotificationCenter defaultCenter] addObserver:self
-//											 selector:@selector(_didShowViewController:)
-//												 name:@"UINavigationControllerDidShowViewControllerNotification"
-//											   object:nil];
-//	
-//	[[NSNotificationCenter defaultCenter] addObserver:self
-//											 selector:@selector(_previewStarted:)
-//												 name:@"PLCameraControllerPreviewStartedNotification"
-//											   object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_didShowViewController:)
+												 name:@"UINavigationControllerDidShowViewControllerNotification"
+											   object:nil];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(_previewStarted:)
+												 name:@"PLCameraControllerPreviewStartedNotification"
+											   object:nil];
 }
 
 
@@ -305,14 +309,14 @@ const CGFloat kFocusInterval = 0.5f;
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIUsers, [error localizedDescription]);
 	}];
 }
-
+*/
 
 #pragma mark - View lifecycle
 - (void)loadView {
 	[super loadView];
 	
-	_subscribers = [NSMutableArray array];
-	_subscriberIDs = [NSMutableArray array];
+//	_subscribers = [NSMutableArray array];
+//	_subscriberIDs = [NSMutableArray array];
 }
 
 - (void)viewDidLoad {
@@ -322,18 +326,24 @@ const CGFloat kFocusInterval = 0.5f;
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	if (_challengeSubmitType == HONChallengeSubmitTypeMatch)
-		[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsNewChallenge] animated:NO];
+//	if (_challengeSubmitType == HONChallengeSubmitTypeMatch)
+//		[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsNewChallenge] animated:NO];
+//	
+//	else
+//		[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsJoinChallenge:_challengeVO] animated:NO];
+	
+	if (_isJoinChallenge)
+		[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsJoinChallenge:_challengeVO] animated:NO];
 	
 	else
-		[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsJoinChallenge:_challengeVO] animated:NO];
+		[self.navigationController pushViewController:[[HONChallengeCameraViewController alloc] initAsNewChallenge] animated:NO];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
 	[super viewDidDisappear:animated];
 }
 
-
+/*
 #pragma mark - UI Presentation
 - (void)_removeIris {
 	if (self.imagePickerController.sourceType == UIImagePickerControllerSourceTypeCamera) {
@@ -897,5 +907,5 @@ const CGFloat kFocusInterval = 0.5f;
 		}
 	}
 }
-
+*/
 @end

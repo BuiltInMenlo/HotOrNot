@@ -126,10 +126,17 @@
 - (void)setChallengeVO:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	_heroOpponentVO = _challengeVO.creatorVO;
-	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).birthday timeIntervalSinceNow] < [_heroOpponentVO.birthday timeIntervalSinceNow]))
-		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
+//	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//	[dateFormatter setDateFormat:@"yyyy-MM-ddHH:mm:ss"];
+//	NSLog(@"CHALLENGE:[%d]", _challengeVO.challengeID);
+//	if (_challengeVO.challengeID == 21567)
+//		NSLog(@"DICT:[%@]", _challengeVO.dictionary);
+//	NSLog(@"CREATOR:(%@)[%f] CHALLENGER:(%@)[%f]\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n", _challengeVO.creatorVO.dictionary, [_challengeVO.creatorVO.joinedDate timeIntervalSinceNow], ((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).dictionary, [((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow]);
 	
+	_heroOpponentVO = _challengeVO.creatorVO;
+	if ([_challengeVO.challengers count] > 0 && ([((HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0]).joinedDate timeIntervalSinceNow] > [_heroOpponentVO.joinedDate timeIntervalSinceNow]))
+		_heroOpponentVO = (HONOpponentVO *)[_challengeVO.challengers objectAtIndex:0];
+				
 	_isChallengeCreator = ([[[HONAppDelegate infoForUser] objectForKey:@"id"] intValue] == _challengeVO.creatorVO.userID);
 	_isChallengeOpponent = NO;
 	for (HONOpponentVO *vo in _challengeVO.challengers) {
