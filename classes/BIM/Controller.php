@@ -5,8 +5,6 @@ class BIM_Controller{
     public $user = null;
     
     public function handleReq(){
-        // set the environment to support legacy versions of the app.
-        BIM_Utils::setLegacy();        
         BIM_Utils::startProfiling();
                 
         $res = null;
@@ -108,9 +106,6 @@ class BIM_Controller{
 	 * 		OR we find a valid session user 
 	 */
 	protected function sessionOK(){
-	    if( IS_LEGACY ){
-	        return false;
-	    }
 	    $OK = true;
         $sessionConf = BIM_Config::session();
 	    if( !empty( $sessionConf->use ) ){

@@ -206,13 +206,4 @@ class BIM_Utils{
             file_put_contents('/tmp/es_profile', print_r(BIM_DAO_ElasticSearch::$profile ,1) );
         }
 	}
-	
-    public static function setLegacy(){
-        $legacyKey = 'IS_LEGACY';
-        if( !empty( $_SERVER[ $legacyKey ] ) ){
-            define($legacyKey,TRUE);
-        } else {
-            define($legacyKey,FALSE);
-        }
-    }	
 }
