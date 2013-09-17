@@ -290,32 +290,32 @@
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-//		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-//			UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
-//			imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-//			imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-//			imagePickerController.delegate = nil;
-//		
-//			imagePickerController.showsCameraControls = NO;
-//			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
-//			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
-//			
-//			UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
-//			UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//			closeTutorialButton.frame = CGRectMake(53.0, _tutorialHolderView.frame.size.height - (([HONAppDelegate isRetina5]) ? 129.0 : 118.0), 214.0, 49.0);
-//			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
-//			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
-//			[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
-//			[overlayView addSubview:closeTutorialButton];
-//			imagePickerController.cameraOverlayView = overlayView;
-//		
-//			self.previewPicker = imagePickerController;
-//			[self presentViewController:self.previewPicker animated:NO completion:nil];
-//		}
-	
-//	if (_isFirstAppearance) {
-//		_isFirstAppearance = NO;
-//	}
+	if (_isFirstAppearance) {
+		_isFirstAppearance = NO;
+		
+		if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+			UIImagePickerController *imagePickerController = [[UIImagePickerController alloc] init];
+			imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+			imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
+			imagePickerController.delegate = nil;
+		
+			imagePickerController.showsCameraControls = NO;
+			imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+			imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
+			
+			UIView *overlayView = [[UIView alloc] initWithFrame:self.view.frame];
+			UIButton *closeTutorialButton = [UIButton buttonWithType:UIButtonTypeCustom];
+			closeTutorialButton.frame = CGRectMake(53.0, _tutorialHolderView.frame.size.height - (([HONAppDelegate isRetina5]) ? 129.0 : 118.0), 214.0, 49.0);
+			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_nonActive"] forState:UIControlStateNormal];
+			[closeTutorialButton setBackgroundImage:[UIImage imageNamed:@"signUpButton_Active"] forState:UIControlStateHighlighted];
+			[closeTutorialButton addTarget:self action:@selector(_goCloseTutorial) forControlEvents:UIControlEventTouchUpInside];
+			[overlayView addSubview:closeTutorialButton];
+			imagePickerController.cameraOverlayView = overlayView;
+		
+			self.previewPicker = imagePickerController;
+			[self presentViewController:self.previewPicker animated:NO completion:nil];
+		}
+	}
 }
 
 

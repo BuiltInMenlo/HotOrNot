@@ -10,13 +10,6 @@
 
 #import "HONChallengeVO.h"
 
-//const CGFloat kFocusInterval;
-
-typedef enum {
-	HONChallengeSubmitTypeMatch			= 14,	/** Pairs w/ existing or creates new */
-	HONChallengeSubmitTypeJoin			= 69	/** Joins an in-progress challenge */
-} HONChallengeSubmitType;
-
-@interface HONImagePickerViewController : UIViewController //<UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAlertViewDelegate>
+@interface HONImagePickerViewController : UIViewController
 - (id)initWithJoinChallenge:(HONChallengeVO *)vo;
 @end

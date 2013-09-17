@@ -17,8 +17,6 @@
 - (void)intro;
 - (void)toggleInfoOverlay:(BOOL)isIntro;
 - (void)updateChallengers:(NSArray *)challengers asJoining:(BOOL)isJoining;
-- (void)addMirroredPreview:(UIImage *)image;
-- (void)startProgress;
 - (void)submitStep:(HONCreateChallengePreviewView *)previewView;
 @property(nonatomic, assign) id <HONSnapCameraOverlayViewDelegate> delegate;
 @end
@@ -27,7 +25,6 @@
 @protocol HONSnapCameraOverlayViewDelegate
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView;
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView;
-- (void)cameraOverlayView:(HONSnapCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed;
 - (void)cameraOverlayViewTakePhoto:(HONSnapCameraOverlayView *)cameraOverlayView;
 @optional
 - (void)cameraOverlayViewChangeFlash:(HONSnapCameraOverlayView *)cameraOverlayView;

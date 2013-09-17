@@ -31,7 +31,6 @@
 @property (nonatomic, strong) NSMutableArray *subscriberIDs;
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) NSString *subjectName;
-@property (nonatomic, strong) NSTimer *progressTimer;
 @property (nonatomic) int uploadCounter;
 @property (nonatomic, strong) NSArray *s3Uploads;
 @property (nonatomic, strong) UIImage *rawImage;
@@ -42,6 +41,7 @@
 @property (nonatomic, strong) NSDictionary *challengeParams;
 @property (nonatomic, strong) UIImageView *submitImageView;
 @property (nonatomic) BOOL hasSubmitted;
+@property (nonatomic) BOOL isMainCamera;
 @end
 
 
@@ -134,8 +134,6 @@
 			}
 			
 			[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
-			[_cameraOverlayView startProgress];
-			_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -151,7 +149,7 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 	@try {
-		UIImage *oImage = _rawImage;
+		UIImage *oImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
 		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeDim * 2.0, kSnapLargeDim * 2.0)];
 		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
 		
@@ -370,12 +368,9 @@
 	
     self.imagePickerController = imagePickerController;
     [self presentViewController:self.imagePickerController animated:YES completion:^(void) {
-		[self _showOverlay];
+		if (sourceType == UIImagePickerControllerSourceTypeCamera)
+			[self _showOverlay];
 	}];
-}
-
-- (void)_restartProgress {
-	[_cameraOverlayView startProgress];
 }
 
 - (void)_showOverlay {
@@ -385,9 +380,6 @@
 	
 	if (_volleySubmitType == HONVolleySubmitTypeJoin) {
 		[_cameraOverlayView updateChallengers:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin)];
-		
-		[_cameraOverlayView startProgress];
-		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 	
 	} else
 		[self _retrieveUser];
@@ -405,24 +397,6 @@
 
 
 #pragma mark - CameraOverlay Delegates
-- (void)cameraOverlayView:(HONSnapCameraOverlayView *)cameraOverlayView toggleLongPress:(BOOL)isPressed {
-	if (isPressed) {
-		[[Mixpanel sharedInstance] track:@"Create Volley - Long Press"
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	}
-	
-	if (_progressTimer){
-		[_progressTimer invalidate];
-		_progressTimer = nil;
-	}
-	
-	if (!isPressed) {
-		[_cameraOverlayView startProgress];
-		_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
-	}
-}
-
 - (void)cameraOverlayViewShowCameraRoll:(HONSnapCameraOverlayView *)cameraOverlayView {
 	self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 }
@@ -433,15 +407,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? @"rear" : @"front", @"type", nil]];
 	
-	if (_progressTimer){
-		[_progressTimer invalidate];
-		_progressTimer = nil;
-	}
-	
 	self.imagePickerController.cameraDevice = (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceFront) ? UIImagePickerControllerCameraDeviceRear : UIImagePickerControllerCameraDeviceFront;
-	
-	[_cameraOverlayView startProgress];
-	_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 - (void)cameraOverlayViewCameraBack:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -451,14 +417,6 @@
 	
 	for (S3PutObjectRequest *por in _s3Uploads)
 		[por.urlConnection cancel];
-	
-	if (_progressTimer){
-		[_progressTimer invalidate];
-		_progressTimer = nil;
-	}
-	
-	[_cameraOverlayView startProgress];
-	_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 - (void)cameraOverlayViewCloseCamera:(HONSnapCameraOverlayView *)cameraOverlayView {
@@ -466,11 +424,6 @@
 	[[Mixpanel sharedInstance] track:@"Create Volley - Cancel"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if (_progressTimer){
-		[_progressTimer invalidate];
-		_progressTimer = nil;
-	}
 	
 	for (S3PutObjectRequest *por in _s3Uploads)
 		[por.urlConnection cancel];
@@ -486,11 +439,6 @@
 	[[Mixpanel sharedInstance] track:@"Create Volley - Take Photo"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
-	
-	if (_progressTimer != nil) {
-		[_progressTimer invalidate];
-		_progressTimer = nil;
-	}
 	
 	[self.imagePickerController takePicture];
 }
@@ -526,14 +474,6 @@
 	
 	for (S3PutObjectRequest *por in _s3Uploads)
 		[por.urlConnection cancel];
-	
-	if (_progressTimer != nil) {
-		[_progressTimer invalidate];
-		_progressTimer = nil;
-	}
-	
-	[_cameraOverlayView startProgress];
-	_progressTimer = [NSTimer scheduledTimerWithTimeInterval:1.6 target:self selector:@selector(_takePhoto) userInfo:nil repeats:NO];
 }
 
 - (void)previewView:(HONCreateChallengePreviewView *)previewView changeSubject:(NSString *)subject {
@@ -640,41 +580,50 @@
 -(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	_rawImage = [info objectForKey:UIImagePickerControllerOriginalImage];
 	
-	[_cameraOverlayView addMirroredPreview:_rawImage];
-	
 	if (_rawImage.imageOrientation != 0)
 		_rawImage = [_rawImage fixOrientation];
 	
 	NSLog(@"RAW IMAGE:[%@]", NSStringFromCGSize(_rawImage.size));
 	
+//	CIImage *image = [CIImage imageWithCGImage:_rawImage.CGImage];
+//	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
+//	NSArray *features = [detctor featuresInImage:image];
+//	NSLog(@"FEATURES:[%d]", [features count]);
 	
-	CIImage *image = [CIImage imageWithCGImage:_rawImage.CGImage];
-	CIDetector *detctor = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:[NSDictionary dictionaryWithObject:CIDetectorAccuracyHigh forKey:CIDetectorAccuracy]];
-	NSArray *features = [detctor featuresInImage:image];
-	
-	NSLog(@"FEATURES:[%d]", [features count]);
-	
+	UIImage *workingImage = _rawImage;
 	
 	// image is wider than tall (800x600)
 	if (_rawImage.size.width > _rawImage.size.height) {
-		float offset = (_rawImage.size.width - _rawImage.size.height) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:_rawImage toRect:CGRectMake(offset, 0.0, _rawImage.size.height, _rawImage.size.height)];
+		_isMainCamera = (_rawImage.size.height > 1000);
+		if (_isMainCamera)
+			workingImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
+		
+		float offset = (workingImage.size.width - workingImage.size.height) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:workingImage toRect:CGRectMake(offset, 0.0, workingImage.size.height, workingImage.size.height)];
 		
 		// image is taller than wide (600x800)
 	} else if (_rawImage.size.width < _rawImage.size.height) {
-		float offset = (_rawImage.size.height - _rawImage.size.width) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:_rawImage toRect:CGRectMake(0.0, offset, _rawImage.size.width, _rawImage.size.width)];
+		_isMainCamera = (_rawImage.size.width > 1000);
+		if (_isMainCamera)
+			workingImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)];
+		
+		float offset = (workingImage.size.height - workingImage.size.width) * 0.5;
+		_challangeImage = [HONImagingDepictor cropImage:workingImage toRect:CGRectMake(0.0, offset, workingImage.size.width, workingImage.size.width)];
 		
 		// image is square
 	} else
-		_challangeImage = _rawImage;
+		_challangeImage = workingImage;
 	
 	
 	_usernames = [NSMutableArray array];
 	for (HONUserVO *vo in _subscribers)
 		[_usernames addObject:vo.username];
 	
-	_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:_rawImage];
+	if (_isMainCamera)
+		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withImage:workingImage];
+	else
+		_previewView = [[HONCreateChallengePreviewView alloc] initWithFrame:[UIScreen mainScreen].bounds withSubject:_subjectName withMirroredImage:workingImage];
+	
 	_previewView.delegate = self;
 	[_previewView setOpponents:[_subscribers copy] asJoining:(_volleySubmitType == HONVolleySubmitTypeJoin) redrawTable:YES];
 	[_previewView showKeyboard];

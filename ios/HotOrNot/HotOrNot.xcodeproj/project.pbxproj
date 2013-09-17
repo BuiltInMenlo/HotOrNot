@@ -1491,12 +1491,12 @@
 				4C3D7E91176D3B8400AE07B3 /* HONCreateChallengePreviewView.m */,
 				4C41097915FD7DD200E34F4E /* HONImagePickerViewController.h */,
 				4C41097A15FD7DD200E34F4E /* HONImagePickerViewController.m */,
+				4CEC303B17DA5E270016AAE1 /* HONChallengeCameraViewController.h */,
+				4CEC303C17DA5E270016AAE1 /* HONChallengeCameraViewController.m */,
 				4C0F5EE117C9508000894551 /* HONCameraPreviewSubscriberViewCell.h */,
 				4C0F5EE217C9508000894551 /* HONCameraPreviewSubscriberViewCell.m */,
 				4C60AF6917CCFEF800609792 /* HONCameraPreviewSubscribersView.h */,
 				4C60AF6A17CCFEF800609792 /* HONCameraPreviewSubscribersView.m */,
-				4CEC303B17DA5E270016AAE1 /* HONChallengeCameraViewController.h */,
-				4CEC303C17DA5E270016AAE1 /* HONChallengeCameraViewController.m */,
 			);
 			name = "Create Challenge";
 			sourceTree = "<group>";
