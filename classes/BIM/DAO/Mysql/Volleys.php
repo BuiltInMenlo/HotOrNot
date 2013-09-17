@@ -161,7 +161,7 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         		LEFT JOIN `hotornot-dev`.tblChallengeParticipants AS tcp
         		ON tc.id = tcp.challenge_id 
         	WHERE tc.id in ( $placeHolders )
-        	ORDER BY tc.id, tcp.joined";
+        	ORDER BY tc.id, tcp.joined, tcp.user_id";
         
         $stmt = $this->prepareAndExecute( $sql, $ids );
         $data = $stmt->fetchAll( PDO::FETCH_CLASS, 'stdClass' );
@@ -322,8 +322,28 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
         $params = array( $volleyId );
         $this->prepareAndExecute($sql, $params);
     }
+
+    /**
+     * 
+     * first we try to update the tblChallenges table for the creator img
+     * if that is successfull then we
+     * 	increment the total counts on the challenge
+     *  set the updated date on the challenge
+     * 	increment the users like count
+     * 
+     * if the like is not successful then we try to update the participant table
+     * if that is successfull then we
+     * 	increment the total counts on the challenge
+     *  set the updated date on the challenge
+     * 	increment the users like count
+     * 
+     * @param int $volleyId
+     * @param int $userId
+     * @param int $targetId
+     * @param string $imgUrl
+     */
     
-    public function upVote( $volleyId, $userId, $targetId, $isCreator = false ){
+    public function upVote( $volleyId, $userId, $targetId, $imgUrl ){
 		$query = "
             INSERT IGNORE INTO `hotornot-dev`.`tblChallengeVotes` 
             (`challenge_id`, `user_id`, `challenger_id`, `added`) 
@@ -332,37 +352,48 @@ class BIM_DAO_Mysql_Volleys extends BIM_DAO_Mysql{
 		$params = array( $volleyId, $userId, $targetId );
         $stmt = $this->prepareAndExecute($query, $params);
 		
-        if( !empty($this->lastInsertId) ){
+        // first we try to update the creator likes
+        $sql = '
+        	UPDATE `hotornot-dev`.tblChallenges 
+        	SET creator_likes = creator_likes + 1
+        	where id = ? and creator_img = ?
+        ';
+        $params = array( $volleyId, $imgUrl );
+        $this->prepareAndExecute($sql, $params);
+        
+        // if we did n ot update the creator likes
+        // then we try to update the likes in the participants table
+        // 
+        if( !$this->rowCount ){
+            $sql = '
+            	UPDATE `hotornot-dev`.tblChallengeParticipants 
+            	SET likes = likes + 1 
+            	where user_id = ? 
+            		  and challenge_id = ?
+            		  and img = ?';
             
-            if( $isCreator ){
-                $sql = '
-                	UPDATE `hotornot-dev`.tblChallenges 
-                	SET votes = votes + 1, 
-                	    creator_likes = creator_likes + 1,
-			    		updated = now()
-                	where id = ?
-                ';
-                $params = array( $volleyId );
-                $this->prepareAndExecute($sql, $params);
-            } else {
-                $sql = '
-                	UPDATE `hotornot-dev`.tblChallenges 
-                	SET votes = votes + 1, 
-			    		updated = now()
-                	where id = ?
-                ';
-                $params = array( $volleyId );
-                $this->prepareAndExecute($sql, $params);
-                
-                $sql = 'UPDATE `hotornot-dev`.tblChallengeParticipants SET likes = likes + 1 where user_id = ? and challenge_id = ?';
-                $params = array( $targetId, $volleyId );
-                $this->prepareAndExecute($sql, $params);
-            }
-            
-            $sql = 'UPDATE `hotornot-dev`.tblUsers SET total_votes = total_votes + 1 where id = ?';
-            $params = array( $targetId );
+            $params = array( $targetId, $volleyId, $imgUrl );
+            $this->prepareAndExecute($sql, $params);
+        }
+        
+        // if we see that either table was updated, we proceed with the final updates
+        if( $this->rowCount ){
+            $sql = '
+            	UPDATE `hotornot-dev`.tblChallenges 
+            	SET votes = votes + 1, 
+    	    		updated = now()
+            	where id = ?
+            ';
+            $params = array( $volleyId );
             $this->prepareAndExecute($sql, $params);
             
+            
+            $sql = '
+            	UPDATE `hotornot-dev`.tblUsers 
+            	SET total_votes = total_votes + 1 
+            	where id = ?';
+            $params = array( $targetId );
+            $this->prepareAndExecute($sql, $params);
         }
     }
     

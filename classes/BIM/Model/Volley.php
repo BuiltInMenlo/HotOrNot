@@ -46,24 +46,19 @@ class BIM_Model_Volley{
                     'img' => $challenger->challenger_img,
                     'score' => $challenger->likes,
                     'joined' => $joined,
+                    'joined_timestamp' => $challenger->joined,
                 );
                 $this->resolveScore($target);
                 $challengers[] = $target;            
             }
             
-            // legacy versions of client do not support multiple challengers
-            if( $this->isLegacy() ){
-                $this->challenger = $challengers[0];
-            } else{
-                $this->challengers = $challengers;
-            }
+            $this->challengers = $challengers;
             
             if( $populateUserData ){
                 $this->populateUsers();
             }
         }
     }
-    
     
     private function _setSubject( $volley ){
         if( empty($volley->subject) ){
@@ -89,11 +84,7 @@ class BIM_Model_Volley{
         self::_updateUser($this->creator, $creator);
         
         // populate the challengers
-        if( $this->isLegacy() ){
-            $challengers = array($this->challenger);
-        } else{
-            $challengers = $this->challengers;
-        }
+        $challengers = $this->challengers;
 	    foreach ( $challengers as $challenger ){
             $target = $users[ $challenger->id ];
             self::_updateUser($challenger, $target);
@@ -136,29 +127,15 @@ class BIM_Model_Volley{
         $userData->score = $score;
     }
     
-    // returns true if the requesting client
-    // is a legacy client
-    public function isLegacy(){
-        return (defined( 'IS_LEGACY' ) && IS_LEGACY );
-    }
-    
-    public static function legacy(){
-        return (defined( 'IS_LEGACY' ) && IS_LEGACY );
-    }
-    
     /**
      * return the list of users
      * in the volley including the creator
      */
     public function getUsers(){
         $userIds = array();
-        if( $this->isLegacy() ){
-            $userIds[] = $this->challenger->id;
-        } else {
-            foreach( $this->challengers as $challenger ){
-    	        $userIds[] = $challenger->id;
-    	    }
-    	}
+        foreach( $this->challengers as $challenger ){
+	        $userIds[] = $challenger->id;
+	    }
     	$userIds[] = $this->creator->id;
     	return $userIds;
     }
@@ -205,6 +182,21 @@ class BIM_Model_Volley{
             }
         }
         return $OK;
+    }
+    
+    public function sortChallengers(){
+        if($this->challengers){
+            usort($this->challengers, 
+                function( $a, $b ){
+                    $al = $a->joined_timestamp;
+                    $bl = $b->joined_timestamp;
+                    if ( $al == $bl ) {
+                        return 0;
+                    }
+                    return ($al > $bl) ? 1 : -1;
+                }
+            );
+        }
     }
     
     public function isCreator( $userId ){
@@ -308,10 +300,9 @@ class BIM_Model_Volley{
         $this->purgeFromCache();
     }
     
-    public function upVote( $targetId, $userId ){
+    public function upVote( $targetId, $userId, $imgUrl ){
         $dao = new BIM_DAO_Mysql_Volleys( BIM_Config::db() );
-        $isCreator = $this->isCreator($targetId);
-        $dao->upVote( $this->id, $userId, $targetId, $isCreator  );
+        $dao->upVote( $this->id, $userId, $targetId, $imgUrl  );
         $this->purgeFromCache();
     }
     
@@ -357,16 +348,10 @@ class BIM_Model_Volley{
         if( $this->creator->id == $data->id ){
             self::_updateUser($this->creator, $data);
         } else {
-            if( $this->isLegacy() ){
-                if( $this->challenger->id == $data->id ){
-                    self::_updateUser($this->challenger, $data);
-                }
-            } else {
-                if( !empty( $this->challengers ) ){
-                    foreach( $this->challengers as $challenger ){
-                        if( $challenger->id == $data->id ){
-                            self::_updateUser($challenger, $data);
-                        }
+            if( !empty( $this->challengers ) ){
+                foreach( $this->challengers as $challenger ){
+                    if( $challenger->id == $data->id ){
+                        self::_updateUser($challenger, $data);
                     }
                 }
             }
@@ -375,15 +360,11 @@ class BIM_Model_Volley{
     
     public function hasChallenger( $userId ){
         $has = false;
-        if( $this->isLegacy() ){
-            $has = ( $this->challenger->id == $userId );
-        } else {
-            if( !empty( $this->challengers ) ){
-                foreach( $this->challengers as $challenger ){
-                    if( $challenger->id == $userId ){
-                        $has = true;
-                        break;
-                    }
+        if( !empty( $this->challengers ) ){
+            foreach( $this->challengers as $challenger ){
+                if( $challenger->id == $userId ){
+                    $has = true;
+                    break;
                 }
             }
         }
@@ -510,15 +491,14 @@ class BIM_Model_Volley{
             self::populateVolleyUsers( $volleys );
             foreach( $volleys as $volley ){
                 $key = self::makeCacheKeys($volley->id);
-                if( !self::legacy() ){
-                    $cache->set( $key, $volley );
-                }
+                $cache->set( $key, $volley );
             }
         }
         
         // now reorder according to passed ids
         $volleyArr = array();
         foreach( $volleys as $id => $volley ){
+            // $volley->sortChallengers();
             $volleyArr[ $volley->id ] = $volley;
         }
         $volleys = array();
@@ -555,10 +535,11 @@ class BIM_Model_Volley{
         }
         if( !$volley ){
             $volley = new self($volleyId);
-            if( $volley->isExtant() && !self::legacy() ){
+            if( $volley->isExtant() ){
                 $cache->set( $cacheKey, $volley );
             }
         }
+        //$volley->sortChallengers();
         return $volley;
     }
     
