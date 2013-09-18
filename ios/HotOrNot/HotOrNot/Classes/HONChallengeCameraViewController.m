@@ -533,8 +533,9 @@
 		if ([_subscribers count] > 0) {
 			for (HONUserVO *vo in _subscribers)
 				usernames = [usernames stringByAppendingFormat:@"%@|", vo.username];
-			[params setObject:[usernames substringToIndex:[usernames length] - 1] forKey:@"usernames"];
 		}
+		[params setObject:[usernames substringToIndex:([usernames length] > 0) ? [usernames length] - 1 : 0] forKey:@"usernames"];
+		
 		
 		if (_challengeVO != nil)
 			[params setObject:[NSString stringWithFormat:@"%d", _challengeVO.challengeID] forKey:@"challengeID"];

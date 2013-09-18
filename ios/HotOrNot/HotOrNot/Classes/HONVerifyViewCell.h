@@ -14,7 +14,7 @@
 
 
 @protocol HONVerifyViewCellDelegate;
-@interface HONVerifyViewCell : UITableViewCell
+@interface HONVerifyViewCell : UICollectionViewCell
 + (NSString *)cellReuseIdentifier;
 - (id)initAsEvenRow:(BOOL)isEven;
 - (void)showTapOverlay;

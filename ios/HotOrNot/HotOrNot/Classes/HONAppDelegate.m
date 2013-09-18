@@ -890,13 +890,13 @@ NSString * const kTwilioSMS = @"6475577873";
 	[[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"8ee8d69b4f24d1f5ac975bceb0b6f17f" delegate:self];
 	[[BITHockeyManager sharedHockeyManager] startManager];
 	
-//	TSConfig *config = [TSConfig configWithDefaults];
-//	config.collectWifiMac = NO;
-//	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-//	//config.odin1 = @"<ODIN-1 value goes here>";
-//	//config.openUdid = @"<OpenUDID value goes here>";
-//	//config.secureUdid = @"<SecureUDID value goes here>";
-//	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
+	TSConfig *config = [TSConfig configWithDefaults];
+	config.collectWifiMac = NO;
+	config.idfa = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
+	//config.odin1 = @"<ODIN-1 value goes here>";
+	//config.openUdid = @"<OpenUDID value goes here>";
+	//config.secureUdid = @"<SecureUDID value goes here>";
+	[TSTapstream createWithAccountName:@"volley" developerSecret:@"xJCRiJCqSMWFVF6QmWdp8g" config:config];
 	
 	if (![[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"])
 		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"timeline2_banner"];

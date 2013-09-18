@@ -27,6 +27,14 @@
 	return (NSStringFromClass(self));
 }
 
+- (id)init {
+	if ((self = [super init])) {
+		self.backgroundColor = [UIColor blackColor];
+	}
+	
+	return (self);
+}
+
 - (id)initAsEvenRow:(BOOL)isEven {
 	if ((self = [super init])) {
 		self.backgroundColor = [UIColor blackColor]; //(isEven) ? [UIColor whiteColor] : [UIColor colorWithWhite:0.9 alpha:1.0];

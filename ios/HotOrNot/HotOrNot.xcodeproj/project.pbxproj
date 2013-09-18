@@ -283,6 +283,7 @@
 		4C810EA117DE65D900F6EAE9 /* CoreImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C810EA017DE65D900F6EAE9 /* CoreImage.framework */; };
 		4C81A015163337C200AB188B /* UIImage+fixOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C81A014163337C200AB188B /* UIImage+fixOrientation.m */; };
 		4C81A017163367F300AB188B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C81A016163367F300AB188B /* AVFoundation.framework */; };
+		4C86F3CE17E9607E003069E7 /* HONCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C86F3CD17E9607E003069E7 /* HONCollectionViewFlowLayout.m */; };
 		4C8CBC20179CF36D00C95189 /* friendsButton_Active.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C8CBC18179CF36D00C95189 /* friendsButton_Active.png */; };
 		4C8CBC21179CF36D00C95189 /* friendsButton_Active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C8CBC19179CF36D00C95189 /* friendsButton_Active@2x.png */; };
 		4C8CBC22179CF36D00C95189 /* friendsButton_nonActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C8CBC1A179CF36D00C95189 /* friendsButton_nonActive.png */; };
@@ -954,6 +955,8 @@
 		4C81A013163337C100AB188B /* UIImage+fixOrientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+fixOrientation.h"; sourceTree = "<group>"; };
 		4C81A014163337C200AB188B /* UIImage+fixOrientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+fixOrientation.m"; sourceTree = "<group>"; };
 		4C81A016163367F300AB188B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		4C86F3CC17E9607E003069E7 /* HONCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HONCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		4C86F3CD17E9607E003069E7 /* HONCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HONCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 		4C8CBC18179CF36D00C95189 /* friendsButton_Active.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = friendsButton_Active.png; sourceTree = "<group>"; };
 		4C8CBC19179CF36D00C95189 /* friendsButton_Active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "friendsButton_Active@2x.png"; sourceTree = "<group>"; };
 		4C8CBC1A179CF36D00C95189 /* friendsButton_nonActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = friendsButton_nonActive.png; sourceTree = "<group>"; };
@@ -2177,6 +2180,7 @@
 				4C32B9A515FAB60A0023A0EE /* Create Challenge */,
 				4C45FF4516DECE40002F1080 /* Views */,
 				4CEEFC8017E155EE0006A640 /* View Controllers */,
+				4C86F3CF17E97606003069E7 /* Layouts */,
 				4C62673A15F96E5600AA7FCE /* HONAppDelegate.h */,
 				4C62673B15F96E5600AA7FCE /* HONAppDelegate.m */,
 				4CAAEDA8161E0699005AB2E1 /* HONTabBarController.h */,
@@ -2305,6 +2309,15 @@
 				4C351CED16FE754B00BD9498 /* mainBG-568h@2x.png */,
 			);
 			name = Global;
+			sourceTree = "<group>";
+		};
+		4C86F3CF17E97606003069E7 /* Layouts */ = {
+			isa = PBXGroup;
+			children = (
+				4C86F3CC17E9607E003069E7 /* HONCollectionViewFlowLayout.h */,
+				4C86F3CD17E9607E003069E7 /* HONCollectionViewFlowLayout.m */,
+			);
+			name = Layouts;
 			sourceTree = "<group>";
 		};
 		4C8CBC30179CFAA600C95189 /* Tapstream */ = {
@@ -3253,6 +3266,7 @@
 				4C8CBC49179CFAA600C95189 /* TSConfig.m in Sources */,
 				4C6BBCB216167F2000145996 /* HONSettingsViewCell.m in Sources */,
 				4C7341921616C078001F9F11 /* HONPrivacyViewController.m in Sources */,
+				4C86F3CE17E9607E003069E7 /* HONCollectionViewFlowLayout.m in Sources */,
 				4CED1C1C177D46C100A32F2B /* NBPhoneNumber.m in Sources */,
 				4CEE1CA0161A311E00C54FBF /* HotOrNot.xcdatamodeld in Sources */,
 				4CAAEDAA161E069D005AB2E1 /* HONTabBarController.m in Sources */,
