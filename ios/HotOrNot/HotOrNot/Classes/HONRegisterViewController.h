@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONRegisterViewController : UIViewController
+@interface HONRegisterViewController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UITextFieldDelegate>
 
 @end

@@ -380,11 +380,11 @@
 	_heroImageHolderView.clipsToBounds = YES;
 	[_scrollView addSubview:_heroImageHolderView];
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_heroImageHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", _heroOpponentVO.imagePrefix]]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]]
 																		cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 									  placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 										  weakSelf.heroImageView.image = image;
@@ -426,7 +426,7 @@
 			
 			UIImageView *opponentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 			opponentImageView.userInteractionEnabled = YES;
-			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.imagePrefix]] placeholderImage:nil];
+			[opponentImageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", vo.imagePrefix]] placeholderImage:nil];
 			[opponentHolderView addSubview:opponentImageView];
 			
 			UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];

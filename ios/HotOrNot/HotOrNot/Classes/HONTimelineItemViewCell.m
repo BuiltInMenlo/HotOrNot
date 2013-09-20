@@ -161,17 +161,16 @@
 	__weak typeof(self) weakSelf = self;
 	
 	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
-	_heroImageHolderView.clipsToBounds = YES;
 	[self addSubview:_heroImageHolderView];
 	
 //	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
 //	[_heroImageHolderView addSubview:imageLoadingView];
 	
-	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 427.0)];
+	_heroImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
 	_heroImageView.userInteractionEnabled = YES;
 	_heroImageView.alpha = 0.0;
 	[_heroImageHolderView addSubview:_heroImageView];
-	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_o.jpg", _heroOpponentVO.imagePrefix]]
+	[_heroImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_l.jpg", _heroOpponentVO.imagePrefix]]
 																  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 									weakSelf.heroImageView.image = image;

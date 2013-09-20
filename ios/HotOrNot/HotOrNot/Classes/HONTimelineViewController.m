@@ -16,7 +16,6 @@
 
 #import "HONTimelineViewController.h"
 #import "HONTimelineItemViewCell.h"
-#import "HONUserProfileViewCell.h"
 #import "HONOpponentVO.h"
 #import "HONUserVO.h"
 #import "HONRegisterViewController.h"
@@ -38,9 +37,10 @@
 #import "HONProfileHeaderButtonView.h"
 #import "HONUserProfileView.h"
 #import "HONUserProfileViewController.h"
+#import "HONCollectionViewFlowLayout.h"
 
 
-@interface HONTimelineViewController() <UIActionSheetDelegate, UIAlertViewDelegate, HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+@interface HONTimelineViewController() <HONTimelineItemViewCellDelegate, HONEmptyTimelineViewDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
 @property (readonly, nonatomic, assign) HONTimelineType timelineType;
 @property (nonatomic, strong) NSString *subjectName;
 @property (nonatomic, strong) NSString *username;
@@ -50,7 +50,9 @@
 @property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UIView *bannerView;
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIView *collectionHolderView;
+@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
+@property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic) BOOL isPushView;
@@ -199,17 +201,36 @@
 			}
 			
 			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"];
-			[_tableView reloadData];
+			
+			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
+			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
+			_flowLayout.minimumLineSpacing = 0.0;
+			
+			_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:_flowLayout];
+			[_collectionView setDataSource:self];
+			[_collectionView setDelegate:self];
+			_collectionView.alpha = 0.0;
+			[_collectionView registerClass:[HONTimelineItemViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+//			_collectionView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 0.0, 0.0);
+			[_collectionHolderView addSubview:_collectionView];
+			
+			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+			_refreshTableHeaderView.delegate = self;
+			[_collectionView addSubview:_refreshTableHeaderView];
+			[_refreshTableHeaderView refreshLastUpdatedDate];
+			
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				_collectionView.alpha = 1.0;
+			}];
 		}
 		
-		//[_refreshButtonView toggleRefresh:NO];
 		if (_progressHUD != nil) {
 			[_progressHUD hide:YES];
 			_progressHUD = nil;
 		}
 		
 		_isRefreshing = NO;
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 		VolleyJSONLog(@"AFNetworking [-] %@: (%@/%@) Failed Request - %@", [[self class] description], [HONAppDelegate apiServerPath], kAPIVotes, [error localizedDescription]);
@@ -226,7 +247,7 @@
 		_progressHUD = nil;
 		
 		_isRefreshing = NO;
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
 	}];
 }
 
@@ -254,7 +275,7 @@
 			_username = _userVO.username;
 			
 			self.navigationController.navigationBar.topItem.title = @"Me";
-			[_tableView reloadData];
+			[_collectionView reloadData];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -292,7 +313,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
-			[_tableView reloadData];
+			[_collectionView reloadData];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -437,21 +458,8 @@
 	_bannerView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 64.0, 320.0, 90.0)];
 //	[self.view addSubview:_bannerView];
 	
-	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
-	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
-	//_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.delegate = self;
-	_tableView.dataSource = self;
-	_tableView.scrollsToTop = NO;
-	_tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:_tableView];
-	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
-	_refreshTableHeaderView.delegate = self;
-	[_tableView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView refreshLastUpdatedDate];
+	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
+	[self.view addSubview:_collectionHolderView];
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
@@ -604,7 +612,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
+		_collectionView.frame = CGRectMake(_collectionView.frame.origin.x, _collectionView.frame.origin.y - 90.0, _collectionView.frame.size.width, _collectionView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"timeline2_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -636,7 +644,7 @@
 	
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONRegisterViewController alloc] init]];
 	[navigationController setNavigationBarHidden:YES];
-	[self presentViewController:navigationController animated:YES completion:^(void) {
+	[self presentViewController:navigationController animated:NO completion:^(void) {
 	}];
 }
 
@@ -672,7 +680,7 @@
 }
 
 - (void)_selectedVoteTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_collectionView setContentOffset:CGPointZero animated:YES];
 //	[_refreshButtonView toggleRefresh:YES];
 	
 	if (_timelineType == HONTimelineTypeSingleUser) {
@@ -880,7 +888,7 @@
 	}];
 	
 	for (HONTimelineItemViewCell *cell in _cells) {
-		NSLog(@"challenge:[%d]", cell.challengeVO.challengeID);
+//		NSLog(@"challenge:[%d]", cell.challengeVO.challengeID);
 		if (cell.challengeVO.challengeID == challengeVO.challengeID)
 			[cell upvoteUser:opponentVO.userID];
 	}
@@ -945,6 +953,63 @@
 }
 
 
+#pragma mark - CollectionView DataSource Delegates
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return ([_challenges count]);
+}
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+	HONTimelineItemViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
+//    cell.backgroundColor = (indexPath.row % 2 == 0) ? [UIColor greenColor] : [UIColor redColor];
+	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
+	cell.delegate = self;
+	
+	[_cells addObject:cell];
+	
+    return (cell);
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+	return (CGSizeMake(320.0, (indexPath.row == [_challenges count] - 1) ? 417.0 : 370.0)); //47
+}
+
+
+#pragma mark - CollectionView Delegates
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+	return (YES);
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+	HONTimelineItemViewCell *cell = (HONTimelineItemViewCell *)[_cells objectAtIndex:indexPath.row];
+	[cell showTapOverlay];
+	
+	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+	
+	[[Mixpanel sharedInstance] track:@"Timeline - Show Challenge"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	
+	_challengeVO = challengeVO;
+	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
+	_blurredImageView.alpha = 0.0;
+	[self.view addSubview:_blurredImageView];
+	
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		//.modalTransitionStyle
+	}];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
+
+
+/*
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ([_challenges count] + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
@@ -1017,44 +1082,7 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-}
-
-
-#pragma mark - AlertView Delegates
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	if (alertView.tag == 1) {
-		if (buttonIndex == 1) {
-			UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONAddContactsViewController alloc] init]];
-			//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-			[navigationController setNavigationBarHidden:YES];
-			[self presentViewController:navigationController animated:YES completion:nil];
-		}
-	
-	} else if (alertView.tag == 2) {
-	} else if (alertView.tag == 3) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Profile - Subscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",										 
-										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
-		if (buttonIndex == 1) {
-			[self _addFriend:_userVO.userID];
-			HONUserProfileViewCell *cell = (HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-			[cell updateFriendButton:YES];
-		}
-		
-	} else if (alertView.tag == 4) {
-		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Profile - Unsubscribe %@", (buttonIndex == 0) ? @"Cancel" : @"Confirm"]
-							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-										  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
-		
-		if (buttonIndex == 1) {
-			[self _removeFriend:_userVO.userID];
-			HONUserProfileViewCell *cell = (HONUserProfileViewCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-			[cell updateFriendButton:NO];
-		}
-	}
-}
+}*/
 
 
 #pragma mark - ActionSheet Delegates
@@ -1071,80 +1099,6 @@
 				UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONVerifyAccountViewController alloc] initAsEmailVerify:YES]];
 				[navigationController setNavigationBarHidden:YES];
 				[self presentViewController:navigationController animated:YES completion:nil];
-				break;}
-		}
-	
-	} else if (actionSheet.tag == 1) {
-		switch (buttonIndex) {
-			case 0:{
-				[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self Flag User"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
-				
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																	message:@"This person will be flagged for review"
-																   delegate:self
-														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"Yes, flag user", nil];
-				
-				[alertView setTag:2];
-				[alertView show];
-				break;}
-				
-			case 1:{
-				BOOL isFriend = NO;
-				for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
-					if (vo.userID == _userVO.userID) {
-						isFriend = YES;
-						break;
-					}
-				}
-				
-				
-				[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Timeline Profile - More Self %@", (isFriend) ? @"Unsubscribe" : @"Subscrive"]
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"opponent", nil]];
-				
-				if (isFriend) {;
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																		message:[NSString stringWithFormat:@"You will no longer receive Volley updates from @%@", _userVO.username]
-																	   delegate:self
-															  cancelButtonTitle:@"No"
-															  otherButtonTitles:@"Yes", nil];
-					[alertView setTag:4];
-					[alertView show];
-				
-				} else {
-					UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																		message:[NSString stringWithFormat:@"You will receive Volley updates from @%@", _userVO.username]
-																	   delegate:self
-															  cancelButtonTitle:@"No"
-															  otherButtonTitles:@"Yes", nil];
-					[alertView setTag:3];
-					[alertView show];
-				}
-				
-				break;}
-		}
-	
-	} else if (actionSheet.tag == 2) {
-		switch (buttonIndex) {
-			case 0:{
-				[[Mixpanel sharedInstance] track:@"Timeline Profile - More Self Flag User"
-									  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-												  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-												  [NSString stringWithFormat:@"%d - %@", _userVO.userID, _userVO.username], @"challenger", nil]];
-				
-				UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Are you sure?"
-																	message:@"This person will be flagged for review"
-																   delegate:self
-														  cancelButtonTitle:@"No"
-														  otherButtonTitles:@"Yes, flag user", nil];
-				
-				[alertView setTag:2];
-				[alertView show];
 				break;}
 		}
 	}

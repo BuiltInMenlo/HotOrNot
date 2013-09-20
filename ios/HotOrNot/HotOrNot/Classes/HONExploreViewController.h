@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface HONExploreViewController : UIViewController
+@interface HONExploreViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @end

@@ -436,34 +436,45 @@ NSString * const kTwilioSMS = @"6475577873";
 	//NSLog(@"challenges:\n%@[%d]", challenges, [challenges count]);
 	
 	// fill up all challenges if first time
-	if ([challenges count] >= 12) {
+//	if ([challenges count] >= 12) {
 		[[NSUserDefaults standardUserDefaults] setObject:[NSDictionary dictionaryWithObjectsAndKeys:challenges, @"total", challenges, @"remaining", nil] forKey:@"discover_challenges"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
-	}
+//	}
 	
 	// send back the 1st or next randomized set
 	return ([HONAppDelegate refreshDiscoverChallenges]);
 }
 
 + (NSArray *)refreshDiscoverChallenges {
-	//	NSLog(@"allChallenges:\n%@", [discover_challenges objectForKey:@"total"]);
-	//	NSLog(@"remainingChallenges:\n%@", [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"]);
+	//	NSLog(@"allChallenges:\n%@", allChallenges);
+	//	NSLog(@"remainingChallenges:\n%@", remainingChallenges);
 	
 	NSArray *allChallenges = [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"total"];
 	NSMutableArray *remainingChallenges = [[[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_challenges"] objectForKey:@"remaining"] mutableCopy];
 	NSMutableArray *newChallenges = [NSMutableArray array];
 	
-	// loop for new set
-	for (int i=0; i<16; i++) {
-		//NSLog(@"POP:[%d][%d]", i, [remainingChallenges count]);
-		int rnd = arc4random() % [remainingChallenges count];
+	if ([allChallenges count] < 16) {
+		for (int i=0; i<[allChallenges count]; i++) {
+			int rnd = arc4random() % [allChallenges count];
+			[newChallenges addObject:[allChallenges objectAtIndex:rnd]];
+		}
 		
-		// pick a random index and remove from pool
-		[newChallenges addObject:[remainingChallenges objectAtIndex:rnd]];
-		[remainingChallenges removeObjectAtIndex:rnd];
+		return (newChallenges);
+	}
 		
-		if ([remainingChallenges count] == 0)
-			break;
+	if ([remainingChallenges count] >= 16) {
+		// loop for new set
+		for (int i=0; i<16; i++) {
+			//NSLog(@"POP:[%d][%d]", i, [remainingChallenges count]);
+			int rnd = arc4random() % [remainingChallenges count];
+			
+			// pick a random index and remove from pool
+			[newChallenges addObject:[remainingChallenges objectAtIndex:rnd]];
+			[remainingChallenges removeObjectAtIndex:rnd];
+			
+			if ([remainingChallenges count] == 0)
+				break;
+		}
 	}
 	
 	// no more left, repopulate
@@ -978,9 +989,9 @@ NSString * const kTwilioSMS = @"6475577873";
 		//self.tabBarController.view.frame = CGRectOffset(self.tabBarController.view.frame, 0.0, 20.0);
 		self.tabBarController.delegate = self;
 		
-		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
-		_bgImageView.frame = CGRectMake(0.0, [[UIApplication sharedApplication] statusBarFrame].size.height, 320.0, [UIScreen mainScreen].bounds.size.height);
-		[self.tabBarController.view addSubview:_bgImageView];
+//		_bgImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:([HONAppDelegate isRetina5]) ? @"mainBG-568h@2x" : @"mainBG"]];
+//		_bgImageView.frame = CGRectMake(0.0, [[UIApplication sharedApplication] statusBarFrame].size.height, 320.0, [UIScreen mainScreen].bounds.size.height);
+//		[self.tabBarController.view addSubview:_bgImageView];
 		
 		self.window.rootViewController = self.tabBarController;
 		self.window.rootViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;

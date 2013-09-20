@@ -71,24 +71,31 @@
 	@try {
 		float avatarSize = kSnapLargeDim;
 		CGSize ratio = CGSizeMake(image.size.width / image.size.height, image.size.height / image.size.width);
-		UIImage *oImage = image;
 		
-		UIImage *lImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
-		lImage = [HONImagingDepictor cropImage:lImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
+		UIImage *oImage = image;
+		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:image toSize:CGSizeMake(640.0, 854.0)] toRect:CGRectMake(0.0, 202.0, 640.0, 450.0)];
+		UIImage *tImage = (ratio.height >= 1.0) ? [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize, avatarSize * ratio.height)] : [HONImagingDepictor scaleImage:image toSize:CGSizeMake(avatarSize * ratio.width, avatarSize)];
+		tImage = [HONImagingDepictor cropImage:tImage toRect:CGRectMake(0.0, 0.0, avatarSize, avatarSize)];
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-avatars"]];
 		
 		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@.jpg", _filename] inBucket:@"hotornot-avatars"];
 		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+		por1.data = UIImageJPEGRepresentation(tImage, kSnapJPEGCompress);
 		por1.delegate = self;
 		[s3 putObject:por1];
 		
-		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-avatars"];
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-avatars"];
 		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+		por2.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
 		por2.delegate = self;
 		[s3 putObject:por2];
+		
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-avatars"];
+		por3.contentType = @"image/jpeg";
+		por3.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+		por3.delegate = self;
+		[s3 putObject:por3];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -167,11 +174,7 @@
 				
 				[_cameraOverlayView verifyOverlay:NO];
 				[self.imagePickerController dismissViewControllerAnimated:NO completion:^(void) {
-					//[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
-					
-					[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 					[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:YES completion:^(void) {
-//						[[NSNotificationCenter defaultCenter] postNotificationName:@"REFRESH_VOTE_TAB" object:nil];
 						[[NSNotificationCenter defaultCenter] postNotificationName:@"SHOW_PROFILE" object:nil];
 					}];
 				}];
@@ -245,7 +248,7 @@
     
     if (sourceType == UIImagePickerControllerSourceTypeCamera) {
         imagePickerController.showsCameraControls = NO;
-		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.5f : 1.25f);
+		imagePickerController.cameraViewTransform = CGAffineTransformScale(imagePickerController.cameraViewTransform, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f, ([HONAppDelegate isRetina5]) ? 1.65f : 1.25f);
 		imagePickerController.cameraDevice = ([UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]) ? UIImagePickerControllerCameraDeviceFront : UIImagePickerControllerCameraDeviceRear;
 		
 		_cameraOverlayView = [[HONAvatarCameraOverlayView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -394,13 +397,28 @@
 	[self _uploadPhoto:image];
 }
 
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+	NSLog(@"imagePickerControllerDidCancel");
+	
+	[self dismissViewControllerAnimated:YES completion:^(void) {
+		[[NSUserDefaults standardUserDefaults] setObject:@"YES" forKey:@"passed_registration"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+		
+		[[Mixpanel sharedInstance] track:@"Register - Pass Fist Run"
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
+		
+		[[[UIApplication sharedApplication] delegate].window.rootViewController dismissViewControllerAnimated:NO completion:nil];
+	}];
+}
+
 
 #pragma mark - AWS Delegates
 - (void)request:(AmazonServiceRequest *)request didCompleteWithResponse:(AmazonServiceResponse *)response {
 	//NSLog(@"\nAWS didCompleteWithResponse:\n%@", response);
 	
 	_uploadCounter++;
-	if (_uploadCounter == 2) {
+	if (_uploadCounter == 3) {
 		[_progressHUD hide:YES];
 		_progressHUD = nil;
 		

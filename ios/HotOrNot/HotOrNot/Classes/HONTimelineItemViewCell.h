@@ -11,7 +11,7 @@
 #import "HONOpponentVO.h"
 
 @protocol HONTimelineItemViewCellDelegate;
-@interface HONTimelineItemViewCell : UITableViewCell
+@interface HONTimelineItemViewCell : UICollectionViewCell
 
 + (NSString *)cellReuseIdentifier;
 - (id)init;

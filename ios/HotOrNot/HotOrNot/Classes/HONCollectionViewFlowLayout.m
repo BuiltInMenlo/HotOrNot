@@ -24,8 +24,8 @@
 		for (UICollectionViewLayoutAttributes *item in items) {
 			UIAttachmentBehavior *spring = [[UIAttachmentBehavior alloc] initWithItem:item attachedToAnchor:[item center]];
 			spring.length = 0.0;
-			spring.damping = 0.5;
-			spring.frequency = 0.8;
+			spring.damping = 0.85; //0.5
+			spring.frequency = 0.68; //0.8
 			
 			[_dynamicAnimator addBehavior:spring];
 		}
@@ -47,7 +47,7 @@
 	CGPoint touchLocation = [scrollView.panGestureRecognizer locationInView:scrollView];
 	
 	for (UIAttachmentBehavior *spring in _dynamicAnimator.behaviors) {
-		CGFloat resist = fabsf(touchLocation.y - spring.anchorPoint.y) / 750;
+		CGFloat resist = fabsf(touchLocation.y - spring.anchorPoint.y) / 1500;
 		
 		UICollectionViewLayoutAttributes *item = [spring.items firstObject];
 		CGPoint centerPt = item.center;

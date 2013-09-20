@@ -296,8 +296,8 @@
 			VolleyJSONLog(@"AFNetworking [-] %@ - Failed to parse JSON: %@", [[self class] description], [error localizedFailureReason]);
 			
 		} else {
-			//			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
-			//			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
+			NSDictionary *voteResult = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:&error];
+			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], voteResult);
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

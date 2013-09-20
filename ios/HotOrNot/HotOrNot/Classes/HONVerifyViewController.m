@@ -40,7 +40,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 @interface HONVerifyViewController() <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) UIView *collectionHolderView;
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) NSMutableArray *challenges;
@@ -66,7 +66,8 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 @property (nonatomic, strong) UIView *profileOverlayView;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) HONHeaderView *headerView;
-@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+
 @end
 
 @implementation HONVerifyViewController
@@ -179,6 +180,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			NSArray *parsedLists = [NSMutableArray arrayWithArray:[unsortedChallenges sortedArrayUsingDescriptors:[NSArray arrayWithObject:[[NSSortDescriptor alloc] initWithKey:@"updated" ascending:NO]]]];
 			//VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], [parsedLists objectAtIndex:0]);
 			
+			int count = 0;
 			_challenges = [NSMutableArray array];
 			for (NSDictionary *serverList in parsedLists) {
 				HONChallengeVO *vo = [HONChallengeVO challengeWithDictionary:serverList];
@@ -186,25 +188,44 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				if (vo != nil) {
 					[_challenges addObject:vo];
 				}
+				
+				count++;
+				
+				if (count >= 50)
+					break;
 			}
 
 			[_refreshButtonView toggleRefresh:NO];
 			_emptyImageView.hidden = [_challenges count] > 0;
 			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"];
 			
+//			[_collectionView reloadData];
+			[_refreshControl endRefreshing];
+			
 			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
-			_flowLayout.itemSize = CGSizeMake(320.0, 198.0);
 			_flowLayout.minimumLineSpacing = 0.0;
 			
 			_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:_flowLayout];
 			[_collectionView setDataSource:self];
 			[_collectionView setDelegate:self];
+			_collectionView.alpha = 0.0;
+//			_collectionView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 0.0, 0.0);
+			_collectionView.alwaysBounceVertical = YES;
 			[_collectionView registerClass:[HONVerifyViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-			_collectionView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 0.0, 0.0);
 			[_collectionHolderView addSubview:_collectionView];
 			
+			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+			_refreshTableHeaderView.delegate = self;
+			[_collectionView addSubview:_refreshTableHeaderView];
+			[_refreshTableHeaderView refreshLastUpdatedDate];
+			
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				_collectionView.alpha = 1.0;
+			}];
+
+			
 			_isRefreshing = NO;
-			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
+//			[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -221,8 +242,10 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
 		
+		[_collectionView reloadData];
+		
 		_isRefreshing = NO;
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
 	}];
 }
 
@@ -318,6 +341,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - View lifecycle
 - (void)loadView {
+	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	[super loadView];
 	
 	self.view.backgroundColor = [UIColor blackColor];
@@ -348,24 +372,11 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_collectionHolderView];
 	
-	
-	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
-//	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
-//	[_tableView setBackgroundColor:[UIColor clearColor]];
-//	_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
-//	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-//	_tableView.rowHeight = 70.0;
-//	_tableView.delegate = self;
-//	_tableView.dataSource = self;
-//	_tableView.userInteractionEnabled = YES;
-//	_tableView.scrollsToTop = NO;
-//	_tableView.showsVerticalScrollIndicator = YES;
-//	[self.view addSubview:_tableView];
-	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:YES];
-	_refreshTableHeaderView.delegate = self;
-	[_collectionView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView refreshLastUpdatedDate];
+	_refreshControl = [[UIRefreshControl alloc] init];
+//	_refreshControl.tintColor = [UIColor whiteColor];
+//	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
+//	[_collectionView addSubview:_refreshControl];
+
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
@@ -389,22 +400,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_refreshButtonView toggleRefresh:YES];
 	
 	_dynamics = [NSMutableArray array];
-	
-	int offset = 0;
-	for (int i=0; i<5; i++) {
-//		UIView *squareView = [[UIView alloc] initWithFrame:CGRectMake(0.0, offset, 320.0, 50.0)];
-//		squareView.backgroundColor = (offset % 200 == 0) ? [UIColor redColor] : [UIColor greenColor];
-//		[self.view addSubview:squareView];
-		
-//		UIAttachmentBehavior *attachmentBehavior = [[UIAttachmentBehavior alloc] initWithItem:squareView attachedToAnchor:CGPointMake(squareView.center.x, squareView.center.y - 25.0)];
-//		[attachmentBehavior setFrequency:1.0];
-//		[attachmentBehavior setDamping:0.5];
-//		
-//		[animator addBehavior:attachmentBehavior];
-//		[_dynamics addObject:attachmentBehavior];
-		
-		offset += 100;
-	}
 }
 
 - (void)viewDidLoad {
@@ -501,7 +496,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
+		_collectionView.frame = CGRectMake(_collectionView.frame.origin.x, _collectionView.frame.origin.y - 90.0, _collectionView.frame.size.width, _collectionView.frame.size.height + 90.0);
 		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
 		[_bannerView removeFromSuperview];
@@ -513,7 +508,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - Notifications
 - (void)_selectedChallengesTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_collectionView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 }
@@ -611,15 +606,15 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 - (void)challengeViewCell:(HONVerifyViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
-	UITableViewCell *tableCell;
+	UICollectionViewCell *tableCell;
 	for (HONVerifyViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-			tableCell = (UITableViewCell *)cell;
+			tableCell = (UICollectionViewCell *)cell;
 			break;
 		}
 	}
 	
-	_indexPath = [_tableView indexPathForCell:tableCell];
+	_indexPath = [_collectionView indexPathForCell:tableCell];
 	
 	//NSLog(@"APPROVE:[%@]", _indexPath);
 	
@@ -710,14 +705,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
 	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
-	
-//	int offset = 0;
-//	for (UIAttachmentBehavior *attachmentBehavior in _dynamics) {
-//		NSLog(@"BEHAVIOR:[%f]", attachmentBehavior.damping);
-//		[attachmentBehavior setAnchorPoint:CGPointMake(attachmentBehavior.anchorPoint.x, -scrollView.contentOffset.y + offset)];
-//		
-//		offset += 100;
-//	}
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
@@ -736,80 +723,34 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
 	cell.delegate = self;
 	
+	[_cells addObject:cell];
     return (cell);
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return (CGSizeMake(320.0, 198.0));
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+	return (CGSizeMake(320.0, (indexPath.row == [_challenges count] - 1) ? 245.0 : 198.0)); //47
 }
 
 
-//#pragma mark - TableView DataSource Delegates
-//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-//	return ([_challenges count]);
-//}
-//
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-//	return (1);
-//}
-//
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-//	return (nil);
-//}
-//
-//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-//	HONVerifyViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-//	
-//	if (cell == nil)
-//		cell = [[HONVerifyViewCell alloc] initAsEvenRow:indexPath.row % 2 == 0];
-//	
-//	cell.delegate = self;
-//	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
-//	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-//	
-//	[_cells addObject:cell];
-//	
-////	CGPoint anchorPt = CGPointMake(cell.center.x, cell.frame.origin.y);
-////	UIAttachmentBehavior *attachmentBehavior = [[UIAttachmentBehavior alloc] initWithItem:cell attachedToAnchor:anchorPt];
-////	[attachmentBehavior setFrequency:1.0];
-////	[attachmentBehavior setDamping:0.5];
-////	
-////	[_dynamics addObject:attachmentBehavior];
-////	[self.animator addBehavior:attachmentBehavior];
-//
-//	return (cell);
-//}
-//
-//
-//#pragma mark - TableView Delegates
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-//	return ((indexPath.section == [_challenges count] - 1) ? 245.0 : 198.0);
-//}
-//
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//	return (0.0);
-//}
-//
-//- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	return (indexPath);
-//}
-//
-//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-//	
-//	HONVerifyViewCell *cell = (HONVerifyViewCell *)[_cells objectAtIndex:indexPath.row];
-//	[cell showTapOverlay];
-//	
-//	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-//	
-//	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
-//						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-//									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-//									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
-//	
-//	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-//	[self _retrieveUser:challengeVO.creatorVO.userID];
-//}
+#pragma mark - CollectionView Delegates
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+	return (YES);
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+	HONVerifyViewCell *cell = (HONVerifyViewCell *)[_cells objectAtIndex:indexPath.row];
+	[cell showTapOverlay];
+	
+	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+	
+	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	[self _retrieveUser:challengeVO.creatorVO.userID];
+}
 
 
 #pragma mark - ActionSheet Delegates

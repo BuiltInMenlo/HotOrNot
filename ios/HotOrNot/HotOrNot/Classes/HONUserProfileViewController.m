@@ -324,15 +324,14 @@
 	[_headerView setTitle:[NSString stringWithFormat:@"%@, %d", _userVO.username, [HONAppDelegate ageForDate:_userVO.birthday]]];
 	
 	_avatarHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 225.0)];
-	_avatarHolderView.clipsToBounds = YES;
 	[_scrollView addSubview:_avatarHolderView];
 	
 	NSMutableString *avatarURL = [_userVO.imageURL mutableCopy];
-	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_o.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
-	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_o.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[avatarURL replaceOccurrencesOfString:@".jpg" withString:@"_l.jpg" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
+	[avatarURL replaceOccurrencesOfString:@".png" withString:@"_l.png" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [avatarURL length])];
 	
 	__weak typeof(self) weakSelf = self;
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -171.0, 320.0, 568.0)];
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 225.0)];
 	_avatarImageView.alpha = 0.0;
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:avatarURL]
 															  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
@@ -454,7 +453,8 @@
 - (void)_reloadCreatorImage {
 	__weak typeof(self) weakSelf = self;
 	
-	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, -54.0, 320.0, 320.0)];
+	_avatarHolderView.clipsToBounds = YES;
+	_avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 320.0)];
 	_avatarImageView.alpha = 0.0;
 	[_avatarHolderView addSubview:_avatarImageView];
 	[_avatarImageView setImageWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_userVO.imageURL]
@@ -504,20 +504,20 @@
 }
 
 - (void)_makeGrid {
-	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, (kSnapMediumDim) * (([_challenges count] / 4) + 1))];
+	_gridHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 429.0, 320.0, kSnapMediumDim * (([_challenges count] / 4) + 1))];
 	_gridHolderView.backgroundColor = [UIColor clearColor];
 	[_scrollView addSubview:_gridHolderView];
 	
 	_challengeCounter = 0;
 	for (HONChallengeVO *vo in _challenges) {
-		CGPoint pos = CGPointMake((kSnapMediumDim) * (_challengeCounter % 4), (kSnapMediumDim) * (_challengeCounter / 4));
+		CGPoint pos = CGPointMake(kSnapMediumDim * (_challengeCounter % 4), kSnapMediumDim * (_challengeCounter / 4));
 		
 		UIView *imageHolderView = [[UIView alloc] initWithFrame:CGRectMake(pos.x, pos.y, kSnapMediumDim, kSnapMediumDim)];
 		[_gridHolderView addSubview:imageHolderView];
 		
 		UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, kSnapMediumDim, kSnapMediumDim)];
 		imageView.userInteractionEnabled = YES;
-		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_m.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
+		[imageView setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@_t.jpg", vo.creatorVO.imagePrefix]] placeholderImage:nil];
 		[imageHolderView addSubview:imageView];
 		
 		_challengeCounter++;

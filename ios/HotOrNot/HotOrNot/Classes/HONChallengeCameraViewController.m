@@ -34,7 +34,7 @@
 @property (nonatomic) int uploadCounter;
 @property (nonatomic, strong) NSArray *s3Uploads;
 @property (nonatomic, strong) UIImage *rawImage;
-@property (nonatomic, strong) UIImage *challangeImage;
+@property (nonatomic, strong) UIImage *squaredImage;
 @property (nonatomic, strong) NSMutableArray *usernames;
 @property (nonatomic, strong) NSString *filename;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
@@ -141,7 +141,7 @@
 	}];
 }
 
-- (void)_uploadPhoto:(UIImage *)image {
+- (void)_uploadPhotos {
 	AmazonS3Client *s3 = [[AmazonS3Client alloc] initWithAccessKey:[[HONAppDelegate s3Credentials] objectForKey:@"key"] withSecretKey:[[HONAppDelegate s3Credentials] objectForKey:@"secret"]];
 	_uploadCounter = 0;
 	
@@ -149,31 +149,48 @@
 	NSLog(@"FILE PREFIX: %@/%@", [HONAppDelegate s3BucketForType:@"challenges"], _filename);
 	
 	@try {
-		UIImage *oImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(960.0, 1280.0)];
-		UIImage *lImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapLargeDim * 2.0, kSnapLargeDim * 2.0)];
-		UIImage *mImage = [HONImagingDepictor scaleImage:image toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
+		
+		// preview - full size
+		UIImage *oImage = _rawImage;
+		
+		// timeline - rectangle
+		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 854.0)] toRect:CGRectMake(0.0, 57.0, 640.0, 740.0)];
+		
+		// explore - square
+		UIImage *mImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 854.0)] toRect:CGRectMake(0.0, 267.0, 640.0, 320.0)];
+		
+		// grid - square
+		UIImage *tImage = [HONImagingDepictor scaleImage:_squaredImage toSize:CGSizeMake(kSnapMediumDim * 2.0, kSnapMediumDim * 2.0)];
+		
+		
 		
 		[s3 createBucket:[[S3CreateBucketRequest alloc] initWithName:@"hotornot-challenges"]];
 		
-		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por1 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_t.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por1.delegate = self;
 		por1.contentType = @"image/jpeg";
-		por1.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
+		por1.data = UIImageJPEGRepresentation(tImage, kSnapJPEGCompress);
 		[s3 putObject:por1];
 		
-		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por2 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_m.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por2.delegate = self;
 		por2.contentType = @"image/jpeg";
-		por2.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
+		por2.data = UIImageJPEGRepresentation(mImage, kSnapJPEGCompress);
 		[s3 putObject:por2];
 		
-		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
+		S3PutObjectRequest *por3 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_l.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por3.delegate = self;
 		por3.contentType = @"image/jpeg";
-		por3.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+		por3.data = UIImageJPEGRepresentation(lImage, kSnapJPEGCompress);
 		[s3 putObject:por3];
 		
-		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, nil];
+		S3PutObjectRequest *por4 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_o.jpg", _filename] inBucket:@"hotornot-challenges"];
+		por4.delegate = self;
+		por4.contentType = @"image/jpeg";
+		por4.data = UIImageJPEGRepresentation(oImage, kSnapJPEGCompress);
+		[s3 putObject:por4];
+		
+		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, nil];
 		
 	} @catch (AmazonClientException *exception) {
 		//[[[UIAlertView alloc] initWithTitle:@"Upload Error" message:exception.message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -600,7 +617,7 @@
 			workingImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(1280.0, 960.0)];
 		
 		float offset = (workingImage.size.width - workingImage.size.height) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:workingImage toRect:CGRectMake(offset, 0.0, workingImage.size.height, workingImage.size.height)];
+		_squaredImage = [HONImagingDepictor cropImage:workingImage toRect:CGRectMake(offset, 0.0, workingImage.size.height, workingImage.size.height)];
 		
 		// image is taller than wide (600x800)
 	} else if (_rawImage.size.width < _rawImage.size.height) {
@@ -609,11 +626,11 @@
 			workingImage = [HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(960.0, 1280.0)];
 		
 		float offset = (workingImage.size.height - workingImage.size.width) * 0.5;
-		_challangeImage = [HONImagingDepictor cropImage:workingImage toRect:CGRectMake(0.0, offset, workingImage.size.width, workingImage.size.width)];
+		_squaredImage = [HONImagingDepictor cropImage:workingImage toRect:CGRectMake(0.0, offset, workingImage.size.width, workingImage.size.width)];
 		
 		// image is square
 	} else
-		_challangeImage = workingImage;
+		_squaredImage = workingImage;
 	
 	
 	_usernames = [NSMutableArray array];
@@ -631,7 +648,7 @@
 	
 	[_cameraOverlayView submitStep:_previewView];
 	
-	[self _uploadPhoto:_challangeImage];
+	[self _uploadPhotos];
 	
 	
 	int friend_total = 0;

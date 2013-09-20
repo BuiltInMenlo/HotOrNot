@@ -29,9 +29,12 @@
 #import "HONUserProfileView.h"
 #import "HONChallengeDetailsViewController.h"
 #import "HONImagingDepictor.h"
+#import "HONCollectionViewFlowLayout.h"
 
-@interface HONExploreViewController ()<UITableViewDataSource, UITableViewDelegate, HONExploreViewCellDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
-@property (nonatomic, strong) UITableView *tableView;
+@interface HONExploreViewController ()<HONExploreViewCellDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+@property (nonatomic, strong) UIView *collectionHolderView;
+@property (nonatomic, strong) UICollectionView *collectionView;
+@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) HONHeaderView *headerView;
@@ -107,8 +110,28 @@
 				[_currChallenges addObject:[_allChallenges objectForKey:[NSString stringWithFormat:@"c_%d", [cID intValue]]]];
 			
 			
+			
 			_emptySetImgView.hidden = ([_currChallenges count] > 0);
-			[_tableView reloadData];
+			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
+			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
+			_flowLayout.minimumLineSpacing = 0.0;
+			
+			_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:_flowLayout];
+			[_collectionView setDataSource:self];
+			[_collectionView setDelegate:self];
+			_collectionView.alpha = 0.0;
+			[_collectionView registerClass:[HONExploreViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+//			_collectionView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 0.0, 0.0);
+			[_collectionHolderView addSubview:_collectionView];
+			
+			_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
+			_refreshTableHeaderView.delegate = self;
+			[_collectionView addSubview:_refreshTableHeaderView];
+			[_refreshTableHeaderView refreshLastUpdatedDate];
+			
+			[UIView animateWithDuration:0.33 animations:^(void) {
+				_collectionView.alpha = 1.0;
+			}];
 			
 			NSLog(@"ALL:[%d]\nCURR:[%d]", [_allChallenges count], [_currChallenges count]);
 		}
@@ -165,21 +188,10 @@
 	[bannerButton addTarget:self action:@selector(_goCloseBanner) forControlEvents:UIControlEventTouchUpInside];
 	[_bannerView addSubview:bannerButton];
 	
-	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
-	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
-	[_tableView setBackgroundColor:[UIColor clearColor]];
-	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	_tableView.delegate = self;
-	_tableView.dataSource = self;
-	_tableView.userInteractionEnabled = YES;
-	_tableView.scrollsToTop = NO;
-	_tableView.showsVerticalScrollIndicator = YES;
-	[self.view addSubview:_tableView];
+	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
+	[self.view addSubview:_collectionHolderView];
 	
-	_refreshTableHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, -self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height) withHeaderOffset:NO];
-	_refreshTableHeaderView.delegate = self;
-	[_tableView addSubview:_refreshTableHeaderView];
-	[_refreshTableHeaderView refreshLastUpdatedDate];
+	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
@@ -294,7 +306,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
+		_collectionView.frame = CGRectMake(_collectionView.frame.origin.x, _collectionView.frame.origin.y - 90.0, _collectionView.frame.size.width, _collectionView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
 		[_bannerView removeFromSuperview];
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"discover_banner"];
@@ -305,7 +317,7 @@
 
 #pragma mark - Notifications
 - (void)_selectedDiscoveryTab:(NSNotification *)notification {
-	[_tableView setContentOffset:CGPointZero animated:YES];
+	[_collectionView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	[self _goRefresh];
 }
@@ -345,10 +357,10 @@
 #pragma mark - UI Presentation
 - (void)_doneRefreshing {
 	[_refreshButtonView toggleRefresh:NO];
-	[_tableView reloadData];
+	[_collectionView reloadData];
 	
 	_isRefreshing = NO;
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
 }
 
 
@@ -474,49 +486,34 @@
 }
 
 
-#pragma mark - TableView DataSource Delegates
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return (ceil([_currChallenges count] * 0.5));
+
+#pragma mark - CollectionView DataSource Delegates
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return (ceil([_currChallenges count] * 0.5));
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return (1);
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-	_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
-	return (nil);
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	HONExploreViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
-	
-	if (cell == nil) {
-		cell = [[HONExploreViewCell alloc] init];
-	}
-	
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+	HONExploreViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cellIdentifier" forIndexPath:indexPath];
+//    cell.backgroundColor = (indexPath.row % 2 == 0) ? [UIColor greenColor] : [UIColor redColor];
 	cell.lChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2)];
 	
 	if ((indexPath.row * 2) + 1 < [_currChallenges count])
 		cell.rChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2) + 1];
 	
 	cell.delegate = self;
-	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-	return (cell);
+	
+    return (cell);
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+	return (CGSizeMake(320.0, (indexPath.row == ceil([_currChallenges count] * 0.5) - 1) ? 211.0 : 160)); //47
 }
 
 
-#pragma mark - TableView Delegates
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-	return ((indexPath.row == ceil([_currChallenges count] * 0.5) - 1) ? 211.0 : 160);
+#pragma mark - CollectionView Delegates
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+	return (NO);
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-	return (0.0);
-}
-
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	return (nil);
-}
 
 @end
