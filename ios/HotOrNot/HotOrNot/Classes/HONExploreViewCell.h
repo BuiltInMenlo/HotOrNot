@@ -12,7 +12,7 @@
 
 
 @protocol HONExploreViewCellDelegate;
-@interface HONExploreViewCell : UICollectionViewCell
+@interface HONExploreViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 
 @property (nonatomic, retain) HONChallengeVO *lChallengeVO;

@@ -152,10 +152,9 @@
 		
 		// preview - full size
 		UIImage *oImage = _rawImage;
-		
-		
-		UIImage *scaledImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
-		
+		UIImage *largeImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(852.0, 1136.0)] toRect:CGRectMake(106.0, 0.0, 640.0, 1136.0)];
+		UIImage *exploreImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(320.0, 568.0)] toRect:CGRectMake(0.0, 124.0, 320.0, 320.0)];
+		UIImage *gridImage = [HONImagingDepictor scaleImage:largeImage toSize:CGSizeMake(160.0, 160.0)];
 		
 		// timeline - rectangle
 		UIImage *lImage = [HONImagingDepictor cropImage:[HONImagingDepictor scaleImage:_rawImage toSize:CGSizeMake(640.0, 853.0)] toRect:CGRectMake(0.0, 57.0, 640.0, 740.0)];
@@ -197,7 +196,7 @@
 		S3PutObjectRequest *por5 = [[S3PutObjectRequest alloc] initWithKey:[NSString stringWithFormat:@"%@_s.jpg", _filename] inBucket:@"hotornot-challenges"];
 		por5.delegate = self;
 		por5.contentType = @"image/jpeg";
-		por5.data = UIImageJPEGRepresentation(scaledImage, kSnapJPEGCompress);
+		por5.data = UIImageJPEGRepresentation(largeImage, kSnapJPEGCompress);
 		[s3 putObject:por5];
 		
 		_s3Uploads = [NSArray arrayWithObjects:por1, por2, por3, por4, por5, nil];

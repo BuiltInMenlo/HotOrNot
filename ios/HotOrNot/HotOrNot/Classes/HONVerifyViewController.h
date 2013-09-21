@@ -10,5 +10,5 @@
 
 const NSInteger kOlderThresholdSeconds;
 
-@interface HONVerifyViewController : UIViewController <UIActionSheetDelegate>
+@interface HONVerifyViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate>
 @end

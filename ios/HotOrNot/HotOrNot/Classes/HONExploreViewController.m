@@ -33,11 +33,13 @@
 
 @interface HONExploreViewController ()<HONExploreViewCellDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
 @property (nonatomic, strong) UIView *collectionHolderView;
-@property (nonatomic, strong) UICollectionView *collectionView;
-@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
+//@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
+//@property (nonatomic, strong) UICollectionView *collectionView;
+@property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) MBProgressHUD *progressHUD;
 @property (nonatomic, strong) HONRefreshButtonView *refreshButtonView;
 @property (nonatomic, strong) HONHeaderView *headerView;
+@property (nonatomic, strong) HONChallengeVO *challengeVO;
 @property (nonatomic, strong) UIImageView *emptySetImgView;
 @property (nonatomic, strong) NSMutableDictionary *allChallenges;
 @property (nonatomic, strong) NSMutableArray *currChallenges;
@@ -113,7 +115,7 @@
 			
 			
 			_emptySetImgView.hidden = ([_currChallenges count] > 0);
-			[_collectionView reloadData];
+			[_tableView reloadData];
 			[_refreshControl endRefreshing];
 			
 //			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
@@ -187,21 +189,29 @@
 	_collectionHolderView = [[UIView alloc] initWithFrame:self.view.frame];
 	[self.view addSubview:_collectionHolderView];
 	
-	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-	flowLayout.minimumLineSpacing = 0.0;
+//	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+//	flowLayout.minimumLineSpacing = 0.0;
 	
-	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
-	[_collectionView setDataSource:self];
-	[_collectionView setDelegate:self];
-	[_collectionView registerClass:[HONExploreViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-	[_collectionHolderView addSubview:_collectionView];
+//	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
+//	[_collectionView setDataSource:self];
+//	[_collectionView setDelegate:self];
+//	[_collectionView registerClass:[HONExploreViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+//	[_collectionHolderView addSubview:_collectionView];
 	
 	_refreshControl = [[UIRefreshControl alloc] init];
 	_refreshControl.tintColor = [UIColor whiteColor];
 	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
-	[_collectionView addSubview:_refreshControl];
 	
 	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"], 320.0, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"discover_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[_tableView addSubview:_refreshControl];
+	[self.view addSubview:_tableView];
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
@@ -316,7 +326,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_collectionView.frame = CGRectMake(_collectionView.frame.origin.x, _collectionView.frame.origin.y - 90.0, _collectionView.frame.size.width, _collectionView.frame.size.height + 90.0);
+		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
 		[_bannerView removeFromSuperview];
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"discover_banner"];
@@ -324,10 +334,21 @@
 	}];
 }
 
+- (void)_goChallengeDetails {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+	}];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 #pragma mark - Notifications
 - (void)_selectedDiscoveryTab:(NSNotification *)notification {
-	[_collectionView setContentOffset:CGPointZero animated:YES];
+	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	[self _goRefresh];
 }
@@ -367,10 +388,10 @@
 #pragma mark - UI Presentation
 - (void)_doneRefreshing {
 	[_refreshButtonView toggleRefresh:NO];
-	[_collectionView reloadData];
+	[_tableView reloadData];
 	
 	_isRefreshing = NO;
-	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
 }
 
 
@@ -433,20 +454,15 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
+	_challengeVO = challengeVO;
+	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	
 	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
 	_blurredImageView.alpha = 0.0;
 	[self.view addSubview:_blurredImageView];
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self performSelector:@selector(_goChallengeDetails) withObject:Nil afterDelay:0.25];
 }
 
 - (void)discoveryViewCell:(HONExploreViewCell *)cell selectRightChallenge:(HONChallengeVO *)challengeVO {
@@ -456,19 +472,13 @@
 									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	_challengeVO = challengeVO;
 	
 	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
 	_blurredImageView.alpha = 0.0;
 	[self.view addSubview:_blurredImageView];
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-	}];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self performSelector:@selector(_goChallengeDetails) withObject:Nil afterDelay:0.25];
 }
 
 
@@ -488,15 +498,60 @@
 
 #pragma mark - ScrollView Delegates
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDidScroll:scrollView];
 }
 
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
-	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
+//	[_refreshTableHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
 }
 
 
+#pragma mark - TableView DataSource Delegates
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return (ceil([_currChallenges count] * 0.5));
+}
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (1);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	_searchHeaderView = [[HONSearchBarHeaderView alloc] initWithFrame:CGRectMake(0.0, 0.0, tableView.frame.size.width, kSearchHeaderHeight)];
+	return (nil);
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONExploreViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	
+	if (cell == nil) {
+		cell = [[HONExploreViewCell alloc] init];
+	}
+	
+	cell.lChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2)];
+	
+	if ((indexPath.row * 2) + 1 < [_currChallenges count])
+		cell.rChallengeVO = [_currChallenges objectAtIndex:(indexPath.row * 2) + 1];
+	
+	cell.delegate = self;
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	return (cell);
+}
+
+
+#pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return ((indexPath.row == ceil([_currChallenges count] * 0.5) - 1) ? 211.0 : 160);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (0.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (nil);
+}
+
+/*
 #pragma mark - CollectionView DataSource Delegates
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return (ceil([_currChallenges count] * 0.5));
@@ -523,7 +578,7 @@
 #pragma mark - CollectionView Delegates
 - (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
 	return (NO);
-}
+}*/
 
 
 @end

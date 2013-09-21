@@ -54,8 +54,7 @@
 	_leftHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_leftHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)];
-	[_leftHolderView addSubview:imageLoadingView];
+//	[_leftHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)]];
 	
 	_leftImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_leftImageView.alpha = 0.0;
@@ -103,8 +102,7 @@
 //	_rightHolderView.clipsToBounds = YES;
 	[self.contentView addSubview:_rightHolderView];
 	
-	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)];
-	[_rightHolderView addSubview:imageLoadingView];
+//	[_rightHolderView addSubview:[[HONImageLoadingView alloc] initAtPos:CGPointMake(48.0, 48.0)]];
 
 	_rightImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 160.0, 160.0)];
 	_rightImageView.alpha = 0.0;
@@ -146,7 +144,7 @@
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
 	[self.contentView addSubview:overlayView];
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
+	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		overlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[overlayView removeFromSuperview];
@@ -160,7 +158,7 @@
 	overlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
 	[self.contentView addSubview:overlayView];
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
+	[UIView animateWithDuration:0.25 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		overlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[overlayView removeFromSuperview];

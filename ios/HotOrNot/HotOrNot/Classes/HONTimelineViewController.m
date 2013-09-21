@@ -51,8 +51,9 @@
 @property (nonatomic, strong) HONOpponentVO *opponentVO;
 @property (nonatomic, strong) UIView *bannerView;
 @property (nonatomic, strong) UIView *collectionHolderView;
-@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
-@property (nonatomic, strong) UICollectionView *collectionView;
+//@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
+//@property (nonatomic, strong) UICollectionView *collectionView;
+@property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *cells;
 @property (nonatomic) BOOL isPushView;
@@ -202,13 +203,19 @@
 				}
 				
 				count++;
-				if (count >= 10)
+				if (count >= 20)
 					break;
 			}
 			
 			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"];
 			[_refreshControl endRefreshing];
-			[_collectionView reloadData];
+			
+//			[UIView animateWithDuration:0.33 animations:^(void) {
+//				_collectionView.alpha = 0.0;
+//			} completion:^(BOOL finished) {
+//				_collectionView.alpha = 1.0;
+				[_tableView reloadData];
+//			}];
 			
 //			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
 //			_flowLayout.itemSize = CGSizeMake(320.0, 370.0);
@@ -247,7 +254,7 @@
 		_progressHUD = nil;
 		
 		_isRefreshing = NO;
-		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
+//		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
 	}];
 }
 
@@ -275,7 +282,7 @@
 			_username = _userVO.username;
 			
 			self.navigationController.navigationBar.topItem.title = @"Me";
-			[_collectionView reloadData];
+			[_tableView reloadData];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -313,7 +320,7 @@
 			VolleyJSONLog(@"AFNetworking [-] %@: %@", [[self class] description], userResult);
 			
 			_userVO = [HONUserVO userWithDictionary:userResult];
-			[_collectionView reloadData];
+			[_tableView reloadData];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -464,16 +471,28 @@
 	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
 	flowLayout.minimumLineSpacing = 0.0;
 	
-	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
-	[_collectionView setDataSource:self];
-	[_collectionView setDelegate:self];
-	[_collectionView registerClass:[HONTimelineItemViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-	[_collectionHolderView addSubview:_collectionView];
+//	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
+//	[_collectionView setDataSource:self];
+//	[_collectionView setDelegate:self];
+//	[_collectionView registerClass:[HONTimelineItemViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+//	[_collectionHolderView addSubview:_collectionView];
 	
 	_refreshControl = [[UIRefreshControl alloc] init];
+	_refreshControl.frame = CGRectOffset(_refreshControl.frame, 0.0, 100.0);
 	_refreshControl.tintColor = [UIColor whiteColor];
 	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
-	[_collectionView addSubview:_refreshControl];
+	
+	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
+	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"timeline2_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	//_tableView.contentInset = UIEdgeInsetsMake(64.0f, 0.0f, 0.0f, 0.0f);
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[_tableView addSubview:_refreshControl];
+	[self.view addSubview:_tableView];
 	
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
@@ -626,7 +645,7 @@
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_collectionView.frame = CGRectMake(_collectionView.frame.origin.x, _collectionView.frame.origin.y - 90.0, _collectionView.frame.size.width, _collectionView.frame.size.height + 90.0);
+		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 	} completion:^(BOOL finished) {
 		[[NSUserDefaults standardUserDefaults] setObject:@"NO" forKey:@"timeline2_banner"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -670,6 +689,18 @@
 	}
 }
 
+- (void)_goChallengeDetails {
+	[UIView animateWithDuration:0.25 animations:^(void) {
+		_blurredImageView.alpha = 1.0;
+	} completion:^(BOOL finished) {
+		//.modalTransitionStyle
+	}];
+	
+	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:_challengeVO withBackground:_blurredImageView]];
+	[navigationController setNavigationBarHidden:YES];
+	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+}
+
 
 #pragma mark - UI Presentation
 - (void)_removeToolTip {
@@ -694,7 +725,7 @@
 }
 
 - (void)_selectedVoteTab:(NSNotification *)notification {
-	[_collectionView setContentOffset:CGPointZero animated:YES];
+	[_tableView setContentOffset:CGPointZero animated:YES];
 //	[_refreshButtonView toggleRefresh:YES];
 	
 	if (_timelineType == HONTimelineTypeSingleUser) {
@@ -820,15 +851,7 @@
 	_blurredImageView.alpha = 0.0;
 	[self.view addSubview:_blurredImageView];
 	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-		//.modalTransitionStyle
-	}];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
+	[self performSelector:@selector(_goChallengeDetails) withObject:Nil afterDelay:0.25];
 }
 
 - (void)timelineItemViewCell:(HONTimelineItemViewCell *)cell showComments:(HONChallengeVO *)challengeVO {
@@ -967,6 +990,7 @@
 }
 
 
+/*
 #pragma mark - CollectionView DataSource Delegates
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return ([_challenges count]);
@@ -1020,10 +1044,9 @@
 	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
 	[navigationController setNavigationBarHidden:YES];
 	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-}
+}*/
 
 
-/*
 #pragma mark - TableView DataSource Delegates
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 	return ([_challenges count] + ((int)(_userVO != nil && _timelineType == HONTimelineTypeSingleUser)));
@@ -1065,38 +1088,6 @@
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	return (nil);
 }
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-//	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
-//	[[[UIApplication sharedApplication] delegate].window addSubview:_blurredImageView];
-	
-	HONTimelineItemViewCell *cell = (HONTimelineItemViewCell *)[_cells objectAtIndex:indexPath.row];
-	[cell showTapOverlay];
-	
-	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
-	
-	[[Mixpanel sharedInstance] track:@"Timeline - Show Challenge"
-						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
-									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
-									  [NSString stringWithFormat:@"%d - %@", challengeVO.challengeID, challengeVO.subjectName], @"challenge", nil]];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
-	
-	_challengeVO = challengeVO;
-	_blurredImageView = [[UIImageView alloc] initWithImage:[HONImagingDepictor createBlurredScreenShot]];
-	_blurredImageView.alpha = 0.0;
-	[self.view addSubview:_blurredImageView];
-	
-	[UIView animateWithDuration:0.25 animations:^(void) {
-		_blurredImageView.alpha = 1.0;
-	} completion:^(BOOL finished) {
-		//.modalTransitionStyle
-	}];
-	
-	UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[HONChallengeDetailsViewController alloc] initWithChallenge:challengeVO withBackground:_blurredImageView]];
-	[navigationController setNavigationBarHidden:YES];
-	[[HONAppDelegate appTabBarController] presentViewController:navigationController animated:YES completion:nil];
-}*/
 
 
 #pragma mark - ActionSheet Delegates

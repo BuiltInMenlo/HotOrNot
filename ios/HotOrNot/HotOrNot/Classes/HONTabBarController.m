@@ -101,8 +101,12 @@
 	_tabHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.view.frame.size.height - kTabSize.height, 320.0, kTabSize.height)];
 	[self.view addSubview:_tabHolderView];
 	
+	UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
+	bgView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.5];
+	[_tabHolderView addSubview:bgView];
+	
 //	UIImageView *bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, kTabSize.height)];
-//	bgImageView.image = [[UIImage imageNamed:@"tabMenuBackground"] applyBlurWithRadius:5.0 tintColor:[UIColor clearColor] saturationDeltaFactor:1.0 maskImage:nil];
+//	bgImageView.image = [UIImage imageNamed:@"tabMenuBackground"];
 //	bgImageView.userInteractionEnabled = YES;
 //	[_tabHolderView addSubview:bgImageView];
 	

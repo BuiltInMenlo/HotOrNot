@@ -39,10 +39,11 @@
 const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
-@interface HONVerifyViewController() <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIActionSheetDelegate, UIAlertViewDelegate, HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
-@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
+@interface HONVerifyViewController() <HONVerifyViewCellDelegate, HONSnapPreviewViewControllerDelegate, HONUserProfileViewDelegate, EGORefreshTableHeaderDelegate>
+//@property (nonatomic, strong) HONCollectionViewFlowLayout *flowLayout;
 @property (nonatomic, strong) UIView *collectionHolderView;
-@property (nonatomic, strong) UICollectionView *collectionView;
+//@property (nonatomic, strong) UICollectionView *collectionView;
+@property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *challenges;
 @property (nonatomic, strong) NSMutableArray *headers;
 @property (nonatomic, strong) NSMutableArray *cells;
@@ -190,7 +191,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 				}
 				
 				count++;
-				if (count >= 10)
+				if (count >= 20)
 					break;
 			}
 
@@ -198,7 +199,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			_emptyImageView.hidden = [_challenges count] > 0;
 			_bannerView.hidden = ![[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"];
 			
-			[_collectionView reloadData];
+			[_tableView reloadData];
 			[_refreshControl endRefreshing];
 			
 //			_flowLayout = [[HONCollectionViewFlowLayout alloc] init];
@@ -231,8 +232,6 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 		[_progressHUD show:NO];
 		[_progressHUD hide:YES afterDelay:kHUDErrorTime];
 		_progressHUD = nil;
-		
-		[_collectionView reloadData];
 		
 		_isRefreshing = NO;
 //		[_refreshTableHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_collectionView];
@@ -365,17 +364,27 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
 	flowLayout.minimumLineSpacing = 0.0;
 	
-	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
-	[_collectionView setDataSource:self];
-	[_collectionView setDelegate:self];
-	_collectionView.alwaysBounceVertical = YES;
-	[_collectionView registerClass:[HONVerifyViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
-	[_collectionHolderView addSubview:_collectionView];
-	
+//	_collectionView = [[UICollectionView alloc] initWithFrame:self.view.frame collectionViewLayout:flowLayout];
+//	[_collectionView setDataSource:self];
+//	[_collectionView setDelegate:self];
+//	_collectionView.alwaysBounceVertical = YES;
+//	[_collectionView registerClass:[HONVerifyViewCell class] forCellWithReuseIdentifier:@"cellIdentifier"];
+//	[_collectionHolderView addSubview:_collectionView];
+//
 	_refreshControl = [[UIRefreshControl alloc] init];
 	_refreshControl.tintColor = [UIColor whiteColor];
 	[_refreshControl addTarget:self action:@selector(_retrieveChallenges) forControlEvents:UIControlEventValueChanged];
-	[_collectionView addSubview:_refreshControl];
+	
+	//_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0.0, 90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"], [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height - (90.0 * [[[NSUserDefaults standardUserDefaults] objectForKey:@"activity_banner"] isEqualToString:@"YES"])) style:UITableViewStylePlain];
+	_tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
+	[_tableView setBackgroundColor:[UIColor clearColor]];
+	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
+	_tableView.scrollsToTop = NO;
+	_tableView.showsVerticalScrollIndicator = YES;
+	[_tableView addSubview:_refreshControl];
+	[self.view addSubview:_tableView];
 
 	_profileOverlayView = [[UIView alloc] initWithFrame:self.view.frame];
 	_profileOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.67];
@@ -495,7 +504,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user", nil]];
 	
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^(void) {
-		_collectionView.frame = CGRectMake(_collectionView.frame.origin.x, _collectionView.frame.origin.y - 90.0, _collectionView.frame.size.width, _collectionView.frame.size.height + 90.0);
+		_tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y - 90.0, _tableView.frame.size.width, _tableView.frame.size.height + 90.0);
 		_emptyImageView.frame = CGRectOffset(_emptyImageView.frame, 0.0, -90.0);
 	} completion:^(BOOL finished) {
 		[_bannerView removeFromSuperview];
@@ -507,7 +516,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 #pragma mark - Notifications
 - (void)_selectedChallengesTab:(NSNotification *)notification {
-	[_collectionView setContentOffset:CGPointZero animated:YES];
+	[_tableView setContentOffset:CGPointZero animated:YES];
 	[_refreshButtonView toggleRefresh:YES];
 	[self _retrieveChallenges];
 }
@@ -570,7 +579,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 
 
 #pragma mark - VerifyCell Delegates
-- (void)challengeViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
+- (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO {
 	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -580,7 +589,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[self _retrieveUser:challengeVO.creatorVO.userID];
 }
 
-- (void)challengeViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
+- (void)verifyViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
 	
 	[[Mixpanel sharedInstance] track:@"Verify - Show Detail"
@@ -593,7 +602,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"ADD_VIEW_TO_WINDOW" object:_snapPreviewViewController.view];
 }
 
-- (void)challengeViewCellHidePreview:(HONVerifyViewCell *)cell {
+- (void)verifyViewCellHidePreview:(HONVerifyViewCell *)cell {
 	[[Mixpanel sharedInstance] track:@"Verify - Hide Detail"
 						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -602,18 +611,47 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	[_snapPreviewViewController showControls];
 }
 
-- (void)challengeViewCell:(HONVerifyViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
+- (void)verifyViewCellTakeAction:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO {
 	_challengeVO = challengeVO;
+	[[Mixpanel sharedInstance] track:@"Verify - Take Action"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
 	
-	UICollectionViewCell *tableCell;
+	UITableViewCell *tableCell;
 	for (HONVerifyViewCell *cell in _cells) {
 		if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
-			tableCell = (UICollectionViewCell *)cell;
+			tableCell = (UITableViewCell *)cell;
 			break;
 		}
 	}
 	
-	_indexPath = [_collectionView indexPathForCell:tableCell];
+	_indexPath = [_tableView indexPathForCell:tableCell];
+	
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:[NSString stringWithFormat:@"Are you sure you want to verify @%@?", _challengeVO.creatorVO.username]
+															 delegate:self
+													cancelButtonTitle:@"Cancel"
+											   destructiveButtonTitle:nil
+													otherButtonTitles:@"Verify only", @"Verify & subscribe", @"Flag", nil];
+	actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
+	[actionSheet setTag:0];
+	[actionSheet showInView:[HONAppDelegate appTabBarController].view];
+	
+	
+}
+
+- (void)verifyViewCell:(HONVerifyViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO {
+	_challengeVO = challengeVO;
+	
+	UITableViewCell *tableCell;
+	for (HONVerifyViewCell *cell in _cells) {
+		if (cell.challengeVO.challengeID == _challengeVO.challengeID) {
+			tableCell = (UITableViewCell *)cell;
+			break;
+		}
+	}
+	
+	_indexPath = [_tableView indexPathForCell:tableCell];
 	
 	//NSLog(@"APPROVE:[%@]", _indexPath);
 	
@@ -629,7 +667,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 												   destructiveButtonTitle:nil
 														otherButtonTitles:@"Verify only", @"Verify & subscribe", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:0];
+		[actionSheet setTag:1];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 		
 	} else {
@@ -644,7 +682,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 												   destructiveButtonTitle:nil
 														otherButtonTitles:@"Looks fake", @"Abusive content", nil];
 		actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-		[actionSheet setTag:0];
+		[actionSheet setTag:2];
 		[actionSheet showInView:[HONAppDelegate appTabBarController].view];
 	}
 }
@@ -711,6 +749,67 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 }
 
 
+#pragma mark - TableView DataSource Delegates
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+	return ([_challenges count]);
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+	return (1);
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	return (nil);
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+	HONVerifyViewCell *cell = [tableView dequeueReusableCellWithIdentifier:nil];
+	
+	if (cell == nil)
+		cell = [[HONVerifyViewCell alloc] initAsEvenRow:indexPath.row % 2 == 0];
+	
+	cell.delegate = self;
+	cell.challengeVO = [_challenges objectAtIndex:indexPath.row];
+	[cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+	
+	[_cells addObject:cell];
+	
+	return (cell);
+}
+
+
+#pragma mark - TableView Delegates
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+	return ((indexPath.section == [_challenges count] - 1) ? 245.0 : 198.0);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+	return (0.0);
+}
+
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	return (indexPath);
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+	[tableView deselectRowAtIndexPath:[tableView indexPathForSelectedRow] animated:NO];
+	
+	HONVerifyViewCell *cell = (HONVerifyViewCell *)[_cells objectAtIndex:indexPath.row];
+	[cell showTapOverlay];
+	
+	HONChallengeVO *challengeVO = (HONChallengeVO *)[_challenges objectAtIndex:indexPath.row];
+	
+	[[Mixpanel sharedInstance] track:@"Verify - Show Profile"
+						  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+									  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+									  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
+	[self _retrieveUser:challengeVO.creatorVO.userID];
+}
+
+
+/*
 #pragma mark - CollectionView DataSource Delegates
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return ([_challenges count]);
@@ -758,14 +857,37 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"HIDE_TABS" object:nil];
 	[self _retrieveUser:challengeVO.creatorVO.userID];
-}
+}*/
 
 
 #pragma mark - ActionSheet Delegates
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
 	NSLog(@"BUTTON INDEX:[%d]", buttonIndex);
 	
-	if (actionSheet.tag == 0) {
+	if (actionSheet.tag == 0 ) {
+		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - %@", (buttonIndex == 0) ? @"Approve" : (buttonIndex == 1) ? @"Approve & Subscribe" : (buttonIndex == 2) ? @"Flag" : @" Cancel"]
+							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
+										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
+										  [NSString stringWithFormat:@"%d - %@", _challengeVO.creatorVO.userID, _challengeVO.creatorVO.username], @"opponent", nil]];
+		
+		if (buttonIndex == 0) {
+			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+			
+		} else if (buttonIndex == 1) {
+			[self _addFriend:_challengeVO.creatorVO.userID];
+			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
+		
+		} else if (buttonIndex == 2) {
+			[[[UIAlertView alloc] initWithTitle:@""
+										message:[NSString stringWithFormat:@"@%@ has been flagged & notified!", _challengeVO.creatorVO.username]
+									   delegate:nil
+							  cancelButtonTitle:@"OK"
+							  otherButtonTitles:nil] show];
+			
+			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:NO];
+		}
+		
+	} else if (actionSheet.tag == 1) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Approve%@", (buttonIndex == 0) ? @"" : (buttonIndex == 1) ? @" & Subscribe" : @" Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",
@@ -779,7 +901,7 @@ const NSInteger kOlderThresholdSeconds = (60 * 60 * 24) / 4;
 			[self _verifyUser:_challengeVO.creatorVO.userID asLegit:YES];
 		}
 	
-	} else if (actionSheet.tag == 1) {
+	} else if (actionSheet.tag == 2) {
 		[[Mixpanel sharedInstance] track:[NSString stringWithFormat:@"Verify - Disprove %@", (buttonIndex == 0) ? @"Fake" : (buttonIndex == 1) ? @"Abusive" : @"Cancel"]
 							  properties:[NSDictionary dictionaryWithObjectsAndKeys:
 										  [NSString stringWithFormat:@"%@ - %@", [[HONAppDelegate infoForUser] objectForKey:@"id"], [[HONAppDelegate infoForUser] objectForKey:@"name"]], @"user",

@@ -14,7 +14,7 @@
 
 
 @protocol HONVerifyViewCellDelegate;
-@interface HONVerifyViewCell : UICollectionViewCell
+@interface HONVerifyViewCell : UITableViewCell
 + (NSString *)cellReuseIdentifier;
 - (id)initAsEvenRow:(BOOL)isEven;
 - (void)showTapOverlay;
@@ -24,8 +24,9 @@
 @end
 
 @protocol HONVerifyViewCellDelegate
-- (void)challengeViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
-- (void)challengeViewCellHidePreview:(HONVerifyViewCell *)cell;
-- (void)challengeViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
-- (void)challengeViewCell:(HONVerifyViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO;
+- (void)verifyViewCellShowPreview:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)verifyViewCellHidePreview:(HONVerifyViewCell *)cell;
+- (void)verifyViewCell:(HONVerifyViewCell *)cell creatorProfile:(HONChallengeVO *)challengeVO;
+- (void)verifyViewCellTakeAction:(HONVerifyViewCell *)cell forChallenge:(HONChallengeVO *)challengeVO;
+- (void)verifyViewCell:(HONVerifyViewCell *)cell approveUser:(BOOL)isApproved forChallenge:(HONChallengeVO *)challengeVO;
 @end

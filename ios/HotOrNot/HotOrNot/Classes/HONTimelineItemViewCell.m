@@ -161,6 +161,7 @@
 	__weak typeof(self) weakSelf = self;
 	
 	_heroImageHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 370.0)];
+	_heroImageHolderView.backgroundColor = [UIColor blackColor];
 	[self.contentView addSubview:_heroImageHolderView];
 	
 //	HONImageLoadingView *imageLoadingView = [[HONImageLoadingView alloc] initAtPos:CGPointMake(73.0, 73.0)];
@@ -174,7 +175,7 @@
 																  cachePolicy:(kIsImageCacheEnabled) ? NSURLRequestUseProtocolCachePolicy : NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:3]
 								placeholderImage:nil success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
 									weakSelf.heroImageView.image = image;
-									[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.heroImageView.alpha = 1.0; } completion:nil];
+									[UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^(void) { weakSelf.heroImageView.alpha = 1.0; } completion:nil];
 								} failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
 									[weakSelf _reloadHeroImage];
 								}];
@@ -335,17 +336,16 @@
 	tappedOverlayView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.85];
 	[self.contentView addSubview:tappedOverlayView];
 	
-	[UIView animateWithDuration:0.125 animations:^(void) {
+	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
+	
+	[UIView animateWithDuration:0.125 delay:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^(void) {
 		tappedOverlayView.alpha = 0.0;
 	} completion:^(BOOL finished) {
 		[tappedOverlayView removeFromSuperview];
 	}];
-	
-	[self performSelector:@selector(_triggerSelect) withObject:Nil afterDelay:0.05];
 }
 
 - (void)_triggerSelect {
-	[self.delegate timelineItemViewCell:self showChallenge:_challengeVO];
 }
 
 - (void)_goCreatorProfile {

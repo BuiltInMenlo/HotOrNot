@@ -1338,7 +1338,8 @@ NSString * const kTwilioSMS = @"6475577873";
 				}
 			}
 			
-			[self _retreiveSubscribees];
+//			[self _retreiveSubscribees];
+			[self _initTabs];
 		}
 		
 	} failure:^(AFHTTPRequestOperation *operation, NSError *error) {

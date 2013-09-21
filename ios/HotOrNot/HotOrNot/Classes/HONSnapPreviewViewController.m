@@ -386,6 +386,14 @@
 	else
 		[self _loadForChallenge];
 	
+	BOOL isFriend = NO;
+	for (HONUserVO *vo in [HONAppDelegate subscribeeList]) {
+		if (vo.userID == _userVO.userID) {
+			isFriend = YES;
+			break;
+		}
+	}
+	
 	_scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, [UIScreen mainScreen].bounds.size.height)];
 	_scrollView.pagingEnabled = NO;
 	_scrollView.showsVerticalScrollIndicator = YES;
@@ -407,7 +415,7 @@
 	[_closeButton addTarget:self action:@selector(_goDone) forControlEvents:UIControlEventTouchDown];
 	[_scrollView addSubview:_closeButton];
 	
-	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 23.0, 320.0, 74.0)];
+	_buttonHolderView = [[UIView alloc] initWithFrame:CGRectMake(0.0, ([UIScreen mainScreen].bounds.size.height * 0.5) - 23.0, 320.0, 164.0)];
 	_buttonHolderView.alpha = 0.0;
 	[_scrollView addSubview:_buttonHolderView];
 	
@@ -430,6 +438,14 @@
 		[profileButton setBackgroundImage:[UIImage imageNamed:@"profileButton_Active"] forState:UIControlStateHighlighted];
 		profileButton.alpha = 1.0;
 	}
+	
+	UIButton *subscribeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	subscribeButton.frame = CGRectMake(121.0, 85.0, 74.0, 74.0);
+	[subscribeButton setBackgroundImage:[UIImage imageNamed:@"flagButton_nonActive"] forState:UIControlStateNormal];
+	[subscribeButton setBackgroundImage:[UIImage imageNamed:@"flagButton_Active"] forState:UIControlStateHighlighted];
+	[subscribeButton addTarget:self action:(isFriend) ? @selector(_goUnsubscribe) : @selector(_goSubscribe) forControlEvents:UIControlEventTouchUpInside];
+	[_buttonHolderView addSubview:subscribeButton];
+	
 	
 	UIButton *flagButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	flagButton.frame = CGRectMake(222.0, 0.0, 74.0, 74.0);
